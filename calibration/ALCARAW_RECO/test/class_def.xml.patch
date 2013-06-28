@@ -1,0 +1,11 @@
+Index: DataFormats/CaloRecHit/src/classes_def.xml
+===================================================================
+RCS file: /local/reps/CMSSW/CMSSW/DataFormats/CaloRecHit/src/classes_def.xml,v
+retrieving revision 1.13
+diff -r1.13 classes_def.xml
+5,6c5,6
+<   <class name="reco::CaloCluster" ClassVersion="10">
+<    <version ClassVersion="10" checksum="4003646624"/>
+---
+>   <class name="reco::CaloCluster" ClassVersion="11">
+>    <version ClassVersion="11" checksum="3936140"/>

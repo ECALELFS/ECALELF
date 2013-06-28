@@ -1,0 +1,29 @@
+# list of files to run on
+# type	treeName	fileName
+# files are added to the same chain if they have the same treeName and the same type
+# chain with the same type are added as friends
+# only three type are admitted: s (signal), b (bkg), d (data)
+# all treeName are admitted, but some are mandatory:
+# selected
+# some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
+#s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Summer12_DD3.observed.root
+s	selected	/tmp/root/DYJets-Summer12-START53-ZSkim-allRange.root
+d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012A-13Jul-v1-190456-193621.root
+#d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-RUN2012A-v1-06Aug-recover-190782-190949.root
+d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012B-13Jul-v1-193834-196531.root
+d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012C-v2-198111-198913.root
+d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012C-v3-198934-201678.root
+d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012C-v3-201679-202016.root
+d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012C-v3-202017-202305.root
+#d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012C-v3-202306-203002.root
+#d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZSkim-RUN2012C-v3-203003-203755.root
+#d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZAlcaSkim-RUN2012D-v1-203773-203853.root
+#d	selected	/tmp/root/Cal_AlphaJarry2012_v0/DoubleElectron-ZAlcaSkim-RUN2012D-v1-203854-204567.root
+s	pileupHist	data/nPU-Summer12_DD3.observed.root
+#d	pileupHist	data/190456-203002-13Jul_PromptTS.69400.observed.root
+d	pileupHist	data/190456-204567-13Julv2_lastPrompt.69400.observed.root
+s	pileup	tmp/mcPUtree.root
+#d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-202305-13Jul_Prompt_Cal_Nov2012.69400.observed.root
+####
+#s	pileupTree	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/tree-nPU-Summer12_DD3-190456-202305-13Jul_Prompt_Cal_Nov2012.69400.observed.root
+#d	corr		DoubleElectron-ZSkim-RUN2012C-v3-201230-201678-JSON_201230-201678-Prompt.root

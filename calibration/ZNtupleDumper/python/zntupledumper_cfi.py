@@ -1,0 +1,33 @@
+import FWCore.ParameterSet.Config as cms
+
+zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
+                               jsonFileName = cms.string(""),
+                               #ZCandidateCollection = cms.InputTag('zCandidateProducer'),
+                               electronCollection = cms.InputTag('patElectrons'),
+                               #recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB"),
+                               #recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE"),
+                               recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits"),
+                               recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits"),
+                               rhoFastJet = cms.InputTag('kt6PFJetsForRhoCorrection',"rho"),
+                               vertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
+                               BeamSpotCollection = cms.InputTag('offlineBeamSpot'),
+                               conversionCollection = cms.InputTag('allConversions'),
+                               metCollection = cms.InputTag('pfMet'),
+                               triggerResultsCollection = cms.InputTag('TriggerResults::HLT'),
+                               foutName = cms.string("ZShervinNtuple.root"),
+                               doStandardTree = cms.bool(True),
+                               doExtraCalibTree = cms.bool(False),
+                               doEleIDTree = cms.bool(False),
+                               isWenu = cms.bool(False)
+                               #isMC = cms.bool(False),
+                               
+                               #                      jsonFile = cms.string(options.json),
+                               #puWeightFile = cms.string('')
+                               #                      R9WeightFile = cms.string(options.R9WeightFile),
+                                    #                      regrPhoFile = cms.string(regrPhoFile),
+                                    #                      regrEleFile = cms.string(regrEleFile),
+                                    #                      r9weightsFile = cms.string('./config/R9Weight.root'),
+                                    #                      correctionFileName = cms.string(options.correctionFileName),
+                                    #                      correctionType = cms.string(options.correctionType),
+                                    #                      oddEventFilter = cms.bool(oddEventFilter)
+                               )
