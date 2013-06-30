@@ -12,8 +12,6 @@
 
 #include <TString.h>
 
-
-
 // system include files
 #include <memory>
 #include <iostream>
@@ -44,23 +42,16 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
 
 
-#define RECHIT
-#ifdef RECHIT
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-#endif
 // //#include "Calibration/EcalCalibAlgos/interface/ElectronCalibAnalyzer.h"
 
-#define NEWRELEASE
 #define REGRESSION
 //#define REGRESSIONv3
 //#define REGRESSIONv2
 //#define REGRESSIONv1
-#define ClusterTools
-#ifdef ClusterTools
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
-#endif
 
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
@@ -76,15 +67,13 @@
 // #include "DataFormats/TrackReco/interface/TrackFwd.h"
 // #include "DataFormats/TrackReco/interface/Track.h"
 
-#define CONVERSIONS
-#ifdef CONVERSIONS
 //#include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/EgammaCandidates/interface/ConversionFwd.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionFinder.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionInfo.h"
 #include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
-#endif
 
+#include "EgammaAnalysis/ElectronTools/interface/EGammaCutBasedEleId.h"
 //#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 /*
 ___________________________________________________________________________________
@@ -141,7 +130,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
  public: // interface  
   
-  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU };
+  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight };
   
   //  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
@@ -169,13 +158,19 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 		  parameters.getParameter<Int_t>("maxNumberOfExpectedMissingHits"));
       retInternal_ = getBitTemplate();
     }
-#endif
+
 
   // initialize it by using only the version name
-  SimpleCutBasedElectronIDSelectionFunctor(Version_t  version, const edm::Handle<reco::ConversionCollection>& ConversionsHandle, const edm::Handle<reco::BeamSpot>& BeamSpotHandle, const edm::Handle<double>& rhoHandle):
+  SimpleCutBasedElectronIDSelectionFunctor(Version_t  version, 
+					   const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
+					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
+					   const edm::Handle<double>& rhoHandle,
+					   //edm::Handle< edm::ValueMap<reco::IsoDeposit> >,
+					   edm::Handle< edm::ValueMap<double> > &isoVals
+					   ):
     ConversionsHandle_(ConversionsHandle),
     BeamSpotHandle_(BeamSpotHandle),
-    rhoHandle_(rhoHandle)
+    rhoHandle_(rhoHandle),EgammaCutBasedEleId::IsoDepositMaps
     {
       if (version == NONE) {
 	std::cout << "SimpleCutBasedElectronIDSelectionFunctor: If you want to use version NONE "
@@ -187,10 +182,22 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       initialize(version);
       retInternal_ = getBitTemplate();
     }
+#endif
 
-  SimpleCutBasedElectronIDSelectionFunctor(TString versionStr, const edm::Handle<reco::ConversionCollection>& ConversionsHandle, const edm::Handle<reco::BeamSpot>& BeamSpotHandle, const edm::Handle<double>& rhoHandle):
+  SimpleCutBasedElectronIDSelectionFunctor(TString versionStr, 
+					   const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
+					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
+					   const edm::Handle<reco::VertexCollection>& VertexHandle,
+					   edm::Handle< edm::ValueMap<double> >& chIsoValsHandle,
+					   edm::Handle< edm::ValueMap<double> >& emIsoValsHandle,
+					   edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle,
+					   const edm::Handle<double>& rhoHandle):
     ConversionsHandle_(ConversionsHandle),
     BeamSpotHandle_(BeamSpotHandle),
+    VertexHandle_(VertexHandle),
+    chIsoValsHandle_(chIsoHandle),
+    emIsoValsHandle_(emIsoHandle),
+    nhIsoValsHandle_(nhIsoHandle),
     rhoHandle_(rhoHandle)
     {
       Version_t version=NONE;
@@ -256,7 +263,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     } else if (version_ == WP80PU) {
       //      std::cout << "[DEBUG] Iniziatializing WP80PU" << std::endl;
       
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits", 0);
       set("hasMatchedConversion");
       
       set("hoe_EB",      0.04);
@@ -280,7 +287,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     // set the cut values and active cuts for WP80 selection PU corrected with rho
     else if (version_ == WP90PU) {
       //      set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits", 0);
       set("hasMatchedConversion");
       
       set("hoe_EB",      0.12);
@@ -303,26 +310,34 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == WP70PU) {
       //      set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits", 0);
       set("hasMatchedConversion");
       
-      set("hoe_EB",      0.12);
-      set("deta_EB",     7.0e-03);
-      set("dphi_EB",     8.0e-01);
-      set("sihih_EB",    1.0e-02);
-      //set("pfmva_EB", 0.1);
-      set("relTrackIso_EB", 1.2e-01);
-      set("relEcalIso_EB",  9.0e-02);
-      set("relHcalIso_EB",  1.0e-01);
-
-      set("hoe_EE",      1.5e-01);
-      set("deta_EE",     9.0e-03);
-      set("dphi_EE",     7.0e-01);
-      set("sihih_EE",    3.0e-02);
-      //set("pfmva_EE", 0.1);
-      set("relTrackIso_EE", 5.0e-02);
-      set("relEcalIso_EE",  6.0e-02);
-      set("relHcalIso_EE",  3.0e-02);
+      set("hoe_EB",      0.12);         set("hoe_EE",      1.5e-01);
+      set("deta_EB",     7.0e-03);      set("deta_EE",     9.0e-03);
+      set("dphi_EB",     8.0e-01);      set("dphi_EE",     7.0e-01);
+      set("sihih_EB",    1.0e-02);      set("sihih_EE",    3.0e-02);
+      //set("pfmva_EB", 0.1);       //set("pfmva_EE", 0.1);
+      set("relTrackIso_EB", 1.2e-01);   set("relTrackIso_EE", 5.0e-02);
+      set("relEcalIso_EB",  9.0e-02);   set("relEcalIso_EE",  6.0e-02);
+      set("relHcalIso_EB",  1.0e-01);   set("relHcalIso_EE",  3.0e-02);
+    }
+    else if (version_ == loose) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
+      set("deta_EB",       0.007);         set("deta_EE",         0.009);
+      set("dphi_EB",       0.150);         set("dphi_EE",         0.100);
+      set("sihih_EB",      0.010);         set("sihih_EE",        0.030);
+      set("ooemoop_EB",    0.050,false);   set("ooemoop_EE",      0.050,false);  
+      set("d0vtx_EB",      0.020);         set("d0vtx_EE",        0.020);
+      set("dzvtx_EB",      0.200);         set("dzvtx_EE",        0.200);
+      set("pfIso_EB",      0.150);         set("pfIso_EE",        0.150);         
+      set("pfIsoLowPt_EB", 0.150);         set("pfIsoLowPt_EE",   0.100);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
 
   }
@@ -339,53 +354,34 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 		  Int_t maxNumberOfExpectedMissingHits)
   {
     version_ = NONE;
-    push_back("trackIso_EB");
-    push_back("ecalIso_EB" );
-    push_back("hcalIso_EB" );
-    push_back("sihih_EB"   );
-    push_back("dphi_EB"    );
-    push_back("deta_EB"    );
-    push_back("hoe_EB"     );
-
-    
-    push_back("trackIso_EE");
-    push_back("ecalIso_EE" );
-    push_back("hcalIso_EE" );
-    push_back("sihih_EE"   );
-    push_back("dphi_EE"    );
-    push_back("deta_EE"    );
-    push_back("hoe_EE"     );
-
+    push_back("trackIso_EB");  push_back("trackIso_EE");
+    push_back("ecalIso_EB" );  push_back("ecalIso_EE" );
+    push_back("hcalIso_EB" );  push_back("hcalIso_EE" );
+    push_back("sihih_EB"   );  push_back("sihih_EE"   );
+    push_back("dphi_EB"    );  push_back("dphi_EE"    );
+    push_back("deta_EB"    );  push_back("deta_EE"    );
+    push_back("hoe_EB"     );  push_back("hoe_EE"     );
     
     push_back("conversionRejection"            );
     push_back("maxNumberOfExpectedMissingHits" );
     
    
-    set("trackIso_EB", trackIso_EB);
-    set("ecalIso_EB",  ecalIso_EB);
-    set("hcalIso_EB",  hcalIso_EB);
-    set("sihih_EB",    sihih_EB);
-    set("dphi_EB",     dphi_EB);
-    set("deta_EB",     deta_EB);
-    set("hoe_EB",      hoe_EB);
-    set("cIso_EB",     cIso_EB);
-    
-    set("trackIso_EE", trackIso_EE);
-    set("ecalIso_EE",  ecalIso_EE);
-    set("hcalIso_EE",  hcalIso_EE);
-    set("sihih_EE",    sihih_EE);
-    set("dphi_EE",     dphi_EE);
-    set("deta_EE",     deta_EE);
-    set("hoe_EE",      hoe_EE);
-    set("cIso_EE",     cIso_EE);
-    
+    set("trackIso_EB", trackIso_EB);    set("trackIso_EE", trackIso_EE);  
+    set("ecalIso_EB",  ecalIso_EB);     set("ecalIso_EE",  ecalIso_EE);   
+    set("hcalIso_EB",  hcalIso_EB);     set("hcalIso_EE",  hcalIso_EE);   
+    set("sihih_EB",    sihih_EB);       set("sihih_EE",    sihih_EE);     
+    set("dphi_EB",     dphi_EB);        set("dphi_EE",     dphi_EE);      
+    set("deta_EB",     deta_EB);        set("deta_EE",     deta_EE);      
+    set("hoe_EB",      hoe_EB);	        set("hoe_EE",      hoe_EE);	      
+    set("cIso_EB",     cIso_EB);        set("cIso_EE",     cIso_EE);      
+        
     set("conversionRejection",            conversionRejection);
     set("maxNumberOfExpectedMissingHits", maxNumberOfExpectedMissingHits);
     
   }
 #endif
 
-  bool operator()( const reco::GsfElectron & electron, pat::strbitset& ret)
+  bool operator()( const reco::GsfElectronRef electron, pat::strbitset& ret)
   {
     // new electron, clear old electron bitmask
     retInternal_ = getBitTemplate();
@@ -407,9 +403,10 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
   using Selector<reco::GsfElectron>::operator();
   // function with the Spring10 variable definitions
-  bool WPxx_PU( const reco::GsfElectron & electron, pat::strbitset& ret)
+  bool WPxx_PU( const reco::GsfElectronRef electronRef, pat::strbitset& ret)
   {
-    
+  reco:GsfElectron& electron = *electronRef;
+
     //    ret.set(false);
     // effective areas
     float AeffTk_EB = 0;
@@ -422,15 +419,50 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     //
     //    Double_t eleET = electron.p4().Pt();
     Double_t eleET = electron.et();
+    Double_t etaSC = electron.superCluster()->eta();
+  // effective area for isolation
+    float AEff = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, 
+								 etaSC, ElectronEffectiveArea::kEleEAData2011);
+
+
+    float ooemoop     = (1.0/ele.ecalEnergy() - ele.eSuperClusterOverP()/ele.ecalEnergy());
     //    Double_t etSCEle = electron.superCluster()->energy() *sin(electron.superCluster()->position().theta());
     Double_t trackIso = electron.dr03TkSumPt()/eleET;
-    Double_t ecalIso = electron.dr03EcalRecHitSumEt()/eleET;
-    Double_t hcalIso = electron.dr03HcalTowerSumEt()/eleET;
-    Double_t sihih   = electron.sigmaIetaIeta();
-    Double_t Dphi    = electron.deltaPhiSuperClusterTrackAtVtx();
-    Double_t Deta    = electron.deltaEtaSuperClusterTrackAtVtx();
-    Double_t HoE     = electron.hadronicOverEm();
-    Double_t pfMVA   = electron.mva();
+    Double_t ecalIso  = electron.dr03EcalRecHitSumEt()/eleET;
+    Double_t hcalIso  = electron.dr03HcalTowerSumEt()/eleET;
+    Double_t sihih    = electron.sigmaIetaIeta();
+    Double_t Dphi     = electron.deltaPhiSuperClusterTrackAtVtx();
+    Double_t Deta     = electron.deltaEtaSuperClusterTrackAtVtx();
+    Double_t HoE      = electron.hadronicOverEm();
+    Double_t pfMVA    = electron.mva();
+    // get the variables
+    bool isEB           = ele.isEB() ? true : false;
+    Double_t pt         = ele.pt();
+    
+    // impact parameter variables
+    float d0vtx         = 0.0;
+    float dzvtx         = 0.0;
+    if (VertexHandle_->size() > 0) {
+      reco::VertexRef vtx(VertexHandle_, 0);    
+      d0vtx = ele.gsfTrack()->dxy(vtx->position());
+      dzvtx = ele.gsfTrack()->dz(vtx->position());
+    } else {
+      d0vtx = ele.gsfTrack()->dxy();
+      dzvtx = ele.gsfTrack()->dz();
+    }
+
+    // get particle flow isolation
+    double iso_ch =  chIsoValsHandle_[ele];
+    double iso_em =  emIsoValsHandle_[ele];
+    double iso_nh =  nhIsoValsHandle_[ele];
+
+    // apply to neutrals
+    double rhoPrime = std::max(*rhoHandle_, 0.0);
+    double iso_n = std::max(iso_nh + iso_em - rhoPrime * AEff, 0.0);
+
+    // compute final isolation
+    double iso = (iso_n + iso_ch) / pt;
+
 #ifdef shervin
     Double_t cIso    = 0;
     if (electron.isEB()) { cIso = 
@@ -442,7 +474,6 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 	       electron.dr03HcalTowerSumEt()  ) / eleET;
     }
 #endif
-    Int_t innerHits = electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
     // in 39 conversion rejection variables are accessible from Gsf electron
 #ifdef shervin
     Double_t dist = electron.convDist(); // default value is -9999 if conversion partner not found
@@ -450,72 +481,106 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     Bool_t isConv = fabs(dist) < 0.02 && fabs(dcot) < 0.02;
 #endif
 
-#ifdef DEBUG
-    std::cout << "[DEBUG] " << ConversionsHandle_->size() << "\t" << BeamSpotHandle_.isValid() << "\t" << *rhoHandle_ << std::endl;
-#endif
+    Int_t innerHits = electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
     bool hasMatchedConversion = ConversionTools::hasMatchedConversion(electron, ConversionsHandle_, BeamSpotHandle_->position());
+
     Double_t absEtaSC = fabs(electron.superCluster()->eta());
     Double_t rhoRel = *rhoHandle_ / eleET;
+ // conversion rejection variables
+
+
+
 
     //------------------------------ Fiducial region cut
     if ( (absEtaSC < 1.4442 || (absEtaSC > 1.566 && absEtaSC < 2.5) ) || ignoreCut("fiducial")) passCut(retInternal_, "fiducial");
 
     //------------------------------ conversion rejection cut
-    if ( innerHits  < cut("maxNumberOfExpectedMissingHits", int()) || ignoreCut("maxNumberOfExpectedMissingHits")) 
+    if ( innerHits  <= cut("maxNumberOfExpectedMissingHits", int()) || ignoreCut("maxNumberOfExpectedMissingHits")) 
       passCut(retInternal_, "maxNumberOfExpectedMissingHits");    
     if ( (!hasMatchedConversion) || ignoreCut("hasMatchedConversion")) passCut(retInternal_, "hasMatchedConversion");
  
-   // now apply the cuts
-    
     if (electron.isEB()) { // BARREL case
-      // check the EB cuts
-
-    if ( HoE        <  cut("hoe_EB",      double()) || ignoreCut("hoe_EB")     ) passCut(retInternal_, "hoe_EB");
-    if ( fabs(Deta) <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
-    if ( fabs(Dphi) <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
-    if ( sihih      <  cut("sihih_EB",    double()) || ignoreCut("sihih_EB")   ) passCut(retInternal_, "sihih_EB");
-    if ( pfMVA      >  cut("pfmva_EB",    double()) || ignoreCut("pfmva_EB")   ) passCut(retInternal_, "pfmva_EB");
-
-    if ( trackIso - AeffTk_EB   *rhoRel <  cut("relTrackIso_EB", double()) || ignoreCut("relTrackIso_EB")) 
-      passCut(retInternal_, "relTrackIso_EB");
-    if ( ecalIso  - AeffECAL_EB *rhoRel <  cut("relEcalIso_EB",  double()) || ignoreCut("relEcalIso_EB") ) 
-      passCut(retInternal_, "relEcalIso_EB");
-    if ( hcalIso  - AeffHCAL_EB *rhoRel <  cut("relHcalIso_EB",  double()) || ignoreCut("relHcalIso_EB") ) 
-      passCut(retInternal_, "relHcalIso_EB");
-
-    // pass all the EE cuts
-    passCut(retInternal_, "hoe_EE");
-    passCut(retInternal_, "deta_EE");	
-    passCut(retInternal_, "dphi_EE");	
-    passCut(retInternal_, "sihih_EE");	
-    passCut(retInternal_, "pfmva_EE");
-    passCut(retInternal_, "relTrackIso_EE");	
-    passCut(retInternal_, "relEcalIso_EE");	
-    passCut(retInternal_, "relHcalIso_EE");	
-    
+      if ( fabs(Deta)  <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
+      if ( fabs(Dphi)  <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
+      if ( sihih       <  cut("sihih_EB",    double()) || ignoreCut("sihih_EB")   ) passCut(retInternal_, "sihih_EB");
+      if ( HoE         <  cut("hoe_EB",      double()) || ignoreCut("hoe_EB")     ) passCut(retInternal_, "hoe_EB");
+      if ( ooemoop     <  cut("ooemoop",     double()) || ignoreCut("ooemoop_EB") ) passCut(retInternal_, "ooemoop_EB");
+      if ( fabs(d0vtx) <  cut("d0vtx",       double()) || ignoreCut("d0vtx_EB")   ) passCut(retInternal_, "d0vtx_EB");
+      if ( fabs(dzvtx) <  cut("dzvtx",       double()) || ignoreCut("dzvtx_EB")   ) passCut(retInternal_, "dzvtx_EB");
+      
+      if ( pfMVA       >  cut("pfmva_EB",    double()) || ignoreCut("pfmva_EB")   ) passCut(retInternal_, "pfmva_EB");
+      
+      if ( trackIso - AeffTk_EB   *rhoRel <  cut("relTrackIso_EB", double()) || ignoreCut("relTrackIso_EB")) 
+	passCut(retInternal_, "relTrackIso_EB");
+      if ( ecalIso  - AeffECAL_EB *rhoRel <  cut("relEcalIso_EB",  double()) || ignoreCut("relEcalIso_EB") ) 
+	passCut(retInternal_, "relEcalIso_EB");
+      if ( hcalIso  - AeffHCAL_EB *rhoRel <  cut("relHcalIso_EB",  double()) || ignoreCut("relHcalIso_EB") ) 
+	passCut(retInternal_, "relHcalIso_EB");
+      if(pt>=20){
+	if(iso < cut("pfIso_EB", double()) || ignoreCut("pfIso_EB") )
+	  passCut(retInternal_, "pfIso_EB");
+	passCut(retInternal_, "pfIsoLowPt_EB");
+      }else{
+	if(iso < cut("pfIsoLowPt_EB", double()) || ignoreCut("pfIsoLowPt_EB") )
+	  passCut(retInternal_, "pfIsoLowPt_EB");
+	passCut(retInternal_, "pfIso_EB");
+      }
+	      
+      // pass all the EE cuts
+      passCut(retInternal_, "deta_EE");	
+      passCut(retInternal_, "dphi_EE");	
+      passCut(retInternal_, "sihih_EE");	
+      passCut(retInternal_, "hoe_EE");
+      passCut(retInternal_, "ooemoop_EE");
+      passCut(retInternal_, "d0vtx_EE");
+      passCut(retInternal_, "dzvtx_EE");
+      passCut(retInternal_, "pfmva_EE");
+      passCut(retInternal_, "relTrackIso_EE");	
+      passCut(retInternal_, "relEcalIso_EE");	
+      passCut(retInternal_, "relHcalIso_EE");	
+      passCut(retInternal_, "pfIso_EE");
+      passCut(retInternal_, "pfIsoLowPt_EE");
     } else {  // ENDCAPS case
-    if ( HoE        <  cut("hoe_EE",      double()) || ignoreCut("hoe_EE")     ) passCut(retInternal_, "hoe_EE");
-    if ( fabs(Deta) <  cut("deta_EE",     double()) || ignoreCut("deta_EE")    ) passCut(retInternal_, "deta_EE");
-    if ( fabs(Dphi) <  cut("dphi_EE",     double()) || ignoreCut("dphi_EE")    ) passCut(retInternal_, "dphi_EE");
-    if ( sihih      <  cut("sihih_EE",    double()) || ignoreCut("sihih_EE")   ) passCut(retInternal_, "sihih_EE");
-    if ( pfMVA      >  cut("pfmva_EE",    double()) || ignoreCut("pfmva_EE")   ) passCut(retInternal_, "pfmva_EE");
-
-    if ( trackIso - AeffTk_EE   *rhoRel <  cut("relTrackIso_EE", double()) || ignoreCut("relTrackIso_EE")) 
-      passCut(retInternal_, "relTrackIso_EE");
-    if ( ecalIso  - AeffECAL_EE *rhoRel <  cut("relEcalIso_EE",  double()) || ignoreCut("relEcalIso_EE") ) 
-       passCut(retInternal_, "relEcalIso_EE");
-    if ( hcalIso  - AeffHCAL_EE *rhoRel <  cut("relHcalIso_EE",  double()) || ignoreCut("relHcalIso_EE") ) 
-      passCut(retInternal_, "relHcalIso_EE");
-
-    // pass all the EB cuts
-    passCut(retInternal_, "hoe_EB");
-    passCut(retInternal_, "deta_EB");	
-    passCut(retInternal_, "dphi_EB");	
-    passCut(retInternal_, "sihih_EB");	
-    passCut(retInternal_, "pfmva_EB");
-    passCut(retInternal_, "relTrackIso_EB");	
-    passCut(retInternal_, "relEcalIso_EB");	
-    passCut(retInternal_, "relHcalIso_EB");	
+      if ( fabs(Deta)  <  cut("deta_EE",     double()) || ignoreCut("deta_EE")    ) passCut(retInternal_, "deta_EE");
+      if ( fabs(Dphi)  <  cut("dphi_EE",     double()) || ignoreCut("dphi_EE")    ) passCut(retInternal_, "dphi_EE");
+      if ( sihih       <  cut("sihih_EE",    double()) || ignoreCut("sihih_EE")   ) passCut(retInternal_, "sihih_EE");
+      if ( HoE         <  cut("hoe_EE",      double()) || ignoreCut("hoe_EE")     ) passCut(retInternal_, "hoe_EE");
+      if ( ooemoop     <  cut("ooemoop",     double()) || ignoreCut("ooemoop_EE") ) passCut(retInternal_, "ooemoop_EE");
+      if ( fabs(d0vtx) <  cut("d0vtx",       double()) || ignoreCut("d0vtx_EE")   ) passCut(retInternal_, "d0vtx_EE");
+      if ( fabs(dzvtx) <  cut("dzvtx",       double()) || ignoreCut("dzvtx_EE")   ) passCut(retInternal_, "dzvtx_EE");
+      
+      if ( pfMVA       >  cut("pfmva_EE",    double()) || ignoreCut("pfmva_EE")   ) passCut(retInternal_, "pfmva_EE");
+      
+      if ( trackIso - AeffTk_EE   *rhoRel <  cut("relTrackIso_EE", double()) || ignoreCut("relTrackIso_EE")) 
+	passCut(retInternal_, "relTrackIso_EE");
+      if ( ecalIso  - AeffECAL_EE *rhoRel <  cut("relEcalIso_EE",  double()) || ignoreCut("relEcalIso_EE") ) 
+	passCut(retInternal_, "relEcalIso_EE");
+      if ( hcalIso  - AeffHCAL_EE *rhoRel <  cut("relHcalIso_EE",  double()) || ignoreCut("relHcalIso_EE") ) 
+	passCut(retInternal_, "relHcalIso_EE");
+      if(pt>=20){
+	if(iso < cut("pfIso_EE", double()) || ignoreCut("pfIso_EE") )
+	  passCut(retInternal_, "pfIso_EE");
+	passCut(retInternal_, "pfIsoLowPt_EE");
+      }else{
+	if(iso < cut("pfIsoLowPt_EE", double()) || ignoreCut("pfIsoLowPt_EE") )
+	  passCut(retInternal_, "pfIsoLowPt_EE");
+	passCut(retInternal_, "pfIso_EE");
+      }
+	      
+      // pass all the EB cuts
+      passCut(retInternal_, "deta_EB");	
+      passCut(retInternal_, "dphi_EB");	
+      passCut(retInternal_, "sihih_EB");	
+      passCut(retInternal_, "hoe_EB");
+      passCut(retInternal_, "ooemoop_EB");
+      passCut(retInternal_, "d0vtx_EB");
+      passCut(retInternal_, "dzvtx_EB");
+      passCut(retInternal_, "pfmva_EB");
+      passCut(retInternal_, "relTrackIso_EB");	
+      passCut(retInternal_, "relEcalIso_EB");	
+      passCut(retInternal_, "relHcalIso_EB");	
+      passCut(retInternal_, "pfIso_EB");
+      passCut(retInternal_, "pfIsoLowPt_EB");
 
     }
     setIgnored(retInternal_);   
@@ -548,6 +613,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
   const edm::Handle<reco::ConversionCollection>& ConversionsHandle_;
   const edm::Handle<reco::BeamSpot>& BeamSpotHandle_;
   const edm::Handle<double>& rhoHandle_;
+
 };
 
 
