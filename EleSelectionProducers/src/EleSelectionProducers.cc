@@ -217,7 +217,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     pat::strbitset tight_ret;
 
 
-    fiducial_selector.PassCut(eleRef, fiducial_ret);
+    fiducial_selector(eleRef, fiducial_ret);
     fiducial_vec.push_back(fiducial_selector.result());
 
     WP70_PU_selector(eleRef, WP70_PU_ret);

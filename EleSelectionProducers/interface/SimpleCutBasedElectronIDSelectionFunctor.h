@@ -379,7 +379,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
   }
 #endif
 
-  bool PassCut( const reco::GsfElectronRef electron, pat::strbitset& ret)
+  bool operator()( const reco::GsfElectronRef& electron, pat::strbitset& ret)
   {
     // new electron, clear old electron bitmask
     retInternal_ = getBitTemplate();
