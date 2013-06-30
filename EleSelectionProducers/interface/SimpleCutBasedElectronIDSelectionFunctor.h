@@ -44,12 +44,8 @@
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
-// //#include "Calibration/EcalCalibAlgos/interface/ElectronCalibAnalyzer.h"
+#include "EgammaAnalysis/ElectronTools/interface/ElectronEffectiveArea.h"
 
-#define REGRESSION
-//#define REGRESSIONv3
-//#define REGRESSIONv2
-//#define REGRESSIONv1
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
 
@@ -126,7 +122,7 @@ Strongly modified by Shervin
 */
 
 
-class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectron>  {
+class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectronRef>  {
 
  public: // interface  
   
@@ -185,19 +181,21 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 #endif
 
   SimpleCutBasedElectronIDSelectionFunctor(TString versionStr, 
+					   const edm::Handle<reco::GsfElectronCollection>& electronsHandle,
 					   const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
 					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
 					   const edm::Handle<reco::VertexCollection>& VertexHandle,
-					   edm::Handle< edm::ValueMap<double> >& chIsoValsHandle,
-					   edm::Handle< edm::ValueMap<double> >& emIsoValsHandle,
-					   edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle,
+					   const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle,
+					   const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle,
+					   const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle,
 					   const edm::Handle<double>& rhoHandle):
+    electronsHandle_(electronsHandle),
     ConversionsHandle_(ConversionsHandle),
     BeamSpotHandle_(BeamSpotHandle),
     VertexHandle_(VertexHandle),
-    chIsoValsHandle_(chIsoHandle),
-    emIsoValsHandle_(emIsoHandle),
-    nhIsoValsHandle_(nhIsoHandle),
+    chIsoValsHandle_(chIsoValsHandle),
+    emIsoValsHandle_(emIsoValsHandle),
+    nhIsoValsHandle_(nhIsoValsHandle),
     rhoHandle_(rhoHandle)
     {
       Version_t version=NONE;
@@ -381,7 +379,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
   }
 #endif
 
-  bool operator()( const reco::GsfElectronRef electron, pat::strbitset& ret)
+  bool PassCut( const reco::GsfElectronRef electron, pat::strbitset& ret)
   {
     // new electron, clear old electron bitmask
     retInternal_ = getBitTemplate();
@@ -401,11 +399,11 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     return (float) retInternal_;
   }
 
-  using Selector<reco::GsfElectron>::operator();
+  using Selector<reco::GsfElectronRef>::operator();
   // function with the Spring10 variable definitions
   bool WPxx_PU( const reco::GsfElectronRef electronRef, pat::strbitset& ret)
   {
-  reco:GsfElectron& electron = *electronRef;
+    const reco::GsfElectron electron = *electronRef;
 
     //    ret.set(false);
     // effective areas
@@ -425,7 +423,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 								 etaSC, ElectronEffectiveArea::kEleEAData2011);
 
 
-    float ooemoop     = (1.0/ele.ecalEnergy() - ele.eSuperClusterOverP()/ele.ecalEnergy());
+    float ooemoop     = (1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
     //    Double_t etSCEle = electron.superCluster()->energy() *sin(electron.superCluster()->position().theta());
     Double_t trackIso = electron.dr03TkSumPt()/eleET;
     Double_t ecalIso  = electron.dr03EcalRecHitSumEt()/eleET;
@@ -436,25 +434,24 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     Double_t HoE      = electron.hadronicOverEm();
     Double_t pfMVA    = electron.mva();
     // get the variables
-    bool isEB           = ele.isEB() ? true : false;
-    Double_t pt         = ele.pt();
+    Double_t pt         = electron.pt();
     
     // impact parameter variables
     float d0vtx         = 0.0;
     float dzvtx         = 0.0;
     if (VertexHandle_->size() > 0) {
       reco::VertexRef vtx(VertexHandle_, 0);    
-      d0vtx = ele.gsfTrack()->dxy(vtx->position());
-      dzvtx = ele.gsfTrack()->dz(vtx->position());
+      d0vtx = electron.gsfTrack()->dxy(vtx->position());
+      dzvtx = electron.gsfTrack()->dz(vtx->position());
     } else {
-      d0vtx = ele.gsfTrack()->dxy();
-      dzvtx = ele.gsfTrack()->dz();
+      d0vtx = electron.gsfTrack()->dxy();
+      dzvtx = electron.gsfTrack()->dz();
     }
 
     // get particle flow isolation
-    double iso_ch =  chIsoValsHandle_[ele];
-    double iso_em =  emIsoValsHandle_[ele];
-    double iso_nh =  nhIsoValsHandle_[ele];
+    double iso_ch = 0;// (*chIsoValsHandle_)[electron];
+    double iso_em = 0;// (*emIsoValsHandle_)[electron];
+    double iso_nh = 0;// (*nhIsoValsHandle_)[electron];
 
     // apply to neutrals
     double rhoPrime = std::max(*rhoHandle_, 0.0);
@@ -610,10 +607,14 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
  private: // member variables
   // version of the cuts  
   Version_t version_;
+  const edm::Handle<reco::GsfElectronCollection>& electronsHandle_;
   const edm::Handle<reco::ConversionCollection>& ConversionsHandle_;
   const edm::Handle<reco::BeamSpot>& BeamSpotHandle_;
+  const edm::Handle<reco::VertexCollection>& VertexHandle_;
+  const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle_;
+  const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle_;
+  const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle_;
   const edm::Handle<double>& rhoHandle_;
-
 };
 
 

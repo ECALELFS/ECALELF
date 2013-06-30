@@ -107,20 +107,20 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   nhIsoValsTAG(iConfig.getParameter<edm::InputTag>("nhIsoVals")),
   rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
 
-  fiducial_selector("fiducial", conversionsHandle, bsHandle, 
+  fiducial_selector("fiducial", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
-  WP70_PU_selector("WP70PU", conversionsHandle, bsHandle, 
+  WP70_PU_selector("WP70PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
-  WP80_PU_selector("WP80PU", conversionsHandle, bsHandle, 
+  WP80_PU_selector("WP80PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
-  WP90_PU_selector("WP90PU", conversionsHandle, bsHandle, 
+  WP90_PU_selector("WP90PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
-  loose_selector("loose", conversionsHandle, bsHandle, 
+  loose_selector("loose", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
-  medium_selector("medium", conversionsHandle, bsHandle, 
+  medium_selector("medium", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
-  tight_selector("tight", conversionsHandle, bsHandle, 
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  tight_selector("tight", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
   //register your products
   /* Examples
@@ -205,7 +205,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 #endif
   for(reco::GsfElectronCollection::const_iterator ele_itr = (electronsHandle)->begin(); 
       ele_itr != (electronsHandle)->end(); ele_itr++){
-    reco::GsfElectronRef eleRef(electronsHandle, ele_itr-electronsHandle->begin());
+    const reco::GsfElectronRef eleRef(electronsHandle, ele_itr-electronsHandle->begin());
 
     // the new tree has one event per each electron
     pat::strbitset fiducial_ret;
@@ -217,7 +217,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     pat::strbitset tight_ret;
 
 
-    fiducial_selector(eleRef, fiducial_ret);
+    fiducial_selector.PassCut(eleRef, fiducial_ret);
     fiducial_vec.push_back(fiducial_selector.result());
 
     WP70_PU_selector(eleRef, WP70_PU_ret);
