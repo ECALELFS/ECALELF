@@ -12,7 +12,10 @@
  - recHitCollection is included in the PAT electron collection, take it from there
  - take the R9 from the PAT electron: electron->r9()
  - flag for Zee or Wenu dump
- - check   maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();
+ - Use MET corrections
+   - https://twiki.cern.ch/twiki/bin/view/CMS/MissingET
+   - https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMetAnalysis
+   - https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETRecipe53X
  * 
  */
 

@@ -48,7 +48,7 @@ class PUDumper : public edm::EDAnalyzer
   
   Int_t nBX;
   Int_t BX_[100];
-  Int_t nPUtrue_[100];
+  Int_t nPUtrue_;
   Int_t nPUobs_[100];
 };
 

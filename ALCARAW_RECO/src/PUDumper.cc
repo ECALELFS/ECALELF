@@ -17,7 +17,7 @@ PUDumper::PUDumper(const edm::ParameterSet& iConfig)
 
   PUTree_ -> Branch("nBX",      &nBX,              "nBX/I");
   PUTree_ -> Branch("BX",       BX_,              "BX[nBX]/I");
-  PUTree_ -> Branch("nPUtrue",  nPUtrue_,    "nPUtrue[nBX]/I");
+  PUTree_ -> Branch("nPUtrue",  &nPUtrue_,    "nPUtrue/I");
   PUTree_ -> Branch("nPUobs",   nPUobs_,      "nPUobs[nBX]/I");
 }
 
@@ -54,15 +54,16 @@ void PUDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // loop on BX
   nBX=0;
   std::vector<PileupSummaryInfo>::const_iterator PVI;
+  nPUtrue_ = PupInfo -> begin()->getTrueNumInteractions();
+
   for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI){
     BX_[nBX]      = PVI -> getBunchCrossing();
-    nPUtrue_[nBX] = PVI -> getTrueNumInteractions();
     nPUobs_[nBX]  = PVI -> getPU_NumInteractions();
 #ifdef DEBUG    
     std::cout << "PUDumper::runNumber: " << runNumber_
-              << "   BX: "      << BX_
+              << "   BX[1]: "      << BX_[1]
               << "   nPUtrue: " << nPUtrue_
-              << "   nPUobs: "  << nPUobs_
+              << "   nPUobs[1]: "  << nPUobs_[1]
               << std::endl;
 #endif
     nBX++;
