@@ -23,7 +23,7 @@ eleRegressionEnergy.inputCollectionType = cms.uint32(0)
 eleRegressionEnergy.useRecHitCollections = cms.bool(True)
 eleRegressionEnergy.produceValueMaps = cms.bool(True)
 eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rho")
-eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS')
+eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
 
 #------------------------------ electronID producer
 from calibration.EleSelectionProducers.eleselectionproducers_cfi import *
@@ -56,7 +56,10 @@ patElectrons.electronIDSources =  cms.PSet(
     fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
     WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
     WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
-    WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU")
+    WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
+    loose       = cms.InputTag("eleSelectionProducers", "loose"),
+    medium      = cms.InputTag("eleSelectionProducers", "medium"),
+    tight      = cms.InputTag("eleSelectionProducers", "tight")
     )
 
 

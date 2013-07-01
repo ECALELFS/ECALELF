@@ -460,12 +460,12 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
        eleIter1 != electronsHandle->end();
        eleIter1++){
-    if( eleIter1->electronID("WP70PU") )
+    if( eleIter1->electronID("tight") )
       {
 	++nWP70;
 	continue;
       }
-    if( eleIter1->electronID("WP90PU") )
+    if( eleIter1->electronID("loose") )
       {
 	++nWP90;
 	continue;
@@ -475,9 +475,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
        eleIter1 != electronsHandle->end();
        eleIter1++){
-    if(! eleIter1->electronID("WP90PU") ) continue;
+    if(! eleIter1->electronID("loose") ) continue;
     if(isWenu){
-      if(! eleIter1->electronID("WP70PU") ) continue;
+      if(! eleIter1->electronID("tight") ) continue;
       if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
       
       // MET/MT selection
@@ -498,7 +498,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  eleIter2 != electronsHandle->end();
 	  eleIter2++){
 	// should exit when eleIter1 == end-1
-	if(! eleIter2->electronID("WP90PU") ) continue;
+	if(! eleIter2->electronID("loose") ) continue;
 	
 	//pat::CompositeCandidate zeeCandidate;
 	//if(! (eleIter1->electronID("WP90PU") && eleIter1->electronID("fiducial"))) continue;
@@ -787,7 +787,8 @@ void ZNtupleDumper::TreeSetPileupVar(void){
 	//weight = puWeights.GetWeight( PVI->getPU_NumInteractions());
 	//weight = puWeights.GetWeight( PVI->getTrueNumInteractions());
 	//weight = 1.;
-	nPU[0]=PVI->getPU_NumInteractions();
+	//nPU[0]=PVI->getPU_NumInteractions();
+	nPU[0]=PVI->getTrueNumInteractions();
       }
     }
   } else {
@@ -928,9 +929,12 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   // make it a function
   eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
-  eleID[index] += ((bool) electron1.electronID("WP90PU")) << 1;
-  eleID[index] += ((bool) electron1.electronID("WP80PU")) << 2;
-  eleID[index] += ((bool) electron1.electronID("WP70PU")) << 3;
+  eleID[index] += ((bool) electron1.electronID("loose")) << 1;
+  eleID[index] += ((bool) electron1.electronID("medium")) << 2;
+  eleID[index] += ((bool) electron1.electronID("tight")) << 3;
+//   eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
+//   eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
+//   eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
 
   classificationEle[index] = electron1.classification();
 

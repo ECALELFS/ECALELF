@@ -20,7 +20,7 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep *_pfMet_*_*',
     'keep *_kt6PFJetsForRhoCorrection_rho_*',
     'keep *_kt6PFJets_rho_*',
-    'keep *_offlinePrimaryVerticesWithBS_*_*',
+    'keep *_offlinePrimaryVertices*_*_*',
     'keep *BeamSpot_offlineBeamSpot_*_*',
     'keep *_allConversions_*_*',
     'keep *_conversions_*_*',
