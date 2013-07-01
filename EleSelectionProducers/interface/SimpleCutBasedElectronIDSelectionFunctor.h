@@ -541,7 +541,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
  
     if (electron.isEB()) { // BARREL case
       //#ifdef DEBUG
-      std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
+      //std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
       //#endif
       if ( fabs(Deta)  <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
       if ( fabs(Dphi)  <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
