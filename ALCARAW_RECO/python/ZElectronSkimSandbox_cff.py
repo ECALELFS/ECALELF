@@ -18,18 +18,21 @@ PassingVeryLooseId = selectedElectrons.clone(
     selectedElectrons.cut.value() +
     " && (gsfTrack.trackerExpectedHitsInner.numberOfHits<=1)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
     " && ((isEB"
-    " && ( dr03TkSumPt/p4.Pt <0.2 && dr03EcalRecHitSumEt/p4.Pt < 0.3 && dr03HcalTowerSumEt/p4.Pt  < 0.3 )"
-    " && (sigmaIetaIeta<0.012)"
-    " && ( -0.8<deltaPhiSuperClusterTrackAtVtx<0.8 )"
-    " && ( -0.01<deltaEtaSuperClusterTrackAtVtx<0.01 )"
-    " && (hadronicOverEm<0.15)"
+    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.01)"
+    " && ( -0.15<deltaPhiSuperClusterTrackAtVtx<0.15 )"
+    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
+    " && (hadronicOverEm<0.12)"
     ")"
     " || (isEE"
-    " && ( dr03TkSumPt/p4.Pt <0.2 && dr03EcalRecHitSumEt/p4.Pt < 0.3 && dr03HcalTowerSumEt/p4.Pt  < 0.3 )"
-    " && (sigmaIetaIeta<0.033)"
-    " && ( -0.8<deltaPhiSuperClusterTrackAtVtx<0.8 )"
-    " && ( -0.01<deltaEtaSuperClusterTrackAtVtx<0.01 )"
-    " && (hadronicOverEm<0.15) "
+    " && ( dr03TkSumPt/p4.Pt <0.2"
+    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.03)"
+    " && ( -0.10<deltaPhiSuperClusterTrackAtVtx<0.10 )"
+    " && ( -0.009<deltaEtaSuperClusterTrackAtVtx<0.009 )"
+    " && (hadronicOverEm<0.10) "
     "))"
     )
     )
