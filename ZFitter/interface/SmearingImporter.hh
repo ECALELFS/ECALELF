@@ -40,7 +40,7 @@ public:
   inline void SetR9Weight(bool value){_useR9weight=value;};
   inline void SetPtWeight(bool value){_usePtweight=value;};
   inline void SetOnlyDiagonal(bool value){_onlyDiagonal=value;};
-  inline void SetEleID(int value){_eleID=value;};
+  inline void SetEleID(TString value){_eleID=value;};
   inline void SetCommonCut(TString cut){_commonCut=cut;};
   inline void SetSmearingEt(bool value){_isSmearingEt=value;};
 
@@ -53,7 +53,7 @@ private:
 
   TString _energyBranchName;
   TString _commonCut;
-  int _eleID;
+  TString _eleID;
   bool _isMC;
   bool _odd;
   bool _usePUweight;

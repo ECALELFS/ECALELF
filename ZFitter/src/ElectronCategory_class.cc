@@ -643,10 +643,14 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       TObjString *Objstring1 = (TObjString *) splitted->At(1);
             
       TString string1 = Objstring1->GetString();
+      if(string1=="loose") string1="2";
+      if(string1=="medium") string1="6";
+      if(string1=="tight") string1="14";
+      if(string1=="WP90PU") string1="16";
+      if(string1=="WP80PU") string1="48";
 
-            
-      TCut cutEle1("eleID_ele1 >= "+string1);
-      TCut cutEle2("eleID_ele2 >= "+string1);
+      TCut cutEle1("(eleID_ele1 & "+string1+")=="+string1);
+      TCut cutEle2("(eleID_ele2 & "+string1+")=="+string1);
 
       cut_string+=cutEle1 && cutEle2;
       cutSet.insert(TString(cutEle1 && cutEle2));

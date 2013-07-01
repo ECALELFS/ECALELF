@@ -14,7 +14,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _constTermToy(0.01),
   _energyBranchName(energyBranchName),
   _commonCut(commonCut),
-  _eleID(0),
+  _eleID("loose"),
   _usePUweight(true),
   _useR9weight(false),
   _usePtweight(false),
@@ -360,9 +360,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents){
 
-  TString eleID_="eleID_";
-  eleID_+=_eleID;
-  
+  TString eleID_=_eleID;
 
   TString oddString;
   if(odd) oddString+="-odd";

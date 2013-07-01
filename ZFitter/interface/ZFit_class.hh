@@ -106,7 +106,7 @@ public:
   TString GetEnergyVarName(TString name);
   //std::map<TString, float> ReadInitValuesFromFile(TString fileName);
 
-  void Import(TString commonCut, int eleID, std::set<TString>& branchList);
+  void Import(TString commonCut, TString eleID_, std::set<TString>& branchList);
 
   // this method makes the fit on data and MC
   void Fit(TString region="", bool doPlot=true);

@@ -1,5 +1,5 @@
 #include "../interface/addBranch_class.hh"
-#include "calibration/ZFitter/interface/ElectronCategory_class.hh"
+#include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
 
 //#define NOFRIEND

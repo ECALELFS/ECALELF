@@ -135,7 +135,7 @@ public:
     importer._scaleToy=scaleToy;
     importer._constTermToy=constTermToy;
   }
-  inline void SetEleID(int value){importer.SetEleID(value);};
+  inline void SetEleID(TString value){importer.SetEleID(value);};
   inline void SetCommonCut(TString cut){importer.SetCommonCut(cut);};
 
   inline void SetHistBinning(double min, double max, double width){
@@ -147,7 +147,7 @@ public:
   }
 
   /// Initialize the categories: import from the tree
-  void Init(TString commonCut, int eleID, Long64_t nEvents=0, bool mcToy=false, TString initFile="");
+  void Init(TString commonCut, TString eleID, Long64_t nEvents=0, bool mcToy=false, TString initFile="");
   //  TH1F *GetSmearedHisto(TString categoryName, 
   //			bool smearEnergy=false, TString histoName="") const;
   //  TH1F *GetSmearedHisto(int categoryIndex,

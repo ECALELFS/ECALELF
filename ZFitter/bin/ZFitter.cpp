@@ -31,7 +31,7 @@
 #include <RooMultiVarGaussian.h>
 
 #include "Math/Minimizer.h"
-#include "calibration/ZFitter/interface/RooMinimizer.hh"
+#include "../interface/RooMinimizer.hh"
 
 #include <TPRegexp.h>
 #include <RooFormulaVar.h>
@@ -934,7 +934,7 @@ int main(int argc, char **argv) {
   std::string initFileName;
   //  bool savePUweightTree;
   std::string imgFormat="eps", outDirFitResMC="test/MC/fitres", outDirFitResData="test/dato/fitres", outDirImgMC="test/MC/img", outDirImgData="test/dato/img", outDirTable="test/dato/table", selection;
-  int eleID=0;
+  TString eleID="";
   //std::vector<std::string> signalFiles, bkgFiles, dataFiles;
   std::string commonCut;
   std::string corrEleFile, corrEleType;
@@ -1107,13 +1107,6 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  if(selection=="WP80_PU") eleID=7;
-  else if (selection=="WP90_PU") eleID=3;
-  else if (selection=="fiducial") eleID=1;
-  else { // use better boost options
-    std::cerr << "[ERROR] Selection: " << selection << " not valid" << std::endl;
-    return 1;
-  }
 
   //if((vm.count("corrEleType") != vm.count("corrEleFile"))&&(vm.count("corrEleType") != vm.count("readDirect")) ){
   //std::cout << "[ERROR] Either provide correction file name, or provide read direct option" << std::endl;
@@ -1582,7 +1575,8 @@ int main(int argc, char **argv) {
      || vm.count("saveR9TreeWeight") 
      ) return 0;
 
-
+  eleID=selection.c_str();
+  eleID.ReplaceAll("_","");
 
   //------------------------------ RooSmearer
   RooArgSet args;

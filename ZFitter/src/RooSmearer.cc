@@ -937,7 +937,7 @@ void RooSmearer::SetNSmear(unsigned int n_smear, unsigned int nlltoy){
 }
 
 
-void RooSmearer::Init(TString commonCut, int eleID, Long64_t nEvents, bool mcToy, TString initFile){
+void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, TString initFile){
     _isDataSmeared=mcToy;
     bool toytoy=false;
     if(initFile.Sizeof()>1){

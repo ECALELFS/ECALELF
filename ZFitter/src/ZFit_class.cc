@@ -99,12 +99,10 @@ ZFit_class::ZFit_class(TChain *data_chain_,
 }
 
 
-void ZFit_class::Import(TString commonCut, int eleID, std::set<TString>& branchList){
+void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList){
   signal_chain->Draw(">>list","runNumber>1","entrylist",10);
   TEntryList *l = (TEntryList*) gROOT->FindObject("list");
 
-  TString eleID_;
-  eleID_+=eleID;
   commonCut+="-eleID_"+eleID_;
   TString mcCut, dataCut;
   if(l->GetN()>0){ // runDependent MC, treat it has data
