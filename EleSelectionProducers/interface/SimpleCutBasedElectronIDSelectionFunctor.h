@@ -1,7 +1,7 @@
 #ifndef SimpleCutBasedElectronIDSelectionFunctorShervin_h
 #define SimpleCutBasedElectronIDSelectionFunctorShervin_h
 
-#define DEBUG
+//#define DEBUG
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 

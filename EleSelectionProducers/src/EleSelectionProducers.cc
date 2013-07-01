@@ -239,7 +239,20 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     tight_selector(eleRef, tight_ret);
     tight_vec.push_back(tight_selector.result());
 
+    if(((bool)tight_selector.result())){
+      if(!(bool) medium_selector.result() || !(bool) loose_selector.result()){
+	edm::LogError("Incoherent selection") << "passing tight but not medium or loose";
+	exit (1);
+      }
+    }
 
+    if(((bool)medium_selector.result())){
+      if( !(bool) loose_selector.result()){
+	edm::LogError("Incoherent selection") << "passing medium but not loose";
+	exit (1);
+      }
+    }
+    
     //     WP80_PU_vec.push_back((SelectionValue_t)WP80_PU_selector.bitMask());
     //     WP90_PU_vec.push_back((SelectionValue_t)WP90_PU_selector.bitMask());
 #ifdef DEBUG

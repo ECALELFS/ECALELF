@@ -31,6 +31,7 @@
 // root include files
 #include <TTree.h>
 #include <TLorentzVector.h>
+#include <Math/Vector4D.h>
 #include <TString.h>
 #include <TFile.h>
 
@@ -480,8 +481,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if(! eleIter1->electronID("tight") ) continue;
       if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
       
+      reco::PFMET met = (*metHandle); /// \todo use corrected phi distribution
+      
       // MET/MT selection
-      // manca la met?!? -> ho aggiunto metHandle
+      if(  met.et() < 25. ) continue;
+      if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 30. ) continue;
       
       TreeSetDiElectronVar(*eleIter1, *eleIter1);
       tree->Fill();

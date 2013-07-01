@@ -5,16 +5,20 @@
 //! ctor
 PUDumper::PUDumper(const edm::ParameterSet& iConfig)
 {
-  MCPileupTag_ = iConfig.getParameter<edm::InputTag>("MCPileupTag");
+  //  MCPileupTag_ = iConfig.getParameter<edm::InputTag>("MCPileupTag");
   
   // create TTree
   edm::Service<TFileService> fs;
   PUTree_ = fs -> make<TTree>("pileup","pileup");
   
-  PUTree_ -> Branch("runNumber",&runNumber_,"runNumber/I");
-  PUTree_ -> Branch("BX",       &BX_,              "BX/I");
-  PUTree_ -> Branch("nPUtrue",  &nPUtrue_,    "nPUtrue/I");
-  PUTree_ -> Branch("nPUobs",   &nPUobs_,      "nPUobs/I");
+  PUTree_ -> Branch("runNumber",     &runNumber,     "runNumber/I");
+  PUTree_ -> Branch("eventNumber",   &eventNumber, "eventNumber/l");
+  PUTree_ -> Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+
+  PUTree_ -> Branch("nBX",      &nBX,              "nBX/I");
+  PUTree_ -> Branch("BX",       BX_,              "BX[nBX]/I");
+  PUTree_ -> Branch("nPUtrue",  nPUtrue_,    "nPUtrue[nBX]/I");
+  PUTree_ -> Branch("nPUobs",   nPUobs_,      "nPUobs[nBX]/I");
 }
 
 // ----------------------------------------------------------------
@@ -34,26 +38,36 @@ void PUDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   // get the PU collection
   edm::Handle<std::vector<PileupSummaryInfo> > PupInfo;
-  iEvent.getByLabel(MCPileupTag_,PupInfo);
+  if( !iEvent.isRealData() ){
+    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+  } else return;
   
   
+  runNumber = iEvent.id().run();
+  eventNumber = iEvent.id().event();
+  if( iEvent.isRealData() ) {
+    lumiBlock = iEvent.luminosityBlock();
+  } else {
+    lumiBlock = -1;
+  }
+
   // loop on BX
+  nBX=0;
   std::vector<PileupSummaryInfo>::const_iterator PVI;
-  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI)
-  {
-    runNumber_ = iEvent.id().run();
-    BX_        = PVI -> getBunchCrossing();
-    nPUtrue_   = PVI -> getTrueNumInteractions();
-    nPUobs_    = PVI -> getPU_NumInteractions();
-    
+  for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI){
+    BX_[nBX]      = PVI -> getBunchCrossing();
+    nPUtrue_[nBX] = PVI -> getTrueNumInteractions();
+    nPUobs_[nBX]  = PVI -> getPU_NumInteractions();
+#ifdef DEBUG    
     std::cout << "PUDumper::runNumber: " << runNumber_
               << "   BX: "      << BX_
               << "   nPUtrue: " << nPUtrue_
               << "   nPUobs: "  << nPUobs_
               << std::endl;
-    
-    PUTree_ -> Fill();
+#endif
+    nBX++;
   }    
+  PUTree_ -> Fill();
 }
 
 DEFINE_FWK_MODULE(PUDumper);

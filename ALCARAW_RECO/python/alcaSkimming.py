@@ -276,6 +276,15 @@ else:
 ################################# FILTERING EVENTS
 process.filterSeq = cms.Sequence()
 #process.load('calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
+if(options.type == "ALCARECOSIM"):
+    # PUDumper
+    process.load("calibration.ALCARAW_RECO.PUDumper_cfi")
+    process.TFileService = cms.Service(
+        "TFileService",
+        fileName = cms.string("PUDumper.root")
+        )
+    process.filterSeq *= process.PUDumper
+    
 
 if (ZSkim):
     process.load('calibration.ALCARAW_RECO.ZElectronSkimSandbox_cff')
@@ -301,6 +310,13 @@ if (HLTFilter):
 
 
 
+#
+# particle flow isolation
+#
+
+from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
+process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence)
 
 ###############################
 # ECAL Recalibration
@@ -367,9 +383,9 @@ if((not options.type=="ALCARERECO") ):
     process.kt6PFJetsForRhoCorrection = process.kt6PFJets.clone(doRhoFastjet = True)
     process.kt6PFJetsForRhoCorrection.Rho_EtaMax = cms.double(2.5)
     if(options.skim!="fromWSkim"):
-        process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection) 
+        process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection * process.pfiso) 
     else:
-        process.rhoFastJetSeq = cms.Sequence()
+        process.rhoFastJetSeq = cms.Sequence(process.pfiso)
 
 
 ###########################

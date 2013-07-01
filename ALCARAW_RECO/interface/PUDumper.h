@@ -37,14 +37,19 @@ class PUDumper : public edm::EDAnalyzer
   
  private:
   
-  edm::InputTag MCPileupTag_;
+  //edm::InputTag MCPileupTag_;
   
   TTree* PUTree_;
+
+  Int_t     	runNumber;   ///< 
+  Long64_t      eventNumber; ///<
+  Int_t         lumiBlock;   ///< lumi section
+  //UInt_t 	runTime;     ///< unix time
   
-  int runNumber_;
-  int BX_;
-  int nPUtrue_;
-  int nPUobs_;
+  Int_t nBX;
+  Int_t BX_[100];
+  Int_t nPUtrue_[100];
+  Int_t nPUobs_[100];
 };
 
 #endif
