@@ -1,7 +1,7 @@
 #ifndef SimpleCutBasedElectronIDSelectionFunctorShervin_h
 #define SimpleCutBasedElectronIDSelectionFunctorShervin_h
 
-//#define DEBUG
+#define DEBUG
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -209,6 +209,9 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       else if (versionStr.CompareTo("WP70PU")==0) version=WP70PU;
       else if (versionStr.CompareTo("WP80PU")==0) version=WP80PU;
       else if (versionStr.CompareTo("WP90PU")==0) version=WP90PU;
+      else if (versionStr.CompareTo("loose")==0) version=loose;
+      else if (versionStr.CompareTo("medium")==0) version=medium;
+      else if (versionStr.CompareTo("tight")==0) version=tight;
       else {
 	std::cerr << "[ERROR] version type not defined" << std::endl;
 	std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -252,6 +255,12 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     push_back("relTrackIso_EE");
     push_back("relEcalIso_EE" );
     push_back("relHcalIso_EE" );
+
+    push_back("ooemoop_EB");      push_back("ooemoop_EE");    
+    push_back("d0vtx_EB");        push_back("d0vtx_EE");      
+    push_back("dzvtx_EB");        push_back("dzvtx_EE");      
+    push_back("pfIso_EB");        push_back("pfIso_EE");      
+    push_back("pfIsoLowPt_EB");   push_back("pfIsoLowPt_EE"); 
 
     //    push_back("conversionRejection"            );
 
@@ -334,6 +343,40 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("pfIso_EB",      0.150);         set("pfIso_EE",        0.150);         
       set("pfIsoLowPt_EB", 0.150);         set("pfIsoLowPt_EE",   0.100);         
       set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == medium) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
+      set("deta_EB",       0.007);         set("deta_EE",         0.009);
+      set("dphi_EB",       0.150);         set("dphi_EE",         0.100);
+      set("sihih_EB",      0.010);         set("sihih_EE",        0.030);
+      set("ooemoop_EB",    0.050,false);   set("ooemoop_EE",      0.050,false);  
+      set("d0vtx_EB",      0.020);         set("d0vtx_EE",        0.020);
+      set("dzvtx_EB",      0.200);         set("dzvtx_EE",        0.200);
+      set("pfIso_EB",      0.150);         set("pfIso_EE",        0.150);         
+      set("pfIsoLowPt_EB", 0.150);         set("pfIsoLowPt_EE",   0.100);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == tight) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
+      set("deta_EB",       0.007);         set("deta_EE",         0.009);
+      set("dphi_EB",       0.150);         set("dphi_EE",         0.100);
+      set("sihih_EB",      0.010);         set("sihih_EE",        0.030);
+      set("ooemoop_EB",    0.050,false);   set("ooemoop_EE",      0.050,false);  
+      set("d0vtx_EB",      0.020);         set("d0vtx_EE",        0.020);
+      set("dzvtx_EB",      0.200);         set("dzvtx_EE",        0.200);
+      set("pfIso_EB",      0.150);         set("pfIso_EE",        0.150);         
+      set("pfIsoLowPt_EB", 0.150);         set("pfIsoLowPt_EE",   0.100);         
+      set("relTrackIso_EB", 0.0002);    set("relTrackIso_EE", 0.00002);  
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
@@ -497,13 +540,16 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     if ( (!hasMatchedConversion) || ignoreCut("hasMatchedConversion")) passCut(retInternal_, "hasMatchedConversion");
  
     if (electron.isEB()) { // BARREL case
+      //#ifdef DEBUG
+      std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
+      //#endif
       if ( fabs(Deta)  <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
       if ( fabs(Dphi)  <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
       if ( sihih       <  cut("sihih_EB",    double()) || ignoreCut("sihih_EB")   ) passCut(retInternal_, "sihih_EB");
       if ( HoE         <  cut("hoe_EB",      double()) || ignoreCut("hoe_EB")     ) passCut(retInternal_, "hoe_EB");
-      if ( ooemoop     <  cut("ooemoop",     double()) || ignoreCut("ooemoop_EB") ) passCut(retInternal_, "ooemoop_EB");
-      if ( fabs(d0vtx) <  cut("d0vtx",       double()) || ignoreCut("d0vtx_EB")   ) passCut(retInternal_, "d0vtx_EB");
-      if ( fabs(dzvtx) <  cut("dzvtx",       double()) || ignoreCut("dzvtx_EB")   ) passCut(retInternal_, "dzvtx_EB");
+      if ( ignoreCut("ooemoop_EB") || ooemoop     <  cut("ooemoop_EB",     double())  ) passCut(retInternal_, "ooemoop_EB");
+      if ( fabs(d0vtx) <  cut("d0vtx_EB",       double()) || ignoreCut("d0vtx_EB")   ) passCut(retInternal_, "d0vtx_EB");
+      if ( fabs(dzvtx) <  cut("dzvtx_EB",       double()) || ignoreCut("dzvtx_EB")   ) passCut(retInternal_, "dzvtx_EB");
       
       if ( pfMVA       >  cut("pfmva_EB",    double()) || ignoreCut("pfmva_EB")   ) passCut(retInternal_, "pfmva_EB");
       
@@ -514,7 +560,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       if ( hcalIso  - AeffHCAL_EB *rhoRel <  cut("relHcalIso_EB",  double()) || ignoreCut("relHcalIso_EB") ) 
 	passCut(retInternal_, "relHcalIso_EB");
       if(pt>=20){
-	if(iso < cut("pfIso_EB", double()) || ignoreCut("pfIso_EB") )
+	if( ignoreCut("pfIso_EB") || iso < cut("pfIso_EB", double()))
 	  passCut(retInternal_, "pfIso_EB");
 	passCut(retInternal_, "pfIsoLowPt_EB");
       }else{
@@ -538,13 +584,14 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       passCut(retInternal_, "pfIso_EE");
       passCut(retInternal_, "pfIsoLowPt_EE");
     } else {  // ENDCAPS case
+      //      std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EE", double()) << "\t" << ignoreCut("deta_EE") << std::endl;
       if ( fabs(Deta)  <  cut("deta_EE",     double()) || ignoreCut("deta_EE")    ) passCut(retInternal_, "deta_EE");
       if ( fabs(Dphi)  <  cut("dphi_EE",     double()) || ignoreCut("dphi_EE")    ) passCut(retInternal_, "dphi_EE");
       if ( sihih       <  cut("sihih_EE",    double()) || ignoreCut("sihih_EE")   ) passCut(retInternal_, "sihih_EE");
       if ( HoE         <  cut("hoe_EE",      double()) || ignoreCut("hoe_EE")     ) passCut(retInternal_, "hoe_EE");
-      if ( ooemoop     <  cut("ooemoop",     double()) || ignoreCut("ooemoop_EE") ) passCut(retInternal_, "ooemoop_EE");
-      if ( fabs(d0vtx) <  cut("d0vtx",       double()) || ignoreCut("d0vtx_EE")   ) passCut(retInternal_, "d0vtx_EE");
-      if ( fabs(dzvtx) <  cut("dzvtx",       double()) || ignoreCut("dzvtx_EE")   ) passCut(retInternal_, "dzvtx_EE");
+      if ( ooemoop     <  cut("ooemoop_EE",     double()) || ignoreCut("ooemoop_EE") ) passCut(retInternal_, "ooemoop_EE");
+      if ( fabs(d0vtx) <  cut("d0vtx_EE",       double()) || ignoreCut("d0vtx_EE")   ) passCut(retInternal_, "d0vtx_EE");
+      if ( fabs(dzvtx) <  cut("dzvtx_EE",       double()) || ignoreCut("dzvtx_EE")   ) passCut(retInternal_, "dzvtx_EE");
       
       if ( pfMVA       >  cut("pfmva_EE",    double()) || ignoreCut("pfmva_EE")   ) passCut(retInternal_, "pfmva_EE");
       
@@ -582,11 +629,15 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     setIgnored(retInternal_);   
 #ifdef DEBUG
-    print(std::cout);
+    std::cout << "------------------------------ " << version_ << std::endl;
     std::cout << "[DEBUG] retInternal_ = " << retInternal_ << std::endl;
     std::cout << "[DEBUG] ret = " << ret << std::endl;
     ret=retInternal_;
     std::cout << "[DEBUG] copy ret = " << (bool) ret << std::endl;
+    std::cout << "[DEBUG] bitMask = " << bitMask() << std::endl;
+    if(((bool)ret)==0){
+      print(std::cout);
+    }      
 #endif
     //    ret= getBitTemplate();
     return (bool)retInternal_;
