@@ -399,7 +399,7 @@ if(options.doTree>0):
     process.zNtupleDumper.recHitCollectionEE = process.patElectrons.reducedEndcapRecHitCollection.value()
 
     if(MC):
-        process.ntupleSeq = cms.Sequence(process.patSequenceMC * process.zNtupleDumper)
+        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC * process.zNtupleDumper)
     else:
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence * process.zNtupleDumper)
 
@@ -543,7 +543,7 @@ if(options.doTree>0 and options.doTreeOnly==0):
     process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
 else:
     if(len(options.jsonFile)>0):
-        if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION)):
+        if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION)):
             # from CMSSW 5.0.0
             import FWCore.PythonUtilities.LumiList as LumiList
             process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()

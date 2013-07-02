@@ -31,6 +31,8 @@ usage(){
     echo "    --createOnly"
     echo "    --submitOnly"
     echo "    --check"
+    echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
+    echo "    --json jsonFile.root"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
 }
@@ -40,7 +42,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -65,6 +67,8 @@ do
 	--createOnly) unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
+ 	--json) JSONFILE=$2;  shift;;
+	--json_name) JSONNAME=$2; shift;;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
     (*) break;;
@@ -155,7 +159,7 @@ checkRelease ${DATASETPATH}
 USER_REMOTE_DIR=$USER_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE:-allRange}
 UI_WORKING_DIR=prod_alcareco/${DATASETNAME}/${RUNRANGE}
 
-if [ "$RUNRANGE" == "allRange" ];then
+if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`" == "0" ];then
     unset RUNRANGE
 fi
 
@@ -177,7 +181,7 @@ queue = cmscaf1nd
 datasetpath=${DATASETPATH}
 
 pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE
+pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE jsonFile=${JSONFILE}
 
 runselection=${RUNRANGE}
 split_by_run=0
@@ -208,7 +212,7 @@ use_parent=${USEPARENT}
 ui_working_dir=$UI_WORKING_DIR
 return_data = 0
 copy_data = 1
-local_stage_out = 0
+local_stage_out = 1
 storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
