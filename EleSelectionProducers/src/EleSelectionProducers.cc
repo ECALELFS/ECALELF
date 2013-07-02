@@ -5,10 +5,6 @@
 // 
 /**\class EleSelectionProducers EleSelectionProducers.cc calibration/EleSelectionProducers/src/EleSelectionProducers.cc
 
-Description: [one line class summary]
-
-Implementation:
-[Notes on implementation]
 */
 //
 // Original Author:  Shervin Nourbakhsh,40 1-B24,+41227671643,
@@ -346,7 +342,15 @@ EleSelectionProducers::fillDescriptions(edm::ConfigurationDescriptions& descript
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
-  desc.setUnknown();
+  desc.add<edm::InputTag>("electronCollection","gsfElectrons");
+  desc.add<edm::InputTag>("rhoFastJet","kt6PFJetsForRhoCorrection:rho");
+  desc.add<edm::InputTag>("vertexCollection","offlinePrimaryVertices");
+  desc.add<edm::InputTag>("conversionCollection","allConversions");
+  desc.add<edm::InputTag>("BeamSpotCollection","offlineBeamSpot");
+  desc.add<edm::InputTag>("chIsoVals","elPFIsoValueCharged03PFIdPFIso");
+  desc.add<edm::InputTag>("emIsoVals","elPFIsoValueGamma03PFIdPFIso");
+  desc.add<edm::InputTag>("nhIsoVals","elPFIsoValueNeutral03PFIdPFIso");
+  //desc.setUnknown();
   descriptions.addDefault(desc);
 }
 

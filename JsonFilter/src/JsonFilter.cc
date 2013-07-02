@@ -274,7 +274,7 @@ JsonFilter::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
   desc.add<std::string>("jsonFileName","");
-  desc.setUnknown();
+  //desc.setUnknown();
   descriptions.addDefault(desc);
 }
 //define this as a plug-in
