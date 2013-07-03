@@ -154,7 +154,7 @@ setEnergy $DATASETPATH
 
 setStoragePath $STORAGE_ELEMENT $SCHEDULER 
 
-checkRelease ${DATASETPATH}
+if [ -z "${CHECK}" ];then checkRelease ${DATASETPATH}; fi
 
 USER_REMOTE_DIR=$USER_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE:-allRange}
 UI_WORKING_DIR=prod_alcareco/${DATASETNAME}/${RUNRANGE}
@@ -240,7 +240,7 @@ fi
 
 if [ -n "$SUBMIT" ]; then
     crab -c ${UI_WORKING_DIR} -submit all
-else
+elif [ -z "${CHECK}" ];then
     echo "##############################"
     echo "To start the crab jobs:"
     echo "crab -c ${UI_WORKING_DIR} -submit all"
