@@ -114,7 +114,7 @@
 #include <DataFormats/Common/interface/TriggerResults.h>
 
 //#define DEBUG
-
+#define TRIGGER
 ////////////////////////////////////////////////
 // class declaration
 //
@@ -172,6 +172,7 @@ private:
   edm::InputTag conversionsProducerTAG;
   edm::InputTag metTAG;
   edm::InputTag triggerResultsTAG;
+  std::vector< std::string> hltPaths;
 private:
   std::string foutName;
   std::string regrPhoFile;
@@ -196,6 +197,7 @@ private:
 
   std::vector< std::string > HLTNames[1]; ///< List of HLT names
   std::vector<Bool_t> HLTResults[1];      ///< 0=fail, 1=fire
+  std::map<std::string, bool> HLTBits;
 
   //pileup
   Float_t rho;            ///< rho fast jet
@@ -373,7 +375,8 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
   foutName(iConfig.getParameter<std::string>("foutName")),
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
-  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree"))
+  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
+  hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths"))
 			    //  r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 			    //puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
 			    //puWeights()
@@ -454,8 +457,33 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
-
-
+  
+  // at least one of the triggers
+#ifdef TRIGGER
+  bool triggerFire=false;
+  if(!hltPaths.empty()){
+    for(std::vector<std::string>::const_iterator hltPath_itr = hltPaths.begin();
+	hltPath_itr != hltPaths.end();
+	hltPath_itr++){
+      if(hltPath_itr->empty()) continue;
+      std::map<std::string, bool>::const_iterator it = HLTBits.find(*hltPath_itr);
+      if(it!=HLTBits.end()){
+	triggerFire+=it->second;
+	//	std::cout << "Not empty:" << hltPaths[0] << "\t" << it->first << "\t" << it->second << "\t" << triggerFire << std::endl;
+	//}else{
+// 	for(std::map<std::string, bool>::const_iterator it_ = HLTBits.begin();
+// 	    it_!=HLTBits.end();
+// 	    it_++){
+// 	  std::cout  << "\t" << it_->first << "\t" << it_->second << std::endl;
+// 	}
+//	edm::LogError("ZNtupleDumper") << "HLT path required but not find in TriggerResults" << " " << HLTBits.size();
+	//edm::LogWarning("ZNtupleDumper") << "HLT path " << *hltPath_itr << " required but not found in TriggerResults" << " " << HLTBits.size();
+	//exit(1);
+      }
+    }
+  }
+  if(!triggerFire) return;
+#endif
   //  pat::CompositeCandidateCollection ZCandidatesCollection;
   
   // count electrons
@@ -769,6 +797,7 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     std::string hltName_str(HLTNames_.triggerName(i));
     (HLTNames[0]).push_back(hltName_str);
     HLTResults->push_back(triggerResultsHandle->accept(i));
+    HLTBits.insert(std::pair<std::string, bool>( hltName_str, triggerResultsHandle->accept(i)));
   } // for i
 #endif
 
