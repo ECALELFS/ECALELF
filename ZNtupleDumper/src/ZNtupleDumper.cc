@@ -470,15 +470,15 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if(it!=HLTBits.end()){
 	triggerFire+=it->second;
 	//	std::cout << "Not empty:" << hltPaths[0] << "\t" << it->first << "\t" << it->second << "\t" << triggerFire << std::endl;
-      }else{
-	
-	for(std::map<std::string, bool>::const_iterator it_ = HLTBits.begin();
-	    it_!=HLTBits.end();
-	    it_++){
-	  std::cout  << "\t" << it_->first << "\t" << it_->second << std::endl;
-	}
-	edm::LogError("ZNtupleDumper") << "HLT path required but not find in TriggerResults" << " " << HLTBits.size();
-	exit(1);
+	//}else{
+// 	for(std::map<std::string, bool>::const_iterator it_ = HLTBits.begin();
+// 	    it_!=HLTBits.end();
+// 	    it_++){
+// 	  std::cout  << "\t" << it_->first << "\t" << it_->second << std::endl;
+// 	}
+//	edm::LogError("ZNtupleDumper") << "HLT path required but not find in TriggerResults" << " " << HLTBits.size();
+	//edm::LogWarning("ZNtupleDumper") << "HLT path " << *hltPath_itr << " required but not found in TriggerResults" << " " << HLTBits.size();
+	//exit(1);
       }
     }
   }
