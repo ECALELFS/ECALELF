@@ -18,7 +18,9 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                doStandardTree = cms.bool(True),
                                doExtraCalibTree = cms.bool(False),
                                doEleIDTree = cms.bool(False),
-                               isWenu = cms.bool(False)
+                               isWenu = cms.bool(False),
+                               #hltPaths = cms.vstring()
+                               hltPaths = cms.vstring('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17')
                                #isMC = cms.bool(False),
                                
                                #                      jsonFile = cms.string(options.json),
