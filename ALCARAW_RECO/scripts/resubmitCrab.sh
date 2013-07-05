@@ -58,8 +58,8 @@ for jobID in `seq 1 $nJobs`
       continue; 
   fi
   # se non c'e' deve essere running, accertarsene
-  jobReport=`find $ui_working_dir/res/ -name crab_fjr_$jobID.xml | head -1`
-  logReport=`find $ui_working_dir/res/ -name CMSSW_$jobID.stdout`
+  jobReport=`find $ui_working_dir/res/ -name crab_fjr_$jobID.xml |sort -r | head -1`
+  logReport=`find $ui_working_dir/res/ -name CMSSW_$jobID.stdout |sort -r | head -1`
 
   if [ ! -e "$jobReport" ];then
       echo "-> Missing $jobReport"
