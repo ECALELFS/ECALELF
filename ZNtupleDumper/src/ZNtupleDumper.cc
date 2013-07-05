@@ -198,6 +198,7 @@ private:
   std::vector< std::string > HLTNames[1]; ///< List of HLT names
   std::vector<Bool_t> HLTResults[1];      ///< 0=fail, 1=fire
   std::map<std::string, bool> HLTBits;
+  Bool_t HLTfire; ///< true if pass the triggers indicated by hltPaths in cfg
 
   //pileup
   Float_t rho;            ///< rho fast jet
@@ -460,7 +461,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // at least one of the triggers
 #ifdef TRIGGER
-  bool triggerFire=false;
+  bool HLTfire=false;
   if(!hltPaths.empty()){
     for(std::vector<std::string>::const_iterator hltPath_itr = hltPaths.begin();
 	hltPath_itr != hltPaths.end();
@@ -468,7 +469,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if(hltPath_itr->empty()) continue;
       std::map<std::string, bool>::const_iterator it = HLTBits.find(*hltPath_itr);
       if(it!=HLTBits.end()){
-	triggerFire+=it->second;
+	HLTfire+=it->second;
 	//	std::cout << "Not empty:" << hltPaths[0] << "\t" << it->first << "\t" << it->second << "\t" << triggerFire << std::endl;
 	//}else{
 // 	for(std::map<std::string, bool>::const_iterator it_ = HLTBits.begin();
@@ -481,8 +482,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	//exit(1);
       }
     }
-  }
-  if(!triggerFire) return;
+  } else HLTfire=true;
+  //if(!triggerFire) return;
 #endif
   //  pat::CompositeCandidateCollection ZCandidatesCollection;
   
@@ -674,8 +675,11 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
   tree->Branch("runTime",       &runTime,         "runTime/i");
 
-  tree->Branch("HLTNames",&(HLTNames[0]));
-  tree->Branch("HLTResults",&(HLTResults[0]));
+#ifdef TRIGGER
+  tree->Branch("HLTfire", &HLTfire, "HLTfire/B");
+  //tree->Branch("HLTNames",&(HLTNames[0]));
+  //tree->Branch("HLTResults",&(HLTResults[0]));
+#endif
   //extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
 
   //   tree->Branch("nBX", &nBX, "nBX/I");
@@ -793,10 +797,11 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
   edm::TriggerNames HLTNames_ = iEvent.triggerNames(*triggerResultsHandle);
   int hltCount = triggerResultsHandle->size();
   HLTNames[0].clear();
+  HLTBits.clear();
   for (int i = 0 ; i != hltCount; ++i) {
     std::string hltName_str(HLTNames_.triggerName(i));
     (HLTNames[0]).push_back(hltName_str);
-    HLTResults->push_back(triggerResultsHandle->accept(i));
+    (HLTResults[0]).push_back(triggerResultsHandle->accept(i));
     HLTBits.insert(std::pair<std::string, bool>( hltName_str, triggerResultsHandle->accept(i)));
   } // for i
 #endif
@@ -968,9 +973,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   eleID[index] += ((bool) electron1.electronID("loose")) << 1;
   eleID[index] += ((bool) electron1.electronID("medium")) << 2;
   eleID[index] += ((bool) electron1.electronID("tight")) << 3;
-//   eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
-//   eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
-//   eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
+  eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
+  eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
+  eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
 
   classificationEle[index] = electron1.classification();
 
