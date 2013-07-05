@@ -132,6 +132,9 @@ for jobID in `seq 1 $nJobs`
       9*9)
 	  intervals="$intervals $jobID"
 	  ;;
+      50660*143)
+	  intervals="$intervals $jobID"
+	  ;;
       *)
 	  echo $jobID $ExitCode
 	  

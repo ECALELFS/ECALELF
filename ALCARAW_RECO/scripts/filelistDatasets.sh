@@ -153,3 +153,11 @@ else
     fi
 
 fi
+
+
+# remove PUDumper files!
+if [ -n "$TAG" ];then
+    sed -i '/PUDumper/ d' filelist/*/*.list
+else
+    sed -i '/PUDumper/ d' filelist/*.list
+fi

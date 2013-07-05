@@ -276,7 +276,7 @@ else:
 ################################# FILTERING EVENTS
 process.filterSeq = cms.Sequence()
 #process.load('calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
-if(options.type == "ALCARECOSIM"):
+if(options.type == "ALCARECOSIM" and (options.doTree==0 or (options.doTree==1 and options.doTreeOnly==0))):
     # PUDumper
     process.load("calibration.ALCARAW_RECO.PUDumper_cfi")
     process.TFileService = cms.Service(

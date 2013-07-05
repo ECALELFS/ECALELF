@@ -197,11 +197,11 @@ if [ "${TYPE}" == "ALCARERECO" ];then
 	echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 	exit 0
     fi
-else
-    if [ "`cat ntuple_datasets.dat | grep -v ALCARERECO | grep ${DATASETNAME} | grep ${JSONNAME} | grep -c $RUNRANGE`" != "0" ];then
-	echo "[WARNING] Ntuple for $JSONNAME  already done for ${RUNRANGE} ${DATASETNAME}"
-	exit 0
-    fi
+#else
+#    if [ "`cat ntuple_datasets.dat | grep -v ALCARERECO | grep ${DATASETNAME} | grep ${JSONNAME} | grep -c $RUNRANGE`" != "0" ];then
+#	echo "[WARNING] Ntuple for $JSONNAME  already done for ${RUNRANGE} ${DATASETNAME}"
+#	exit 0
+#    fi
 fi
 fi
 
@@ -373,7 +373,7 @@ if [ -n "${CHECK}" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
 #    else
-#	mergeOutput.sh -u ${UI_WORKING_DIR}
+	mergeOutput.sh -u ${UI_WORKING_DIR}
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 fi
