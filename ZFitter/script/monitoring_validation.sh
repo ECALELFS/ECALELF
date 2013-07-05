@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #tag_name=""
-commonCut=Et_25
+commonCut=Et_25-trigger
 selection=WP80_PU
 invMass_var=invMass_SC_regrCorr_ele
 invMass_min=65

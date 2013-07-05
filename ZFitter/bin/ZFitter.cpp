@@ -988,7 +988,7 @@ int main(int argc, char **argv) {
     ("saveRootMacro","")
     //
     ("selection", po::value<string>(&selection)->default_value("WP80_PU"),"")
-    ("commonCut", po::value<string>(&commonCut)->default_value("Et_25"),"")
+    ("commonCut", po::value<string>(&commonCut)->default_value("Et_25-trigger"),"")
     ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_regrCorr_ele"),"")
     ("invMass_min", po::value<float>(&invMass_min)->default_value(65.),"")
     ("invMass_max", po::value<float>(&invMass_max)->default_value(115.),"")

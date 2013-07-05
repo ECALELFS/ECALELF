@@ -633,6 +633,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       
     }
 
+
     //--------------- eleID
     if(string.Contains("eleID_")){
       TObjArray *splitted = string.Tokenize("_");
@@ -1019,6 +1020,13 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
+
+    if(string.CompareTo("trigger")){
+      cutSet.insert("HLTfire==1");
+    } 
+    if(string.CompareTo("notrigger")){
+      cutSet.insert("HLTfire==0");
+    } 
 
 
     //------------------------------ categorie particolari
