@@ -1323,13 +1323,14 @@ int main(int argc, char **argv) {
       for(unsigned int i=0; i < mcPUFileNameVec.size(); i++){
 	TString mcPUFileName_=mcPUFileNameVec[i];
 	TString dataPUFileName_=dataPUFileNameVec[i];
-	TString runMin_ = "";
-	if(mcPUFileName_.Index(".runMin_")!=-1){
-	  runMin_=mcPUFileName_;
-	  runMin_.Remove(0,runMin_.Index(".runMin_")+1);
-	  runMin_.Remove(runMin_.First('.'));
-	  runMin_.ReplaceAll("runMin_","");
-	}
+ 	TString runMin_ = "";
+	if(!mcPUFileName_.Contains("nPU")){
+// 	if(mcPUFileName_.Index(".runMin_")!=-1){
+ 	  runMin_=mcPUFileName_;
+ 	  runMin_.Remove(runMin_.First('-'));
+// 	  runMin_.Remove(runMin_.First('.'));
+// 	  runMin_.ReplaceAll("runMin_","");
+ 	}
 	int runMin = runMin_.Sizeof()>1 ? runMin_.Atoi() : 1;
 	std::cout << "********* runMin = " << runMin << "\t" << runMin_ << std::endl;
 	puWeights.ReadFromFiles(mcPUFileName_.Data(),dataPUFileName_.Data(), runMin);
