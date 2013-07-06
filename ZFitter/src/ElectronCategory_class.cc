@@ -1168,12 +1168,14 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
     if(string.Contains("fiducial")){
       cut_string+=fiducial_cut;
       cutSet.insert(TString(fiducial_cut));
+      continue;
     }
 
     if(string.Contains("noPF")){
       // noPF electrons for the calibration
       cut_string+=noPFEle_cut;
       cutSet.insert(TString(noPFEle_cut));
+      continue;
     }      
 
     std::cout << "[WARNING] Region " << string << " not found" << std::endl;
