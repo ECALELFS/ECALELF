@@ -1,4 +1,4 @@
-#define DEBUG
+//#define DEBUG
 #include "../interface/ElectronCategory_class.hh"
 #define OldDefinitions
 #define GAP
@@ -1165,7 +1165,16 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 //     }
 
 
+    if(string.Contains("fiducial")){
+      cut_string+=fiducial_cut;
+      cutSet.insert(TString(fiducial_cut));
+    }
 
+    if(string.Contains("noPF")){
+      // noPF electrons for the calibration
+      cut_string+=noPFEle_cut;
+      cutSet.insert(TString(noPFEle_cut));
+    }      
 
     std::cout << "[WARNING] Region " << string << " not found" << std::endl;
 
@@ -1182,11 +1191,6 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
     //  cut_string.Print();
 #endif
 
-  // noPF electrons for the calibration
-  cut_string+=noPFEle_cut;
-  cutSet.insert(TString(noPFEle_cut));
-  cut_string+=fiducial_cut;
-  cutSet.insert(TString(fiducial_cut));
 
 
 #ifdef DEBUG

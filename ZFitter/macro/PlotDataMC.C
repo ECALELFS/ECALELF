@@ -180,7 +180,9 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
 			     s->GetMaximum() ///s->Integral()
 			     );
   max=1.1*d->GetMaximum();
-  std::cout << max << std::endl;
+  std::cout << "max = " << max << std::endl;
+  std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
+  std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
   if(logy){
     max*=10;
     d->GetYaxis()->SetRangeUser(0.1,max);
