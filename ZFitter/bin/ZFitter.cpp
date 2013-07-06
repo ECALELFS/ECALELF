@@ -1327,6 +1327,7 @@ int main(int argc, char **argv) {
 	if(!mcPUFileName_.Contains("nPU")){
 // 	if(mcPUFileName_.Index(".runMin_")!=-1){
  	  runMin_=mcPUFileName_;
+ 	  runMin_.Remove(0,runMin_.Last('/')+1);
  	  runMin_.Remove(runMin_.First('-'));
 // 	  runMin_.Remove(runMin_.First('.'));
 // 	  runMin_.ReplaceAll("runMin_","");

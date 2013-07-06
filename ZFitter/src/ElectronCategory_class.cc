@@ -1,4 +1,4 @@
-//#define DEBUG
+#define DEBUG
 #include "../interface/ElectronCategory_class.hh"
 #define OldDefinitions
 #define GAP
@@ -1021,11 +1021,13 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
     }
 
 
-    if(string.CompareTo("trigger")){
-      cutSet.insert("HLTfire==1");
-    } 
-    if(string.CompareTo("notrigger")){
-      cutSet.insert("HLTfire==0");
+    if(string.CompareTo("trigger")==0){
+      cutSet.insert(TString("HLTfire==1"));
+      continue;
+    }
+    if(string.CompareTo("notrigger")==0){
+      cutSet.insert(TString("HLTfire==0"));
+      continue;
     } 
 
 
@@ -1165,21 +1167,20 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 
 
 
-
-
     std::cout << "[WARNING] Region " << string << " not found" << std::endl;
 
   }
 
 #ifdef DEBUG
   std::cout << "Cut string: " << std::endl;
-  cut_string.Print();
+    for(std::set<TString>::const_iterator itr = cutSet.begin();
+      itr != cutSet.end();
+      itr++){
+    TString cut_string = *itr;
+    std::cout << cut_string << std::endl;
+    }
+    //  cut_string.Print();
 #endif
-
-  if(TString(cut_string).Sizeof()<=1){
-    std::cerr << "[ERROR]: region " << region << " not defined" << std::endl;
-    //   return "error";
-  }
 
   // noPF electrons for the calibration
   cut_string+=noPFEle_cut;

@@ -461,7 +461,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // at least one of the triggers
 #ifdef TRIGGER
-  bool HLTfire=false;
+  HLTfire=false;
   if(!hltPaths.empty()){
     for(std::vector<std::string>::const_iterator hltPath_itr = hltPaths.begin();
 	hltPath_itr != hltPaths.end();
