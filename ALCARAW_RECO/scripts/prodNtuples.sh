@@ -372,7 +372,7 @@ if [ -n "${CHECK}" ];then
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
-#    else
+    else
 	mergeOutput.sh -u ${UI_WORKING_DIR}
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
