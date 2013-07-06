@@ -1,0 +1,26 @@
+############### This file is equivalent to Winter13-powheg.dat but with new trees with trigger and new selection
+########### standard MC
+##### Madgraph
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim-runDependent/194533-194533/withTrgBit/DYJets-Summer12-START53-ZSkim-runDependent-194533-194533.root
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim-runDependent/200519-200519/withTrgBit/DYJets-Summer12-START53-ZSkim-runDependent-200519-200519.root
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim-runDependent/206859-206859/withTrgBit/DYJets-Summer12-START53-ZSkim-runDependent-206859-206859.root
+########### Data
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012D-22Jan-v1/203777-208686/190456-208686_22Jan-v1/withTrgBit/DoubleElectron-ZSkim-RUN2012D-22Jan-v1-203777-208686.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012C-22Jan-v1/198022-203742/190456-208686_22Jan-v1/withTrgBit/DoubleElectron-ZSkim-RUN2012C-22Jan-v1-198022-203742.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012B-22Jan-v1/193834-196531/190456-208686_22Jan-v1/withTrgBit/DoubleElectron-ZSkim-RUN2012B-22Jan-v1-193834-196531.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012A-22Jan-v1/190645-193621/190456-208686_22Jan-v1/withTrgBit/DoubleElectron-ZSkim-RUN2012A-22Jan-v1-190645-193621.root
+########### Friend trees
+##### PU histograms
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-196531-22Jan_v1.69300.true.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/198022-203742-22Jan_v1.69300.true.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/203777-208686-22Jan_v1.69300.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/194533-194533-Summer12_DD3_runDep.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/200519-200519-Summer12_DD3_runDep.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/206859-206859-Summer12_DD3_runDep.true.root
+##### PU trees
+#s	pileup	mcPUTree-Winter13-powheg-RUNABCD.root
+##### Scale correction trees
+#d	scaleEle_HggRunEtaR9	HggRunEtaR9-Winter13-RUNABC.root
+##### Smearer category trees
+#d	smearerCat_d	smearerCat_data-scaleStep2smearing_8.root
+#s	smearerCat_s	smearerCat_mc-scaleStep2smearing_8.root
