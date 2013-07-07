@@ -192,7 +192,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
   //  EB+ : 2, 4, 5, 8, 11
   //   (17:58:27) Riccardo Paramatti: EB- : 7, 9, 10, 16, 17
   TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
-  TCut fiducial_cut = "eleID%2==1";
+  TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
   /*
     se region contiene runNumber:
     prendi il primo range dal primo _ _ dopo runNumber 
