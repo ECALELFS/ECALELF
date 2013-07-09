@@ -1,0 +1,34 @@
+# regions defined for condition validation
+# for closure test
+EB
+EE
+EB-absEta_0_1
+EB-absEta_1_1.4442
+EE-absEta_1.566_2
+EE-absEta_2_2.5
+##
+### for this step corrections
+## diagonal categories
+EB-absEta_0_1-gold
+EB-absEta_1_1.4442-gold
+EB-absEta_0_1-bad
+EB-absEta_1_1.4442-bad
+EE-absEta_1.566_2-gold
+EE-absEta_2_2.5-gold
+EE-absEta_1.566_2-bad
+EE-absEta_2_2.5-bad
+## off diagonal categories
+#EBlowEtaGold_EBlowEtaBad
+#EBlowEtaGold_EBhighEtaBad
+#EBlowEtaGold_EBhighEtaGold
+#EBlowEtaGold_EElowEtaGold
+#EBlowEtaGold_EElowEtaBad
+#EBlowEtaGold_EEhighEtaBad
+#EBlowEtaGold_EEhighEtaGold
+### for the resolution estimation
+#EB-absEta_0_1-EBGapEle1_5-EBGapEle2_5-gold
+#EB-absEta_0_1-!EBGapEle1_5-!EBGapEle2_5-gold
+#EB-absEta_0_1-EBGapEle1_5-EBGapEle2_5-bad
+#EB-absEta_0_1-!EBGapEle1_5-!EBGapEle2_5-bad
+#EB-absEta_0_1-EBGapEle1_5-EBGapEle2_5
+#EB-absEta_0_1-!EBGapEle1_5-!EBGapEle2_5

@@ -1,0 +1,70 @@
+\begin{comment}
+
+
+\end{comment}
+
+\makeatletter
+\@ifundefined{dataSample}{
+  \newcommand{\dataSample}{dataSample}
+  \newcommand{\mcSample}{mcSample}
+  \newcommand{\imgDir}{imgDir}
+  \newcommand{\PeriodDivisionTickzOld}{}
+  \newcommand{\PeriodDivisionTickzNew}{}
+}{}
+\@ifundefined{invMassVarName}{
+  \newcommand{\invMassVarName}{invMass_var}
+}{}
+\@ifundefined{resol}{
+  \newcommand{\resol}{\ensuremath{\frac{\sigma_{CB}}{peak_{CB}}}}
+}{}
+
+\makeatother
+
+%% define the commands for this sample
+%% if you would like to include one slide in another presentation it's better to substitute the command 
+%% with its definition
+
+%% \renewcommand{\dataSample}{dataSampleName}
+%% \renewcommand{\mcSample}{mcSampleName}
+%% \renewcommand{\imgDir}{imgDirName}
+%% \renewcommand{\invMassVarName}{invMass_varName}
+
+%% \renewcommand{\PeriodDivisionTickzOld}{
+%%   %       \draw [step=0.2,color=red] (0,0) grid (0.8\textwidth,0.7\textwidth);
+%%   \draw [draw] (1.31,1.0) -- (1.31,3.2);
+%%   \node [anchor=east,outer sep=0pt,inner sep=0pt] at (1.31,2.9) {\tiny 10May};
+%%   \node [anchor=east,outer sep=0pt,inner sep=1em] at (1.31,2.75) {\tiny +};
+%%   \node [anchor=east,outer sep=0pt,inner sep=1em] at (1.31,2.60) {\tiny V4};
+
+%%   \draw [draw] (1.51,1.0) -- (1.51,3.2);
+%%   \node [anchor=east,outer sep=0pt,inner sep=0em] at (1.51,2.7) {\tiny V5};
+
+%%   \draw [draw] (1.83,1.0) -- (1.83,3.2);
+%%   \node [anchor=east,outer sep=0pt,inner sep=0em] at (1.83,2.75) {\tiny V6};
+
+%%   \draw [draw,dashed] (2.45,1.0) -- (2.45,3.2);
+%%   %       \node at (2.5,1.2) {RUN2011B};
+%%   %       \node [anchor=east,outer sep=0pt,inner sep=0em] at (2.24,2.8) {\tiny Prompt V1};
+%%   \node [anchor=east,outer sep=0pt,inner sep=1pt] at (2.45,2.85) {\tiny Sept};
+%%   %       \draw [draw,dashed] (2.62,1.0) -- (2.62,3.2);
+%%   \node [anchor=west,outer sep=0pt,inner sep=1em] at (2.45,2.85) {\tiny Oct};
+%%   \draw [draw, thick] (3.1,0.62) rectangle (4.1,0.83); % RMS
+%% }
+
+%% \renewcommand{\PeriodDivisionTickzNew}{
+%%   %       \draw [step=0.2,color=red] (0,0) grid (0.8\textwidth,0.7\textwidth);
+%% %  \draw [draw] (1.31,1.0) -- (1.31,3.2);
+%% %  \node [anchor=east,outer sep=0pt,inner sep=0pt] at (1.31,2.9) {\tiny 10May};
+%% %  \node [anchor=east,outer sep=0pt,inner sep=1em] at (1.31,2.75) {\tiny +};
+%% %  \node [anchor=east,outer sep=0pt,inner sep=1em] at (1.31,2.60) {\tiny RUN2012A};
+
+%%   \draw [draw] (1.6,1.0) -- (1.6,3.2);
+
+
+
+%%   \node [anchor=east,outer sep=0pt,inner sep=0em] at (1.62,2.95) {\tiny RUN2012A};
+
+%%   \node [anchor=west,outer sep=0pt,inner sep=1em] at (1.6,2.95) {\tiny RUN2012B};
+%%   \draw [draw, thick] (3.1,0.62) rectangle (4.1,0.83); % RMS
+%% }
+
