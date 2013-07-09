@@ -1,8 +1,0 @@
-150c150,154
-<                         EcalRecHit aHit( (*it).id(), (*it).energy() * agc_eb * icalconst * lasercalib, (*it).time() );
----
->                         EcalRecHit aHit( (*it).id(), (*it).energy() * agc_eb * icalconst * lasercalib, (*it).time(), (*it).flags() );
-> 			// this is an horrible workaround due to the fact that in EcalRecHit class there is no method to take the flagbits!!! - Shervin
-> 			for(int i=0; i < EcalRecHit::kUnknown; i++)
-> 			  if(it->checkFlag(i)) aHit.setFlag(i);
-> 			

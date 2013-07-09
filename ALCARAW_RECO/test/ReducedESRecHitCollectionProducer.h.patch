@@ -1,7 +1,0 @@
-Index: RecoEcal/EgammaClusterProducers/interface/ReducedESRecHitCollectionProducer.h
-===================================================================
-RCS file: /cvs/CMSSW/CMSSW/RecoEcal/EgammaClusterProducers/interface/ReducedESRecHitCollectionProducer.h,v
-retrieving revision 1.4
-diff -r1.4 ReducedESRecHitCollectionProducer.h
-50a51
->   bool noFlag_;
