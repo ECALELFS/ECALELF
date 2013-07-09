@@ -3,7 +3,7 @@
 // Package:    EleSelectionProducers
 // Class:      EleSelectionProducers
 // 
-/**\class EleSelectionProducers EleSelectionProducers.cc calibration/EleSelectionProducers/src/EleSelectionProducers.cc
+/**\class EleSelectionProducers EleSelectionProducers.cc Calibration/EleSelectionProducers/src/EleSelectionProducers.cc
 
 */
 //
@@ -29,7 +29,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
-#include "calibration/EleSelectionProducers/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
+#include "Calibration/EleSelectionProducers/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 

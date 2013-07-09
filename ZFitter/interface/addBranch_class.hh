@@ -2,7 +2,7 @@
 #define ADDBRANCH_HH
 /// starting from standard ntuple, produce new tree with additional branches
 /**
- * \class addBranch_class addBranch_class.cc calibration/ZFitter/interface/addBranch_class.hh
+ * \class addBranch_class addBranch_class.cc Calibration/ZFitter/interface/addBranch_class.hh
  *
  * create tree with following branches:
  * - ZPt

@@ -3,7 +3,7 @@
 
 /// Cruijff function
 
-/**\class Cruijff_pdf_class Cruijff_pdf_class.cc calibration/ZFitter/interface/Cruijff_pdf_class.hh
+/**\class Cruijff_pdf_class Cruijff_pdf_class.cc Calibration/ZFitter/interface/Cruijff_pdf_class.hh
 	Class providing a RooPdf corresponding to a Cruijff function
         (Gaussian with exponential tails)
 */
