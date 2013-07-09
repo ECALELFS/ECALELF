@@ -61,10 +61,10 @@ sed -i 's|[/]*assert|////assert|' DataFormats/EgammaCandidates/src/GsfElectron.c
 
 #########################################################################################
 echo "[STATUS] Download ECALELF directory"
-if [ ! -d calibration ];then
-    svn co  svn+ssh://svn.cern.ch/reps/analysis/trunk/calibration/ >> ../setup.log || exit 1 #setup.sh #ZFitter 
+if [ ! -d Calibration ];then
+    git clone git@github.com:ECALELFS/ECALELF.git # >> ../setup.log || exit 1 #setup.sh #ZFitter 
 fi
-cd calibration
+cd Calibration
 
 cd ALCARAW_RECO/
 
@@ -79,9 +79,9 @@ svn co svn+ssh://svn.cern.ch/reps/analysis/trunk/bin bin
 ###
 echo "[WARNING] Remember to do this after all cmsenv:"
 echo "# for bash
-PATH=$PATH:$CMSSW_BASE/src/calibration/ALCARAW_RECO/bin
+PATH=$PATH:$CMSSW_BASE/src/Calibration/ALCARAW_RECO/bin
 # for tcsh
-setenv PATH $PATH\":$CMSSW_BASE/src//calibration/ALCARAW_RECO/bin\" 
+setenv PATH $PATH\":$CMSSW_BASE/src/Calibration/ALCARAW_RECO/bin\" 
 "
 
 fi
@@ -109,19 +109,19 @@ case $CMSSW_VERSION in
 ###### - Regression from Josh 5_3_X
 #	cvs co -r regressionMay18b RecoEgamma/EgammaTools
 	#checkdeps -a
-	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root calibration/EleNewEnergiesProducer/data/
+	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root Calibration/EleNewEnergiesProducer/data/
 
 	echo "[STATUS] applying patch for CMSSW_6_X"
-	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
+	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
     if [ ! -e "$CMSSW_BASE/src/RecoEcal/EgammaCoreTools" ];then
 	addpkg RecoEcal/EgammaCoreTools  #V05-08-24
     fi
     if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
 	echo "[STATUS] patching clusterLazyTools"
-	sed -i -f calibration/ALCARAW_RECO/test/EcalClusterLazyTools_h.sed $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h
+	sed -i -f Calibration/ALCARAW_RECO/test/EcalClusterLazyTools_h.sed $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h
 	#patch  -p0 < test/clusterLazyTools.patch
     fi
-    patch  -p0 < calibration/ALCARAW_RECO/test/class_def.xml.patch
+    patch  -p0 < Calibration/ALCARAW_RECO/test/class_def.xml.patch
 
 	;;
     CMSSW_5_*)
@@ -137,7 +137,7 @@ case $CMSSW_VERSION in
 	cvs co -r V09-00-01      RecoEgamma/EgammaTools     >> setup.log  
 #	cvs co -r V00-00-02    EgammaAnalysis/ElectronTools
 	cvs co -r MD-21Apr2013-test-2    EgammaAnalysis/ElectronTools
-	patch -p0 < calibration/ALCARAW_RECO/test/electronRegression.patch
+	patch -p0 < Calibration/ALCARAW_RECO/test/electronRegression.patch
 
 	cd EgammaAnalysis/ElectronTools/data/
 	cat download.url | xargs wget 
@@ -145,17 +145,17 @@ case $CMSSW_VERSION in
 ###### - Regression from Josh 5_3_X
 #	cvs co -r regressionMay18b RecoEgamma/EgammaTools
 	#checkdeps -a
-	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root calibration/EleNewEnergiesProducer/data/
+	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root Calibration/EleNewEnergiesProducer/data/
 
 	echo "[STATUS] applying patch for CMSSW_5_X"
-	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
+	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
     if [ ! -e "$CMSSW_BASE/src/RecoEcal/EgammaCoreTools" ];then
 	addpkg RecoEcal/EgammaCoreTools  #V05-08-24
     fi
     if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
-	patch  -p0 < calibration/ALCARAW_RECO/test/clusterLazyTools.patch
+	patch  -p0 < Calibration/ALCARAW_RECO/test/clusterLazyTools.patch
     fi
-    patch  -p0 < calibration/ALCARAW_RECO/test/class_def.xml.patch
+    patch  -p0 < Calibration/ALCARAW_RECO/test/class_def.xml.patch
 
 	;;
     CMSSW_4_4*)
@@ -175,7 +175,7 @@ case $CMSSW_VERSION in
 	cvs co -r V05-08-24      RecoEcal/EgammaCoreTools       >> setup.log || exit 1                 
 	cvs co -r V08-11-10-02   RecoEgamma/EgammaTools	        >> setup.log || exit 1
 	cvs co -r V00-00-02-44X    EgammaAnalysis/ElectronTools >> setup.log || exit 1
-	patch -p0 < calibration/ALCARAW_RECO/test/electronRegression.patch
+	patch -p0 < Calibration/ALCARAW_RECO/test/electronRegression.patch
 	cd EgammaAnalysis/ElectronTools/data/
 	cat download.url | xargs wget || exit 1
 	cd -
@@ -195,7 +195,7 @@ case $CMSSW_VERSION in
 	cvs co RecoEgamma/EgammaTools/interface/EGEnergyCorrector.h  >> setup.log || exit 1
 
 	echo "[STATUS] applying patch for CMSSW_4_4_X"
-	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
+	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
 	
 	sed -i 's|hadTowOverEm|hadronicOverEm|' ${CMSSW_BASE}/src/RecoEgamma/EgammaTools/src/EGEnergyCorrector.cc
 	if [ "`grep -c RecoEcal/EgammaCoreTool ${CMSSW_BASE}/src/RecoEgamma/EgammaTools/BuildFile.xml`" == "0" ];then
@@ -204,13 +204,13 @@ case $CMSSW_VERSION in
 	if [ "`grep -c CondFormats/EgammaObjects ${CMSSW_BASE}/src/RecoEgamma/EgammaTools/BuildFile.xml`" == "0" ];then
 	    echo "<use   name=\"CondFormats/EgammaObjects\"/>" >> ${CMSSW_BASE}/src/RecoEgamma/EgammaTools/BuildFile.xml
 	fi
-	patch  -p0 < calibration/ALCARAW_RECO/test/class_def.xml.patch
+	patch  -p0 < Calibration/ALCARAW_RECO/test/class_def.xml.patch
 
     if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
-	patch  -p0 < calibration/ALCARAW_RECO/test/clusterLazyTools.patch
+	patch  -p0 < Calibration/ALCARAW_RECO/test/clusterLazyTools.patch
     fi
-    sed -i ';s|REGRESSION=3|REGRESSION=1|' calibration/*/BuildFile.xml
-    sed -i 's|#||;s|REGRESSION=3|REGRESSION=2|' calibration/ZNtupleDumper/BuildFile.xml
+    sed -i ';s|REGRESSION=3|REGRESSION=1|' Calibration/*/BuildFile.xml
+    sed -i 's|#||;s|REGRESSION=3|REGRESSION=2|' Calibration/ZNtupleDumper/BuildFile.xml
 
 	
 	;;
@@ -229,7 +229,7 @@ case $CMSSW_VERSION in
 	
 	cvs co -r regression42x_Dec3 CondFormats/DataRecord
 	
-	cp calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
+	cp Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch Calibration/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
 	if [ ! -e "$CMSSW_BASE/src/RecoEcal/EgammaCoreTools" ];then
 	    addpkg RecoEcal/EgammaCoreTools  #V05-08-24
 	    cvs update -r V05-08-02  RecoEcal/EgammaCoreTools/src/EcalClusterTools.cc
@@ -240,10 +240,10 @@ case $CMSSW_VERSION in
 	    cvs update -r V05-08-14  RecoEcal/EgammaCoreTools/BuildFile.xml
 	fi
 	if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
-	    sed -i -f calibration/ALCARAW_RECO/test/EcalClusterLazyTools_h.sed $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h
+	    sed -i -f Calibration/ALCARAW_RECO/test/EcalClusterLazyTools_h.sed $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h
 	fi
 	
-	sed -i 's|#||;s|REGRESSION=3|REGRESSION=2|' calibration/*/BuildFile.xml
+	sed -i 's|#||;s|REGRESSION=3|REGRESSION=2|' Calibration/*/BuildFile.xml
 	
 	if [ "`grep -c reducedBarrelRecHitCollection $CMSSW_BASE/src/PhysicsTools/PatAlgos/plugins/PATElectronProducer.h`" == "0" ]; then
 	    sed -i '/embedPFCandidate_/ i edm::InputTag reducedEBRecHitCollection;\nedm::InputTag reducedEERecHitCollection;' $CMSSW_BASE/src/PhysicsTools/PatAlgos/plugins/PATElectronProducer.h
@@ -253,10 +253,10 @@ case $CMSSW_VERSION in
 
 	fi
 	
-	sed -i '/patSequence/ {s|+[ ]*eleRegressionEnergy||}' calibration/ZNtupleDumper/python/patSequence_cff.py
-	sed -i '/electronRegressionEnergyProducer_cfi/ d;/eleRegressionEnergy/ d' calibration/ZNtupleDumper/python/patSequence_cff.py
+	sed -i '/patSequence/ {s|+[ ]*eleRegressionEnergy||}' Calibration/ZNtupleDumper/python/patSequence_cff.py
+	sed -i '/electronRegressionEnergyProducer_cfi/ d;/eleRegressionEnergy/ d' Calibration/ZNtupleDumper/python/patSequence_cff.py
 
-	patch  -p0 < calibration/ALCARAW_RECO/test/class_def.xml.patch
+	patch  -p0 < Calibration/ALCARAW_RECO/test/class_def.xml.patch
 
 
 	;;
@@ -287,6 +287,6 @@ for file in `find -name '*.url'`;
 done
 
 ####-------->  Each time you set your environment!
-#PATH=$PATH:$CMSSW_BASE/calibration/ALCARAW_RECO/bin
+#PATH=$PATH:$CMSSW_BASE/Calibration/ALCARAW_RECO/bin
 #Previous command MUST be executed every time you log in 
 
