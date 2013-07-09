@@ -95,7 +95,7 @@ s	pileupTree	file.root
 
 
 1) If it does not exist yet, create the PU distribution in data with the proper script in ZNtupleDumper
-   See PU data section in calibration/ZNtupleDumper/doc/README for details
+   See PU data section in Calibration/ZNtupleDumper/doc/README for details
 
 2) Create the .dat config file and put it into (see previous section for details)
    ./data/validation/rereco/rerecoGroupName/

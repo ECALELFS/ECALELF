@@ -8,10 +8,10 @@ Steps for the production using the CERN batch system (launch from lxplus):
 
 #### ALCARAW private production
 The following instructions correspond to point: 1a), 1.1a), 2a) indicated in 
-calibration/README:
-https://svnweb.cern.ch/cern/wsvn/analysis/trunk/calibration/README
+Calibration/README:
+https://svnweb.cern.ch/cern/wsvn/analysis/trunk/Calibration/README
 
-For the detailed content of alcaraw format consult the calibration/doc/alcaraw.dump file
+For the detailed content of alcaraw format consult the Calibration/doc/alcaraw.dump file
 
 1) Fill the alcaraw_datasets.dat with the information of the desired run range
    It is convenient to add the new line at the bottom of the file.
