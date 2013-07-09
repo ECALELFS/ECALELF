@@ -3,7 +3,7 @@
 
 /// Breit-Wigner convoluted with Crystal Ball function PDF
 
-/**\class BW_CB_pdf_class BW_CB_pdf_class.cc calibration/ZFitter/interface/BW_CB_pdf_class.hh
+/**\class BW_CB_pdf_class BW_CB_pdf_class.cc Calibration/ZFitter/interface/BW_CB_pdf_class.hh
 	Class providing a RooPdf correspoding to the convolution of a
 	Breit-Wigner and Crystal Ball
 

@@ -1,6 +1,6 @@
 /// Zee Fit class: BW+CB and Cruijff 
 
-/**\class ZFit_class ZFit_class.cc calibration/ZFitter/src/ZNtupleDumper.cc
+/**\class ZFit_class ZFit_class.cc Calibration/ZFitter/src/ZNtupleDumper.cc
 Description: class that provide flexible and simple way to fit the Zee invariant mass shape with different pdfs:
  - BW+CB
  - Cruijff

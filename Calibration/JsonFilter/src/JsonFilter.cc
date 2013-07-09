@@ -3,7 +3,7 @@
 // Package:    JsonFilter
 // Class:      JsonFilter
 // 
-/**\class JsonFilter JsonFilter.cc calibration/JsonFilter/src/JsonFilter.cc
+/**\class JsonFilter JsonFilter.cc Calibration/JsonFilter/src/JsonFilter.cc
 
  Description: [one line class summary]
 

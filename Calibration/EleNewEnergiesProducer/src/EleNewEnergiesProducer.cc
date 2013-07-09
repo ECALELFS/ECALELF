@@ -3,7 +3,7 @@
 // Package:    EleNewEnergiesProducer
 // Class:      EleNewEnergiesProducer
 // 
-/**\class EleNewEnergiesProducer EleNewEnergiesProducer.cc calibration/EleNewEnergiesProducer/src/EleNewEnergiesProducer.cc
+/**\class EleNewEnergiesProducer EleNewEnergiesProducer.cc Calibration/EleNewEnergiesProducer/src/EleNewEnergiesProducer.cc
 
  Description: [one line class summary]
 

@@ -4,7 +4,7 @@
 // Class:      ZNtupleDumper
 // 
 /// Zee and E/p ntuple dumper from patElectrons
-/**\class ZNtupleDumper ZNtupleDumper.cc calibration/ZNtupleDumper/src/ZNtupleDumper.cc
+/**\class ZNtupleDumper ZNtupleDumper.cc Calibration/ZNtupleDumper/src/ZNtupleDumper.cc
  * 
  * Description: Zee and E/p ntuple dumper from patElectrons
  * 
@@ -57,7 +57,7 @@
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
 
-//#include "calibration/ZNtupleDumper/interface/puWeights_class.hh"
+//#include "Calibration/ZNtupleDumper/interface/puWeights_class.hh"
 
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
