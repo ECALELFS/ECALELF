@@ -422,7 +422,7 @@ if(options.doTree>0):
     if(re.match("CMSSW_4_4_.*", CMSSW_VERSION)):
         process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
     if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
-        pathPrefix=CMSSW_BASE+'/src/calibration/EleNewEnergiesProducer/'
+        pathPrefix=CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
         print '[INFO] Using v2 regression for CMSSW_4_2_X' 
         process.eleNewEnergiesProducer.regrPhoFile=cms.string(pathPrefix+'data/gbrv2ph.root')
         process.eleNewEnergiesProducer.regrEleFile=cms.string(pathPrefix+'data/gbrv2ele.root')
