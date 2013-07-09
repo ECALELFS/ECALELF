@@ -2,7 +2,7 @@
 ################
 # Semplified script for rereco and ntuple of 2011 and 2012 data
 ##############
-NTUPLE_REMOTE_DIR=caf/user/shervin/calibration/8TeV/ZNtuples
+NTUPLE_REMOTE_DIR=caf/user/shervin/Calibration/8TeV/ZNtuples
 SCHEDULER=caf
 CREATE=y
 SUBMIT=y
@@ -46,7 +46,7 @@ do
 	--tutorial) 
 	    echo "[OPTION] Entering in tutorial mode"
 	    TUTORIAL=y; SCHEDULER=caf; 
-	    NTUPLE_REMOTE_DIR=group/alca_ecalcalib/sandbox/tutorial/${USER}/calibration/8TeV/ZNtuples;
+	    NTUPLE_REMOTE_DIR=group/alca_ecalcalib/sandbox/tutorial/${USER}/Calibration/8TeV/ZNtuples;
 	    echo "Ntuple output directory: /eos/cms/store/${NTUPLE_REMOTE_DIR}"
 	    echo -n "Check if exists: "
 	    eos.select ls -s /eos/cms/store/${NTUPLE_REMOTE_DIR} &> /dev/null || {

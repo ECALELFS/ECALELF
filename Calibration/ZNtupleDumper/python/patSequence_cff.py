@@ -12,9 +12,9 @@ from calibration.ZNtupleDumper.elePat_cfi import *
     
 #------------------------------ new energies
 from calibration.EleNewEnergiesProducer.elenewenergiesproducer_cfi import *
-eleNewEnergiesProducer.regrPhoFile='src/calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
-eleNewEnergiesProducer.regrEleFile='src/calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
-eleNewEnergiesProducer.regrEleFile_fra='src/calibration/EleNewEnergiesProducer/data/eleEnergyRegWeights_V1.root'
+eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
+eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
+eleNewEnergiesProducer.regrEleFile_fra='src/Calibration/EleNewEnergiesProducer/data/eleEnergyRegWeights_V1.root'
 eleNewEnergiesProducer.ptSplit=cms.bool(False)
 
 from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
