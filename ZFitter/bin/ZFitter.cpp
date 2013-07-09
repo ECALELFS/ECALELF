@@ -1078,6 +1078,7 @@ int main(int argc, char **argv) {
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
+  else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
   else {
     std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
     exit(1);
