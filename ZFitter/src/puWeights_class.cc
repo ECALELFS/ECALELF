@@ -1,4 +1,6 @@
 #include "../interface/puWeights_class.hh"
+#include <stdlib.h>
+#include <TROOT.h>
 //#define DEBUG
 puWeights_class::~puWeights_class(){
 
@@ -113,36 +115,51 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
   
   if(!data.IsOpen() || !mc.IsOpen()){
     std::cerr << "[ERROR] data or mc PU file not opened" << std::endl;
+    exit(1);
     return;
   }
 
   TH1D* puMC_hist = (TH1D*) mc.Get("pileup");
   if(puMC_hist==NULL){
-    std::cerr << "[ERROR] mc pileup histogram is NULL" << std::endl;
-    return;
+    TTree *puMC_tree = (TTree*) mc.Get("PUDumper/pileup");
+    if(puMC_tree==NULL){
+      std::cerr << "[ERROR] mc pileup histogram is NULL" << std::endl;
+      exit(1);
+      return;
+    }
+    puMC_tree->Draw("nPUtrue>>pileupHist_mc(60,0,60)","BX==0");
+    puMC_hist = (TH1D *) gROOT->FindObject("pileupHist_mc");
+    puMC_hist->SaveAs("tmp/puMC_hist.root");
   }
+  
   TH1D *puData_hist = (TH1D *) data.Get("pileup");
   //  puData_hist->GetBinWidth(3);
   if(puData_hist==NULL){
-    std::cerr << "[ERROR] data pileup histogram is NULL" << std::endl;
-    return;
+    puData_hist = (TH1D *) data.Get("PUDumper/pileup");
+    if(puData_hist==NULL){
+      std::cerr << "[ERROR] data pileup histogram is NULL" << std::endl;
+      exit(1);
+      return;
+    }
   }
 
   // they should have bin width = 1
   if(puMC_hist->GetBinWidth(2) != 1){
     std::cerr << "[ERROR] Bin width for mc pileup distribution different from 1" << std::endl;
+    exit(1);
     return;
   }
 
   if(puData_hist->GetBinWidth(2) != 1){
     std::cerr << "[ERROR] Bin width for data pileup distribution different from 1" << std::endl;
+    exit(1);
     return;
   }
 
   // they should have the same binning otherwise PU weights until the max between them
   int nBins = MAX_PU_REWEIGHT;
   if(puData_hist->GetNbinsX() != puMC_hist->GetNbinsX()){
-    std::cerr << "[WARNING] Different binning between data and mc pileup distributions" << std::endl;
+    std::cerr << "[WARNING] Different binning between data and mc pileup distributions:" << puData_hist->GetNbinsX() << "\t" << puMC_hist->GetNbinsX() << std::endl;
     nBins=std::min(puData_hist->GetNbinsX(),puMC_hist->GetNbinsX());
     //std::cerr << "Pileup reweighted until nPU max = " << nBins;
   } 
@@ -156,10 +173,21 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
 
   double puMCweight_int=0;
   for (int i = 0; i<nBins; i++) {
-    double weight = puData_hist->GetBinContent(i+1)/puMC_hist->GetBinContent(i+1);
+    double binContent=puMC_hist->GetBinContent(i+1);
+    if(binContent==0 && puData_hist->GetBinContent(i+1)!=0){
+      if(puData_hist->GetBinContent(i+1) < 1e-4){
+	std::cerr << "[WARNING] mc bin empty while data not: iBin = " << i+1 << std::endl;
+	std::cerr << "          data bin = " << puData_hist->GetBinContent(i+1) << std::endl;
+      } else {
+	std::cerr << "[ERROR] mc bin empty while data not: iBin = " << i+1 << std::endl;
+	std::cerr << "        data bin = " << puData_hist->GetBinContent(i+1) << std::endl;
+	exit(1);
+      }
+    }
+    double weight = binContent>0 ? puData_hist->GetBinContent(i+1)/binContent : 0;
     // the MC normalization should not change, so calculate the
     // integral of the MC and rescale the weights by that 
-    puMCweight_int+=weight * puMC_hist->GetBinContent(i+1); 
+    puMCweight_int+=weight * binContent; 
     weights_itr->second.insert(std::pair<int,double>(i,weight));
 #ifdef DEBUG
     std::cout << "[DEBUG] " << weights_itr->first << "\t" << weights_itr->second[i] << "\t" << weights_itr->second.size() << std::endl;
@@ -170,6 +198,7 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
     weights_itr->second[i]/=puMCweight_int;
   }
   PUweights_itr=PUWeightsRunDepMap.begin();
+  if(TString(puMC_hist->GetName()).Contains("Hist")) delete puMC_hist;
   return;
 }
 

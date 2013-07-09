@@ -229,12 +229,12 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
   std::cout << "$\\Chi^2$ " <<  d->Chi2Test(s_norm, "UW CHI2/NDF NORM") << std::endl;
   
 
-  TLegend *leg = new TLegend(0.7,0.8,1,1);
+  TLegend *leg = new TLegend(0.6,0.8,1,1);
   if(dataLabel !="") leg->AddEntry(d,dataLabel,"p");
   if(mcLabel   !="") leg->AddEntry(s,mcLabel, "lf");
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
-  leg->SetTextSize(0.05);
+  leg->SetTextSize(0.04);
   if(dataLabel !="" && mcLabel !="") leg->Draw();
   //c->GetListOfPrimitives()->Add(leg,"");
 

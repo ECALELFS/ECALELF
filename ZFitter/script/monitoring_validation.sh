@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #tag_name=""
-commonCut=Et_25-trigger
-selection=WP80_PU
+commonCut=Et_25-trigger-noPF
+selection=WP80PU
 invMass_var=invMass_SC_regrCorr_ele
 invMass_min=65
 invMass_max=115
@@ -12,8 +12,8 @@ configFile=data/validation/monitoring_2012_53X.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
-#updateOnly="--updateOnly"
-extraOptions="--addBranch iSM --forceNewFit"
+updateOnly="--updateOnly"
+#extraOptions="--addBranch iSM --forceNewFit"
 
 # VALIDATION=y
 # STABILITY=y
@@ -127,9 +127,13 @@ elif  [ -z "${configFile}" -a -n "${TEST}" ];then
 fi
 
 case ${selection} in
-    WP80_PU)
+    WP80PU)
         ;;
-    WP90_PU)
+    WP90PU)
+	;;
+    loose)
+	;;
+    medium)
 	;;
     *)
 	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
