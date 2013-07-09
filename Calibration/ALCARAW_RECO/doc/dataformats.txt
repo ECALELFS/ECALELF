@@ -4,7 +4,7 @@ samples) will be performed using the alcareco data format that
 contains only relevant collections for the ECAL calibration with
 electrons. 
 
-If you have not followed the instructions in the calibration/README
+If you have not followed the instructions in the Calibration/README
 file please do it.
 
 

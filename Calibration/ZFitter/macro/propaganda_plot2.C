@@ -212,7 +212,7 @@
 
 
   TString selectedTreeDir="/u2/shervin/Higgs/selected/";
-  //  TString selectedTreeDir="root://eoscms//cms/store/caf/user/shervin/calibration/7TeV/Higgs/selected/";
+  //  TString selectedTreeDir="root://eoscms//cms/store/caf/user/shervin/Calibration/7TeV/Higgs/selected/";
   //--------------- prendo il file con gli eventi selezionati
   // mi serve una chain per i dati, una per il segnale MC ed una per i fondi
   TChain *data_chain = new TChain("selected","data");

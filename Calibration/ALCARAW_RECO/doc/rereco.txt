@@ -34,7 +34,7 @@ svn ci -m "rereco tag_name done"
 #============================== TAG FILES
 To run the Rereco with a new set of conditions it is necessary to have a configuration file with the tags.
 
-An example of a configuration file can be found in calibration/ALCARAW_RECO/config/reRecoTags/test.py
+An example of a configuration file can be found in Calibration/ALCARAW_RECO/config/reRecoTags/test.py
 
 Here an example:
 ##############################################################

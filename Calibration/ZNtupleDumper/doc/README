@@ -59,7 +59,7 @@ prodNtuples.sh [options]
  --ui_working_dir dir: do not use the default crab ui_working_dir (optional)
  --store: storage element for crab: (def=caf)
  --remote_dir: user remote dir on the storage element: --remote_dir group/alca_ecalcalib/alcareco
- --ntuple_remote_dir DIR: base directory storing the ntuples: --ntuple_remote_dir caf/user/shervin/calibration/8TeV/ZNtuples
+ --ntuple_remote_dir DIR: base directory storing the ntuples: --ntuple_remote_dir caf/user/shervin/Calibration/8TeV/ZNtuples
 
 Ex. ./script/prodNtuples.sh --type alcareco \
 --json tmp/201230-201678.json --json_name 201230-201678-Prompt \
