@@ -207,7 +207,7 @@ esac
     ## pileup reweight name
 if [ -z "$puName" ];then
     puCount=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3 |wc -l`
-    if [ "${puCount}" != "1" ];then
+    if [ "${puCount}" == "0" ];then
 	echo "[ERROR] No or too mani pileupHist files for data"
 	exit 1
     fi
