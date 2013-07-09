@@ -1,0 +1,55 @@
+Index: RecoEcal/EgammaCoreTools/src/EcalClusterLazyTools.cc
+===================================================================
+RCS file: /local/reps/CMSSW/CMSSW/RecoEcal/EgammaCoreTools/src/EcalClusterLazyTools.cc,v
+retrieving revision 1.9
+diff -r1.9 EcalClusterLazyTools.cc
+19a20,23
+> 	getIntercalibConstants( es );
+> 	getADCToGeV ( es );
+> 	getLaserDbService ( es );
+> 
+63a68,111
+> void EcalClusterLazyTools::getESRecHits( const edm::Event &ev, edm::InputTag redESRecHits )
+> {
+>         edm::Handle< EcalRecHitCollection > pESRecHits;
+>         ev.getByLabel( redESRecHits, pESRecHits );
+>         esRecHits_ = pESRecHits.product();
+> 
+>         // make the map of rechits
+>         rechits_map_.clear();
+>         if (pESRecHits.isValid()) {
+>           EcalRecHitCollection::const_iterator it;
+>           for (it = pESRecHits->begin(); it != pESRecHits->end(); ++it) {
+>             // remove bad ES rechits
+>             if (it->recoFlag()==1 || it->recoFlag()==14 || (it->recoFlag()<=10 && it->recoFlag()>=5)) continue;
+>             //Make the map of DetID, EcalRecHit pairs
+>             rechits_map_.insert(std::make_pair(it->id(), *it));
+>           }
+>         }
+> 
+> }
+> 
+> 
+> 
+> void EcalClusterLazyTools::getIntercalibConstants( const edm::EventSetup &es )
+> {
+>   // get IC's
+>   es.get<EcalIntercalibConstantsRcd>().get(ical);
+>   icalMap = ical->getMap();
+> }
+> 
+> 
+> 
+> void EcalClusterLazyTools::getADCToGeV( const edm::EventSetup &es )
+> {
+>   // get ADCtoGeV
+>   es.get<EcalADCToGeVConstantRcd>().get(agc);
+> }
+> 
+> 
+> 
+> void EcalClusterLazyTools::getLaserDbService     ( const edm::EventSetup &es ){
+>   // transp corrections
+>   es.get<EcalLaserDbRecord>().get(laser);
+> }
+> 

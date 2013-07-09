@@ -1,0 +1,9 @@
+#160404-180252_8Nov_v2 changed to 160404-180252_All2011_v3
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECOSIM/DYJets-Fall11-START42_V14B-v1-ZSkim/allRange/DYJets-Fall11-START42_V14B-v1-ZSkim-allRange.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARERECO/rereco29Jun-RUN2011/DoubleElectron-ZSkim-RUN2011A-05Jul-v1/160329-168437/160404-180252_All2011_v3/DoubleElectron-ZSkim-RUN2011A-05Jul-v1-160329-168437.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARERECO/rereco29Jun-RUN2011/DoubleElectron-ZSkim-RUN2011A-v5/170053-172778/160404-180252_All2011_v3/DoubleElectron-ZSkim-RUN2011A-v5-170053-172778.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARERECO/rereco29Jun-RUN2011/DoubleElectron-ZSkim-RUN2011A-v6/172791-175770/160404-180252_All2011_v3/DoubleElectron-ZSkim-RUN2011A-v6-172791-175770.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARERECO/rereco29Jun-RUN2011/DoubleElectron-ZSkim-RUN2011B-v1/175832-180296/160404-180252_All2011_v3/DoubleElectron-ZSkim-RUN2011B-v1-175832-180296.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Fall11.observed.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2-2011_AB.root
+s	pileup	tmp/mcPUtree.root
