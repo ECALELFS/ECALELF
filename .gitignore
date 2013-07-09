@@ -37,3 +37,4 @@ prod_alcarereco
 
 # patch
 *.rej
+.__afs*
