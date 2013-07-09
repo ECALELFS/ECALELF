@@ -1,11 +1,40 @@
-# Build and Release Folders
-bin/
-bin-debug/
-bin-release/
+*.root
+*.log
+*~
+.svn
+#.gitignore
+prod_alcareco
+prod_alcaraw
+prod_ntuples
+prod_alcarereco
 
-# Other files and folders
-.settings/
+# root compiled macros
+*_C.d
+*_C.so
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Compiled programs
+*.exe
+
+*#
+
+# python
+*.pyc
+*__init__.py
+
+# patch
+*.rej
+.__afs*
