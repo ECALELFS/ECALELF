@@ -192,7 +192,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
   //  EB+ : 2, 4, 5, 8, 11
   //   (17:58:27) Riccardo Paramatti: EB- : 7, 9, 10, 16, 17
   TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
-  TCut fiducial_cut = "eleID%2==1";
+  TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
   /*
     se region contiene runNumber:
     prendi il primo range dal primo _ _ dopo runNumber 
@@ -633,6 +633,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       
     }
 
+
     //--------------- eleID
     if(string.Contains("eleID_")){
       TObjArray *splitted = string.Tokenize("_");
@@ -1020,6 +1021,15 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
     }
 
 
+    if(string.CompareTo("trigger")==0){
+      cutSet.insert(TString("HLTfire==1"));
+      continue;
+    }
+    if(string.CompareTo("notrigger")==0){
+      cutSet.insert(TString("HLTfire==0"));
+      continue;
+    } 
+
 
     //------------------------------ categorie particolari
     if(string.CompareTo("RefReg",TString::kIgnoreCase)==0 || string.CompareTo("REF_REG")==0 || string.CompareTo("EBRefReg",TString::kIgnoreCase)==0){
@@ -1155,9 +1165,18 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 //     }
 
 
+    if(string.Contains("fiducial")){
+      cut_string+=fiducial_cut;
+      cutSet.insert(TString(fiducial_cut));
+      continue;
+    }
 
-
-
+    if(string.Contains("noPF")){
+      // noPF electrons for the calibration
+      cut_string+=noPFEle_cut;
+      cutSet.insert(TString(noPFEle_cut));
+      continue;
+    }      
 
     std::cout << "[WARNING] Region " << string << " not found" << std::endl;
 
@@ -1165,19 +1184,15 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 
 #ifdef DEBUG
   std::cout << "Cut string: " << std::endl;
-  cut_string.Print();
+    for(std::set<TString>::const_iterator itr = cutSet.begin();
+      itr != cutSet.end();
+      itr++){
+    TString cut_string = *itr;
+    std::cout << cut_string << std::endl;
+    }
+    //  cut_string.Print();
 #endif
 
-  if(TString(cut_string).Sizeof()<=1){
-    std::cerr << "[ERROR]: region " << region << " not defined" << std::endl;
-    //   return "error";
-  }
-
-  // noPF electrons for the calibration
-  cut_string+=noPFEle_cut;
-  cutSet.insert(TString(noPFEle_cut));
-  cut_string+=fiducial_cut;
-  cutSet.insert(TString(fiducial_cut));
 
 
 #ifdef DEBUG

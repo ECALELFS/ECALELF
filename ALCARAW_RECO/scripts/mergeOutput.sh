@@ -58,6 +58,9 @@ fi
 USER_REMOTE_DIR=`grep '^user_remote_dir=' ${UI_WORKING_DIR}/share/crab.cfg |cut -d '=' -f 2` 
 STORAGE_PATH=`grep 'storage_path=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
 echo "RUNRANGE=${RUNRANGE:=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`}"
+if [ -z "$RUNRANGE" ];then 
+    echo "RUNRANGE=${RUNRANGE:=allRange}"
+fi
 DATASETNAME=`echo ${USER_REMOTE_DIR} | sed "s|${RUNRANGE}.*||"`
 DATASETNAME=`basename $DATASETNAME`
 

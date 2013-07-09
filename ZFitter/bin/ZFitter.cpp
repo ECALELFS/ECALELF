@@ -987,8 +987,8 @@ int main(int argc, char **argv) {
     ("saveR9TreeWeight", "")
     ("saveRootMacro","")
     //
-    ("selection", po::value<string>(&selection)->default_value("WP80_PU"),"")
-    ("commonCut", po::value<string>(&commonCut)->default_value("Et_25"),"")
+    ("selection", po::value<string>(&selection)->default_value("WP80PU"),"")
+    ("commonCut", po::value<string>(&commonCut)->default_value("Et_25-trigger-noPF"),"")
     ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_regrCorr_ele"),"")
     ("invMass_min", po::value<float>(&invMass_min)->default_value(65.),"")
     ("invMass_max", po::value<float>(&invMass_max)->default_value(115.),"")
@@ -1078,6 +1078,7 @@ int main(int argc, char **argv) {
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
+  else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
   else {
     std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
     exit(1);
@@ -1323,13 +1324,15 @@ int main(int argc, char **argv) {
       for(unsigned int i=0; i < mcPUFileNameVec.size(); i++){
 	TString mcPUFileName_=mcPUFileNameVec[i];
 	TString dataPUFileName_=dataPUFileNameVec[i];
-	TString runMin_ = "";
-	if(mcPUFileName_.Index(".runMin_")!=-1){
-	  runMin_=mcPUFileName_;
-	  runMin_.Remove(0,runMin_.Index(".runMin_")+1);
-	  runMin_.Remove(runMin_.First('.'));
-	  runMin_.ReplaceAll("runMin_","");
-	}
+ 	TString runMin_ = "";
+	if(!mcPUFileName_.Contains("nPU")){
+// 	if(mcPUFileName_.Index(".runMin_")!=-1){
+ 	  runMin_=mcPUFileName_;
+ 	  runMin_.Remove(0,runMin_.Last('/')+1);
+ 	  runMin_.Remove(runMin_.First('-'));
+// 	  runMin_.Remove(runMin_.First('.'));
+// 	  runMin_.ReplaceAll("runMin_","");
+ 	}
 	int runMin = runMin_.Sizeof()>1 ? runMin_.Atoi() : 1;
 	std::cout << "********* runMin = " << runMin << "\t" << runMin_ << std::endl;
 	puWeights.ReadFromFiles(mcPUFileName_.Data(),dataPUFileName_.Data(), runMin);

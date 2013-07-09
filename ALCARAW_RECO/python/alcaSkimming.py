@@ -554,3 +554,4 @@ else:
             myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
             process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
             process.source.lumisToProcess.extend(myLumis)
+

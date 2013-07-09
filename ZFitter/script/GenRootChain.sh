@@ -129,7 +129,7 @@ fi
 
 # saving the root files with the chains
 rm tmp/*_chain.root
-./bin/ZFitter.exe --saveRootMacro -f ${configFile} ${noPU}
+./bin/ZFitter.exe --saveRootMacro -f ${configFile} ${noPU} || exit 1
 
 # adding all the chains in one file
 hadd tmp/s_chain.root tmp/s_*_chain.root

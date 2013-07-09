@@ -180,7 +180,9 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
 			     s->GetMaximum() ///s->Integral()
 			     );
   max=1.1*d->GetMaximum();
-  std::cout << max << std::endl;
+  std::cout << "max = " << max << std::endl;
+  std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
+  std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
   if(logy){
     max*=10;
     d->GetYaxis()->SetRangeUser(0.1,max);
@@ -227,12 +229,12 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
   std::cout << "$\\Chi^2$ " <<  d->Chi2Test(s_norm, "UW CHI2/NDF NORM") << std::endl;
   
 
-  TLegend *leg = new TLegend(0.7,0.8,1,1);
+  TLegend *leg = new TLegend(0.6,0.8,1,1);
   if(dataLabel !="") leg->AddEntry(d,dataLabel,"p");
   if(mcLabel   !="") leg->AddEntry(s,mcLabel, "lf");
   leg->SetBorderSize(1);
   leg->SetFillColor(0);
-  leg->SetTextSize(0.05);
+  leg->SetTextSize(0.04);
   if(dataLabel !="" && mcLabel !="") leg->Draw();
   //c->GetListOfPrimitives()->Add(leg,"");
 
@@ -248,7 +250,7 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
 }
 
 
-
+#ifdef shervin
 
 TCanvas *PlotHLTDataMC(TChain *data, TChain *mc, TString branchname, TString binning, 
 		    TString category, TString selection, 
@@ -280,7 +282,7 @@ TCanvas *PlotHLTDataMC(TChain *data, TChain *mc, TString branchname, TString bin
   for(std::vector<std::string>::const_iterator hlt_itr=HLTNames[0].begin();
 	hlt_itr!=HLTNames[0].end();
 	hlt_itr++,hltRes_itr++){
-    hlt_data->SetBinLabel(hlt_itr-HLTNames[0].begin()+1,(*hlt_itr).c_str());
+    hlt_data->GetXaxis()->SetBinLabel(hlt_itr-HLTNames[0].begin()+1,(*hlt_itr).c_str());
   }
   
   TCanvas *c = new TCanvas("c","");
@@ -288,3 +290,6 @@ TCanvas *PlotHLTDataMC(TChain *data, TChain *mc, TString branchname, TString bin
   hlt_data->Draw();
   return c;
 }
+
+
+#endif

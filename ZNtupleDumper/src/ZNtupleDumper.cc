@@ -461,7 +461,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   // at least one of the triggers
 #ifdef TRIGGER
-  bool HLTfire=false;
+  HLTfire=false;
   if(!hltPaths.empty()){
     for(std::vector<std::string>::const_iterator hltPath_itr = hltPaths.begin();
 	hltPath_itr != hltPaths.end();
@@ -508,7 +508,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
        eleIter1 != electronsHandle->end();
        eleIter1++){
-    if(! eleIter1->electronID("loose") ) continue;
+    //if(! eleIter1->electronID("loose") ) continue;
     if(isWenu){
       if(! eleIter1->electronID("tight") ) continue;
       if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
@@ -534,7 +534,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  eleIter2 != electronsHandle->end();
 	  eleIter2++){
 	// should exit when eleIter1 == end-1
-	if(! eleIter2->electronID("loose") ) continue;
+	//if(! eleIter2->electronID("loose") ) continue;
 	
 	//pat::CompositeCandidate zeeCandidate;
 	//if(! (eleIter1->electronID("WP90PU") && eleIter1->electronID("fiducial"))) continue;

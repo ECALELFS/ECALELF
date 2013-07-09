@@ -122,9 +122,9 @@ for jobID in `seq 1 $nJobs`
 #	  echo $jobID $ExitCode
 	  intervals="$intervals $jobID"
 	  ;;
-      6*6)
-	  intervals="$intervals $jobID"
-	  ;;
+#      6*6)
+#	  intervals="$intervals $jobID"
+#	  ;;
       8001*8001)
 	  echo $jobID $ExitCode
 #	  intervals="$intervals $jobID"

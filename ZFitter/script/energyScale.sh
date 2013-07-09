@@ -5,7 +5,7 @@
 # - material dependence  (step2)
 # - closure test (step3)
 
-commonCut=Et_25
+commonCut=Et_25-trigger
 selection=WP90_PU
 invMass_var=invMass_SC_regrCorr_pho
 baseDir=test
