@@ -8,7 +8,7 @@ ecalUncalibRecHitSequence = cms.Sequence(ecalGlobalUncalibRecHit * ecalDetIdToBe
         
 #process.ecalRecHit.laserCorrection=cms.bool(ApplyLaser)
 # can add a flag for ICs?
-#no switch in standard recHit producer to apply new intercalibrations
+#no switch in standard recHit producer to apply new interCalibration.
 uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)
 
 sandboxSeq  = uncalibRecHitSeq

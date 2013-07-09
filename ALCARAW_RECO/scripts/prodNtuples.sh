@@ -232,6 +232,14 @@ if [ -z "$USER_REMOTE_DIR_BASE" ];then
     exit 1
 fi
 
+case ${DATASETNAME} in
+	*SingleElectron*)
+		isSingleEle=1
+	;;
+	*)
+		isSingleEle=0
+	;;
+esac
 
 
 
@@ -314,7 +322,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 jsonFile=${JSONFILE}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 jsonFile=${JSONFILE} isSingleEle=${isSingleEle}
 get_edm_output=1
 output_file=${OUTFILES}
 
