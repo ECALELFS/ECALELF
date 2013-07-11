@@ -171,7 +171,7 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
   TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
   TH1F *s = (TH1F *) gROOT->FindObject("mc_hist");
   if(s==NULL) s=d;
-  d->SaveAs("tmp/d_hist.root");
+  //d->SaveAs("tmp/d_hist.root");
   s->SaveAs("tmp/s_hist.root");
 
   yLabel.Form("Events /(%.2f %s)", s->GetBinWidth(2), yLabelUnit.Data());
@@ -293,3 +293,166 @@ TCanvas *PlotHLTDataMC(TChain *data, TChain *mc, TString branchname, TString bin
 
 
 #endif
+
+
+TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
+		      TString branchname, TString binning, 
+		      TString category, TString selection, 
+		      TString dataLabel, TString mcLabel, TString mc2Label,
+		      TString xLabel, TString yLabelUnit, 
+		      bool logy=false, bool usePU=true, bool smear=false, bool scale=false){
+  
+  TString yLabel; 
+  
+  TCanvas *c = new TCanvas("c","");
+  TString branchNameData=branchname;
+  TString branchNameMC=branchname;
+
+  ElectronCategory_class cutter;
+  TCut selection_data="";
+  if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0);
+  selection_data+=selection;
+  TCut selection_MC="";
+  if(category.Sizeof()>1) selection_MC = cutter.GetCut(category, true,0);
+  selection_MC+=selection;
+
+  if(smear){
+    branchNameMC.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(smearEle[0]*smearEle[1]))");
+    branchNameMC.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*smearEle) ");
+    branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*smearEle[0])");
+    branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*smearEle[1])");
+
+  }
+  if(scale){
+    branchNameData.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(corrEle[0]*corrEle[1]))");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*corrEle)");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*corrEle[0])");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*corrEle[1])");
+  }
+  //std::cout << branchNameData << "\t" << branchNameMC << std::endl;
+
+
+  data->Draw(branchNameData+">>data_hist"+binning, selection_data);
+  if(mc!=NULL){
+    if(usePU)  mc->Draw(branchNameMC+">>mc_hist"+binning, selection_MC *"puWeight");
+    else  mc->Draw(branchNameMC+">>mc_hist"+binning, selection_MC);
+  }
+  if(mc2!=NULL){
+    if(usePU)  mc2->Draw(branchNameMC+">>mc2_hist"+binning, selection_data *"puWeight");
+    else  mc2->Draw(branchNameMC+">>mc2_hist"+binning, selection_data);
+  }
+  
+
+  c->Clear();
+  TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
+  TH1F *s = (TH1F *) gROOT->FindObject("mc_hist");
+  TH1F *s2 = (TH1F *) gROOT->FindObject("mc2_hist");
+  if(s==NULL){
+    std::cerr << "[WARNING] no mc" << std::endl;
+    s=d;
+  }
+  if(s2==NULL){
+    std::cerr << "[WARNING] no mc2" << std::endl;
+    s2=s;
+  }
+  std::cout << s->GetEntries() << "\t" << s2->GetEntries() << "\t" << d->GetEntries() << std::endl;
+
+  //d->SaveAs("tmp/d_hist.root");
+  s->SaveAs("tmp/s_hist.root");
+  s2->SaveAs("tmp/s2_hist.root");
+
+
+  yLabel.Form("Events /(%.2f %s)", s->GetBinWidth(2), yLabelUnit.Data());
+  float max = 1.1 * std::max(
+			     d->GetMaximum(),///d->Integral(),
+			     s->GetMaximum() ///s->Integral()
+			     );
+  max=1.1*d->GetMaximum();
+  std::cout << "max = " << max << std::endl;
+  std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
+  std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
+  std::cout << "nEvents signal2: " << s2->Integral() << "\t" << s2->GetEntries() << std::endl;
+  if(logy){
+    max*=10;
+    d->GetYaxis()->SetRangeUser(0.1,max);
+    s->GetYaxis()->SetRangeUser(0.1,max);
+    s2->GetYaxis()->SetRangeUser(0.1,max);
+    c->SetLogy();
+  } else {
+    d->GetYaxis()->SetRangeUser(0,max);
+    s->GetYaxis()->SetRangeUser(0,max);
+    s2->GetYaxis()->SetRangeUser(0,max);
+  }
+  s->GetYaxis()->SetTitle(yLabel);
+  s->GetXaxis()->SetTitle(xLabel);
+  s2->GetYaxis()->SetTitle(yLabel);
+  s2->GetXaxis()->SetTitle(xLabel);
+  d->GetYaxis()->SetTitle(yLabel);
+  d->GetXaxis()->SetTitle(xLabel);
+
+
+  d->SetMarkerStyle(20);
+  d->SetMarkerSize(1);
+  if(d != s){
+    s->SetMarkerStyle(20);
+    s->SetMarkerSize(1);
+    s->SetFillStyle(3001);
+    s->SetFillColor(kRed);
+  }
+  if(s2 != s){
+    //s2->SetMarkerStyle(1);
+    //s2->SetMarkerSize(0);
+    //s->SetFillStyle(0);
+    //s->SetFillColor(kB);
+    s2->SetLineWidth(3);
+    s2->SetLineColor(kBlack);
+  }
+
+
+  TH1F* s_norm = (TH1F *) (s->DrawNormalized("hist", d->Integral()));
+  TH1F* s2_norm = (TH1F *) (s2->DrawNormalized("hist same", d->Integral()));
+  //TH1F* d_norm = s_norm;
+  //if(d!=s) d_norm = (TH1F *) (d->DrawNormalized("p same", d->Integral()));
+  if(d!=s) d->Draw("p same");
+
+  if(logy){
+    //d_norm->GetYaxis()->SetRangeUser(0.1,max);
+    s_norm->GetYaxis()->SetRangeUser(0.1,max);
+    c->SetLogy();
+  } else {
+    //d_norm->GetYaxis()->SetRangeUser(0,max);  
+    s_norm->GetYaxis()->SetRangeUser(0,max);  
+  }
+  std::cout << "Variable  & Data & Simulation & Simulation2 \\" << std::endl;
+  std::cout << "Mean      & " << d->GetMean() << " " << d->GetMeanError() 
+	    << " & " << s_norm->GetMean() <<  " " << s_norm->GetMeanError() 
+	    << " & " << s2_norm->GetMean() <<  " " << s2_norm->GetMeanError() 
+	    << " \\" << std::endl;
+  std::cout << "Std. dev. & " << d->GetRMS() << " " << d->GetRMSError() 
+	    << " & " << s_norm->GetRMS() << " " << s_norm->GetRMSError() 
+	    << " & " << s2_norm->GetRMS() << " " << s2_norm->GetRMSError() 
+	    << " \\" << std::endl;
+  std::cout << "\\hline" << std::endl;
+  std::cout << "$\\Chi^2$ " <<  d->Chi2Test(s_norm, "UW CHI2/NDF NORM") << std::endl;
+  
+
+  TLegend *leg = new TLegend(0.6,0.8,1,1);
+  if(dataLabel !="") leg->AddEntry(d,dataLabel,"p");
+  if(mcLabel   !="") leg->AddEntry(s,mcLabel, "lf");
+  if(mc2Label   !="") leg->AddEntry(s2,mc2Label, "l");
+  leg->SetBorderSize(1);
+  leg->SetFillColor(0);
+  leg->SetTextSize(0.04);
+  if(dataLabel !="" && mcLabel !="") leg->Draw();
+  //c->GetListOfPrimitives()->Add(leg,"");
+
+  TPaveText *pv = new TPaveText(0.23,0.95,0.6,1,"NDC");
+  pv->AddText("CMS Preliminary 2012");
+  pv->SetFillColor(0);
+  pv->SetBorderSize(0);
+  pv->Draw();
+
+
+  return c;
+
+}
