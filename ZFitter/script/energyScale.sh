@@ -5,7 +5,7 @@
 # - material dependence  (step2)
 # - closure test (step3)
 
-commonCut=Et_25-trigger
+commonCut=Et_25-trigger-noPF
 selection=WP90_PU
 invMass_var=invMass_SC_regrCorr_pho
 baseDir=test
@@ -65,17 +65,21 @@ if [ -z "${runRangesFile}" ];then
     exit 1
 fi
 
-case ${selection} in 
-    WP80_PU)
+case ${selection} in
+    WP80PU)
+        ;;
+    WP90PU)
 	;;
-    WP90_PU)
+    loose)
+	;;
+    medium)
 	;;
     *)
-	echo "[ERROR] Selection ${selection} not yet implemented" >> /dev/stderr
-	usage >> /dev/stderr
-	exit 1
-	;;
+	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
+        exit 1
+        ;;
 esac
+
 
 
 case ${STEP} in
@@ -106,7 +110,7 @@ esac
     ## pileup reweight name
 if [ -z "$puName" ];then
     puCount=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3 |wc -l`
-    if [ "${puCount}" != "1" ];then
+    if [ "${puCount}" == "0" ];then
 	echo "[ERROR] No or too mani pileupHist files for data"
 	exit 1
     fi
