@@ -274,3 +274,13 @@ then in .dat file: energy_SC_A_B_gold(bad)
     # 
 
 # list of plots:
+
+
+
+################# SmearerFit instructions
+ - create the tree with the smearerCat category to speed up further running with same categories
+./bin/ZFitter.exe -f data/validation/22Jan2012-stdMC.dat --regionsFile=data/regions/scaleStep2smearing_9.dat \
+	--commonCut=Et_25-trigger-noPF-EB --smearerFit \
+	--outDirFitResData=test/dato/fitres/Hgg_Et_v1/ \
+	--autoNsmear --constTermFix --smearerType=profile --saveRootMacro --addBranch=smearerCat \
+	>&test/dato/fitres/Hgg_Et_v1/log.log
