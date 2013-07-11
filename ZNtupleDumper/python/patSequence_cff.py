@@ -3,7 +3,7 @@ from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 from Configuration.StandardSequences.MagneticField_cff import *
 
 #------------------------------ pattuple
-from calibration.ZNtupleDumper.elePat_cfi import *
+from Calibration.ZNtupleDumper.elePat_cfi import *
 #process.patElectrons.electronSource = cms.InputTag("gsfElectrons")
 #process.patElectrons.addElectronID = cms.bool(False)
 #process.patElectrons.addGenMatch = cms.bool(True)
@@ -11,7 +11,7 @@ from calibration.ZNtupleDumper.elePat_cfi import *
 #print process.patElectrons.reducedBarrelRecHitCollection
     
 #------------------------------ new energies
-from calibration.EleNewEnergiesProducer.elenewenergiesproducer_cfi import *
+from Calibration.EleNewEnergiesProducer.elenewenergiesproducer_cfi import *
 eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
 eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
 eleNewEnergiesProducer.regrEleFile_fra='src/Calibration/EleNewEnergiesProducer/data/eleEnergyRegWeights_V1.root'
@@ -26,7 +26,7 @@ eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rh
 eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
 
 #------------------------------ electronID producer
-from calibration.EleSelectionProducers.eleselectionproducers_cfi import *
+from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
 # process.EleSelectionProducers
 
 #============================== Adding new energies to patElectrons

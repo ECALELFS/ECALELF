@@ -135,7 +135,7 @@ process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
-process.load('calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff')
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff')
 
 process.load('Configuration.EventContent.EventContent_cff')
 
@@ -246,6 +246,7 @@ else:
             print "[INFO] Using GT START53_V24::All"
             process.GlobalTag.globaltag = 'START53_V24::All'
         else:
+            print "[INFO] Using GT FT_R_53_V21::All"
             process.GlobalTag.globaltag = 'FT_R_53_V21::All' #22Jan rereco
     elif(re.match("CMSSW_5_3_9_patch3",CMSSW_VERSION)):
         if(MC):
@@ -280,10 +281,10 @@ else:
 
 ################################# FILTERING EVENTS
 process.filterSeq = cms.Sequence()
-#process.load('calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
+#process.load('Calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
 if(options.type == "ALCARECOSIM" and (options.doTree==0 or (options.doTree==1 and options.doTreeOnly==0))):
     # PUDumper
-    process.load("calibration.ALCARAW_RECO.PUDumper_cfi")
+    process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
     process.TFileService = cms.Service(
         "TFileService",
         fileName = cms.string("PUDumper.root")
@@ -292,7 +293,7 @@ if(options.type == "ALCARECOSIM" and (options.doTree==0 or (options.doTree==1 an
     
 
 if (ZSkim):
-    process.load('calibration.ALCARAW_RECO.ZElectronSkimSandbox_cff')
+    process.load('Calibration.ALCARAW_RECO.ZElectronSkimSandbox_cff')
     process.filterSeq *= process.ZeeFilterSeq
 elif (WSkim):
     process.load("DPGAnalysis.Skims.WElectronSkim_cff")
@@ -331,12 +332,12 @@ if (options.type=="ALCARAW"):
     process.reconstruction_step = cms.Path(process.reconstruction)
     process.endjob_step = cms.EndPath(process.endOfProcess)
 
-    process.load('calibration.ALCARAW_RECO.sandboxSeq_cff')
+    process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
     # this module provides:
     #process.sandboxSeq  = uncalibRecHitSeq
 else:
     # I want to reduce the recHit collections to save space
-    process.load('calibration.ALCARAW_RECO.alCaIsolatedElectrons_cfi')
+    process.load('Calibration.ALCARAW_RECO.alCaIsolatedElectrons_cfi')
     #============================== TO BE CHECKED FOR PRESHOWER
     process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
     process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
@@ -362,7 +363,7 @@ if(options.type=="ALCARERECO"):
         print "sure, it was defined."
         process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
         
-    process.load('calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')
+    process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')
     # this module provides:
     # process.electronRecoSeq
     # process.electronClusteringSeq # with ele-SC reassociation
@@ -407,9 +408,9 @@ if((not options.type=="ALCARERECO") ):
 # Tree production
 ###########################
 if(options.doTree>0):
-    process.load('calibration.ZNtupleDumper.patSequence_cff')
-    process.load("calibration.ZNtupleDumper.zntupledumper_cfi")
-    process.load("calibration.JsonFilter.jsonFilter_cfi")
+    process.load('Calibration.ZNtupleDumper.patSequence_cff')
+    process.load("Calibration.ZNtupleDumper.zntupledumper_cfi")
+    process.load("Calibration.JsonFilter.jsonFilter_cfi")
     process.zNtupleDumper.recHitCollectionEB = process.patElectrons.reducedBarrelRecHitCollection.value()
     process.zNtupleDumper.recHitCollectionEE = process.patElectrons.reducedEndcapRecHitCollection.value()
 
@@ -491,14 +492,14 @@ elif(options.type == "ALCARECOSIM"):
         process.ZPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
 
 
-process.load('calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
 
 if(options.type=="ALCARAW"):
-    from calibration.ALCARAW_RECO.sandboxOutput_cff import *
+    from Calibration.ALCARAW_RECO.sandboxOutput_cff import *
     process.OutALCARECOEcalCalElectron.outputCommands +=  sandboxOutputCommands
     
 if(options.type == "ALCARERECO"):
-    from calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
+    from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
     process.OutALCARECOEcalCalElectron.outputCommands += sandboxRerecoOutputCommands 
 
 fileName = cms.untracked.string(options.output)
