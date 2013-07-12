@@ -468,6 +468,67 @@ bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iPro
   return changed;
 }
 
+
+Double_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t& iMin, RooSmearer& smearer){
+  Int_t iMinStart= iMin;
+  var->SetVal(X[iMinStart]);
+  Double_t chi2, chi2init=smearer.evaluate(); 
+
+  Double_t locmin=1e20;
+  Int_t iLocMin=0;
+  std::queue<Double_t> chi2old;
+
+  for(Int_t i =iMinStart; i <N; i++){ //loop versus positive side
+    var->setVal(X[i]);
+    chi2=smearer.evaluate(); 
+      
+    //      if(update==true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+    if(chi2<=locmin){ //local minimum
+	iLocMin=i;
+	locmin=chi2;
+    }
+      
+    if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
+      while(!chi2old.empty()){
+	chi2old.pop();
+      }
+    } 
+
+    if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
+    if(chi2old.size()>2 && chi2-chi2old.back() >40 && chi2-locmin >400) break; // jump to the next constTerm
+    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >500) break; 
+    
+    chi2old.push(chi2);
+  }
+
+  for(Int_t i =iMinStart; i >=0; i--){ //loop versus positive side
+    var->setVal(X[i]);
+    chi2=smearer.evaluate(); 
+      
+    //      if(update==true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+    if(chi2<=locmin){ //local minimum
+	iLocMin=i;
+	locmin=chi2;
+    }
+      
+    if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
+      while(!chi2old.empty()){
+	chi2old.pop();
+      }
+    } 
+
+    if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
+    if(chi2old.size()>2 && chi2-chi2old.back() >40 && chi2-locmin >400) break; // jump to the next constTerm
+    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >500) break; 
+    
+    chi2old.push(chi2);
+  }
+
+  iMin=iLocMin; //update min point
+  return locmin;
+}
+
+
 /**
    min is updated
  */
@@ -507,6 +568,11 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     std::queue<Double_t> chi2old;
 
     for(Int_t i2 =0; i2 <N2; i2++){
+#ifdef DEBUG
+      std::cout << "i1 = " << i1 << "\tX1[i1]=" << X1[i1] 
+		<< "\ti2 = " << i2 << "\tX2[i2]=" << X2[i2] 
+		<< std::endl;
+#endif
       var2->setVal(X2[i2]);
       chi2=smearer.evaluate(); 
       
@@ -517,8 +583,8 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
 	locmin=chi2;
       }
       
-      if(chi2<chi2old.back()){ //remove history if chi2<chi2old
-	while(chi2old.empty()){
+      if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
+	while(!chi2old.empty()){
 	  chi2old.pop();
 	}
       } 
@@ -987,7 +1053,7 @@ int main(int argc, char **argv) {
     ("saveR9TreeWeight", "")
     ("saveRootMacro","")
     //
-    ("selection", po::value<string>(&selection)->default_value("WP80PU"),"")
+    ("selection", po::value<string>(&selection)->default_value("loose"),"")
     ("commonCut", po::value<string>(&commonCut)->default_value("Et_25-trigger-noPF"),"")
     ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_regrCorr_ele"),"")
     ("invMass_min", po::value<float>(&invMass_min)->default_value(65.),"")
@@ -1578,7 +1644,7 @@ int main(int argc, char **argv) {
      || vm.count("saveR9TreeWeight") 
      ) return 0;
 
-  eleID=selection.c_str();
+  eleID+=selection.c_str();
   eleID.ReplaceAll("_","");
 
   //------------------------------ RooSmearer
@@ -1928,6 +1994,7 @@ int main(int argc, char **argv) {
 		TString of=outFile; of.ReplaceAll(".root",name+".root");
 		smearer.dataset->SaveAs(of);
 	      }
+	      continue;
 	      std::cout << "Doing " << name << "\t" << var->getVal() << std::endl;
 	      
 	      TGraph *profil = GetProfile(var, smearer,0);
