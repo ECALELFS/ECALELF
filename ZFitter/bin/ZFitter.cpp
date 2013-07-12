@@ -469,9 +469,8 @@ bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iPro
 }
 
 
-Double_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t& iMin, RooSmearer& smearer){
-  Int_t iMinStart= iMin;
-  var->SetVal(X[iMinStart]);
+Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, RooSmearer& smearer, bool update=true){
+  var->setVal(X[iMinStart]);
   Double_t chi2, chi2init=smearer.evaluate(); 
 
   Double_t locmin=1e20;
@@ -481,8 +480,9 @@ Double_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t& iMin, RooSmeare
   for(Int_t i =iMinStart; i <N; i++){ //loop versus positive side
     var->setVal(X[i]);
     chi2=smearer.evaluate(); 
-      
-    //      if(update==true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+
+    if(update==true) 
+      std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
@@ -495,37 +495,40 @@ Double_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t& iMin, RooSmeare
     } 
 
     if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-    if(chi2old.size()>2 && chi2-chi2old.back() >40 && chi2-locmin >400) break; // jump to the next constTerm
-    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >500) break; 
-    
+    if(chi2old.size()>3 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
+    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
+
     chi2old.push(chi2);
   }
 
+  while(!chi2old.empty()){
+    chi2old.pop();
+  }
   for(Int_t i =iMinStart; i >=0; i--){ //loop versus positive side
     var->setVal(X[i]);
     chi2=smearer.evaluate(); 
       
-    //      if(update==true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+    if(update==true) 
+      std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
-    }
-      
+    } 
+
     if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
       while(!chi2old.empty()){
 	chi2old.pop();
       }
     } 
-
+  
     if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-    if(chi2old.size()>2 && chi2-chi2old.back() >40 && chi2-locmin >400) break; // jump to the next constTerm
-    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >500) break; 
+    if(chi2old.size()>3 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
+    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
     
     chi2old.push(chi2);
   }
 
-  iMin=iLocMin; //update min point
-  return locmin;
+  return iLocMin;
 }
 
 
@@ -557,7 +560,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   Double_t chi2, chi2init=smearer.evaluate(); 
 
   Double_t locmin=1e20;
-  Int_t iLocMin1=0, iLocMin2;
+  Int_t iLocMin1=0, iLocMin2, iLocMin2Prev=0;
 
   TStopwatch myClock;
   myClock.Start();
@@ -567,34 +570,18 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     var1->setVal(X1[i1]);
     std::queue<Double_t> chi2old;
 
-    for(Int_t i2 =0; i2 <N2; i2++){
-#ifdef DEBUG
-      std::cout << "i1 = " << i1 << "\tX1[i1]=" << X1[i1] 
-		<< "\ti2 = " << i2 << "\tX2[i2]=" << X2[i2] 
-		<< std::endl;
-#endif
-      var2->setVal(X2[i2]);
-      chi2=smearer.evaluate(); 
-      
-      if(update==true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
-      if(chi2<=locmin){ //local minimum
-	iLocMin1=i1;
-	iLocMin2=i2;
-	locmin=chi2;
-      }
-      
-      if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
-	while(!chi2old.empty()){
-	  chi2old.pop();
-	}
-      } 
+    iLocMin2Prev = FindMin1D(var2, X2, N2, iLocMin2Prev, smearer, true);
 
-      if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-      if(chi2old.size()>2 && chi2-chi2old.back() >40 && chi2-locmin >400) break; // jump to the next constTerm
-      if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >500) break; 
-
-      chi2old.push(chi2);
+    var2->setVal(X2[iLocMin2Prev]);
+    chi2=smearer.evaluate(); 
+      
+    if(update==true || true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+    if(chi2<=locmin){ //local minimum
+      iLocMin1=i1;
+      iLocMin2=iLocMin2Prev;
+      locmin=chi2;
     }
+    
   }
 
   // reset to initial value
