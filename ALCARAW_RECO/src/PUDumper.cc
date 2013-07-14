@@ -39,7 +39,7 @@ void PUDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // get the PU collection
   edm::Handle<std::vector<PileupSummaryInfo> > PupInfo;
   if( !iEvent.isRealData() ){
-    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo); ///\todo put it in the cfi!
   } else return;
   
   

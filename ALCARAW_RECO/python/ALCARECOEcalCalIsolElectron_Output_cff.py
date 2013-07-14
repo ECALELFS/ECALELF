@@ -52,12 +52,9 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep *_TriggerResults_*_*',
     'keep *_hltTriggerSummaryAOD_*_HLT',
     # pfisolation
-    'keep *_elPFIsoValueCharged03PFIdPFIso_*_*',
-    'keep *_elPFIsoValueGamma03PFIdPFIso_*_*',
-    'keep *_elPFIsoValueNeutral03PFIdPFIso_*_*',
-    'keep *_*_elPFIsoValueCharged03PFIdPFIso_*',
-    'keep *_*_elPFIsoValueGamma03PFIdPFIso_*',
-    'keep *_*_elPFIsoValueNeutral03PFIdPFIso_*'
+    'keep *_elPFIsoValueCharged03PFIdGsf*_*_*',
+    'keep *_elPFIsoValueGamma03PFIdGsf*_*_*',
+    'keep *_elPFIsoValueNeutral03PFIdGsf*_*_*'
     )
 )
 

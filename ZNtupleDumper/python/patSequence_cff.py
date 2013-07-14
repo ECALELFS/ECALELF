@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
-from Configuration.StandardSequences.MagneticField_cff import *
+#from Configuration.StandardSequences.MagneticField_cff import *
 
 #------------------------------ pattuple
 from Calibration.ZNtupleDumper.elePat_cfi import *

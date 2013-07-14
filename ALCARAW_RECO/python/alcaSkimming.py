@@ -2,19 +2,15 @@ import FWCore.ParameterSet.Config as cms
 import os, sys, imp, re
 import FWCore.ParameterSet.VarParsing as VarParsing
 import subprocess
+import copy
 
+from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+
+    
 #sys.path(".")
-#
-#    _____             __ _                        _   _
-#   / ____|           / _(_)                      | | (_)
-#   | |     ___  _ __ | |_ _  __ _ _   _ _ __ __ _| |_ _  ___  _ __
-#   | |    / _ \| '_ \|  _| |/ _` | | | | '__/ _` | __| |/ _ \| '_ \
-#   | |___| (_) | | | | | | | (_| | |_| | | | (_| | |_| | (_) | | | |
-#    \_____\___/|_| |_|_| |_|\__, |\__,_|_|  \__,_|\__|_|\___/|_| |_|
-#                             __/ |
-#                            |___/
 
-### setup 'ALCARAW'  options
+############################################################
+### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
 options.register ('type',
                   "ALCARAW",
@@ -48,18 +44,16 @@ options.register('doTreeOnly',
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
                  
 ### setup any defaults you want
-#options.outputFile = '/uscms/home/cplager/nobackup/outputFiles/try_3.root'
 options.output="alcaSkimALCARAW.root"
 options.secondaryOutput="ntuple.root"
-#options.files= "file:///tmp/shervin/RAW-RECO.root"
 options.files= "root://eoscms//eos/cms/store/group/alca_ecalcalib/ALCARAW/RAW-RECO_533.root"
-#options.files= "file:///tmp/shervin/MC-AODSIM.root"
-#'file1.root', 'file2.root'
 options.maxEvents = -1 # -1 means all events
 ### get and parse the command line arguments
 options.parseArguments()
 
 print options
+
+############################################################
 # Use the options
 
 # Do you want to filter events? 
@@ -134,11 +128,34 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
-#process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff')
-
 process.load('Configuration.EventContent.EventContent_cff')
 
+# import of ALCARECO sequences
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
+from Calibration.ALCARAW_RECO.sandboxOutput_cff import *
+from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
+
+#process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
+process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
+process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff') # ALCARAW
+# this module provides:
+#process.sandboxSeq  = uncalibRecHitSeq
+process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
+# this module provides:
+# process.electronRecoSeq
+# process.electronClusteringSeq # with ele-SC reassociation
+# process.sandboxRerecoSeq = (electronRecoSeq * electronClusteringSeq)
+
+# Tree production
+process.load('Calibration.ZNtupleDumper.patSequence_cff')
+process.load("Calibration.ZNtupleDumper.zntupledumper_cfi")
+process.load("Calibration.JsonFilter.jsonFilter_cfi")
+
+# I want to reduce the recHit collections to save space: alcareco
+process.load('Calibration.ALCARAW_RECO.alCaIsolatedElectrons_cfi')
+
+# ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
@@ -282,9 +299,8 @@ else:
 ################################# FILTERING EVENTS
 process.filterSeq = cms.Sequence()
 #process.load('Calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
-if(options.type == "ALCARECOSIM" and (options.doTree==0 or (options.doTree==1 and options.doTreeOnly==0))):
+if(MC):
     # PUDumper
-    process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
     process.TFileService = cms.Service(
         "TFileService",
         fileName = cms.string("PUDumper.root")
@@ -320,241 +336,138 @@ if (HLTFilter):
 # particle flow isolation
 #
 
-process.pfiso = cms.Sequence()
+#process.pfiso = cms.Sequence()
 
 ###############################
 # ECAL Recalibration
 ###############################
+#============================== TO BE CHECKED FOR PRESHOWER
+process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
+process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
 
-if (options.type=="ALCARAW"):
-    process.raw2digi_step = cms.Path(process.RawToDigi)
-    process.L1Reco_step = cms.Path(process.L1Reco)
-    process.reconstruction_step = cms.Path(process.reconstruction)
-    process.endjob_step = cms.EndPath(process.endOfProcess)
+process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
+process.reducedEcalRecHitsES.noFlag = cms.bool(True)
+process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 
-    process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
-    # this module provides:
-    #process.sandboxSeq  = uncalibRecHitSeq
+#==============================
+#Define the sequences
+process.alcarecoSeq = cms.Sequence(process.alCaIsolatedElectrons) # + process.alcaElectronTracksReducer)
+if(options.type=="ALCARERECO"):  # in ALCARECO production starting from AOD or RECO the ES recHits are reduced
+    process.alcarecoSeq += process.reducedEcalRecHitsES
+    
+try:
+    EcalTrivialConditionRetriever
+except NameError:
+    print "well, it WASN'T defined after all!"
+    process.trivialCond = cms.Sequence()
 else:
-    # I want to reduce the recHit collections to save space
-    process.load('Calibration.ALCARAW_RECO.alCaIsolatedElectrons_cfi')
-    #============================== TO BE CHECKED FOR PRESHOWER
-    process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
-    process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
+    print "sure, it was defined."
+    process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
-    process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
-    process.reducedEcalRecHitsES.noFlag = cms.bool(True)
-    process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
+if(re.match("CMSSW_6_.*", CMSSW_VERSION)):
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * process.alcarecoSeq)
+else:
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * process.alcarecoSeq)
 
-    if(not options.type=="ALCARERECO"):  # in ALCARECO production starting from AOD or RECO the ES recHits are reduced
-        process.alcarecoSeq = cms.Sequence(process.alCaIsolatedElectrons) # + process.alcaElectronTracksReducer)
-    else:
-        process.alcarecoSeq = cms.Sequence(process.alCaIsolatedElectrons + process.reducedEcalRecHitsES)
+process.load('Calibration.ALCARAW_RECO.eleIsoSequence_cff')
 
-    #==============================
-    
-if(options.type=="ALCARERECO"):
-    try:
-        EcalTrivialConditionRetriever
-    except NameError:
-        print "well, it WASN'T defined after all!"
-        process.trivialCond = cms.Sequence()
-    else:
-        print "sure, it was defined."
-        process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
-        
-    process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')
-    # this module provides:
-    # process.electronRecoSeq
-    # process.electronClusteringSeq # with ele-SC reassociation
-    # process.sandboxRerecoSeq = (electronRecoSeq * electronClusteringSeq)
-    process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
-    process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
-
-    process.correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
-    process.correctedMulti5x5SuperClustersWithPreshower.corectedSuperClusterCollection = 'endcapRecalibSC'
-    if(re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*", CMSSW_VERSION)):
-        process.multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
-
-    # in sandboxRereco
-    process.reducedEcalRecHitsES.EndcapSuperClusterCollection= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC',processName)
-
-    process.alCaIsolatedElectrons.electronLabel = cms.InputTag("electronRecalibSCAssociator")
-    process.alCaIsolatedElectrons.ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")
-    process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
-    if(re.match("CMSSW_6_.*", CMSSW_VERSION)):
-        process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * process.alcarecoSeq)
-    else:
-        process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * process.alcarecoSeq)
-
-if(options.type=="ALCARECO"):
-    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
-    process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence)
-    
+process.load('RecoJets.Configuration.RecoPFJets_cff')
+process.kt6PFJetsForRhoCorrection = process.kt6PFJets.clone(doRhoFastjet = True)
+process.kt6PFJetsForRhoCorrection.Rho_EtaMax = cms.double(2.5)
 if((not options.type=="ALCARERECO") ):
-    process.load('RecoJets.Configuration.RecoPFJets_cff')
-    process.kt6PFJetsForRhoCorrection = process.kt6PFJets.clone(doRhoFastjet = True)
-    process.kt6PFJetsForRhoCorrection.Rho_EtaMax = cms.double(2.5)
-
-
     if(options.skim!="fromWSkim"):
         process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection * process.pfiso) 
     else:
         process.rhoFastJetSeq = cms.Sequence(process.pfiso)
 
 
-###########################
-# Tree production
-###########################
-if(options.doTree>0):
-    process.load('Calibration.ZNtupleDumper.patSequence_cff')
-    process.load("Calibration.ZNtupleDumper.zntupledumper_cfi")
-    process.load("Calibration.JsonFilter.jsonFilter_cfi")
-    process.zNtupleDumper.recHitCollectionEB = process.patElectrons.reducedBarrelRecHitCollection.value()
-    process.zNtupleDumper.recHitCollectionEE = process.patElectrons.reducedEndcapRecHitCollection.value()
-
-    if(MC):
-        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC * process.zNtupleDumper)
-    else:
-        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence * process.zNtupleDumper)
-
-    if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
-        process.zNtupleDumper.doStandardTree = cms.bool(False)
-    if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree==7 or options.doTree==10 or options.doTree==11 or options.doTree==14 or options.doTree==15): # it's a bit mask
-        process.zNtupleDumper.doExtraCalibTree=cms.bool(True)
-    if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
-        process.zNtupleDumper.doEleIDTree=cms.bool(True)
-    process.zNtupleDumper.foutName=options.secondaryOutput
-    # this includes the sequence: patSequence
-    # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
-
-    pathPrefix=CMSSW_BASE+"/"
-    process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
-    process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
-    process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
-#    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
-    process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)
-    if(re.match("CMSSW_4_4_.*", CMSSW_VERSION)):
-        process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
-    if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
-        pathPrefix=CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
-        print '[INFO] Using v2 regression for CMSSW_4_2_X' 
-        process.eleNewEnergiesProducer.regrPhoFile=cms.string(pathPrefix+'data/gbrv2ph.root')
-        process.eleNewEnergiesProducer.regrEleFile=cms.string(pathPrefix+'data/gbrv2ele.root')
-        process.eleNewEnergiesProducer.regrEleFile_fra=cms.string('nocorrections')
-        #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
-
-################################
-# Setting Path
-################################
-if(options.type=="ALCARAW"):
-    process.ZPath = cms.Path( process.filterSeq *
-                              (process.rhoFastJetSeq + process.alcarecoElectronTracksReducerSeq +
-                               process.sandboxSeq ))
-elif(options.type=="ALCARERECO"):
-    if(options.doTree>0):
-        process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('electronRecalibSCAssociator')
-        process.eleSelectionProducers.electronCollection   = 'electronRecalibSCAssociator'
-        process.eleNewEnergiesProducer.electronCollection  = 'electronRecalibSCAssociator'
-        process.patElectrons.electronSource                = 'electronRecalibSCAssociator'
-
-        if(doTreeOnly):
-            process.NtuplePath = cms.Path(process.ntupleSeq)
-        else:
-            process.ZPath = cms.Path(process.alcarerecoSeq)
-            process.NtuplePath = cms.Path(process.alcarerecoSeq * process.ntupleSeq)
-    else:
-        process.ZPath = cms.Path(process.alcarerecoSeq)
-        
-elif(options.type == "ALCARECO"):
-
-    if(options.doTree>0):
-        if(doTreeOnly):
-            process.NtuplePath = cms.Path(process.filterSeq * process.ntupleSeq)
-        else:
-            process.ZPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
-            process.NtuplePath = cms.Path(process.filterSeq *(process.rhoFastJetSeq+process.alcarecoSeq) * process.ntupleSeq)
-    else:
-        process.ZPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
-elif(options.type == "ALCARECOSIM"):
-    print "Alcarecosim"
-    if(options.doTree>0):
-        if(doTreeOnly):
-            print "Only ntuple path"
-            process.NtuplePath = cms.Path(process.ntupleSeq)
-        else:
-            process.ZPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
-            process.NtuplePath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq )
-                                           *process.ntupleSeq)
-
-    else:
-        process.ZPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
-
-
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
-
-if(options.type=="ALCARAW"):
-    from Calibration.ALCARAW_RECO.sandboxOutput_cff import *
-    process.OutALCARECOEcalCalElectron.outputCommands +=  sandboxOutputCommands
+if(MC):
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC * process.zNtupleDumper)
+else:
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence * process.zNtupleDumper)
     
-if(options.type == "ALCARERECO"):
-    from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
-    process.OutALCARECOEcalCalElectron.outputCommands += sandboxRerecoOutputCommands 
+if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
+    process.zNtupleDumper.doStandardTree = cms.bool(False)
+if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree==7 or options.doTree==10 or options.doTree==11 or options.doTree==14 or options.doTree==15): # it's a bit mask
+    process.zNtupleDumper.doExtraCalibTree=cms.bool(True)
+if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
+    process.zNtupleDumper.doEleIDTree=cms.bool(True)
+
+
+
+
+
+
+process.OutALCARECOEcalUncalElectron = copy.deepcopy(process.OutALCARECOEcalCalElectron)
+process.OutALCARECOEcalUncalElectron.outputCommands +=sandboxOutputCommands
 
 fileName = cms.untracked.string(options.output)
 
-process.output = cms.OutputModule("PoolOutputModule",
-                                  # after 5 GB split the file
-                                  maxSize = cms.untracked.int32(5120000),
-                                  outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
-                                  fileName = fileName,
-                                  SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('ZPath')),
-                                  dataset = cms.untracked.PSet(
+process.outputALCARAW = cms.OutputModule("PoolOutputModule",
+                                         # after 5 GB split the file
+                                         maxSize = cms.untracked.int32(5120000),
+                                         outputCommands = process.OutALCARECOEcalUncalElectron.outputCommands,
+                                         #fileName = fileName,
+                                         fileName = cms.untracked.string('alcaraw.root'),
+                                         SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('ZALCARAWPath')),
+                                         dataset = cms.untracked.PSet(
     filterName = cms.untracked.string(''),
     dataTier = cms.untracked.string('ALCARECO')
     )
-                                  )
+                                         )
+
+process.outputALCARECO = cms.OutputModule("PoolOutputModule",
+                                          # after 5 GB split the file
+                                          maxSize = cms.untracked.int32(5120000),
+                                          outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
+                                          fileName = cms.untracked.string('alcareco.root'),
+                                          SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('ZALCARECOPath')),
+                                          dataset = cms.untracked.PSet(
+    filterName = cms.untracked.string(''),
+    dataTier = cms.untracked.string('ALCARECO')
+    )
+                                          )
 
 #print "OUTPUTCOMMANDS"
 #print process.output.outputCommands
 
-if(not doTreeOnly): 
-    process.ALCARECOoutput_step = cms.EndPath(process.output)
 
-debug=False
-if(debug):
-    process.DEBUGoutput = cms.OutputModule("PoolOutputModule",
-                                           # after 5 GB split the file
-                                           maxSize = cms.untracked.int32(5120000),
-                                           outputCommands = cms.untracked.vstring([ 'keep *_*_*_*' ]),
-                                           fileName = cms.untracked.string('/tmp/shervin/patDUMP.root'),
-                                           #                                  SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('ZPath, NtuplePath')),
-                                           dataset = cms.untracked.PSet(
-        filterName = cms.untracked.string(''),
-        dataTier = cms.untracked.string('ALCARECO')
-        )
-                                           )
-    
-    process.DEBUGoutput_step = cms.EndPath(process.DEBUGoutput)
-    
-#process.schedule = cms.Schedule(process.zFilterPath,process.ALCARECOoutput_step)
 
-if(options.doTree>0):
-    #process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
-    #process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
-    process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
-    process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
-    process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
-    process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
-    process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
-    process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-    process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
-    process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
+##############################################################
+# Setting Path
+################################
+process.raw2digi_step = cms.Path(process.RawToDigi)
+process.L1Reco_step = cms.Path(process.L1Reco)
+process.reconstruction_step = cms.Path(process.reconstruction)
+process.endjob_step = cms.EndPath(process.endOfProcess)
 
-    print process.eleNewEnergiesProducer.recHitCollectionEB
-    
+process.ZALCARAWPath = cms.Path( process.filterSeq *
+                                 (process.rhoFastJetSeq + process.alcarecoElectronTracksReducerSeq +
+                                  process.sandboxSeq ))
+process.ZALCARERECOPath = cms.Path(process.alcarerecoSeq)
+process.NtuplePath = cms.Path(process.filterSeq * process.ntupleSeq)
+process.ZALCARECOPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
 
+process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
+process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
+
+
+############################################################
+# Setting collection names
+##############################
+#process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
+#process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
+process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
+process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
+process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
+process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
+process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
+process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
+process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
+
+
+############### JSON Filter
 if(options.doTree>0 and options.doTreeOnly==0):
     process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
 else:
@@ -572,8 +485,66 @@ else:
             process.source.lumisToProcess.extend(myLumis)
 
 
+
 # Schedule definition
 if(options.type=='ALCARAW'):
-    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
+    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZALCARAWPath, process.ALCARAWoutput_step,  process.ZALCARECOPath, process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
+elif(options.type=='ALCARERECO'):
+    process.schedule = cms.Schedule(process.ZALCARERECOPath, process.ALCARECOoutput_step) # add ntuple
 else:
-    process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step)
+    process.schedule = cms.Schedule(process.ZALCARECOPath, process.ALCARECOoutput_step) # add ntuple
+
+
+
+
+if(options.type=="ALCARERECO"):        
+    process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
+    process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
+
+    process.correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
+    process.correctedMulti5x5SuperClustersWithPreshower.corectedSuperClusterCollection = 'endcapRecalibSC'
+    if(re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*", CMSSW_VERSION)):
+        process.multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
+
+    # in sandboxRereco
+    process.reducedEcalRecHitsES.EndcapSuperClusterCollection= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC',processName)
+
+    process.alCaIsolatedElectrons.electronLabel = cms.InputTag("electronRecalibSCAssociator")
+    process.alCaIsolatedElectrons.ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")
+    process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
+
+    process.eleRegressionEnergy.inputElectronsTag = cms.InputTag('electronRecalibSCAssociator')
+    process.eleSelectionProducers.electronCollection   = 'electronRecalibSCAssociator'
+    process.eleNewEnergiesProducer.electronCollection  = 'electronRecalibSCAssociator'
+    process.patElectrons.electronSource                = 'electronRecalibSCAssociator'
+
+    process.OutALCARECOEcalCalElectron.outputCommands += sandboxRerecoOutputCommands 
+    process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
+    
+process.zNtupleDumper.recHitCollectionEB = process.patElectrons.reducedBarrelRecHitCollection.value()
+process.zNtupleDumper.recHitCollectionEE = process.patElectrons.reducedEndcapRecHitCollection.value()
+
+
+process.zNtupleDumper.foutName=options.secondaryOutput
+# this includes the sequence: patSequence
+# patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
+
+pathPrefix=CMSSW_BASE+"/"
+process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
+process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
+process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
+#    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
+process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)
+if(re.match("CMSSW_4_4_.*", CMSSW_VERSION)):
+    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
+if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
+    pathPrefix=CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
+    print '[INFO] Using v2 regression for CMSSW_4_2_X' 
+    process.eleNewEnergiesProducer.regrPhoFile=cms.string(pathPrefix+'data/gbrv2ph.root')
+    process.eleNewEnergiesProducer.regrEleFile=cms.string(pathPrefix+'data/gbrv2ele.root')
+    process.eleNewEnergiesProducer.regrEleFile_fra=cms.string('nocorrections')
+    #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
+
+
+process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
+process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
