@@ -72,7 +72,7 @@ else:
     if(options.type=="ALCARAW"):
         print "[ERROR] no skim selected"
 #        sys.exit(-1)
-
+    
 
 doTreeOnly=False
 if(options.doTree>0 and options.doTreeOnly==1):
@@ -132,15 +132,15 @@ process.load('Configuration.EventContent.EventContent_cff')
 
 # import of ALCARECO sequences
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
-from Calibration.ALCARAW_RECO.sandboxOutput_cff import *
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
 from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
 process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
-process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff') # ALCARAW
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
 # this module provides:
-#process.sandboxSeq  = uncalibRecHitSeq
+#process.seqALCARECOEcalUncalElectron  = uncalibRecHitSeq
 process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
 # this module provides:
 # process.electronRecoSeq
@@ -148,12 +148,7 @@ process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
 # process.sandboxRerecoSeq = (electronRecoSeq * electronClusteringSeq)
 
 # Tree production
-process.load('Calibration.ZNtupleDumper.patSequence_cff')
-process.load("Calibration.ZNtupleDumper.zntupledumper_cfi")
-process.load("Calibration.JsonFilter.jsonFilter_cfi")
-
-# I want to reduce the recHit collections to save space: alcareco
-process.load('Calibration.ALCARAW_RECO.alCaIsolatedElectrons_cfi')
+process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 
 # ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
@@ -290,13 +285,14 @@ else:
 
 ###############################
 # Event filter sequence: process.filterSeq
-# sanbox sequence: process.sandboxSeq + process.alcarecoElectronTracksReducerSeq
+# sanbox sequence: process.seqALCARECOEcalUncalElectron + process.alcarecoElectronTracksReducerSeq
 # sandbox rereco sequence: process.sandboxRerecoSeq
 # alcareco event reduction: process.alcarecoSeq
 #
     
 
 ################################# FILTERING EVENTS
+process.PUDumperSeq = cms.Sequence()
 process.filterSeq = cms.Sequence()
 #process.load('Calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
 if(MC):
@@ -305,22 +301,19 @@ if(MC):
         "TFileService",
         fileName = cms.string("PUDumper.root")
         )
-    process.filterSeq *= process.PUDumper
+    process.PUDumperSeq *= process.PUDumper
     
-
-if (ZSkim):
-    process.load('Calibration.ALCARAW_RECO.ZElectronSkimSandbox_cff')
-    process.filterSeq *= process.ZeeFilterSeq
-elif (WSkim):
-    process.load("DPGAnalysis.Skims.WElectronSkim_cff")
-    process.filterSeq *= process.elecMetSeq
-elif(options.skim=="EleSkim"):
-    process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                              src = cms.InputTag("gsfElectrons"),
-                                              minNumber = cms.uint32(1)
-                                              )
-    process.filterSeq *= process.MinEleNumberFilter
-                
+process.load('Calibration.ALCARAW_RECO.ZElectronSkimSandbox_cff')
+#process.filterSeq *= process.ZeeFilterSeq
+process.load("DPGAnalysis.Skims.WElectronSkim_cff")
+#process.filterSeq *= process.elecMetSeq
+process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
+                                          src = cms.InputTag("gsfElectrons"),
+                                          minNumber = cms.uint32(1)
+                                          )
+if(options.skim=="" or options.skim=="none" or options.skim=="no"):
+    process.ZeeFilterSeq = cms.Sequence(process.MinEleNumberFilter)
+    process.elecMetSeq = cms.Sequence(process.MinEleNumberFilter)
 
 if (HLTFilter):
     import copy
@@ -351,7 +344,7 @@ process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 
 #==============================
 #Define the sequences
-process.alcarecoSeq = cms.Sequence(process.alCaIsolatedElectrons) # + process.alcaElectronTracksReducer)
+process.alcarecoSeq = process.seqALCARECOEcalCalElectronRECO
 if(options.type=="ALCARERECO"):  # in ALCARECO production starting from AOD or RECO the ES recHits are reduced
     process.alcarecoSeq += process.reducedEcalRecHitsES
     
@@ -369,16 +362,13 @@ if(re.match("CMSSW_6_.*", CMSSW_VERSION)):
 else:
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * process.alcarecoSeq)
 
-process.load('Calibration.ALCARAW_RECO.eleIsoSequence_cff')
 
-process.load('RecoJets.Configuration.RecoPFJets_cff')
-process.kt6PFJetsForRhoCorrection = process.kt6PFJets.clone(doRhoFastjet = True)
-process.kt6PFJetsForRhoCorrection.Rho_EtaMax = cms.double(2.5)
+process.rhoFastJetSeq = cms.Sequence()
 if((not options.type=="ALCARERECO") ):
     if(options.skim!="fromWSkim"):
-        process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection * process.pfiso) 
+        process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection) 
     else:
-        process.rhoFastJetSeq = cms.Sequence(process.pfiso)
+        process.rhoFastJetSeq = cms.Sequence()
 
 
 if(MC):
@@ -394,13 +384,9 @@ if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
 
 
-
-
-
-
-process.OutALCARECOEcalUncalElectron = copy.deepcopy(process.OutALCARECOEcalCalElectron)
-process.OutALCARECOEcalUncalElectron.outputCommands +=sandboxOutputCommands
-
+############################################################
+# OUTPUT MODULES
+##############################
 fileName = cms.untracked.string(options.output)
 
 process.outputALCARAW = cms.OutputModule("PoolOutputModule",
@@ -409,7 +395,7 @@ process.outputALCARAW = cms.OutputModule("PoolOutputModule",
                                          outputCommands = process.OutALCARECOEcalUncalElectron.outputCommands,
                                          #fileName = fileName,
                                          fileName = cms.untracked.string('alcaraw.root'),
-                                         SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('ZALCARAWPath')),
+                                         SelectEvents = process.OutALCARECOEcalUncalElectron.SelectEvents,
                                          dataset = cms.untracked.PSet(
     filterName = cms.untracked.string(''),
     dataTier = cms.untracked.string('ALCARECO')
@@ -421,7 +407,7 @@ process.outputALCARECO = cms.OutputModule("PoolOutputModule",
                                           maxSize = cms.untracked.int32(5120000),
                                           outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
                                           fileName = cms.untracked.string('alcareco.root'),
-                                          SelectEvents = cms.untracked.PSet(SelectEvents = cms.vstring('ZALCARECOPath')),
+                                          SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
                                           dataset = cms.untracked.PSet(
     filterName = cms.untracked.string(''),
     dataTier = cms.untracked.string('ALCARECO')
@@ -440,13 +426,22 @@ process.raw2digi_step = cms.Path(process.RawToDigi)
 process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-
-process.ZALCARAWPath = cms.Path( process.filterSeq *
-                                 (process.rhoFastJetSeq + process.alcarecoElectronTracksReducerSeq +
-                                  process.sandboxSeq ))
+# ALCARAW
+process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
+                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                    process.seqALCARECOEcalUncalElectron ))
+process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.elecMetSeq *
+                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                    process.seqALCARECOEcalUncalElectron ))
+# ALCARERECO
 process.ZALCARERECOPath = cms.Path(process.alcarerecoSeq)
+# ALCARECO
+process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
+                                                 process.seqALCARECOEcalCalElectron)
+process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.elecMetSeq *
+                                                 process.seqALCARECOEcalCalElectron)
+
 process.NtuplePath = cms.Path(process.filterSeq * process.ntupleSeq)
-process.ZALCARECOPath = cms.Path( process.filterSeq * ( process.rhoFastJetSeq + process.alcarecoSeq ))
 
 process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
 process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
@@ -485,14 +480,20 @@ else:
             process.source.lumisToProcess.extend(myLumis)
 
 
-
+############################################################
 # Schedule definition
+##############################
 if(options.type=='ALCARAW'):
-    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZALCARAWPath, process.ALCARAWoutput_step,  process.ZALCARECOPath, process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
+    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,
+                                    process.reconstruction_step,process.endjob_step,
+                                    process.pathALCARECOEcalUncalZElectron, process.pathALCARECOEcalUncalWElectron,
+                                    process.ALCARAWoutput_step,
+                                    process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                    process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
 elif(options.type=='ALCARERECO'):
     process.schedule = cms.Schedule(process.ZALCARERECOPath, process.ALCARECOoutput_step) # add ntuple
 else:
-    process.schedule = cms.Schedule(process.ZALCARECOPath, process.ALCARECOoutput_step) # add ntuple
+    process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron, process.ALCARECOoutput_step) # add ntuple
 
 
 

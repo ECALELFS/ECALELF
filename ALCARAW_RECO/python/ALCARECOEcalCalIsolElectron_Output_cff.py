@@ -4,18 +4,24 @@ import FWCore.ParameterSet.Config as cms
 
 # output block for alcastream Electron
 OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
+    'drop reco*Clusters_hfEMClusters_*_*',
+    'drop reco*Clusters_pfPhotonTranslator_*_*',
     'drop *EcalRecHit*_ecalRecHit_*_*',
     'drop *EcalrecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
     'drop *EcalRecHit*_reducedEcalRecHitsE*_*_*',
     'keep *EcalRecHit*_alCaIsolatedElectrons_*_*',
-    'keep *EcalRecHit*_reducedEcalRecHitsES_alCaRecHitsES_*'
+    'keep *EcalRecHit*_reducedEcalRecHitsES_alCaRecHitsES_*',
+    'drop *_*Unclean*_*_*',
+    'drop *_*unclean*_*_*',
+    'drop *_*_*Unclean*_*',
+    'drop *_*_*unclean*_*',
 )
 
 OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     # put this if you have a filter
-#    SelectEvents = cms.untracked.PSet(
-#        SelectEvents = cms.vstring('pathALCARECOEcalCalElectron')
-#    ),
+    SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron')
+    ),
     outputCommands = cms.untracked.vstring( 
     'keep *_pfMet_*_*',
     'keep *_kt6PFJetsForRhoCorrection_rho_*',
@@ -32,12 +38,6 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep recoCaloClusters_*_*_*',
     'keep recoSuperClusters_*_*_*',
     'keep recoPreshowerCluster*_*_*_*',
-    'drop reco*Clusters_hfEMClusters_*_*',
-    'drop reco*Clusters_pfPhotonTranslator_*_*',
-    'drop *_*Unclean*_*_*',
-    'drop *_*unclean*_*_*',
-    'drop *_*_*Unclean*_*',
-    'drop *_*_*unclean*_*',
     #'keep *_*_*_HLT',
     #'keep *_generalTracks_*_*',
     #'keep reco*Track*Extra*_generalTracks_*_*',
@@ -58,9 +58,9 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     )
 )
 
-OutALCARECOEcalCalElectron_noDrop.outputCommands+=OutALCARECOEcalCalElectron_specific
-
-
 import copy
 OutALCARECOEcalCalElectron=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
 OutALCARECOEcalCalElectron.outputCommands.insert(0, "drop *")
+OutALCARECOEcalCalElectron.outputCommands+=OutALCARECOEcalCalElectron_specific
+
+
