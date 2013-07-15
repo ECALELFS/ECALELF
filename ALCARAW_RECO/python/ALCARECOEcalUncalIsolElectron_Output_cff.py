@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 from Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff import *
 import copy
 
-OutALCARECOEcalUncalElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
+OutALCARECOEcalUncalElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop_)
 OutALCARECOEcalUncalElectron_noDrop.outputCommands+=cms.untracked.vstring(
     'keep *EcalTriggerPrimitiveDigi*_ecalDigis_*_*',
     'keep *_ecalGlobalUncalibRecHit_*_*',

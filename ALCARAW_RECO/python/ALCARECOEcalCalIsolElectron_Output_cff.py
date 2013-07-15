@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 
 
 # output block for alcastream Electron
-OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
+OutALCARECOEcalCalElectron_specific_ = cms.untracked.vstring(
     'drop reco*Clusters_hfEMClusters_*_*',
     'drop reco*Clusters_pfPhotonTranslator_*_*',
     'drop *EcalRecHit*_ecalRecHit_*_*',
@@ -14,10 +14,10 @@ OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
     'drop *_*Unclean*_*_*',
     'drop *_*unclean*_*_*',
     'drop *_*_*Unclean*_*',
-    'drop *_*_*unclean*_*',
+    'drop *_*_*unclean*_*'
 )
 
-OutALCARECOEcalCalElectron_noDrop = cms.PSet(
+OutALCARECOEcalCalElectron_noDrop_ = cms.PSet(
     # put this if you have a filter
     SelectEvents = cms.untracked.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron')
@@ -38,6 +38,7 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep recoCaloClusters_*_*_*',
     'keep recoSuperClusters_*_*_*',
     'keep recoPreshowerCluster*_*_*_*',
+    'keep *_pfElectronTranslator_*_*',
     #'keep *_*_*_HLT',
     #'keep *_generalTracks_*_*',
     #'keep reco*Track*Extra*_generalTracks_*_*',
@@ -59,8 +60,8 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
 )
 
 import copy
-OutALCARECOEcalCalElectron=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
-OutALCARECOEcalCalElectron.outputCommands.insert(0, "drop *")
-OutALCARECOEcalCalElectron.outputCommands+=OutALCARECOEcalCalElectron_specific
+OutALCARECOEcalCalElectron_=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop_)
+OutALCARECOEcalCalElectron_.outputCommands.insert(0, "drop *")
+OutALCARECOEcalCalElectron_.outputCommands+=OutALCARECOEcalCalElectron_specific_
 
 
