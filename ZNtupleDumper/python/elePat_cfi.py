@@ -13,7 +13,7 @@ patElectrons.pvSrc = cms.InputTag("offlinePrimaryVertices")
 patElectrons.reducedBarrelRecHitCollection = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
 patElectrons.reducedEndcapRecHitCollection = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 patElectrons.embedPFCandidate     = cms.bool(True)  ## embed in AOD externally stored particle flow candidate
-patElectrons.embedTrack           = cms.bool(False) ## embed in AOD externally stored track (note: gsf electrons don't have a track)
+patElectrons.embedTrack           = cms.bool(False) ## embed in AOD externally stored track (note: gsf electrons don't have a track), make it point to reducedtrack collection
 
 
 # #------------------------------ trigger information producer
