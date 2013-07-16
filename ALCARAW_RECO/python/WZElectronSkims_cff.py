@@ -103,7 +103,7 @@ eleSelSeq = cms.Sequence(
 ZeeSelector =  cms.EDProducer("CandViewShallowCloneCombiner",
                               decay = cms.string("PassingVeryLooseId PassingVeryLooseId"),
                               checkCharge = cms.bool(False),
-                              cut   = cms.string("mass > 50")
+                              cut   = cms.string("mass > 40 && mass < 130")
                               )
 
 
