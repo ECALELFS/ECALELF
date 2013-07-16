@@ -1,4 +1,8 @@
+Testing the alcaraw + alcareco production
+cmsRun ALCARAW_RECO/python/alcaSkimming.py files=file://../../../B292A7F8-3A7F-E111-A1A5-001D09F29114.root maxEvents=6 &> log2.log
 
+Testing the alcarereco production
+cmsRun ALCARAW_RECO/python/alcaSkimming.py files=file://alcaraw.root maxEvents=4 type=ALCARERECO tagFile=ALCARAW_RECO/config/reRecoTags/Cal_Jun2013_AlphaComb_v1.py &> log.log
 
 #============================== RERECO
 Instructions:

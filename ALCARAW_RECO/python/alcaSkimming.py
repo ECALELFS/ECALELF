@@ -303,26 +303,39 @@ if(MC):
         )
     process.PUDumperSeq *= process.PUDumper
     
-process.load('Calibration.ALCARAW_RECO.ZElectronSkimSandbox_cff')
+process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 #process.filterSeq *= process.ZeeFilterSeq
-process.load("DPGAnalysis.Skims.WElectronSkim_cff")
-#process.filterSeq *= process.elecMetSeq
+#process.filterSeq *= process.WenuFilterSeq
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = cms.InputTag("gsfElectrons"),
                                           minNumber = cms.uint32(1)
                                           )
 if(options.skim=="" or options.skim=="none" or options.skim=="no"):
     process.ZeeFilterSeq = cms.Sequence(process.MinEleNumberFilter)
-    process.elecMetSeq = cms.Sequence(process.MinEleNumberFilter)
+    process.WenuFilterSeq = cms.Sequence(process.MinEleNumberFilter)
 
 if (HLTFilter):
-    import copy
     from HLTrigger.HLTfilters.hltHighLevel_cfi import *
     process.ZEEHltFilter = copy.deepcopy(hltHighLevel)
     process.ZEEHltFilter.throw = cms.bool(False)
     process.ZEEHltFilter.HLTPaths = ["HLT_Ele*"]
     process.filterSeq *= process.ZEEHltFilter
 
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+process.NtupleFilter = copy.deepcopy(hltHighLevel)
+process.NtupleFilter.throw = cms.bool(False)
+process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalWElectron',
+                                  'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron'
+                                  ]
+process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCASKIM")
+if(ZSkim):
+    process.NtupleFilterSeq= cms.Sequence(process.ZeeFilterSeq)
+elif(WSkim):
+    process.NtupleFilterSeq= cms.Sequence(process.WenuFilterSeq)
+else:
+    process.NtupleFilterSeq = cms.Sequence()
+#process.NtupleFilter)
+#process.filterSeq *= process.NtupleFilter
 
 
 #
@@ -440,7 +453,7 @@ process.outputRECO = cms.OutputModule("PoolOutputModule",
                                       )
 
 #print "OUTPUTCOMMANDS"
-print process.outputALCARECO.outputCommands
+#print process.outputALCARECO.outputCommands
 
 
 
@@ -456,7 +469,7 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
-process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.elecMetSeq *
+process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.WenuFilterSeq *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
 # ALCARERECO
@@ -464,10 +477,10 @@ process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 # ALCARECO
 process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
                                                  process.seqALCARECOEcalCalElectron)
-process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.elecMetSeq *
+process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * ~process.ZeeFilter * process.WenuFilterSeq *
                                                  process.seqALCARECOEcalCalElectron)
 
-process.NtuplePath = cms.Path(process.filterSeq * process.ntupleSeq)
+process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
 
 process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
 process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
@@ -507,8 +520,7 @@ if(options.type=="ALCARERECO"):
     
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
     process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
-    print process.outputALCARECO.outputCommands
-    print process.patElectrons.electronSource
+
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
@@ -581,3 +593,4 @@ process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
+
