@@ -53,11 +53,11 @@ PassingHLT = cms.EDProducer("trgMatchGsfElectronProducer",
 #     )
 
 
-# import HLTrigger.HLTfilters.hltHighLevel_cfi
-# WEnuHltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
-#     throw = cms.bool(False),
-#     HLTPaths = [HLTPath]
-#     )
+import HLTrigger.HLTfilters.hltHighLevel_cfi
+ZSCHltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
+    throw = cms.bool(False),
+    HLTPaths = ['HLT_Ele27_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele15_CaloIdT_CaloIsoVL_trackless_v*']
+    )
 
 # elecMetSeq = cms.Sequence( WEnuHltFilter * ele_sequence * elecMetFilter )
 
@@ -91,10 +91,67 @@ PassingVeryLooseId = selectedElectrons.clone(
     "))"
     )
     )
+PassingMediumId = selectedElectrons.clone(
+    cut = cms.string(
+    selectedElectrons.cut.value() +
+    " && (gsfTrack.trackerExpectedHitsInner.numberOfHits<=1)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
+    " && ((isEB"
+    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.01)"
+    " && ( -0.06<deltaPhiSuperClusterTrackAtVtx<0.06 )"
+    " && ( -0.004<deltaEtaSuperClusterTrackAtVtx<0.004 )"
+    " && (hadronicOverEm<0.12)"
+    ")"
+    " || (isEE"
+    " && ( dr03TkSumPt/p4.Pt <0.2"
+    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.03)"
+    " && ( -0.03<deltaPhiSuperClusterTrackAtVtx<0.03 )"
+    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
+    " && (hadronicOverEm<0.10) "
+    "))"
+    )
+    )
+
+PassingTightId = selectedElectrons.clone(
+    cut = cms.string(
+    selectedElectrons.cut.value() +
+    " && (gsfTrack.trackerExpectedHitsInner.numberOfHits<=0)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
+    " && ((isEB"
+    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.01)"
+    " && ( -0.03<deltaPhiSuperClusterTrackAtVtx<0.03 )"
+    " && ( -0.004<deltaEtaSuperClusterTrackAtVtx<0.004 )"
+    " && (hadronicOverEm<0.12)"
+    ")"
+    " || (isEE"
+    " && ( dr03TkSumPt/p4.Pt <0.2"
+    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.03)"
+    " && ( -0.02<deltaPhiSuperClusterTrackAtVtx<0.02 )"
+    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
+    " && (hadronicOverEm<0.10) "
+    "))"
+    )
+    )
+
+SCselector = cms.EDFilter("SuperClusterSelector",
+                          src = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower'),
+                          cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
+                          )
+
+### Build candidates from all the merged superclusters
+eleSC = cms.EDProducer('ConcreteEcalCandidateProducer',
+                  src = cms.InputTag('SCselector'),
+                  particleType = cms.string('gamma')
+                  )
 
 eleSelSeq = cms.Sequence(
-    PassingVeryLooseId 
-    )
+    PassingVeryLooseId + PassingMediumId + PassingTightId +SCselector+eleSC )
 
 
 ############################################################
@@ -103,7 +160,7 @@ eleSelSeq = cms.Sequence(
 ZeeSelector =  cms.EDProducer("CandViewShallowCloneCombiner",
                               decay = cms.string("PassingVeryLooseId PassingVeryLooseId"),
                               checkCharge = cms.bool(False),
-                              cut   = cms.string("mass > 40 && mass < 130")
+                              cut   = cms.string("mass > 40 && mass < 140")
                               )
 
 
@@ -115,7 +172,7 @@ W_ELECTRON_ET_CUT_MIN = 27.0
 MT_CUT_MIN = 50.
 
 WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("pfMet PassingVeryLooseId"), # charge coniugate states are implied
+    decay = cms.string("pfMet PassingTightId"), # charge coniugate states are implied
     checkCharge = cms.bool(False),                           
     cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
 )
@@ -124,6 +181,13 @@ WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
 WZSelector = cms.EDProducer("CandMerger",
                             src = cms.VInputTag("WenuSelector", "ZeeSelector")
                             )
+
+ 
+EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
+                               decay = cms.string("PassingTightId eleSC"),
+                               checkCharge = cms.bool(False), 
+                               cut   = cms.string("mass > 40 && mass < 140")
+                               )
 
 ############################################################
 # Filters
@@ -143,6 +207,13 @@ WZFilter = cms.EDFilter("CandViewCountFilter",
                          minNumber = cms.uint32(1)
                          )
 
+ZSCFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("eleSC"),
+                         minNumber = cms.uint32(1)
+                         )
 ZeeFilterSeq = cms.Sequence(eleSelSeq * ZeeSelector * ZeeFilter)    
 WenuFilterSeq = cms.Sequence(eleSelSeq * WenuSelector * WenuFilter)
 WZFilterSeq = cms.Sequence(eleSelSeq * WZFilter)
+ZSCFilterSeq    = cms.Sequence(ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
+
+

@@ -60,11 +60,15 @@ print options
 HLTFilter = False
 ZSkim = False
 WSkim = False
+ZSCSkim = False
 
 if(options.skim=="ZSkim"):
     ZSkim=True
 elif(options.skim=="WSkim"):
     WSkim=True
+elif(options.skim=="ZSCSkim"):
+    ZSCSkim=True
+
 elif(options.skim=="fromWSkim"):
     print "[INFO] producing from WSkim files (USER format)"
     WSkim=False
@@ -313,6 +317,7 @@ process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
 if(options.skim=="" or options.skim=="none" or options.skim=="no"):
     process.ZeeFilterSeq = cms.Sequence(process.MinEleNumberFilter)
     process.WenuFilterSeq = cms.Sequence(process.MinEleNumberFilter)
+    process.ZSCFilterSeq = cms.Sequence(process.MinEleNumberFilter)
 
 if (HLTFilter):
     from HLTrigger.HLTfilters.hltHighLevel_cfi import *
@@ -332,6 +337,9 @@ if(ZSkim):
     process.NtupleFilterSeq= cms.Sequence(process.ZeeFilterSeq)
 elif(WSkim):
     process.NtupleFilterSeq= cms.Sequence(process.WenuFilterSeq)
+elif(ZSCSkim):
+    process.NtupleFilterSeq= cms.Sequence(process.ZSCFilterSeq)
+
 else:
     process.NtupleFilterSeq = cms.Sequence()
 #process.NtupleFilter)
@@ -419,7 +427,7 @@ process.outputALCARECO = cms.OutputModule("PoolOutputModule",
                                           # after 5 GB split the file
                                           maxSize = cms.untracked.int32(5120000),
                                           outputCommands = process.OutALCARECOEcalCalElectron_.outputCommands,
-                                          fileName = cms.untracked.string('alcarereco.root'),
+                                          fileName = cms.untracked.string('alcareco.root'),
                                           SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
                                           dataset = cms.untracked.PSet(
     filterName = cms.untracked.string(''),
@@ -469,16 +477,26 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
-process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.WenuFilterSeq *
+process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
+                                                   ~process.ZeeFilter * process.WenuFilterSeq *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
+process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
+                                                     ~process.ZeeFilter * process.ZSCFilterSeq *
+                                                     (process.ALCARECOEcalCalElectronPreSeq +
+                                                      process.seqALCARECOEcalUncalElectron ))
+
 # ALCARERECO
 process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 # ALCARECO
 process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
                                                  process.seqALCARECOEcalCalElectron)
-process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * ~process.ZeeFilter * process.WenuFilterSeq *
+process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
+                                                 ~process.ZeeFilter * process.WenuFilterSeq *
                                                  process.seqALCARECOEcalCalElectron)
+process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
+                                                   ~process.ZeeFilter * process.ZSCFilterSeq *
+                                                   process.seqALCARECOEcalCalElectron)
 
 process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
 
@@ -554,16 +572,18 @@ if(options.type=='ALCARAW'):
     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,
                                     process.reconstruction_step,process.endjob_step, 
                                     process.pathALCARECOEcalUncalZElectron, process.pathALCARECOEcalUncalWElectron,
+                                    process.pathALCARECOEcalUncalZSCElectron,
                                     process.ALCARAWoutput_step,
                                     process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                    process.pathALCARECOEcalCalZSCElectron,
                                     process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
 elif(options.type=='ALCARERECO'):
     process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step, process.NtuplePath)
 elif(options.type=='ALCARECO'):
-    process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+    process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron, process.pathALCARECOEcalCalZSCElectron,
                                     process.ALCARECOoutput_step, process.NtuplePath
                                     ) # fix the output modules
-
+    
 
 
 
