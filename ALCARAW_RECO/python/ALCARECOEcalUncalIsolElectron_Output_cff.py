@@ -22,8 +22,8 @@ OutALCARECOEcalUncalElectron.outputCommands += cms.untracked.vstring(
     )
 
 OutALCARECOEcalUncalElectron.SelectEvents = cms.untracked.PSet(
-    #SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalUncalWElectron')
-    SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalWElectron')
+    SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalUncalWElectron')
+    #SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalWElectron')
     )
 
 

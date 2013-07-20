@@ -577,6 +577,16 @@ if(options.type=='ALCARAW'):
                                     process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                     process.pathALCARECOEcalCalZSCElectron,
                                     process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
+    
+    if(options.skim=='WSkim'):
+        process.outputALCARAW.SelectEvents = cms.untracked.PSet(
+            SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron')
+            )
+    elif(options.skim=='ZSkim'):
+        process.outputALCARAW.SelectEvents = cms.untracked.PSet(
+            SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
+            )
+
 elif(options.type=='ALCARERECO'):
     process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step, process.NtuplePath)
 elif(options.type=='ALCARECO'):

@@ -146,6 +146,9 @@ case $DATASETPATH in
     */USER)
 	USEPARENT=0
 	;;
+    */RAW)
+	USEPARENT=0
+	;;
     *)
 	echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
 	exit 1
@@ -160,6 +163,10 @@ if [ -z "${SKIM}" ];then
 	*SingleElectron*USER)
 	    SKIM=fromWSkim
 	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
+	    ;;
+	*SingleElectron*RAW)
+	    SKIM=WSkim
+	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/20
 	    ;;
 	*SingleElectron*)
 	    SKIM=WSkim
