@@ -9,6 +9,7 @@
 #include <TChain.h>
 #include <TStopwatch.h>
 #include <TF1.h>
+#include <TH2F.h>
 
 #include "../interface/ZFit_class.hh"
 #include "../interface/puWeights_class.hh"
@@ -45,6 +46,7 @@
 #define PROFILE_NBINS 200
 
 //#define DEBUG
+#define smooth
 #include "../src/nllProfile.cc"
 using namespace std;
 using namespace RooStats;
@@ -233,7 +235,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
       //std::cout << "[INFO] Updating to range: " << nBin << "\t" << range_min << "\t" << range_max << std::endl;
       if(nBin <=0) exit(1);
     }
-    while(nBin >40 && level!=4){
+    while(nBin >40 && level<4){
       bin_width*=1.1;
       range_min = bin_width*((floor)(range_min / bin_width));
       range_max = bin_width*((floor)(range_max / bin_width));
@@ -469,20 +471,126 @@ bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iPro
 }
 
 
-Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, RooSmearer& smearer, bool update=true){
+void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
+{
+   Double_t k5a[5][5] =  { { 0, 0, 1, 0, 0 },
+                           { 0, 2, 2, 2, 0 },
+                           { 1, 2, 5, 2, 1 },
+                           { 0, 2, 2, 2, 0 },
+                           { 0, 0, 1, 0, 0 } };
+   Double_t k5b[5][5] =  { { 0, 1, 2, 1, 0 },
+                           { 1, 2, 4, 2, 1 },
+                           { 2, 4, 8, 4, 2 },
+                           { 1, 2, 4, 2, 1 },
+                           { 0, 1, 2, 1, 0 } };
+   Double_t k3a[3][3] =  { { 0, 1, 0 },
+                           { 1, 2, 1 },
+                           { 0, 1, 0 } };
+
+   //  if (ntimes > 1) {
+   // Warning("Smooth","Currently only ntimes=1 is supported");
+   //   }
+   TString opt = option;
+   opt.ToLower();
+   Int_t ksize_x=5;
+   Int_t ksize_y=5;
+   Double_t *kernel = &k5a[0][0];
+   if (opt.Contains("k5b")) kernel = &k5b[0][0];
+   if (opt.Contains("k3a")) {
+      kernel = &k3a[0][0];
+      ksize_x=3;
+      ksize_y=3;
+   }
+
+   // find i,j ranges
+   Int_t ifirst = h->GetXaxis()->GetFirst();
+   Int_t ilast  = h->GetXaxis()->GetLast();
+   Int_t jfirst = h->GetYaxis()->GetFirst();
+   Int_t jlast  = h->GetYaxis()->GetLast();
+
+   // Determine the size of the bin buffer(s) needed
+   //Double_t nentries = h->GetEntries();
+   Int_t nx = h->GetNbinsX();
+   Int_t ny = h->GetNbinsY();
+   Int_t bufSize  = (nx+2)*(ny+2);
+   Double_t *buf  = new Double_t[bufSize];
+   Double_t *ebuf = 0;
+   if (h->GetSumw2()->fN) ebuf = new Double_t[bufSize];
+
+   // Copy all the data to the temporary buffers
+   Int_t i,j,bin;
+   for (i=ifirst; i<=ilast; i++){
+      for (j=jfirst; j<=jlast; j++){
+         bin = h->GetBin(i,j);
+         buf[bin] =h->GetBinContent(bin);
+         if (ebuf) ebuf[bin]=h->GetBinError(bin);
+      }
+   }
+
+   // Kernel tail sizes (kernel sizes must be odd for this to work!)
+   Int_t x_push = (ksize_x-1)/2;
+   Int_t y_push = (ksize_y-1)/2;
+
+   // main work loop
+   for (i=ifirst; i<=ilast; i++){
+      for (j=jfirst; j<=jlast; j++) {
+         Double_t content = 0.0;
+         Double_t error = 0.0;
+         Double_t norm = 0.0;
+
+         for (Int_t n=0; n<ksize_x; n++) {
+            for (Int_t m=0; m<ksize_y; m++) {
+               Int_t xb = i+(n-x_push);
+               Int_t yb = j+(m-y_push);
+               if ( (xb >= 1) && (xb <= nx) && (yb >= 1) && (yb <= ny)) {
+                  bin = h->GetBin(xb,yb);
+		  if(buf[bin]!=0){
+                  Double_t k = kernel[n*ksize_y +m];
+                  //if ( (k != 0.0 ) && (buf[bin] != 0.0) ) { // General version probably does not want the second condition
+                  if ( k != 0.0 ) {
+                     norm    += k;
+                     content += k*buf[bin];
+                     if (ebuf) error   += k*k*buf[bin]*buf[bin];
+                  }
+		  }
+               }
+            }
+         }
+
+         if ( norm != 0.0 ) {
+            h->SetBinContent(i,j,content/norm);
+            if (ebuf) {
+               error /= (norm*norm);
+               h->SetBinError(i,j,sqrt(error));
+            }
+         }
+      }
+   }
+   //fEntries = nentries;
+
+   delete [] buf;
+   delete [] ebuf;
+}
+
+
+Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Int_t min, RooSmearer& smearer, bool update=true, Double_t *Y=NULL){
   var->setVal(X[iMinStart]);
   Double_t chi2, chi2init=smearer.evaluate(); 
 
   Double_t locmin=1e20;
   Int_t iLocMin=0;
   std::queue<Double_t> chi2old;
+  Double_t NY[200]={0.}; 
 
   for(Int_t i =iMinStart; i <N; i++){ //loop versus positive side
     var->setVal(X[i]);
     chi2=smearer.evaluate(); 
-
+    if(Y!=NULL){ 
+      Y[i] += chi2;
+      NY[i]++;
+    }
     if(update==true) 
-      std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
+      std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
@@ -494,9 +602,12 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, RooSmear
       }
     } 
 
-    if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-    if(chi2old.size()>3 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
-    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
+    if(chi2old.size()>2 && chi2-min > 500) break;
+    if(chi2old.size()>4){
+      if(chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
+      if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
+      if(chi2old.size()> 7 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
+    }
 
     chi2old.push(chi2);
   }
@@ -507,6 +618,10 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, RooSmear
   for(Int_t i =iMinStart; i >=0; i--){ //loop versus positive side
     var->setVal(X[i]);
     chi2=smearer.evaluate(); 
+    if(Y!=NULL){ 
+      Y[i] += chi2;
+      NY[i]++;
+    }
       
     if(update==true) 
       std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
@@ -521,11 +636,19 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, RooSmear
       }
     } 
   
-    if(chi2old.size()>2 && chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-    if(chi2old.size()>3 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
-    if(chi2old.size()>3 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
-    
+    if(chi2old.size()>2 && chi2-min > 500) break;
+    if(chi2old.size()>4){
+      if(chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
+      if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
+      if(chi2old.size()> 7 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
+    }
     chi2old.push(chi2);
+  }
+
+  if(Y!=NULL){  //take the mean!
+    for(Int_t i =0; i < N; i++){ 
+      if(Y[i]!=0) Y[i] /= NY[i];
+    }
   }
 
   return iLocMin;
@@ -552,6 +675,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   Double_t 	*X2    = g2->GetX();
   Int_t 	 N1    = g1->GetN();
   Int_t 	 N2    = g2->GetN();
+  Double_t      *Y     = new Double_t[N2];
 
   std::cout << "--------------------------------- Init eval "  << std::endl;
   //initial values
@@ -560,34 +684,61 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   Double_t chi2, chi2init=smearer.evaluate(); 
 
   Double_t locmin=1e20;
-  Int_t iLocMin1=0, iLocMin2, iLocMin2Prev=0;
+  Int_t iLocMin1=0, iLocMin2, iLocMin2Prev=N2/3;
 
   TStopwatch myClock;
   myClock.Start();
 
   std::cout << "--------------------------------- Grid eval "  << std::endl;
+  TH2F h("hist2","",N1,0,N1,N2,0,N2);
   for(Int_t i1 =0; i1 <N1; i1++){
+    for(Int_t i2=0; i2 < N2; i2++){ // reset Y values
+      Y[i2]=0;
+    }
+
     var1->setVal(X1[i1]);
     std::queue<Double_t> chi2old;
 
-    iLocMin2Prev = FindMin1D(var2, X2, N2, iLocMin2Prev, smearer, true);
+    iLocMin2Prev = FindMin1D(var2, X2, N2, iLocMin2Prev, locmin, smearer, true, Y);
+    for(Int_t i2=0; i2 < N2; i2++){
+      if(Y[i2]!=0) std::cout << i1 << "\t" << i2 << "\t" << X1[i1] << "\t" << X2[i2] << "\t" << Y[i2];
+      h.Fill(i1,i2,Y[i2]);
+      if(Y[i2]!=0) std::cout << "\t" << h.GetBinContent(i1+1,i2+1) << std::endl;
+    }
 
     var2->setVal(X2[iLocMin2Prev]);
     chi2=smearer.evaluate(); 
-      
+
+#ifndef smooth
     if(update==true || true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
     if(chi2<=locmin){ //local minimum
       iLocMin1=i1;
       iLocMin2=iLocMin2Prev;
       locmin=chi2;
     }
-    
+#endif
   }
 
   // reset to initial value
   var1->setVal(v1);
   var2->setVal(v2);
 
+#ifdef smooth
+  Smooth(&h, 1, "k3a");
+  for(Int_t i1=0; i1<N1; i1++){
+    for(Int_t i2=0; i2<N2; i2++){
+      Double_t content = h.GetBinContent(i1+1,i2+1);
+      if(content>0){
+      if(update==true || true) std::cout << "[DEBUG] " << X1[i1] << "\t" << X2[i2] << "\t" << content-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+      if(content>0 && locmin > content){
+	locmin=content;
+	iLocMin1=i1;
+	iLocMin2=i2;
+      }
+      }
+    }
+  }
+#endif
   if(update && locmin<min){ // updated absolute minimum
     min=locmin;
     if(v1!=X1[iLocMin1] || v2!=X2[iLocMin2]) changed=true; //the value has been updated, need a new iteration
@@ -619,6 +770,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   smearer.SetNSmear(0,1);
   delete g1;
   delete g2;
+  delete Y;
   return changed;
 }
 

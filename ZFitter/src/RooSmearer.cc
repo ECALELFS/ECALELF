@@ -701,27 +701,28 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   if(!category.active) return;
   Long64_t catSize=category.mc_events->size();
   
-  category.nSmearToy=(int)(200000./catSize); 
-  if(category.nSmearToy <3) category.nSmearToy = 3; // fix the min to 3
-  else  if( category.nSmearToy > 30) category.nSmearToy = 30; // fix the max to 20
+  category.nSmearToy=(int)(300000./catSize); 
+  if(category.nSmearToy <7) category.nSmearToy = 7; // fix the min to 3
+  else  if( category.nSmearToy > 40) category.nSmearToy = 40; // fix the max to 20
   if(!smearscan) return;
 
 
   //------------------------------ rescale mc histograms 
-  double stdDev=0;
+  double stdDev=10;
   double min=10; int nBin_min=0;
   int n=0;
   unsigned int nSmearToyLim=130;
   category.nLLtoy=1;
-  for(category.nBins=(int) ((category.invMass_max-category.invMass_min)/2.);
-      category.nBins<161; category.nBins*=2){
-    ResetBinning(category);
+  for(int iBin=0; iBin<1; iBin++){
+      //category.nBins=(int) ((category.invMass_max-category.invMass_min)/2.);
+      //category.nBins<161; category.nBins*=2){
+    //ResetBinning(category);
     TH1F *data = GetSmearedHisto(category, false, _isDataSmeared); ///-----> not need to repeate!
 
     for(category.nLLtoy=1; category.nLLtoy < 2; category.nLLtoy+=2){
-      for(; category.nSmearToy <= nSmearToyLim; category.nSmearToy*=2){
+      for(; category.nSmearToy <= nSmearToyLim && stdDev>1; category.nSmearToy*=2){
 	double  sum=0, sum2=0;
-	for(n=0; n<500; n++){
+	for(n=0; n<300; n++){
 	  UpdateCategoryNLL(category, category.nLLtoy); //the new nll has been updated for the category
 	  
 	  sum+=category.nll;
@@ -749,8 +750,10 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
 		  << "\tdataEvents=" << category.data_events->size() 
 		  << std::endl;
       }
+      if(category.nSmearToy > nSmearToyLim) category.nSmearToy/=2;
     }
   }
+  
   //  exit(0);
   return;
 #ifdef DD
