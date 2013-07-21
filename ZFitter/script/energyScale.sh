@@ -114,9 +114,15 @@ if [ -z "$puName" ];then
 	echo "[ERROR] No or too mani pileupHist files for data"
 	exit 1
     fi
-    puFile=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3`
+    puFiles=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3`
+    for puFile in $puFiles
+      do
+      puName="${puName}_`basename $puFile .root | sed 's|\..*||'`"
+    done
+
 	#echo $puFile
-    puName=`basename $puFile .root | sed 's|\..*||'`
+    #puName=`basename $puFile .root | sed 's|\..*||'`
+    puName=`echo $puName | sed 's|^_||'`
 	#echo $puName
 fi
 
