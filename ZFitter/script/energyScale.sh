@@ -9,7 +9,7 @@ commonCut=Et_25-trigger-noPF
 selection=WP90_PU
 invMass_var=invMass_SC_regrCorr_pho
 baseDir=test
-updateOnly="--updateOnly" # --profileOnly --initFile=init.txt"
+#updateOnly="--updateOnly" # --profileOnly --initFile=init.txt"
 #updateOnly=""
 
 usage(){

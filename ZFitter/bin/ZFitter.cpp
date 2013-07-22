@@ -537,14 +537,14 @@ void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
          Double_t content = 0.0;
          Double_t error = 0.0;
          Double_t norm = 0.0;
-
+	 if(h->GetBinContent(i,j)<=0) continue;
          for (Int_t n=0; n<ksize_x; n++) {
             for (Int_t m=0; m<ksize_y; m++) {
                Int_t xb = i+(n-x_push);
                Int_t yb = j+(m-y_push);
                if ( (xb >= 1) && (xb <= nx) && (yb >= 1) && (yb <= ny)) {
                   bin = h->GetBin(xb,yb);
-		  if(buf[bin]!=0){
+		  if(buf[bin]>0){
                   Double_t k = kernel[n*ksize_y +m];
                   //if ( (k != 0.0 ) && (buf[bin] != 0.0) ) { // General version probably does not want the second condition
                   if ( k != 0.0 ) {
@@ -596,13 +596,13 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Int_t mi
 	locmin=chi2;
     }
       
-    if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
+    if(!chi2old.empty() && chi2<chi2old.back()-10){ //remove history if chi2<chi2old
       while(!chi2old.empty()){
 	chi2old.pop();
       }
     } 
 
-    if(chi2old.size()>2 && chi2-min > 500) break;
+    if(chi2old.size()>2 && chi2-locmin > 300) break;
     if(chi2old.size()>4){
       if(chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
       if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
@@ -630,13 +630,13 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Int_t mi
 	locmin=chi2;
     } 
 
-    if(!chi2old.empty() && chi2<chi2old.back()){ //remove history if chi2<chi2old
+    if(!chi2old.empty() && chi2<chi2old.back()-10){ //remove history if chi2<chi2old
       while(!chi2old.empty()){
 	chi2old.pop();
       }
     } 
   
-    if(chi2old.size()>2 && chi2-min > 500) break;
+    if(chi2old.size()>2 && chi2-locmin > 300) break;
     if(chi2old.size()>4){
       if(chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
       if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
@@ -767,7 +767,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   std::cout << "------------------------------" << std::endl;
 
   //  std::cout << "[INFO] Level " << iProfile << " variable:" << var->GetName() << "\t" << var->getVal() << "\t" << min << std::endl;
-  smearer.SetNSmear(0,1);
+  //  smearer.SetNSmear(0,1);
   delete g1;
   delete g2;
   delete Y;
@@ -2103,7 +2103,7 @@ int main(int argc, char **argv) {
 	  //smearer.SetNSmear(10);
 
 	  std::cout <<"==================PROFILE=================="<<endl;
-	  smearer.SetNSmear(0,10);
+	  //	  smearer.SetNSmear(0,10);
 	  //create profiles
 	  TString outFile=outDirFitResData.c_str();
 	  outFile+="/outProfile-";
@@ -2133,7 +2133,7 @@ int main(int argc, char **argv) {
 		TString of=outFile; of.ReplaceAll(".root",name+".root");
 		smearer.dataset->SaveAs(of);
 	      }
-	      continue;
+	      //if(!name.Contains("scale")) continue;
 	      std::cout << "Doing " << name << "\t" << var->getVal() << std::endl;
 	      
 	      TGraph *profil = GetProfile(var, smearer,0);

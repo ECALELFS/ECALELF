@@ -634,14 +634,14 @@ void ZFit_class::Fit(TString region, bool doPlot){
   int p = regionMC.Index("-runNumber");
   int pp = regionMC.Index("-", p+1);
   
-  if(p>0){
+  if(p>0){ //there is the runNumber string
     TString region_tmp=region;
-    region_tmp.Remove(0,p);
-    if(pp>0) region_tmp.Remove(p,pp-p);
-    region_tmp.ReplaceAll("-runNumber_","");
+    region_tmp.Remove(0,p);   // remove the part before
+    if(pp>0) region_tmp.Remove(pp-p); // remove the part after if exists
+    region_tmp.ReplaceAll("-runNumber_",""); // remove runNumber string
     TString region_tmp2=region_tmp;
-    region_tmp.Remove(region_tmp.First('_'));
-    region_tmp2.Remove(0,region_tmp2.First('_')+1);
+    region_tmp.Remove(region_tmp.First('_')); // take the runMin 
+    region_tmp2.Remove(0,region_tmp2.First('_')+1); //take the runMax
     int runMin=region_tmp.Atoi();
     int runMax=region_tmp2.Atoi();
     std::cout << region << "\t" << p << " " << pp << "\ttmp " << region_tmp << "\ttmp2 " << region_tmp2 << "\trunMin " << runMin << "\t" << runMax << std::endl;
