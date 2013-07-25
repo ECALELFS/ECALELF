@@ -106,9 +106,11 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
   commonCut+="-eleID_"+eleID_;
   TString mcCut, dataCut;
   if(l->GetN()>0){ // runDependent MC, treat it has data
+    std::cout << "[INFO] Importing run dependent MC" << std::endl;
     if(_oddMC) mcCut = cutter.GetCut(commonCut+"-odd", false);
     else mcCut = cutter.GetCut(commonCut, false);
   } else {
+    std::cout << "[INFO] Importing std MC" << std::endl;
     if(_oddMC) mcCut = cutter.GetCut(commonCut+"-odd", true);
     else mcCut = cutter.GetCut(commonCut, true);
   }
