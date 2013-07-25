@@ -573,12 +573,12 @@ void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
 }
 
 
-Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Int_t min, RooSmearer& smearer, bool update=true, Double_t *Y=NULL){
+Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t min, RooSmearer& smearer, bool update=true, Double_t *Y=NULL){
   var->setVal(X[iMinStart]);
   Double_t chi2, chi2init=smearer.evaluate(); 
 
   Double_t locmin=1e20;
-  Int_t iLocMin=0;
+  Int_t iLocMin=iMinStart;
   std::queue<Double_t> chi2old;
   Double_t NY[200]={0.}; 
 
@@ -596,17 +596,20 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Int_t mi
 	locmin=chi2;
     }
       
-    if(!chi2old.empty() && chi2<chi2old.back()-10){ //remove history if chi2<chi2old
+    if(!chi2old.empty() && chi2<chi2old.back()-15){ //remove history if chi2<chi2old
       while(!chi2old.empty()){
 	chi2old.pop();
       }
     } 
 
-    if(chi2old.size()>2 && chi2-locmin > 300) break;
+    if(chi2old.size()>2 && chi2-min > 300){ std::cout << "stop 1" << std::endl; break;}
+    if(abs(i-iLocMin)>7 && chi2-min > 200){ std::cout << "stop 2" << std::endl; break;}
+    if(abs(i-iLocMin)>7 && chi2-locmin > 150){ std::cout << "stop 3" << std::endl; break;}
+    if(abs(i-iLocMin)>8 && chi2-locmin > 120){ std::cout << "stop 4" << std::endl; break;}
     if(chi2old.size()>4){
       if(chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-      if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
-      if(chi2old.size()> 7 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
+      if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >100) break; // jump to the next constTerm
+      if(chi2old.size()> 7 && chi2old.front()-chi2old.back()>100 && chi2-locmin >150) break; 
     }
 
     chi2old.push(chi2);
@@ -630,17 +633,20 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Int_t mi
 	locmin=chi2;
     } 
 
-    if(!chi2old.empty() && chi2<chi2old.back()-10){ //remove history if chi2<chi2old
+    if(!chi2old.empty() && chi2<chi2old.back()-15){ //remove history if chi2<chi2old
       while(!chi2old.empty()){
 	chi2old.pop();
       }
     } 
   
-    if(chi2old.size()>2 && chi2-locmin > 300) break;
+    if(chi2old.size()>2 && chi2-min > 300){ std::cout << "stop 1" << std::endl; break;}
+    if(abs(i-iLocMin)>7 && chi2-min > 200){ std::cout << "stop 2" << std::endl; break;}
+    if(abs(i-iLocMin)>7 && chi2-locmin > 150){ std::cout << "stop 3" << std::endl; break;}
+    if(abs(i-iLocMin)>8 && chi2-locmin > 120){ std::cout << "stop 4" << std::endl; break;}
     if(chi2old.size()>4){
-      if(chi2-chi2old.back() >80 && chi2-locmin >100) break; // jump to the next constTerm
-      if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >200) break; // jump to the next constTerm
-      if(chi2old.size()> 7 && chi2old.front()-chi2old.back()>100 && chi2-locmin >300) break; 
+      if(chi2-chi2old.back() >80 && chi2-locmin >100){ std::cout << "stop 5" << std::endl; break;}
+      if(chi2old.size()> 6 && chi2-chi2old.back() >40 && chi2-locmin >100){ std::cout << "stop 6" << std::endl; break;}
+      if(chi2old.size()> 7 && chi2old.front()-chi2old.back()>50 && chi2-locmin >100){ std::cout << "stop 7" << std::endl; break;}
     }
     chi2old.push(chi2);
   }
@@ -683,7 +689,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   Double_t v2=var2->getVal();
   Double_t chi2, chi2init=smearer.evaluate(); 
 
-  Double_t locmin=1e20;
+  Double_t locmin=1e20, locminSmooth=1e20;
   Int_t iLocMin1=0, iLocMin2, iLocMin2Prev=N2/3;
 
   TStopwatch myClock;
@@ -711,12 +717,12 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
 
 #ifndef smooth
     if(update==true || true) std::cout << "[DEBUG] " << var1->getVal() << "\t" << var2->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+#endif
     if(chi2<=locmin){ //local minimum
       iLocMin1=i1;
       iLocMin2=iLocMin2Prev;
       locmin=chi2;
     }
-#endif
   }
 
   // reset to initial value
@@ -729,15 +735,16 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     for(Int_t i2=0; i2<N2; i2++){
       Double_t content = h.GetBinContent(i1+1,i2+1);
       if(content>0){
-      if(update==true || true) std::cout << "[DEBUG] " << X1[i1] << "\t" << X2[i2] << "\t" << content-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
-      if(content>0 && locmin > content){
-	locmin=content;
-	iLocMin1=i1;
-	iLocMin2=i2;
-      }
+	if(update==true || true) std::cout << "[DEBUG] " << X1[i1] << "\t" << X2[i2] << "\t" << content-chi2init << "\t" << locminSmooth-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+	if(content>0 && locminSmooth > content){
+	  locminSmooth=content;
+	  iLocMin1=i1;
+	  iLocMin2=i2;
+	}
       }
     }
   }
+  locmin=locminSmooth;
 #endif
   if(update && locmin<min){ // updated absolute minimum
     min=locmin;
