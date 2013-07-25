@@ -116,9 +116,9 @@ for category in $categories
       runMin=`echo ${runrange} | cut -d '_' -f 2`
       runMax=`echo ${runrange} | cut -d '_' -f 3`
       #for runDependent mc
-     if [ "$runMin" -ge "190456" -a "$runMax" -le "196531" ];then runrange="-runNumber_194533_194533"; 
-     elif [ "$runMin" -ge "198111" -a "$runMax" -le "203742" ];then runrange="-runNumber_200519_200519";
-     elif [ "$runMin" -ge "203756" -a "$runMax" -le "208686" ];then runrange="-runNumber_206859_206859";
+     if [ "$runMin" -ge "190456" -a "$runMin" -le "196531" -a "$runMax" -le "198115" ];then runrange="-runNumber_194533_194533"; 
+     elif [ "$runMin" -ge "198111" -a "$runMin" -le "203742" -a "$runMax" -le "203852" ];then runrange="-runNumber_200519_200519";
+     elif [ "$runMin" -ge "203756" -a "$runMin" -le "208686" ];then runrange="-runNumber_206859_206859";
      else runrange="";
      fi
   fi
