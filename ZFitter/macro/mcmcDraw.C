@@ -135,7 +135,7 @@ void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
                if ( (xb >= 1) && (xb <= nx) && (yb >= 1) && (yb <= ny)) {
                   bin = h->GetBin(xb,yb);
 		  if(buf[bin]>0){
-		    if(xb>9 && xb < 12) std::cout << bin << "\t" << xb << "\t" << yb << "\t" << buf[bin] << "\t" << h->GetBinContent(xb,yb) << std::endl;
+		    //if(xb>9 && xb < 12) std::cout << bin << "\t" << xb << "\t" << yb << "\t" << buf[bin] << "\t" << h->GetBinContent(xb,yb) << std::endl;
                   Double_t k = kernel[n*ksize_y +m];
                   //if ( (k != 0.0 ) && (buf[bin] != 0.0) ) { // General version probably does not want the second condition
                   if ( k != 0.0 ) {
@@ -302,7 +302,7 @@ TGraphErrors g(TTree *tree, TString alphaName, TString constTermName){
   Double_t const2=constTerm*constTerm;
   for(Double_t energy=20; energy<150; energy+=10){
     Double_t addSmearing = (sqrt(alpha2/energy+const2));
-    
+    std::cout << alpha << "\t" << constTerm << "\t" << addSmearing << std::endl;
     graph.SetPoint(iPoint, energy, addSmearing);
     graph.SetPointError(iPoint,0, 0);
     iPoint++;
@@ -387,7 +387,7 @@ RooHistPdf *nllToL(TH2F* hist){
     for(Int_t iBinY=1; iBinY <= hist->GetNbinsY(); iBinY++){
       Double_t binContent=hist->GetBinContent(iBinX, iBinY);
       Double_t b = binContent <= 0 ? 0 : exp(-binContent+min+50);
-      if(binContent != 0 && binContent-min<100) std::cout << iBinX << "\t" << iBinY << "\t" << binContent << "\t" << -binContent+min << "\t" << b << std::endl;
+      //      if(binContent != 0 && binContent-min<100) std::cout << iBinX << "\t" << iBinY << "\t" << binContent << "\t" << -binContent+min << "\t" << b << std::endl;
       //h->Fill(hist->GetXaxis()->GetBinLowEdge(iBinX), hist->GetYaxis()->GetBinLowEdge(iBinY),b);
       h->SetBinContent(iBinX, iBinY,b);
     }
@@ -681,7 +681,7 @@ TGraphErrors plot(RooDataSet *dataset, TString alpha, TString constTerm){
 
 
 
-void MakePlots(TString filename, TString energy="8TeV", TString lumi=""){
+void MakePlots(TString filename, float zmax=50, bool invert=false, TString energy="8TeV", TString lumi=""){
   TString outDir=filename; outDir.ReplaceAll("fitres","img");
   outDir="tmp/";
   //std::map<TString, TH2F *> deltaNLL_map;
@@ -708,9 +708,19 @@ void MakePlots(TString filename, TString energy="8TeV", TString lumi=""){
 
     TTree *tree = dataset2tree(dataset);
     TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
-    TH2F *hist = prof2d(tree, alphaName, constTermName, "nll", "(12,-0.0005,0.0115,29,-0.0025,0.1425)",true);
-
-//     //    deltaNLL_map.insert(std::pair <TString, TH2F *>(keyName,hist));
+    TString binning="(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
+    if(invert){
+      binning="(61,-0.0022975,0.1401475,40,0.00025,0.02025)";
+    }
+    TH2F *hist = invert ? prof2d(tree, constTermName, alphaName, "nll", binning, true,true) :
+      prof2d(tree, alphaName, constTermName, "nll", binning, true,true);
+    if(invert){
+      hist->GetXaxis()->SetTitle("#Delta #alpha");
+      hist->GetYaxis()->SetTitle("#Delta #sigma");
+    } else {
+      hist->GetYaxis()->SetTitle("#Delta #alpha");
+      hist->GetXaxis()->SetTitle("#Delta #sigma");
+    }
     hist->SaveAs(outDir+"/deltaNLL-"+constTermName+".root");
     hist->Draw("colz");
     bestFit_.Draw("P same");
@@ -718,26 +728,30 @@ void MakePlots(TString filename, TString energy="8TeV", TString lumi=""){
 
     Int_t iBinX, iBinY;
     Double_t x,y;
-    hist->GetBinWithContent2(0,iBinX,iBinY);
+    hist->GetBinWithContent2(1.99999660253524780e-04,iBinX,iBinY);
     x= hist->GetXaxis()->GetBinCenter(iBinX);
     y= hist->GetYaxis()->GetBinCenter(iBinY);
     TGraph nllBestFit(1,&x,&y);
 
+    
     nllBestFit.SetMarkerStyle(3);
     nllBestFit.SetMarkerColor(kRed);
     TList* contour68 = contourFromTH2(hist, 0.68);
 
     hist->Draw("colz");
-    hist->GetZaxis()->SetRangeUser(0,50);
-    bestFit_.Draw("P same");
+    hist->GetZaxis()->SetRangeUser(0,zmax);
+    //bestFit_.Draw("P same");
     nllBestFit.Draw("P same");
     //contour68->Draw("same");
     c->SaveAs(outDir+"/deltaNLL-"+constTermName+".png");
+    c->SaveAs(outDir+"/deltaNLL-"+constTermName+".eps");
+    c->Clear();
     hist->SaveAs("tmp/hist-"+constTermName+".root");
     nllBestFit.SaveAs("tmp/nllBestFit.root");
     contour68->SaveAs("tmp/contour68.root");
     delete hist;
-    hist = prof2d(tree, alphaName, constTermName, "nll", "(12,-0.0005,0.0115,29,-0.0025,0.1425)");
+    hist = prof2d(tree, alphaName, constTermName, "nll", 
+		  "(40,0.00025,0.02025,61,-0.0022975,0.1401475)", false,true);
     RooHistPdf *histPdf = nllToL(hist);
     delete hist;
     RooDataSet *gen_dataset=histPdf->generate(*histPdf->getVariables(),1000000,kTRUE,kFALSE);
@@ -788,6 +802,95 @@ void MakePlots(TString filename, TString energy="8TeV", TString lumi=""){
   f_in.Close();
   
   return;
+}
+
+
+TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString fname="outProfile-scaleStep2smearing_7-Et_25-trigger-noPF-EB.root"){
+  TString outDir=dirname; outDir.ReplaceAll("fitres","img");
+  outDir="tmp/";
+  //std::map<TString, TH2F *> deltaNLL_map;
+  
+  /*------------------------------ Plotto */
+  TCanvas c("ctoy","c");
+  
+  
+  TTree *toys = new TTree("toys","");
+  Double_t constTerm_tree, constTermTrue_tree;
+  Double_t alpha_tree, alphaTrue_tree;
+  char catName[100]; 
+  Int_t catIndex;
+  toys->Branch("constTerm", &constTerm_tree, "constTerm/D");
+  toys->Branch("alpha", &alpha_tree, "alpha/D");
+  toys->Branch("constTermTrue", &constTermTrue_tree, "constTermTrue/D");
+  toys->Branch("alphaTrue", &alphaTrue_tree, "alphaTrue/D");
+
+  toys->Branch("catName", catName, "catName/C");
+  toys->Branch("catIndex", &catIndex, "catIndex/I");
+  std::map<TString, Int_t> catIndexMap;
+
+  ///1/
+  for(int itoy =1; itoy <= 200; itoy++){
+    TString filename=dirname+"/"; filename+=itoy; filename+="/"+fname;
+    
+    TFile f_in(filename, "read");
+    if(f_in.IsZombie()){
+      std::cerr << "File opening error: " << filename << std::endl;
+      return NULL;
+    }
+
+    TList *KeyList = f_in.GetListOfKeys();
+    std::cout << KeyList->GetEntries() << std::endl;
+    for(int i =0; i <  KeyList->GetEntries(); i++){
+      c.Clear();
+      TKey *key = (TKey *)KeyList->At(i);
+      if(TString(key->GetClassName())!="RooDataSet") continue;
+      RooDataSet *dataset = (RooDataSet *) key->ReadObj();
+    
+      TString constTermName = dataset->GetName();
+      TString alphaName=constTermName; alphaName.ReplaceAll("constTerm","alpha");
+
+      TTree *tree = dataset2tree(dataset);
+      TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
+      TH2F *hist = prof2d(tree, alphaName, constTermName, "nll", 
+			  "(40,0.00025,0.02025,61,-0.0022975,0.1401475)", true,true);
+
+      Int_t iBinX, iBinY;
+      hist->GetBinWithContent2(1.99999660253524780e-04,iBinX,iBinY);
+
+      TString catName_=constTermName; catName_.ReplaceAll("constTerm_",""); catName_.ReplaceAll("-","_");
+      if(catIndexMap.count(catName_)==0) catIndexMap.insert(std::pair<TString,Int_t>(catName_,catIndexMap.size()));
+      catIndex=catIndexMap[catName_];
+
+      constTerm_tree =  hist->GetXaxis()->GetBinCenter(iBinX);
+      alpha_tree = hist->GetYaxis()->GetBinCenter(iBinY);
+      sprintf(catName,"%s", catName_.Data());
+      bestFit_.GetPoint(0, constTermTrue_tree,alphaTrue_tree);
+
+      toys->Fill();
+
+      delete tree;
+      delete hist;
+    
+    }
+    f_in.Close();
+  }
+  //toys->SaveAs("tmp/toysTree.root");
+  
+
+  return toys;
+}
+
+TH1F *PlotToys(TTree *tree, Int_t catIndex, bool constTerm){
+  TH1F *h= NULL;
+  TString cutString="catIndex=="; cutString+=catIndex;
+  if(constTerm){
+    tree->Draw("constTerm-constTermTrue>>constTerm", cutString);
+   h  = (TH1F *) gROOT->FindObject("constTerm");
+  } else{
+    tree->Draw("alpha-alphaTrue>>alpha",cutString);
+    h  = (TH1F *) gROOT->FindObject("alpha");
+  }
+  return h;
 }
 
 // lowEtaBad
