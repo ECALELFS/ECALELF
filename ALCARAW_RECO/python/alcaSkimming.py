@@ -334,11 +334,11 @@ process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron', 'pathALCAREC
                                   ]
 process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCASKIM")
 if(ZSkim):
-    process.NtupleFilterSeq= cms.Sequence(process.ZeeFilterSeq)
+    process.NtupleFilterSeq= cms.Sequence(process.ZeeFilter)
 elif(WSkim):
-    process.NtupleFilterSeq= cms.Sequence(process.WenuFilterSeq)
+    process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter)
 elif(ZSCSkim):
-    process.NtupleFilterSeq= cms.Sequence(process.ZSCFilterSeq)
+    process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
 
 else:
     process.NtupleFilterSeq = cms.Sequence()
@@ -478,7 +478,7 @@ process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
 process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
-                                                   ~process.ZeeFilter * process.WenuFilterSeq *
+                                                   ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilterSeq *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
 process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
@@ -492,9 +492,11 @@ process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
                                                  process.seqALCARECOEcalCalElectron)
 process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
-                                                 ~process.ZeeFilter * process.WenuFilterSeq *
+                                                 process.FilterSeq * 
+                                                 ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
                                                  process.seqALCARECOEcalCalElectron)
 process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
+                                                   process.FilterSeq *
                                                    ~process.ZeeFilter * process.ZSCFilterSeq *
                                                    process.seqALCARECOEcalCalElectron)
 

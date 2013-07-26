@@ -139,6 +139,10 @@ PassingTightId = selectedElectrons.clone(
     )
     )
 
+#------------------------------ electronID producer
+from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
+# process.EleSelectionProducers
+
 SCselector = cms.EDFilter("SuperClusterSelector",
                           src = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower'),
                           cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
@@ -150,8 +154,14 @@ eleSC = cms.EDProducer('ConcreteEcalCandidateProducer',
                   particleType = cms.string('gamma')
                   )
 
+selectedCands = cms.EDFilter("AssociatedVariableMaxCutCandRefSelector",
+                             src = cms.InputTag("eleSelectionProducers:loose"),
+                             max = cms.double("0.5")
+                             )
+
 eleSelSeq = cms.Sequence(
-    PassingVeryLooseId + PassingMediumId + PassingTightId +SCselector+eleSC )
+    PassingVeryLooseId + PassingMediumId + PassingTightId + #(eleSelectionProducers * selectedCands) +
+    (SCselector*eleSC))
 
 
 ############################################################
@@ -162,7 +172,6 @@ ZeeSelector =  cms.EDProducer("CandViewShallowCloneCombiner",
                               checkCharge = cms.bool(False),
                               cut   = cms.string("mass > 40 && mass < 140")
                               )
-
 
 
 #met, mt cuts for W selection
@@ -178,16 +187,16 @@ WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
 )
 
 
-WZSelector = cms.EDProducer("CandMerger",
-                            src = cms.VInputTag("WenuSelector", "ZeeSelector")
-                            )
-
- 
 EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
-                               decay = cms.string("PassingTightId eleSC"),
+                               decay = cms.string("PassingVeryLooseId eleSC"),
                                checkCharge = cms.bool(False), 
                                cut   = cms.string("mass > 40 && mass < 140")
                                )
+WZSelector = cms.EDProducer("CandMerger",
+                            src = cms.VInputTag("WenuSelector", "ZeeSelector", "EleSCSelector")
+                            )
+
+ 
 
 ############################################################
 # Filters
@@ -211,6 +220,7 @@ ZSCFilter = cms.EDFilter("CandViewCountFilter",
                          src = cms.InputTag("eleSC"),
                          minNumber = cms.uint32(1)
                          )
+FilterSeq = cms.Sequence(eleSelSeq * (ZeeSelector + WenuSelector + EleSCSelector))
 ZeeFilterSeq = cms.Sequence(eleSelSeq * ZeeSelector * ZeeFilter)    
 WenuFilterSeq = cms.Sequence(eleSelSeq * WenuSelector * WenuFilter)
 WZFilterSeq = cms.Sequence(eleSelSeq * WZFilter)
