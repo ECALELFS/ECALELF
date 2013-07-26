@@ -687,6 +687,16 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   //initial values
   Double_t v1=var1->getVal();
   Double_t v2=var2->getVal();
+  if(var1->isConstant()){
+    X1[0] = v1;
+    N1=1;
+  }
+  if(var2->isConstant()){
+    X2[0] = v2;
+    N2=1;
+  }
+
+      
   Double_t chi2, chi2init=smearer.evaluate(); 
 
   Double_t locmin=1e20, locminSmooth=1e20;
@@ -911,7 +921,7 @@ void MinimizationProfile(RooSmearer& smearer, RooArgSet args, long unsigned int 
       TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
       RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList_.find(alphaName): NULL;
       if(name.Contains("alpha")) continue;
-      if(var2!=NULL && var2->isConstant()) var2=NULL;
+      //if(var2!=NULL && var2->isConstant()) var2=NULL; // to use MinProfile 1D instead of 2D
       //taking large profile
       for(int iProfile=2; iProfile<4; iProfile++){
 	if(var2==NULL) MinProfile(var, smearer, iProfile, min_old, min); //updateError += MinProfile(var, smearer, iProfile, min_old, min);
