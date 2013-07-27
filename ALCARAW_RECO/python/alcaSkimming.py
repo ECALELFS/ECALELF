@@ -570,6 +570,21 @@ else:
 ############################################################
 # Schedule definition
 ##############################
+if(options.skim=='WSkim'):
+    process.outputALCARAW.SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron')
+        )
+    process.outputALCARECO.SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')
+        )
+elif(options.skim=='ZSkim'):
+    process.outputALCARAW.SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
+        )
+    process.outputALCARECO.SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron')
+        )
+
 if(options.type=='ALCARAW'):
     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,
                                     process.reconstruction_step,process.endjob_step, 
@@ -580,14 +595,6 @@ if(options.type=='ALCARAW'):
                                     process.pathALCARECOEcalCalZSCElectron,
                                     process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
     
-    if(options.skim=='WSkim'):
-        process.outputALCARAW.SelectEvents = cms.untracked.PSet(
-            SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron')
-            )
-    elif(options.skim=='ZSkim'):
-        process.outputALCARAW.SelectEvents = cms.untracked.PSet(
-            SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
-            )
 
 elif(options.type=='ALCARERECO'):
     process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step, process.NtuplePath)
