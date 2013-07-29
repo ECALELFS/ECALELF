@@ -33,6 +33,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
+//#define DEBUG
 //
 // class declaration
 //
@@ -113,11 +114,28 @@ ValueMapTraslator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    //------------------------------ 
    iEvent.getByLabel(referenceCollectionTAG, referenceHandle);
    iEvent.getByLabel(inputCollectionTAG, inputHandle);
-   
+
    for(Map_t::const_iterator valueMap_itr = inputHandle->begin();
        valueMap_itr != inputHandle->end();
        valueMap_itr++){
+     for(unsigned int i = 0; i < valueMap_itr.size(); i++){
+#ifdef DEBUG
+       std::cout << valueMap_itr[i] << std::endl;
+#endif
+       valueVector.push_back((valueMap_itr[i])); //valueMap_itr-inputHandle->begin()]));
+     }
    }
+
+#ifdef DEBUG   
+   std::cout << "Size: " << referenceHandle->size() << "\t" << inputHandle->size() << "\t" << valueVector.size() << std::endl;
+
+   for(reco::GsfElectronCollection::const_iterator electron = referenceHandle->begin();
+       electron!= referenceHandle->end();
+       electron++){
+     reco::GsfElectronRef eleRef(referenceHandle, electron-referenceHandle->begin());
+     std::cout <<  (*inputHandle)[eleRef] << std::endl;
+   }
+#endif
    Map_t::Filler filler(*valueVectorPtr);
    filler.insert(referenceHandle, valueVector.begin(), valueVector.end());
    filler.fill();
