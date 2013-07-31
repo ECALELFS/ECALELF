@@ -504,6 +504,11 @@ float RooSmearer::getCompatibility() const
 #endif
   }
   //if(withSmearToy) std::cout << "[DEBUG] Compatibility2: " << compatibility << "\t" << compatibility - nllMin << std::endl;
+  if(dataset!=NULL && lastNLL!=compatibility){
+    myClass->nllVar.setVal(compatibility);
+    myClass->dataset->add(RooArgSet(_paramSet,nllVar));
+  }
+
   myClass->lastNLL=compatibility;
   myClass->lastNLLrms=sqrt(lastNLLrms);
   
@@ -514,6 +519,7 @@ float RooSmearer::getCompatibility() const
       myClass->nllMin=compatibility;
     }
   }
+
   //  myClock->Stop();
   //  myClock->Print();
 return compatibility;
@@ -558,10 +564,6 @@ Double_t RooSmearer::evaluate() const
   double weight=(nllBase*2-comp_mean);
   if(weight<0) weight=1;
   myClass->_markov.AddFast(myClass->_paramSet, comp_mean, weight);
-  if(dataset!=NULL){
-    myClass->nllVar.setVal(comp_mean);
-    myClass->dataset->add(RooArgSet(_paramSet,nllVar));
-  }
 #ifdef CPU_DEBUG
   ///  myClock->Stop();
   //  std::cout << "Elapsed time for add to MarkovChain: CPU " << myClock->CpuTime() << "; Real " <<  myClock->RealTime() << " s " << std::endl;
