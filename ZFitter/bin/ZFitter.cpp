@@ -1819,6 +1819,8 @@ int main(int argc, char **argv) {
     TString varName=*region_itr;
     TPRegexp reg("Et_[0-9]*_[0-9]*");
     reg.Substitute(varName,"");
+    TPRegexp reg2("energySC_[0-9]*_[0-9]*");
+    reg2.Substitute(varName,"");
     varName.ReplaceAll("--","-");
     if(varName.First("-")==0) varName.Remove(0,1);
 
@@ -1832,7 +1834,7 @@ int main(int argc, char **argv) {
       //const_term_v->setConstant(true);
       args.add(*const_term_v);
     } 
-    if(reg.MatchB(*region_itr) && vm.count("constTermFix")==1){
+    if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) )&& vm.count("constTermFix")==1){
       const_term_ = new RooFormulaVar("constTerm_"+*region_itr, "constTerm_"+varName,"@0", *const_term_v);
       const_term_v->setConstant(false);
     } else const_term_ = const_term_v;
@@ -2140,7 +2142,7 @@ int main(int argc, char **argv) {
 	      double min=0.;
 	      TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
 	      RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName): NULL;
-	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
+	      if(var2!=NULL && name.Contains("constTerm")){ // && var2->isConstant()==false){
 		smearer.SetDataSet(name,TString(var->GetName())+TString(var2->GetName()));
 		MinProfile2D(var, var2, smearer, -1, 0., min, false);
 		//MinMCMC2D(var, var2, smearer, 1, 0., min, 1200, false);

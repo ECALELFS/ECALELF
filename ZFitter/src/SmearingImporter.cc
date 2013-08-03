@@ -177,7 +177,7 @@ void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryLis
 
 }
 
-void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents){
+void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents, bool isToy, bool externToy){
     
   // for the energy calculation
   Float_t         energyEle[2];
@@ -194,7 +194,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
   Int_t           smearerCat[2];
   bool hasSmearerCat=false;
+
+  // for toy repartition
+  Long64_t eventNumber;
+
   //------------------------------
+  chain->SetBranchAddress("eventNumber", &eventNumber);
+
   chain->SetBranchAddress(_energyBranchName, energyEle);
   if(chain->GetBranch("scaleEle")!=NULL){
     std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
@@ -202,9 +208,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   } 
 
   if(chain->GetBranch("smearEle")!=NULL){
-    std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
-    chain->SetBranchAddress("smearEle", smearEle_);
-  } 
+    if(isToy==false || (externToy==true && isToy==true)){
+      std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
+      chain->SetBranchAddress("smearEle", smearEle_);
+    } 
+  }
 
   chain->SetBranchAddress("etaEle", etaEle);
   chain->SetBranchAddress("phiEle", phiEle);
@@ -278,6 +286,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   for(Long64_t jentry=0; jentry < entries; jentry++){
     Long64_t entryNumber= chain->GetEntryNumber(jentry);
     chain->GetEntry(entryNumber);
+    if(isToy){
+      if(isMC && eventNumber%3==0) continue;
+      if(!isMC && eventNumber%3!=0) continue;
+    }
+
     if (hasSmearerCat==false && chain->GetTreeNumber() != treenumber) {
       treenumber = chain->GetTreeNumber();
       for(std::vector< std::pair<TTreeFormula*, TTreeFormula*> >::const_iterator catSelector_itr = catSelectors.begin();
@@ -358,7 +371,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 }
 
-SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents){
+SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents, bool isToy, bool externToy){
 
   TString eleID_="eleID_"+_eleID;
 
@@ -374,7 +387,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   _chain->SetBranchStatus("etaEle", 1);
   _chain->SetBranchStatus("phiEle", 1);
   _chain->SetBranchStatus(_energyBranchName, 1);
-
+  if(isToy) _chain->SetBranchStatus("eventNumber",1);
   //  std::cout << _chain->GetBranchStatus("seedXSCEle") <<  std::endl;
   //  std::cout << _chain->GetBranchStatus("etaEle") <<  std::endl;
 
@@ -428,7 +441,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
     }
   }
 
-  Import(_chain, cache, oddString, isMC, nEvents);
+  Import(_chain, cache, oddString, isMC, nEvents, isToy, externToy);
 #ifdef DEBUG
   int index=0;
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
