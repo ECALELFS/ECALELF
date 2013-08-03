@@ -33,6 +33,18 @@ fi
 
 argumentfile=${UI_WORKING_DIR}/share/arguments.xml
 
+while [ "${emptyJobID}" != "1" ]; do
+    echo "remove emptyJob: ${emptyJobID}"
+    sed -i "\cJobID=\"${emptyJobID}\"c d" ${argumentfile}
+    sed -i "s|JobID=\"${jobIDmax}\"|JobID=\"${emptyJobID}\"|" ${argumentfile}
+    emptyJobID=`sed '/InputFiles=""/ d;s|.*JobID="||;s|".*||;\c</Job>c d;/arguments/ d;/InputFiles=\"\"/ d' prod_alcaraw/SingleElectron-WSkim-RUN2012A-22Jan-v1/190645-193621/share/arguments.xml | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
+done
+exit 0  
+
+#jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
+#awk "BEGIN{n=0};{if(/JobID=\"${jobIDmax}\"/){n++;job=${jobIDmax}+n;print job;line=\$0;sub(\"JobID=\\\"${jobIDmax}\\\"\",\"JobID=\\\"\"job\"\\\"\",line); print line} }" > tmp/argument.tmp
+
+
 if [ -e "${UI_WORKING_DIR}/share/arguments.xml-bak" ];then
     cp ${UI_WORKING_DIR}/share/arguments.xml-bak $argumentfile 
 else
@@ -57,46 +69,80 @@ fi
 # remove the line with the end-tag and place it at the end of the corresponding tag
 sed -i '\c[ ]*</Job>c d; s| >| ></Job>|;' $argumentfile
 
-for file in $filelist
+eventList=`cat ${UI_WORKING_DIR}/share/eventList.dat`
+IFS=$'\n'
+# for list in $eventList
+#   do
+#   #echo $list
+#   nEvents=`echo $list | cut -f 1`
+#   file=`echo $list | cut  -f 2`
+
+#   if [ "${nEvents}" == "0" ];then 
+#       sed -i "s|$file||" $argumentfile
+#   fi
+# done
+
+jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
+echo $jobIDmax
+let jobIDmax=$jobIDmax+1
+sed -i "/InputFiles=\"[-/0-Z.]*,.*\"/{ 
+    h; 
+    :first
+    { 
+    s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.]*\\).*\"|InputFiles=\"\\1\"|; p;
+    g;s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.,]*\\)\"|InputFiles=\"\\2\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; h;
+    }; } 
+    :successive
+    {
+    /InputFiles=\"[-/0-Z.]*,.*\"/{ 
+    s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.,]*\\)\"|InputFiles=\"\\1\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; p;
+    g;s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.,]*\\)\"|InputFiles=\"\\2\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; h;
+    }
+    }; t successive" $argumentfile
+
+nJobMax=`grep "jobID=\"$jobIDmax\"" $argumentfile |wc -l`
+awk "BEGIN{n=0};{if(/JobID=\"${jobIDmax}\"/){n++;job=${jobIDmax}+n;print job;line=\$0;sub(\"JobID=\\\"${jobIDmax}\\\"\",\"JobID=\\\"\"job\"\\\"\",line); print line}else{print \$0} }" $argumentfile > tmp/argument.tmp
+mv tmp/argument.tmp $argumentfile
+
+for list in $eventList
   do
-  nEvents=`grep $file ${UI_WORKING_DIR}/share/eventList.dat | cut -f 1`
-  # remove empty files
-  if [ "${nEvents}" == "0" ];then 
-      sed -i "s|$file||" $argumentfile
+  #echo $list
+  nEvents=`echo $list | cut -f 1`
+  file=`echo $list | cut  -f 2`
+  if [ "${nEvents}" == "0" ];then
+      continue;
+  fi
+  jobIDs=`grep $file $argumentfile | sed 's|.*JobID="||;s|".*||'`
+  jobID=${jobIDs[0]}
+  if [ "`echo $jobIDs | wc -w`" != "1" ];then
+      grep $file $argumentfile
+      echo "$nEvents $file"
+      continue
+  fi
+  
+  if [ "${nEvents}" -gt "4000" ];then
+      while [ "$nEvents" -gt "4000" ]; do
+	  let nEvents=$nEvents-3000
+	  let jobIDmax=$jobIDmax+1
+	  newJobID=${jobIDmax};
+#  	  echo $jobID $jobIDmax $newJobID $nEvents
+	  sed -i "/JobID=\"$jobID\"/ {/MaxEvents=\"-1\"/{p;s|MaxEvents=\"-1\"|MaxEvents=\"3000\"|;s|SkipEvents=\"0\"|SkipEvents=\"${nEvents}\"|;s|JobID=\"$jobID\"|JobID=\"${newJobID}\"|}}" ${argumentfile}
+      done
+      sed -i "/JobID=\"$jobID\"/ {s|MaxEvents=\"-1\"|MaxEvents=\"$nEvents\"|}" $argumentfile
+  fi  
+done
+
+exit 0
+emptyJobID=`grep '/InputFiles=""/' $argumentfile` #| sed '{s|.*JobID="||;s|".*||}' | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
+echo $emptyJobID
+exit 0
+
+# remove empty files
+      echo 
   else
-      if [ "${nEvents}" -le "4000" ];then
-	  a=1
-      else
-	  jobIDs=`grep $file $argumentfile | sed 's|.*JobID="||;s|".*||'`
-	  if [ "`echo $jobIDs | wc -w`" != "1" ];then
-	      
-	      emptyJobID=`grep 'InputFiles=""' $argumentfile | head -1 | sed 's|.*JobID="||;s|".*||'`
-	      if [ "${emptyJobID}" != "" ];then
-		  echo "Replacing empty job ${emptyJobID} with file $file"
-		  sed -i "s|$file||" $argumentfile
-		  sed -i "/JobID=\"${emptyJobID}\"/{s|InputFiles=\"\"|InputFiles=\"$file\"|}" $argumentfile
-	      else
-		  sed "/${jobIDs[0]}/ {p;s|${jobIDs[0]}|${newJobID}|} "
-		  # have to put a new job
-		  echo "Error: $file"
-		  exit 1
-	      fi
+	  
 	  fi
 	  jobID=${jobIDs[0]}
-	  while [ "$nEvents" -gt "4000" ]; do
-	      let nEvents=$nEvents-3000
-	      emptyJobID=`grep 'InputFiles=""' $argumentfile | head -1 | sed 's|.*JobID="||;s|".*||'`
-	      if [ "${emptyJobID}" != "" ];then
-		  newJobID=${emptyJobID}
-		  sed -i "/JobID=\"${emptyJobID}\"/ d" $argumentfile
-	      else
-		  let jobIDmax=$jobIDmax+1
-		  newJobID=${jobIDmax};
-	      fi
-	      echo $jobID $jobIDmax $newJobID $nEvents
-	      sed -i "/JobID=\"$jobID\"/ {/MaxEvents=\"-1\"/{p;s|MaxEvents=\"-1\"|MaxEvents=\"3000\"|;s|SkipEvents=\"0\"|SkipEvents=\"${nEvents}\"|;s|JobID=\"$jobID\"|JobID=\"${newJobID}\"|;s|$|</Job>|}}" ${argumentfile}
-	  done
-	  sed -i "/JobID=\"$jobID\"/ {s|MaxEvents=\"-1\"|MaxEvents=\"$nEvents\"|}" $argumentfile
 	      
 	  #else
 	  #    echo "Error $file not in $argumentfile"
@@ -114,13 +160,6 @@ sed -i 's|</Job></Job>|</Job>|' $argumentfile
 exit 0
 #removing jobID without input files
 echo "JobIDmax = $jobIDmax"
-emptyJobID=`sed '/InputFiles=""/ d;s|.*JobID="||;s|".*||;\c</Job>c d;/arguments/ d;/InputFiles=\"\"/ d' prod_alcaraw/SingleElectron-WSkim-RUN2012A-22Jan-v1/190645-193621/share/arguments.xml | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
-while [ "${emptyJobID}" != "1" ]; do
-    echo "remove emptyJob: ${emptyJobID}"
-    sed -i "\cJobID=\"${emptyJobID}\"c d" ${argumentfile}
-    sed -i "s|JobID=\"${jobIDmax}\"|JobID=\"${emptyJobID}\"|" ${argumentfile}
-    emptyJobID=`sed '/InputFiles=""/ d;s|.*JobID="||;s|".*||;\c</Job>c d;/arguments/ d;/InputFiles=\"\"/ d' prod_alcaraw/SingleElectron-WSkim-RUN2012A-22Jan-v1/190645-193621/share/arguments.xml | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
-done
 echo "JobIDmax = $jobIDmax"
 
 jobIDmax=`grep JobID ${argumentfile} | wc -l`
