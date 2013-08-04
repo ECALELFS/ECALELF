@@ -130,10 +130,15 @@ process = cms.Process(processName)
 #                                    )
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
+process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
+process.load('Configuration.StandardSequences.L1Reco_cff')
+process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
+process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff')
 
@@ -319,16 +324,20 @@ if (HLTFilter):
 # particle flow isolation
 #
 
-from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
-process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence)
+process.pfiso = cms.Sequence()
 
 ###############################
 # ECAL Recalibration
 ###############################
 
 if (options.type=="ALCARAW"):
-    process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
+    process.raw2digi_step = cms.Path(process.RawToDigi)
+    process.L1Reco_step = cms.Path(process.L1Reco)
+    process.reconstruction_step = cms.Path(process.reconstruction)
+    process.endjob_step = cms.EndPath(process.endOfProcess)
+
+    process.load('calibration.ALCARAW_RECO.sandboxSeq_cff')
+
     # this module provides:
     #process.sandboxSeq  = uncalibRecHitSeq
 else:
@@ -383,10 +392,17 @@ if(options.type=="ALCARERECO"):
     else:
         process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * process.alcarecoSeq)
 
+if(options.type=="ALCARECO"):
+    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons')
+    process.pfiso = cms.Sequence(process.pfParticleSelectionSequence + process.eleIsoSequence)
+    
 if((not options.type=="ALCARERECO") ):
     process.load('RecoJets.Configuration.RecoPFJets_cff')
     process.kt6PFJetsForRhoCorrection = process.kt6PFJets.clone(doRhoFastjet = True)
     process.kt6PFJetsForRhoCorrection.Rho_EtaMax = cms.double(2.5)
+
+
     if(options.skim!="fromWSkim"):
         process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection * process.pfiso) 
     else:
@@ -561,3 +577,9 @@ else:
             process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
             process.source.lumisToProcess.extend(myLumis)
 
+
+# Schedule definition
+if(options.type=='ALCARAW'):
+    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
+else:
+    process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step)
