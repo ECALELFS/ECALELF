@@ -56,7 +56,7 @@ for outFile in $outFiles
   cat >> tmp/sed.sed <<EOF
 \#if \[ -e ./$outFile#,+8 c #check output ${outFile_base}
 /#check output ${outFile_base}/ a outFile_base=${outFile_base}
-/#check output ${outFile_base}/ a for file in ${outFile_base}*.root; do\n  if [ -e "\$file" ] ; then\n    newFile=\`basename \$file .root\`_\$OutUniqueID.root;\n    mv \$file \$newFile;\n    ln -s \`pwd\`/\$newFile \$RUNTIME_AREA/\`basename \$file\`;\n else\n    job_exit_code=60302;\n    echo "WARNING: Output file \$file not found";\n  fi;\ndone;\n\nfor file in \$SOFTWARE_DIR/\${outFiles_base}*\$OutUniqueID.root;  do  file_list="\$file_list,\$file";done;file_list=\`echo \$file_list\| sed 's\|,\|\|'\`\n echo \${file_list}
+/#check output ${outFile_base}/ a for file in ${outFile_base}*.root; do\n  if [ -e "\$file" ] ; then\n    newFile=\`basename \$file .root\`_\$OutUniqueID.root;\n    mv \$file \$newFile;\n    ln -s \`pwd\`/\$newFile \$RUNTIME_AREA/\`basename \$file\`;\n else\n    job_exit_code=60302;\n    echo "WARNING: Output file \$file not found";\n  fi;\ndone;\n\nfor file in \$SOFTWARE_DIR/\${outFile_base}*\$OutUniqueID.root;  do  file_list="\$file_list,\$file";done;file_list=\`echo \$file_list\| sed 's\|^,\|\|'\`\n echo \${file_list}
 EOF
 done
 
