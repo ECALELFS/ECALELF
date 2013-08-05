@@ -32,18 +32,29 @@ fi
 
 
 argumentfile=${UI_WORKING_DIR}/share/arguments.xml
+jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
 
-while [ "${emptyJobID}" != "1" ]; do
-    echo "remove emptyJob: ${emptyJobID}"
-    sed -i "\cJobID=\"${emptyJobID}\"c d" ${argumentfile}
-    sed -i "s|JobID=\"${jobIDmax}\"|JobID=\"${emptyJobID}\"|" ${argumentfile}
-    emptyJobID=`sed '/InputFiles=""/ d;s|.*JobID="||;s|".*||;\c</Job>c d;/arguments/ d;/InputFiles=\"\"/ d' prod_alcaraw/SingleElectron-WSkim-RUN2012A-22Jan-v1/190645-193621/share/arguments.xml | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
+cp $argumentfile tmp/arguments.xml || exit 1
+while [ "${jobIDmax}" -gt "5000" ];do
+    let jobIDmax=$jobIDmax-4000    
+    sed  "/ui_working_dir/ d;/datasetpath/ d;/total_number_of_lumis/ d;/lumis_per_job/ d;/\[CMSSW\]/ a total_number_of_events=4000\nnumber_of_jobs=4000\ndatasetpath=None\n" ${UI_WORKING_DIR}/share/crab.cfg > tmp/crab.cfg || exit 1
+    sed -i "/\[USER\]/ a ui_working_dir=${UI_WORKING_DIR}/sub-${jobIDmax}" tmp/crab.cfg
+    sed -i "/user_remote_dir/ {s|\$|/sub-${jobIDmax}|}" tmp/crab.cfg
+#    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
+    crab -cfg tmp/crab.cfg -create || exit 1
+    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID>$jobIDmax && jobID<$jobIDmax+4000){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-${jobIDmax}/share/arguments.xml || exit 1
+
 done
-exit 0  
 
-#jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
-#awk "BEGIN{n=0};{if(/JobID=\"${jobIDmax}\"/){n++;job=${jobIDmax}+n;print job;line=\$0;sub(\"JobID=\\\"${jobIDmax}\\\"\",\"JobID=\\\"\"job\"\\\"\",line); print line} }" > tmp/argument.tmp
+sed  "/ui_working_dir/ d;/datasetpath/ d;/total_number_of_lumis/ d;/lumis_per_job/ d;/\[CMSSW\]/ a total_number_of_events=${jobIDmax}\nnumber_of_jobs=${jobIDmax}\ndatasetpath=None\n" ${UI_WORKING_DIR}/share/crab.cfg > tmp/crab.cfg || exit 1
+sed  -i '/user_remote_dir/ {s|$|/sub-0|}' tmp/crab.cfg || exit 1
+    sed -i "/\[USER\]/ a ui_working_dir=${UI_WORKING_DIR}/sub-0" tmp/crab.cfg
+#    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
+    crab -cfg tmp/crab.cfg -create || exit 1
+    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID<=$jobIDmax){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-0/share/arguments.xml || exit 1
 
+
+exit 0
 
 if [ -e "${UI_WORKING_DIR}/share/arguments.xml-bak" ];then
     cp ${UI_WORKING_DIR}/share/arguments.xml-bak $argumentfile 
@@ -71,38 +82,54 @@ sed -i '\c[ ]*</Job>c d; s| >| ></Job>|;' $argumentfile
 
 eventList=`cat ${UI_WORKING_DIR}/share/eventList.dat`
 IFS=$'\n'
-# for list in $eventList
-#   do
-#   #echo $list
-#   nEvents=`echo $list | cut -f 1`
-#   file=`echo $list | cut  -f 2`
+for list in $eventList
+  do
+  #echo $list
+  nEvents=`echo $list | cut -f 1`
+  file=`echo $list | cut  -f 2`
 
-#   if [ "${nEvents}" == "0" ];then 
-#       sed -i "s|$file||" $argumentfile
-#   fi
-# done
+  if [ "${nEvents}" == "0" ];then 
+      sed -i "s|$file||;s|,,|,|" $argumentfile
+  fi
+done
 
 jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
 echo $jobIDmax
 let jobIDmax=$jobIDmax+1
-sed -i "/InputFiles=\"[-/0-Z.]*,.*\"/{ 
+sed -i "/InputFiles=\".*,.*\"/{ 
     h; 
-    :first
-    { 
-    s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.]*\\).*\"|InputFiles=\"\\1\"|; p;
-    g;s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.,]*\\)\"|InputFiles=\"\\2\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; h;
-    }; } 
+    s|InputFiles=\"\\([^,]*\\),\\(.*\\).*\"|InputFiles=\"\\1\"|; p;
+     g;s|InputFiles=\"\\([^,]*\\),\\(.*\\)\"|InputFiles=\"\\2\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; h;   
+    };  
     :successive
     {
-    /InputFiles=\"[-/0-Z.]*,.*\"/{ 
-    s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.,]*\\)\"|InputFiles=\"\\1\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; p;
-    g;s|InputFiles=\"\\([-/0-Z.]*\\),\\([-/0-Z.,]*\\)\"|InputFiles=\"\\2\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; h;
+    /InputFiles=\".*,.*\"/{ 
+    s|InputFiles=\"\\([^,]*\\),\\(.*\\)\"|InputFiles=\"\\1\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; p;
+    g;s|InputFiles=\"\\([^,]*\\),\\(.*\\)\"|InputFiles=\"\\2\"|;s|JobID=\"[0-9]*\"|JobID=\"${jobIDmax}\"|; h;
     }
     }; t successive" $argumentfile
 
 nJobMax=`grep "jobID=\"$jobIDmax\"" $argumentfile |wc -l`
 awk "BEGIN{n=0};{if(/JobID=\"${jobIDmax}\"/){n++;job=${jobIDmax}+n;print job;line=\$0;sub(\"JobID=\\\"${jobIDmax}\\\"\",\"JobID=\\\"\"job\"\\\"\",line); print line}else{print \$0} }" $argumentfile > tmp/argument.tmp
 mv tmp/argument.tmp $argumentfile
+
+
+jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
+emptyJobIDs=`grep 'InputFiles=\"\"' $argumentfile |  sed '{s|.*JobID="||;s|".*||}' | sort -n -r`
+
+for emptyJobID in $emptyJobIDs
+  do
+  if [ "${jobIDmax}" == "${emptyJobID}" ];then
+      let jobIDmax=$jobIDmax-1
+      sed -i "/JobID=\"${emptyJobID}\"/ d;" $argumentfile
+      continue
+  fi
+#  echo $emptyJobID
+#  grep "JobID=\"$jobIDmax\"" $argumentfile
+  sed -i "/JobID=\"${emptyJobID}\"/ d; s|JobID=\"${jobIDmax}\"|JobID=\"${emptyJobID}\"|" $argumentfile
+  let jobIDmax=$jobIDmax-1
+done
+
 
 for list in $eventList
   do
@@ -115,7 +142,7 @@ for list in $eventList
   jobIDs=`grep $file $argumentfile | sed 's|.*JobID="||;s|".*||'`
   jobID=${jobIDs[0]}
   if [ "`echo $jobIDs | wc -w`" != "1" ];then
-      grep $file $argumentfile
+#      grep $file $argumentfile
       echo "$nEvents $file"
       continue
   fi
@@ -133,36 +160,11 @@ for list in $eventList
 done
 
 exit 0
-emptyJobID=`grep '/InputFiles=""/' $argumentfile` #| sed '{s|.*JobID="||;s|".*||}' | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
-echo $emptyJobID
-exit 0
+# emptyJobID=`grep '/InputFiles=""/' $argumentfile` #| sed '{s|.*JobID="||;s|".*||}' | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`
+# echo $emptyJobID
+#exit 0
 
-# remove empty files
-      echo 
-  else
-	  
-	  fi
-	  jobID=${jobIDs[0]}
-	      
-	  #else
-	  #    echo "Error $file not in $argumentfile"
-	  #fi
-      fi
-  fi
-  
-done
 
-exit 0
-
-sed -i '\c^[ ]*</Job>c d; s| >$| ></Job>|;' $argumentfile
-sed -i 's|</Job></Job>|</Job>|' $argumentfile
-
-exit 0
-#removing jobID without input files
-echo "JobIDmax = $jobIDmax"
-echo "JobIDmax = $jobIDmax"
-
-jobIDmax=`grep JobID ${argumentfile} | wc -l`
 cp $argumentfile tmp/arguments.xml || exit 1
 while [ "${jobIDmax}" -gt "5000" ];do
     let jobIDmax=$jobIDmax-4000    
