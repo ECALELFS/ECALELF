@@ -336,7 +336,7 @@ if (options.type=="ALCARAW"):
     process.reconstruction_step = cms.Path(process.reconstruction)
     process.endjob_step = cms.EndPath(process.endOfProcess)
 
-    process.load('calibration.ALCARAW_RECO.sandboxSeq_cff')
+    process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
 
     # this module provides:
     #process.sandboxSeq  = uncalibRecHitSeq
