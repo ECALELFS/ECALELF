@@ -274,13 +274,33 @@ EOF
 
 if [ -n "${CREATE}" ];then
     crab -cfg ${crabFile} -create
-    ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
+    ./scripts/splitArguments.sh -u ${UI_WORKING_DIR}
+    if [ -d "${UI_WORKING_DIR}/sub-0" ];then
+	UI_WORKING_DIRS=`ls -d ${UI_WORKING_DIR}/sub-*`
+    else
+	UI_WORKING_DIRS=${UI_WORKING_DIR}
+    fi
+    for ui_working_dir in ${UI_WORKING_DIRS}
+      do
+      ./scripts/splittedOutputFilesCrabPatch.sh -u ${ui_working_dir}
+    done
+
 #crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARAW
+fi
+
+if [ -d "${UI_WORKING_DIR}/sub-0" ];then
+    UI_WORKING_DIRS=`ls -d ${UI_WORKING_DIR}/sub-*`
+else
+    UI_WORKING_DIRS=${UI_WORKING_DIR}
 fi
 
 if [ -n "$SUBMIT" ]; then
     if [ -z "${TUTORIAL}" ];then
-	crab -c ${UI_WORKING_DIR} -submit all
+	for ui_working_dir in ${UI_WORKING_DIRS}
+	  do
+	  echo "[STATUS] Submitting ${ui_working_dir}"
+	  crab -c ${ui_working_dir} -submit all
+	done
     else
 	crab -c ${UI_WORKING_DIR} -submit 1
     fi
@@ -303,7 +323,11 @@ else
 fi
 
 if [ -n "${CHECK}" ];then
-    resubmitCrab.sh -u ${UI_WORKING_DIR}
+    for ui_working_dir in ${UI_WORKING_DIRS}
+      do
+      echo "[STATUS] Checking ${ui_working_dir}"
+      resubmitCrab.sh -u ${ui_working_dir}
+    done
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"

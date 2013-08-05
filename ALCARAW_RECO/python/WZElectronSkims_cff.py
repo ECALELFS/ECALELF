@@ -176,8 +176,8 @@ ZeeSelector =  cms.EDProducer("CandViewShallowCloneCombiner",
 
 #met, mt cuts for W selection
 MT="sqrt(2*daughter(0).pt*daughter(1).pt*(1 - cos(daughter(0).phi - daughter(1).phi)))"
-MET_CUT_MIN = 20.
-W_ELECTRON_ET_CUT_MIN = 27.0
+MET_CUT_MIN = 25.
+W_ELECTRON_ET_CUT_MIN = 30.0
 MT_CUT_MIN = 50.
 
 WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
