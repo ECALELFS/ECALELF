@@ -5,6 +5,14 @@ allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_S
 194533-194533	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 200519-200519	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 206859-206859	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+#
+194533-194533	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+200519-200519	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+206859-206859	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+#
+194533-194533	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+200519-200519	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+206859-206859	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 ################### MC geometries and material
 allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-ExtFlat10S30_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-ExtFlat10S30	caf	group/alca_ecalcalib/alcareco
 allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-ExtFlat20S30_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-ExtFlat20S30	caf	group/alca_ecalcalib/alcareco
