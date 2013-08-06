@@ -505,7 +505,8 @@ process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * pro
 process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
 if(options.type=="ALCARERECO"):
     process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
-process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
+if(options.type=="ALCARAW"):
+    process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
 
 
 ############################################################
