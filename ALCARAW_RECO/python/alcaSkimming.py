@@ -576,3 +576,8 @@ else:
 #     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
 # else:
 #     process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step, process.ntuple)
+
+process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
+process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
+process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
+process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
