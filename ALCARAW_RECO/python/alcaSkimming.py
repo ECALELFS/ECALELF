@@ -571,8 +571,8 @@ else:
             process.source.lumisToProcess.extend(myLumis)
 
 
-# Schedule definition
-if(options.type=='ALCARAW'):
-    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
-else:
-    process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step)
+# # Schedule definition
+# if(options.type=='ALCARAW'):
+#     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
+# else:
+#     process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step, process.ntuple)
