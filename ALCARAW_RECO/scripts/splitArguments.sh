@@ -146,7 +146,7 @@ while [ "${jobIDmax}" -gt "5000" ];do
     sed -i "/user_remote_dir/ {s|\$|/sub-${jobIDmax}|}" tmp/crab.cfg
 #    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
     crab -cfg tmp/crab.cfg -create || exit 1
-    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID>$jobIDmax && jobID<$jobIDmax+4000){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-${jobIDmax}/share/arguments.xml || exit 1
+    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID>$jobIDmax && jobID<$jobIDmax+4000){jobID-=$jobIDmax;j=\"JobID=\\\"\"jobID\"\\\"\"; gsub(\"JobID=\\\"[0-9]*\\\"\",j,line);print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-${jobIDmax}/share/arguments.xml || exit 1
 
 done
 
@@ -156,7 +156,6 @@ sed  -i '/user_remote_dir/ {s|$|/sub-0|}' tmp/crab.cfg || exit 1
 #    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
     crab -cfg tmp/crab.cfg -create || exit 1
     awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID<=$jobIDmax){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-0/share/arguments.xml || exit 1
-
 
 exit 0
 
