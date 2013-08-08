@@ -59,10 +59,10 @@ class ValueMapTraslator : public edm::EDProducer {
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
       // ----------member data ---------------------------
-  edm::InputTag referenceCollectionTAG;
+  edm::InputTag referenceCollectionTAG,oldreferenceCollectionTAG;
   edm::InputTag inputCollectionTAG;
   std::string outputCollectionName;
-  edm::Handle<reco::GsfElectronCollection> referenceHandle;
+  edm::Handle<reco::GsfElectronCollection> referenceHandle,oldreferenceHandle;
   edm::Handle<Map_t> inputHandle;
 };
 
@@ -81,7 +81,8 @@ class ValueMapTraslator : public edm::EDProducer {
 ValueMapTraslator::ValueMapTraslator(const edm::ParameterSet& iConfig):
   referenceCollectionTAG(iConfig.getParameter<edm::InputTag>("referenceCollection")),
   inputCollectionTAG(iConfig.getParameter<edm::InputTag>("inputCollection")),
-  outputCollectionName(iConfig.getParameter<std::string>("outputCollection"))
+  outputCollectionName(iConfig.getParameter<std::string>("outputCollection")),
+  oldreferenceCollectionTAG(iConfig.getParameter<edm::InputTag>("oldreferenceCollection"))
 {
    //now do what ever other initialization is needed
   /// \todo outputCollectionName = inputCollection+postfix
@@ -113,6 +114,9 @@ ValueMapTraslator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    //------------------------------ 
    iEvent.getByLabel(referenceCollectionTAG, referenceHandle);
+#ifdef DEBUG
+   iEvent.getByLabel(oldreferenceCollectionTAG, oldreferenceHandle);
+#endif
    iEvent.getByLabel(inputCollectionTAG, inputHandle);
 
    for(Map_t::const_iterator valueMap_itr = inputHandle->begin();
@@ -122,18 +126,35 @@ ValueMapTraslator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 #ifdef DEBUG
        std::cout << valueMap_itr[i] << std::endl;
 #endif
-       valueVector.push_back((valueMap_itr[i])); //valueMap_itr-inputHandle->begin()]));
+       //       valueVector.push_back((valueMap_itr[i])); //valueMap_itr-inputHandle->begin()]));
      }
+     break;
    }
 
 #ifdef DEBUG   
-   std::cout << "Size: " << referenceHandle->size() << "\t" << inputHandle->size() << "\t" << valueVector.size() << std::endl;
+   std::cout << "Size: " << referenceHandle->size() << "\t" << oldreferenceHandle->size() << "\t" << inputHandle->size() << "\t" << valueVector.size() << std::endl;
 
-   for(reco::GsfElectronCollection::const_iterator electron = referenceHandle->begin();
-       electron!= referenceHandle->end();
-       electron++){
-     reco::GsfElectronRef eleRef(referenceHandle, electron-referenceHandle->begin());
-     std::cout <<  (*inputHandle)[eleRef] << std::endl;
+   for(reco::GsfElectronCollection::const_iterator electronNew = referenceHandle->begin();
+       electronNew!= referenceHandle->end();
+       electronNew++){
+    
+     for(reco::GsfElectronCollection::const_iterator electron = oldreferenceHandle->begin();
+	 electron!= oldreferenceHandle->end();
+	 electron++){
+       if(fabs(electronNew->eta() - electron->eta())>0.0001) continue;
+       if(fabs(electronNew->phi() - electron->phi())>0.0001) continue;
+	   
+       reco::GsfElectronRef eleRef(oldreferenceHandle, electron-oldreferenceHandle->begin());
+       reco::GsfElectronRef eleRef2(referenceHandle, electronNew-referenceHandle->begin());
+
+#ifdef DEBUG     
+       std::cout << eleRef->eta() << "\t" << eleRef2->eta() << "\t" 
+		 << eleRef->energy() << "\t" << eleRef2->energy() << "\t" 
+		 << (eleRef == eleRef2) << "\t" 
+		 <<  (*inputHandle)[eleRef] << std::endl;
+#endif
+     valueVector.push_back((*inputHandle)[eleRef]); //valueMap_itr-inputHandle->begin()]));
+     }
    }
 #endif
    Map_t::Filler filler(*valueVectorPtr);
