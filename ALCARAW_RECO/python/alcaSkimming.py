@@ -581,3 +581,9 @@ process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
+
+if(options.type=="ALCARERECO"):
+    process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
+    process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
+    process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
+                
