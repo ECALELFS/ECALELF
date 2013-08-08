@@ -598,11 +598,19 @@ if(options.type=='ALCARAW'):
     
 
 elif(options.type=='ALCARERECO'):
-    process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step, process.NtuplePath)
+    if(doTreeOnly):
+        process.schedule = cms.Schedule(process.NtuplePath)
+    else:
+        process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step,
+                                        process.NtuplePath)
 elif(options.type=='ALCARECO'):
-    process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron, process.pathALCARECOEcalCalZSCElectron,
-                                    process.ALCARECOoutput_step, process.NtuplePath
-                                    ) # fix the output modules
+    if(doTreeOnly):
+        process.schedule = cms.Schedule(process.NtuplePath)
+    else:
+        process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                        process.pathALCARECOEcalCalZSCElectron,
+                                        process.ALCARECOoutput_step, process.NtuplePath
+                                        ) # fix the output modules
     
 
 
