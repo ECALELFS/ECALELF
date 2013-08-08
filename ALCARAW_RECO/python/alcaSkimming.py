@@ -503,7 +503,7 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process
 process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
 
 process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
-if (options.type=="ALCARERECO"):
+if(options.type=="ALCARERECO"):
     process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
 process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
 
