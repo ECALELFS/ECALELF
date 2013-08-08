@@ -41,6 +41,11 @@ options.register('doTree',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "doTree=0: no tree; 1: standard tree; 2: onlyExtraTree; 3: standard+extra; 4:only eleID; 5:eleID+standard; 6: eleID+extra; 7: standard+extra+eleID")
+options.register('isSingleEle',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "sSingleEle=0: false")
 options.register('doTreeOnly',
                  1, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -332,6 +337,7 @@ if (options.type=="ALCARAW"):
     process.endjob_step = cms.EndPath(process.endOfProcess)
 
     process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
+
     # this module provides:
     #process.sandboxSeq  = uncalibRecHitSeq
 else:
@@ -412,7 +418,8 @@ if(options.doTree>0):
     process.load("Calibration.JsonFilter.jsonFilter_cfi")
     process.zNtupleDumper.recHitCollectionEB = process.patElectrons.reducedBarrelRecHitCollection.value()
     process.zNtupleDumper.recHitCollectionEE = process.patElectrons.reducedEndcapRecHitCollection.value()
-
+    if(options.isSingleEle==1):
+	process.zNtupleDumper.isWenu = cms.bool(True)
     if(MC):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC * process.zNtupleDumper)
     else:
