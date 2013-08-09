@@ -200,7 +200,8 @@ process.source = cms.Source("PoolSource",
 #                                                      )
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True)
+    wantSummary = cms.untracked.bool(True),
+    #SkipEvent = cms.untracked.vstring('ProductNotFound'),
 )
 
 # Other statements
@@ -585,12 +586,12 @@ else:
 #     process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step, process.ntuple)
 
 process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
-process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
-process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
-process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 
 if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
+    process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
+    process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
+    process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
                 
