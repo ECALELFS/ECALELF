@@ -107,6 +107,7 @@
 #include "CalibCalorimetry/EcalLaserCorrection/interface/EcalLaserDbRecord.h"
 
 #include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETFwd.h"
 
 // HLT trigger
 #include "FWCore/Framework/interface/TriggerNamesService.h"
@@ -155,7 +156,7 @@ private:
   edm::Handle<double> rhoHandle;
   edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
   edm::Handle<reco::ConversionCollection> conversionsHandle;
-  edm::Handle<reco::PFMET> metHandle;
+  edm::Handle< reco::PFMETCollection > metHandle;
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
 
   //------------------------------ Input Tags
@@ -428,7 +429,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   } else isMC=false;
   
   //------------------------------ RECHIT
-  //iEvent.getByLabel(recHitCollectionEBTAG, recHitCollectionEBHandle);
+  
+//iEvent.getByLabel(recHitCollectionEBTAG, recHitCollectionEBHandle);
   //iEvent.getByLabel(recHitCollectionEETAG, recHitCollectionEEHandle);
    
   //------------------------------ CONVERSIONS
@@ -455,7 +457,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(rhoTAG,rhoHandle);
   
   iEvent.getByLabel(metTAG, metHandle); 
-  
+  //if(metHandle.isValid()==false) iEvent.getByType(metHandle);
+  reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
+      
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
   
@@ -513,12 +517,13 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       if(! eleIter1->electronID("tight") ) continue;
       if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
       
-      reco::PFMET met = (*metHandle); /// \todo use corrected phi distribution
+      //reco::PFMET met = (*metHandle); /// \todo use corrected phi distribution
       
       // MET/MT selection
       if(  met.et() < 25. ) continue;
-      if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 30. ) continue;
-      
+      if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 50. ) continue;
+      if( eleIter1->et()<30) continue;
+
       TreeSetDiElectronVar(*eleIter1, *eleIter1);
       tree->Fill();
       if(doExtraCalibTree){
