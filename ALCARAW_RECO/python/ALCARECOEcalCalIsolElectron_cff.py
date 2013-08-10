@@ -11,11 +11,13 @@ kt6PFJetsForRhoCorrection.Rho_EtaMax = cms.double(2.5)
 alcarecoEcalRecHitReducerSeq = cms.Sequence(alCaIsolatedElectrons)
 alcarecoElectronTracksReducerSeq = cms.Sequence(alcaElectronTracksReducer)
 
+# sequence that reduces the RECO format (only ECAL part) into ALCARECO
 seqALCARECOEcalCalElectronRECO = cms.Sequence( alCaIsolatedElectrons)
 
+# sequence that reduces the RECO format (not ECAL part) into ALCARECO
 ALCARECOEcalCalElectronPreSeq = cms.Sequence( kt6PFJetsForRhoCorrection +
                                               alcaElectronTracksReducer +
-                                              pfiso )
+                                              pfisoALCARECO )
 
 seqALCARECOEcalCalElectron = cms.Sequence( ALCARECOEcalCalElectronPreSeq +
                                            seqALCARECOEcalCalElectronRECO

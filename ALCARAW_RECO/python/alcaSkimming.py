@@ -12,6 +12,11 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 ############################################################
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
+options.register('isCrab',
+                 '1', # default Value = true
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "change files path in case of local test")
 options.register ('type',
                   "ALCARAW",
                   VarParsing.VarParsing.multiplicity.singleton,
@@ -138,6 +143,15 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
 from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
+#Define the sequences
+#
+# particle flow isolation
+#
+process.pfIsoEgamma = cms.Sequence()
+if(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
+    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
+    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
@@ -346,12 +360,6 @@ else:
 #process.filterSeq *= process.NtupleFilter
 
 
-#
-# particle flow isolation
-#
-
-#process.pfiso = cms.Sequence()
-
 ###############################
 # ECAL Recalibration
 ###############################
@@ -364,10 +372,8 @@ process.reducedEcalRecHitsES.noFlag = cms.bool(True)
 process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 
 #==============================
-#Define the sequences
-process.alcarecoSeq = process.seqALCARECOEcalCalElectronRECO
-if(options.type=="ALCARERECO"):  # in ALCARECO production starting from AOD or RECO the ES recHits are reduced
-    process.alcarecoSeq += process.reducedEcalRecHitsES
+
+    
     
 try:
     EcalTrivialConditionRetriever
@@ -378,10 +384,11 @@ else:
     print "sure, it was defined."
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
+
 if(re.match("CMSSW_6_.*", CMSSW_VERSION)):
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * process.alcarecoSeq)
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
 else:
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * process.alcarecoSeq)
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
 
 
 process.rhoFastJetSeq = cms.Sequence()
@@ -490,14 +497,17 @@ process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * proce
 process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 # ALCARECO
 process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.ZeeFilterSeq *
+                                                 process.pfIsoEgamma *
                                                  process.seqALCARECOEcalCalElectron)
 process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
                                                  process.FilterSeq * 
                                                  ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
+                                                 process.pfIsoEgamma *
                                                  process.seqALCARECOEcalCalElectron)
 process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
                                                    process.FilterSeq *
                                                    ~process.ZeeFilter * process.ZSCFilterSeq *
+                                                   process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalElectron)
 
 process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
@@ -552,7 +562,8 @@ process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.
 
 
 ############### JSON Filter
-if(options.doTree>0 and options.doTreeOnly==0):
+if((options.doTree>0 and options.doTreeOnly==0)):
+    # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
     process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
 else:
     if(len(options.jsonFile)>0):
@@ -600,7 +611,7 @@ if(options.type=='ALCARAW'):
 
 elif(options.type=='ALCARERECO'):
     process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step, process.NtuplePath)
-elif(options.type=='ALCARECO'):
+elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron, process.pathALCARECOEcalCalZSCElectron,
                                     process.ALCARECOoutput_step, process.NtuplePath
                                     ) # fix the output modules
@@ -613,7 +624,11 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-pathPrefix=CMSSW_BASE+"/"
+if(options.isCrab):
+    pathPrefix="./"
+else:
+    pathPrefix=CMSSW_BASE+"/"
+
 process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
 process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
 process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
