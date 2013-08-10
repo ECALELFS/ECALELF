@@ -32,29 +32,6 @@ fi
 
 
 argumentfile=${UI_WORKING_DIR}/share/arguments.xml
-jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
-
-cp $argumentfile tmp/arguments.xml || exit 1
-while [ "${jobIDmax}" -gt "5000" ];do
-    let jobIDmax=$jobIDmax-4000    
-    sed  "/ui_working_dir/ d;/datasetpath/ d;/total_number_of_lumis/ d;/lumis_per_job/ d;/\[CMSSW\]/ a total_number_of_events=4000\nnumber_of_jobs=4000\ndatasetpath=None\n" ${UI_WORKING_DIR}/share/crab.cfg > tmp/crab.cfg || exit 1
-    sed -i "/\[USER\]/ a ui_working_dir=${UI_WORKING_DIR}/sub-${jobIDmax}" tmp/crab.cfg
-    sed -i "/user_remote_dir/ {s|\$|/sub-${jobIDmax}|}" tmp/crab.cfg
-#    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
-    crab -cfg tmp/crab.cfg -create || exit 1
-    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID>$jobIDmax && jobID<$jobIDmax+4000){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-${jobIDmax}/share/arguments.xml || exit 1
-
-done
-
-sed  "/ui_working_dir/ d;/datasetpath/ d;/total_number_of_lumis/ d;/lumis_per_job/ d;/\[CMSSW\]/ a total_number_of_events=${jobIDmax}\nnumber_of_jobs=${jobIDmax}\ndatasetpath=None\n" ${UI_WORKING_DIR}/share/crab.cfg > tmp/crab.cfg || exit 1
-sed  -i '/user_remote_dir/ {s|$|/sub-0|}' tmp/crab.cfg || exit 1
-    sed -i "/\[USER\]/ a ui_working_dir=${UI_WORKING_DIR}/sub-0" tmp/crab.cfg
-#    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
-    crab -cfg tmp/crab.cfg -create || exit 1
-    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID<=$jobIDmax){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-0/share/arguments.xml || exit 1
-
-
-exit 0
 
 if [ -e "${UI_WORKING_DIR}/share/arguments.xml-bak" ];then
     cp ${UI_WORKING_DIR}/share/arguments.xml-bak $argumentfile 
@@ -158,6 +135,29 @@ for list in $eventList
       sed -i "/JobID=\"$jobID\"/ {s|MaxEvents=\"-1\"|MaxEvents=\"$nEvents\"|}" $argumentfile
   fi  
 done
+
+jobIDmax=`sed 's|.*JobID="||;s|".*||' $argumentfile |sort -n | tail -1`
+
+cp $argumentfile tmp/arguments.xml || exit 1
+while [ "${jobIDmax}" -gt "5000" ];do
+    let jobIDmax=$jobIDmax-4000    
+    sed  "/ui_working_dir/ d;/datasetpath/ d;/total_number_of_lumis/ d;/lumis_per_job/ d;/\[CMSSW\]/ a total_number_of_events=4000\nnumber_of_jobs=4000\ndatasetpath=None\n" ${UI_WORKING_DIR}/share/crab.cfg > tmp/crab.cfg || exit 1
+    sed -i "/\[USER\]/ a ui_working_dir=${UI_WORKING_DIR}/sub-${jobIDmax}" tmp/crab.cfg
+    sed -i "/user_remote_dir/ {s|\$|/sub-${jobIDmax}|}" tmp/crab.cfg
+#    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
+    crab -cfg tmp/crab.cfg -create || exit 1
+    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID>$jobIDmax && jobID<$jobIDmax+4000){jobID-=$jobIDmax;j=\"JobID=\\\"\"jobID\"\\\"\"; gsub(\"JobID=\\\"[0-9]*\\\"\",j,line);print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-${jobIDmax}/share/arguments.xml || exit 1
+
+done
+
+sed  "/ui_working_dir/ d;/datasetpath/ d;/total_number_of_lumis/ d;/lumis_per_job/ d;/\[CMSSW\]/ a total_number_of_events=${jobIDmax}\nnumber_of_jobs=${jobIDmax}\ndatasetpath=None\n" ${UI_WORKING_DIR}/share/crab.cfg > tmp/crab.cfg || exit 1
+sed  -i '/user_remote_dir/ {s|$|/sub-0|}' tmp/crab.cfg || exit 1
+    sed -i "/\[USER\]/ a ui_working_dir=${UI_WORKING_DIR}/sub-0" tmp/crab.cfg
+#    mv ${UI_WORKING_DIR} `echo ${UI_WORKING_DIR} | sed 's|/$||'`-bis || exit 1
+    crab -cfg tmp/crab.cfg -create || exit 1
+    awk "(/JobID/){line=\$0;jobID=line;gsub(\".*JobID=\\\"\",\"\",jobID); gsub(\"\\\" .*\",\"\",jobID);if(jobID<=$jobIDmax){print line}};(!/JobID/){print \$0}" tmp/arguments.xml > ${UI_WORKING_DIR}/sub-0/share/arguments.xml || exit 1
+
+exit 0
 
 exit 0
 # emptyJobID=`grep '/InputFiles=""/' $argumentfile` #| sed '{s|.*JobID="||;s|".*||}' | sort -n | awk '($1!=++old){print $1; old=$1}' | head -1`

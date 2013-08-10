@@ -166,7 +166,7 @@ if [ -z "${SKIM}" ];then
 	    ;;
 	*SingleElectron*RAW)
 	    SKIM=WSkim
-	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/20
+	    #let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/20
 	    ;;
 	*SingleElectron*)
 	    SKIM=WSkim
@@ -267,8 +267,8 @@ eMail = shervin@cern.ch
 rb = HC
 rb = CERN
 proxy_server = myproxy.cern.ch
-se_white_list=$WHITELIST
-se_black_list=$BLACKLIST
+#se_white_list=$WHITELIST
+#se_black_list=$BLACKLIST
 
 EOF
 
