@@ -512,12 +512,13 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process
 
 process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
 
-process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
-if(options.type=="ALCARERECO"):
-    process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
-if(options.type=="ALCARAW"):
-    process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
-
+if(options.doTreeOnly==0):
+    process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
+    if(options.type=="ALCARERECO"):
+        process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
+    if(options.type=="ALCARAW"):
+        process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
+            
 
 ############################################################
 # Setting collection names
