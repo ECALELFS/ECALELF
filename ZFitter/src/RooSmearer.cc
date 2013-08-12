@@ -92,7 +92,7 @@ void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy, bool externToy){
   if(data_events_cache.empty()){
     if(cacheToy){
       std::cout << "[STATUS] --- Setting toy cache for data" << std::endl;
-      data_events_cache = importer.GetCache(_data_chain, false, false, nEvents, true, externToy); //importer.GetCacheToy(nEvents, false);
+      data_events_cache = importer.GetCache(_signal_chain, false, false, nEvents, true, externToy); //importer.GetCacheToy(nEvents, false);
     }else {
       std::cout << "[STATUS] --- Setting cache for data" << std::endl;
       data_events_cache = importer.GetCache(_data_chain, false, false, nEvents);
@@ -101,7 +101,7 @@ void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy, bool externToy){
   if(mc_events_cache.empty()){
     if(cacheToy){
       std::cout << "[STATUS] --- Setting toy cache for mc" << std::endl;
-      mc_events_cache = importer.GetCache(_signal_chain, true, false, nEvents,true); //importer.GetCacheToy(nEvents, true);
+      mc_events_cache = importer.GetCache(_signal_chain, true, false, nEvents,true, externToy); //importer.GetCacheToy(nEvents, true);
     }else {
       std::cout << "[STATUS] --- Setting cache for mc" << std::endl;
       mc_events_cache = importer.GetCache(_signal_chain, true, false, nEvents);
@@ -944,7 +944,7 @@ void RooSmearer::SetNSmear(unsigned int n_smear, unsigned int nlltoy){
 
 
 void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, bool externToy, TString initFile){
-  _isDataSmeared=externToy; //mcToy;
+  if(mcToy) _isDataSmeared=externToy; //mcToy;
   if(initFile.Sizeof()>1){
     std::cout << "[INFO] Truth values for toys initialized to " << std::endl;
     //truthSet->readFromFile(initFile);
@@ -956,7 +956,7 @@ void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool m
   SetCommonCut(commonCut); SetEleID(eleID);
   SetCache(nEvents, mcToy, externToy); InitCategories(mcToy);
   evaluate();
-  if(mcToy){
+  if(mcToy && false){
     RooArgList argList(_paramSet);
     TIterator *it = argList.createIterator();
     for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL; var =  (RooRealVar *)it->Next()){
