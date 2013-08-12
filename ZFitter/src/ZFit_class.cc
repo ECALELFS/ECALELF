@@ -106,9 +106,11 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
   commonCut+="-eleID_"+eleID_;
   TString mcCut, dataCut;
   if(l->GetN()>0){ // runDependent MC, treat it has data
+    std::cout << "[INFO] Importing run dependent MC" << std::endl;
     if(_oddMC) mcCut = cutter.GetCut(commonCut+"-odd", false);
     else mcCut = cutter.GetCut(commonCut, false);
   } else {
+    std::cout << "[INFO] Importing std MC" << std::endl;
     if(_oddMC) mcCut = cutter.GetCut(commonCut+"-odd", true);
     else mcCut = cutter.GetCut(commonCut, true);
   }
@@ -633,10 +635,26 @@ void ZFit_class::Fit(TString region, bool doPlot){
   TString regionMC=region; 
   int p = regionMC.Index("-runNumber");
   int pp = regionMC.Index("-", p+1);
-  if(p>0){
+  
+  if(p>0){ //there is the runNumber string
+    TString region_tmp=region;
+    region_tmp.Remove(0,p);   // remove the part before
+    if(pp>0) region_tmp.Remove(pp-p); // remove the part after if exists
+    region_tmp.ReplaceAll("-runNumber_",""); // remove runNumber string
+    TString region_tmp2=region_tmp;
+    region_tmp.Remove(region_tmp.First('_')); // take the runMin 
+    region_tmp2.Remove(0,region_tmp2.First('_')+1); //take the runMax
+    int runMin=region_tmp.Atoi();
+    int runMax=region_tmp2.Atoi();
+    std::cout << region << "\t" << p << " " << pp << "\ttmp " << region_tmp << "\ttmp2 " << region_tmp2 << "\trunMin " << runMin << "\t" << runMax << std::endl;
     if(pp<=0) regionMC.Remove(p);
     else regionMC.Remove(p,pp-p);
+    // cuts for runDependentMC!
+    if(runMin>=190456 && runMax<=196531) regionMC.Insert(p,"-runNumber_194533_194533");
+    if(runMin>=198111 && runMax<=203742) regionMC.Insert(p,"-runNumber_200519_200519");
+    if(runMin>=203756 && runMax<=208686) regionMC.Insert(p,"-runNumber_206859_206859");
   }
+    
   TString paramsMCFileName=outDirFitResMC+"/"+regionMC+".txt";
   TString fitResMCFileName=outDirFitResMC+"/"+regionMC+".root";
   TString plotMCFileName=outDirImgMC+"/"+regionMC+"."+imgFormat;  

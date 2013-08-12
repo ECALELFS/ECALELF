@@ -103,7 +103,26 @@ echo "#category & events & DeltaM_data & DeltaM_MC & DeltaP & width_data & width
 for category in $categories
   do
 #  echo $category
-  categoryMC=`echo $category | sed 's|-runNumber_[0-9]*_[0-9]*||'`
+  case $category in 
+      *runNumber*)
+	  runrange=`echo $category | sed 's|.*runNumber|runNumber|;s|.*runNumber_\([0-9]*\)_\([0-9]*\).*|\1_\2|'`
+	  ;;
+      *)
+	  unset runrange
+	  ;;
+  esac
+  if [ -n "${runrange}" ];then
+      runrange="-runNumber_${runrange}"
+      runMin=`echo ${runrange} | cut -d '_' -f 2`
+      runMax=`echo ${runrange} | cut -d '_' -f 3`
+      #for runDependent mc
+     if [ "$runMin" -ge "190456" -a "$runMin" -le "196531" -a "$runMax" -le "198115" ];then runrange="-runNumber_194533_194533"; 
+     elif [ "$runMin" -ge "198111" -a "$runMin" -le "203742" -a "$runMax" -le "203852" ];then runrange="-runNumber_200519_200519";
+     elif [ "$runMin" -ge "203756" -a "$runMin" -le "208686" ];then runrange="-runNumber_206859_206859";
+     else runrange="";
+     fi
+  fi
+  categoryMC=`echo $category | sed "s|-runNumber_[0-9]*_[0-9]*|${runrange}|"`
   fileMC="${outDirFitResMC}/$categoryMC.tex"
   if [ ! -r "${fileMC}" ];then
       echo "[ERROR] ${fileMC} not found" >> /dev/stderr

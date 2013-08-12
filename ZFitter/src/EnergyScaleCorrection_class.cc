@@ -357,8 +357,8 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 
 //============================== SMEARING
 void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, int runMax_, 
-				      double smearing_, double err_smearing_){
-
+					      double constTerm, double err_constTerm, double alpha, double err_alpha){
+  //double smearing_, double err_smearing_){
   // se le corrections non sono definite per Hgg (gold e bad) allora ignoro le righe che si riferiscono a queste categorie
   if( (!isHggCat) && (category_.Contains("gold",TString::kIgnoreCase) || category_.Contains("bad",TString::kIgnoreCase))) {
     return;
@@ -371,8 +371,8 @@ void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, in
   correction_t corr;
   corr.runMax=runMax_;
   std::pair<double,double> pair_tmp;
-  pair_tmp.first=smearing_;
-  pair_tmp.second=err_smearing_;
+  pair_tmp.first=constTerm;
+  pair_tmp.second=alpha;
   smearings[category_]=pair_tmp; 
 
   return;
@@ -388,15 +388,16 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
   
   int runMin=0, runMax=900000;
   TString category, region2;
-  double smearing, err_smearing;
-
+  //double smearing, err_smearing;
+  double constTerm, err_constTerm, alpha, err_alpha;
 
   for(f_in >> category; f_in.good(); f_in >> category){
     f_in //>> region2 
 	 //>> runMin >> runMax 
-      >> smearing >> err_smearing;
+      >> constTerm >> alpha;
+    //>> smearing >> err_smearing;
     
-    AddSmearing(category, runMin, runMax, smearing, err_smearing);
+    AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha);
   }
   
   f_in.close();
@@ -407,6 +408,7 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
 }
 
 
+
 float EnergyScaleCorrection_class::getSmearingSigma(float energy, bool isEBEle, float R9Ele, float etaSCEle){
   //const correction_map_t *correction_map_p = &(runCorrection_itr->second.correction_map);
   TString category=GetElectronCategory(isEBEle, R9Ele, etaSCEle);
@@ -415,8 +417,10 @@ float EnergyScaleCorrection_class::getSmearingSigma(float energy, bool isEBEle, 
     std::cerr << "[ERROR] Electron category " << category << " not found!!!!  Smearing not applied" << std::endl;
     exit(1);
   }
-
-  return smearings.find(category)->second.first;
+  
+  double constTerm=smearings.find(category)->second.first;
+  double alpha=smearings.find(category)->second.second;
+  return sqrt(constTerm*constTerm + alpha*alpha/energy);
 }
 
 float EnergyScaleCorrection_class::getSmearing(float energy, bool isEBEle, float R9Ele, float etaSCEle){

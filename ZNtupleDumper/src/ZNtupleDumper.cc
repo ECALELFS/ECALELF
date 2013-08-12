@@ -1029,7 +1029,7 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
     invMass_regrCorr_egamma = sqrt(2* energyEle_regrCorr_egamma[0] * energyEle_regrCorr_egamma[1] *angle);
 
     if(electron1.genLepton()!=0 && electron2.genLepton()!=0){
-      invMass_MC     = sqrt(2*electron1.genLepton()->energy() *electron1.genLepton()->energy() *
+      invMass_MC     = sqrt(2*electron1.genLepton()->energy() *electron2.genLepton()->energy() *
 				angle);
     } else invMass_MC = 0;
     //  invMass_genMC     = (electron1.genLepton()->p4 + electron2.genLepton()->p4()).M();
