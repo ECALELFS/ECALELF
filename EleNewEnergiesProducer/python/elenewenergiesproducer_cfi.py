@@ -15,6 +15,10 @@ eleNewEnergiesProducer = cms.EDProducer('EleNewEnergiesProducer',
                                         regrEleFile_fra = cms.string('nocorrection.root'),
                                         correctionFileName = cms.string(''),
                                         correctionType = cms.string(''),
-                                        ptSplit = cms.bool(True)
+                                        ptSplit = cms.bool(True),
+                                        regrEleJoshV4_SemiParamFile = cms.string('./data/regweights_v4_forest_ele.root'),
+                                        regrEleJoshV5_SemiParamFile = cms.string('./data/regweights_v5_forest_ele.root'),
+                                        regrPhoJoshV4_SemiParamFile = cms.string('./data/regweights_v4_forest_ph.root'),
+                                        regrPhoJoshV5_SemiParamFile = cms.string('./data/regweights_v5_forest_ph.root'),
                                         
                                         )

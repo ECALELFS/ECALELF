@@ -175,8 +175,6 @@ private:
   std::vector< std::string> hltPaths;
 private:
   std::string foutName;
-  std::string regrPhoFile;
-  std::string regrEleFile;
   
   bool doExtraCalibTree;
   bool doEleIDTree;
@@ -240,6 +238,11 @@ private:
   Float_t energySigmaSCEle_regrCorr_ele[2];
   Float_t energySigmaSCEle_regrCorr_pho[2];
 
+  Float_t energySCEle_regrCorrSemiParV4_pho[2], energySigmaSCEle_regrCorrSemiParV4_pho[2];
+  Float_t energySCEle_regrCorrSemiParV4_ele[2], energySigmaSCEle_regrCorrSemiParV4_ele[2];
+  Float_t energySCEle_regrCorrSemiParV5_pho[2], energySigmaSCEle_regrCorrSemiParV5_pho[2];
+  Float_t energySCEle_regrCorrSemiParV5_ele[2], energySigmaSCEle_regrCorrSemiParV5_ele[2];
+
   Float_t energySCEle_corr[2];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 
   Float_t energyEle_regrCorr_egamma[2];      ///< Egamma POG electron regression energy
@@ -265,6 +268,8 @@ private:
   Float_t invMass_SC_regrCorr_pho;
   Float_t invMass_regrCorr_fra;
   Float_t invMass_regrCorr_egamma;
+  Float_t invMass_SC_regrCorrSemiParV4_ele,invMass_SC_regrCorrSemiParV4_pho;
+  Float_t invMass_SC_regrCorrSemiParV5_ele,invMass_SC_regrCorrSemiParV5_pho;
 
   Float_t invMass_MC;
   Float_t   etaMCEle[2], phiMCEle[2];
@@ -730,6 +735,12 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("energySigmaSCEle_regrCorr_ele", energySigmaSCEle_regrCorr_ele, "energySigmaSCEle_regrCorr_ele[2]/F");
   tree->Branch("energySigmaSCEle_regrCorr_pho", energySigmaSCEle_regrCorr_pho, "energySigmaSCEle_regrCorr_pho[2]/F");
 
+  // semi parametric regression V4
+  tree->Branch("energySCEle_regrCorrSemiParV4_ele", energySCEle_regrCorrSemiParV4_ele, "energySCEle_regrCorrSemiParV4_ele[2]/F");
+  tree->Branch("energySCEle_regrCorrSemiParV4_pho", energySCEle_regrCorrSemiParV4_pho, "energySCEle_regrCorrSemiParV4_pho[2]/F");
+  tree->Branch("energySCEle_regrCorrSemiParV5_ele", energySCEle_regrCorrSemiParV5_ele, "energySCEle_regrCorrSemiParV5_ele[2]/F");
+  tree->Branch("energySCEle_regrCorrSemiParV5_pho", energySCEle_regrCorrSemiParV5_pho, "energySCEle_regrCorrSemiParV5_pho[2]/F");
+
   tree->Branch("R9Ele", R9Ele, "R9Ele[2]/F");
 
   tree->Branch("e5x5SCEle", e5x5SCEle, "e5x5SCEle[2]/F");
@@ -749,6 +760,10 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("invMass_SC_regrCorr_pho", &invMass_SC_regrCorr_pho, "invMass_SC_regrCorr_pho/F");
   tree->Branch("invMass_regrCorr_fra", &invMass_regrCorr_fra, "invMass_regrCorr_fra/F");
   tree->Branch("invMass_regrCorr_egamma", &invMass_regrCorr_egamma, "invMass_regrCorr_egamma/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV4_pho", &invMass_SC_regrCorrSemiParV4_pho, "invMass_SC_regrCorrSemiParV4_pho/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV4_ele", &invMass_SC_regrCorrSemiParV4_ele, "invMass_SC_regrCorrSemiParV4_ele/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV5_pho", &invMass_SC_regrCorrSemiParV5_pho, "invMass_SC_regrCorrSemiParV5_pho/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV5_ele", &invMass_SC_regrCorrSemiParV5_ele, "invMass_SC_regrCorrSemiParV5_ele/F");
   tree->Branch("invMass_MC", &invMass_MC, "invMass_MC/F");
 
   tree->Branch("etaMCEle",      etaMCEle,       "etaMCEle[2]/F");	//[nEle]
@@ -951,6 +966,16 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   energySigmaSCEle_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleVar");
   energySigmaEle_regrCorr_fra[index] = electron1.userFloat("eleNewEnergiesProducer:energyEleFraVar");
   energySigmaEle_regrCorr_egamma[index] = electron1.userFloat("eleRegressionEnergy:eneErrorRegForGsfEle");
+
+  energySCEle_regrCorrSemiParV4_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV4_ecorr");
+  energySCEle_regrCorrSemiParV4_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV4_ecorr");
+  energySigmaSCEle_regrCorrSemiParV4_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV4_sigma");
+  energySigmaSCEle_regrCorrSemiParV4_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV4_sigma");
+
+  energySCEle_regrCorrSemiParV5_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV5_ecorr");
+  energySCEle_regrCorrSemiParV5_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV5_ecorr");
+  energySigmaSCEle_regrCorrSemiParV5_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV5_sigma");
+  energySigmaSCEle_regrCorrSemiParV5_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV5_sigma");
 
   // change in an electron properties please, EleNewEnergyProducer
   e3x3SCEle[index] = clustertools->e3x3(*electron1.superCluster()->seed());
