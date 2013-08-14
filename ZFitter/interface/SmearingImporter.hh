@@ -33,7 +33,7 @@ public:
 
 
   inline void SetRegionList(std::vector<TString> regionList){ _regionList=regionList;};
-  regions_cache_t GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents=0);
+  regions_cache_t GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents=0, bool isToy=false, bool externToy=true);
   regions_cache_t GetCacheToy(Long64_t nEvents, bool isMC);
 
   inline void SetPuWeight(bool value){_usePUweight=value;};
@@ -65,7 +65,7 @@ private:
 
   void Import(TTree *chain, event_cache_t& eventCache, TEntryList *entryList, bool swap=false);
   //void Import(TTree *chain, event_cache_t& eventCache, TTreeFormula *selector, bool swap=false);
-  void Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents=0);
+  void Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents=0, bool isToy=false, bool externToy=true);
   void ImportToy(Long64_t nEvents, event_cache_t& eventCache, bool isMC);
   
 };

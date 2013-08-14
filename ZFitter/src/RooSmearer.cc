@@ -85,14 +85,14 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
 }
 
 
-void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy){
+void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy, bool externToy){
   std::cout << "------------------------------------------------------------" << std::endl;
   std::cout << "[STATUS] Importing cache events" << std::endl;
 
   if(data_events_cache.empty()){
     if(cacheToy){
       std::cout << "[STATUS] --- Setting toy cache for data" << std::endl;
-      data_events_cache = importer.GetCacheToy(nEvents, false);
+      data_events_cache = importer.GetCache(_signal_chain, false, false, nEvents, true, externToy); //importer.GetCacheToy(nEvents, false);
     }else {
       std::cout << "[STATUS] --- Setting cache for data" << std::endl;
       data_events_cache = importer.GetCache(_data_chain, false, false, nEvents);
@@ -101,7 +101,7 @@ void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy){
   if(mc_events_cache.empty()){
     if(cacheToy){
       std::cout << "[STATUS] --- Setting toy cache for mc" << std::endl;
-      mc_events_cache = importer.GetCacheToy(nEvents, true);
+      mc_events_cache = importer.GetCache(_signal_chain, true, false, nEvents,true, externToy); //importer.GetCacheToy(nEvents, true);
     }else {
       std::cout << "[STATUS] --- Setting cache for mc" << std::endl;
       mc_events_cache = importer.GetCache(_signal_chain, true, false, nEvents);
@@ -134,11 +134,12 @@ void RooSmearer::InitCategories(bool mcToy){
       cat.categoryIndex1 = region_ele1_itr - importer._regionList.begin();
       cat.categoryIndex2 = region_ele2_itr - importer._regionList.begin();
 
-      if(!mcToy) cat.data_events = &(data_events_cache[index]);
-      else {
-	std::cout << "[INFO] Initializing data_events with mc" << std::endl;
-	cat.data_events = &(mc_events_cache[index]);
-      }
+//       if(!mcToy) cat.data_events = &(data_events_cache[index]);
+//       else {
+// 	std::cout << "[INFO] Initializing data_events with mc" << std::endl;
+// 	cat.data_events = &(mc_events_cache[index]);
+//       }
+      cat.data_events = &(data_events_cache[index]);
       cat.mc_events = &(mc_events_cache[index]);
       
       cat.categoryName1 += *region_ele1_itr;
@@ -504,6 +505,11 @@ float RooSmearer::getCompatibility() const
 #endif
   }
   //if(withSmearToy) std::cout << "[DEBUG] Compatibility2: " << compatibility << "\t" << compatibility - nllMin << std::endl;
+  if(dataset!=NULL && lastNLL!=compatibility){
+    myClass->nllVar.setVal(compatibility);
+    myClass->dataset->add(RooArgSet(_paramSet,nllVar));
+  }
+
   myClass->lastNLL=compatibility;
   myClass->lastNLLrms=sqrt(lastNLLrms);
   
@@ -514,6 +520,7 @@ float RooSmearer::getCompatibility() const
       myClass->nllMin=compatibility;
     }
   }
+
   //  myClock->Stop();
   //  myClock->Print();
 return compatibility;
@@ -558,10 +565,6 @@ Double_t RooSmearer::evaluate() const
   double weight=(nllBase*2-comp_mean);
   if(weight<0) weight=1;
   myClass->_markov.AddFast(myClass->_paramSet, comp_mean, weight);
-  if(dataset!=NULL){
-    myClass->nllVar.setVal(comp_mean);
-    myClass->dataset->add(RooArgSet(_paramSet,nllVar));
-  }
 #ifdef CPU_DEBUG
   ///  myClock->Stop();
   //  std::cout << "Elapsed time for add to MarkovChain: CPU " << myClock->CpuTime() << "; Real " <<  myClock->RealTime() << " s " << std::endl;
@@ -940,30 +943,29 @@ void RooSmearer::SetNSmear(unsigned int n_smear, unsigned int nlltoy){
 }
 
 
-void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, TString initFile){
-    _isDataSmeared=mcToy;
-    bool toytoy=false;
-    if(initFile.Sizeof()>1){
-      std::cout << "[INFO] Truth values for toys initialized to " << std::endl;
-      //truthSet->readFromFile(initFile);
-      //truthSet->writeToStream(std::cout, kFALSE);
-      std::cout << "------------------------------ Read init toy MC:" << std::endl;
-      _paramSet.readFromFile(initFile);
-      _paramSet.writeToStream(std::cout, kFALSE);
+void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, bool externToy, TString initFile){
+  if(mcToy) _isDataSmeared=externToy; //mcToy;
+  if(initFile.Sizeof()>1){
+    std::cout << "[INFO] Truth values for toys initialized to " << std::endl;
+    //truthSet->readFromFile(initFile);
+    //truthSet->writeToStream(std::cout, kFALSE);
+    std::cout << "------------------------------ Read init toy MC:" << std::endl;
+    _paramSet.readFromFile(initFile);
+    _paramSet.writeToStream(std::cout, kFALSE);
+  }
+  SetCommonCut(commonCut); SetEleID(eleID);
+  SetCache(nEvents, mcToy, externToy); InitCategories(mcToy);
+  evaluate();
+  if(mcToy && false){
+    RooArgList argList(_paramSet);
+    TIterator *it = argList.createIterator();
+    for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL; var =  (RooRealVar *)it->Next()){
+      var->randomize();
     }
-    SetCommonCut(commonCut); SetEleID(eleID);
-    SetCache(nEvents,toytoy); InitCategories(mcToy);
-    evaluate();
-    if(mcToy){
-      RooArgList argList(_paramSet);
-      TIterator *it = argList.createIterator();
-      for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL; var =  (RooRealVar *)it->Next()){
-	var->randomize();
-      }
-      std::cout << "------------------------------ Randomize initial value:" << std::endl;
-      _paramSet.writeToStream(std::cout, kFALSE);
-    }
-    return;
+    std::cout << "------------------------------ Randomize initial value:" << std::endl;
+    _paramSet.writeToStream(std::cout, kFALSE);
+  }
+  return;
 }
 
 void RooSmearer::UpdateCategoryNLL(ZeeCategory& cat, unsigned int nLLtoy, bool multiSmearToy){

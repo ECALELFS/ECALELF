@@ -147,7 +147,7 @@ public:
   }
 
   /// Initialize the categories: import from the tree
-  void Init(TString commonCut, TString eleID, Long64_t nEvents=0, bool mcToy=false, TString initFile="");
+  void Init(TString commonCut, TString eleID, Long64_t nEvents=0, bool mcToy=false, bool externToy=true,TString initFile="");
   //  TH1F *GetSmearedHisto(TString categoryName, 
   //			bool smearEnergy=false, TString histoName="") const;
   //  TH1F *GetSmearedHisto(int categoryIndex,
@@ -216,7 +216,7 @@ public:
 
   RooStats::MarkovChain _markov;
 private:
-  void SetCache(Long64_t nEvents=0, bool cacheToy=false);
+  void SetCache(Long64_t nEvents=0, bool cacheToy=false, bool externToy=true);
   void InitCategories(bool mcToy=false);
 
   //double smearedEnergy(float ene,float scale,float alpha,float
