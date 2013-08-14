@@ -196,7 +196,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   bool hasSmearerCat=false;
 
   // for toy repartition
-  Long64_t eventNumber;
+  ULong64_t eventNumber;
 
   //------------------------------
   chain->SetBranchAddress("eventNumber", &eventNumber);
@@ -208,7 +208,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   } 
 
   if(chain->GetBranch("smearEle")!=NULL){
-    if(isToy==false || (externToy==true && isToy==true)){
+    if(isToy==false || (externToy==true && isToy==true && isMC==false)){
       std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
       chain->SetBranchAddress("smearEle", smearEle_);
     } 
@@ -287,6 +287,9 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     Long64_t entryNumber= chain->GetEntryNumber(jentry);
     chain->GetEntry(entryNumber);
     if(isToy){
+      if(jentry<10){
+	std::cout << isMC << "\t" << eventNumber << "\t" << eventNumber%3 << std::endl;
+      }
       if(isMC && eventNumber%3==0) continue;
       if(!isMC && eventNumber%3!=0) continue;
     }
@@ -419,16 +422,19 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
     }
   }
  
-  
+  std::cout << "Eventlist" << std::endl;
   TString evListName="evList_";
   evListName+=_chain->GetTitle();
   evListName+="_all";
+  TEntryList *oldList = _chain->GetEntryList();
+  if(oldList==NULL){
   _chain->Draw(">>"+evListName, cutter.GetCut(_commonCut+"-"+eleID_,true), "entrylist");
   //_chain->Draw(">>"+evListName, "", "entrylist");
   TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
   //  elist_all->SetBit(!kCanDelete);
   _chain->SetEntryList(elist_all);
-
+  }
+  std::cout << "Eventlist" << std::endl;
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
       region_ele1_itr != _regionList.end();
       region_ele1_itr++){
