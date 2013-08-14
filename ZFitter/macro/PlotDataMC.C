@@ -456,3 +456,149 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
   return c;
 
 }
+
+
+
+TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
+		     TString category, TString selection, 
+		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
+		     bool logy=false, bool usePU=true, bool smear=false, bool scale=false){
+
+  int nHist= mc_vec.size();
+  TString yLabel; 
+  
+  TCanvas *c = new TCanvas("c","");
+  TString branchNameData=branchname;
+  TString branchNameMC=branchname;
+
+  ElectronCategory_class cutter;
+  TCut selection_data="";
+  if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0);
+  selection_data+=selection;
+  TCut selection_MC="";
+  if(category.Sizeof()>1) selection_MC = cutter.GetCut(category, false,0);
+  selection_MC+=selection;
+
+  if(smear){
+    branchNameMC.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(smearEle[0]*smearEle[1]))");
+    branchNameMC.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*smearEle) ");
+    branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*smearEle[0])");
+    branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*smearEle[1])");
+
+  }
+  if(scale){
+    branchNameData.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(corrEle[0]*corrEle[1]))");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*corrEle)");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*corrEle[0])");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*corrEle[1])");
+  }
+  //std::cout << branchNameData << "\t" << branchNameMC << std::endl;
+
+
+  
+  // Draw histograms
+    data->Draw(branchNameData+">>data_hist"+binning, selection_data);
+    if(nHist > 0){
+      for(std::vector<TChain *> mc_itr = mc_vec.begin();
+	  mc_itr != mc_vec.end();
+	  mc_itr++){
+	TChain *mc = *mc_itr;
+	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
+	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight");
+	else  mc->Draw(branchNameMC+">>mc_hist"+binning, selection_MC);
+      }
+    }
+
+
+  c->Clear();
+  TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
+  //d->SaveAs("tmp/d_hist.root");
+  //s->SaveAs("tmp/s_hist.root");
+
+  yLabel.Form("Events /(%.2f %s)", d->GetBinWidth(2), yLabelUnit.Data());
+  
+  float max = 0; //1.1 * std::max(
+  //d->GetMaximum(),///d->Integral(),
+  //s->GetMaximum() ///s->Integral()
+  //);
+  max=1.1*d->GetMaximum();
+  std::cout << "max = " << max << std::endl;
+  std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
+
+
+  d->GetYaxis()->SetTitle(yLabel);
+  d->GetXaxis()->SetTitle(xLabel);
+  if(logy){
+    max*=10;
+    d->GetYaxis()->SetRangeUser(0.1,max);
+    c->SetLogy();
+  } else {
+      d->GetYaxis()->SetRangeUser(0,max);
+  }
+
+  d->SetMarkerStyle(20);
+  d->SetMarkerSize(1);
+
+  for(int i=0; i < nHist; i++){
+    TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
+    TH1F *s = (TH1F *) gROOT->FindObject(mcHistName);
+
+    std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
+    if(logy){
+      s->GetYaxis()->SetRangeUser(0.1,max);
+    } else {
+      s->GetYaxis()->SetRangeUser(0,max);
+    }
+    s->GetYaxis()->SetTitle(yLabel);
+    s->GetXaxis()->SetTitle(xLabel);
+
+    s->SetMarkerStyle(20);
+    s->SetMarkerSize(1);
+    s->SetFillStyle(3001+i);
+    s->SetFillColor(kRed+i);
+    TH1F* s_norm = NULL;
+    if(i==0) s_norm = (TH1F *) (s->DrawNormalized("hist", d->Integral()));
+    else s_norm = (TH1F *) (s->DrawNormalized("hist same", d->Integral()));
+    if(logy){
+      //d_norm->GetYaxis()->SetRangeUser(0.1,max);
+      s_norm->GetYaxis()->SetRangeUser(0.1,max);
+    } else {
+      //d_norm->GetYaxis()->SetRangeUser(0,max);  
+      s_norm->GetYaxis()->SetRangeUser(0,max);  
+    }
+    
+  }
+
+  //TH1F* d_norm = s_norm;
+  //if(d!=s) d_norm = (TH1F *) (d->DrawNormalized("p same", d->Integral()));
+  if(nHist>0) d->Draw("p same");
+  else d->Draw("p");
+
+//   std::cout << "Variable  & Data & Simulation \\" << std::endl;
+//   std::cout << "Mean      & " << d->GetMean() << " " << d->GetMeanError() 
+// 	    << " & " << s_norm->GetMean() <<  " " << s_norm->GetMeanError() << " \\" << std::endl;
+//   std::cout << "Std. dev. & " << d->GetRMS() << " " << d->GetRMSError() 
+// 	    << " & " << s_norm->GetRMS() << " " << s_norm->GetRMSError() << " \\" << std::endl;
+//   std::cout << "\\hline" << std::endl;
+//   std::cout << "$\\Chi^2$ " <<  d->Chi2Test(s_norm, "UW CHI2/NDF NORM") << std::endl;
+  
+
+//   TLegend *leg = new TLegend(0.6,0.8,1,1);
+//   if(dataLabel !="") leg->AddEntry(d,dataLabel,"p");
+//   if(mcLabel   !="") leg->AddEntry(s,mcLabel, "lf");
+//   leg->SetBorderSize(1);
+//   leg->SetFillColor(0);
+//   leg->SetTextSize(0.04);
+//   if(dataLabel !="" && mcLabel !="") leg->Draw();
+//   //c->GetListOfPrimitives()->Add(leg,"");
+
+  TPaveText *pv = new TPaveText(0.2,0.95,0.7,1,"NDC");
+  pv->AddText("CMS Preliminary 2012");
+  pv->SetFillColor(0);
+  pv->SetBorderSize(0);
+  pv->Draw();
+
+
+  return c;
+
+}

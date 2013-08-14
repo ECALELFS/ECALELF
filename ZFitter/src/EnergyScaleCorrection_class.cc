@@ -18,6 +18,9 @@ EnergyScaleCorrection_class::EnergyScaleCorrection_class(TString correctionFileN
   if(smearingFileName.Sizeof()>1) noSmearings=false;
   else noSmearings=true;
 
+  if(correctionFileName.Sizeof()>1) noCorrections=false;
+  else noCorrections=true;
+
   if(correctionType.Sizeof()<=1 && smearingType.Sizeof()>1) correctionType=smearingType;
 #ifdef DEBUG
   std::cout << "[DEBUG] Using correctionType: " << correctionType << std::endl;
