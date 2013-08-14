@@ -186,7 +186,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     legend->SetFillStyle(1001);
     legend->Draw();
 
-
+    std::cout << "Saving into " << img_filename(filename, region, ".eps") << std::endl;
     c->SaveAs(img_filename(filename, region, ".eps"));
     c->SaveAs(img_filename(filename, region, ".png"));
     c->SaveAs(img_filename(filename, region, ".C"));
@@ -240,7 +240,7 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
     /*------------------------------ somma sugli istogrammi */
     std::cout << "Data Entries in " << keyName << "\t" << h->GetEntries() << std::endl;
 
-    if(type.CompareTo("data")==0){
+    if(type.CompareTo("data")==0 || type.CompareTo("smeardata")==0 ){
       if(dataHist.find(region)==dataHist.end()){
  	hist_t hist_vec; // vector of bins of ONE histogram
  	AddHist(hist_vec, h); // add the content of the histogram h to the vector
@@ -283,6 +283,7 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
       itr!= dataHist.end(); itr++){
     c->cd();
     TString region=itr->first;
+    std::cout << region << std::endl;
     //     for(int i_region=0; i_region < n_region -1; i_region++){
     //       for(int j_region=i_region; j_region < n_region; j_region++){
     // 	region="region_";

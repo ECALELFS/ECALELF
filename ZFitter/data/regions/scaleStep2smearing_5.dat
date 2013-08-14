@@ -1,0 +1,26 @@
+# regions defined for condition validation
+energySC_27_33-absEta_0_1-bad
+energySC_33_39-absEta_0_1-bad
+energySC_39_45-absEta_0_1-bad
+energySC_45_50-absEta_0_1-bad
+energySC_50_58-absEta_0_1-bad
+energySC_58_65-absEta_0_1-bad
+#energySC_65_80-absEta_0_1-bad
+energySC_27_35-absEta_0_1-gold
+energySC_35_43-absEta_0_1-gold
+energySC_43_50-absEta_0_1-gold
+energySC_50_55-absEta_0_1-gold
+energySC_55_75-absEta_0_1-gold
+#energySC_75_100-absEta_0_1-gold
+#
+energySC_27_33-absEta_1_1.4442-bad
+energySC_33_39-absEta_1_1.4442-bad
+energySC_39_45-absEta_1_1.4442-bad
+energySC_45_50-absEta_1_1.4442-bad
+energySC_50_58-absEta_1_1.4442-bad
+energySC_58_65-absEta_1_1.4442-bad
+#energySC_65_80-absEta_1_1.4442-bad
+energySC_27_40-absEta_1_1.4442-gold
+energySC_40_50-absEta_1_1.4442-gold
+energySC_50_75-absEta_1_1.4442-gold
+#energySC_75_100-absEta_1_1.4442-gold

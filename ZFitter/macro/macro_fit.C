@@ -620,7 +620,7 @@ void FitProfile2(TString filename, TString energy="8 TeV", TString lumi=""){
       TString region= map_region_itr->first;
       TString variable = map_itr->first;
       bool isScale=map_itr->first.CompareTo("scale")==0;
-      //if(isScale) continue;
+      if(!isScale) continue;
 
       std::cout << region << " " << variable << std::endl;
 
@@ -678,8 +678,12 @@ void FitProfile2(TString filename, TString energy="8 TeV", TString lumi=""){
 	g->GetXaxis()->SetTitle("1+#DeltaP ");
 
       }else{
-	g->GetXaxis()->SetRangeUser(std::max(fun->GetXmin()-sigma,0.), std::min(fun->GetXmax()+sigma,0.15));
-	g->GetYaxis()->SetRangeUser(-5, std::max(fun->Eval(fun->GetXmin()-1.5*sigma), fun->Eval(fun->GetXmax()+1.5*sigma)));
+	Double_t xMin=0., xMax=0.03;
+	//xMin=std::max(fun->GetXmin()-sigma,0.);
+	//xMax=std::min(fun->GetXmax()+sigma,0.15);
+	g->GetXaxis()->SetRangeUser(xMin, xMax);
+	g->GetYaxis()->SetRangeUser(-5, 100);
+	//g->GetYaxis()->SetRangeUser(-5, std::max(fun->Eval(fun->GetXmin()-1.5*sigma), fun->Eval(fun->GetXmax()+1.5*sigma)));
 	g->Draw("AP");
 	g->GetYaxis()->SetTitle("#Delta L (a. u.)");
 	g->GetXaxis()->SetTitle("#Delta#sigma");

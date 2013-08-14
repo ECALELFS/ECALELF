@@ -18,5 +18,5 @@ s	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree-st
 ##### Scale correction trees
 #d	scaleEle_HggRunEtaR9	HggRunEtaR9-Winter13-RUNABC.root
 ##### Smearer category trees
-d	smearerCat_d	smearerCat-22Jan-stdMC_data-scaleStep2smearing_7.root
-s	smearerCat_s	smearerCat-22Jan-stdMC_mc-scaleStep2smearing_7.root
+#d	smearerCat_d	smearerCat-22Jan-stdMC_data-scaleStep2smearing_7.root
+#s	smearerCat_s	smearerCat-22Jan-stdMC_mc-scaleStep2smearing_7.root
