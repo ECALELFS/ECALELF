@@ -589,8 +589,10 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
       Y[i] += chi2;
       NY[i]++;
     }
+#ifdef DEBUG
     if(update==true) 
       std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
+#endif
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
@@ -625,9 +627,11 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
       Y[i] += chi2;
       NY[i]++;
     }
-      
+
+#ifdef DEBUG      
     if(update==true) 
       std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
+#endif
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
@@ -653,7 +657,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
 
   if(Y!=NULL){  //take the mean!
     for(Int_t i =0; i < N; i++){ 
-      if(Y[i]!=0) Y[i] /= NY[i];
+      if(NY[i]!=0) Y[i] /= NY[i];
     }
   }
 
@@ -717,9 +721,13 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
 
     iLocMin2Prev = FindMin1D(var2, X2, N2, iLocMin2Prev, locmin, smearer, true, Y);
     for(Int_t i2=0; i2 < N2; i2++){
+#ifdef DEBUG
       if(Y[i2]!=0) std::cout << i1 << "\t" << i2 << "\t" << X1[i1] << "\t" << X2[i2] << "\t" << Y[i2];
+#endif
       h.Fill(i1,i2,Y[i2]);
+#ifdef DEBUG
       if(Y[i2]!=0) std::cout << "\t" << h.GetBinContent(i1+1,i2+1) << std::endl;
+#endif
     }
 
     var2->setVal(X2[iLocMin2Prev]);
@@ -745,7 +753,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     for(Int_t i2=0; i2<N2; i2++){
       Double_t content = h.GetBinContent(i1+1,i2+1);
       if(content>0){
-	if(update==true || true) std::cout << "[DEBUG] " << X1[i1] << "\t" << X2[i2] << "\t" << content-chi2init << "\t" << locminSmooth-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
+	if(update==true) std::cout << "[DEBUG] " << X1[i1] << "\t" << X2[i2] << "\t" << content-chi2init << "\t" << locminSmooth-chi2init << "\t" << min-chi2init << "\t" << smearer.nllMin-chi2init << std::endl;
 	if(content>0 && locminSmooth > content){
 	  locminSmooth=content;
 	  iLocMin1=i1;
@@ -1949,11 +1957,11 @@ int main(int argc, char **argv) {
   myClock.Reset();
   if(vm.count("smearerFit")){
 
-    
+
 	smearer.SetHistBinning(80,100,invMass_binWidth); // to do before Init
 	if(vm.count("runToy")){
 	  smearer.SetToyScale(1, constTermToy);
-	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), initFileName.c_str());
+	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
 	  else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
 	  std::cout << "[DEBUG] " << constTermToy << std::endl;
 	} else{
@@ -1961,23 +1969,7 @@ int main(int argc, char **argv) {
 	  args.writeToStream(std::cout, kFALSE);
 	  smearer.Init(commonCut.c_str(), eleID);
 	}
-// 	for(std::vector<ZeeCategory>::iterator cat_itr = smearer.ZeeCategories.begin();
-// 		cat_itr != smearer.ZeeCategories.end();
-// 		cat_itr++){
-// 	  if((cat_itr->categoryName1.Contains("absEta_1_1.4442-gold") && !cat_itr->categoryName2.Contains("absEta_0_1-gold"))
-// 		  ||
-// 		  (cat_itr->categoryName2.Contains("absEta_1_1.4442-gold") && !cat_itr->categoryName1.Contains("absEta_0_1-gold"))
-// 		) cat_itr->active=false;
-// 	}  
 
-
-	//RooArgList list(args);
-	//m.simplex();
-	//for(int i =0; i < list.getSize(); i++){
-	//      list[i].Print();
-	//if(TString(list[i].GetName()).Contains("constTerm")) ((RooRealVar *)list.at(i))->setConstant(kFALSE);
-	//      list[i].Print();
-	//}
 	//if(vm.count("plotOnly")) //smearer.SetNSmear(10);
 	RooMinuit m(smearer);
 	if(! vm.count("plotOnly") && ! vm.count("profileOnly")){
