@@ -216,37 +216,37 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   produces< NewEnergyMap >("energyEleFra");
   produces< NewEnergyMap >("energyEleFraVar");
 
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_ecorr");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_sigma");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_alpha1");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_gamma1");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_alpha2");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_gamma2");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4_pdfval");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4ecorr");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4sigma");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4alpha1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4gamma1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4alpha2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4gamma2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV4pdfval");
 
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_ecorr");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_sigma");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_alpha1");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_gamma1");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_alpha2");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_gamma2");
-  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5_pdfval");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5ecorr");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5sigma");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5alpha1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5gamma1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5alpha2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5gamma2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV5pdfval");
 
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_ecorr");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_sigma");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_alpha1");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_gamma1");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_alpha2");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_gamma2");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4_pdfval");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4ecorr");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4sigma");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4alpha1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4gamma1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4alpha2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4gamma2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV4pdfval");
 					   
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_ecorr");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_sigma");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_alpha1");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_gamma1");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_alpha2");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_gamma2");
-  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5_pdfval");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5ecorr");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5sigma");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5alpha1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5gamma1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5alpha2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5gamma2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5pdfval");
 
  //now do what ever other initialization is needed
   
@@ -609,37 +609,37 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energyEleFraVarMap, "energyEleFraVar");//fra
 
   // electron
-  iEvent.put(energySCEleJoshEleSemiParamV4_ecorr_Map, "energySCEleJoshEleSemiParamV4_ecorr");
-  iEvent.put(energySCEleJoshEleSemiParamV4_sigma_Map, "energySCEleJoshEleSemiParamV4_sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV4_alpha1_Map, "energySCEleJoshEleSemiParamV4_alpha1");
-  iEvent.put(energySCEleJoshEleSemiParamV4_gamma1_Map, "energySCEleJoshEleSemiParamV4_gamma1");
-  iEvent.put(energySCEleJoshEleSemiParamV4_alpha2_Map, "energySCEleJoshEleSemiParamV4_alpha2");
-  iEvent.put(energySCEleJoshEleSemiParamV4_gamma2_Map, "energySCEleJoshEleSemiParamV4_gamma2");
-  iEvent.put(energySCEleJoshEleSemiParamV4_pdfval_Map, "energySCEleJoshEleSemiParamV4_pdfval");
+  iEvent.put(energySCEleJoshEleSemiParamV4_ecorr_Map,  "energySCEleJoshEleSemiParamV4ecorr");
+  iEvent.put(energySCEleJoshEleSemiParamV4_sigma_Map,  "energySCEleJoshEleSemiParamV4sigma");
+  iEvent.put(energySCEleJoshEleSemiParamV4_alpha1_Map, "energySCEleJoshEleSemiParamV4alpha1");
+  iEvent.put(energySCEleJoshEleSemiParamV4_gamma1_Map, "energySCEleJoshEleSemiParamV4gamma1");
+  iEvent.put(energySCEleJoshEleSemiParamV4_alpha2_Map, "energySCEleJoshEleSemiParamV4alpha2");
+  iEvent.put(energySCEleJoshEleSemiParamV4_gamma2_Map, "energySCEleJoshEleSemiParamV4gamma2");
+  iEvent.put(energySCEleJoshEleSemiParamV4_pdfval_Map, "energySCEleJoshEleSemiParamV4pdfval");
   
-  iEvent.put(energySCEleJoshEleSemiParamV5_ecorr_Map, "energySCEleJoshEleSemiParamV5_ecorr");
-  iEvent.put(energySCEleJoshEleSemiParamV5_sigma_Map, "energySCEleJoshEleSemiParamV5_sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV5_alpha1_Map, "energySCEleJoshEleSemiParamV5_alpha1");
-  iEvent.put(energySCEleJoshEleSemiParamV5_gamma1_Map, "energySCEleJoshEleSemiParamV5_gamma1");
-  iEvent.put(energySCEleJoshEleSemiParamV5_alpha2_Map, "energySCEleJoshEleSemiParamV5_alpha2");
-  iEvent.put(energySCEleJoshEleSemiParamV5_gamma2_Map, "energySCEleJoshEleSemiParamV5_gamma2");
-  iEvent.put(energySCEleJoshEleSemiParamV5_pdfval_Map, "energySCEleJoshEleSemiParamV5_pdfval");
+  iEvent.put(energySCEleJoshEleSemiParamV5_ecorr_Map,  "energySCEleJoshEleSemiParamV5ecorr");
+  iEvent.put(energySCEleJoshEleSemiParamV5_sigma_Map,  "energySCEleJoshEleSemiParamV5sigma");
+  iEvent.put(energySCEleJoshEleSemiParamV5_alpha1_Map, "energySCEleJoshEleSemiParamV5alpha1");
+  iEvent.put(energySCEleJoshEleSemiParamV5_gamma1_Map, "energySCEleJoshEleSemiParamV5gamma1");
+  iEvent.put(energySCEleJoshEleSemiParamV5_alpha2_Map, "energySCEleJoshEleSemiParamV5alpha2");
+  iEvent.put(energySCEleJoshEleSemiParamV5_gamma2_Map, "energySCEleJoshEleSemiParamV5gamma2");
+  iEvent.put(energySCEleJoshEleSemiParamV5_pdfval_Map, "energySCEleJoshEleSemiParamV5pdfval");
   // photon 
-  iEvent.put(energySCEleJoshPhoSemiParamV4_ecorr_Map,  "energySCEleJoshPhoSemiParamV4_ecorr");
-  iEvent.put(energySCEleJoshPhoSemiParamV4_sigma_Map,  "energySCEleJoshPhoSemiParamV4_sigma");
-  iEvent.put(energySCEleJoshPhoSemiParamV4_alpha1_Map, "energySCEleJoshPhoSemiParamV4_alpha1");
-  iEvent.put(energySCEleJoshPhoSemiParamV4_gamma1_Map, "energySCEleJoshPhoSemiParamV4_gamma1");
-  iEvent.put(energySCEleJoshPhoSemiParamV4_alpha2_Map, "energySCEleJoshPhoSemiParamV4_alpha2");
-  iEvent.put(energySCEleJoshPhoSemiParamV4_gamma2_Map, "energySCEleJoshPhoSemiParamV4_gamma2");
-  iEvent.put(energySCEleJoshPhoSemiParamV4_pdfval_Map, "energySCEleJoshPhoSemiParamV4_pdfval");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_ecorr_Map,  "energySCEleJoshPhoSemiParamV4ecorr");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_sigma_Map,  "energySCEleJoshPhoSemiParamV4sigma");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_alpha1_Map, "energySCEleJoshPhoSemiParamV4alpha1");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_gamma1_Map, "energySCEleJoshPhoSemiParamV4gamma1");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_alpha2_Map, "energySCEleJoshPhoSemiParamV4alpha2");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_gamma2_Map, "energySCEleJoshPhoSemiParamV4gamma2");
+  iEvent.put(energySCEleJoshPhoSemiParamV4_pdfval_Map, "energySCEleJoshPhoSemiParamV4pdfval");
 
-  iEvent.put(energySCEleJoshPhoSemiParamV5_ecorr_Map,  "energySCEleJoshPhoSemiParamV5_ecorr");
-  iEvent.put(energySCEleJoshPhoSemiParamV5_sigma_Map,  "energySCEleJoshPhoSemiParamV5_sigma");
-  iEvent.put(energySCEleJoshPhoSemiParamV5_alpha1_Map, "energySCEleJoshPhoSemiParamV5_alpha1");
-  iEvent.put(energySCEleJoshPhoSemiParamV5_gamma1_Map, "energySCEleJoshPhoSemiParamV5_gamma1");
-  iEvent.put(energySCEleJoshPhoSemiParamV5_alpha2_Map, "energySCEleJoshPhoSemiParamV5_alpha2");
-  iEvent.put(energySCEleJoshPhoSemiParamV5_gamma2_Map, "energySCEleJoshPhoSemiParamV5_gamma2");
-  iEvent.put(energySCEleJoshPhoSemiParamV5_pdfval_Map, "energySCEleJoshPhoSemiParamV5_pdfval");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_ecorr_Map,  "energySCEleJoshPhoSemiParamV5ecorr");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_sigma_Map,  "energySCEleJoshPhoSemiParamV5sigma");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_alpha1_Map, "energySCEleJoshPhoSemiParamV5alpha1");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_gamma1_Map, "energySCEleJoshPhoSemiParamV5gamma1");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_alpha2_Map, "energySCEleJoshPhoSemiParamV5alpha2");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_gamma2_Map, "energySCEleJoshPhoSemiParamV5gamma2");
+  iEvent.put(energySCEleJoshPhoSemiParamV5_pdfval_Map, "energySCEleJoshPhoSemiParamV5pdfval");
   
 }
 
