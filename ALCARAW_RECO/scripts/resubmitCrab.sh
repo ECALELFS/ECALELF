@@ -142,7 +142,10 @@ for jobID in `seq 1 $nJobs`
 #	  intervals="$intervals $jobID"
 #	  crab -c $ui_working_dir -resubmit $jobID
 	  ;;
-
+      50115*50115)
+	  intervals="$intervals $jobID"
+	  ;;
+  
       *)
 	  echo $jobID $ExitCode
 	  

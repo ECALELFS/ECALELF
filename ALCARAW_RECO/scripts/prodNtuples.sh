@@ -356,7 +356,7 @@ if [ -n "${CREATE}" ];then
     if [ -n "$FILELIST" ];then
 	makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
     fi
-    splittedOutputFilesCrabPatch -u $UI_WORKING_DIR
+    splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
 fi
 
 if [ -n "$SUBMIT" ];then

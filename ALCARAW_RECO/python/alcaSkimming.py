@@ -13,7 +13,7 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
 options.register('isCrab',
-                 '1', # default Value = true
+                 '0', # default Value = true
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "change files path in case of local test")
@@ -632,13 +632,18 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
 if(options.isCrab):
-    pathPrefix="./"
+    pathPrefix=""
 else:
-    pathPrefix=CMSSW_BASE+"/"
+    pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
 
 process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
 process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
 process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
+process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV4_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV4_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV5_SemiParamFile.value()
+
 #    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
 process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)
 if(re.match("CMSSW_4_4_.*", CMSSW_VERSION)):

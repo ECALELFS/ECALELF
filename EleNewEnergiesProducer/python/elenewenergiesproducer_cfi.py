@@ -16,9 +16,9 @@ eleNewEnergiesProducer = cms.EDProducer('EleNewEnergiesProducer',
                                         correctionFileName = cms.string(''),
                                         correctionType = cms.string(''),
                                         ptSplit = cms.bool(True),
-                                        regrEleJoshV4_SemiParamFile = cms.string('./data/regweights_v4_forest_ele.root'),
-                                        regrEleJoshV5_SemiParamFile = cms.string('./data/regweights_v5_forest_ele.root'),
-                                        regrPhoJoshV4_SemiParamFile = cms.string('./data/regweights_v4_forest_ph.root'),
-                                        regrPhoJoshV5_SemiParamFile = cms.string('./data/regweights_v5_forest_ph.root'),
+                                        regrEleJoshV4_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v4_forest_ele.root'),
+                                        regrEleJoshV5_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v5_forest_ele.root'),
+                                        regrPhoJoshV4_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v4_forest_ph.root'),
+                                        regrPhoJoshV5_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v5_forest_ph.root'),
                                         
                                         )
