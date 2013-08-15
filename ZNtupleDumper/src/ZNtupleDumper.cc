@@ -114,8 +114,8 @@
 #include <FWCore/Common/interface/TriggerNames.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 
-//#define DEBUG
-#define TRIGGER
+#define DEBUG
+
 ////////////////////////////////////////////////
 // class declaration
 //
@@ -665,11 +665,10 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
   tree->Branch("runTime",       &runTime,         "runTime/i");
 
-#ifdef TRIGGER
   tree->Branch("HLTfire", &HLTfire, "HLTfire/B");
   //tree->Branch("HLTNames",&(HLTNames[0]));
   //tree->Branch("HLTResults",&(HLTResults[0]));
-#endif
+
   //extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
 
   //   tree->Branch("nBX", &nBX, "nBX/I");
@@ -799,7 +798,6 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     lumiBlock = -1;
   }
 
-#ifdef TRIGGER
   edm::TriggerNames HLTNames_ = iEvent.triggerNames(*triggerResultsHandle);
   int hltCount = triggerResultsHandle->size();
   HLTNames[0].clear();
@@ -810,7 +808,7 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     (HLTResults[0]).push_back(triggerResultsHandle->accept(i));
     HLTBits.insert(std::pair<std::string, bool>( hltName_str, triggerResultsHandle->accept(i)));
   } // for i
-#endif
+
 
   return;
 }    
