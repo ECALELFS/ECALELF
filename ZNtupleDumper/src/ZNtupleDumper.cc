@@ -343,8 +343,6 @@ private:
   // --------------- selection cuts
 private:
 
-  Long64_t nentries;
-
   Long64_t epsilonected;
 
 
@@ -424,33 +422,23 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   pEvent = &iEvent;
   pSetup = &iSetup;
   
-  
-  nentries++;
   // filling infos runNumber, eventNumber, lumi
   if( !iEvent.isRealData() ){
     iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
     isMC=true;
   } else isMC=false;
   
-  //------------------------------ RECHIT
-  //iEvent.getByLabel(recHitCollectionEBTAG, recHitCollectionEBHandle);
-  //iEvent.getByLabel(recHitCollectionEETAG, recHitCollectionEEHandle);
-   
   //------------------------------ CONVERSIONS
   iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
 
   //------------------------------ HLT
-#ifdef TRIGGER
   iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
-#endif
 
+  //------------------------------
   clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
 					   recHitCollectionEETAG);  
-   
 
-  // Handle to the Zee collection
-  //  edm::Handle<pat::CompositeCandidateCollection > ZCandidatesHandle;
-  //  iEvent.getByLabel(ZCandidateTAG, ZCandidatesHandle);
+  //------------------------------ electrons
   iEvent.getByLabel(electronsTAG, electronsHandle);
 
   // for conversions with full vertex fit
@@ -461,11 +449,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   iEvent.getByLabel(metTAG, metHandle); 
   
+  //------------------------------
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
   
   // at least one of the triggers
-#ifdef TRIGGER
   HLTfire=false;
   if(!hltPaths.empty()){
     for(std::vector<std::string>::const_iterator hltPath_itr = hltPaths.begin();
@@ -487,11 +475,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	//exit(1);
       }
     }
-  } else HLTfire=true;
-  //if(!triggerFire) return;
-#endif
-  //  pat::CompositeCandidateCollection ZCandidatesCollection;
-  
+  } 
+
   // count electrons
   int nWP70 = 0; //only WP70
   int nWP90 = 0; //only WP90
@@ -513,7 +498,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
        eleIter1 != electronsHandle->end();
        eleIter1++){
-    //if(! eleIter1->electronID("loose") ) continue;
     if(isWenu){
       if(! eleIter1->electronID("tight") ) continue;
       if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
