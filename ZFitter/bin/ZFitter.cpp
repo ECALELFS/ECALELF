@@ -10,6 +10,7 @@
 #include <TStopwatch.h>
 #include <TF1.h>
 #include <TH2F.h>
+#include <TFriendElement.h>
 
 #include "../interface/ZFit_class.hh"
 #include "../interface/puWeights_class.hh"
@@ -1309,6 +1310,10 @@ int main(int argc, char **argv) {
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_pho") energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
   else {
     std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
     exit(1);
@@ -1424,6 +1429,8 @@ int main(int argc, char **argv) {
 #endif
   }
 
+  
+  //init chains
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
       tag_chain_itr++){
@@ -1440,7 +1447,7 @@ int main(int argc, char **argv) {
     }
   }
 
-
+  
 
   ///------------------------------ to obtain run ranges
   if(vm.count("runDivide")){
@@ -1483,6 +1490,7 @@ int main(int argc, char **argv) {
     }else categories.push_back((*region_itr)+"-"+commonCut.c_str());
   }
 
+  
 
   ///------------------------------ to obtain r9weights
   r9Weights_class r9Weights;
@@ -1492,9 +1500,9 @@ int main(int argc, char **argv) {
   }
   if(vm.count("r9WeightFile")){
     r9Weights.ReadFromFile(r9WeightFile);
-
+    
     // mc // save it in a file and reload it as a chain to be safe against the reference directory for the tree
-
+    
     TFile r9File_mc("tmp/r9mcTree.root","recreate");
     if(r9File_mc.IsOpen()){
       r9File_mc.cd();
@@ -1511,7 +1519,7 @@ int main(int argc, char **argv) {
       std::cerr << "[ERROR] " << std::endl;
       return 1;
     }
-
+    
 
     // data
     TFile r9File_data("tmp/r9dataTree.root","recreate");
@@ -1529,16 +1537,16 @@ int main(int argc, char **argv) {
     }
   }
   if(vm.count("saveR9TreeWeight")) return 0;
-  if((tagChainMap["s"]).count("r9Weight")){
-    std::cout << "[STATUS] Adding r9Weight chain to signal chain as friend chain" << std::endl;
-  }
-  if((tagChainMap["d"]).count("r9Weight")){
-    std::cout << "[STATUS] Adding r9Weight chain to data chain as friend chain" << std::endl;
-    //	if((tagChainMap["d"])["selected"]->AddFriend((tagChainMap["d"])["r9Weight"])==NULL) return 2;
-#ifdef DEBUG
-    std::cout << "[DEBUG] r9Weight branch address " << (tagChainMap["d"])["selected"]->GetBranch("r9Weight") << std::endl;
-#endif
-  }
+//   if((tagChainMap["s"]).count("r9Weight")){
+//     std::cout << "[STATUS] Adding r9Weight chain to signal chain as friend chain" << std::endl;
+//   }
+//   if((tagChainMap["d"]).count("r9Weight")){
+//     std::cout << "[STATUS] Adding r9Weight chain to data chain as friend chain" << std::endl;
+//     //	if((tagChainMap["d"])["selected"]->AddFriend((tagChainMap["d"])["r9Weight"])==NULL) return 2;
+// #ifdef DEBUG
+//     std::cout << "[DEBUG] r9Weight branch address " << (tagChainMap["d"])["selected"]->GetBranch("r9Weight") << std::endl;
+// #endif
+//   }
 
 
   //==============================
@@ -1546,10 +1554,10 @@ int main(int argc, char **argv) {
   //  if(vm.count("dataPU")==0 && (tagChainMap["s"]).count("pileupHist")==0 && (tagChainMap["s"]).count("pileup")==0){
 
   if(vm.count("noPU")==0 && !vm.count("runToy")){
-    if(dataPUFileNameVec.empty() && (tagChainMap["s"]).count("pileup")==0){
+    if(dataPUFileNameVec.empty() && (tagChainMap.count("s")!=0) && (tagChainMap["s"]).count("pileup")==0){
       std::cerr << "[ERROR] Nor pileup mc tree configured in chain list file either dataPU histograms are not provided" << std::endl;
       return 1;
-    }else if( vm.count("dataPU")!=0 || (!dataPUFileNameVec.empty() && (tagChainMap["s"]).count("pileup")==0)){
+    }else if( vm.count("dataPU")!=0 || (!dataPUFileNameVec.empty() && ((tagChainMap.count("s")==0) || (tagChainMap["s"]).count("pileup")==0))){
       std::cout << "[STATUS] Creating pileup weighting tree and saving it" << std::endl;
       for(unsigned int i=0; i < mcPUFileNameVec.size(); i++){
 	TString mcPUFileName_=mcPUFileNameVec[i];
@@ -1567,22 +1575,32 @@ int main(int argc, char **argv) {
 	std::cout << "********* runMin = " << runMin << "\t" << runMin_ << std::endl;
 	puWeights.ReadFromFiles(mcPUFileName_.Data(),dataPUFileName_.Data(), runMin);
       }
-      TFile f("tmp/mcPUtree.root","recreate");
-      if(f.IsOpen()){
-	f.cd();
-	TTree *puTree = puWeights.GetTreeWeight((tagChainMap["s"])["selected"],true);
-	puTree->Write();
-	delete puTree;
-	f.Write();
-	f.Close();
-	std::pair<TString, TChain* > pair_tmp("pileup", new TChain("pileup"));
-	(tagChainMap["s"]).insert(pair_tmp);
-	(tagChainMap["s"])["pileup"]->SetTitle("s");
-	(tagChainMap["s"])["pileup"]->Add("tmp/mcPUtree.root");
+
+      for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
+	  tag_chain_itr!=tagChainMap.end();
+	  tag_chain_itr++){
+	if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //do it for each sample
+	
+	TString fpuname="tmp/mcPUtree"+tag_chain_itr->first+".root";
+	TFile f(fpuname,"recreate");
+	if(f.IsOpen()){
+	  f.cd();
+	  TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+	  TTree *puTree = puWeights.GetTreeWeight(ch,true);
+	  puTree->Write();
+	  delete puTree;
+	  f.Write();
+	  f.Close();
+	  std::pair<TString, TChain* > pair_tmp("pileup", new TChain("pileup"));
+	  chain_map_t::iterator chain_itr= ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+ 	  chain_itr->second->SetTitle(tag_chain_itr->first);
+	  chain_itr->second->Add(fpuname);
+	  // adding pu weight also to chain "s"
+	}
+	
       }
     }
   }
-
 
   //read corrections directly from file
   if (vm.count("corrEleType")){
@@ -1783,8 +1801,53 @@ int main(int argc, char **argv) {
 
 
   //(tagChainMap["s"])["selected"]->GetEntries();
-
   UpdateFriends(tagChainMap);
+
+  //create tag "s" if not present (due to multiple mc samples)
+  tag="s"; chainName="selected";
+  if(!tagChainMap.count(tag)){
+    //#ifdef DEBUG
+    std::cout << "==============================" << std::endl;
+    std::cout << "==============================" << std::endl;
+
+    std::cout << "[DEBUG] Create new tag map for tag: " << tag << std::endl;
+    //#endif
+    std::pair<TString, chain_map_t > pair_tmp_tag(tag,chain_map_t()); // make_pair not work with scram b
+    tagChainMap.insert(pair_tmp_tag);
+    
+    std::pair<TString, TChain* > pair_tmp(chainName, new TChain(chainName));
+    (tagChainMap[tag]).insert(pair_tmp);
+    (tagChainMap[tag])[chainName]->SetTitle(tag);
+    
+    for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
+	tag_chain_itr!=tagChainMap.end();
+	tag_chain_itr++){
+#ifdef DEBUG
+      std::cout << tag_chain_itr->first << std::endl;
+#endif
+      if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue;
+      
+      for(chain_map_t::const_iterator chain_itr=tag_chain_itr->second.begin();
+	chain_itr!=tag_chain_itr->second.end();
+	chain_itr++){
+	chain_itr->second->GetEntries();
+	std::cout <<"Adding chain to s: " << chain_itr->first << "\t" << chain_itr->second->GetName() << "\t" << chain_itr->second->GetTitle() << std::endl;
+	if((tagChainMap[tag])[chainName]->Add(chain_itr->second)==0) exit(1);
+	
+	TList *friendList= chain_itr->second->GetListOfFriends();
+	if(friendList!=NULL){
+	  friendList->Print();
+	TIter friend_itr(friendList);
+	for(TFriendElement *friendElement = (TFriendElement*) friend_itr.Next(); 
+	    friendElement != NULL; friendElement = (TFriendElement*) friend_itr.Next()){
+	  std::cout << "[STATUS] Adding friend " << friendElement->GetTreeName() << std::endl;
+	  (tagChainMap[tag])[chainName]->AddFriend(friendElement->GetTree());
+	}
+	}
+      }
+    }
+  }
+  
   if(vm.count("saveRootMacro")){
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();

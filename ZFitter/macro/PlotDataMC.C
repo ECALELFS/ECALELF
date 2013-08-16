@@ -463,8 +463,10 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 		     TString category, TString selection, 
 		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
 		     bool logy=false, bool usePU=true, bool smear=false, bool scale=false){
-
   int nHist= mc_vec.size();
+  int colors[4]={kRed,kGreen,kBlue,0};
+  int fillstyle[4]={0,0,0,0};
+  if(nHist>4) return NULL;
   TString yLabel; 
   
   TCanvas *c = new TCanvas("c","");
@@ -499,13 +501,13 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   // Draw histograms
     data->Draw(branchNameData+">>data_hist"+binning, selection_data);
     if(nHist > 0){
-      for(std::vector<TChain *> mc_itr = mc_vec.begin();
+      for(std::vector<TChain *>::const_iterator mc_itr = mc_vec.begin();
 	  mc_itr != mc_vec.end();
 	  mc_itr++){
 	TChain *mc = *mc_itr;
 	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
 	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight");
-	else  mc->Draw(branchNameMC+">>mc_hist"+binning, selection_MC);
+	else  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC);
       }
     }
 
@@ -540,9 +542,9 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   d->SetMarkerSize(1);
 
   for(int i=0; i < nHist; i++){
-    TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
+    TString mcHistName; mcHistName+=i; mcHistName+="_hist";
     TH1F *s = (TH1F *) gROOT->FindObject(mcHistName);
-
+    if(s==NULL) continue;
     std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
     if(logy){
       s->GetYaxis()->SetRangeUser(0.1,max);
@@ -553,9 +555,12 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
     s->GetXaxis()->SetTitle(xLabel);
 
     s->SetMarkerStyle(20);
-    s->SetMarkerSize(1);
-    s->SetFillStyle(3001+i);
-    s->SetFillColor(kRed+i);
+    s->SetMarkerSize(2);
+    s->SetMarkerColor(colors[i]);
+    s->SetFillStyle(fillstyle[i]);
+    s->SetFillColor(colors[i]);
+    s->SetLineColor(colors[i]);
+
     TH1F* s_norm = NULL;
     if(i==0) s_norm = (TH1F *) (s->DrawNormalized("hist", d->Integral()));
     else s_norm = (TH1F *) (s->DrawNormalized("hist same", d->Integral()));
@@ -601,4 +606,13 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
   return c;
 
+}
+
+
+std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2, TChain *v3){
+  std::vector<TChain *> vec;
+  vec.push_back(v1);
+  vec.push_back(v2);
+  vec.push_back(v3);
+  return vec;
 }

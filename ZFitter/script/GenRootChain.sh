@@ -132,8 +132,14 @@ rm tmp/*_chain.root
 ./bin/ZFitter.exe --saveRootMacro -f ${configFile} ${noPU} || exit 1
 
 # adding all the chains in one file
-hadd tmp/s_chain.root tmp/s_*_chain.root
-hadd tmp/d_chain.root tmp/d_*_chain.root
+for file in tmp/{s,d}[0-9]*_selected_chain.root
+  do
+  name=`basename $file .root | sed 's|_.*||'`
+  hadd tmp/${name}_chain.root tmp/${name}_*_chain.root
+  
+done
+#hadd tmp/s_chain.root tmp/s_*_chain.root
+#hadd tmp/d_chain.root tmp/d_*_chain.root
 
 cat > tmp/load.C <<EOF
 {

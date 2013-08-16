@@ -133,12 +133,22 @@ if [ -z "${mcName}" ];then
 #	echo "[ERROR] No or too mani MC files to extract the mcName"
 #	exit 1
 #    fi
-    mcFiles=`grep -v '#' ${configFile}  | grep  'selected' | grep '^s' | cut -f 3`
-    for mcFile in $mcFiles
+
+    mcTags=`grep -v '#' ${configFile}  | grep  'selected' | grep '^s' | cut -f 1`
+    for mcTag in ${mcTags}
       do
-      mcName="${mcName}_`basename $mcFile .root | sed 's|\..*||'`"
+      mcFiles=`grep -v '#' ${configFile}  | grep  'selected' | grep "^${mcTags}" | cut -f 3`
+      for mcFile in $mcFiles
+	do
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/194533-194533/semiParamRegression/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-194533-194533.root
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/200519-200519/semiParamRegression/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-200519-200519.root
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/206859-206859/semiParamRegression/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-206859-206859.root
+
+	mcNames="${mcNames} `basename $mcFile .root | sed 's|\..*||;s|-[0-9]*-[0-9]*|'`"
+      done
     done
-    mcName=`echo $mcName | sed 's|^_||'`
+    
+      mcName=`echo $mcNames | sort | uniq sed 's| |_|;s|^_||'`
 #	echo $mcName
 fi
 
