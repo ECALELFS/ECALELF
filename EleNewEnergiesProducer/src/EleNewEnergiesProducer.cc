@@ -648,18 +648,22 @@ void
 EleNewEnergiesProducer::beginJob()
 {
   if (!corV4_ele.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V4 regrEle: " << regrEleJoshV4_SemiParamFile << std::endl;
     corV4_ele.Initialize(regrEleJoshV4_SemiParamFile); //"/afs/cern.ch/user/b/bendavid/CMSSWhgg/CMSSW_5_3_11_patch5/src/HiggsAnalysis/GBRLikelihoodEGTools/data/regweights_v4_forest_ph.root");
   }
   
   if (!corV5_ele.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V5 regrEle: " << regrEleJoshV5_SemiParamFile <<std::endl;
     corV5_ele.Initialize(regrEleJoshV5_SemiParamFile); //"/afs/cern.ch/user/b/bendavid/CMSSWhgg/CMSSW_5_3_11_patch5/src/HiggsAnalysis/GBRLikelihoodEGTools/data/regweights_v5_forest_ph.root");
   }
 
   if (!corV4_pho.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V4 regrPho: " << regrPhoJoshV4_SemiParamFile <<std::endl;
     corV4_pho.Initialize(regrPhoJoshV4_SemiParamFile); //"/afs/cern.ch/user/b/bendavid/CMSSWhgg/CMSSW_5_3_11_patch5/src/HiggsAnalysis/GBRLikelihoodEGTools/data/regweights_v4_forest_ph.root");
   }
   
   if (!corV5_pho.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V5 regrPho: " << regrPhoJoshV5_SemiParamFile <<std::endl;
     corV5_pho.Initialize(regrPhoJoshV5_SemiParamFile); //"/afs/cern.ch/user/b/bendavid/CMSSWhgg/CMSSW_5_3_11_patch5/src/HiggsAnalysis/GBRLikelihoodEGTools/data/regweights_v5_forest_ph.root");
   }
 
