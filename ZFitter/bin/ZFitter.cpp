@@ -89,7 +89,7 @@ std::vector<TString> ReadRegionsFromFile(TString fileName){
 }
 
 
-void UpdateFriends(tag_chain_map_t& tagChainMap){
+void UpdateFriends(tag_chain_map_t& tagChainMap, bool merge=false){
 
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
@@ -111,6 +111,47 @@ void UpdateFriends(tag_chain_map_t& tagChainMap){
   }
   return;
 }
+
+
+TChain * addChainAndFriends(TString chainName, std::vector<TChain *> chain_vec){
+  TChain *sumChain = new TChain(chainName,"");
+  
+  std::map<TString, TChain *> friends_map;
+  for(std::vector<TChain *>::const_iterator chain_itr = chain_vec.begin();
+      chain_itr!=chain_vec.end();
+      chain_itr++){
+    
+    TList *friendList= (*chain_itr)->GetListOfFriends();
+    TIter newfriend_itr(friendList);
+
+    for(TFriendElement *friendElement = (TFriendElement*) newfriend_itr.Next(); 
+	friendElement != NULL; friendElement = (TFriendElement*) newfriend_itr.Next()){
+      TString treeName=friendElement->GetTreeName();
+      std::cout << "[STATUS] Adding new friend " << treeName  << std::endl;
+      std::map<TString, TChain*>::iterator map_itr = friends_map.find(treeName);
+      if(map_itr==friends_map.end()){
+	friends_map[treeName] = new TChain(treeName,"");
+      }
+      friends_map[treeName]->Add((TChain *)friendElement->GetTree());
+    }
+  }
+
+  for(std::vector<TChain *>::const_iterator chain_itr = chain_vec.begin();
+      chain_itr!=chain_vec.end();
+      chain_itr++){
+    sumChain->Add(*chain_itr);  
+  }
+
+  for(std::map<TString,TChain *>::const_iterator map_itr = friends_map.begin();
+      map_itr != friends_map.end();
+      map_itr++){
+    sumChain->AddFriend(map_itr->second);
+  }
+  sumChain->GetListOfFriends()->Print();
+  return sumChain;
+}
+
+
 
 //Get Profile after smearing
 TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level=1, bool warningEnable=true, bool trueEval=true);
