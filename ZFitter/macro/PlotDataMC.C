@@ -465,7 +465,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 		     bool logy=false, bool usePU=true, bool smear=false, bool scale=false){
   int nHist= mc_vec.size();
   int colors[4]={kRed,kGreen,kBlue,0};
-  int fillstyle[4]={0,0,0,0};
+  int fillstyle[4]={0,0,0,0}; //3003,3004,3005,3006};
   if(nHist>4) return NULL;
   TString yLabel; 
   
@@ -514,19 +514,24 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
   c->Clear();
   TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
+
+  d->SetMarkerStyle(20);
+  d->SetMarkerSize(1);
+
+  if(d->GetEntries()==0 || d->Integral()==0){
+    d=(TH1F *) gROOT->FindObject("0_hist");
+    d->SetMarkerSize(0);
+  }
   //d->SaveAs("tmp/d_hist.root");
   //s->SaveAs("tmp/s_hist.root");
 
   yLabel.Form("Events /(%.2f %s)", d->GetBinWidth(2), yLabelUnit.Data());
   
   float max = 0; //1.1 * std::max(
-  //d->GetMaximum(),///d->Integral(),
-  //s->GetMaximum() ///s->Integral()
-  //);
   max=1.1*d->GetMaximum();
   std::cout << "max = " << max << std::endl;
   std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
-
+    
 
   d->GetYaxis()->SetTitle(yLabel);
   d->GetXaxis()->SetTitle(xLabel);
@@ -537,9 +542,6 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   } else {
       d->GetYaxis()->SetRangeUser(0,max);
   }
-
-  d->SetMarkerStyle(20);
-  d->SetMarkerSize(1);
 
   for(int i=0; i < nHist; i++){
     TString mcHistName; mcHistName+=i; mcHistName+="_hist";

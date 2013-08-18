@@ -112,6 +112,34 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, bool merge=false){
   return;
 }
 
+void MergeSamples(tag_chain_map_t& tagChainMap, TString tag="s"){
+  
+  std::pair<TString, chain_map_t > pair_tmp_tag(tag,chain_map_t()); // make_pair not work with scram b
+  tagChainMap.insert(pair_tmp_tag);
+  
+  for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
+      tag_chain_itr!=tagChainMap.end();
+      tag_chain_itr++){
+
+    if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //do it for each sample
+    //TChain *chain = (tag_chain_itr->second.find("selected"))->second;
+    //    std::cout << chain->GetName() << std::endl;
+    for(chain_map_t::const_iterator chain_itr=tag_chain_itr->second.begin();
+	chain_itr!=tag_chain_itr->second.end();
+	chain_itr++){
+      TString chainName = chain_itr->first;
+      if(tagChainMap.count(chainName)==0){ // create the new chain if does not exist for tag
+	std::pair<TString, TChain* > pair_tmp(chainName, new TChain(chainName));
+	(tagChainMap[tag]).insert(pair_tmp);
+	(tagChainMap[tag])[chainName]->SetTitle(tag);
+      }
+      (tagChainMap[tag])[chainName]->Add(chain_itr->second);
+    }
+  }
+  UpdateFriends(tagChainMap);
+  return;
+}
+
 
 TChain * addChainAndFriends(TString chainName, std::vector<TChain *> chain_vec){
   TChain *sumChain = new TChain(chainName,"");
@@ -1845,49 +1873,13 @@ int main(int argc, char **argv) {
   UpdateFriends(tagChainMap);
 
   //create tag "s" if not present (due to multiple mc samples)
-  tag="s"; chainName="selected";
-  if(!tagChainMap.count(tag)){
+  if(!tagChainMap.count("s")){
     //#ifdef DEBUG
     std::cout << "==============================" << std::endl;
     std::cout << "==============================" << std::endl;
-
-    std::cout << "[DEBUG] Create new tag map for tag: " << tag << std::endl;
-    //#endif
-    std::pair<TString, chain_map_t > pair_tmp_tag(tag,chain_map_t()); // make_pair not work with scram b
-    tagChainMap.insert(pair_tmp_tag);
-    
-    std::pair<TString, TChain* > pair_tmp(chainName, new TChain(chainName));
-    (tagChainMap[tag]).insert(pair_tmp);
-    (tagChainMap[tag])[chainName]->SetTitle(tag);
-    
-    for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
-	tag_chain_itr!=tagChainMap.end();
-	tag_chain_itr++){
-#ifdef DEBUG
-      std::cout << tag_chain_itr->first << std::endl;
-#endif
-      if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue;
-      
-      for(chain_map_t::const_iterator chain_itr=tag_chain_itr->second.begin();
-	chain_itr!=tag_chain_itr->second.end();
-	chain_itr++){
-	chain_itr->second->GetEntries();
-	std::cout <<"Adding chain to s: " << chain_itr->first << "\t" << chain_itr->second->GetName() << "\t" << chain_itr->second->GetTitle() << std::endl;
-	if((tagChainMap[tag])[chainName]->Add(chain_itr->second)==0) exit(1);
-	
-	TList *friendList= chain_itr->second->GetListOfFriends();
-	if(friendList!=NULL){
-	  friendList->Print();
-	TIter friend_itr(friendList);
-	for(TFriendElement *friendElement = (TFriendElement*) friend_itr.Next(); 
-	    friendElement != NULL; friendElement = (TFriendElement*) friend_itr.Next()){
-	  std::cout << "[STATUS] Adding friend " << friendElement->GetTreeName() << std::endl;
-	  (tagChainMap[tag])[chainName]->AddFriend(friendElement->GetTree());
-	}
-	}
-      }
-    }
+    MergeSamples(tagChainMap, "s");
   }
+  
   
   if(vm.count("saveRootMacro")){
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
