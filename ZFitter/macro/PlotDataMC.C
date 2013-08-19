@@ -462,7 +462,7 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
 		     TString category, TString selection, 
 		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
-		     bool logy=false, bool usePU=true, bool smear=false, bool scale=false){
+		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false){
   int nHist= mc_vec.size();
   int colors[4]={kRed,kGreen,kBlue,0};
   int fillstyle[4]={0,0,0,0}; //3003,3004,3005,3006};
@@ -513,7 +513,16 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
 
   c->Clear();
+  TLegend *leg = new TLegend(0.65,0.8,1,1);
+  leg->SetBorderSize(1);
+  leg->SetFillColor(0);
+  leg->SetTextSize(0.04);
+//   if(dataLabel !="" && mcLabel !="") leg->Draw();
+//   //c->GetListOfPrimitives()->Add(leg,"");
+
+
   TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
+  if(dataLabel !="") leg->AddEntry(d,dataLabel,"p");
 
   d->SetMarkerStyle(20);
   d->SetMarkerSize(1);
@@ -562,6 +571,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
     s->SetFillStyle(fillstyle[i]);
     s->SetFillColor(colors[i]);
     s->SetLineColor(colors[i]);
+    s->SetLineWidth(2);
 
     TH1F* s_norm = NULL;
     if(i==0) s_norm = (TH1F *) (s->DrawNormalized("hist", d->Integral()));
@@ -573,6 +583,8 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
       //d_norm->GetYaxis()->SetRangeUser(0,max);  
       s_norm->GetYaxis()->SetRangeUser(0,max);  
     }
+
+    if(mcLabel_vec[i] !="") leg->AddEntry(s,mcLabel_vec[i], "lf");
     
   }
 
@@ -589,17 +601,9 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 //   std::cout << "\\hline" << std::endl;
 //   std::cout << "$\\Chi^2$ " <<  d->Chi2Test(s_norm, "UW CHI2/NDF NORM") << std::endl;
   
+  if(mcLabel_vec.size()!=0) leg->Draw();
 
-//   TLegend *leg = new TLegend(0.6,0.8,1,1);
-//   if(dataLabel !="") leg->AddEntry(d,dataLabel,"p");
-//   if(mcLabel   !="") leg->AddEntry(s,mcLabel, "lf");
-//   leg->SetBorderSize(1);
-//   leg->SetFillColor(0);
-//   leg->SetTextSize(0.04);
-//   if(dataLabel !="" && mcLabel !="") leg->Draw();
-//   //c->GetListOfPrimitives()->Add(leg,"");
-
-  TPaveText *pv = new TPaveText(0.2,0.95,0.7,1,"NDC");
+  TPaveText *pv = new TPaveText(0.25,0.95,0.65,1,"NDC");
   pv->AddText("CMS Preliminary 2012");
   pv->SetFillColor(0);
   pv->SetBorderSize(0);
@@ -616,5 +620,18 @@ std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2, TChain *v3){
   vec.push_back(v1);
   vec.push_back(v2);
   vec.push_back(v3);
+  return vec;
+}
+
+std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2){
+  std::vector<TChain *> vec;
+  vec.push_back(v1);
+  vec.push_back(v2);
+  return vec;
+}
+
+std::vector<TChain *> MakeChainVector(TChain *v1){
+  std::vector<TChain *> vec;
+  vec.push_back(v1);
   return vec;
 }
