@@ -11,15 +11,15 @@ usage(){
     echo " --noPlot: does not make the stability plot"
     echo " --xMin"
     echo " --xMax"
-    echo " --tableFile2 file: secondary file for comparisons"
-    echo " --titleFile1 arg:  name in the legend for data of file 1 (def=$titleOne)"
-    echo " --titleFile2 arg:  name in the legend for data of file 2 (def=$titleTwo)"
+    echo " -l legend"
     echo " --color: make coloured plot (def=$color)"
     echo " --column arg (def=$column)"
+    echo " --allRegions" 
+    echo " --norm: normalized the y axis to the first point"
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o ht:x:y: -l help,tableFile:,xVar:,yVar:,outDirImgData:,noPlot,xMin:,xMax:,tableFile2:,titleFile1:,titleFile2:,color,column: -- "$@")
+if ! options=$(getopt -u -o ht:x:y:l: -l help,tableFile:,xVar:,yVar:,outDirImgData:,noPlot,xMin:,xMax:,tableFile2:,titleFile1:,titleFile2:,color,column:,allRegions,norm -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -27,12 +27,13 @@ fi
 
 set -- $options
 
+index=0
 while [ $# -gt 0 ]
 do
     case $1 in
 	-h|--help) usage; exit 0;;
-	-t|--tableFile) TABLEFILE=$2; shift;;
-	--tableFile2) TABLEFILETWO=$2; shift;;
+	-t) TABLEFILES="${TABLEFILES} $2"; shift;;
+	-l) LEGENDS[${index}]="$2";  echo $index; echo ${LEGENDS[$index]}; let index=$index+1; shift;;
 	-x|--xVar) xVar=$2; shift;;
 	-y|--yVar) yVar=$2; shift;;
 	--outDirImgData) outDirImgData=$2; shift;;
@@ -44,6 +45,8 @@ do
 	--color) color=true;;
 	--xMean) XMEAN=true;;
 	--column) column=$2; shift;;
+	--allRegions) MULTIREGION=y;;
+	--norm) NORM=y;;
 	#--titleFile1) titleOne=$2; shift;;
 	#--titleFile2) titleTwo=$2; shift;;
 	(--) shift; break;;
@@ -53,15 +56,12 @@ do
     shift
 done
 
-if [ -z "${TABLEFILE}" ];then
+
+if [ -z "${TABLEFILE}" -a -z "${TABLEFILES}" ];then
     echo "[ERROR] Table file not specified: mandatory paramater" >> /dev/stderr
     exit 1
 fi
 
-if [ ! -r "${TABLEFILE}" ];then
-    echo "[ERROR] Table file ${TABLEFILE} not found or not readable" >> /dev/stderr
-    exit 1
-fi
 
 if [ -n "${TABLEFILETWO}" -a ! -r "${TABLEFILETWO}" ];then
     echo "[ERROR] Second table file ${TABLEFILETWO} not found or not readable" >> /dev/stderr
@@ -104,7 +104,12 @@ case $xVar in
     ADC)
 	xVarName="scale shift [%]"
 	;;
-
+    nHitsSCEle)
+	xVarName="num Hits SC"
+	;;
+    Et)
+	xVarName="Et (GeV)"
+	;;
 esac
 
 case $yVar in
@@ -140,13 +145,183 @@ case $yVar in
 	yMin=0
 	yMax=10
 	;;
-	
+    selEff)
+	columns=13
+	yVarName="nEvents * pb"
+	yMin=1
+	yMax=0
+	;;
     *)
 	echo "[ERROR] yVar not defined" >> /dev/stderr
 	exit 1
 	;;
 esac
-#xVar=runNumber
+
+if [ ! -e "tmp/stability/dat/" ]; then 
+    mkdir -p tmp/stability/dat
+else
+    rm tmp/stability -Rf
+    mkdir -p tmp/stability/dat
+fi
+
+cat > tmp/stability_macro.C <<EOF
+
+{
+  gROOT->ProcessLine(".L src/setTDRStyle.C+");
+  gROOT->ProcessLine(".L macro/stability.C+");
+
+  setTDRStyle1();
+  tdrStyle->SetOptTitle(0);
+   gROOT->SetStyle("tdrStyle");  
+  TCanvas *c;
+
+std::vector<TString> filenameList;
+std::vector<TString> labelList;
+  //============================== 
+EOF
+
+index=0
+for TABLEFILE in $TABLEFILES
+  do
+  if [ ! -r "${TABLEFILE}" ];then
+      echo "[ERROR] Table file ${TABLEFILE} not found or not readable" >> /dev/stderr
+      exit 1
+  fi
+  echo $TABLEFILE
+  tmpFile=tmp/stability/tmpFile-${index}.tex
+  tmpFileDat=tmp/stability/dat/tmpFile-${index}.dat
+  echo $tmpFile
+  echo $tmpFileDat
+  case $xVar in
+    *)
+        grep -v '#' $TABLEFILE | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;s|^\t${xVar}|noname\t${xVar}|;s|^-||" |cut -d '&' -f 1,2,$columns  > $tmpFile
+	;;
+esac
+  NF=`head -1 $tmpFile | awk -F '&' '{print NF}'`
+  case $NF in
+      5)
+	  ;;
+      4)
+	  sed -i 's|\\\\$| \& -- \\\\|' $tmpFile
+	  ;;
+      3)
+	  sed -i 's|\\\\$| \& -- \& -- \\\\|' $tmpFile
+	  ;;
+  esac
+
+  ./script/tex2txt.sh $tmpFile |  sed 's| $||;s|--|0\t0|g' > $tmpFileDat # the double 0\t0 is num+-err
+  cp $tmpFileDat tmp/tmpFile_tmp.dat  
+
+# remove the values for the x axis out of xMin <= x <= xMax range
+  if [ -n "$xMin" -a -n "$xMax" ];then
+      awk "(\$1!=\"#\" && \$3>=$xMin && \$4<=$xMax){print \$0}" tmp/tmpFile_tmp.dat > $tmpFileDat
+  elif [ -n "$xMin" ];then
+      awk "(\$1!=\"#\" && \$3>=$xMin){print \$0}" tmp/tmpFile_tmp.dat > $tmpFileDat
+  elif [ -n "$xMax" ];then
+      awk "(\$1!=\"#\" && \$4<=$xMax){print \$0}" tmp/tmpFile_tmp.dat > $tmpFileDat
+  fi
+
+  cat >> tmp/stability_macro.C<<EOF
+  //------------------------------ 
+filenameList.push_back("${tmpFileDat}");
+labelList.push_back("${LEGENDS[$index]}");
+EOF
+  let index=${index}+1
+
+done
+
+
+
+regions=`cat tmp/stability/dat/*.dat | cut -f 1 | sort | uniq`
+if [ -n "${MULTIREGION}" ];then
+    cat >> tmp/stability_macro.C<<EOF
+  //------------------------------ 
+	filenameList.clear();
+labelList.clear();
+EOF
+index=0
+    for region in $regions
+      do
+      for tmpFileDat in tmp/stability/dat/*.dat
+	do
+	tmpFileDatNew=tmp/stability/`basename $tmpFileDat .dat`-${region}.dat
+	if [ -z "${NORM}" ];then
+	    grep -P "${region}\t" $tmpFileDat > ${tmpFileDatNew}	
+	else
+	    grep -P "${region}\t" $tmpFileDat |awk '(NR==1){a=$6};(NF!=0){print $1,$2,$3,$4,$5,$6/a,$7,$8,$9,$10,$11}'  > ${tmpFileDatNew}
+	fi
+
+	cat >> tmp/stability_macro.C<<EOF
+  filenameList.push_back("${tmpFileDatNew}");
+EOF
+if [ -n "${LEGENDS[1]}" ];then
+    cat >> tmp/stability_macro.C<<EOF
+  //labelList.push_back("${region}");
+  labelList.push_back("${LEGENDS[$index]}");
+EOF
+else
+    cat >> tmp/stability_macro.C<<EOF
+labelList.push_back("${region}");
+EOF
+fi
+let index=$index+1
+      done
+    done
+fi
+
+if [ -n "${MULTIREGION}" ];then
+      cat >> tmp/stability_macro.C<<EOF
+  //------------------------------ 
+  c = var_Stability(filenameList, labelList, "",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}.eps");
+  delete c;
+
+EOF
+
+  else 
+    for region in $regions
+      do
+      cat >> tmp/stability_macro.C<<EOF
+  //------------------------------ 
+  c = var_Stability(filenameList, labelList, "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.eps");
+  delete c;
+
+EOF
+    done
+fi
+  
+cat >> tmp/stability_macro.C<<EOF
+
+}
+EOF
+
+
+if [ -z "$NOPLOT" ];then
+    root -l -b -q tmp/stability_macro.C
+fi
+
+exit 0
+
+exit 0    
+
+echo  >  tmp/stability_sum_table-$yVar.tex
+  
+  echo -n -e "$region\t&\t" >> tmp/stability_sum_table-$yVar.tex
+  grep -P "$region\t" tmp/tmpFile.dat | awk '{n+=1;sum[6]+=$6; sum2[6]+=$6*$6; sum[7]+=$7;};END{printf("%.2f & %.2f & %.2f \\\\\n", sum[6]/n, sqrt(sum2[6]/n-(sum[6]/n)*(sum[6]/n)), sum[7]/n)}' >> tmp/stability_sum_table-$yVar.tex
+
+
+if [ -n "${TABLEFILETWO}" ];then
+    tableTwo=tmp/tmpFile2.dat
+fi
+
+done
+
+if [ -z "$NOPLOT" ];then
+    root -l -b -q tmp/stability_macro.C
+fi
+
+exit 0
 case $xVar in
     unixTime)
 	grep -v '%' $TABLEFILE | grep -v '#' | cut -d '&' -f 1 | sed 's|.*runNumber_\([0-9]*\)_\([0-9]*\)|\1-\2|' |sort | uniq > tmp/runList.txt
@@ -179,13 +354,19 @@ case $xVar in
             grep -v '#' $TABLEFILETWO | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;" |cut -d '&' -f 1,2,$columns  > tmp/tmpFile2.tex
         fi
         ;;
-
-    *)
+    runNumber)
         grep -v '#' $TABLEFILE | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;" |cut -d '&' -f 1,2,$columns  > tmp/tmpFile.tex
         if [ -n "${TABLEFILETWO}" ];then 
             grep -v '#' $TABLEFILETWO | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;" |cut -d '&' -f 1,2,$columns  > tmp/tmpFile2.tex
         fi
         ;;
+    *)
+        grep -v '#' $TABLEFILE | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;s|^\t${xVar}|noname\t${xVar}|;s|^-||" |cut -d '&' -f 1,2,$columns  > tmp/tmpFile.tex
+        if [ -n "${TABLEFILETWO}" ];then 
+            grep -v '#' $TABLEFILETWO | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;s|^\t${xVar}|noname\t${xVar}|;s|^-||" |cut -d '&' -f 1,2,$columns  > tmp/tmpFile2.tex
+        fi
+	;;
+
 esac
 
 #take the categories from the table
@@ -262,9 +443,5 @@ cat >> tmp/stability_macro.C<<EOF
 
 }
 EOF
-
-if [ -z "$NOPLOT" ];then
-    root -l -b -q tmp/stability_macro.C
-fi
 
 
