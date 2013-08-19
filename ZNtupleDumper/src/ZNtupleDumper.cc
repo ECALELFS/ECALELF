@@ -975,12 +975,12 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   R9Ele[index] = e3x3SCEle[index]/electron1.superCluster()->rawEnergy();
 
-  if(isMC){
-    if(electron1.isEB()) 
-      R9Ele[index] = R9Ele[index]*1.0045+0.0010;
-    else 
-      R9Ele[index] = R9Ele[index]*1.0086-0.0007;
-  } 
+//   if(isMC){
+//     if(electron1.isEB()) 
+//       R9Ele[index] = R9Ele[index]*1.0045+0.0010;
+//     else 
+//       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
+//   } 
 
   // make it a function
   eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
