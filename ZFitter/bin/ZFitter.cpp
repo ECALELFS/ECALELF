@@ -1649,7 +1649,7 @@ int main(int argc, char **argv) {
 	  tag_chain_itr!=tagChainMap.end();
 	  tag_chain_itr++){
 	if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //do it for each sample
-	
+	if(tag_chain_itr->second.count("pileup")!=0) continue; // already have pileup file
 	TString fpuname="tmp/mcPUtree"+tag_chain_itr->first+".root";
 	TFile f(fpuname,"recreate");
 	if(f.IsOpen()){
