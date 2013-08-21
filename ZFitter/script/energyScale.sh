@@ -1,4 +1,5 @@
 #!/bin/bash
+source script/functions.sh
 # 
 # energy scale derived in different steps:
 # - time dependence (step1)
@@ -6,7 +7,7 @@
 # - closure test (step3)
 
 commonCut=Et_25-trigger-noPF
-selection=WP90_PU
+selection=loose
 invMass_var=invMass_SC_regrCorr_pho
 baseDir=test
 updateOnly="--updateOnly" # --profileOnly --initFile=init.txt"
@@ -106,51 +107,12 @@ case ${STEP} in
 esac
 
 
+## pileup reweight name
+puName ${configFile}
+echo "PUName: $puName"
 
-    ## pileup reweight name
-if [ -z "$puName" ];then
-    puCount=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3 |wc -l`
-    if [ "${puCount}" == "0" ];then
-	echo "[ERROR] No or too mani pileupHist files for data"
-	exit 1
-    fi
-    puFiles=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3`
-    for puFile in $puFiles
-      do
-      puName="${puName}_`basename $puFile .root | sed 's|\..*||'`"
-    done
-
-	#echo $puFile
-    #puName=`basename $puFile .root | sed 's|\..*||'`
-    puName=`echo $puName | sed 's|^_||'`
-	#echo $puName
-fi
-
-    ## MC name
-if [ -z "${mcName}" ];then
-    mcCount=`grep -v '#' ${configFile}  | grep  'selected' | grep '^s' | cut -f 3 |wc -l`
-    #if [ "${mcCount}" != "1" ];then
-#	echo "[ERROR] No or too mani MC files to extract the mcName"
-#	exit 1
-#    fi
-
-    mcTags=`grep -v '#' ${configFile}  | grep  'selected' | grep '^s' | cut -f 1`
-    for mcTag in ${mcTags}
-      do
-      mcFiles=`grep -v '#' ${configFile}  | grep  'selected' | grep "^${mcTags}" | cut -f 3`
-      for mcFile in $mcFiles
-	do
-s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/194533-194533/semiParamRegression/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-194533-194533.root
-s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/200519-200519/semiParamRegression/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-200519-200519.root
-s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/206859-206859/semiParamRegression/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-206859-206859.root
-
-	mcNames="${mcNames} `basename $mcFile .root | sed 's|\..*||;s|-[0-9]*-[0-9]*|'`"
-      done
-    done
-    
-      mcName=`echo $mcNames | sort | uniq sed 's| |_|;s|^_||'`
-#	echo $mcName
-fi
+mcName ${configFile}
+echo "mcName: ${mcName}"
 
 if [ "${invMass_var}" == "invMass_regrCorr_egamma" ];then
     outDirMC=$baseDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
