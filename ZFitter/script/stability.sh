@@ -2,7 +2,7 @@
 titleOne="Data"
 titleTwo=""
 color=false
-column=1
+column=3
 usage(){
     echo "`basename $0` -t tableFile -x xVar -y yVar --outDirImgData dir"
     echo " xVar: runNumber | absEta"
@@ -77,6 +77,7 @@ if [ -z "${outDirImgData}" -a -z "${NOPLOT}" ];then
     echo "[ERROR] outDirImgData not specified: mandatory paramater" >> /dev/stderr
     exit 1
 fi
+
 if [ ! -e "tmp/" ];then mkdir tmp/; fi
 
 tmpFile=tmp/tmpFile.dat
@@ -225,6 +226,7 @@ esac
   //------------------------------ 
 filenameList.push_back("${tmpFileDat}");
 labelList.push_back("${LEGENDS[$index]}");
+//labelList.push_back("${region}");
 EOF
   let index=${index}+1
 
@@ -233,13 +235,15 @@ done
 
 
 regions=`cat tmp/stability/dat/*.dat | cut -f 1 | sort | uniq`
+
+
 if [ -n "${MULTIREGION}" ];then
     cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
 	filenameList.clear();
 labelList.clear();
 EOF
-index=0
+    index=0
     for region in $regions
       do
       for tmpFileDat in tmp/stability/dat/*.dat
@@ -250,22 +254,36 @@ index=0
 	else
 	    grep -P "${region}\t" $tmpFileDat |awk '(NR==1){a=$6};(NF!=0){print $1,$2,$3,$4,$5,$6/a,$7,$8,$9,$10,$11}'  > ${tmpFileDatNew}
 	fi
-
+	
 	cat >> tmp/stability_macro.C<<EOF
   filenameList.push_back("${tmpFileDatNew}");
 EOF
-if [ -n "${LEGENDS[1]}" ];then
-    cat >> tmp/stability_macro.C<<EOF
+	if [ -n "${LEGENDS[0]}" ];then
+	    cat >> tmp/stability_macro.C<<EOF
   //labelList.push_back("${region}");
   labelList.push_back("${LEGENDS[$index]}");
 EOF
-else
-    cat >> tmp/stability_macro.C<<EOF
+	else
+	    cat >> tmp/stability_macro.C<<EOF
 labelList.push_back("${region}");
 EOF
-fi
-let index=$index+1
+	fi
+	let index=$index+1
       done
+    done
+else
+cat >> tmp/stability_macro.C<<EOF
+  //------------------------------ 
+	//filenameList.clear();
+labelList.clear();
+EOF
+    index=0
+    for region in $regions
+      do
+	    cat >> tmp/stability_macro.C<<EOF
+labelList.push_back("${region}");
+EOF
+	    let index=$index+1
     done
 fi
 
