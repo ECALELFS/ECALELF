@@ -1,8 +1,8 @@
 #!/bin/bash
-
+source script/functions.sh
 #tag_name=""
 commonCut=Et_25-trigger-noPF
-selection=WP80PU
+selection=loose
 invMass_var=invMass_SC_regrCorr_ele
 invMass_min=65
 invMass_max=115
@@ -13,6 +13,7 @@ configFile=data/validation/monitoring_2012_53X.dat
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
 updateOnly="--updateOnly"
+#extraOptions="--updateOnly"
 #extraOptions="--addBranch iSM --forceNewFit"
 
 # VALIDATION=y
@@ -204,41 +205,12 @@ case $PERIOD in
 	;;
 esac
 
-    ## pileup reweight name
-if [ -z "$puName" ];then
-    puCount=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3 |wc -l`
-    if [ "${puCount}" == "0" ];then
-	echo "[ERROR] No or too mani pileupHist files for data"
-	exit 1
-    fi
-    puFiles=`grep -v '#' ${configFile}  | grep  'pileupHist' | grep '^d' | cut -f 3`
-    for puFile in $puFiles
-      do
-      puName="${puName}_`basename $puFile .root | sed 's|\..*||'`"
-    done
+## pileup reweight name
+puName ${configFile}
+echo "PUName: $puName"
 
-	#echo $puFile
-    #puName=`basename $puFile .root | sed 's|\..*||'`
-    puName=`echo $puName | sed 's|^_||'`
-	#echo $puName
-fi
-
-    ## MC name
-if [ -z "${mcName}" ];then
-    mcCount=`grep -v '#' ${configFile}  | grep  'selected' | grep '^s' | cut -f 3 |wc -l`
-    #if [ "${mcCount}" != "1" ];then
-#	echo "[ERROR] No or too mani MC files to extract the mcName"
-#	exit 1
-#    fi
-    mcFiles=`grep -v '#' ${configFile}  | grep  'selected' | grep '^s' | cut -f 3`
-    for mcFile in $mcFiles
-      do
-      mcName="${mcName}_`basename $mcFile .root | sed 's|\..*||'`"
-    done
-    mcName=`echo $mcName | sed 's|^_||'`
-#	echo $mcName
-fi
-
+mcName ${configFile}
+echo "mcName: ${mcName}"
 
 #################### NAMING OUTPUT FOLDERS
 if [ -n "${rereco}" ];then
@@ -298,7 +270,7 @@ if [ -z "${ONLYTABLE}" ];then
     ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
 	${extraOptions} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	--commonCut=${commonCut}  --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
+	--commonCut=${commonCut}  --selection=${selection} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
 	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/validation.log|| exit 1
 fi
 
@@ -319,7 +291,8 @@ if [ -n "$STABILITY" ];then
 	    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
 		${extraOptions} \
 		$updateOnly --commonCut=${commonCut} \
-		--invMass_var ${invMass_var} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
+		--invMass_var ${invMass_var} --selection=${selection} \
+		--invMass_min=${invMass_min} --invMass_max=${invMass_max} \
 		--outDirFitResMC=${outDirMC}/fitres \
 		--outDirImgMC=${outDirMC}/img  \
 		--outDirFitResData=${outDirData}/fitres --outDirImgData=${outDirData}/img \
@@ -359,7 +332,7 @@ if [ -n "$ETA" ];then
     if [ -z "${ONLYTABLE}" ];then
 	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 	    ${extraOptions} \
-	    $updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} \
+	    $updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} --selection=${selection} \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/absEta.log || exit 1
     fi
@@ -384,7 +357,7 @@ if [ -n "${REFREG}" ];then
     if [ -z "${ONLYTABLE}" ];then
 	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 	    ${extraOptions} \
-	    $updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} \
+	    $updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} --selection=${selection} \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/RefReg.log || exit 1
     fi
@@ -402,26 +375,26 @@ if [ -n "$SYSTEMATICS" ];then
     # pileup EB, pileup EE
     # 
 
-    regionFile=data/regions/test.dat
-    tableFile=${outDirTable}/alphaSM-${invMass_var}-${selection}.tex
-    if [ -z "${ONLYTABLE}" ];then
-	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
-	    ${extraOptions} \
-	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
-	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/alphaSM.log || exit 1
-    fi
-    ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
-	> ${tableFile}  || exit 1
-    exit 0
+#     regionFile=data/regions/test.dat
+#     tableFile=${outDirTable}/alphaSM-${invMass_var}-${selection}.tex
+#     if [ -z "${ONLYTABLE}" ];then
+# 	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
+# 	    ${extraOptions} \
+# 	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
+# 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+# 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/alphaSM.log || exit 1
+#     fi
+#     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
+# 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
+# 	> ${tableFile}  || exit 1
+#     exit 0
 
     regionFile=data/regions/systematics.dat
     tableFile=${outDirTable}/systematics-${invMass_var}-${selection}.tex
     if [ -z "${ONLYTABLE}" ];then
 	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 	    ${extraOptions} \
-	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
+	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/systematics.log || exit 1
     fi
@@ -449,7 +422,7 @@ if [ -n "$SYSTEMATICS" ];then
 	if [ -z "${ONLYTABLE}" ];then
 	    ./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 		${extraOptions} \
-		$updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
+		$updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
 		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres/floating \
 		--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img/floating \
 		--fit_type_value=0 > ${outDirData}/log/fit_systematics_floating.log
@@ -462,7 +435,7 @@ if [ -n "$SYSTEMATICS" ];then
 	if [ -z "${ONLYTABLE}" ];then
 	    ./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 		${extraOptions} \
-		$updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
+		$updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
 		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres/invMass_range \
 		--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img/invMass_range \
 		--invMass_min=70 --invMass_max=110 > ${outDirData}/log/fit_systematics_invMass_range.log
@@ -475,7 +448,7 @@ if [ -n "$SYSTEMATICS" ];then
 	if [ -z "${ONLYTABLE}" ];then
 	    ./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 		${extraOptions} \
-		$updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
+		$updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
 		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres/invMass_range2 \
 		--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img/invMass_range2 \
 		--invMass_min=75 --invMass_max=105 > ${outDirData}/log/fit_systematics_invMass_range2.log
@@ -500,7 +473,7 @@ if [ -n "$SYSTEMATICSD" ];then
     if [ -z "${ONLYTABLE}" ];then
 	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
 	    ${extraOptions} \
-	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} \
+	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/systematics.log || exit 1
     fi

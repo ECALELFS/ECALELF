@@ -36,7 +36,10 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
       itr++){
     TString cut_string = *itr;
 
-    if(isMC && cut_string.Contains("runNumber")) continue;
+    if(isMC && cut_string.Contains("runNumber")){
+      cut_string.Insert(0,"(");
+      cut_string+="|| runNumber==1)"; 
+    }
     if(isMC && cut_string.Contains("lumiBlock")) continue;
     //      std::cout << "[DEBUG] Skipping runNumber cut for MC " << isMC << "\t" << string << std::endl;
 

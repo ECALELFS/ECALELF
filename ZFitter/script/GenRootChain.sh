@@ -132,11 +132,12 @@ rm tmp/*_chain.root
 ./bin/ZFitter.exe --saveRootMacro -f ${configFile} ${noPU} || exit 1
 
 # adding all the chains in one file
-for file in tmp/{s,d}[0-9]*_selected_chain.root
+for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
   do
   name=`basename $file .root | sed 's|_.*||'`
+  echo $name
   hadd tmp/${name}_chain.root tmp/${name}_*_chain.root
-  
+  filelist="$filelist tmp/${name}_chain.root"
 done
 #hadd tmp/s_chain.root tmp/s_*_chain.root
 #hadd tmp/d_chain.root tmp/d_*_chain.root
@@ -145,18 +146,15 @@ cat > tmp/load.C <<EOF
 {
   gROOT->ProcessLine(".L macro/PlotDataMC.C+");
   gROOT->ProcessLine(".L src/setTDRStyle.C");
+  gROOT->ProcessLine(".L macro/addChainWithFriends.C+");
+
   setTDRStyle1();
 
   TChain *signal = (TChain *) _file0->Get("selected");
   TChain *data   = (TChain *) _file1->Get("selected");
 
-  _file0->cd();
-   signal->GetEntries();
-   signal->LoadTree(0);
-
-   _file1->cd();
-   data->GetEntries();
-   data->LoadTree(0);
+  ReassociateFriends(_file0, signal);
+  ReassociateFriends(_file1, data);
 
    TDirectory *curDir = new TDirectory("curDir","");
    curDir->cd();
@@ -169,5 +167,6 @@ cat > tmp/load.C <<EOF
 EOF
 
 echo "Now you can run:"
-echo "root -l tmp/s_chain.root tmp/d_chain.root tmp/load.C tmp/standardDataMC.C" 
+echo "root -l $filelist tmp/load.C tmp/standardDataMC.C" 
 echo "change the outputPath string in load.C to have the plots in the correct directory"
+

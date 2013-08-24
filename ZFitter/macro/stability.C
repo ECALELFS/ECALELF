@@ -18,6 +18,7 @@
 #include <TFitResultPtr.h>
 //#define DEBUG
 //#define lightLabels
+enum plotType { onlyData=0, onlyDataBis, dataMC, dataMCs, dataOverMC, dataOverMCfit, onlyMCs};
 
 TH1F *stabilityHist(TGraphErrors *g_data, double& y_err_mean){
   //------------------------------
@@ -37,7 +38,7 @@ TH1F *stabilityHist(TGraphErrors *g_data, double& y_err_mean){
   return hist_corr;
 }
 
-TGraphErrors *columns_vs_var(TString filename, TString region_, int column, double rMin=1, double rMax=0){
+TGraphErrors *columns_vs_var(TString filename, TString region_, int column, double& rMin, double& rMax, bool updateRange=false){
 
   TString region;
   TString xVar, rangeMin, rangeMax,numEvents;
@@ -46,7 +47,7 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
   double deltaG, err_deltaG;
   bool isDeltaG=false;
   std::vector<TString> xLabels;
-
+  double rMin_=10, rMax_=-10;
   TGraphErrors deltaM_data_graph(100), deltaM_MC_graph(100), deltaG_graph(100);
   TH1F deltaM_data_hist("deltaM_data_hist", "#Delta m [GeV/c^{2}]",
 			1000, -5, 5);
@@ -86,7 +87,11 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
       isDeltaG=true;
       f_in >> deltaG >> err_deltaG;
     }
-    
+    if(deltaM_data< rMin_) rMin_=deltaM_data;
+    if(deltaM_MC< rMin_) rMin_=deltaM_MC;
+    if(deltaM_data >  rMax_) rMax_=deltaM_data;
+    if(deltaM_MC > rMax_) rMax_=deltaM_MC;
+
     if(region_=="" || region.CompareTo(region_)==0){
       deltaM_data_hist.Fill(deltaM_data);
       if(xVar.CompareTo("runNumber")==0){
@@ -161,6 +166,11 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
   }
   }
   g_out->SetHistogram(hist_g);
+  if(updateRange){
+    std:: cout << rMin_ << "\t" << rMax_ << std::endl;
+    if(rMin_<rMin) rMin=rMin_-0.1;
+    if(rMax_>rMax) rMax=rMax_+0.1;
+  }
   g_out->Draw("AP");
   return g_out;
 
@@ -462,6 +472,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   SetLegendStyle(legend);
   if(column==-10) legend->SetTextSize(0.04);
   if(column<0) legend->SetTextSize(0.05);
+
   legend->SetEntrySeparation(0.01);
 
 
@@ -668,7 +679,6 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
 
 }
 
-enum plotType { onlyData=0, onlyDataBis, dataMC, dataMCs, dataOverMC, dataOverMCfit, onlyMCs};
 
 TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> legendList,TString region, double rMin=3, double rMax=2, bool color=false, int column=1, TString xTitle="", TString yTitle="" ){
   
@@ -708,30 +718,41 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
   else  c = new TCanvas("c", region, 900,500);
   c->cd();
 
-
+  bool doStatistics= (column%10==1);
+  if(column>10){
+    column-=(column%10);
+    column/=10;
+  }
   if(column<0)  legend = new TLegend(0.15,0.6,0.4,0.95);
   else if(column>=0){
-    legend = new TLegend(0,0.6,1,1);
-    pt = new TPaveText(0.,0.,1,0.6,"NDC");
-    pt -> SetFillStyle(0);
-    pt->SetTextSize(0.1);
-    pt->SetFillColor(kWhite);
-    pt->SetBorderSize(0);
+    if(doStatistics){
+      legend = new TLegend(0,0.6,1,1);
+      pt = new TPaveText(0.,0.,1,0.6,"NDC");
+      pt -> SetFillStyle(0);
+      pt->SetTextSize(0.1);
+      pt->SetFillColor(kWhite);
+      pt->SetBorderSize(0);
+    } else{
+      legend = new TLegend(0,0.,1,1);
+      pt=NULL;
+    }
   }
   
   SetLegendStyle(legend);
   if(column<0){
     legend->SetTextSize(0.06); 
+  } else {
+    legend->SetTextSize(0.06); 
   }
-
   TMultiGraph *g_multi = new TMultiGraph();
+  bool updateRange=rMin>=rMax;
   for(std::vector<TString>::const_iterator filename_itr= filenameList.begin();
       filename_itr != filenameList.end();
       filename_itr++){
     int index=filename_itr-filenameList.begin();
-    TGraphErrors *g_data = columns_vs_var(*filename_itr, region, 0,rMin, rMax);
-    TGraphErrors *g_MC   = columns_vs_var(*filename_itr, region, 1,rMin, rMax);
-    TGraphErrors *g_dataMC=columns_vs_var(*filename_itr, region, 2,rMin, rMax);
+    TGraphErrors *g_data = columns_vs_var(*filename_itr, region, 0,rMin, rMax, updateRange);
+    TGraphErrors *g_MC   = columns_vs_var(*filename_itr, region, 1,rMin, rMax, updateRange);
+    TGraphErrors *g_dataMC=columns_vs_var(*filename_itr, region, 2,rMin, rMax, false);
     if(g_data==NULL || g_MC==NULL || g_dataMC==NULL) return c;
 
     g_data->SetName(region);
@@ -748,7 +769,12 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
     g_MC -> SetFillColor(kGray);
     g_MC -> SetMarkerColor(kRed+2+index);
     g_MC -> SetFillColor(kRed+2+index);
-    if(column==dataMCs || column==onlyMCs){
+    if(abs(column)==dataMCs){
+      g_MC -> SetFillStyle(1001); //+index);
+      g_MC -> SetFillColor(g_data->GetMarkerColor());
+      g_MC -> SetMarkerColor(g_data->GetMarkerColor()); //kBlack+index);
+      g_MC -> SetMarkerStyle(20+index);
+    }else if(abs(column)==onlyMCs){
       g_MC -> SetFillStyle(3003+index);
       g_MC -> SetFillColor(kBlack+index);
       g_MC -> SetMarkerColor(kBlack+index);
@@ -757,14 +783,14 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
     g_MC -> SetLineWidth(0);
     g_MC -> SetLineColor(1);
   
-    if(column>1 && column!=dataOverMC && column!=dataMC || (column==dataMC && index==0)){
+    if(column!=onlyData && abs(column)!=dataOverMC && abs(column)!=onlyDataBis && abs(column)!=dataMC || (abs(column)==dataMC && index==0)){
       TString plotOption="L3";
-      if(column==onlyMCs) plotOption="P";
+      if(abs(column)==onlyMCs) plotOption="P";
       g_multi->Add(g_MC,plotOption);
       if (column==dataMC) legend->AddEntry(g_MC,"Simulation", plotOption);
-      else legend->AddEntry(g_MC,TString("MC: ")+legendList[index], plotOption);
+      else legend->AddEntry(g_MC,TString("MC: ")+legendList[index], plotOption+"f");
     }
-    if(column!=dataOverMC){
+    if(abs(column)!=dataOverMC){
       if(pt!=NULL){
 	double y_mean_error=0;
 	TH1F *hist = (column!=onlyMCs) ? stabilityHist(g_data, y_mean_error) : stabilityHist(g_MC, y_mean_error);
@@ -776,8 +802,8 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
 	pt->AddText(TString::Format("Std. dev. = %.2f", hist->GetRMS()));
 	pt->AddText(TString::Format("Mean Error = %.2f", y_mean_error));
       }
-      if(column!=onlyMCs){
-	legend->AddEntry(g_data,legendList[index], "P");
+      if(abs(column)!=onlyMCs){
+	legend->AddEntry(g_data,"Data: "+legendList[index], "P");
 	g_multi->Add(g_data,"P");
       }
     }else{
@@ -821,6 +847,7 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
   g_multi->GetYaxis()->SetLabelSize(g_multi->GetYaxis()->GetLabelSize()*labelScale);
 
   if( rMax == rMin || rMax < rMin){
+    std::cout << g_multi->GetYaxis()->GetXmin() << "\t" <<  g_multi->GetYaxis()->GetXmax() *1.1 << std::endl;
     g_multi->GetYaxis()->SetRangeUser(g_multi->GetYaxis()->GetXmin(), g_multi->GetYaxis()->GetXmax() *1.1);
   } else {
     if(rMin > g_multi->GetYaxis()->GetXmin()) rMin=g_multi->GetYaxis()->GetXmin();
