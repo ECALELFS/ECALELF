@@ -51,6 +51,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
@@ -155,6 +156,7 @@ private:
   edm::ESHandle<CaloTopology> topologyHandle;
   edm::Handle<double> rhoHandle;
   edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
+  edm::Handle< GenEventInfoProduct >  GenEventInfoHandle;
   edm::Handle<reco::ConversionCollection> conversionsHandle;
   edm::Handle< reco::PFMETCollection > metHandle;
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
@@ -193,6 +195,8 @@ private:
   Long64_t      eventNumber; ///<
   Int_t         lumiBlock;   ///< lumi section
   UInt_t 	runTime;     ///< unix time
+
+  Float_t       mcGenWeight; ///< weight in generator for MC
 
   std::vector< std::string > HLTNames[1]; ///< List of HLT names
   std::vector<Bool_t> HLTResults[1];      ///< 0=fail, 1=fire
@@ -426,6 +430,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // filling infos runNumber, eventNumber, lumi
   if( !iEvent.isRealData() ){
     iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+    iEvent.getByLabel(edm::InputTag("generator"), GenEventInfoHandle);
     isMC=true;
   } else isMC=false;
   
@@ -664,6 +669,8 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
   tree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
   tree->Branch("runTime",       &runTime,         "runTime/i");
+  
+  tree->Branch("mcGenWeight",   &mcGenWeight, "mcGenWeight/F");
 
   tree->Branch("HLTfire", &HLTfire, "HLTfire/B");
   //tree->Branch("HLTNames",&(HLTNames[0]));
@@ -836,9 +843,13 @@ void ZNtupleDumper::TreeSetPileupVar(void){
 	nPU[0]=PVI->getTrueNumInteractions();
       }
     }
+    
+    mcGenWeight=(GenEventInfoHandle->weights())[0];
+
   } else {
     //weight= 1.;
     nPU[0]=-1;
+    mcGenWeight=-1;
   }
   return;
 }
