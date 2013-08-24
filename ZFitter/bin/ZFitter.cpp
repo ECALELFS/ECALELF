@@ -296,14 +296,18 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
   }
 
     nBin=(int)((range_max-range_min)/bin_width);
-    while(nBin <10){
+    if(var->isConstant()==false){
+    while(nBin <10 && nBin>1){
       //std::cout << "[INFO] Updating from range: " << nBin << "\t" << range_min << "\t" << range_max << std::endl;
       bin_width*=0.9;
       range_min = std::max(var->getMin(),bin_width*((floor)(range_min / bin_width))- bin_width);
       range_max = std::min(var->getMax(),bin_width*((floor)(range_max / bin_width))+ bin_width);
       nBin=(int)((range_max-range_min)/bin_width);
       //std::cout << "[INFO] Updating to range: " << nBin << "\t" << range_min << "\t" << range_max << std::endl;
-      if(nBin <=0) exit(1);
+      if(nBin <=0){
+	std::cout << "[ERROR] NBins < 10" << std::endl;
+	exit(1);
+      }
     }
     while(nBin >40 && level<4){
       bin_width*=1.1;
@@ -311,7 +315,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
       range_max = bin_width*((floor)(range_max / bin_width));
       nBin=(int)((range_max-range_min)/bin_width);
     }
-
+    }
    double chi2[PROFILE_NBINS];
    double xValues[PROFILE_NBINS];
    if(trueEval) std::cout << "------------------------------" << std::endl;
@@ -1672,42 +1676,49 @@ int main(int argc, char **argv) {
   }
 
   //read corrections directly from file
-  if (vm.count("corrEleType")){
+  if(vm.count("corrEleType")){
     std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
     TString treeName="scaleEle_"+corrEleType;
-    if((tagChainMap["d"]).count(treeName)==0){
-      if (vm.count("readDirect")){
+    //std::cout<<"here, read ele corr from command line: "<<corrEleFile<<std::endl;
+    
+    EnergyScaleCorrection_class eScaler(corrEleFile,corrEleType);
+    TString corrEleTreeFileName=TString(chainFileListName.c_str());
+    corrEleTreeFileName.ReplaceAll(".dat","");
+    corrEleTreeFileName.Remove(0,corrEleTreeFileName.Last('/')+1);
+    corrEleTreeFileName.Insert(0,"scaleEle_"+TString(corrEleType)+"-");
+    corrEleTreeFileName.Insert(0,"tmp/");
+    
+    for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
+	tag_chain_itr!=tagChainMap.end();
+	tag_chain_itr++){
+      if(tag_chain_itr->first.CompareTo("d")==0 || !tag_chain_itr->first.Contains("d")) continue; //do it for each sample
+      if(tag_chain_itr->second.count(treeName)!=0) continue; // already have correction file
+      TString fpuname=corrEleTreeFileName+"-"+tag_chain_itr->first+".root";
+      std::cout << "[STATUS] Saving electron scale corrections to root file:" << fpuname << std::endl;
+      TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+      std::cout << "data entries: " << ch->GetEntries() << std::endl;
+      TFile f(fpuname,"recreate");
+      if(f.IsOpen()){
+	f.cd();
+	TTree *corrTree = eScaler.GetCorrTree(ch);
+	std::cout << "corrEle entries: " << corrTree->GetEntries() << std::endl;
+	  
+	corrTree->Write();
+	delete corrTree;
+	f.Write();
+	f.Close();
+	// adding pu weight also to chain "s"
 	std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-	(tagChainMap["d"]).insert(pair_tmp);
-	(tagChainMap["d"])[treeName]->SetTitle("d");
-	if((tagChainMap["d"])[treeName]->Add(TString(corrEleFile))<=0) return 1;
-      }
-      else {
-	//std::cout<<"here, read ele corr from command line: "<<corrEleFile<<std::endl;
-	EnergyScaleCorrection_class eScaler(corrEleFile,corrEleType);
-	std::cout << "[STATUS] Saving electron scale corrections to root file:" << corrEleType+".root" << std::endl;
-	std::cout << "data entries: " << (tagChainMap["d"])["selected"]->GetEntries() << std::endl;
-	TFile f(TString(corrEleType+".root"),"recreate");
-	if(f.IsOpen()){
-	  TTree *corrTree = eScaler.GetCorrTree((tagChainMap["d"])["selected"]);
-	  //corrTree->SetName("scaleEle");
-	  //corrTree->SetTitle(corrEleType.c_str());
-	  f.cd();
-	  corrTree->Write();
-	  std::cout << "corrEle entries: " << corrTree->GetEntries() << std::endl;
-	  delete corrTree;
-
-	  f.Write();
-	  f.Close();
-	  std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-	  (tagChainMap["d"]).insert(pair_tmp);
-	  (tagChainMap["d"])[treeName]->SetTitle("d");
-	  if((tagChainMap["d"])[treeName]->Add(TString(corrEleType+".root"))<=0) return 1;
-	}
+	chain_map_t::iterator chain_itr= ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+	chain_itr->second->SetTitle(tag_chain_itr->first);
+	chain_itr->second->Add(fpuname);
       }
     }
-    //if( (tagChainMap["d"])["selected"]->AddFriend((tagChainMap["d"])[treeName])==NULL) return 2;
+    
   }
+
+    //if( (tagChainMap["d"])["selected"]->AddFriend((tagChainMap["d"])[treeName])==NULL) return 2;
+
 
   //read corrections directly from file
   if (vm.count("smearEleType")){
@@ -1772,15 +1783,16 @@ int main(int argc, char **argv) {
        branch_itr++){
     UpdateFriends(tagChainMap);
     TString treeName=*branch_itr;
+    TString branchFileName="tmp/"+treeName+"_data.root";
     if(treeName.Contains("invMassSigma")){
       newBrancher.scaler= new EnergyScaleCorrection_class("","", smearEleFile,smearEleType);
     }
     //data
-    std::cout <<"[STATUS] Adding branch " << *branch_itr << " to data..." <<std::endl;
-
-    TFile f(TString("tmp/"+*branch_itr+"_data.root"),"recreate");
+    std::cout <<"[STATUS] Adding branch " << treeName << " to data..." <<std::endl;
+    
+    TFile f(TString(branchFileName),"recreate");
     if (!f.IsOpen()){
-      std::cerr << "[ERROR] File for branch " << *branch_itr << " not created" << std::endl;
+      std::cerr << "[ERROR] File for branch " << treeName << " not created" << std::endl;
       return 1;
     }
     TTree *newTree = newBrancher.AddBranch((tagChainMap["d"])["selected"],treeName+"_d", *branch_itr);
@@ -2207,10 +2219,10 @@ int main(int argc, char **argv) {
 	f->Close();
 	if(!vm.count("plotOnly")){
 	  Int_t oldMarkovSize=smearer._markov.Size();
-	  //smearer.SetNSmear(10);
+	  //if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
 
 	  std::cout <<"==================PROFILE=================="<<endl;
-	  //	  smearer.SetNSmear(0,10);
+	  //smearer.SetNSmear(0,20);
 	  //create profiles
 	  TString outFile=outDirFitResData.c_str();
 	  outFile+="/outProfile-";
@@ -2225,14 +2237,15 @@ int main(int argc, char **argv) {
 		continue;
 
 	      TString name(var->GetName());
+	      if(name.Contains("scale")) continue;
 
 	      // special part for alpha fitting 
 	      double min=0.;
 	      TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
 	      RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName): NULL;
-	      if(var2!=NULL && name.Contains("constTerm")){ // && var2->isConstant()==false){
+	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
 		smearer.SetDataSet(name,TString(var->GetName())+TString(var2->GetName()));
-		MinProfile2D(var, var2, smearer, -1, 0., min, false);
+		//MinProfile2D(var, var2, smearer, -1, 0., min, false);
 		//MinMCMC2D(var, var2, smearer, 1, 0., min, 1200, false);
 		//MinMCMC2D(var, var2, smearer, 2, 0., min, 800, false);
 		//MinMCMC2D(var, var2, smearer, 3, 0., min, 100, false);

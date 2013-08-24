@@ -9,6 +9,7 @@
 #include <TH2F.h>
 #include <TLegend.h>
 #include <TPaveText.h>
+#include <TStopwatch.h>
 #include "src/ElectronCategory_class.cc"
 #include <iostream>
 
@@ -463,6 +464,10 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 		     TString category, TString selection, 
 		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
 		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false){
+  TStopwatch watch;
+  watch.Start();
+  
+
   int nHist= mc_vec.size();
   int colors[4]={kRed,kGreen,kBlue,0};
   int fillstyle[4]={0,0,0,0}; //3003,3004,3005,3006};
@@ -474,6 +479,16 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   TString branchNameMC=branchname;
 
   ElectronCategory_class cutter;
+  // data->SetBranchStatus("*",0);
+//   std::set<TString> branchList = cutter.GetBranchNameNtuple(category);
+//   for(std::set<TString>::const_iterator itr = branchList.begin();
+//       itr != branchList.end();
+//       itr++){
+//     std::cout << "[STATUS] Enabling branch: " << *itr << std::endl;
+//     data->SetBranchStatus(*itr, 1);
+//   }
+//   data->SetBranchStatus("invMass_SC_regrCorrSemiParV4_ele", 1);
+//   data->SetBranchStatus("invMass_SC_regrCorrSemiParV5_ele", 1);
   TCut selection_data="";
   if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0);
   selection_data+=selection;
@@ -505,6 +520,17 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 	  mc_itr != mc_vec.end();
 	  mc_itr++){
 	TChain *mc = *mc_itr;
+// 	mc->SetBranchStatus("*",0);
+// 	for(std::set<TString>::const_iterator itr = branchList.begin();
+// 	    itr != branchList.end();
+// 	    itr++){
+// 	  //std::cout << "[STATUS] Enabling branch: " << *itr << std::endl;
+// 	  mc->SetBranchStatus(*itr, 1);
+// 	}
+// 	mc->SetBranchStatus("invMass_SC_regrCorrSemiParV4_ele", 1);
+// 	mc->SetBranchStatus("invMass_SC_regrCorrSemiParV5_ele", 1);
+// 	mc->SetBranchStatus("puWeight",1);
+
 	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
 	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight");
 	else  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC);
@@ -609,7 +635,8 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   pv->SetBorderSize(0);
   pv->Draw();
 
-
+  watch.Stop();
+  watch.Print();
   return c;
 
 }
@@ -635,3 +662,67 @@ std::vector<TChain *> MakeChainVector(TChain *v1){
   vec.push_back(v1);
   return vec;
 }
+
+
+// TH2F *PlotDataMCs(TChain *data, TString branchname, 
+// 		  TString category, TString selection, 
+// 		  bool usePU=true, bool smear=false, bool scale=false){
+
+//     ElectronCategory_class cutter;
+//     TCut selection_data="";
+//     if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0);
+//     selection_data+=selection;
+    
+//   if(smear){
+//     branchNameMC.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(smearEle[0]*smearEle[1]))");
+//     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*smearEle) ");
+//     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*smearEle[0])");
+//     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*smearEle[1])");
+
+//   }
+//   if(scale){
+//     branchNameData.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(corrEle[0]*corrEle[1]))");
+//     branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*corrEle)");
+//     branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*corrEle[0])");
+//     branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*corrEle[1])");
+//   }
+  
+//   // Draw histograms
+//   TString branchNameData=branchname;
+//   data->Draw(branchNameData+">>eventlist", selection_data,"eventlist");
+//   TEventList *evlist = (TEventList*) gROOT->FindObject("eventlist");
+//   data->SetEventList(evlist);
+
+//   TTreeFormula *selector_ele1 = new TTreeFormula("selector", branchNameData, data);
+//   TTreeFormula *selector_ele2 = new TTreeFormula("selector", branchNameData.ReplaceAll("[0]","[1]"), data);
+
+//   Long64_t entries = entryList->GetN();
+//   std::cout << "___ ENTRIES: " << entries << std::endl; 
+//   data->LoadTree(chain->GetEntryNumber(0));
+//   Long64_t treenumber=-1;
+
+//   branchname="seedXSCEle:seedYSCEle";
+//   binning="(360,1,361,171,-85,86)";
+// //   yLabel="iEta";
+// //   xLabel="iPhi";
+// //   c->SetGridx();
+  
+//   Float_t iPhi[2], iEta[2];
+//   data->SetBranchAddress("seedYSCEle", iPhi);
+//   data->SetBranchAddress("seedXSCEle", iEta);
+//   double sum[360][171]=0, sum2[360][171]=0;
+//   for(Long64_t jentry=0; jentry < entries; jentry++){
+//     Long64_t entryNumber= data->GetEntryNumber(jentry);
+//     data->GetEntry(entryNumber);
+//     if (data->GetTreeNumber() != treenumber) {
+//       treenumber = data->GetTreeNumber();
+//       selector_ele1->UpdateFormulaLeaves();
+//       selector_ele2->UpdateFormulaLeaves();
+//     }
+//     double value=selector_ele1->EvalInstance();
+    
+//     sum+=value;
+//     sum2+=value*value;
+//   }
+  
+// }

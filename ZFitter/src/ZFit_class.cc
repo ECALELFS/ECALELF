@@ -727,16 +727,16 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
 
   BW_CB_pdf_class tempconvBwCbPdf(invMass);
 
-  RooAbsPdf *fit_pdf = &(tempconvBwCbPdf.GetPdf()); //with original initial values
+  RooAbsPdf *generator_pdf = &(tempconvBwCbPdf.GetPdf()); //with original initial values
 
   //	  cout <<"before reading"<<endl; 
   //	  (tempconvBwCbPdf.params).Print("v");
 
   //	  cout <<"name of init file: "<<_initFileNameMC<<endl; 
-  (convBwCbPdf.params).readFromFile(_initFileNameMC,0,0,kTRUE);
+  (tempconvBwCbPdf.params).readFromFile(_initFileNameMC,0,0,kTRUE);
   //	  (convBwCbPdf.params).Print("v");
 
-  params = convBwCbPdf.GetParams();
+  params = tempconvBwCbPdf.GetParams();
   //  cout <<" before set init: gamma"<<((RooRealVar *)params->find("\\gamma"))->getVal()<<endl;
   //cout <<" before set init: dm "<<((RooRealVar *)params->find("\\Delta m"))->getVal()<<endl;
 
@@ -744,7 +744,7 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
 	  
   SetInitParamsfromRead(params);
 
-  RooAbsPdf* generator_pdf = &(convBwCbPdf.GetPdf()); //generator pdf
+  RooAbsPdf* fit_pdf = &(convBwCbPdf.GetPdf()); //generator pdf
 
   /*RooPlot* plot = invMass.frame();
     fit_pdf->plotOn(plot, RooFit::LineColor(kRed));
@@ -762,6 +762,7 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
     int numcpu=4;
     for (int i = 0; i < nToys; ++i){
       RooDataSet* toydata = generator_pdf->generate(invMass, nEvents);         
+      SetFitPar();
       RooFitResult *fitres_Toy = fit_pdf->fitTo(*toydata,RooFit::Save(), //RooFit::Range(range.c_str()), 
 						RooFit::NumCPU(numcpu),
 						RooFit::Verbose(kFALSE),RooFit::PrintLevel(-1),
@@ -782,8 +783,9 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
     int numcpu=2;
     for (int i = 0; i < nToys; ++i){
       RooDataHist* toydata = generator_pdf->generateBinned(invMass, nEvents);         
-		  
-      std::cout <<"init gamma: "<<init_gamma<<std::endl;
+      SetFitPar();
+
+      //std::cout <<"init gamma: "<<init_gamma<<std::endl;
       RooFitResult *fitres_Toy = fit_pdf->fitTo(*toydata,RooFit::Save(), //RooFit::Range(range.c_str()), 
 						RooFit::NumCPU(numcpu),
 						RooFit::Verbose(kFALSE),RooFit::PrintLevel(-1),
