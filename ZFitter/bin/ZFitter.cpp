@@ -22,18 +22,18 @@
 
 #include "../interface/RooSmearer.hh"
 #include <RooMinuit.h>
-#include <RooStats/UniformProposal.h>
-#include <RooStats/PdfProposal.h>
+//#include <RooStats/UniformProposal.h>
+//#include <RooStats/PdfProposal.h>
 //#include <RooStats/SequentialProposal.h>
 #include <RooGaussian.h>
 #include <RooStats/MetropolisHastings.h>
 #include "RooBinning.h"
 //#include "../src/ShervinMinuit.cc"
-#include <RooStats/ProposalHelper.h>
+//#include <RooStats/ProposalHelper.h>
 #include <RooMultiVarGaussian.h>
 
 #include "Math/Minimizer.h"
-//#include "../interface/RooMinimizer.hh"
+#include "../interface/RooMinimizer.hh"
 
 #include <TPRegexp.h>
 #include <RooFormulaVar.h>
@@ -49,7 +49,7 @@
 //#define DEBUG
 #define smooth
 #include "../src/nllProfile.cc"
-using namespace std;
+//using namespace std;
 using namespace RooStats;
 
 /**
@@ -625,7 +625,7 @@ int main(int argc, char **argv) {
 	if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue;
 	TChain *ch = (tag_chain_itr->second.find("selected"))->second;
 	TString treeName="pileup";
-	TString fileame="tmp/mcPUtree"+tag_chain_itr->first+".root";
+	TString filename="tmp/mcPUtree"+tag_chain_itr->first+".root";
 	TFile f(filename,"recreate");
 	if(f.IsOpen()){
 	  f.cd();
@@ -654,7 +654,7 @@ int main(int argc, char **argv) {
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
       if(tag_chain_itr->first.CompareTo("d")==0 || !tag_chain_itr->first.Contains("d")) continue; //only data
-      if(tag_chaint_itr->second.count(treeName)!=0) continue; //skip if already present
+      if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
      
       TString filename="tmp/scaleEle_"+corrEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
@@ -696,7 +696,7 @@ int main(int argc, char **argv) {
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
       if(tag_chain_itr->first.CompareTo("d")==0 || !tag_chain_itr->first.Contains("d")) continue; //only data
-      if(tag_chaint_itr->second.count(treeName)!=0) continue; //skip if already present
+      if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
      
       TString filename="tmp/scaleEle_"+corrEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
@@ -736,7 +736,7 @@ int main(int argc, char **argv) {
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
       if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //only data
-      if(tag_chaint_itr->second.count(treeName)!=0) continue; //skip if already present
+      if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
  
       TString filename="tmp/smearEle_"+corrEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
@@ -783,7 +783,7 @@ int main(int argc, char **argv) {
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
       if(tag_chain_itr->first.CompareTo("s")==0 || tag_chain_itr->first.CompareTo("d")==0) continue; //only data
-      if(tag_chaint_itr->second.count(treeName)!=0) continue; //skip if already present
+      if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
 
       //data

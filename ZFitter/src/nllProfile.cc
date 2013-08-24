@@ -51,6 +51,202 @@
 #define FIT_LIMIT 0.01
 #define ITER_MAX 20
 
+#ifndef ShervinMinuit_
+#define ShervinMinuit_
+class ShervinMinuit: public RooStats::PdfProposal {
+  
+public:
+  //inline ShervinMinuit(){};
+  //ShervinMinuit(int nBurnSteps);
+  ShervinMinuit(int nBurnSteps, RooSmearer& smearer);
+
+  RooStats::ProposalHelper *ph;
+  RooStats::ProposalFunction* proposal;
+  void Propose(RooArgSet& xPrime, RooArgSet& x);
+  inline Bool_t IsSymmetric(RooArgSet& xPrime, RooArgSet& x){return true;}; //proposal->IsSymmetric(xPrime,x);};
+  inline Double_t GetProposalDensity(RooArgSet& xPrime, RooArgSet& x){return 0;}; //proposal->GetProposalDensity(xPrime, x);};
+
+  inline void SetMinuit(RooMinuit& m){_m = &m;};
+private:
+  int _nBurnSteps;
+  int _iStep;
+  int _iBurnStep;
+  RooMinuit* _m;
+  
+  
+  RooSmearer& _smearer;
+  //RooArgSet& _params;
+  RooArgSet _paramSet;
+  RooStats::UniformProposal propUnif;
+  RooMultiVarGaussian *gausPdf;
+  TRandom3 gen;
+  std::vector<TH1F*> rmsHist;
+  float fSigmaRangeDivisor;
+};
+#endif
+
+ShervinMinuit::ShervinMinuit(int nBurnSteps, RooSmearer& smearer): 
+  _smearer(smearer),gausPdf(NULL), gen(1245), fSigmaRangeDivisor(-1)
+  //  _params(smearer.GetParams())
+{
+
+  _iStep =0;
+		     
+  _nBurnSteps = nBurnSteps;
+  
+  RooArgList argList(smearer.GetParams());
+  TIterator *it = argList.createIterator();
+  std::cout << "###############################" << std::endl;
+  for(RooRealVar *v = (RooRealVar*)it->Next(); v!=NULL; v = (RooRealVar*)it->Next()){
+    if(! v->isConstant()){
+      _paramSet.add((*v));
+      rmsHist.push_back(new TH1F(v->GetName(),"",1000, v->getMin(), v->getMax()));
+    }
+  }
+  delete it;
+  //  _paramSet.Print();
+//   ph = new ProposalHelper();
+//   ph->SetVariables(_paramSet);
+//   ph->SetUpdateProposalParameters(kTRUE); // auto-create mean vars and add mappings  
+//   ph->SetUniformFraction(1);
+//   ph->SetCluesFraction(0);
+//   ph->SetWidthRangeDivisor(100);
+  //  proposal = ph->GetProposalFunction();
+
+  RooArgList xVec(_paramSet);
+  Int_t size = xVec.getSize();
+  Float_t fSigmaRangeDivisor = 100;
+  TMatrixDSym *fCovMatrix = new TMatrixDSym(size);
+  RooRealVar* r;
+  for (Int_t i = 0; i < size; i++) {
+    r = (RooRealVar*)xVec.at(i);
+    Double_t range = r->getMax() - r->getMin();
+    (*fCovMatrix)(i,i) = range / fSigmaRangeDivisor;
+  }
+
+//   gausPdf = new RooMultiVarGaussian("multiVar","", RooArgList(_paramSet), *fCovMatrix);
+//   gausPdf->initGenerator(12345);
+//   gausPdf->  generateEvent(1);
+//   SetPdf(*gausPdf);
+  
+//   //  gausPdf->generate(_paramSet,10)->Print();
+//   SetCacheSize(10);
+  //proposal = ph->GetProposalFunction();
+  //proposal = &propUnif;
+  //_iBurnStep = (int) _nBurnSteps/100;
+  //if(_iBurnStep==0)   _iBurnStep = (int) _nBurnSteps/10;
+  //if(_iBurnStep==0)   _iBurnStep = (int) _nBurnSteps/5;
+}
+
+
+void ShervinMinuit::Propose(RooArgSet& xPrime, RooArgSet& x){
+  TIterator *it=NULL; 
+//   RooRealVar v1("v1","",0.01,0,0.04);
+//   RooRealVar v2("v2","",0.02,0,0.04);
+//   RooArgSet arg1(v1);
+//   RooArgSet arg2(v2);
+
+  if(_iStep==20){
+    fSigmaRangeDivisor=4;
+    RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
+    float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
+    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
+	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
+	      << std::endl;
+  }    
+  else if(_iStep==50){
+    fSigmaRangeDivisor=10;
+    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor << std::endl;
+    RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
+    float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
+    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
+	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
+	      << std::endl;
+
+  }
+  else if(_iStep==80){
+    fSigmaRangeDivisor=15;
+    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor << std::endl;
+    RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
+    float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
+    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
+	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
+	      << std::endl;
+    var = (RooRealVar *)x.find("scale_EB-absEta_0_1-gold-Et_25");
+    varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
+    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
+	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
+	      << std::endl;
+
+ //  }  else if(_iStep==100){
+//     fSigmaRangeDivisor=20;
+//     std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor << std::endl;
+//     RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
+//     float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
+//     std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
+// 	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
+// 	      << std::endl;
+
+  }
+
+
+  //else if(_iStep==100) fSigmaRangeDivisor=10;
+
+  it = RooArgList(xPrime).createIterator();
+  int index=0;
+  for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL;
+      var = (RooRealVar *) it->Next()){
+    
+    //var->setError(var->getError()/100);
+
+    
+    RooRealVar *v_x = ((RooRealVar *)x.find(var->GetName()));
+    rmsHist[index]->Fill(v_x->getVal());
+
+    float varErr = std::min(rmsHist[index]->GetRMS(), (var->getMax()-var->getMin())/fSigmaRangeDivisor);
+
+
+    if(fSigmaRangeDivisor<3)     var->setVal(gen.Uniform(v_x->getMin(), v_x->getMax()));
+    else {
+      if(varErr < (var->getMax()-var->getMin())/100) std::cout << "[WARNING] " << varErr << std::endl;
+      var->setVal(gen.Gaus(
+			   ((RooRealVar *)x.find(var->GetName()))->getVal(), 
+			   varErr)
+		  );
+    }
+    
+//     if(TString(var->GetName())=="constTerm_EB-absEta_0_1-gold-Et_25"){
+//       std::cout << var->GetName() << "\t" << v_x->getVal() << " --> " << var->getVal() << "\t" << varErr << std::endl;
+//     }
+    index++;
+  }
+
+  _iStep++;
+  return;
+
+
+  
+  if(_iStep == _nBurnSteps){
+    std::cout << "Now Gaussian proposal" << std::endl;
+
+    it = xPrime.createIterator();
+    for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL;
+	var = (RooRealVar *) it->Next()){
+      //var->setError(var->getError()/100);
+      //float varErr = var->getVal()/100;
+      //if(TString(var->GetName()).Contains("constTerm")) varErr*=10;
+      //var->setMin(std::max(var->getMin(),var->getVal()- varErr*3));
+      //var->setMax(std::min(var->getMax(),var->getVal()+ varErr*3));
+      var->setMin(0.0);
+      var->setMax(0.05);
+      //var->setVal(0.03);
+      std::cout << var -> GetName() << "\t" << var->getError() << "\t" << var -> getMin() << "\t" << var->getMax()<< std::endl;
+    }
+    //_m->hesse();
+    //RooFitResult *fitres = _m->save();
+  } 
+}  
+
 Double_t asymmetricParabola(Double_t* x,Double_t* par)
 {
   // qualche commento non farebbe male
@@ -1009,198 +1205,3 @@ void MinimizationProfile(RooSmearer& smearer, RooArgSet args, long unsigned int 
   }
 }
 
-
-
-class ShervinMinuit: public PdfProposal {
-  
-public:
-  //inline ShervinMinuit(){};
-  //ShervinMinuit(int nBurnSteps);
-  ShervinMinuit(int nBurnSteps, RooSmearer& smearer);
-
-  ProposalHelper *ph;
-  ProposalFunction* proposal;
-  void Propose(RooArgSet& xPrime, RooArgSet& x);
-  inline Bool_t IsSymmetric(RooArgSet& xPrime, RooArgSet& x){return true;}; //proposal->IsSymmetric(xPrime,x);};
-  inline Double_t GetProposalDensity(RooArgSet& xPrime, RooArgSet& x){return 0;}; //proposal->GetProposalDensity(xPrime, x);};
-
-  inline void SetMinuit(RooMinuit& m){_m = &m;};
-private:
-  int _nBurnSteps;
-  int _iStep;
-  int _iBurnStep;
-  RooMinuit* _m;
-  
-  
-  RooSmearer& _smearer;
-  //RooArgSet& _params;
-  RooArgSet _paramSet;
-  RooStats::UniformProposal propUnif;
-  RooMultiVarGaussian *gausPdf;
-  TRandom3 gen;
-  std::vector<TH1F*> rmsHist;
-  float fSigmaRangeDivisor;
-};
-
-
-ShervinMinuit::ShervinMinuit(int nBurnSteps, RooSmearer& smearer): 
-  _smearer(smearer),gausPdf(NULL), gen(1245), fSigmaRangeDivisor(-1)
-  //  _params(smearer.GetParams())
-{
-
-  _iStep =0;
-		     
-  _nBurnSteps = nBurnSteps;
-  
-  RooArgList argList(smearer.GetParams());
-  TIterator *it = argList.createIterator();
-  std::cout << "###############################" << std::endl;
-  for(RooRealVar *v = (RooRealVar*)it->Next(); v!=NULL; v = (RooRealVar*)it->Next()){
-    if(! v->isConstant()){
-      _paramSet.add((*v));
-      rmsHist.push_back(new TH1F(v->GetName(),"",1000, v->getMin(), v->getMax()));
-    }
-  }
-  delete it;
-  //  _paramSet.Print();
-//   ph = new ProposalHelper();
-//   ph->SetVariables(_paramSet);
-//   ph->SetUpdateProposalParameters(kTRUE); // auto-create mean vars and add mappings  
-//   ph->SetUniformFraction(1);
-//   ph->SetCluesFraction(0);
-//   ph->SetWidthRangeDivisor(100);
-  //  proposal = ph->GetProposalFunction();
-
-  RooArgList xVec(_paramSet);
-  Int_t size = xVec.getSize();
-  Float_t fSigmaRangeDivisor = 100;
-  TMatrixDSym *fCovMatrix = new TMatrixDSym(size);
-  RooRealVar* r;
-  for (Int_t i = 0; i < size; i++) {
-    r = (RooRealVar*)xVec.at(i);
-    Double_t range = r->getMax() - r->getMin();
-    (*fCovMatrix)(i,i) = range / fSigmaRangeDivisor;
-  }
-
-//   gausPdf = new RooMultiVarGaussian("multiVar","", RooArgList(_paramSet), *fCovMatrix);
-//   gausPdf->initGenerator(12345);
-//   gausPdf->  generateEvent(1);
-//   SetPdf(*gausPdf);
-  
-//   //  gausPdf->generate(_paramSet,10)->Print();
-//   SetCacheSize(10);
-  //proposal = ph->GetProposalFunction();
-  //proposal = &propUnif;
-  //_iBurnStep = (int) _nBurnSteps/100;
-  //if(_iBurnStep==0)   _iBurnStep = (int) _nBurnSteps/10;
-  //if(_iBurnStep==0)   _iBurnStep = (int) _nBurnSteps/5;
-}
-
-
-void ShervinMinuit::Propose(RooArgSet& xPrime, RooArgSet& x){
-  TIterator *it=NULL; 
-//   RooRealVar v1("v1","",0.01,0,0.04);
-//   RooRealVar v2("v2","",0.02,0,0.04);
-//   RooArgSet arg1(v1);
-//   RooArgSet arg2(v2);
-
-  if(_iStep==20){
-    fSigmaRangeDivisor=4;
-    RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
-    float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
-    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
-	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
-	      << std::endl;
-  }    
-  else if(_iStep==50){
-    fSigmaRangeDivisor=10;
-    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor << std::endl;
-    RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
-    float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
-    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
-	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
-	      << std::endl;
-
-  }
-  else if(_iStep==80){
-    fSigmaRangeDivisor=15;
-    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor << std::endl;
-    RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
-    float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
-    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
-	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
-	      << std::endl;
-    var = (RooRealVar *)x.find("scale_EB-absEta_0_1-gold-Et_25");
-    varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
-    std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
-	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
-	      << std::endl;
-
- //  }  else if(_iStep==100){
-//     fSigmaRangeDivisor=20;
-//     std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor << std::endl;
-//     RooRealVar *var = (RooRealVar *)x.find("constTerm_EB-absEta_0_1-gold-Et_25");
-//     float varErr = (var->getMax()-var->getMin())/fSigmaRangeDivisor;
-//     std::cout << "[INFO] Changing sigma divisor to: " << fSigmaRangeDivisor 
-// 	      << "\t" << var->getVal() << ": " << var->getMin() << " - " << var->getMax() << "\t" << varErr
-// 	      << std::endl;
-
-  }
-
-
-  //else if(_iStep==100) fSigmaRangeDivisor=10;
-
-  it = RooArgList(xPrime).createIterator();
-  int index=0;
-  for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL;
-      var = (RooRealVar *) it->Next()){
-    
-    //var->setError(var->getError()/100);
-
-    
-    RooRealVar *v_x = ((RooRealVar *)x.find(var->GetName()));
-    rmsHist[index]->Fill(v_x->getVal());
-
-    float varErr = std::min(rmsHist[index]->GetRMS(), (var->getMax()-var->getMin())/fSigmaRangeDivisor);
-
-
-    if(fSigmaRangeDivisor<3)     var->setVal(gen.Uniform(v_x->getMin(), v_x->getMax()));
-    else {
-      if(varErr < (var->getMax()-var->getMin())/100) std::cout << "[WARNING] " << varErr << std::endl;
-      var->setVal(gen.Gaus(
-			   ((RooRealVar *)x.find(var->GetName()))->getVal(), 
-			   varErr)
-		  );
-    }
-    
-//     if(TString(var->GetName())=="constTerm_EB-absEta_0_1-gold-Et_25"){
-//       std::cout << var->GetName() << "\t" << v_x->getVal() << " --> " << var->getVal() << "\t" << varErr << std::endl;
-//     }
-    index++;
-  }
-
-  _iStep++;
-  return;
-
-
-  
-  if(_iStep == _nBurnSteps){
-    std::cout << "Now Gaussian proposal" << std::endl;
-
-    it = xPrime.createIterator();
-    for(RooRealVar *var = (RooRealVar *) it->Next(); var!=NULL;
-	var = (RooRealVar *) it->Next()){
-      //var->setError(var->getError()/100);
-      //float varErr = var->getVal()/100;
-      //if(TString(var->GetName()).Contains("constTerm")) varErr*=10;
-      //var->setMin(std::max(var->getMin(),var->getVal()- varErr*3));
-      //var->setMax(std::min(var->getMax(),var->getVal()+ varErr*3));
-      var->setMin(0.0);
-      var->setMax(0.05);
-      //var->setVal(0.03);
-      std::cout << var -> GetName() << "\t" << var->getError() << "\t" << var -> getMin() << "\t" << var->getMax()<< std::endl;
-    }
-    //_m->hesse();
-    //RooFitResult *fitres = _m->save();
-  } 
-}  
