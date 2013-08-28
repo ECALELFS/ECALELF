@@ -66,7 +66,8 @@ void SmearingImporter::ImportToy(Long64_t nEvents, event_cache_t& eventCache, bo
 
 
 void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryList *entryList, bool swap){
-    
+  std::cerr << "[ERROR] Entering wrong function!" << std::endl;
+  exit(1);
   // for the energy calculation
   Float_t         energyEle[2];
   Float_t         corrEle_[2]={1,1};
@@ -248,6 +249,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Long64_t treenumber=-1;
 
   std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
+  if(hasSmearerCat==false){
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
       region_ele1_itr != _regionList.end();
       region_ele1_itr++){
@@ -282,13 +284,14 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	
     }
   }
+  }
 
   for(Long64_t jentry=0; jentry < entries; jentry++){
     Long64_t entryNumber= chain->GetEntryNumber(jentry);
     chain->GetEntry(entryNumber);
     if(isToy){
       if(jentry<10){
-	std::cout << isMC << "\t" << eventNumber << "\t" << eventNumber%3 << std::endl;
+	std::cout << "Dividing toyMC events: " << isMC << "\t" << eventNumber << "\t" << eventNumber%3 << std::endl;
       }
       if(isMC && eventNumber%3==0) continue;
       if(!isMC && eventNumber%3!=0) continue;
@@ -408,7 +411,10 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   if(_chain->GetBranch("r9Weight")!=NULL)  _chain->SetBranchStatus("r9Weight", 1);
   if(_chain->GetBranch("puWeight")!=NULL)  _chain->SetBranchStatus("puWeight", 1);
   if(_chain->GetBranch("ptWeight")!=NULL)  _chain->SetBranchStatus("ptWeight", 1);
-  if(_chain->GetBranch("smearerCat")!=NULL)_chain->SetBranchStatus("smearerCat", 1);
+  if(_chain->GetBranch("smearerCat")!=NULL){
+    std::cout << "[STATUS] Activating branch smearerCat" << std::endl;
+    _chain->SetBranchStatus("smearerCat", 1);
+  }
 
 
 
@@ -422,19 +428,18 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
     }
   }
  
-  std::cout << "Eventlist" << std::endl;
   TString evListName="evList_";
   evListName+=_chain->GetTitle();
   evListName+="_all";
   TEntryList *oldList = _chain->GetEntryList();
   if(oldList==NULL){
-  _chain->Draw(">>"+evListName, cutter.GetCut(_commonCut+"-"+eleID_,true), "entrylist");
-  //_chain->Draw(">>"+evListName, "", "entrylist");
-  TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
-  //  elist_all->SetBit(!kCanDelete);
-  _chain->SetEntryList(elist_all);
+    std::cout << "[STATUS] Setting entry list: " << evListName << std::endl;
+    _chain->Draw(">>"+evListName, cutter.GetCut(_commonCut+"-"+eleID_,isMC), "entrylist");
+    //_chain->Draw(">>"+evListName, "", "entrylist");
+    TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
+    //  elist_all->SetBit(!kCanDelete);
+    _chain->SetEntryList(elist_all);
   }
-  std::cout << "Eventlist" << std::endl;
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
       region_ele1_itr != _regionList.end();
       region_ele1_itr++){
