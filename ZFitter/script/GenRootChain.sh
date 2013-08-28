@@ -6,6 +6,7 @@ commonCut=Et_25
 selection=WP80_PU
 invMass_var=invMass_SC_regrCorr_ele
 configFile=data/validation/monitoring_2012_53X.dat
+regionsFile=data/regions/scaleStep4smearing_2.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
@@ -21,7 +22,8 @@ usage(){
     echo " -f arg (=${configFile})"
     echo " --noPU"
     echo " --outDirImg arg (=${outDirImg})"
-    
+    echo " --addBranch arg" 
+    echo " --regionsFile arg (=${regionsFile})"
 #    echo " --puName arg             "
 #    echo " --runRangesFile arg (=${runRangesFile})  run ranges for stability plots"
 #    echo " --selection arg (=${selection})     "
@@ -49,7 +51,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics,slides,onlyTable,test,commonCut:,period:,noPU,outDirImg: -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics,slides,onlyTable,test,commonCut:,period:,noPU,outDirImg:,addBranch:,regionsFile: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -64,6 +66,8 @@ do
         -h|--help) desc;usage; exit 0;;
         -f) configFile=$2; shift;;
 	--noPU) noPU="--noPU";;
+	--addBranch) addBranchList="${addBranchList} --addBranch=$2"; shift;;
+	--regionsFile) regionsFile=$2; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--outDirImg) outDirImg=$2; shift;;
 	--puName) puName=$2; shift;;
@@ -129,7 +133,7 @@ fi
 
 # saving the root files with the chains
 rm tmp/*_chain.root
-./bin/ZFitter.exe --saveRootMacro -f ${configFile} ${noPU} || exit 1
+./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} || exit 1
 
 # adding all the chains in one file
 for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
