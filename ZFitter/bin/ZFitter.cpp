@@ -89,7 +89,7 @@ std::vector<TString> ReadRegionsFromFile(TString fileName){
 }
 
 
-void UpdateFriends(tag_chain_map_t& tagChainMap, bool merge=false){
+void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag){
 
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
@@ -100,11 +100,14 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, bool merge=false){
 	chain_itr!=tag_chain_itr->second.end();
 	chain_itr++){
 
-      if(chain_itr->first!="selected" &&
-	 chain->GetFriend(chain_itr->first)==NULL){
-	std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
-		  << " to tag " << tag_chain_itr->first << std::endl;
-	chain->AddFriend(chain_itr->second);
+      if(chain_itr->first!="selected"){
+	if(chain->GetFriend(chain_itr->first)==NULL){
+	  if(!chain_itr->first.Contains("smearerCat") || (chain_itr->first.Contains("smearerCat") && chain_itr->first.Contains(regionsFileNameTag))){
+	  std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
+		    << " to tag " << tag_chain_itr->first << std::endl;
+	  chain->AddFriend(chain_itr->second);
+	  }
+	} // already added
       }
       chain_itr->second->GetEntries();
     }
@@ -112,7 +115,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, bool merge=false){
   return;
 }
 
-void MergeSamples(tag_chain_map_t& tagChainMap, TString tag="s"){
+void MergeSamples(tag_chain_map_t& tagChainMap, TString regionsFileNameTag, TString tag="s"){
   
   std::pair<TString, chain_map_t > pair_tmp_tag(tag,chain_map_t()); // make_pair not work with scram b
   tagChainMap.insert(pair_tmp_tag);
@@ -121,7 +124,7 @@ void MergeSamples(tag_chain_map_t& tagChainMap, TString tag="s"){
       tag_chain_itr!=tagChainMap.end();
       tag_chain_itr++){
 
-    if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //do it for each sample
+    if(tag_chain_itr->first.CompareTo(tag)==0 || !tag_chain_itr->first.Contains(tag)) continue; //do it for each sample
     //TChain *chain = (tag_chain_itr->second.find("selected"))->second;
     //    std::cout << chain->GetName() << std::endl;
     for(chain_map_t::const_iterator chain_itr=tag_chain_itr->second.begin();
@@ -136,7 +139,7 @@ void MergeSamples(tag_chain_map_t& tagChainMap, TString tag="s"){
       (tagChainMap[tag])[chainName]->Add(chain_itr->second);
     }
   }
-  UpdateFriends(tagChainMap);
+  UpdateFriends(tagChainMap, regionsFileNameTag);
   return;
 }
 
@@ -364,8 +367,8 @@ int main(int argc, char **argv) {
 
   if(!vm.count("regionsFile") && 
      !vm.count("runDivide") && !vm.count("savePUTreeWeight") && 
-     !vm.count("saveR9TreeWeight") && !vm.count("saveCorrEleTree") &&
-     !vm.count("saveRootMacro")
+     !vm.count("saveR9TreeWeight") && !vm.count("saveCorrEleTree") 
+     //&& !vm.count("saveRootMacro")
      ){
     std::cerr << "[ERROR] Missing mandatory option \"regionsFile\"" << std::endl;
     return 1;
@@ -431,6 +434,10 @@ int main(int argc, char **argv) {
   chainFileListTag.Remove(0,chainFileListTag.Last('/')+1);
   chainFileListTag.ReplaceAll(".dat","");
 
+  TString regionsFileNameTag=regionsFileName;
+  regionsFileNameTag.Remove(0,regionsFileNameTag.Last('/')+1);
+  regionsFileNameTag.ReplaceAll(".dat","");
+  
   std::ifstream chainFileList(chainFileListName.c_str());
   while(chainFileList >> tag, chainFileList.good()){
     if(tag.Contains('#')){
@@ -650,6 +657,8 @@ int main(int argc, char **argv) {
     std::cout << "------------------------------------------------------------" << std::endl;
     std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
     TString treeName="scaleEle_"+corrEleType;
+    EnergyScaleCorrection_class eScaler(corrEleFile,corrEleType);
+
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
@@ -658,7 +667,6 @@ int main(int argc, char **argv) {
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
      
       TString filename="tmp/scaleEle_"+corrEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
-      EnergyScaleCorrection_class eScaler(corrEleFile,corrEleType);
       std::cout << "[STATUS] Saving electron scale corrections to root file:" << filename << std::endl;
 
 	TFile f(filename,"recreate");
@@ -733,8 +741,11 @@ int main(int argc, char **argv) {
   for( std::vector<string>::const_iterator branch_itr = branchList.begin();
        branch_itr != branchList.end();
        branch_itr++){
-    UpdateFriends(tagChainMap);
+    UpdateFriends(tagChainMap, regionsFileNameTag);
     TString treeName=*branch_itr;
+    if(*branch_itr=="smearerCat") treeName+="_"+regionsFileNameTag;
+
+    TString branchName=*branch_itr;
     if(treeName.Contains("invMassSigma")){
       newBrancher.scaler= new EnergyScaleCorrection_class("","", smearEleFile,smearEleType);
     }
@@ -747,22 +758,22 @@ int main(int argc, char **argv) {
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
 
       //data
-      std::cout <<"[STATUS] Adding branch " << treeName << " to " << tag_chain_itr->first <<std::endl;
+      std::cout <<"[STATUS] Adding branch " << branchName << " to " << tag_chain_itr->first <<std::endl;
       TString filename="tmp/"+treeName+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
 
       TFile f(filename,"recreate");
       if (!f.IsOpen()){
-	std::cerr << "[ERROR] File for branch " << treeName << " not created" << std::endl;
+	std::cerr << "[ERROR] File for branch " << branchName << " not created" << std::endl;
 	return 1;
       }
-      TTree *newTree = newBrancher.AddBranch(ch,treeName+tag_chain_itr->first, treeName);
-
+      TTree *newTree = newBrancher.AddBranch(ch,treeName, branchName);
       if(newTree==NULL){
 	std::cerr << "[ERROR] New tree for branch " << treeName << " is NULL" << std::endl;
 	return 1;
       }
 
       f.cd();
+      newTree->SetTitle(tag_chain_itr->first);
       newTree->Write();
       delete newTree;
       f.Write();
@@ -775,14 +786,15 @@ int main(int argc, char **argv) {
   } //end of branches loop
 
   //(tagChainMap["s"])["selected"]->GetEntries();
-  UpdateFriends(tagChainMap);
+  UpdateFriends(tagChainMap, regionsFileNameTag);
 
   //create tag "s" if not present (due to multiple mc samples)
   if(!tagChainMap.count("s")){
     //#ifdef DEBUG
     std::cout << "==============================" << std::endl;
     std::cout << "==============================" << std::endl;
-    MergeSamples(tagChainMap, "s");
+    MergeSamples(tagChainMap, regionsFileNameTag, "s");
+    MergeSamples(tagChainMap, regionsFileNameTag, "d");
   }
   
   
@@ -1091,31 +1103,33 @@ int main(int argc, char **argv) {
 	  smearer.GetSmearedHisto(*itr, true, true);
 	  smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
 	} 
-	
-	TFile *f = new TFile(outDirFitResData+"/histos-"+r+"-"+TString(commonCut.c_str())+".root", "recreate");
-	f->Print();
-	f->cd();
-	for(std::vector<ZeeCategory>::iterator itr= smearer.ZeeCategories.begin();
-		itr != smearer.ZeeCategories.end();
-		itr++){
-	  //if(!itr->active) continue;
-	  TH1F *MC = smearer.GetSmearedHisto(*itr, true, false);
-	  TH1F *smearMC = smearer.GetSmearedHisto(*itr, true, true);
-	  TH1F *data = smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
-	  
-	  MC->Write();
-	  smearMC->Write();
-	  data->Write();
-	  f->Write();    
-	} 
 
-	f->Close();
-	if(!vm.count("plotOnly")){
+	if(vm.count("plotOnly") || !vm.count("profileOnly")){
+	  TFile *f = new TFile(outDirFitResData+"/histos-"+r+"-"+TString(commonCut.c_str())+".root", "recreate");
+	  f->Print();
+	  f->cd();
+	  for(std::vector<ZeeCategory>::iterator itr= smearer.ZeeCategories.begin();
+	      itr != smearer.ZeeCategories.end();
+	      itr++){
+	    //if(!itr->active) continue;
+	    TH1F *MC = smearer.GetSmearedHisto(*itr, true, false);
+	    TH1F *smearMC = smearer.GetSmearedHisto(*itr, true, true);
+	    TH1F *data = smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
+	  
+	    MC->Write();
+	    smearMC->Write();
+	    data->Write();
+	    f->Write();    
+	  } 
+	  f->Close();
+	}
+
+	if(vm.count("profileOnly") || !vm.count("plotOnly")){
 	  Int_t oldMarkovSize=smearer._markov.Size();
 	  //if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
 
 	  std::cout <<"==================PROFILE=================="<<endl;
-	  //smearer.SetNSmear(0,20);
+	  smearer.SetNSmear(0,20);
 	  //create profiles
 	  TString outFile=outDirFitResData.c_str();
 	  outFile+="/outProfile-";
@@ -1130,7 +1144,6 @@ int main(int argc, char **argv) {
 		continue;
 
 	      TString name(var->GetName());
-	      if(name.Contains("scale")) continue;
 
 	      // special part for alpha fitting 
 	      double min=0.;
