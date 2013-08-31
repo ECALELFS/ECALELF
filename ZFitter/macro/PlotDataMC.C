@@ -469,12 +469,36 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   
 
   int nHist= mc_vec.size();
-  int colors[4]={kRed,kGreen,kBlue,0};
+  int colors[4]={kRed,kGreen,kBlue,kCyan};
   int fillstyle[4]={0,0,0,0}; //3003,3004,3005,3006};
   if(nHist>4) return NULL;
   TString yLabel; 
   
   TCanvas *c = new TCanvas("c","");
+  TPad * pad1 = new TPad("pad1", "pad1",0.01,0.13,0.75,1.);  
+  TPad * pad2 = new TPad("pad2", "pad2",0.01,0.001,0.75,0.2);  
+  TPad * pad3 = new TPad("pad3", "pad3",0.68,0.001,1.,0.2);
+
+  pad1->SetRightMargin(0.1);
+  pad1->SetLogy();
+  pad1->Draw();
+  pad1->cd();
+  
+  pad2->SetGrid();
+  pad2->SetBottomMargin(0.4);
+  pad2->SetRightMargin(0.1);
+  pad2->Draw();
+  pad2->cd();
+  
+  pad3->SetGrid();    
+  //pad2->SetTopMargin(0.01);
+  pad3->SetBottomMargin(0.4);
+  pad3->SetRightMargin(0.1);
+  pad3->Draw();
+  pad3->cd();
+    
+  pad1->cd();
+
   TString branchNameData=branchname;
   TString branchNameMC=branchname;
 
@@ -611,7 +635,15 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
     }
 
     if(mcLabel_vec[i] !="") leg->AddEntry(s,mcLabel_vec[i], "lf");
-    
+
+//     TH1F *sRatio = (TH1F *) s->Clone(mcHistName+"_ratio");
+//     sRatio->Divide(d);
+//     if(ratio){
+//       pad2->cd();
+//       if(i==0) sRatio->Draw();
+//       else sRatio->Draw("same");
+//     }
+//     pad1->cd();
   }
 
   //TH1F* d_norm = s_norm;
@@ -641,6 +673,14 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
 }
 
+std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2, TChain *v3, TChain *v4){
+  std::vector<TChain *> vec;
+  vec.push_back(v1);
+  vec.push_back(v2);
+  vec.push_back(v3);
+  vec.push_back(v4);
+  return vec;
+}
 
 std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2, TChain *v3){
   std::vector<TChain *> vec;
