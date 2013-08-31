@@ -1,5 +1,5 @@
 #include "../interface/EnergyScaleCorrection_class.h"
-#define DEBUG
+//#define DEBUG
 
 // for exit(0)
 #include <stdlib.h>
