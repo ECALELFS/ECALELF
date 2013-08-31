@@ -280,7 +280,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
       
       if(region_ele2_itr==region_ele1_itr){
 	TString region=*region_ele1_itr;
-	region.ReplaceAll(_commonCut,"");
+	region.ReplaceAll(_commonCut,""); //remove the common Cut!
 	TTreeFormula *selector = new TTreeFormula("selector"+(region), cutter.GetCut(region+oddString, isMC), originalChain);
 	catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector,NULL));
 	//selector->Print();
