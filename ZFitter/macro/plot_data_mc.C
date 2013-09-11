@@ -186,7 +186,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     legend->SetFillStyle(1001);
     legend->Draw();
 
-    std::cout << "Saving into " << img_filename(filename, region, ".eps") << std::endl;
+    
     c->SaveAs(img_filename(filename, region, ".eps"));
     c->SaveAs(img_filename(filename, region, ".png"));
     c->SaveAs(img_filename(filename, region, ".C"));
@@ -240,7 +240,7 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
     /*------------------------------ somma sugli istogrammi */
     std::cout << "Data Entries in " << keyName << "\t" << h->GetEntries() << std::endl;
 
-    if(type.CompareTo("data")==0 || type.CompareTo("smeardata")==0 ){
+    if(type.CompareTo("data")==0 || type.CompareTo("smeardata")==0){
       if(dataHist.find(region)==dataHist.end()){
  	hist_t hist_vec; // vector of bins of ONE histogram
  	AddHist(hist_vec, h); // add the content of the histogram h to the vector
@@ -279,11 +279,13 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
   legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
   //    SetLegendStyle(legend);
 
+  TH1F *mc_all[3]={NULL}, *data_all[3]={NULL}, *mcSmeared_all[3]={NULL};
+  
   for(std::map<TString, hist_t>::const_iterator itr = dataHist.begin();
       itr!= dataHist.end(); itr++){
     c->cd();
     TString region=itr->first;
-    std::cout << region << std::endl;
+    
     //     for(int i_region=0; i_region < n_region -1; i_region++){
     //       for(int j_region=i_region; j_region < n_region; j_region++){
     // 	region="region_";
@@ -299,8 +301,38 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
     TH1F *data=GetMeanHist(dataHist[region], h_ref, "data_"+region, true);	
     TH1F *mcSmeared=GetMeanHist(mcSmearedHist[region], h_ref, "mcSmeared_"+region);
 	
+    if(region.Contains("EE")){
+      if(mc_all[1] == NULL) mc_all[1]=(TH1F *) mc->Clone("EE_mc_hist");
+      else mc_all[1]->Add(mc);
+      if(data_all[1] == NULL) data_all[1]=(TH1F *) data->Clone("EE_data_hist");
+      else data_all[1]->Add(data);
+      if(mcSmeared_all[1] == NULL) mcSmeared_all[1]=(TH1F *) mcSmeared->Clone("EE_mcSmeared_hist");
+      else mcSmeared_all[1]->Add(mcSmeared);
+    }
+
+    if(region.Contains("EB")){
+      if(mc_all[0] == NULL) mc_all[0]=(TH1F *) mc->Clone("EB_mc_hist");
+      else mc_all[0]->Add(mc);
+      if(data_all[0] == NULL) data_all[0]=(TH1F *) data->Clone("EB_data_hist");
+      else data_all[0]->Add(data);
+      if(mcSmeared_all[0] == NULL) mcSmeared_all[0]=(TH1F *) mcSmeared->Clone("EB_mcSmeared_hist");
+      else mcSmeared_all[0]->Add(mcSmeared);
+    }
+    
+    if(mc_all[2] == NULL) mc_all[2]=(TH1F *) mc->Clone("all_mc_hist");
+    else mc_all[2]->Add(mc);
+    if(data_all[2] == NULL) data_all[2]=(TH1F *) data->Clone("all_data_hist");
+    else data_all[2]->Add(data);
+    if(mcSmeared_all[2] == NULL) mcSmeared_all[2]=(TH1F *) mcSmeared->Clone("all_mcSmeared_hist");
+    else mcSmeared_all[2]->Add(mcSmeared);
+    
+
     Plot(c, data,mc,mcSmeared,legend, region, filename, energy, lumi);
   }
+
+  //    Plot(c, data_all[0],mc_all[0],mcSmeared_all[0],legend, "EBinclusive", filename, energy, lumi);
+  //  Plot(c, data_all[1],mc_all[1],mcSmeared_all[1],legend, "EEinclusive", filename, energy, lumi);
+  //  Plot(c, data_all[2],mc_all[2],mcSmeared_all[2],legend, "Allinclusive", filename, energy, lumi);
   //    }
   delete c;
   f_in.Close();
