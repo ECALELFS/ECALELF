@@ -44,7 +44,6 @@
 #include <TRandom3.h>
 #include <queue>
 #define profile
-#define PROFILE_NBINS 200
 
 //#define DEBUG
 #define smooth
@@ -301,6 +300,7 @@ int main(int argc, char **argv) {
     ("nEventsMinDiag", po::value<unsigned int>(&nEventsMinDiag)->default_value(1000), "min num events in diagonal categories")
     ("nEventsMinOffDiag", po::value<unsigned int>(&nEventsMinOffDiag)->default_value(2000), "min num events in off-diagonal categories")
     ("constTermFix", "constTerm not depending on Et")
+    ("alphaGoldFix", "alphaTerm for gold electrons fixed to the low eta region")
     ("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
     ;
   inputOption.add_options()
@@ -707,7 +707,7 @@ int main(int argc, char **argv) {
       if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
  
-      TString filename="tmp/smearEle_"+corrEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
+      TString filename="tmp/smearEle_"+smearEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
       std::cout << "[STATUS] Saving electron smearings to root file:" << filename << std::endl;
       
       TFile f(filename,"recreate");
@@ -716,7 +716,7 @@ int main(int argc, char **argv) {
 	exit(1);
       }
 
-      TTree *corrTree = eScaler.GetSmearTree((tagChainMap["s"])["selected"], true, energyBranchName );
+      TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
       f.cd();
       corrTree->Write();
       std::cout << "[INFO] Data entries: "    << ch->GetEntries() << std::endl;
@@ -869,10 +869,20 @@ int main(int argc, char **argv) {
       alpha_v->setError(0.01);
       alpha_v->setConstant(true);
       //alpha_v->Print();
-      args.add(*alpha_v);
+      if(!vm.count("alphaGoldFix") || !region_itr->Contains("absEta_1_1.4442-gold")){
+	args.add(*alpha_v);
+      }
     } 
     if(reg.MatchB(*region_itr) && vm.count("constTermFix")==1){
-      alpha_ = new RooFormulaVar("alpha_"+*region_itr, "alpha_"+varName,"@0", *alpha_v);
+      if(vm.count("alphaGoldFix") && region_itr->Contains("absEta_1_1.4442-gold")){
+	std::cout << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
+	std::cerr << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
+	TString lowRegionVarName=varName; lowRegionVarName.ReplaceAll("absEta_1_1.4442","absEta_0_1");
+	alpha_v = (RooRealVar *)args.find("alpha_"+lowRegionVarName);
+	alpha_ = new RooFormulaVar("alpha_"+*region_itr, "alpha_"+lowRegionVarName,"@0", *alpha_v);
+      } else {
+	alpha_ = new RooFormulaVar("alpha_"+*region_itr, "alpha_"+varName,"@0", *alpha_v);
+      }
       alpha_v->setConstant(false);
     } else alpha_ = alpha_v;
     
@@ -970,11 +980,11 @@ int main(int argc, char **argv) {
   myClock.Reset();
   if(vm.count("smearerFit")){
 
-
 	smearer.SetHistBinning(80,100,invMass_binWidth); // to do before Init
 	if(vm.count("runToy")){
 	  smearer.SetToyScale(1, constTermToy);
-	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
+	  //if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
+	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
 	  else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
 	  std::cout << "[DEBUG] " << constTermToy << std::endl;
 	} else{
@@ -1082,7 +1092,7 @@ int main(int argc, char **argv) {
 	    delete mcChain;
 
 	  }
-	}	    
+	}
 
 	std::cout << "[INFO] Minimization time: \t";
 	myClock.Stop();
@@ -1129,7 +1139,7 @@ int main(int argc, char **argv) {
 	  //if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
 
 	  std::cout <<"==================PROFILE=================="<<endl;
-	  smearer.SetNSmear(0,20);
+	  if(!vm.count("constTermFix")) smearer.SetNSmear(0,20);
 	  //create profiles
 	  TString outFile=outDirFitResData.c_str();
 	  outFile+="/outProfile-";
@@ -1144,14 +1154,14 @@ int main(int argc, char **argv) {
 		continue;
 
 	      TString name(var->GetName());
-
+	      if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
 	      // special part for alpha fitting 
 	      double min=0.;
 	      TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
 	      RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName): NULL;
 	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
 		smearer.SetDataSet(name,TString(var->GetName())+TString(var2->GetName()));
-		//MinProfile2D(var, var2, smearer, -1, 0., min, false);
+		if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, false);
 		//MinMCMC2D(var, var2, smearer, 1, 0., min, 1200, false);
 		//MinMCMC2D(var, var2, smearer, 2, 0., min, 800, false);
 		//MinMCMC2D(var, var2, smearer, 3, 0., min, 100, false);
