@@ -15,8 +15,8 @@ d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-
 s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/1-1-Summer12_DD3.true.root
 ##### PU trees
 #s	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree-stdMC_powheg-RUN2012ABCD.root
-s1	pileup	mcPUtrees1.root
-s2	pileup	mcPUtrees2.root
+s1	pileup	mcPUtree_s1-22Jan2012-stdMC.dat
+s2	pileup	mcPUtree_s2-22Jan2012-stdMC.dat
 ##### Scale correction trees
 #d	scaleEle_HggRunEtaR9	HggRunEtaR9-Winter13-RUNABC.root
 ##### Smearer category trees
