@@ -1,5 +1,6 @@
 #include "../interface/RooSmearer.hh"
 #include <RooPullVar.h>
+#define NSMEARTOYLIM 1000
 //#define DEBUG
 //#define CPU_DEBUG
 #include <TIterator.h>
@@ -210,7 +211,7 @@ void RooSmearer::InitCategories(bool mcToy){
       float max=cat.hist_mc->GetMaximum();
       float left=cat.hist_mc->GetBinContent(1);
       float right=cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
-      if((right - left)/max > 0.2){
+      if((right - left)/max > 0.2 || (left - right)/max > 0.4){
 	cat.active=false;
 	std::cout << "[INFO] Category: " << ZeeCategories.size() 
 		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
@@ -266,7 +267,7 @@ TH1F *RooSmearer::GetSmearedHisto(ZeeCategory& category, bool isMC,
     std::cerr << "[ERROR] histogram pointer is NULL!!!" << std::endl;
     exit(1);
   }
-  std::cerr << "[DEBUG] isMC: " << isMC << "\tsmearEnergy: " << smearEnergy << std::endl;
+  //std::cerr << "[DEBUG] isMC: " << isMC << "\tsmearEnergy: " << smearEnergy << std::endl;
 #endif
 
   // to be put as single if
@@ -345,11 +346,11 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
   //std::cout << "---" << std::endl;
   //_paramSet.writeToStream(std::cout, kFALSE);
 #endif
-  if(nSmearToy>150){
+  if(nSmearToy>NSMEARTOYLIM){
     std::cerr << "[ERROR] nSmearToy = " << nSmearToy << std::endl;
     exit(1);
   }
-  double smearEne1[150], smearEne2[150]; // _nSmearToy<100
+  double smearEne1[NSMEARTOYLIM], smearEne2[NSMEARTOYLIM]; // _nSmearToy<100
   for(zee_events_t::const_iterator event_itr = cache.begin(); 
 	  event_itr!= cache.end();
 	  event_itr++){
@@ -491,11 +492,16 @@ float RooSmearer::getCompatibility() const
   //bool withSmearToy=(compatibility - nllMin < deltaNLLMaxSmearToy);
   //std::cout << "[DEBUG] Compatibility1: " << compatibility << "\t" << compatibility - nllMin << std::endl;
   //compatibility=0;
+  bool updated=false;
   for(std::vector<ZeeCategory>::iterator cat_itr = myClass->ZeeCategories.begin();
       cat_itr != myClass->ZeeCategories.end();
       cat_itr++){
     if(!cat_itr->active) continue;
     if(isCategoryChanged(*cat_itr,true)){ // && withSmearToy){
+      updated=true;
+#ifdef DEBUG
+      std::cout << "[DEBUG] " << cat_itr->categoryName1 << " - " << cat_itr->categoryName2 << "\t isupdated" << std::endl;
+#endif
       myClass->UpdateCategoryNLL(*cat_itr, cat_itr->nLLtoy); //the new nll has been updated for the category
     }
     compatibility+=cat_itr->nll;
@@ -505,7 +511,7 @@ float RooSmearer::getCompatibility() const
 #endif
   }
   //if(withSmearToy) std::cout << "[DEBUG] Compatibility2: " << compatibility << "\t" << compatibility - nllMin << std::endl;
-  if(dataset!=NULL && lastNLL!=compatibility){
+  if(dataset!=NULL && updated){
     myClass->nllVar.setVal(compatibility);
     myClass->dataset->add(RooArgSet(_paramSet,nllVar));
   }
@@ -707,6 +713,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   category.nSmearToy=(int)(300000./catSize); 
   if(category.nSmearToy <7) category.nSmearToy = 7; // fix the min to 3
   else  if( category.nSmearToy > 40) category.nSmearToy = 40; // fix the max to 20
+  category.nSmearToy=400;
   if(!smearscan) return;
 
 
@@ -714,7 +721,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   double stdDev=10;
   double min=10; int nBin_min=0;
   int n=0;
-  unsigned int nSmearToyLim=130;
+  unsigned int nSmearToyLim=NSMEARTOYLIM-1;
   category.nLLtoy=1;
   for(int iBin=0; iBin<1; iBin++){
       //category.nBins=(int) ((category.invMass_max-category.invMass_min)/2.);
@@ -725,12 +732,15 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
     for(category.nLLtoy=1; category.nLLtoy < 2; category.nLLtoy+=2){
       for(; category.nSmearToy <= nSmearToyLim && stdDev>1; category.nSmearToy*=2){
 	double  sum=0, sum2=0;
-	for(n=0; n<300; n++){
+	TStopwatch cl;
+	cl.Start();
+	for(n=0; n<50; n++){
 	  UpdateCategoryNLL(category, category.nLLtoy); //the new nll has been updated for the category
 	  
 	  sum+=category.nll;
 	  sum2+=category.nll * category.nll;
 	}
+	cl.Stop();
 	sum/=n;
 	sum2/=n;
 	stdDev= sqrt(sum2 - sum*sum);
@@ -742,18 +752,21 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
 	
 	std::cout << "[DEBUG] " 
 		  << "\t" << category.categoryIndex1
-		  << "\t" << category.categoryIndex2
+		  << " " << category.categoryIndex2
 		  << "\t" << stdDev 
 		  << "\t" << sum
-		  << "\t" << stdDev/sum 
+		  << " " << stdDev/sum 
 		  << "\t" << category.nSmearToy 
-		  << "\t" << category.nLLtoy
-		  << "\t" << category.nBins 
+		  << " " << category.nLLtoy
+		  << " " << category.nBins 
 		  << "\tmcEvents=" << category.mc_events->size() 
 		  << "\tdataEvents=" << category.data_events->size() 
-		  << std::endl;
+		  << "\t";
+	cl.Print(); 
+	//<< std::endl;
       }
-      if(category.nSmearToy > nSmearToyLim) category.nSmearToy/=2;
+      //if(category.nSmearToy > nSmearToyLim) category.nSmearToy/=2;
+      category.nSmearToy/=2;
     }
   }
   
@@ -944,7 +957,7 @@ void RooSmearer::SetNSmear(unsigned int n_smear, unsigned int nlltoy){
 
 
 void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, bool externToy, TString initFile){
-  if(mcToy) _isDataSmeared=externToy; //mcToy;
+  if(mcToy) _isDataSmeared=!externToy; //mcToy;
   if(initFile.Sizeof()>1){
     std::cout << "[INFO] Truth values for toys initialized to " << std::endl;
     //truthSet->readFromFile(initFile);
