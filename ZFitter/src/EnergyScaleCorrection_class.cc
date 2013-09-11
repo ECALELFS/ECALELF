@@ -450,6 +450,10 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop,
   TTree *newTree = new TTree("smearEle_"+correctionType,correctionType);
   newTree->Branch("smearEle", smearEle_, "smearEle[2]/F");
 
+  if(tree==NULL){
+    std::cerr << "[ERROR] original chain in GetSmearTree is NULL" << std::endl;
+    exit(1);
+  }
   if(fastLoop){
     tree->SetBranchStatus("*",0);
     tree->SetBranchStatus(energyEleBranchName,1);
