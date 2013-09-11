@@ -467,7 +467,7 @@ RooHistPdf *nllToL(TH2F* hist){
   return histPdf;
 }
 
-TH2F *prof2d(TTree *tree, TString var1Name, TString var2Name, TString nllName, TString binning="(40,0,0.05,40,0,0.2)", bool delta=false, bool smooth=false){
+TH2F *prof2d(TTree *tree, TString var1Name, TString var2Name, TString nllName, TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)", bool delta=false, int nSmooth=0, TString optSmooth="k3a"){
 
   var1Name.ReplaceAll("-","_");
   var2Name.ReplaceAll("-","_");
@@ -489,17 +489,22 @@ TH2F *prof2d(TTree *tree, TString var1Name, TString var2Name, TString nllName, T
   delete hEntries;
   Double_t min=1e20, max=0;
 
-  if(smooth){
-    Smooth(h, 1, "k3a");
-    Smooth(h, 1, "k3a");
-    Smooth(h, 1, "k3a");
+  if(nSmooth>0){
+    for(int iSmooth=0; iSmooth<nSmooth; iSmooth++){
+      Smooth(h, 1, optSmooth);
+    }
   }
-
+  
+  Int_t iBinXmin=0, iBinYmin=0;
   if(delta){
     for(Int_t iBinX=1; iBinX <= h->GetNbinsX(); iBinX++){
       for(Int_t iBinY=1; iBinY <= h->GetNbinsY(); iBinY++){
 	Double_t binContent=h->GetBinContent(iBinX, iBinY);
-	if(min>binContent && binContent!=0) min=binContent;
+	if(min>binContent && binContent!=0){
+	  min=binContent;
+	  iBinXmin=iBinX;
+	  iBinYmin=iBinY;
+	}
 	if(max<binContent) max=binContent;
       }
     }
@@ -508,12 +513,20 @@ TH2F *prof2d(TTree *tree, TString var1Name, TString var2Name, TString nllName, T
       for(Int_t iBinY=1; iBinY <= h->GetNbinsY(); iBinY++){
 	Double_t binContent=h->GetBinContent(iBinX, iBinY);
 	//std::cout << binContent << std::endl;
+	if(binContent==0 && iBinX > 1 && h->GetBinContent(iBinX-1,iBinY) !=0 ){
+	binContent=h->GetBinContent(iBinX-1,iBinY);
+      }
 	if(binContent!=0) binContent-=min-0.0002;
 	else binContent=-1;
 	h->SetBinContent(iBinX,iBinY,binContent);
       }
     }
   }
+//   std::cout << "iBinXmin = " << iBinXmin 
+// 	    << "\tiBinYmin = " << iBinYmin 
+// 	    << "\tminBin content = " << h->GetBinContent(iBinXmin, iBinYmin)
+//     //	    << "\tminX = h->GetXaxis()->GetBinCenter(
+// 	    << std::endl;
   h->GetZaxis()->SetRangeUser(0.000001,50);
   //std::cerr << "io sono qui 3" << std::endl;    
   return h;
@@ -609,6 +622,7 @@ RooMultiVarGaussian *MultiVarGaussian(RooDataSet *dataset){
 TTree *dataset2tree(RooDataSet *dataset){
 
   const RooArgSet *args = dataset->get();
+  if(args==NULL) return NULL;
   RooArgList argList(*args);
 
   Double_t variables[50];
@@ -744,11 +758,9 @@ TGraphErrors plot(RooDataSet *dataset, TString alpha, TString constTerm){
 }
 
 
-
-
-void MakePlots(TString filename, float zmax=50, bool invert=false, TString opt="", TString energy="8TeV", TString lumi=""){
-  TString outDir=filename; outDir.ReplaceAll("fitres","img");
-  outDir="tmp/";
+void MakePlots(TString filename, float zmax=30, int nSmooth=10, TString opt="", TString energy="8TeV", TString lumi=""){
+  TString outDir=filename; outDir.Remove(outDir.Last('/')); outDir+="/img/"+opt;
+  //outDir="tmp/k5b/";
   //std::map<TString, TH2F *> deltaNLL_map;
   
   /*------------------------------ Plotto */
@@ -767,69 +779,93 @@ void MakePlots(TString filename, float zmax=50, bool invert=false, TString opt="
     TKey *key = (TKey *)KeyList->At(i);
     if(TString(key->GetClassName())!="RooDataSet") continue;
     RooDataSet *dataset = (RooDataSet *) key->ReadObj();
-    
+    if(dataset==NULL){
+      std::cerr << "[WARNING] No dataset for " << key->GetName() << "\t" << key->GetTitle() << std::endl;
+      continue;
+    }
     TString constTermName = dataset->GetName();
     TString alphaName=constTermName; alphaName.ReplaceAll("constTerm","alpha");
 
     TTree *tree = dataset2tree(dataset);
     TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
-    TString binning="(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
-    if(invert){
-      binning="(61,-0.0022975,0.1401475,40,0.00025,0.02025)";
-    }
-    TH2F *hist = invert ? prof2d(tree, constTermName, alphaName, "nll", binning, true,true) :
-      prof2d(tree, alphaName, constTermName, "nll", binning, true,true);
-    if(invert){
-      hist->GetXaxis()->SetTitle("#Delta #alpha");
-      hist->GetYaxis()->SetTitle("#Delta #sigma");
-    } else {
-      hist->GetYaxis()->SetTitle("#Delta #alpha");
-      hist->GetXaxis()->SetTitle("#Delta #sigma");
-    }
-    hist->SaveAs(outDir+"/deltaNLL-"+constTermName+".root");
+    //    TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)"; 
+    TString binning="(241,-0.0005,0.2405,300,0.00025,0.03025)"; 
+    
+    TH2F *hist = prof2d(tree, constTermName, alphaName, "nll", binning, true,nSmooth, opt);
+//     std::cout << "Bin width = " << hist->GetXaxis()->GetBinWidth(10) << "\t" << hist->GetYaxis()->GetBinWidth(10) << std::endl; 
+//     std::cout << "Bin 1 center = " << hist->GetXaxis()->GetBinCenter(1) << "\t" << hist->GetYaxis()->GetBinCenter(1) << std::endl; 
+//     std::cout << "Bin 10 center = " << hist->GetXaxis()->GetBinCenter(10) << "\t" << hist->GetYaxis()->GetBinCenter(10) << std::endl; 
+//     return;
     hist->Draw("colz");
-    bestFit_.Draw("P same");
-    bestFit_.SetMarkerSize(2);
+    hist->GetZaxis()->SetRangeUser(0,zmax);
+    hist->GetXaxis()->SetRangeUser(0,0.15);
+    hist->GetYaxis()->SetRangeUser(0,0.018);
+
+    hist->GetXaxis()->SetTitle("#Delta S");
+    hist->GetYaxis()->SetTitle("#Delta C");
 
     Int_t iBinX, iBinY;
     Double_t x,y;
-    hist->GetBinWithContent2(1.99999660253524780e-04,iBinX,iBinY);
+    hist->GetBinWithContent2(0.0002,iBinX,iBinY,1,-1,1,-1,0.0000001);
     x= hist->GetXaxis()->GetBinCenter(iBinX);
     y= hist->GetYaxis()->GetBinCenter(iBinY);
+    std::cout << "Best Fit: " << x << "\t" << y << std::endl;
     TGraph nllBestFit(1,&x,&y);
 
+    TString fileName=outDir+"/"+constTermName;
+    fileName+="-"; fileName+=nSmooth;
     
     nllBestFit.SetMarkerStyle(3);
     nllBestFit.SetMarkerColor(kRed);
-    TList* contour68 = contourFromTH2(hist, 0.68);
-
-    hist->Draw("colz");
-    hist->GetZaxis()->SetRangeUser(0,zmax);
-    //bestFit_.Draw("P same");
     nllBestFit.Draw("P same");
-    //contour68->Draw("same");
-    c->SaveAs(outDir+"/deltaNLL-"+constTermName+".png");
-    c->SaveAs(outDir+"/deltaNLL-"+constTermName+".eps");
-    c->Clear();
-    hist->SaveAs("tmp/hist-"+constTermName+".root");
-    nllBestFit.SaveAs("tmp/nllBestFit.root");
-    contour68->SaveAs("tmp/contour68.root");
+
+    std::cout << fileName << std::endl;
+    ofstream fout(fileName+".dat", ios_base::app);
+    fout << constTermName << "\t" << x << "\t" << y << std::endl;
+
+
+    c->SaveAs(fileName+".png");
+    c->SaveAs(fileName+".eps");
+
+    fileName+="-zoom";
+    hist->GetZaxis()->SetRangeUser(0,3);
+    //hist->GetXaxis()->SetRangeUser(0.00,0.12);
+    //hist->GetYaxis()->SetRangeUser(0,0.005);
+    c->SaveAs(fileName+".png");
+    c->SaveAs(fileName+".eps");
+
+
+//     hist->SaveAs(outDir+"/deltaNLL-"+constTermName+".root");
+//     hist->Draw("colz");
+//     bestFit_.Draw("P same");
+//     bestFit_.SetMarkerSize(2);
+
+
+    
+//     nllBestFit.SetMarkerStyle(3);
+//     nllBestFit.SetMarkerColor(kRed);
+//     TList* contour68 = contourFromTH2(hist, 0.68);
+
+//     hist->Draw("colz");
+//     hist->GetZaxis()->SetRangeUser(0,zmax);
+//     //bestFit_.Draw("P same");
+//     nllBestFit.Draw("P same");
+//     //contour68->Draw("same");
     delete hist;
     RooAbsPdf *histPdf = NULL;
     if(!opt.Contains("keys")){
-	 hist = prof2d(tree, alphaName, constTermName, "nll", 
-		       "(40,0.00025,0.02025,61,-0.0022975,0.1401475)", false,true);
-	 
-	 histPdf = nllToL(hist);
-       }else{
-	 hist = prof2d(tree, alphaName, constTermName, "nll", 
-		       "(40,0.00025,0.02025,61,-0.0022975,0.1401475)", false,false);
-	 histPdf = Smooth(hist,1,"keys");
-       }
+      hist = prof2d(tree, alphaName, constTermName, "nll", 
+		    binning, false, nSmooth, opt);
+      histPdf = nllToL(hist);
+    }else{
+      hist = prof2d(tree, alphaName, constTermName, "nll", 
+		    binning, false,nSmooth);
+      histPdf = Smooth(hist,1,"keys");
+    }
     delete hist;
     RooDataSet *gen_dataset=histPdf->generate(*histPdf->getVariables(),1000000,kTRUE,kFALSE);
     TTree *genTree = dataset2tree(gen_dataset);
-    genTree->SaveAs("tmp/genTree-"+constTermName+".root");
+    genTree->SaveAs(fileName+"-genTree.root");
     delete gen_dataset;
     delete histPdf;
     
@@ -858,7 +894,7 @@ void MakePlots(TString filename, float zmax=50, bool invert=false, TString opt="
     c->Clear();
     g_multi.Draw("A");
     c->SaveAs(outDir+"/smearing_vs_energy-"+constTermName+".png");
-
+    c->SaveAs(outDir+"/smearing_vs_energy-"+constTermName+".eps");
     //    TPaveText *pv = new TPaveText(0.7,0.7,1, 0.8);    
 //     TLegend *legend = new TLegend(0.7,0.8,0.95,0.92);
 //     legend->SetFillStyle(3001);
@@ -878,13 +914,14 @@ void MakePlots(TString filename, float zmax=50, bool invert=false, TString opt="
 }
 
 
-TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString fname="outProfile-scaleStep2smearing_7-Et_25-trigger-noPF-EB.root", TString opt=""){
+
+TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString fname="outProfile-scaleStep2smearing_7-Et_25-trigger-noPF-EB.root", TString opt="", int nSmooth=10){
   TString outDir=dirname; outDir.ReplaceAll("fitres","img");
   outDir="tmp/";
   //std::map<TString, TH2F *> deltaNLL_map;
 
-  bool smooth=false;
-  if(opt.Contains("smooth")) smooth=true;
+  //bool smooth=false;
+  //if(opt.Contains("smooth")) smooth=true;
   
 
   /*------------------------------ Plotto */
@@ -907,7 +944,7 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
   std::map<TString, Int_t> catIndexMap;
 
   ///1/
-  for(int itoy =1; itoy <= 200; itoy++){
+  for(int itoy =2; itoy <= 200; itoy++){
     TString filename=dirname+"/"; filename+=itoy; filename+="/"+fname;
     
     TFile f_in(filename, "read");
@@ -915,7 +952,7 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
       std::cerr << "File opening error: " << filename << std::endl;
       continue; //return NULL;
     }
-
+    //std::cout << filename << std::endl;
     TList *KeyList = f_in.GetListOfKeys();
     //std::cout << KeyList->GetEntries() << std::endl;
     for(int i =0; i <  KeyList->GetEntries(); i++){
@@ -930,23 +967,27 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
       TTree *tree = dataset2tree(dataset);
 
       TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
-      TH2F *hist = prof2d(tree, alphaName, constTermName, "nll", 
-			  "(40,0.00025,0.02025,61,-0.0022975,0.1401475)", true,smooth);
+      TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
+    
+      TH2F *hist = prof2d(tree, constTermName, alphaName, "nll", binning, true, nSmooth, opt);
       //hist->SaveAs("myhist.root");
       
       Int_t iBinX, iBinY;
-      hist->GetBinWithContent2(0.0002,iBinX,iBinY, 1,-1,1,-1,0.00001);
+      hist->GetBinWithContent2(0.0002,iBinX,iBinY,1,-1,1,-1,0.0000001);
 	
-      if(iBinX!=0 && iBinY!=0 && iBinX < 41 && iBinY < 62){
+      //      if(iBinX!=0 && iBinY!=0 && iBinX < 41 && iBinY < 62){
+      {
 	TString catName_=constTermName; catName_.ReplaceAll("constTerm_",""); catName_.ReplaceAll("-","_");
 	if(catIndexMap.count(catName_)==0) catIndexMap.insert(std::pair<TString,Int_t>(catName_,catIndexMap.size()));
-	catIndex=catIndexMap[catName_];
-	
-	constTerm_tree =  hist->GetXaxis()->GetBinCenter(iBinX);
-	alpha_tree = hist->GetYaxis()->GetBinCenter(iBinY);
+	catIndex=catIndexMap[catName_];	
+	constTerm_tree =  hist->GetYaxis()->GetBinCenter(iBinY);
+	alpha_tree = hist->GetXaxis()->GetBinCenter(iBinX);
 	sprintf(catName,"%s", catName_.Data());
 	bestFit_.GetPoint(0, constTermTrue_tree,alphaTrue_tree);
-	
+// 	std::cout << constTerm_tree << " " << constTermTrue_tree 
+// 		  << "\t" << alpha_tree << " " << alphaTrue_tree 
+// 		  << std::endl;
+
 	if(opt.Contains("scandiff")){
 	  constTermTrue_tree = getMinimumFromTree(tree, "nll",TString(constTermName).ReplaceAll("-","_"));
 	} else       if(opt.Contains("scan")){
@@ -955,9 +996,9 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
 	//std::cout << iBinX << "\t" << iBinY << "\t" << constTerm_tree - getMinimumFromTree(tree, "nll",TString(constTermName).ReplaceAll("-","_")) << std::endl;
 	
 	toys->Fill();
-      }else{
-	hist->SaveAs("myhist.root");
-	exit(0);
+//       }else{
+// 	hist->SaveAs("myhist.root");
+// 	exit(0);
       }
       delete tree;
       delete hist;
@@ -984,6 +1025,161 @@ TH1F *PlotToys(TTree *tree, Int_t catIndex, bool constTerm){
   return h;
 }
 
+void DrawToyTree(TTree *toys, TString outDir){
+  
+//   toys->Draw("constTerm>>constTerm_0","catIndex==0");
+//   toys->Draw("constTerm>>constTerm_1","catIndex==1");
+//   toys->Draw("constTerm>>constTerm_2","catIndex==2");
+//   toys->Draw("constTerm>>constTerm_3","catIndex==3");
+//   toys->Draw("alpha>>alpha_3","catIndex==3");
+//   toys->Draw("alpha>>alpha_2","catIndex==2");
+//   toys->Draw("alpha>>alpha_1","catIndex==1");
+//   toys->Draw("alpha>>alpha_0","catIndex==0");
+//   toys->Draw("constTerm:alpha>>constTerm_alpha_0","catIndex==0");
+//   toys->Draw("constTerm:alpha>>constTerm_alpha_1","catIndex==1");
+//   toys->Draw("constTerm:alpha>>constTerm_alpha_2","catIndex==2");
+//   toys->Draw("constTerm:alpha>>constTerm_alpha_3","catIndex==3");
+  TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
+
+  TString constTermBinning="(80,-0.02015,0.02025)";
+  TString alphaTermBinning="(300,-0.1495,0.1505)";
+  toys->Draw("constTerm-constTermTrue>>constTerm_0"+constTermBinning,"catIndex==0");
+  toys->Draw("constTerm-constTermTrue>>constTerm_1"+constTermBinning,"catIndex==1");
+  toys->Draw("constTerm-constTermTrue>>constTerm_2"+constTermBinning,"catIndex==2");
+  toys->Draw("constTerm-constTermTrue>>constTerm_3"+constTermBinning,"catIndex==3");
+  toys->Draw("alpha-alphaTrue>>alpha_3"+alphaTermBinning,"catIndex==3");
+  toys->Draw("alpha-alphaTrue>>alpha_2"+alphaTermBinning,"catIndex==2");
+  toys->Draw("alpha-alphaTrue>>alpha_1"+alphaTermBinning,"catIndex==1");
+  toys->Draw("alpha-alphaTrue>>alpha_0"+alphaTermBinning,"catIndex==0");
+  toys->Draw("constTerm:alpha>>constTerm_alpha_0"+binning,"catIndex==0");
+  toys->Draw("constTerm:alpha>>constTerm_alpha_1"+binning,"catIndex==1");
+  toys->Draw("constTerm:alpha>>constTerm_alpha_2"+binning,"catIndex==2");
+  toys->Draw("constTerm:alpha>>constTerm_alpha_3"+binning,"catIndex==3");
+
+  TH1F *constTerm_alpha_0 = (TH1F *) gROOT->FindObject("constTerm_alpha_0");
+  TH1F *constTerm_alpha_1 = (TH1F *) gROOT->FindObject("constTerm_alpha_1");
+  TH1F *constTerm_alpha_2 = (TH1F *) gROOT->FindObject("constTerm_alpha_2");
+  TH1F *constTerm_alpha_3 = (TH1F *) gROOT->FindObject("constTerm_alpha_3");
+
+  TH1F *constTerm_0 = (TH1F *) gROOT->FindObject("constTerm_0");
+  TH1F *constTerm_1 = (TH1F *) gROOT->FindObject("constTerm_1");
+  TH1F *constTerm_2 = (TH1F *) gROOT->FindObject("constTerm_2");
+  TH1F *constTerm_3 = (TH1F *) gROOT->FindObject("constTerm_3");
+
+  TH1F *alpha_0 = (TH1F *) gROOT->FindObject("alpha_0");
+  TH1F *alpha_1 = (TH1F *) gROOT->FindObject("alpha_1");
+  TH1F *alpha_2 = (TH1F *) gROOT->FindObject("alpha_2");
+  TH1F *alpha_3 = (TH1F *) gROOT->FindObject("alpha_3");
+
+  gStyle->SetOptStat(1);
+
+  double xq[3]={0.5,0.68,0.95},yq[3];
+  //  for (Int_t i=0;i<nq;i++) 
+  //    xq[i] = (double)(i+1)/nq;
+
+  TCanvas *c = new TCanvas("c","");
+  
+  constTerm_alpha_0->Draw("colz");
+  constTerm_alpha_0->GetYaxis()->SetTitle("#Delta C");
+  constTerm_alpha_0->GetXaxis()->SetTitle("#Delta S");
+  constTerm_alpha_0->GetXaxis()->SetRangeUser(0,0.15);
+  constTerm_alpha_0->GetYaxis()->SetRangeUser(0,0.015);
+  c->SaveAs(outDir+"/constTerm_alpha_0.png");
+  c->SaveAs(outDir+"/constTerm_alpha_0.eps");
+
+  constTerm_alpha_1->Draw("colz");
+  constTerm_alpha_1->GetYaxis()->SetTitle("#Delta C");
+  constTerm_alpha_1->GetXaxis()->SetTitle("#Delta S");
+  constTerm_alpha_1->GetXaxis()->SetRangeUser(0,0.15);
+  constTerm_alpha_1->GetYaxis()->SetRangeUser(0,0.015);
+  c->SaveAs(outDir+"/constTerm_alpha_1.png");
+  c->SaveAs(outDir+"/constTerm_alpha_1.eps");
+
+  constTerm_alpha_2->Draw("colz");
+  constTerm_alpha_2->GetYaxis()->SetTitle("#Delta C");
+  constTerm_alpha_2->GetXaxis()->SetTitle("#Delta S");
+  constTerm_alpha_2->GetXaxis()->SetRangeUser(0,0.15);
+  constTerm_alpha_2->GetYaxis()->SetRangeUser(0,0.015);
+  c->SaveAs(outDir+"/constTerm_alpha_2.png");
+  c->SaveAs(outDir+"/constTerm_alpha_2.eps");
+
+  constTerm_alpha_3->Draw("colz");
+  constTerm_alpha_3->GetYaxis()->SetTitle("#Delta C");
+  constTerm_alpha_3->GetXaxis()->SetTitle("#Delta S");
+  constTerm_alpha_3->GetXaxis()->SetRangeUser(0,0.15);
+  constTerm_alpha_3->GetYaxis()->SetRangeUser(0,0.015);
+  c->SaveAs(outDir+"/constTerm_alpha_3.png");
+  c->SaveAs(outDir+"/constTerm_alpha_3.eps");
+
+  ofstream fout(outDir+"/bias.dat");
+  fout << "#------------------------------" << std::endl;
+  fout << "#median\t68%\t95%" << std::endl;
+  constTerm_0->Draw();
+  constTerm_0->GetXaxis()->SetTitle("#Delta C - #Delta C True");
+  constTerm_0->GetQuantiles(3,yq,xq);
+  fout << "constTerm_0: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  constTerm_0->Rebin(2);
+  c->SaveAs(outDir+"/constTerm_0.png");
+  c->SaveAs(outDir+"/constTerm_0.eps");
+
+  constTerm_1->Draw();
+  constTerm_1->GetXaxis()->SetTitle("#Delta C - #Delta C True");
+  constTerm_1->GetQuantiles(3,yq,xq);
+  fout << "constTerm_1: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  constTerm_1->Rebin(2);
+  c->SaveAs(outDir+"/constTerm_1.png");
+  c->SaveAs(outDir+"/constTerm_1.eps");
+
+  constTerm_2->Draw();
+  constTerm_2->GetXaxis()->SetTitle("#Delta C - #Delta C True");
+  constTerm_2->GetQuantiles(3,yq,xq);
+  fout << "constTerm_2: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  //  constTerm_2->GetXaxis()->SetRangeUser(-0.005,0.005);
+  constTerm_2->Rebin(2);
+  c->SaveAs(outDir+"/constTerm_2.png");
+  c->SaveAs(outDir+"/constTerm_2.eps");
+
+  constTerm_3->Draw();
+  constTerm_3->GetXaxis()->SetTitle("#Delta C - #Delta C True");
+  constTerm_3->GetQuantiles(3,yq,xq);
+  fout << "constTerm_3: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  constTerm_3->Rebin(2);
+  c->SaveAs(outDir+"/constTerm_3.png");
+  c->SaveAs(outDir+"/constTerm_3.eps");
+
+  alpha_0->Draw();
+  alpha_0->GetXaxis()->SetTitle("#Delta S - #Delta S True");
+  alpha_0->GetQuantiles(3,yq,xq);
+  fout << "alpha_0: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  alpha_0->Rebin(2);
+  c->SaveAs(outDir+"/alpha_0.png");
+  c->SaveAs(outDir+"/alpha_0.eps");
+
+  alpha_1->Draw();
+  alpha_1->GetXaxis()->SetTitle("#Delta S - #Delta S True");
+  alpha_1->GetQuantiles(3,yq,xq);
+  fout << "alpha_1: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  alpha_1->Rebin(2);
+  c->SaveAs(outDir+"/alpha_1.png");
+  c->SaveAs(outDir+"/alpha_1.eps");
+
+  alpha_2->Draw();
+  alpha_2->GetXaxis()->SetTitle("#Delta S - #Delta S True");
+  alpha_2->GetQuantiles(3,yq,xq);
+  fout << "alpha_2: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  alpha_2->Rebin(2);
+  c->SaveAs(outDir+"/alpha_2.png");
+  c->SaveAs(outDir+"/alpha_2.eps");
+
+  alpha_3->Draw();
+  alpha_3->GetXaxis()->SetTitle("#Delta S - #Delta S True");
+  alpha_3->GetQuantiles(3,yq,xq);
+  fout << "alpha_3: " << yq[0] << "\t" << yq[1] << "\t" << yq[2] << std::endl;
+  alpha_3->Rebin(2);
+  c->SaveAs(outDir+"/alpha_3.png");
+  c->SaveAs(outDir+"/alpha_3.eps");
+  return;
+}
 // lowEtaBad
 //tree->Draw(constTermName+":"+alphaName+">>h(16,0.0,0.08,20,0,0.02)",nllVarName+"-1.170791e+07","colz",10442-10232,10232) 
 

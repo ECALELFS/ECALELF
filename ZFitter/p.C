@@ -1,17 +1,24 @@
 {
-  bool smooth=true;
-  bool zoom=true;
+  int nSmooth=0;
+  TString optSmooth="k3a";
   gROOT->ProcessLine(".include /afs/cern.ch/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include");
   gROOT->ProcessLine(".L macro/mcmcDraw.C+");
+  //  TString filename="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_8/reducedPoints_fixed/0.01-0.00/2/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF-EB.root";
+  TString filename="test/dato/22Jan2012-runDepPowheg-noR9shift/loose/invMass_SC_regrCorrSemiParV5_pho/step4_fixed/fitres/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF.root";
+  MakePlots(filename, 10, 10, optSmooth);
+  MakePlots(filename, 10, 3,  optSmooth);
+  MakePlots(filename, 10, 1,  optSmooth);
+  MakePlots(filename, 10, 0,  optSmooth);
+}
   TCanvas *c = new TCanvas("c","");
   //  gROOT->ProcessLine(".L ~/smooth.C+");
-  TString constTermName="constTerm_absEta_0_1-bad-Et_25-trigger-noPF";
+  //TString constTermName="constTerm_absEta_0_1-bad-Et_25-trigger-noPF";
   //TString constTermName="constTerm_absEta_0_1-gold-Et_25-trigger-noPF";
-  //TString constTermName="constTerm_absEta_1_1.4442-bad-Et_25-trigger-noPF";
-  //TString constTermName="constTerm_absEta_1_1.4442-gold-Et_25-trigger-noPF";
+  TString constTermName="constTerm_absEta_1_1.4442-bad-Et_25-trigger-noPF";
+  //TString constTermName="constTerm_absEta_1_1.4442-gold-Et_25-trigger-noPF-EB";
   TString alphaName=constTermName; alphaName.ReplaceAll("constTerm","alpha");
   RooDataSet *data = (RooDataSet *)_file0->Get(constTermName);
-  
+  if(data!=NULL){
   TTree *tree = dataset2tree(data);
   double min=tree->GetMinimum("nll");
   TString minString; minString+=min;
@@ -20,35 +27,42 @@
   //  h->GetZaxis()->SetRangeUser(0,100);
 
   TH2F *hprof = prof2d(tree,  TString(constTermName).ReplaceAll("-","_"), TString(alphaName).ReplaceAll("-","_"), "nll", 
-		       "(241,-0.00025,0.24025,60,0.00025,0.03025)", true,smooth);
+		       "(241,-0.00025,0.24025,60,0.00025,0.03025)", true, nSmooth);
   hprof->Draw("colz");
-  if(zoom){
-    hprof->GetZaxis()->SetRangeUser(0,10);
-    hprof->GetXaxis()->SetRangeUser(0,0.15);
-    hprof->GetYaxis()->SetRangeUser(0,0.018);
-  } else {
-    hprof->GetZaxis()->SetRangeUser(0,30);
-    hprof->GetXaxis()->SetRangeUser(0,0.15);
-    hprof->GetYaxis()->SetRangeUser(0,0.018);
-  }
-  hprof->GetXaxis()->SetTitle("#Delta #alpha");
-  hprof->GetYaxis()->SetTitle("#Delta #sigma");
+  hprof->GetZaxis()->SetRangeUser(0,30);
+  hprof->GetXaxis()->SetRangeUser(0,0.15);
+  hprof->GetYaxis()->SetRangeUser(0,0.018);
+  
+  hprof->GetXaxis()->SetTitle("#Delta S");
+  hprof->GetYaxis()->SetTitle("#Delta C");
   Int_t iBinX, iBinY;
   Double_t x,y;
   hprof->GetBinWithContent2(1.99999660253524780e-04,iBinX,iBinY);
   x= hprof->GetXaxis()->GetBinCenter(iBinX);
   y= hprof->GetYaxis()->GetBinCenter(iBinY);
   TGraph nllBestFit(1,&x,&y);
-  std::cout << constTermName << "\t" << x << "\t" << y << std::endl;
+
+  TString fileName=constTermName;
+  fileName+="-"; fileName+=nSmooth;
+
   nllBestFit.SetMarkerStyle(3);
   nllBestFit.SetMarkerColor(kRed);
   nllBestFit.Draw("P same");
 
-  TString fileName=constTermName;
-  if(!smooth) fileName+="-noSmooth";
-  if(zoom) fileName+="-zoom";
+  std::cout << fileName << std::endl;
+  ofstream fout(fileName+".dat", ios_base::app);
+  fout << constTermName << "\t" << x << "\t" << y << std::endl;
+
 
   c->SaveAs(fileName+".png");
   c->SaveAs(fileName+".eps");
 
+  fileName+="-zoom";
+  hprof->GetZaxis()->SetRangeUser(0,3);
+  hprof->GetXaxis()->SetRangeUser(0.04,0.12);
+  hprof->GetYaxis()->SetRangeUser(0,0.005);
+  c->SaveAs(fileName+".png");
+  c->SaveAs(fileName+".eps");
+
+  }
 }
