@@ -7,6 +7,7 @@
 //#define DEBUG
 #include <TStopwatch.h>
 #define SELECTOR
+#define FIXEDSMEARINGS
 SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut):
   //  _chain(chain),
   _regionList(regionList),
@@ -68,6 +69,7 @@ void SmearingImporter::ImportToy(Long64_t nEvents, event_cache_t& eventCache, bo
 void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryList *entryList, bool swap){
   std::cerr << "[ERROR] Entering wrong function!" << std::endl;
   exit(1);
+  TRandom3 gen(0);
   // for the energy calculation
   Float_t         energyEle[2];
   Float_t         corrEle_[2]={1,1};
@@ -165,8 +167,12 @@ void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryLis
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
-  
-   
+#ifdef FIXEDSMEARINGS
+    for(int i=0; i < 400; i++){
+      event.smearings_ele1[i] = gen.Gaus(0,1);
+      event.smearings_ele2[i] = gen.Gaus(0,1);
+    }
+#endif
     eventCache.push_back(event);
   }
 

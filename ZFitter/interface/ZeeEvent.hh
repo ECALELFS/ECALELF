@@ -22,7 +22,7 @@ class ZeeEvent{
 //  float pu_weight;
 //  float r9weight1;
 //  float r9weight2;
-
+  float smearings_ele1[400], smearings_ele2[400];
 
   
 };

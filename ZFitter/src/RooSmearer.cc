@@ -1,6 +1,7 @@
 #include "../interface/RooSmearer.hh"
 #include <RooPullVar.h>
-#define NSMEARTOYLIM 1000
+#define NSMEARTOYLIM 10
+#define FIXEDSMEARINGS
 //#define DEBUG
 //#define CPU_DEBUG
 #include <TIterator.h>
@@ -30,7 +31,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   _paramSet("paramSet","Set of parameters",this),
   invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
   deltaNLLMaxSmearToy(330),
-  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(1), 
+  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(NSMEARTOYLIM), 
   nllBase(0),
   nllVar("nll","",0,1e20),
   _isDataSmeared(false),
@@ -350,21 +351,23 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
     std::cerr << "[ERROR] nSmearToy = " << nSmearToy << std::endl;
     exit(1);
   }
-  double smearEne1[NSMEARTOYLIM], smearEne2[NSMEARTOYLIM]; // _nSmearToy<100
+
+  float smearEne1[NSMEARTOYLIM], smearEne2[NSMEARTOYLIM]; // _nSmearToy<100
+
   for(zee_events_t::const_iterator event_itr = cache.begin(); 
 	  event_itr!= cache.end();
 	  event_itr++){
-	// random gen time is consuming!!! test different _nSmearToy to verify
-	smearedEnergy(smearEne1, nSmearToy, event_itr->energy_ele1, scale1, alpha1, constant1);
-	smearedEnergy(smearEne2, nSmearToy, event_itr->energy_ele2, scale2, alpha2, constant2);
 
+#ifdef FIXEDSMEARINGS
+    smearedEnergy(smearEne1, nSmearToy, event_itr->energy_ele1, scale1, alpha1, constant1, event_itr->smearings_ele1);
+    smearedEnergy(smearEne2, nSmearToy, event_itr->energy_ele2, scale2, alpha2, constant2, event_itr->smearings_ele2);
+#else
+	// random gen time is consuming!!! test different _nSmearToy to verify
+    smearedEnergy(smearEne1, nSmearToy, event_itr->energy_ele1, scale1, alpha1, constant1,NULL);
+    smearedEnergy(smearEne2, nSmearToy, event_itr->energy_ele2, scale2, alpha2, constant2,NULL);
+#endif
 	for(unsigned int iSmearToy=0; iSmearToy < nSmearToy; iSmearToy++){
-	  // float energy1 =  smearedEnergy(event_itr->energy_ele1, scale1, alpha1, constant1) ;
-	  // float energy2 =  smearedEnergy(event_itr->energy_ele2, scale2, alpha2, constant2) ;
-	  // float invMass = sqrt(2 * energy1 * energy2 * event_itr->angle_eta_ele1_ele2);
 	  hist->Fill(event_itr->invMass * sqrt(smearEne1[iSmearToy] * smearEne2[iSmearToy]),
-		  //smearedEnergy(event_itr->energy_ele1, scale1, alpha1, constant1) *
-		  //smearedEnergy(event_itr->energy_ele2, scale2, alpha2, constant2)), 
 		event_itr->weight);
 	}
   }
@@ -380,7 +383,7 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
 
 
 
-double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,float scale,float alpha,float constant) const
+float RooSmearer::smearedEnergy(float *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings) const
 {
   // sigmaMB = sigma Material Budget
   // if I want to take into account the non perfet simulation of the
@@ -394,9 +397,15 @@ double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,flo
   //   float sigma = sqrt(alpha/sqrt(ene)*alpha/sqrt(ene) + constant * constant + sigmaMB*sigmaMB);
 
   float sigma = sqrt(alpha*alpha/ene + constant * constant );
+#ifdef FIXEDSMEARINGS
+  for(unsigned int i=0; i < nGen; i++){
+    smear[i] = (fixedSmearings[i]*sigma)+(scale);
+  }
+#else
   for(unsigned int i=0; i < nGen; i++){
 	smear[i] = rgen_->Gaus(scale,sigma);
   }
+#endif
   return smear[0];
 }
 
@@ -713,7 +722,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   category.nSmearToy=(int)(300000./catSize); 
   if(category.nSmearToy <7) category.nSmearToy = 7; // fix the min to 3
   else  if( category.nSmearToy > 40) category.nSmearToy = 40; // fix the max to 20
-  category.nSmearToy=400;
+  category.nSmearToy=200;
   if(!smearscan) return;
 
 
