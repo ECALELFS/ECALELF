@@ -828,7 +828,7 @@ void MakePlots(TString filename, float zmax=30, int nSmooth=10, TString opt="", 
     c->SaveAs(fileName+".eps");
 
     fileName+="-zoom";
-    hist->GetZaxis()->SetRangeUser(0,3);
+    hist->GetZaxis()->SetRangeUser(0,1);
     //hist->GetXaxis()->SetRangeUser(0.00,0.12);
     //hist->GetYaxis()->SetRangeUser(0,0.005);
     c->SaveAs(fileName+".png");
@@ -967,7 +967,7 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
       TTree *tree = dataset2tree(dataset);
 
       TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
-      TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
+      TString binning="(241,-0.0005,0.2405,61,-0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
     
       TH2F *hist = prof2d(tree, constTermName, alphaName, "nll", binning, true, nSmooth, opt);
       //hist->SaveAs("myhist.root");
@@ -1039,7 +1039,7 @@ void DrawToyTree(TTree *toys, TString outDir){
 //   toys->Draw("constTerm:alpha>>constTerm_alpha_1","catIndex==1");
 //   toys->Draw("constTerm:alpha>>constTerm_alpha_2","catIndex==2");
 //   toys->Draw("constTerm:alpha>>constTerm_alpha_3","catIndex==3");
-  TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
+  TString binning="(241,-0.0005,0.2405,61,-0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
 
   TString constTermBinning="(80,-0.02015,0.02025)";
   TString alphaTermBinning="(300,-0.1495,0.1505)";

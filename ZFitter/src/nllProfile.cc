@@ -794,8 +794,8 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     }
     Int_t iBin1min= std::max(iBin1-5,0);
     Int_t iBin2min= std::max(iBin2-5,0);
-    Int_t iBin1max= std::max(iBin1+5,N);
-    Int_t iBin2max= std::max(iBin2+5,N);
+    Int_t iBin1max= std::min(iBin1+5,N);
+    Int_t iBin2max= std::min(iBin2+5,N);
 
     for(iBin1=iBin1min; iBin1<iBin1max; iBin1++){
       var1->setVal(XG1[iBin1]);
@@ -811,6 +811,8 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     myClock.Print();
     delete G1;
     delete G2;
+    var1->setVal(v1);
+    var2->setVal(v2);
   }
 
 

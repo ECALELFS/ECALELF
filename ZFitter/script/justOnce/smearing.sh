@@ -4,7 +4,7 @@
 
 #regionsFile=scaleStep2smearing_7
 queue=$1
-nEventsPerToy=factorized_${queue}
+nEventsPerToy=factorizedNew_${queue}
 #nEventsPerToy=factorized
 if [ -z "${queue}" ];then local=y; fi
 
@@ -102,7 +102,7 @@ EOF
 #    echo "s1	smearEle_HggRunEtaR9	smearEle_HggRunEtaR9_s1-invertedToyMC-${const}-${alpha}.root" >> $baseDir/toyMC.dat
 #    echo "s2	smearEle_HggRunEtaR9	smearEle_HggRunEtaR9_s2-invertedToyMC-${const}-${alpha}.root" >> $baseDir/toyMC.dat
 
-    for nToys in `seq 1 200`; 
+    for nToys in `seq 2 200`; 
       do 
       newDir=${baseDir}/${alphaConst}/${nToys}
       mkdir -p $newDir 

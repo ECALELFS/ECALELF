@@ -1183,10 +1183,13 @@ int main(int argc, char **argv) {
 	      fOutProfile->cd();
 	      profil->Write();
 	      std::cout << "Saved profile for " << name << std::endl;
-	      profilePhi->SetName(n+"_phi");
-	      profilePhi->Draw("AP*");
-	      profilePhi->Write();
-	      std::cout << "Saved profile for " << name << std::endl;
+	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
+		n.ReplaceAll("constTerm","phi");
+		profilePhi->SetName(n);
+		profilePhi->Draw("AP*");
+		profilePhi->Write();
+	      }
+	      std::cout << "Saved profile for " << n << std::endl;
 
 	      delete profil;
 	      delete profilePhi;
