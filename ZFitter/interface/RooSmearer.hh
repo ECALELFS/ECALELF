@@ -219,7 +219,7 @@ private:
 
   //double smearedEnergy(float ene,float scale,float alpha,float
   //constant) const;
-  float smearedEnergy(float *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings=NULL) const;
+  double smearedEnergy(double *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings=NULL) const;
   void SetSmearedHisto(const zee_events_t& cache, 
 		       RooArgSet pars1, RooArgSet pars2, 
 		       TString categoryName1, TString categoryName2, unsigned int nSmearToy,

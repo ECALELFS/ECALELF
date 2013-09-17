@@ -8,6 +8,8 @@
 #include <TMath.h>
 #include <TEntryList.h>
 
+#define NSMEARTOYLIM 30
+
 #include "ZeeEvent.hh"
 #include "ElectronCategory_class.hh"
 // prende le TChain

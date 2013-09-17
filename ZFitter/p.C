@@ -3,8 +3,9 @@
   TString optSmooth="k3a";
   gROOT->ProcessLine(".include /afs/cern.ch/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include");
   gROOT->ProcessLine(".L macro/mcmcDraw.C+");
-  //  TString filename="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_8/reducedPoints_fixed/0.01-0.00/2/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF-EB.root";
-  TString filename="test/dato/22Jan2012-runDepPowheg-noR9shift/loose/invMass_SC_regrCorrSemiParV5_pho/step4_fixed/fitres/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF.root";
+  TString filename="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_8/factorized/0.01-0.00/2/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF-EB.root";
+  //  TString filename="test/dato/22Jan2012-runDepPowheg-noR9shift/loose/invMass_SC_regrCorrSemiParV5_pho/step4_fixed/fitres/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF.root";
+
   MakePlots(filename, 10, 10, optSmooth);
   MakePlots(filename, 10, 3,  optSmooth);
   MakePlots(filename, 10, 1,  optSmooth);

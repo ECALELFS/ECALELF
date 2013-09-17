@@ -1,6 +1,5 @@
 #include "../interface/RooSmearer.hh"
 #include <RooPullVar.h>
-#define NSMEARTOYLIM 10
 #define FIXEDSMEARINGS
 //#define DEBUG
 //#define CPU_DEBUG
@@ -31,7 +30,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   _paramSet("paramSet","Set of parameters",this),
   invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
   deltaNLLMaxSmearToy(330),
-  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(NSMEARTOYLIM), 
+  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(NSMEARTOYLIM-1), 
   nllBase(0),
   nllVar("nll","",0,1e20),
   _isDataSmeared(false),
@@ -302,6 +301,10 @@ TH1F *RooSmearer::GetSmearedHisto(ZeeCategory& category, bool isMC,
     (*h)->Reset(); // unuseful: histogram should be empty
     SetHisto(*cache, *h);
   }
+
+//   if(isMC==false){
+//     delete cache;
+//   }
   return *h;
 }
 
@@ -352,8 +355,11 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
     exit(1);
   }
 
-  float smearEne1[NSMEARTOYLIM], smearEne2[NSMEARTOYLIM]; // _nSmearToy<100
-
+  double smearEne1[NSMEARTOYLIM], smearEne2[NSMEARTOYLIM]; // _nSmearToy<100
+  if(cache.begin()->smearings_ele1==NULL){
+    std::cerr<< "[ERROR] No smearings" << std::endl;
+    exit(1);
+  }
   for(zee_events_t::const_iterator event_itr = cache.begin(); 
 	  event_itr!= cache.end();
 	  event_itr++){
@@ -366,10 +372,13 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
     smearedEnergy(smearEne1, nSmearToy, event_itr->energy_ele1, scale1, alpha1, constant1,NULL);
     smearedEnergy(smearEne2, nSmearToy, event_itr->energy_ele2, scale2, alpha2, constant2,NULL);
 #endif
-	for(unsigned int iSmearToy=0; iSmearToy < nSmearToy; iSmearToy++){
-	  hist->Fill(event_itr->invMass * sqrt(smearEne1[iSmearToy] * smearEne2[iSmearToy]),
-		event_itr->weight);
-	}
+//     if(event_itr==cache.begin()){
+//       std::cout << "fixedSmearings: " << event_itr->smearings_ele1[0] << "\t"  << scale1 << "\t" << alpha1 << "\t" << event_itr->energy_ele1 << "\t" << constant1 << "\t" << smearEne1[0] << std::endl;
+//     }
+    for(unsigned int iSmearToy=0; iSmearToy < nSmearToy; iSmearToy++){
+      hist->Fill(event_itr->invMass * sqrt(smearEne1[iSmearToy] * smearEne2[iSmearToy]),
+		 event_itr->weight);
+    }
   }
   hist->Scale(1./nSmearToy);
   //  hist->Scale(1./hist->Integral()); // now saved as pdf
@@ -383,7 +392,7 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
 
 
 
-float RooSmearer::smearedEnergy(float *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings) const
+double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings) const
 {
   // sigmaMB = sigma Material Budget
   // if I want to take into account the non perfet simulation of the
@@ -516,7 +525,7 @@ float RooSmearer::getCompatibility() const
     compatibility+=cat_itr->nll;
     myClass->lastNLLrms+= (cat_itr->nllRMS*cat_itr->nllRMS);
 #ifdef DEBUG
-    std::cout << "[DEBUG] Compatibility: " << compatibility << std::endl;
+    std::cout << "[DEBUG] Compatibility: " << compatibility << "\t" << compatibility-lastNLL << std::endl;
 #endif
   }
   //if(withSmearToy) std::cout << "[DEBUG] Compatibility2: " << compatibility << "\t" << compatibility - nllMin << std::endl;
@@ -722,7 +731,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   category.nSmearToy=(int)(300000./catSize); 
   if(category.nSmearToy <7) category.nSmearToy = 7; // fix the min to 3
   else  if( category.nSmearToy > 40) category.nSmearToy = 40; // fix the max to 20
-  category.nSmearToy=200;
+  category.nSmearToy=NSMEARTOYLIM;
   if(!smearscan) return;
 
 
@@ -1003,6 +1012,7 @@ void RooSmearer::UpdateCategoryNLL(ZeeCategory& cat, unsigned int nLLtoy, bool m
   }
   comp/=nLLtoy;
   comp2/=nLLtoy;
+  //  std::cout << "nll - comp = " << cat.nll +comp << std::endl;
   cat.nll= -comp;
   cat.nllRMS= sqrt(comp2-comp*comp);
   return;

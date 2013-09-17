@@ -849,8 +849,8 @@ int main(int argc, char **argv) {
     RooAbsReal *const_term_=NULL;
     RooRealVar *const_term_v = args.getSize() ==0 ? NULL : (RooRealVar *) args.find("constTerm_"+varName);
     if(const_term_v==NULL){
-      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.0005,0.05); 
-      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.01, 0.0005,0.02);
+      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); 
+      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.01, 0.000,0.02);
       const_term_v->setError(0.03); // 1%
       //const_term_v->setConstant(true);
       args.add(*const_term_v);
@@ -1159,15 +1159,18 @@ int main(int argc, char **argv) {
 	      double min=0.;
 	      TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
 	      RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName): NULL;
+	      TGraph *profilePhi=NULL;
 	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
 		smearer.SetDataSet(name,TString(var->GetName())+TString(var2->GetName()));
-		if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, false);
+
+		if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, false, &profilePhi);
 		//MinMCMC2D(var, var2, smearer, 1, 0., min, 1200, false);
 		//MinMCMC2D(var, var2, smearer, 2, 0., min, 800, false);
 		//MinMCMC2D(var, var2, smearer, 3, 0., min, 100, false);
 		smearer.dataset->Write();
 		TString of=outFile; of.ReplaceAll(".root",name+".root");
 		smearer.dataset->SaveAs(of);
+
 	      }
 	      //if(!name.Contains("scale")) continue;
 	      std::cout << "Doing " << name << "\t" << var->getVal() << std::endl;
@@ -1180,8 +1183,13 @@ int main(int argc, char **argv) {
 	      fOutProfile->cd();
 	      profil->Write();
 	      std::cout << "Saved profile for " << name << std::endl;
+	      profilePhi->SetName(n+"_phi");
+	      profilePhi->Draw("AP*");
+	      profilePhi->Write();
+	      std::cout << "Saved profile for " << name << std::endl;
+
 	      delete profil;
-	      
+	      delete profilePhi;
 	    }
 	  std::cout << "Cloning args" << std::endl;
 	  //	  RooArgSet *mu = (RooArgSet *)args.snapshot();

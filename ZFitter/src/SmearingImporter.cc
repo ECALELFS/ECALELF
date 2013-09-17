@@ -69,7 +69,7 @@ void SmearingImporter::ImportToy(Long64_t nEvents, event_cache_t& eventCache, bo
 void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryList *entryList, bool swap){
   std::cerr << "[ERROR] Entering wrong function!" << std::endl;
   exit(1);
-  TRandom3 gen(0);
+  TRandom3 gen(12345);
   // for the energy calculation
   Float_t         energyEle[2];
   Float_t         corrEle_[2]={1,1};
@@ -168,9 +168,12 @@ void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryLis
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
 #ifdef FIXEDSMEARINGS
-    for(int i=0; i < 400; i++){
-      event.smearings_ele1[i] = gen.Gaus(0,1);
-      event.smearings_ele2[i] = gen.Gaus(0,1);
+    for(int i=0; i < NSMEARTOYLIM; i++){
+      event.smearings_ele1[i] = (float) gen.Gaus(0,1);
+      event.smearings_ele2[i] = (float) gen.Gaus(0,1);
+//       if(i==0 && eventCache.size()==0){
+// 	std::cout << event.smearings_ele1[0] << std::endl;
+//       }
     }
 #endif
     eventCache.push_back(event);
@@ -185,7 +188,9 @@ void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryLis
 }
 
 void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents, bool isToy, bool externToy){
-    
+
+  TRandom3 gen(12345);
+
   // for the energy calculation
   Float_t         energyEle[2];
   Float_t         corrEle_[2]={1,1};
@@ -371,6 +376,19 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
+#ifdef FIXEDSMEARINGS
+    //    if(isMC || isToy){
+    event.smearings_ele1 = new float[NSMEARTOYLIM];
+    event.smearings_ele2 = new float[NSMEARTOYLIM];
+    for(int i=0; i < NSMEARTOYLIM; i++){
+      event.smearings_ele1[i] = (float) gen.Gaus(0,1);
+      event.smearings_ele2[i] = (float) gen.Gaus(0,1);
+    }
+//     } else {
+//       event.smearings_ele1 = NULL;
+//       event.smearings_ele2 = NULL;
+//     }      
+#endif
   
     cache.at(evIndex).push_back(event);
     //(cache[evIndex]).push_back(event);

@@ -22,7 +22,8 @@ class ZeeEvent{
 //  float pu_weight;
 //  float r9weight1;
 //  float r9weight2;
-  float smearings_ele1[400], smearings_ele2[400];
+  float *smearings_ele1, *smearings_ele2;
+  //  float smearings_ele1[NSMEARTOY], *smearings_ele2;
 
   
 };
