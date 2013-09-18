@@ -105,6 +105,7 @@ do
 		    fi
 		    ;;
 		ALCARECOSIM)
+		    isMC=1
 		    ;;
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
@@ -375,6 +376,9 @@ if [ -n "${CHECK}" ];then
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
     else
 	mergeOutput.sh -u ${UI_WORKING_DIR} -g ntuple
+	if [ "${isMC}" == "1" ];then
+	    mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper
+	fi
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 fi

@@ -98,7 +98,11 @@ fi
 
 #if [ -z "$JSON" ];then
 #    JSON=`echo ${USER_REMOTE_DIR} | sed "s|.*${RUNRANGE}/||;s|/unmerged.*||"`
-MERGEDFILE=${DATASETNAME}-${RUNRANGE}.root
+if [ "${FILENAME_BASE}" == "PUDumper" ];then
+    MERGEDFILE=PUDumper-${DATASETNAME}-${RUNRANGE}.root
+else
+    MERGEDFILE=${DATASETNAME}-${RUNRANGE}.root
+fi
 #else
 #    MERGEDFILE=${DATASETNAME}-${RUNRANGE}-JSON_${JSON}.root
 #fi
