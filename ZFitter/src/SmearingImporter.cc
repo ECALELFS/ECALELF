@@ -17,8 +17,10 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _commonCut(commonCut),
   _eleID("loose"),
   _usePUweight(true),
+  _useMCweight(true),
   _useR9weight(false),
   _usePtweight(false),
+  _excludeByWeight(true),
   _onlyDiagonal(false),
   _isSmearingEt(false),
   cutter(false)
@@ -66,130 +68,11 @@ void SmearingImporter::ImportToy(Long64_t nEvents, event_cache_t& eventCache, bo
 }
 
 
-void SmearingImporter::Import(TTree *chain, event_cache_t& eventCache, TEntryList *entryList, bool swap){
-  std::cerr << "[ERROR] Entering wrong function!" << std::endl;
-  exit(1);
-  TRandom3 gen(12345);
-  // for the energy calculation
-  Float_t         energyEle[2];
-  Float_t         corrEle_[2]={1,1};
-  Float_t         smearEle_[2]={1,1};
-  // for the angle calculation
-  Float_t         etaEle[2];
-  Float_t         phiEle[2];
-
-  // for the weight calculation
-  Float_t         weight=1;
-  Float_t         r9weight[2]={1,1};
-  Float_t         ptweight[2]={1,1};
-
-  //------------------------------
-  chain->SetBranchAddress(_energyBranchName, energyEle);
-  if(chain->GetBranch("scaleEle")!=NULL){
-    std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
-    chain->SetBranchAddress("scaleEle", corrEle_);
-  } 
-
-  if(chain->GetBranch("smearEle")!=NULL){
-    std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
-    chain->SetBranchAddress("smearEle", smearEle_);
-  } 
-
-  chain->SetBranchAddress("etaEle", etaEle);
-  chain->SetBranchAddress("phiEle", phiEle);
-
-
-  if(chain->GetBranch("puWeight")!=NULL){
-    std::cout << "[STATUS] Getting puWeight branch for tree: " << chain->GetTitle() << std::endl;
-    chain->SetBranchAddress("puWeight", &weight);
-  }
-
-  if(chain->GetBranch("r9Weight")!=NULL){
-    std::cout << "[STATUS] Getting r9Weight branch for tree: " << chain->GetTitle() << std::endl;
-    chain->SetBranchAddress("r9Weight", r9weight);
-  }  
-
-  if(chain->GetBranch("ptWeight")!=NULL){
-    std::cout << "[STATUS] Getting ptWeight branch for tree: " <<  chain->GetTitle() << std::endl;
-    chain->SetBranchAddress("ptWeight", ptweight);
-  }
-
-  TEntryList *elist_all = (TEntryList*)chain->GetEntryList()->Clone();
-  chain->SetEntryList(entryList);
-
-  Long64_t entries = entryList->GetN();
-  std::cout << "___ ENTRIES: " << entries << std::endl;
-  for(Long64_t jentry=0; jentry < entries; jentry++){
-    //  for(Long64_t jentry=0; jentry<chain->GetEntries(); jentry++){
-    //chain->LoadTree(jentry);
-    //chain->GetEntry(jentry);
-    chain->GetEntry(chain->GetEntryNumber(jentry));
-
-    ZeeEvent event;
-    //if(jentry<1){
-      //chain->Show(chain->GetEntryNumber(jentry));
-//       std::cout << "[INFO] corrEle[0] = " << corrEle_[0] << std::endl;
-//       std::cout << "[INFO] corrEle[1] = " << corrEle_[1] << std::endl;
-//       std::cout << "[INFO] smearEle[0] = " << smearEle_[0] << std::endl;
-//       std::cout << "[INFO] smearEle[1] = " << smearEle_[1] << std::endl;
-//     }
-
-    float t1=TMath::Exp(-etaEle[0]);
-    float t2=TMath::Exp(-etaEle[1]);
-    float t1q = t1*t1;
-    float t2q = t2*t2;
-  
-    //------------------------------
-    if(swap){
-      event.energy_ele2 = energyEle[0] * corrEle_[0] * smearEle_[0];
-      event.energy_ele1 = energyEle[1] * corrEle_[1] * smearEle_[1];
-    } else {
-      event.energy_ele1 = energyEle[0] * corrEle_[0] * smearEle_[0];
-      event.energy_ele2 = energyEle[1] * corrEle_[1] * smearEle_[1];
-    }
-    //event.angle_eta_ele1_ele2=  (1-((1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[0]-phiEle[1]))/((1+t1q)*(1+t2q)));
-    event.invMass= sqrt(2 * event.energy_ele1 * event.energy_ele2 *
-			(1-((1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[0]-phiEle[1]))/((1+t1q)*(1+t2q)))
-			);
-    // to calculate the invMass: invMass = sqrt(2 * energy_ele1 * energy_ele2 * angle_eta_ele1_ele2)
-
-    if(_isSmearingEt){
-      if(swap){
-	event.energy_ele2 /= TMath::CosH(etaEle[0]);
-	event.energy_ele1 /= TMath::CosH(etaEle[1]);
-      } else {
-	event.energy_ele1 /= TMath::CosH(etaEle[0]);
-	event.energy_ele2 /= TMath::CosH(etaEle[1]);
-      }
-    }	
-
-    event.weight = 1.;
-    if(_usePUweight) event.weight *= weight;
-    if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
-    if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
-#ifdef FIXEDSMEARINGS
-    for(int i=0; i < NSMEARTOYLIM; i++){
-      event.smearings_ele1[i] = (float) gen.Gaus(0,1);
-      event.smearings_ele2[i] = (float) gen.Gaus(0,1);
-//       if(i==0 && eventCache.size()==0){
-// 	std::cout << event.smearings_ele1[0] << std::endl;
-//       }
-    }
-#endif
-    eventCache.push_back(event);
-  }
-
-  chain->SetEntryList(elist_all);
-  chain->ResetBranchAddresses();
-  chain->GetEntry(0);
-  return;
-
-
-}
 
 void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents, bool isToy, bool externToy){
 
-  TRandom3 gen(12345);
+  TRandom3 gen(0);
+  Long64_t excludedByWeight=0;
 
   // for the energy calculation
   Float_t         energyEle[2];
@@ -203,7 +86,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Float_t         weight=1;
   Float_t         r9weight[2]={1,1};
   Float_t         ptweight[2]={1,1};
-
+  Float_t         mcGenWeight=1;
   Int_t           smearerCat[2];
   bool hasSmearerCat=false;
 
@@ -243,6 +126,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   if(chain->GetBranch("ptWeight")!=NULL){
     std::cout << "[STATUS] Getting ptWeight branch for tree: " <<  chain->GetTitle() << std::endl;
     chain->SetBranchAddress("ptWeight", ptweight);
+  }
+
+  if(chain->GetBranch("mcGenWeight")!=NULL){
+    std::cout << "[STATUS] Getting mcGenWeight branch for tree: " <<  chain->GetTitle() << std::endl;
+    chain->SetBranchAddress("mcGenWeight", &mcGenWeight);
   }
 
   if(chain->GetBranch("smearerCat")!=NULL){
@@ -376,6 +264,15 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
+    if(_useMCweight) event.weight *= mcGenWeight;
+
+    if(_excludeByWeight){
+      if(event.weight > gen.Rndm()){
+	excludedByWeight++;
+	continue;
+      }
+      else event.weight=1;
+    }
 #ifdef FIXEDSMEARINGS
     //    if(isMC || isToy){
     event.smearings_ele1 = new float[NSMEARTOYLIM];
@@ -393,7 +290,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     cache.at(evIndex).push_back(event);
     //(cache[evIndex]).push_back(event);
   }
-  
+
+  std::cout << "[INFO] Importing events: events excluded by weight: " << excludedByWeight << std::endl;
   chain->ResetBranchAddresses();
   chain->GetEntry(0);
   return;

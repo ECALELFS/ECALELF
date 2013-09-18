@@ -106,7 +106,7 @@ $(OBJ_DIR)/SmearingImporter.o: $(SRC)/SmearingImporter.cc $(INCLUDEDIR)/Smearing
 	@echo "--> Making class: SmearingImporter"
 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/SmearingImporter.o $(SRC)/SmearingImporter.cc
 
-$(OBJ_DIR)/RooSmearer.o: $(SRC)/RooSmearer.cc $(INCLUDEDIR)/RooSmearer.hh 
+$(OBJ_DIR)/RooSmearer.o: $(SRC)/RooSmearer.cc $(INCLUDEDIR)/RooSmearer.hh $(INCLUDEDIR)/SmearingImporter.hh
 	@echo "--> Making class: RooSmearer"
 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/RooSmearer.o $(SRC)/RooSmearer.cc 
 

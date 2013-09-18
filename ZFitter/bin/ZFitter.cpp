@@ -982,6 +982,8 @@ int main(int argc, char **argv) {
 
 	smearer.SetHistBinning(80,100,invMass_binWidth); // to do before Init
 	if(vm.count("runToy")){
+	  smearer.SetPuWeight(false);
+
 	  smearer.SetToyScale(1, constTermToy);
 	  //if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
 	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
@@ -1139,7 +1141,7 @@ int main(int argc, char **argv) {
 	  //if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
 
 	  std::cout <<"==================PROFILE=================="<<endl;
-	  if(!vm.count("constTermFix")) smearer.SetNSmear(0,20);
+	  //if(!vm.count("constTermFix")) smearer.SetNSmear(0,20);
 	  //create profiles
 	  TString outFile=outDirFitResData.c_str();
 	  outFile+="/outProfile-";
@@ -1154,7 +1156,7 @@ int main(int argc, char **argv) {
 		continue;
 
 	      TString name(var->GetName());
-	      if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
+	      //if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
 	      // special part for alpha fitting 
 	      double min=0.;
 	      TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
