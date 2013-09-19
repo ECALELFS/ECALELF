@@ -175,8 +175,9 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
     if(Emean!=0 && rho!=0) nBin=(int) (M_PI_2 / bin_width);
 
 #ifdef DEBUG
-    std::cout << "nBin = " << nBin << std::endl;
+
 #endif
+    std::cout << "nBin = " << nBin << "\t" << bin_width << "\t" << Emean << "\t" << rho << std::endl;
 //     if(var->isConstant()==false){
 //       while(nBin <10 && nBin>1){
 //       //std::cout << "[INFO] Updating from range: " << nBin << "\t" << range_min << "\t" << range_max << std::endl;
@@ -206,7 +207,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
       if(rho!=0 && Emean!=0){
 	if(name.Contains("alpha")) value=rho*Emean*cos(bin_width*iVal);
 	if(name.Contains("const")) value=rho*sin(bin_width*iVal);
-	//	std::cout << "[DEBUG] " << "\t" << rho << "\t" << Emean << "\t" << bin_width << "\t" << bin_width*iVal << "\t" << value << std::endl;
+	//std::cout << "[DEBUG] " << "\t" << rho << "\t" << Emean << "\t" << bin_width << "\t" << bin_width*iVal << "\t" << value << std::endl;
       }
 #ifdef DEBUG
       std::cout << "testing function @ " << value << std::endl;
@@ -526,7 +527,7 @@ void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
    delete [] ebuf;
 }
 
-bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t locmin){
+bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t locmin, float phiMin=1){
   if(abs(i-iLocMin)>2 && chi2-min > 300){ std::cout << "stop 1" << std::endl; return true;}
   if(abs(i-iLocMin)>5 && chi2-min > 200){ std::cout << "stop 2" << std::endl; return true;}
 //   if(abs(i-iLocMin)>6 && chi2-locmin > 120){ std::cout << "stop 3" << std::endl; return true;}
@@ -537,12 +538,13 @@ bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t
 //   if(abs(i-iLocMin)>11 && chi2-locmin > 5){ std::cout << "stop 11" << std::endl; return true;}
 //   if(abs(i-iLocMin)>12 && chi2-locmin > 3){ std::cout << "stop 12" << std::endl; return true;}
 
-  if(abs(i-iLocMin)>3 && chi2-locmin > 20){ std::cout << "stop 3" << std::endl; return true;}
-  if(abs(i-iLocMin)>4 && chi2-locmin > 10){ std::cout << "stop 4" << std::endl; return true;}
-  if(abs(i-iLocMin)>5 && chi2-locmin > 5){ std::cout << "stop 8" << std::endl; return true;}
-  if(abs(i-iLocMin)>6 && chi2-locmin > 3){ std::cout << "stop 9" << std::endl; return true;}
-  if(abs(i-iLocMin)>7 && chi2-locmin > 2){ std::cout << "stop 10" << std::endl; return true;}
-  if(abs(i-iLocMin)>8 && chi2-locmin > 1){ std::cout << "stop 10" << std::endl; return true;}
+  if(abs(i-iLocMin)>3 && chi2-locmin > phiMin*20){ std::cout << "stop 3" << std::endl; return true;}
+  if(abs(i-iLocMin)>4 && chi2-locmin > phiMin*10){ std::cout << "stop 4" << std::endl; return true;}
+  if(abs(i-iLocMin)>5 && chi2-locmin > phiMin*5){ std::cout << "stop 8" << std::endl; return true;}
+  if(abs(i-iLocMin)>6 && chi2-locmin > phiMin*4){ std::cout << "stop 9" << std::endl; return true;}
+  if(abs(i-iLocMin)>7 && chi2-locmin > phiMin*3){ std::cout << "stop 10" << std::endl; return true;}
+  if(abs(i-iLocMin)>8 && chi2-locmin > phiMin*2){ std::cout << "stop 10" << std::endl; return true;}
+  if(abs(i-iLocMin)>9 && chi2-locmin > phiMin*1){ std::cout << "stop 10" << std::endl; return true;}
 
   return false;
 }
@@ -550,38 +552,39 @@ bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t
 Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t min, RooSmearer& smearer, bool update=true, Double_t *Y=NULL, RooRealVar *var2=NULL, Double_t *X2=NULL){
   Double_t vInit=var->getVal();
   var->setVal(X[iMinStart]);
-  if(var2!=NULL) var2->setVal(X2[iMinStart]);
+  float phiMin=1;
+  if(var2!=NULL){ 
+    var2->setVal(X2[iMinStart]);
+    phiMin=3;
+  }
   if(Y==NULL) exit(1);
 
-  Double_t chi2, chi2init=smearer.evaluate(); 
+  Double_t chi2, chi2init=smearer.evaluate(), chi2old=chi2init; 
 
   Double_t locmin=1e20;
   Int_t iLocMin=iMinStart;
-  std::queue<Double_t> chi2old;
-  Double_t NY[PROFILE_NBINS]={0.}; 
 
-  for(Int_t i =iMinStart; i <N; i++){ //loop versus positive side
+  Double_t NY[PROFILE_NBINS]={0.}; 
+  int iStep=1;
+  for(Int_t i =iMinStart; i <N; i+=iStep){ //loop versus positive side
     var->setVal(X[i]);
     if(var2!=NULL) var2->setVal(X2[i]);
     chi2=smearer.evaluate(); 
     Y[i] += chi2;
     NY[i]++;
   
-    if(var2!=NULL) std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
+    iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
+
+    if(var2!=NULL) std::cout << "[DEBUG] "  << std::setprecision(5) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
       chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
-    else std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
+    else std::cout << std::setprecision(5) << "[DEBUG] " <<  "\t" << iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\tchi2= " <<  chi2 << std::endl;
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
     }
       
-    if(!chi2old.empty() && chi2<chi2old.back()-15){ //remove history if chi2<chi2old
-      while(!chi2old.empty()){
-	chi2old.pop();
-      }
-    } 
-
-    if(stopFindMin1D(i,iLocMin, chi2, min, locmin)) break;
+    if(stopFindMin1D(i,iLocMin, chi2, min, locmin, phiMin)) break;
+    chi2old=chi2;
     if(i==iLocMin && i-iMinStart==3 && Y[iMinStart]==Y[iMinStart+1] && Y[iMinStart]==Y[iMinStart+2] && Y[iMinStart]==Y[iMinStart+3]){
       std::cerr << "[WARNING] No sensitivity to variable: " << var->GetName() << std::endl;
       std::cerr << "          Variable changed to constant" << std::endl;
@@ -589,40 +592,32 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
       std::cout << "          Variable changed to constant" << std::endl;
       return -1;
     }
-    chi2old.push(chi2);
   }
 
-  while(!chi2old.empty()){
-    chi2old.pop();
-  }
-  for(Int_t i =iMinStart; i >=0; i--){ //loop versus positive side
+  iStep=1;
+  for(Int_t i =iMinStart; i >=0; i-=iStep){ //loop versus positive side
     var->setVal(X[i]);
     if(var2!=NULL) var2->setVal(X2[i]);
     chi2=smearer.evaluate(); 
     Y[i] += chi2;
     NY[i]++;
 
+    iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
 #ifdef DEBUG      
     //if(update==true) 
       std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
 #endif
-    if(var2!=NULL) std::cout << "[DEBUG] Neg" <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
+    if(var2!=NULL) std::cout << "[DEBUG] Neg"  << std::setprecision(5) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
       chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
-    else std::cout << "[DEBUG] Neg" <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
+    else std::cout << std::setprecision(5) << "[DEBUG] Neg" <<  "\t" <<  iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
 
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
     } 
 
-    if(!chi2old.empty() && chi2<chi2old.back()-15){ //remove history if chi2<chi2old
-      while(!chi2old.empty()){
-	chi2old.pop();
-      }
-    } 
-
-    if(stopFindMin1D(i,iLocMin, chi2, min, locmin)) break;
-    chi2old.push(chi2);
+    if(stopFindMin1D(i,iLocMin, chi2, min, locmin, phiMin)) break;
+    chi2old=chi2;
   }
 
   if(Y!=NULL){  //take the mean!
@@ -716,6 +711,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
 
   locmin=1e20;
   var1->setVal(0);
+  var2->setVal(0.05);
   MinProfile(var2, smearer, -1, min_old, locmin); // best DeltaS with DeltaC=0
   
   //sqrt(<E>) = DeltaS/DeltaC
@@ -787,21 +783,28 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     
 
     while(XG1[iBin1]<X1[iMin_]){ //nearest bin to the minimum
+      std::cout << "[DEBUG] Nearest bin to minimum: " << iBin1 << "\t" << XG1[iBin1] << "  " << X1[iMin_] << std::endl;
       iBin1++;
     }
     while(XG2[iBin2]<X2[iMin_]){ //nearest bin to the minimum
+      std::cout << "[DEBUG] Nearest bin to minimum: " << iBin2 << "\t" << XG2[iBin2] << "  " << X2[iMin_] << std::endl;
       iBin2++;
     }
     Int_t iBin1min= std::max(iBin1-5,0);
     Int_t iBin2min= std::max(iBin2-5,0);
     Int_t iBin1max= std::min(iBin1+5,N);
     Int_t iBin2max= std::min(iBin2+5,N);
+    std::cout << "[INFO] " << "iBin1min = " << iBin1min << std::endl
+	      << "       " << "iBin1max = " << iBin1max << std::endl
+	      << "       " << "iBin2min = " << iBin2min << std::endl
+	      << "       " << "iBin2max = " << iBin2max << std::endl;
 
     for(iBin1=iBin1min; iBin1<iBin1max; iBin1++){
       var1->setVal(XG1[iBin1]);
       for(iBin2=iBin2min; iBin2<iBin2max; iBin2++){
 	var2->setVal(XG2[iBin2]);
 	smearer.evaluate();
+	std::cout << "[DEBUG] " << XG1[iBin1] << "\t" << XG2[iBin2] << "\t" << smearer.evaluate()-chi2 << std::endl;
       }
     }
     (*g) = GetProfile(var1, smearer, -1, false, false, rho, Emean);

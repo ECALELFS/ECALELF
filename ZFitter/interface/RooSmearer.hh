@@ -195,8 +195,9 @@ public:
   unsigned int _deactive_minEventsDiag;
   unsigned int _deactive_minEventsOffDiag;
   double nllMin;
-private:
   unsigned int _nSmearToy;
+private:
+
   unsigned int _nLLtoy;
   TRandom3* rgen_;
   TStopwatch *myClock;

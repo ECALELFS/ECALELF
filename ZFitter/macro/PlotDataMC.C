@@ -556,8 +556,8 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 // 	mc->SetBranchStatus("puWeight",1);
 
 	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
-	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight");
-	else  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC);
+	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight*mcGenWeight");
+	else  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC*"mcGenWeight");
       }
     }
 

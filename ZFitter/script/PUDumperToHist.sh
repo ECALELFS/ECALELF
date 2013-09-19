@@ -1,12 +1,12 @@
 #!/bin/bash
 
-
+OUTFILE=nPUtrue.root
 usage(){
-    echo "`basename $0` "
+    echo "`basename $0` -f file.root -d outDir -o outfile.root"
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help -- "$@")
+if ! options=$(getopt -u -o hf:o: -l help -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -18,7 +18,9 @@ while [ $# -gt 0 ]
 do
     case $1 in
 	-h|--help) usage; exit 0;;
-	-f) FILE=$2; shift;;
+	-f) FILES="$FILE $2"; shift;;
+#	-d) FILEDIR=$2; shift;;
+	-o) OUTFILE=$2; shift;;
 	(--) shift; break;;
 	(-*) usage; echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
 	(*) break;;
@@ -28,20 +30,27 @@ done
 
 
 
-if [ -z "${FILE}" ];then
+if [ -z "${FILES}" ];then
     echo "[ERROR] PUDumper file not provided" >> /dev/stderr
     exit 1
 fi
 
-FILEDIR=`dirname ${FILE}`
-
+echo $FILES
 cat >tmp/PUDumperToHist.C <<EOF
 {
   TChain c("PUDumper/pileup");
+EOF
+for FILE in ${FILES}
+  do
+  echo $FILE
+cat >>tmp/PUDumperToHist.C <<EOF
   c.Add("${FILE}");
-  c.Draw("nPUtrue>>pileup","BX==0");
+EOF
+done
+cat >>tmp/PUDumperToHist.C <<EOF
+  c.Draw("nPUtrue>>pileup(100,0,100)","BX==0");
   TH1F *hist = gROOT->FindObject("pileup");
-  hist->SaveAs("${FILEDIR}/nPUtrue.root");
+  hist->SaveAs("${OUTFILE}");
 }
 EOF
     

@@ -863,49 +863,51 @@ void MakePlots(TString filename, float zmax=30, int nSmooth=10, TString opt="", 
       histPdf = Smooth(hist,1,"keys");
     }
     delete hist;
-    RooDataSet *gen_dataset=histPdf->generate(*histPdf->getVariables(),1000000,kTRUE,kFALSE);
-    TTree *genTree = dataset2tree(gen_dataset);
-    genTree->SaveAs(fileName+"-genTree.root");
-    delete gen_dataset;
-    delete histPdf;
+
+
+//     RooDataSet *gen_dataset=histPdf->generate(*histPdf->getVariables(),1000000,kTRUE,kFALSE);
+//     TTree *genTree = dataset2tree(gen_dataset);
+//     genTree->SaveAs(fileName+"-genTree.root");
+//     delete gen_dataset;
+//     delete histPdf;
     
-    TGraphErrors toyGraph = g(genTree, constTermName);
-    TGraphErrors bestFitGraph = g(tree,alphaName, constTermName);
-    TGraphErrors bestFitScanGraph = g(y, x);
-    delete genTree;
-    delete tree;
-    toyGraph.SetFillColor(kGreen);
-    toyGraph.SetLineColor(kBlue);
-    toyGraph.SetLineStyle(2);
-    bestFitGraph.SetLineColor(kBlack);
-    bestFitScanGraph.SetLineColor(kRed);
-    bestFitScanGraph.SetLineWidth(2);
+//     TGraphErrors toyGraph = g(genTree, constTermName);
+//     TGraphErrors bestFitGraph = g(tree,alphaName, constTermName);
+//     TGraphErrors bestFitScanGraph = g(y, x);
+//     delete genTree;
+//     delete tree;
+//     toyGraph.SetFillColor(kGreen);
+//     toyGraph.SetLineColor(kBlue);
+//     toyGraph.SetLineStyle(2);
+//     bestFitGraph.SetLineColor(kBlack);
+//     bestFitScanGraph.SetLineColor(kRed);
+//     bestFitScanGraph.SetLineWidth(2);
 
 
     
-    TMultiGraph g_multi("multigraph","");
-    g_multi.Add(&toyGraph,"L3");
-    g_multi.Add(&toyGraph,"L");
-    g_multi.Add(&bestFitGraph, "L");
-    g_multi.Add(&bestFitScanGraph, "L");
+//     TMultiGraph g_multi("multigraph","");
+//     g_multi.Add(&toyGraph,"L3");
+//     g_multi.Add(&toyGraph,"L");
+//     g_multi.Add(&bestFitGraph, "L");
+//     g_multi.Add(&bestFitScanGraph, "L");
    
-    g_multi.Draw("A");
+//     g_multi.Draw("A");
 
-    c->Clear();
-    g_multi.Draw("A");
-    c->SaveAs(outDir+"/smearing_vs_energy-"+constTermName+".png");
-    c->SaveAs(outDir+"/smearing_vs_energy-"+constTermName+".eps");
-    //    TPaveText *pv = new TPaveText(0.7,0.7,1, 0.8);    
-//     TLegend *legend = new TLegend(0.7,0.8,0.95,0.92);
-//     legend->SetFillStyle(3001);
-//     legend->SetFillColor(1);
-//     legend->SetTextFont(22); // 132
-//     legend->SetTextSize(0.04); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
-//   //  legend->SetFillColor(0); // colore di riempimento bianco
-//     legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
-    //    SetLegendStyle(legend);
+//     c->Clear();
+//     g_multi.Draw("A");
+//     c->SaveAs(outDir+"/smearing_vs_energy-"+constTermName+".png");
+//     c->SaveAs(outDir+"/smearing_vs_energy-"+constTermName+".eps");
+//     //    TPaveText *pv = new TPaveText(0.7,0.7,1, 0.8);    
+// //     TLegend *legend = new TLegend(0.7,0.8,0.95,0.92);
+// //     legend->SetFillStyle(3001);
+// //     legend->SetFillColor(1);
+// //     legend->SetTextFont(22); // 132
+// //     legend->SetTextSize(0.04); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
+// //   //  legend->SetFillColor(0); // colore di riempimento bianco
+// //     legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
+//     //    SetLegendStyle(legend);
 	
-    //Plot(c, data,mc,mcSmeared,legend, region, filename, energy, lumi);
+//     //Plot(c, data,mc,mcSmeared,legend, region, filename, energy, lumi);
   }
   
   f_in.Close();

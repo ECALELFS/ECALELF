@@ -219,6 +219,7 @@ int main(int argc, char **argv) {
   unsigned int nIter =0;
   unsigned int nEventsMinDiag=0;
   unsigned int nEventsMinOffDiag=0;
+  unsigned int nSmearToy=1;
   std::string minimType;
   std::vector<std::string> branchList;
 
@@ -302,6 +303,7 @@ int main(int argc, char **argv) {
     ("constTermFix", "constTerm not depending on Et")
     ("alphaGoldFix", "alphaTerm for gold electrons fixed to the low eta region")
     ("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
+    ("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(1), "")
     ;
   inputOption.add_options()
     ("chainFileList,f", po::value< string >(&chainFileListName), "Configuration file with input file list")
@@ -605,7 +607,7 @@ int main(int argc, char **argv) {
     if(dataPUFileNameVec.empty() && (tagChainMap.count("s")!=0) && (tagChainMap["s"]).count("pileup")==0){
       std::cerr << "[ERROR] Nor pileup mc tree configured in chain list file either dataPU histograms are not provided" << std::endl;
       return 1;
-    }else if( vm.count("dataPU")!=0 || (!dataPUFileNameVec.empty() && ((tagChainMap.count("s")==0) || (tagChainMap["s"]).count("pileup")==0))){
+    }else if( !vm.count("runToy") && (vm.count("dataPU")!=0 || (!dataPUFileNameVec.empty() && ((tagChainMap.count("s")==0) || (tagChainMap["s"]).count("pileup")==0)))){
       std::cout << "[STATUS] Creating pileup weighting tree and saving it" << std::endl;
       for(unsigned int i=0; i < mcPUFileNameVec.size(); i++){
 	TString mcPUFileName_=mcPUFileNameVec[i];
@@ -903,6 +905,7 @@ int main(int argc, char **argv) {
 		     categories,
 		     args_vec, args, energyBranchName);
   smearer._isDataSmeared=vm.count("isDataSmeared");
+  if(vm.count("runToy")) smearer.SetPuWeight(false);
   smearer.SetOnlyDiagonal(vm.count("onlyDiagonal"));
   smearer._autoBin=vm.count("autoBin");
   smearer._autoNsmear=vm.count("autoNsmear");
@@ -910,7 +913,7 @@ int main(int argc, char **argv) {
   //smearer.nEventsMinDiag = nEventsMinDiag;
   smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
   smearer.SetSmearingEt(vm.count("smearingEt"));
-
+  smearer._nSmearToy = nSmearToy;
   //------------------------------ Take the list of branches needed for the defined categories
   ElectronCategory_class cutter;
   std::set<TString> activeBranchList;

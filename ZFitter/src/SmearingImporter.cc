@@ -72,7 +72,7 @@ void SmearingImporter::ImportToy(Long64_t nEvents, event_cache_t& eventCache, bo
 void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents, bool isToy, bool externToy){
 
   TRandom3 gen(0);
-  Long64_t excludedByWeight=0;
+  Long64_t excludedByWeight=0, includedEvents=0;
 
   // for the energy calculation
   Float_t         energyEle[2];
@@ -189,11 +189,16 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     Long64_t entryNumber= chain->GetEntryNumber(jentry);
     chain->GetEntry(entryNumber);
     if(isToy){
+      int modulo=eventNumber%5;
       if(jentry<10){
-	std::cout << "Dividing toyMC events: " << isMC << "\t" << eventNumber << "\t" << eventNumber%3 << std::endl;
+	std::cout << "Dividing toyMC events: " << isMC << "\t" << eventNumber << "\t" << modulo
+		  << "\t" << mcGenWeight 
+		  << std::endl;
+	
       }
-      if(isMC && eventNumber%3==0) continue;
-      if(!isMC && eventNumber%3!=0) continue;
+
+      if(isMC && modulo<2) continue;
+      if(!isMC && modulo>=2) continue;
     }
 
     if (hasSmearerCat==false && chain->GetTreeNumber() != treenumber) {
@@ -267,7 +272,10 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_useMCweight) event.weight *= mcGenWeight;
 
     if(_excludeByWeight){
-      if(event.weight > gen.Rndm()){
+      float rnd = gen.Rndm();
+      if(jentry < 10)  std::cout << "mcGen = " << mcGenWeight << "\t" << rnd << std::endl;
+      if(mcGenWeight < rnd){ /// \todo fix the reject by weight in case of pu,r9,pt reweighting
+
 	excludedByWeight++;
 	continue;
       }
@@ -286,12 +294,12 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 //       event.smearings_ele2 = NULL;
 //     }      
 #endif
-  
+    includedEvents++;
     cache.at(evIndex).push_back(event);
     //(cache[evIndex]).push_back(event);
   }
 
-  std::cout << "[INFO] Importing events: events excluded by weight: " << excludedByWeight << std::endl;
+  std::cout << "[INFO] Importing events: " << includedEvents << "; events excluded by weight: " << excludedByWeight << std::endl;
   chain->ResetBranchAddresses();
   chain->GetEntry(0);
   return;
@@ -333,8 +341,9 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   if(_chain->GetBranch("r9Weight")!=NULL)  _chain->SetBranchStatus("r9Weight", 1);
   if(_chain->GetBranch("puWeight")!=NULL)  _chain->SetBranchStatus("puWeight", 1);
   if(_chain->GetBranch("ptWeight")!=NULL)  _chain->SetBranchStatus("ptWeight", 1);
+  if(_chain->GetBranch("mcGenWeight")!=NULL)  _chain->SetBranchStatus("mcGenWeight", 1);
   if(_chain->GetBranch("smearerCat")!=NULL){
-    std::cout << "[STATUS] Activating branch smearerCat" << std::endl;
+    //std::cout << "[STATUS] Activating branch smearerCat" << std::endl;
     _chain->SetBranchStatus("smearerCat", 1);
   }
 

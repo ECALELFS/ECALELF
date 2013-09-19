@@ -8,7 +8,7 @@ source script/functions.sh
 
 commonCut=Et_25-trigger-noPF
 selection=loose
-invMass_var=invMass_SC_regrCorr_pho
+invMass_var=invMass_SC_regrCorrSemiParV5_pho
 baseDir=test
 updateOnly="--updateOnly" # --profileOnly --initFile=init.txt"
 #updateOnly=""
@@ -182,30 +182,24 @@ fi
 
 
 if [ -n "${STEP2}" ];then
-
+#    extension="_0.8bad"
+    extension="_factorized"
     if [ ! -e "${outDirMC}/fitres" ];then mkdir ${outDirMC}/fitres -p; fi
     if [ ! -e "${outDirMC}/img" ];then mkdir ${outDirMC}/img -p; fi
-    if [ ! -e "${outDirData}/step2/fitres" ];then mkdir ${outDirData}/step2/fitres -p; fi
-    if [ ! -e "${outDirData}/step2/img" ];then mkdir ${outDirData}/step2/img -p; fi
-
-    if [ ! -e "${outDirData}/step2_fixed/fitres" ];then mkdir ${outDirData}/step2_fixed/fitres -p; fi
-    if [ ! -e "${outDirData}/step2_fixed/img" ];then mkdir ${outDirData}/step2_fixed/img -p; fi
-
-    if [ ! -e "${outDirData}/step2_0.8bad/fitres" ];then mkdir ${outDirData}/step2_0.8bad/fitres -p; fi
-    if [ ! -e "${outDirData}/step2_0.8bad/img" ];   then mkdir ${outDirData}/step2_0.8bad/img -p; fi
-
+    if [ ! -e "${outDirData}/step2${extension}/fitres" ];then mkdir ${outDirData}/step2${extension}/fitres -p; fi
+    if [ ! -e "${outDirData}/step2${extension}/img" ];then mkdir ${outDirData}/step2${extension}/img -p; fi
     
     #${outDirData}/step2/fitres/initFile-scaleStep2smearing_8-${commonCut}.txt \
     regionFile=data/regions/scaleStep2smearing_8.dat
     ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
- 	$isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut}-R9p_0.8 \
- 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step2_0.8bad/fitres \
- 	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step2_0.8bad/img \
-	--smearerFit  --autoNsmear --constTermFix --alphaGoldFix \
+ 	$isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} \
+ 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step2${extension}/fitres \
+ 	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step2${extension}/img \
+	--smearerFit  --constTermFix --alphaGoldFix \
 	--corrEleType HggRunEta \
 	--corrEleFile ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat \
-        --initFile=${outDirData}/step2/fitres/params-scaleStep2smearing_8-${commonCut}-R9p_0.8.txt \
-	--addBranch=smearerCat > ${outDirData}/log/step20.8badsmearing_8-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.log || exit 1
+        --initFile=${outDirData}/step2/fitres/params-scaleStep2${extension}smearing_8-${commonCut}.txt \
+	--addBranch=smearerCat > ${outDirData}/log/step2${extension}smearing_8-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.log || exit 1
 
     exit 0
     regionFile=data/regions/scaleStep2smearing_8.dat

@@ -4,7 +4,9 @@
 
 #regionsFile=scaleStep2smearing_7
 queue=$1
-nEventsPerToy=factorizedNew_${queue}
+nEventsPerToy=factorizedSherpa_${queue}
+nSmearToy=90
+
 #nEventsPerToy=factorized
 if [ -z "${queue}" ];then local=y; fi
 
@@ -104,7 +106,7 @@ EOF
 
     for nToys in `seq 2 200`; 
       do 
-      newDir=${baseDir}/${alphaConst}/${nToys}
+      newDir=${baseDir}/${alphaConst}/${nSmearToy}/${nToys}/
       mkdir -p $newDir 
       ls $newDir
 
@@ -114,14 +116,16 @@ EOF
       --regionsFile=data/regions/${regionsFile}.dat \
 	--commonCut=Et_25-trigger-noPF-EB --smearerFit --outDirFitResData=$newDir \
         --constTermFix --alphaGoldFix --smearerType=profile --noPU \
-	--initFile=${baseDir}/${alphaConst}/mcToy.txt --profileOnly --runToy > ${newDir}/log2.log"
+	--initFile=${baseDir}/${alphaConst}/mcToy.txt --profileOnly --runToy --nSmearToy=${nSmearToy} > ${newDir}/log2.log"
       else
 	  echo "#============================================================ Toy = $nToys"
-        ./bin/ZFitter.exe -f ${baseDir}/toyMC.dat \
- 	   --regionsFile=data/regions/${regionsFile}.dat \
- 	   --commonCut=Et_25-trigger-noPF-EB --smearerFit --outDirFitResData=$newDir \
- 	   --constTermFix --smearerType=profile --noPU --alphaGoldFix \
- 	   --initFile=${baseDir}/${alphaConst}/mcToy.txt --profileOnly --runToy  |tee ${newDir}/log2.log
+	  ./bin/ZFitter.exe -f ${baseDir}/toyMC.dat \
+	      --regionsFile=data/regions/${regionsFile}.dat \
+	      --commonCut=Et_25-trigger-noPF-EB --smearerFit --outDirFitResData=$newDir \
+	      --constTermFix --smearerType=profile --noPU --alphaGoldFix \
+	      --initFile=${baseDir}/${alphaConst}/mcToy.txt \
+	      --profileOnly --runToy --eventsPerToy=0 --nSmearToy=${nSmearToy} |tee ${newDir}/log.log
+	  exit 0
       fi
     done
     wait 

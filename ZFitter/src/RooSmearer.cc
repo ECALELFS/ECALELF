@@ -30,7 +30,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   _paramSet("paramSet","Set of parameters",this),
   invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
   deltaNLLMaxSmearToy(330),
-  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(NSMEARTOYLIM-1), 
+  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(NSMEARTOYLIM), 
   nllBase(0),
   nllVar("nll","",0,1e20),
   _isDataSmeared(false),
@@ -408,7 +408,7 @@ double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,flo
   float sigma = sqrt(alpha*alpha/ene + constant * constant );
 #ifdef FIXEDSMEARINGS
   for(unsigned int i=0; i < nGen; i++){
-    smear[i] = (fixedSmearings[i]*sigma)+(scale);
+    smear[i] = (double) (fixedSmearings[i]*sigma)+(scale);
   }
 #else
   for(unsigned int i=0; i < nGen; i++){
@@ -443,7 +443,7 @@ double RooSmearer::getLogLikelihood(TH1F* data, TH1F* prob) const
   //       return -9999999.;
   //     }
 
-  double logL=0;
+  double logL=0.;
   //Not using underflows and overflows at the moment
   for (int ibin=1;ibin<data->GetNbinsX()+1;++ibin)
   {
@@ -481,7 +481,7 @@ double RooSmearer::getLogLikelihood(TH1F* data, TH1F* prob) const
 	}
 #endif
   }
-  //  std::cout << "Finale logL = " << logL <<std::endl;
+  //std::cout << "Finale logL = " << logL <<std::endl;
   return logL;
 }
 
@@ -748,7 +748,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
     TH1F *data = GetSmearedHisto(category, false, _isDataSmeared); ///-----> not need to repeate!
 
     for(category.nLLtoy=1; category.nLLtoy < 2; category.nLLtoy+=2){
-      for(; category.nSmearToy <= nSmearToyLim && stdDev>1; category.nSmearToy*=2){
+      for(category.nSmearToy; category.nSmearToy <= nSmearToyLim && stdDev>1; category.nSmearToy*=2){
 	double  sum=0, sum2=0;
 	TStopwatch cl;
 	cl.Start();
@@ -1000,7 +1000,7 @@ void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool m
 }
 
 void RooSmearer::UpdateCategoryNLL(ZeeCategory& cat, unsigned int nLLtoy, bool multiSmearToy){
-  TH1F *data = GetSmearedHisto(cat, false, _isDataSmeared,true); ///-----> not need to repeate!
+  TH1F *data = GetSmearedHisto(cat, false, _isDataSmeared,true, false); ///-----> not need to repeate! 1 one smearing! otherwise bin errors are wrongly reduced
       
   double comp=0., comp2=0.;
   for(unsigned int itoy=0; itoy < nLLtoy; itoy++){

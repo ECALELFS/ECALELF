@@ -1,6 +1,6 @@
 {
   TString optSmooth="k3a";
-  TString toyDir="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_8/reducedPoints_fixed/";
+  TString toyDir="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_8/factorizedNew_2nd/";
   //0.005-0.00  0.005-0.01  0.005-0.15  0.01-0.00  0.01-0.01  0.01-0.15  0.02-0.00  0.02-0.01  0.02-0.15
   gROOT->ProcessLine(".include /afs/cern.ch/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include");
   gROOT->ProcessLine(".L macro/mcmcDraw.C+");
@@ -12,8 +12,8 @@
 
   std::vector<TString> toySubDirVec;
   toySubDirVec.push_back("0.01-0.00/");
-  toySubDirVec.push_back("0.0005-0.05/");
-  toySubDirVec.push_back("0.0005-0.10/");
+  toySubDirVec.push_back("0.000-0.07/");
+  toySubDirVec.push_back("0.007-0.05/");
 
   for(std::vector<TString>::const_iterator toySubDir_itr = toySubDirVec.begin();
       toySubDir_itr!= toySubDirVec.end(); toySubDir_itr++){
