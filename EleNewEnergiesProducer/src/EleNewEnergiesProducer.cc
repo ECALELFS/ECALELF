@@ -154,6 +154,10 @@ private:
   std::string regrPhoJoshV4_SemiParamFile;
   std::string regrPhoJoshV5_SemiParamFile;
 
+  EGEnergyCorrectorSemiParm corV6_ele;
+  EGEnergyCorrectorSemiParm corV6_pho;
+  std::string regrEleJoshV6_SemiParamFile;
+  std::string regrPhoJoshV6_SemiParamFile;
   bool ptSplit;
 };
 
@@ -186,6 +190,10 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   regrEleJoshV5_SemiParamFile(iConfig.getParameter<std::string>("regrEleJoshV5_SemiParamFile")),
   regrPhoJoshV4_SemiParamFile(iConfig.getParameter<std::string>("regrPhoJoshV4_SemiParamFile")),
   regrPhoJoshV5_SemiParamFile(iConfig.getParameter<std::string>("regrPhoJoshV5_SemiParamFile")),
+
+  regrEleJoshV6_SemiParamFile(iConfig.getParameter<std::string>("regrEleJoshV6_SemiParamFile")),
+  regrPhoJoshV6_SemiParamFile(iConfig.getParameter<std::string>("regrPhoJoshV6_SemiParamFile")),
+
   ptSplit(iConfig.getParameter<bool>("ptSplit"))
 //     r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 //     puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
@@ -247,6 +255,23 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5alpha2");
   produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5gamma2");
   produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV5pdfval");
+
+  //------------------------------
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6ecorr");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6sigma");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6alpha1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6gamma1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6alpha2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6gamma2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParamV6pdfval");
+
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamVecorr");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamVsigma");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamValpha1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamVgamma1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamValpha2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamVgamma2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParamVpdfval");
 
  //now do what ever other initialization is needed
   
