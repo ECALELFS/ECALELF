@@ -247,6 +247,13 @@ private:
   Float_t energySCEle_regrCorrSemiParV4_ele[2], energySigmaSCEle_regrCorrSemiParV4_ele[2];
   Float_t energySCEle_regrCorrSemiParV5_pho[2], energySigmaSCEle_regrCorrSemiParV5_pho[2];
   Float_t energySCEle_regrCorrSemiParV5_ele[2], energySigmaSCEle_regrCorrSemiParV5_ele[2];
+  Float_t energySCEle_regrCorrSemiParV6_pho[2], energySigmaSCEle_regrCorrSemiParV6_pho[2];
+  Float_t energySCEle_regrCorrSemiParV6_ele[2], energySigmaSCEle_regrCorrSemiParV6_ele[2];
+  Float_t energySCEle_regrCorrSemiParV7_pho[2], energySigmaSCEle_regrCorrSemiParV7_pho[2];
+  Float_t energySCEle_regrCorrSemiParV7_ele[2], energySigmaSCEle_regrCorrSemiParV7_ele[2];
+  Float_t energySCEle_regrCorrSemiParV8_pho[2], energySigmaSCEle_regrCorrSemiParV8_pho[2];
+  Float_t energySCEle_regrCorrSemiParV8_ele[2], energySigmaSCEle_regrCorrSemiParV8_ele[2];
+
 
   Float_t energySCEle_corr[2];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 
@@ -275,6 +282,9 @@ private:
   Float_t invMass_regrCorr_egamma;
   Float_t invMass_SC_regrCorrSemiParV4_ele,invMass_SC_regrCorrSemiParV4_pho;
   Float_t invMass_SC_regrCorrSemiParV5_ele,invMass_SC_regrCorrSemiParV5_pho;
+  Float_t invMass_SC_regrCorrSemiParV6_ele,invMass_SC_regrCorrSemiParV6_pho;
+  Float_t invMass_SC_regrCorrSemiParV7_ele,invMass_SC_regrCorrSemiParV7_pho;
+  Float_t invMass_SC_regrCorrSemiParV8_ele,invMass_SC_regrCorrSemiParV8_pho;
 
   Float_t invMass_MC;
   Float_t   etaMCEle[2], phiMCEle[2];
@@ -737,6 +747,20 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("energySigmaSCEle_regrCorrSemiParV5_ele", energySigmaSCEle_regrCorrSemiParV5_ele, "energySigmaSCEle_regrCorrSemiParV5_ele[2]/F");
   tree->Branch("energySigmaSCEle_regrCorrSemiParV5_pho", energySigmaSCEle_regrCorrSemiParV5_pho, "energySigmaSCEle_regrCorrSemiParV5_pho[2]/F");
 
+  tree->Branch("energySCEle_regrCorrSemiParV6_ele", energySCEle_regrCorrSemiParV6_ele, "energySCEle_regrCorrSemiParV6_ele[2]/F");
+  tree->Branch("energySCEle_regrCorrSemiParV6_pho", energySCEle_regrCorrSemiParV6_pho, "energySCEle_regrCorrSemiParV6_pho[2]/F");
+  tree->Branch("energySigmaSCEle_regrCorrSemiParV6_ele", energySigmaSCEle_regrCorrSemiParV6_ele, "energySigmaSCEle_regrCorrSemiParV6_ele[2]/F");
+  tree->Branch("energySigmaSCEle_regrCorrSemiParV6_pho", energySigmaSCEle_regrCorrSemiParV6_pho, "energySigmaSCEle_regrCorrSemiParV6_pho[2]/F");
+
+  tree->Branch("energySCEle_regrCorrSemiParV7_ele", energySCEle_regrCorrSemiParV7_ele, "energySCEle_regrCorrSemiParV7_ele[2]/F");
+  tree->Branch("energySCEle_regrCorrSemiParV7_pho", energySCEle_regrCorrSemiParV7_pho, "energySCEle_regrCorrSemiParV7_pho[2]/F");
+  tree->Branch("energySigmaSCEle_regrCorrSemiParV7_ele", energySigmaSCEle_regrCorrSemiParV7_ele, "energySigmaSCEle_regrCorrSemiParV7_ele[2]/F");
+  tree->Branch("energySigmaSCEle_regrCorrSemiParV7_pho", energySigmaSCEle_regrCorrSemiParV7_pho, "energySigmaSCEle_regrCorrSemiParV7_pho[2]/F");
+
+  tree->Branch("energySCEle_regrCorrSemiParV8_ele", energySCEle_regrCorrSemiParV8_ele, "energySCEle_regrCorrSemiParV8_ele[2]/F");
+  tree->Branch("energySCEle_regrCorrSemiParV8_pho", energySCEle_regrCorrSemiParV8_pho, "energySCEle_regrCorrSemiParV8_pho[2]/F");
+  tree->Branch("energySigmaSCEle_regrCorrSemiParV8_ele", energySigmaSCEle_regrCorrSemiParV8_ele, "energySigmaSCEle_regrCorrSemiParV8_ele[2]/F");
+  tree->Branch("energySigmaSCEle_regrCorrSemiParV8_pho", energySigmaSCEle_regrCorrSemiParV8_pho, "energySigmaSCEle_regrCorrSemiParV8_pho[2]/F");
 
   tree->Branch("R9Ele", R9Ele, "R9Ele[2]/F");
 
@@ -761,6 +785,13 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("invMass_SC_regrCorrSemiParV4_ele", &invMass_SC_regrCorrSemiParV4_ele, "invMass_SC_regrCorrSemiParV4_ele/F");
   tree->Branch("invMass_SC_regrCorrSemiParV5_pho", &invMass_SC_regrCorrSemiParV5_pho, "invMass_SC_regrCorrSemiParV5_pho/F");
   tree->Branch("invMass_SC_regrCorrSemiParV5_ele", &invMass_SC_regrCorrSemiParV5_ele, "invMass_SC_regrCorrSemiParV5_ele/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV6_pho", &invMass_SC_regrCorrSemiParV6_pho, "invMass_SC_regrCorrSemiParV6_pho/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV6_ele", &invMass_SC_regrCorrSemiParV6_ele, "invMass_SC_regrCorrSemiParV6_ele/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV7_pho", &invMass_SC_regrCorrSemiParV7_pho, "invMass_SC_regrCorrSemiParV7_pho/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV7_ele", &invMass_SC_regrCorrSemiParV7_ele, "invMass_SC_regrCorrSemiParV7_ele/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV8_pho", &invMass_SC_regrCorrSemiParV8_pho, "invMass_SC_regrCorrSemiParV8_pho/F");
+  tree->Branch("invMass_SC_regrCorrSemiParV8_ele", &invMass_SC_regrCorrSemiParV8_ele, "invMass_SC_regrCorrSemiParV8_ele/F");
+
   tree->Branch("invMass_MC", &invMass_MC, "invMass_MC/F");
 
   tree->Branch("etaMCEle",      etaMCEle,       "etaMCEle[2]/F");	//[nEle]
@@ -977,6 +1008,21 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   energySigmaSCEle_regrCorrSemiParV5_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV5sigma");
   energySigmaSCEle_regrCorrSemiParV5_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV5sigma");
 
+  energySCEle_regrCorrSemiParV6_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV6ecorr");
+  energySCEle_regrCorrSemiParV6_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV6ecorr");
+  energySigmaSCEle_regrCorrSemiParV6_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV6sigmaEoverE");
+  energySigmaSCEle_regrCorrSemiParV6_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV6sigmaEoverE");
+
+  energySCEle_regrCorrSemiParV7_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV7ecorr");
+  energySCEle_regrCorrSemiParV7_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV7ecorr");
+  energySigmaSCEle_regrCorrSemiParV7_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV7sigmaEoverE");
+  energySigmaSCEle_regrCorrSemiParV7_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV7sigmaEoverE");
+
+  energySCEle_regrCorrSemiParV8_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV8ecorr");
+  energySCEle_regrCorrSemiParV8_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV8ecorr");
+  energySigmaSCEle_regrCorrSemiParV8_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParamV8sigmaEoverE");
+  energySigmaSCEle_regrCorrSemiParV8_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParamV8sigmaEoverE");
+
   // change in an electron properties please, EleNewEnergyProducer
   e3x3SCEle[index] = clustertools->e3x3(*electron1.superCluster()->seed());
   e5x5SCEle[index] = clustertools->e5x5(*electron1.superCluster()->seed());
@@ -1057,6 +1103,18 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
     invMass_SC_regrCorrSemiParV5_ele = sqrt(2* energySCEle_regrCorrSemiParV5_ele[0] * energySCEle_regrCorrSemiParV5_ele[1] *
 				       angle);
     invMass_SC_regrCorrSemiParV5_pho = sqrt(2* energySCEle_regrCorrSemiParV5_pho[0] * energySCEle_regrCorrSemiParV5_pho[1] *
+				       angle);
+    invMass_SC_regrCorrSemiParV6_ele = sqrt(2* energySCEle_regrCorrSemiParV6_ele[0] * energySCEle_regrCorrSemiParV6_ele[1] *
+				       angle);
+    invMass_SC_regrCorrSemiParV6_pho = sqrt(2* energySCEle_regrCorrSemiParV6_pho[0] * energySCEle_regrCorrSemiParV6_pho[1] *
+				       angle);
+    invMass_SC_regrCorrSemiParV7_ele = sqrt(2* energySCEle_regrCorrSemiParV7_ele[0] * energySCEle_regrCorrSemiParV7_ele[1] *
+				       angle);
+    invMass_SC_regrCorrSemiParV7_pho = sqrt(2* energySCEle_regrCorrSemiParV7_pho[0] * energySCEle_regrCorrSemiParV7_pho[1] *
+				       angle);
+    invMass_SC_regrCorrSemiParV8_ele = sqrt(2* energySCEle_regrCorrSemiParV8_ele[0] * energySCEle_regrCorrSemiParV8_ele[1] *
+				       angle);
+    invMass_SC_regrCorrSemiParV8_pho = sqrt(2* energySCEle_regrCorrSemiParV8_pho[0] * energySCEle_regrCorrSemiParV8_pho[1] *
 				       angle);
 
     invMass_regrCorr_fra = sqrt(2* energyEle_regrCorr_fra[0] * energyEle_regrCorr_fra[1] *angle);
