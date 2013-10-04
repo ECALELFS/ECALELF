@@ -645,7 +645,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //------------------------------
     corV6_ele.CorrectedEnergyWithErrorV6(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
     energySCEleJoshEleSemiParamV6_ecorr.push_back(ecor);
-    energySCEleJoshEleSemiParamV6_sigma.push_back(sigmaEoverE);
+    energySCEleJoshEleSemiParamV6_sigmaEoverE.push_back(sigmaEoverE);
     energySCEleJoshEleSemiParamV6_cbmean.push_back(cbmean);
     energySCEleJoshEleSemiParamV6_sigma.push_back(sigma);
     energySCEleJoshEleSemiParamV6_alpha1.push_back(alpha1);
@@ -656,7 +656,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     corV6_pho.CorrectedEnergyWithErrorV6(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
     energySCEleJoshPhoSemiParamV6_ecorr.push_back(ecor);
-    energySCEleJoshPhoSemiParamV6_sigma.push_back(sigmaEoverE);
+    energySCEleJoshPhoSemiParamV6_sigmaEoverE.push_back(sigmaEoverE);
     energySCEleJoshPhoSemiParamV6_cbmean.push_back(cbmean);
     energySCEleJoshPhoSemiParamV6_sigma.push_back(sigma);
     energySCEleJoshPhoSemiParamV6_alpha1.push_back(alpha1);
@@ -667,7 +667,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //------------------------------
     corV7_ele.CorrectedEnergyWithErrorV7(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
     energySCEleJoshEleSemiParamV7_ecorr.push_back(ecor);
-    energySCEleJoshEleSemiParamV7_sigma.push_back(sigmaEoverE);
+    energySCEleJoshEleSemiParamV7_sigmaEoverE.push_back(sigmaEoverE);
     energySCEleJoshEleSemiParamV7_cbmean.push_back(cbmean);
     energySCEleJoshEleSemiParamV7_sigma.push_back(sigma);
     energySCEleJoshEleSemiParamV7_alpha1.push_back(alpha1);
@@ -678,7 +678,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     corV7_pho.CorrectedEnergyWithErrorV7(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
     energySCEleJoshPhoSemiParamV7_ecorr.push_back(ecor);
-    energySCEleJoshPhoSemiParamV7_sigma.push_back(sigmaEoverE);
+    energySCEleJoshPhoSemiParamV7_sigmaEoverE.push_back(sigmaEoverE);
     energySCEleJoshPhoSemiParamV7_cbmean.push_back(cbmean);
     energySCEleJoshPhoSemiParamV7_sigma.push_back(sigma);
     energySCEleJoshPhoSemiParamV7_alpha1.push_back(alpha1);
@@ -689,7 +689,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //------------------------------
     corV8_ele.CorrectedEnergyWithErrorV8(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
     energySCEleJoshEleSemiParamV8_ecorr.push_back(ecor);
-    energySCEleJoshEleSemiParamV8_sigma.push_back(sigmaEoverE);
+    energySCEleJoshEleSemiParamV8_sigmaEoverE.push_back(sigmaEoverE);
     energySCEleJoshEleSemiParamV8_cbmean.push_back(cbmean);
     energySCEleJoshEleSemiParamV8_sigma.push_back(sigma);
     energySCEleJoshEleSemiParamV8_alpha1.push_back(alpha1);
@@ -700,7 +700,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
     corV8_pho.CorrectedEnergyWithErrorV8(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
     energySCEleJoshPhoSemiParamV8_ecorr.push_back(ecor);
-    energySCEleJoshPhoSemiParamV8_sigma.push_back(sigmaEoverE);
+    energySCEleJoshPhoSemiParamV8_sigmaEoverE.push_back(sigmaEoverE);
     energySCEleJoshPhoSemiParamV8_cbmean.push_back(cbmean);
     energySCEleJoshPhoSemiParamV8_sigma.push_back(sigma);
     energySCEleJoshPhoSemiParamV8_alpha1.push_back(alpha1);
@@ -1078,8 +1078,6 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshEleSemiParamV6_sigmaEoverE_Map, "energySCEleJoshEleSemiParamV6sigmaEoverE");
   iEvent.put(energySCEleJoshEleSemiParamV6_cbmean_Map,      "energySCEleJoshEleSemiParamV6cbmean");
   iEvent.put(energySCEleJoshEleSemiParamV6_sigma_Map,       "energySCEleJoshEleSemiParamV6sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV6_sigma_Map,       "energySCEleJoshEleSemiParamV6sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV6_sigma_Map,       "energySCEleJoshEleSemiParamV6sigma");
   iEvent.put(energySCEleJoshEleSemiParamV6_alpha1_Map,      "energySCEleJoshEleSemiParamV6alpha1");
   iEvent.put(energySCEleJoshEleSemiParamV6_gamma1_Map,      "energySCEleJoshEleSemiParamV6gamma1");
   iEvent.put(energySCEleJoshEleSemiParamV6_alpha2_Map,      "energySCEleJoshEleSemiParamV6alpha2");
@@ -1089,8 +1087,6 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshPhoSemiParamV6_ecorr_Map,       "energySCEleJoshPhoSemiParamV6ecorr");
   iEvent.put(energySCEleJoshPhoSemiParamV6_sigmaEoverE_Map, "energySCEleJoshPhoSemiParamV6sigmaEoverE");
   iEvent.put(energySCEleJoshPhoSemiParamV6_cbmean_Map,      "energySCEleJoshPhoSemiParamV6cbmean");
-  iEvent.put(energySCEleJoshPhoSemiParamV6_sigma_Map,       "energySCEleJoshPhoSemiParamV6sigma");
-  iEvent.put(energySCEleJoshPhoSemiParamV6_sigma_Map,       "energySCEleJoshPhoSemiParamV6sigma");
   iEvent.put(energySCEleJoshPhoSemiParamV6_sigma_Map,       "energySCEleJoshPhoSemiParamV6sigma");
   iEvent.put(energySCEleJoshPhoSemiParamV6_alpha1_Map,      "energySCEleJoshPhoSemiParamV6alpha1");
   iEvent.put(energySCEleJoshPhoSemiParamV6_gamma1_Map,      "energySCEleJoshPhoSemiParamV6gamma1");
@@ -1103,8 +1099,6 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshEleSemiParamV7_sigmaEoverE_Map, "energySCEleJoshEleSemiParamV7sigmaEoverE");
   iEvent.put(energySCEleJoshEleSemiParamV7_cbmean_Map,      "energySCEleJoshEleSemiParamV7cbmean");
   iEvent.put(energySCEleJoshEleSemiParamV7_sigma_Map,       "energySCEleJoshEleSemiParamV7sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV7_sigma_Map,       "energySCEleJoshEleSemiParamV7sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV7_sigma_Map,       "energySCEleJoshEleSemiParamV7sigma");
   iEvent.put(energySCEleJoshEleSemiParamV7_alpha1_Map,      "energySCEleJoshEleSemiParamV7alpha1");
   iEvent.put(energySCEleJoshEleSemiParamV7_gamma1_Map,      "energySCEleJoshEleSemiParamV7gamma1");
   iEvent.put(energySCEleJoshEleSemiParamV7_alpha2_Map,      "energySCEleJoshEleSemiParamV7alpha2");
@@ -1114,8 +1108,6 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshPhoSemiParamV7_ecorr_Map,       "energySCEleJoshPhoSemiParamV7ecorr");
   iEvent.put(energySCEleJoshPhoSemiParamV7_sigmaEoverE_Map, "energySCEleJoshPhoSemiParamV7sigmaEoverE");
   iEvent.put(energySCEleJoshPhoSemiParamV7_cbmean_Map,      "energySCEleJoshPhoSemiParamV7cbmean");
-  iEvent.put(energySCEleJoshPhoSemiParamV7_sigma_Map,       "energySCEleJoshPhoSemiParamV7sigma");
-  iEvent.put(energySCEleJoshPhoSemiParamV7_sigma_Map,       "energySCEleJoshPhoSemiParamV7sigma");
   iEvent.put(energySCEleJoshPhoSemiParamV7_sigma_Map,       "energySCEleJoshPhoSemiParamV7sigma");
   iEvent.put(energySCEleJoshPhoSemiParamV7_alpha1_Map,      "energySCEleJoshPhoSemiParamV7alpha1");
   iEvent.put(energySCEleJoshPhoSemiParamV7_gamma1_Map,      "energySCEleJoshPhoSemiParamV7gamma1");
@@ -1128,8 +1120,6 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshEleSemiParamV8_sigmaEoverE_Map, "energySCEleJoshEleSemiParamV8sigmaEoverE");
   iEvent.put(energySCEleJoshEleSemiParamV8_cbmean_Map,      "energySCEleJoshEleSemiParamV8cbmean");
   iEvent.put(energySCEleJoshEleSemiParamV8_sigma_Map,       "energySCEleJoshEleSemiParamV8sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV8_sigma_Map,       "energySCEleJoshEleSemiParamV8sigma");
-  iEvent.put(energySCEleJoshEleSemiParamV8_sigma_Map,       "energySCEleJoshEleSemiParamV8sigma");
   iEvent.put(energySCEleJoshEleSemiParamV8_alpha1_Map,      "energySCEleJoshEleSemiParamV8alpha1");
   iEvent.put(energySCEleJoshEleSemiParamV8_gamma1_Map,      "energySCEleJoshEleSemiParamV8gamma1");
   iEvent.put(energySCEleJoshEleSemiParamV8_alpha2_Map,      "energySCEleJoshEleSemiParamV8alpha2");
@@ -1139,8 +1129,6 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshPhoSemiParamV8_ecorr_Map,       "energySCEleJoshPhoSemiParamV8ecorr");
   iEvent.put(energySCEleJoshPhoSemiParamV8_sigmaEoverE_Map, "energySCEleJoshPhoSemiParamV8sigmaEoverE");
   iEvent.put(energySCEleJoshPhoSemiParamV8_cbmean_Map,      "energySCEleJoshPhoSemiParamV8cbmean");
-  iEvent.put(energySCEleJoshPhoSemiParamV8_sigma_Map,       "energySCEleJoshPhoSemiParamV8sigma");
-  iEvent.put(energySCEleJoshPhoSemiParamV8_sigma_Map,       "energySCEleJoshPhoSemiParamV8sigma");
   iEvent.put(energySCEleJoshPhoSemiParamV8_sigma_Map,       "energySCEleJoshPhoSemiParamV8sigma");
   iEvent.put(energySCEleJoshPhoSemiParamV8_alpha1_Map,      "energySCEleJoshPhoSemiParamV8alpha1");
   iEvent.put(energySCEleJoshPhoSemiParamV8_gamma1_Map,      "energySCEleJoshPhoSemiParamV8gamma1");

@@ -69,6 +69,9 @@ setEnergy(){
 	*7TeV*)
 	    ENERGY=7TeV
 	    ;;
+	*Summer11*)
+	    ENERGY=7TeV
+	    ;;
 	*)
 	    echo "[ERROR] Center of mass energy not determined for $1" >> /dev/stderr
 	    echo "        Check implementation in prodFunctions.sh"    >> /dev/stderr

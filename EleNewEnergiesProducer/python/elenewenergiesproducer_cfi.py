@@ -17,8 +17,21 @@ eleNewEnergiesProducer = cms.EDProducer('EleNewEnergiesProducer',
                                         correctionType = cms.string(''),
                                         ptSplit = cms.bool(True),
                                         regrEleJoshV4_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v4_forest_ele.root'),
-                                        regrEleJoshV5_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v5_forest_ele.root'),
                                         regrPhoJoshV4_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v4_forest_ph.root'),
+                                        regrEleJoshV5_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v5_forest_ele.root'),
                                         regrPhoJoshV5_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v5_forest_ph.root'),
-                                        
+#                                         regrEleJoshV6_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v6_7TeV_forest_ele.root'),
+#                                         regrPhoJoshV6_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v6_7TeV_forest_ph.root'),
+#                                         regrEleJoshV7_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v7_7TeV_forest_ele.root'),
+#                                         regrPhoJoshV7_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v7_7TeV_forest_ph.root'),
+#                                         regrEleJoshV8_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v8_7TeV_forest_ele.root'),
+#                                         regrPhoJoshV8_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v8_7TeV_forest_ph.root'),
+
+                                        regrEleJoshV6_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v6_8TeV_forest_ele.root'),
+                                        regrPhoJoshV6_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v6_8TeV_forest_ph.root'),
+                                        regrEleJoshV7_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v7_8TeV_forest_ele.root'),
+                                        regrPhoJoshV7_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v7_8TeV_forest_ph.root'),
+                                        regrEleJoshV8_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v8_8TeV_forest_ele.root'),
+                                        regrPhoJoshV8_SemiParamFile = cms.string('src/Calibration/EleNewEnergiesProducer/data/regweights_v8_8TeV_forest_ph.root'),
+
                                         )

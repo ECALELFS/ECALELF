@@ -75,5 +75,5 @@ allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-
 160329-173692	/DoubleElectron/Run2011A-ZElectron-08Nov2011-v1_RAW-RECO	DoubleElectron-ZSkim-RUN2011A-29JunRUN2011-v1	caf	group/alca_ecalcalib/alcareco/7TeV/GR_R_53_V9F/DoubleElectron_Run2011A-ZElectron-08Nov2011-v1_RAW-RECO_FNAL	VALID	RUN2011A,RUN2011AB
 175832-180252	/DoubleElectron/Run2011B-ZElectron-19Nov2011-v1_RAW-RECO	DoubleElectron-ZSkim-RUN2011B-29JunRUN2011-v1	caf	group/alca_ecalcalib/alcareco/7TeV/GR_R_53_V9F/DoubleElectron_Run2011B-ZElectron-19Nov2011-v1_RAW-RECO_FNAL	VALID	RUN2011B, RUN2011AB
 ##################### 2011 data 53X rereco
-160329-173692	/DoubleElectron/Run2011A-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1	caf	group/alca_ecalcalib/alcareco/	VALID	RUN2011A, RUN2011AB
-175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf	group/alca_ecalcalib/alcareco/	VALID	RUN2011B, RUN2011AB
+160329-173692	/DoubleElectron/Run2011A-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1	caf	group/alca_ecalcalib/ecalelf/alcareco/	VALID	RUN2011A, RUN2011AB
+175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf	group/alca_ecalcalib/ecalelf/alcareco/	VALID	RUN2011B, RUN2011AB
