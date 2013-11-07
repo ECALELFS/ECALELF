@@ -4,26 +4,28 @@
 
 #regionsFile=scaleStep2smearing_7
 queue=$1
-nEventsPerToy=factorizedSherpa_${queue}
-nSmearToy=90
+nEventsPerToy=factorizedSherpaFixed_DataSeedFixed_smooth_autobin_smearingEt_${queue}
+nSmearToy=10
+commonCut=Et_20-trigger-noPF-EB
 
 #nEventsPerToy=factorized
 if [ -z "${queue}" ];then local=y; fi
 
-for regionsFile in scaleStep2smearing_8 #scaleStep2smearing_5 scaleStep2smearing_6 
+for regionsFile in scaleStep2smearing_1 scaleStep2smearing_2 #scaleStep2smearing_9 
   do
 dir=test/dato/fitres/Hgg_Et-toys/${regionsFile}
 #alphaConst=C
 
-
-for constAlpha in  0.01-0.00 0.000-0.07 0.007-0.05 #0.0005 0.02 0.005
+for scale in 1.00 1.01 0.99 1.02 0.98 #1.05 0.95 1
+do
+for constAlpha in  0.01-0.00 0.03-0.00 0.005-0.00 #0.035-0.25 #0.007-0.05 0.01-0.00 0.000-0.07 # #  #0.0005 0.02 0.005
   do
   const=`echo $constAlpha | cut -d '-' -f 1`
   alpha=`echo $constAlpha | cut -d '-' -f 2`
   #for  alpha in 0.00 # 0.05 #0.10 #0.15 0.00 #0.03 0.07
   #  do
     echo "[[[[[[[[[[[ const:alpha ]]]]]]]]]]] ${const}:${alpha}"
-    baseDir=${dir}/${nEventsPerToy}/${const}-${alpha}/
+    baseDir=${dir}/${nEventsPerToy}/${const}-${alpha}-${scale}/
     mkdir -p $baseDir 
     cat > ${baseDir}/smearEleFile.dat <<EOF
 EB-absEta_0_1-bad       ${const}    ${alpha}
@@ -69,34 +71,42 @@ EOF
 #     fi
 
     cat > $baseDir/${alphaConst}/mcToy.txt <<EOF
-scale_Et_58_65-absEta_0_1-bad-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_58_65-absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_55_75-absEta_0_1-gold-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_50_75-absEta_1_1.4442-gold-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_50_58-absEta_0_1-bad-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_50_58-absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  1.0 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_50_55-absEta_0_1-gold-Et_25-trigger-noPF-EB =  1.000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_45_50-absEta_0_1-bad-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_45_50-absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_43_50-absEta_0_1-gold-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_40_50-absEta_1_1.4442-gold-Et_25-trigger-noPF-EB =  1.0000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_39_45-absEta_0_1-bad-Et_25-trigger-noPF-EB =  1.000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_39_45-absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  1.0 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_35_43-absEta_0_1-gold-Et_25-trigger-noPF-EB =  1.0 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_33_39-absEta_0_1-bad-Et_25-trigger-noPF-EB =  1.0 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_33_39-absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  1.000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_27_40-absEta_1_1.4442-gold-Et_25-trigger-noPF-EB =  1.0 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_27_35-absEta_0_1-gold-Et_25-trigger-noPF-EB =  1.000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_27_33-absEta_0_1-bad-Et_25-trigger-noPF-EB =  1.000 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-scale_Et_27_33-absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  1.0 +/- 0.0050000 C L(0.95 - 1.05) // [GeV]
-constTerm_absEta_0_1-gold-Et_25-trigger-noPF-EB =  ${const} +/- 0.030000 L(0.000 - 0.02) 
-constTerm_absEta_0_1-bad-Et_25-trigger-noPF-EB =  ${const} +/- 0.030000 L(0.000 - 0.02) 
-constTerm_absEta_1_1.4442-gold-Et_25-trigger-noPF-EB =  ${const} +/- 0.030000 L(0.000 - 0.02) 
-constTerm_absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  ${const} +/- 0.030000 L(0.000 - 0.02) 
-alpha_absEta_0_1-gold-Et_25-trigger-noPF-EB =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.2) 
-alpha_absEta_0_1-bad-Et_25-trigger-noPF-EB =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.2) 
-alpha_absEta_1_1.4442-gold-Et_25-trigger-noPF-EB =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.2) 
-alpha_absEta_1_1.4442-bad-Et_25-trigger-noPF-EB =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.2) 
+scale_Et_58_65-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_58_65-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_55_75-absEta_0_1-gold-${commonCut} =      ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_50_75-absEta_1_1.4442-gold-${commonCut} = ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_50_58-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_50_58-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_50_55-absEta_0_1-gold-${commonCut} =      ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_45_50-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_45_50-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_43_50-absEta_0_1-gold-${commonCut} =      ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_40_50-absEta_1_1.4442-gold-${commonCut} = ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_39_45-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_39_45-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_35_43-absEta_0_1-gold-${commonCut} =      ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_33_39-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_33_39-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_27_40-absEta_1_1.4442-gold-${commonCut} = ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_27_35-absEta_0_1-gold-${commonCut} =      ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_27_33-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_27_33-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_20_33-absEta_1_1.4442-bad-${commonCut}  = ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
+scale_Et_20_33-absEta_0_1-bad-${commonCut} 		= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+scale_Et_20_35-absEta_0_1-gold-${commonCut} 		= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+scale_Et_20_40-absEta_1_1.4442-gold-${commonCut} 	= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+scale_Et_50_100-absEta_1_1.4442-gold-${commonCut} 	= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+scale_Et_55_100-absEta_0_1-gold-${commonCut} 		= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+scale_Et_58_100-absEta_0_1-bad-${commonCut} 		= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+scale_Et_58_100-absEta_1_1.4442-bad-${commonCut} 	= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
+constTerm_absEta_0_1-gold-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_0_1-bad-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_1_1.4442-gold-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_1_1.4442-bad-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
+alpha_absEta_0_1-gold-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_0_1-bad-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_1_1.4442-gold-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_1_1.4442-bad-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
 EOF
 
     #sed '/smearEle/ d'  
@@ -104,7 +114,7 @@ EOF
 #    echo "s1	smearEle_HggRunEtaR9	smearEle_HggRunEtaR9_s1-invertedToyMC-${const}-${alpha}.root" >> $baseDir/toyMC.dat
 #    echo "s2	smearEle_HggRunEtaR9	smearEle_HggRunEtaR9_s2-invertedToyMC-${const}-${alpha}.root" >> $baseDir/toyMC.dat
 
-    for nToys in `seq 2 200`; 
+    for nToys in `seq 2 50`; 
       do 
       newDir=${baseDir}/${alphaConst}/${nSmearToy}/${nToys}/
       mkdir -p $newDir 
@@ -114,17 +124,18 @@ EOF
 	  bsub -q ${queue} -oo ${newDir}/stdout.log -eo ${newDir}/stderr.log -J "$regionsFile-$const-$alpha" \
 	      "cd /afs/cern.ch/user/s/shervin/scratch1/calib/CMSSW_5_3_7_patch6/src/Calibration/ZFitter; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; ./bin/ZFitter.exe -f ${baseDir}/toyMC.dat \
       --regionsFile=data/regions/${regionsFile}.dat \
-	--commonCut=Et_25-trigger-noPF-EB --smearerFit --outDirFitResData=$newDir \
-        --constTermFix --alphaGoldFix --smearerType=profile --noPU \
-	--initFile=${baseDir}/${alphaConst}/mcToy.txt --profileOnly --runToy --nSmearToy=${nSmearToy} > ${newDir}/log2.log"
+	--commonCut=${commonCut} --smearerFit --outDirFitResData=$newDir \
+        --constTermFix --alphaGoldFix --smearerType=profile --noPU --smearingEt \
+	--initFile=${baseDir}/${alphaConst}/mcToy.txt --profileOnly --plotOnly --runToy --nSmearToy=${nSmearToy} \
+        --autoBin        > ${newDir}/log2.log"
       else
 	  echo "#============================================================ Toy = $nToys"
 	  ./bin/ZFitter.exe -f ${baseDir}/toyMC.dat \
 	      --regionsFile=data/regions/${regionsFile}.dat \
-	      --commonCut=Et_25-trigger-noPF-EB --smearerFit --outDirFitResData=$newDir \
-	      --constTermFix --smearerType=profile --noPU --alphaGoldFix \
+	      --commonCut=${commonCut} --smearerFit --outDirFitResData=$newDir \
+	      --constTermFix --smearerType=profile --noPU  --smearingEt \
 	      --initFile=${baseDir}/${alphaConst}/mcToy.txt \
-	      --profileOnly --runToy --eventsPerToy=0 --nSmearToy=${nSmearToy} |tee ${newDir}/log.log
+	      --plotOnly --profileOnly --runToy --eventsPerToy=0 --nSmearToy=${nSmearToy} --autoBin |tee ${newDir}/nSmearToy_${nSmearToy}.log
 	  exit 0
       fi
     done
@@ -133,77 +144,16 @@ EOF
   wait
 done
 
-#done
+done
 
 exit 0
-  
-#!/bin/bash
-#1000 100000 
-dir=test/dato/fitres/Hgg_Et-toys
-for nToys in `seq 4 5`; 
-  do 
-  echo "[[[[[[[[[[[ nToys ]]]]]]]]]]] $nToys"
-  for nEventsPerToy in 0 10000 1000000
-    do
-    echo "[[[[[[[[[[[ nEventsPerToy ]]]]]]]]]]] ${nEventsPerToy}"
-    for  alpha in 0.00 0.01 0.03 0.05 0.07
-      do
-      for const in 0.005 0.01 0.02 0.001
-	do
-	echo "[[[[[[[[[[[ const:alpha ]]]]]]]]]]] ${const}:${alpha}"
-	newDir=${dir}/${nEventsPerToy}/${const}-${alpha}/${nToys}
-	mkdir -p $newDir 
-	cat > $newDir/mcToy.txt <<EOF
-scale_Et_58_65-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_50_58-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_45_50-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_39_45-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_33_39-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_27_33-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-constTerm_absEta_0_0.8-bad-EB-Et_25 =  ${const} +/- 0.030000 L(0.0005 - 0.05) 
-alpha_absEta_0_0.8-bad-EB-Et_25 =  ${alpha} +/- 0.010000 L(0 - 0.2) 
-EOF
-	( nice -19 ./bin/ZFitter.exe --smearerFit --autoNsmear --commonCut="EB-Et_25" -f data/validation/Winter13-powheg.dat --regionsFile=data/regions/test.dat --constTermFix --smearerType=profile --runToy --nToys=2 --initFile=${newDir}/mcToy.txt --eventsPerToy=${nEventsPerToy} --outDirFitResData=$newDir &> ${newDir}/log.log ) &
-      done
-      wait 
-    done
-    wait 
-  done  
-  wait 
-done
 
 
-#!/bin/bash
-#1000 100000 
-dir=test/dato/fitres/Hgg_Et-toys
-for nToys in `seq 4 5`; 
-  do 
-  echo "[[[[[[[[[[[ nToys ]]]]]]]]]]] $nToys"
-  for nEventsPerToy in 0 10000 1000000
-    do
-    echo "[[[[[[[[[[[ nEventsPerToy ]]]]]]]]]]] ${nEventsPerToy}"
-    for  alpha in 0.00 0.01 0.03 0.05 0.07
-      do
-      for const in 0.005 0.01 0.02 0.001
-	do
-	echo "[[[[[[[[[[[ const:alpha ]]]]]]]]]]] ${const}:${alpha}"
-	newDir=${dir}/${nEventsPerToy}/${const}-${alpha}/${nToys}
-	mkdir -p $newDir 
-	cat > $newDir/mcToy.txt <<EOF
-scale_Et_58_65-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_50_58-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_45_50-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_39_45-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_33_39-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-scale_Et_27_33-absEta_0_0.8-bad-EB-Et_25 =  1.0000 +/- 0.0050000 L(0.95 - 1.05) // [GeV]
-constTerm_absEta_0_0.8-bad-EB-Et_25 =  ${const} +/- 0.030000 L(0.0005 - 0.05) 
-alpha_absEta_0_0.8-bad-EB-Et_25 =  ${alpha} +/- 0.010000 L(0 - 0.2) 
-EOF
-	( nice -19 ./bin/ZFitter.exe --smearerFit --autoNsmear --commonCut="EB-Et_25" -f data/validation/Winter13-powheg.dat --regionsFile=data/regions/test.dat --constTermFix --smearerType=profile --runToy --nToys=2 --initFile=${newDir}/mcToy.txt --eventsPerToy=${nEventsPerToy} --outDirFitResData=$newDir &> ${newDir}/log.log ) &
-      done
-      wait 
-    done
-    wait 
-  done  
-  wait 
-done
+
+for file in  test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_9/factorizedSherpaFixed_DataSeedFixed_smooth_cmscaf1nd/0.01-0.00/15/*/log2.log; do grep DUMP $file > `dirname $file`/dumpNLL.dat; done
+
+for index in `seq 2 50`; do sed -i "s|\[DUMP NLL\]|$index\t |" test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_9/factorizedSherpaFixed_DataSeedFixed_smooth_cmscaf1nd/0.01-0.00/15/$index/dumpNLL.dat; done
+
+cat test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_9/factorizedSherpaFixed_DataSeedFixed_smooth_cmscaf1nd/0.01-0.00/15/*/dumpNLL.dat > dumpNLL.dat
+
+cat  dumpNLL.dat  | awk -F '\t' '{cat[$2]+=$3;cat2[$2]+=$3*$3; n[$2]++;};END{for(i in cat){print i, n[i], cat[i]/n[i], cat2[i]/n[i]-cat[i]/n[i]*cat[i]/n[i]}}' | awk '($5 > 5){print $0}' 

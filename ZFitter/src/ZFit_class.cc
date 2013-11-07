@@ -43,7 +43,7 @@ ZFit_class::~ZFit_class(void){
 ZFit_class::ZFit_class(TChain *data_chain_, 
 		       TChain *signal_chain_,
 		       TChain *bkg_chain_, 
-		       TString invMass_VarName, double invMass_min, double invMass_max
+		       TString invMass_VarName, double invMass_min, double invMass_max, double bin_width
 		       ):
   _isDataUnbinned(false), _isDataSumW2(false),
   _isMCUnbinned(true),    _isMCSumW2(true),
@@ -78,7 +78,7 @@ ZFit_class::ZFit_class(TChain *data_chain_,
   energyVar_name = GetEnergyVarName(invMass_VarName);
 
   /*--------------- imposto il binning */
-  double bin_width=.5;
+  //double bin_width=.5;
   int nBins = (int)((invMass.getMax()-invMass.getMin())/bin_width);
   invMass.setBins(10000);
   invMass.setBins(nBins,"plotRange");

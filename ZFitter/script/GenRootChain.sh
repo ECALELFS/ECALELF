@@ -24,6 +24,8 @@ usage(){
     echo " --outDirImg arg (=${outDirImg})"
     echo " --addBranch arg" 
     echo " --regionsFile arg (=${regionsFile})"
+    echo " --corrEleType arg"
+    echo " --corrEleFile arg"
 #    echo " --puName arg             "
 #    echo " --runRangesFile arg (=${runRangesFile})  run ranges for stability plots"
 #    echo " --selection arg (=${selection})     "
@@ -51,7 +53,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics,slides,onlyTable,test,commonCut:,period:,noPU,outDirImg:,addBranch:,regionsFile: -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics,slides,onlyTable,test,commonCut:,period:,noPU,outDirImg:,addBranch:,regionsFile:,corrEleType:,corrEleFile: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -68,6 +70,8 @@ do
 	--noPU) noPU="--noPU";;
 	--addBranch) addBranchList="${addBranchList} --addBranch=$2"; shift;;
 	--regionsFile) regionsFile=$2; shift;;
+	--corrEleType) corrEleType="--corrEleType=$2"; shift;;
+	--corrEleFile) corrEleFile="--corrEleFile=$2"; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--outDirImg) outDirImg=$2; shift;;
 	--puName) puName=$2; shift;;

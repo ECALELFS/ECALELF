@@ -26,6 +26,7 @@
 #include <TObject.h>
 #include <TKey.h>
 #include <TPaveText.h>
+#include <TSystem.h>
 
 #include <iostream>
 #include <vector>
@@ -53,19 +54,64 @@
 #define FIT_LIMIT 0.01
 #define ITER_MAX 20
 //#define DEBUG
+#define MEM_DEBUG
 #define PROFILE_NBINS 2000
 
 using namespace RooStats;
 
 //Get Profile after smearing
-TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level=-1, bool warningEnable=true, bool trueEval=true, float rho=0, float Emean=0);
-TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool warningEnable, bool trueEval, float rho, float Emean){
-  TString name(var->GetName());
-  if(trueEval) std::cout << "[STATUS] Getting profile for " << name << "\t" << level << "\t" << trueEval << "\t" << rho << std::endl;
-  double minValue=var->getVal();
+TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level=-1, bool warningEnable=false, bool trueEval=true, float rho=0, float Emean=0, float phi=0);
+
+TGraph *GetProfile(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, bool trueEval=true, double rho=0, double Emean=0, float phi=0){
+  if(var2==NULL) return GetProfile(var1, smearer, -1, false, trueEval, rho, Emean);
+
+  Double_t v1 = var1->getVal();
+  Double_t v2 = var2->getVal();
+
+  TGraph *g1 = GetProfile(var1, smearer, -1, false, false, rho, Emean, phi); // take only the binning    
+  TGraph *g2 = GetProfile(var2, smearer, -1, false, false, rho, Emean, phi); // take only the binning
+  TGraph *g3 = (rho!=0) ?  GetProfile(NULL, smearer, -1, false, false, rho, Emean, phi) : GetProfile(var1, smearer, -1, false, false, rho, Emean, phi); // take only the binning
+
+  Double_t 	*X1    = g1->GetX();
+  Double_t 	*X2    = g2->GetX();
+  Int_t 	 N     = g1->GetN();
+  Double_t *Y = g3->GetY();
+
+  if(N!=g2->GetN()){
+    std::cerr << "[ERROR] N1!=N2 for phi minimization: " << N << "\t"<<g2->GetN() << std::endl;
+    exit(1);
+  }
+
+  for(Int_t i=0; i < N; i++){ // reset Y values
+    var1->setVal(X1[i]);
+    var2->setVal(X2[i]);
+    Y[i]=smearer.evaluate();
+  }
+
+  var1->setVal(v1);
+  var2->setVal(v2);
+
+  delete g1;
+  delete g2;
+  return g3;
+}
+
+TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool warningEnable, bool trueEval, float rho, float Emean, float phi){
+  if(var==NULL) trueEval=false;
+  TString name(var == NULL ? "phi" : var->GetName());
+  //if(trueEval) 
+  std::cout << "[STATUS] Getting profile for " << name << "\t" << level << "\t" << trueEval << "\t" << rho << "\t" << Emean << std::endl;
+  double minValue= var==NULL? 0 : var->getVal();
   //double minYvalue=compatibility.evaluate();
 
-  double bin_width=0., range_min=0., range_max=0., sigma=0.;
+  double bin_width=0., sigma=0.;
+  double range_min = var ==NULL ? 0      : var->getMin();
+  double range_max = var ==NULL ? M_PI_2 : var->getMax();
+  if(Emean!=0){
+    range_min =  0     ;
+    range_max =  M_PI_2;
+  }
+
   int nBin=0;
   switch(level){
   case -1:
@@ -74,6 +120,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
   case 0:
     TGraph *g1; g1 =GetProfile(var, compatibility, 1,false);
     TGraph *g2; g2 =GetProfile(var, compatibility, 2,false);
+    TGraph *g3; g3 =GetProfile(var, compatibility, 4,false);
     Double_t X[PROFILE_NBINS], Y[PROFILE_NBINS];
 
     Int_t N_; N_=g1->GetN();
@@ -92,6 +139,14 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
       Y[i+nBin] =Y_[i];
     }
     nBin+=N_;
+
+    N_=g3->GetN();
+    X_=g3->GetX(); Y_=g3->GetY();
+    for(Int_t i=0; i < N_; i++){
+      X[i+nBin]=X_[i];
+      Y[i+nBin] =Y_[i];
+    }
+    nBin+=N_;
     return  new TGraph(nBin,X,Y);
 
     break;
@@ -99,21 +154,18 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
   case 1:
     if(name.Contains("scale")){
       bin_width=0.005;
-    } else if(name.Contains("const")){
+    } else if(name.Contains("const")|| (rho==0 && Emean!=0)){
       bin_width=0.005;
     } else if(name.Contains("alpha")){
       bin_width=0.01;
     } 
-
-    range_min = var->getMin();
-    range_max = var->getMax();
-    
+    if((var==NULL || name.Contains("alpha") || name.Contains("const")) && (Emean!=0 && rho!=0)) bin_width=0.025;
     break;
   case 2:
     if(name.Contains("scale")){
       bin_width=0.0005; // level1/10
       sigma=10*bin_width;    //
-    }else  if(name.Contains("const")){
+    }else  if(name.Contains("const")|| (rho==0 && Emean!=0)){
       bin_width=0.0005; //level1/10
       sigma=10*bin_width; // +/- 0.5%
     } else if(name.Contains("alpha")){
@@ -121,58 +173,57 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 	sigma=5*bin_width; // +/- 0.5%
     } 
 
-
+    if((var==NULL || name.Contains("alpha") || name.Contains("const")) && (Emean!=0 && rho!=0)) bin_width=0.025;
     //sigma=var->getError();
-    range_min = std::max(var->getMin(), minValue -  sigma);
-    range_max = std::min(var->getMax(), minValue +  sigma);
+    range_min = std::max(range_min, minValue -  sigma);
+    range_max = std::min(range_max, minValue +  sigma);
     break;
   case 3:
     if(name.Contains("scale")){
       bin_width=0.0001;     // level2/5
       sigma=8*bin_width;    // 
-    }else  if(name.Contains("const")){
+    }else  if(name.Contains("const") || (rho==0 && Emean!=0)){
       bin_width=0.0002;    // level2 /3
       sigma=6*bin_width;    
     } else if(name.Contains("alpha")){
 	bin_width=0.003;
 	sigma=5*bin_width; // +/- 0.5%
     } 
-
     //sigma=var->getError();
-    range_min = std::max(var->getMin(), minValue - sigma); //4sigma
-    range_max = std::min(var->getMax(), minValue + sigma);
+    range_min = std::max(range_min, minValue - sigma); //4sigma
+    range_max = std::min(range_max, minValue + sigma);
     break;
   case 4:
     if(name.Contains("scale")){
-      bin_width=0.0005; // level1/10
-    }else  if(name.Contains("const")){
-      bin_width=0.001; //level1/10
+      bin_width=0.0001; // level1/10
+	sigma=5*bin_width; // +/- 0.5%
+    }else  if(name.Contains("const")|| (rho==0 && Emean!=0)){
+      bin_width=0.0001; //level1/10
+	sigma=10*bin_width; // +/- 0.5%
     } else if(name.Contains("alpha")){
-	bin_width=0.005;
+	bin_width=0.001;
+	sigma=5*bin_width; // +/- 0.5%
     } 
+    range_min = std::max(range_min, minValue - sigma); //4sigma
+    range_max = std::min(range_max, minValue + sigma);
 
-    range_min = var->getMin();
-    range_max = var->getMax();
     break;
     
   case 5:
     if(name.Contains("scale")){
       bin_width=0.0001; // level1/10
-    }else  if(name.Contains("const")){
+    }else  if(name.Contains("const") || (rho==0 && Emean!=0)){
       bin_width=0.0001; //level1/10
     } else if(name.Contains("alpha")){
       bin_width=0.001;
     } 
-    if((name.Contains("alpha") || name.Contains("const")) && (Emean!=0 && rho!=0)) bin_width=0.025;
-
-    range_min = var->getMin();
-    range_max = var->getMax();
+    if((var==NULL || name.Contains("alpha") || name.Contains("const")) && (Emean!=0 && rho!=0)) bin_width=0.025;
     break;
 
   }
-
+    if((var==NULL || name.Contains("alpha") || name.Contains("const")) && (Emean!=0)) bin_width=0.025;
     nBin=(int)((range_max-range_min)/bin_width);
-    if(Emean!=0 && rho!=0) nBin=(int) (M_PI_2 / bin_width);
+    //    if(Emean!=0 && rho!=0) nBin=(int) (M_PI_2 / bin_width);
 
 #ifdef DEBUG
 
@@ -209,6 +260,12 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 	if(name.Contains("const")) value=rho*sin(bin_width*iVal);
 	//std::cout << "[DEBUG] " << "\t" << rho << "\t" << Emean << "\t" << bin_width << "\t" << bin_width*iVal << "\t" << value << std::endl;
       }
+      if(rho==0 && Emean!=0){
+	if(name.Contains("alpha")) value=value*Emean*cos(phi);
+	if(name.Contains("const")) value=value*sin(phi);
+	//std::cout << "[DEBUG] " << "\t" << rho << "\t" << Emean << "\t" << bin_width << "\t" << bin_width*iVal << "\t" << value << std::endl;
+      }
+      
 #ifdef DEBUG
       std::cout << "testing function @ " << value << std::endl;
 #endif
@@ -227,7 +284,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
     std::cout << "------------------------------" << std::endl;
   }
 
-  var->setVal(minValue);
+  if(var!=NULL) var->setVal(minValue);
   TGraph *profil = new TGraph(nBin,xValues,chi2);
   return profil;
 }
@@ -527,7 +584,7 @@ void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
    delete [] ebuf;
 }
 
-bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t locmin, float phiMin=1){
+bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t locmin, float phiMin=2){
   if(abs(i-iLocMin)>2 && chi2-min > 300){ std::cout << "stop 1" << std::endl; return true;}
   if(abs(i-iLocMin)>5 && chi2-min > 200){ std::cout << "stop 2" << std::endl; return true;}
 //   if(abs(i-iLocMin)>6 && chi2-locmin > 120){ std::cout << "stop 3" << std::endl; return true;}
@@ -555,7 +612,11 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
   float phiMin=1;
   if(var2!=NULL){ 
     var2->setVal(X2[iMinStart]);
-    phiMin=3;
+    phiMin=5;
+  }
+  TString varName = var->GetName();
+  if(varName.Contains("constTerm") || varName.Contains("alpha")){
+    phiMin=2;
   }
   if(Y==NULL) exit(1);
 
@@ -573,11 +634,11 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
     Y[i] += chi2;
     NY[i]++;
   
-    iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
-
-    if(var2!=NULL) std::cout << "[DEBUG] "  << std::setprecision(5) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
+    //iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
+    iStep=1;
+    if(var2!=NULL) std::cout << "[DEBUG] "  << std::setprecision(3) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
       chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
-    else std::cout << std::setprecision(5) << "[DEBUG] " <<  "\t" << iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\tchi2= " <<  chi2 << std::endl;
+    else std::cout  << std::setprecision(4) << "[DEBUG] " <<  "\t" << iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\tchi2= " <<  chi2 << std::endl;
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
 	locmin=chi2;
@@ -602,14 +663,15 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
     Y[i] += chi2;
     NY[i]++;
 
-    iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
+    //iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
+    iStep=1;
 #ifdef DEBUG      
     //if(update==true) 
       std::cout << "[DEBUG] " <<  "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << std::endl;
 #endif
-    if(var2!=NULL) std::cout << "[DEBUG] Neg"  << std::setprecision(5) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
+    if(var2!=NULL) std::cout <<   "[DEBUG] Neg"  << std::setprecision(3) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
       chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
-    else std::cout << std::setprecision(5) << "[DEBUG] Neg" <<  "\t" <<  iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
+    else std::cout << std::setprecision(4) << "[DEBUG] Neg" <<  "\t" <<  iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
 
     if(chi2<=locmin){ //local minimum
 	iLocMin=i;
@@ -630,7 +692,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
 }
 
 bool MinProfile(RooRealVar *var, RooSmearer& smearer, int iProfile, 
-		Double_t min_old, Double_t& min, double rho=0, double Emean=0){ 
+		Double_t min_old, Double_t& min, double rho=0, double Emean=0, bool update=true, bool dscan=false){ 
   bool changed=false;
 
   Double_t v1=var->getVal();
@@ -671,7 +733,7 @@ bool MinProfile(RooRealVar *var, RooSmearer& smearer, int iProfile,
     //else a fluctuation changed the min value
    }
 
-  if(min<min_old || changed) { // if a new minimum has been found now, or due to another variable, need to update the scale
+  if(update && (min<min_old || changed)) { // if a new minimum has been found now, or due to another variable, need to update the scale
     std::cout << "[INFO] Updating variable:" << var->GetName() << " from " << v1 << " to " << X[iMin_]  << std::endl
 	      << "       min = " << min << "; Y[iMin_]-min =  " << Y[iMin_]-min << std::endl;
     var->setVal(X[iMin_]);
@@ -682,6 +744,8 @@ bool MinProfile(RooRealVar *var, RooSmearer& smearer, int iProfile,
   }   
   //  std::cout << "[INFO] Level " << iProfile << " variable:" << var->GetName() << "\t" << var->getVal() << "\t" << min << std::endl;
   delete profil;
+  //  delete X;
+  //delete Y;
   return changed;
 }
 
@@ -689,7 +753,13 @@ bool MinProfile(RooRealVar *var, RooSmearer& smearer, int iProfile,
    min is updated
  */
 bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iProfile, 
-		  Double_t min_old, Double_t& min, bool update=true, TGraph **g=NULL){ 
+		  Double_t min_old, Double_t& min, double& rho, double& Emean, bool update=true, bool dscan=false){ 
+#ifdef MEM_DEBUG
+  ProcInfo_t info;
+  gSystem->GetProcInfo(&info);
+  std::cout << "GET MEM INFO AT MinProfile2D START " << info.fMemResident << std::endl;
+#endif
+
   bool changed=false;
   std::cout << "------------------------------ MinProfile2D: iProfile==" << iProfile << std::endl;
 
@@ -705,17 +775,18 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   myClock.Start();
 
   var2->setVal(0);
+  var1->setVal(sqrt(v1*v1+v2*v2/50));
   changed+=MinProfile(var1, smearer, -1, min_old, locmin); // best DeltaC with DeltaS=0
   // rho = best DeltaC with DeltaS=0
-  double rho = var1->getVal();
+  rho = var1->getVal();
 
   locmin=1e20;
   var1->setVal(0);
-  var2->setVal(0.05);
+  var2->setVal(rho*7);
   MinProfile(var2, smearer, -1, min_old, locmin); // best DeltaS with DeltaC=0
   
   //sqrt(<E>) = DeltaS/DeltaC
-  double Emean = var2->getVal()/rho;
+  Emean = var2->getVal()/rho;
 
   std::cout << "--------------------------------- GetProfile for " << var1->GetName() << std::endl;
   TGraph 	*g1 = GetProfile(var1, smearer, iProfile, false, false, rho, Emean); // take only the binning
@@ -731,12 +802,12 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     exit(1);
   }
 
-  //  Double_t      *Y     = new Double_t[N2];
+
   Double_t *Y = g1->GetY();
 
   //Int_t iLocMin1=0, iLocMin2, 
   Int_t iLocMin2Prev=10;
-  //Double_t      *Y2     = new Double_t[PROFILE_NBINS];
+  //Double_t      Y2[PROFILE_NBINS];
   for(Int_t i2=0; i2 < N; i2++){ // reset Y values
     Y[i2]=0;
     //    if(X1[iLocMin2Prev]<v1) iLocMin2Prev++;
@@ -771,7 +842,7 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
   myClock.Print();
 
   //------------------------------ making the 2D scan around the minimum
-  if(update==false){
+  if(update==false && dscan==true){
     myClock.Start();
     var1->setVal(X1[iMin_]);
     var2->setVal(X2[iMin_]);
@@ -783,17 +854,24 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     
 
     while(XG1[iBin1]<X1[iMin_]){ //nearest bin to the minimum
-      std::cout << "[DEBUG] Nearest bin to minimum: " << iBin1 << "\t" << XG1[iBin1] << "  " << X1[iMin_] << std::endl;
+      //std::cout << "[DEBUG] Nearest bin to minimum: " << iBin1 << "\t" << XG1[iBin1] << "  " << X1[iMin_] << std::endl;
       iBin1++;
     }
     while(XG2[iBin2]<X2[iMin_]){ //nearest bin to the minimum
-      std::cout << "[DEBUG] Nearest bin to minimum: " << iBin2 << "\t" << XG2[iBin2] << "  " << X2[iMin_] << std::endl;
+      //std::cout << "[DEBUG] Nearest bin to minimum: " << iBin2 << "\t" << XG2[iBin2] << "  " << X2[iMin_] << std::endl;
       iBin2++;
     }
-    Int_t iBin1min= std::max(iBin1-5,0);
-    Int_t iBin2min= std::max(iBin2-5,0);
-    Int_t iBin1max= std::min(iBin1+5,N);
-    Int_t iBin2max= std::min(iBin2+5,N);
+    Int_t iBin1min= std::max(iBin1-6,0);
+    Int_t iBin2min= std::max(iBin2-6,0);
+    Int_t iBin1max= std::min(iBin1+6,G1->GetN());
+    Int_t iBin2max= std::min(iBin2+6,G1->GetN());
+    
+    Int_t iBin1_ = iBin1, iBin2_=iBin2, iBinM=(int)(sqrt(iBin1*iBin1+iBin2*iBin2));
+    
+    iBin1min=0;
+    iBin1max=G1->GetN();
+    iBin2min=0;
+    iBin2max=G1->GetN();
     std::cout << "[INFO] " << "iBin1min = " << iBin1min << std::endl
 	      << "       " << "iBin1max = " << iBin1max << std::endl
 	      << "       " << "iBin2min = " << iBin2min << std::endl
@@ -802,18 +880,20 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     for(iBin1=iBin1min; iBin1<iBin1max; iBin1++){
       var1->setVal(XG1[iBin1]);
       for(iBin2=iBin2min; iBin2<iBin2max; iBin2++){
-	var2->setVal(XG2[iBin2]);
+	if(sqrt(iBin1*iBin1+Emean * iBin2*iBin2) < iBinM-10) continue;
+	if(sqrt(iBin1*iBin1+Emean * iBin2*iBin2) > iBinM+10) continue;
+      	var2->setVal(XG2[iBin2]);
 	smearer.evaluate();
 	std::cout << "[DEBUG] " << XG1[iBin1] << "\t" << XG2[iBin2] << "\t" << smearer.evaluate()-chi2 << std::endl;
       }
     }
-    (*g) = GetProfile(var1, smearer, -1, false, false, rho, Emean);
-    Double_t *YY = (*g) -> GetY();
-    for(int i=0; i < N; i++) YY[i]=Y[i];
+    
     myClock.Stop();
     myClock.Print();
     delete G1;
     delete G2;
+//     delete XG1;
+//     delete XG2;
     var1->setVal(v1);
     var2->setVal(v2);
   }
@@ -836,6 +916,11 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
 
   delete g1;
   delete g2;
+#ifdef MEM_DEBUG
+  gSystem->GetProcInfo(&info);
+  std::cout << "GET MEM INFO JUST BEFORE END MinProfile2D " << info.fMemResident << std::endl;
+#endif
+
   return changed;
 }
 
@@ -897,18 +982,18 @@ void MinimizationProfile(RooSmearer& smearer, RooArgSet args, long unsigned int 
     for(RooRealVar *var = (RooRealVar*)it_->Next(); var!=NULL; var = (RooRealVar*)it_->Next()){
       if (var->isConstant()) continue;
       TString  name(var->GetName());
-      
       // special part for alpha fitting 
       TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
       RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList_.find(alphaName): NULL;
       if(name.Contains("alpha")) continue; //if alpha parameter exists, need a 2D scan
       //if(var2!=NULL && var2->isConstant()) var2=NULL; // to use MinProfile 1D instead of 2D
       //taking large profile
-      if(var2==NULL) MinProfile(var, smearer, -1, min_old, min); //updateError += MinProfile(var, smearer, iProfile, min_old, min);
+      if(var2==NULL || var2->isConstant()) MinProfile(var, smearer, -1, min_old, min); //updateError += MinProfile(var, smearer, iProfile, min_old, min);
       else { 
 	//if(mcmc && iProfile>2) updateError += MinMCMC2D(var, var2, smearer, iProfile, min_old, min, nIterMCMC);
 	//  else 
-	updateError+=MinProfile2D(var, var2, smearer, -1, min_old, min);
+	double rho=0, Emean=0;
+	updateError+=MinProfile2D(var, var2, smearer, -1, min_old, min, rho, Emean);
       }
     }
     delete it_;

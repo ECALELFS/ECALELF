@@ -1,11 +1,14 @@
 #!/bin/bash
+CERT_BASE_DIR=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification
+MINBIAS=69400
+
 usage(){
     echo 
     echo "============================== Usage: "
     echo "`basename $0` <-a | < -p pileupFile  -j jsonFile> > [--pixel] [--printOnly]" #| -u crab_working_dir >" 
     echo " -a: automatic retreive of the last jsonFile and last pileupFile"
     echo "Optional parameters:"
-    echo " -m minbias"
+    echo " -m minbias (=$MINBIAS)"
     echo " -r 190000-200000 : run range"
     echo " --printOnly"
     echo " --pixel : use PU JSON with pixel correction"
@@ -30,8 +33,6 @@ desc(){
 }
 
 
-CERT_BASE_DIR=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification
-MINBIAS=69400
 
 runRangeJSON(){
 _RUNRANGE=$1
@@ -145,7 +146,7 @@ if [ -n "$PRINTONLY" ];then exit 0;fi
 
 if [ ! -e "data/puFiles/$JSONNAME.root" ];then
     if [ ! -d "data/puFiles" ];then mkdir data/puFiles -p; fi
-    pileupCalc.py -i ${JSON} --inputLumiJSON $PUJSON --calcMode observed --minBiasXsec $MINBIAS --maxPileupBin 60 --numPileupBins 60  data/puFiles/$JSONNAME.root
+    pileupCalc.py -i ${JSON} --inputLumiJSON $PUJSON --calcMode true --minBiasXsec $MINBIAS --maxPileupBin 100 --numPileupBins 100  data/puFiles/$JSONNAME.root
 fi
 
 

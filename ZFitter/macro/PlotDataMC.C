@@ -587,7 +587,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   yLabel.Form("Events /(%.2f %s)", d->GetBinWidth(2), yLabelUnit.Data());
   
   float max = 0; //1.1 * std::max(
-  max=1.1*d->GetMaximum();
+  max=1.2*d->GetMaximum();
   std::cout << "max = " << max << std::endl;
   std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
     
@@ -616,7 +616,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
     s->GetXaxis()->SetTitle(xLabel);
 
     s->SetMarkerStyle(20);
-    s->SetMarkerSize(2);
+    s->SetMarkerSize(1);
     s->SetMarkerColor(colors[i]);
     s->SetFillStyle(fillstyle[i]);
     s->SetFillColor(colors[i]);

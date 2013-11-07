@@ -8,7 +8,7 @@
 #include <TMath.h>
 #include <TEntryList.h>
 
-#define NSMEARTOYLIM 100
+#define NSMEARTOYLIM 31
 
 #include "ZeeEvent.hh"
 #include "ElectronCategory_class.hh"

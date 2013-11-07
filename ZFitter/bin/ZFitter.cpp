@@ -303,7 +303,7 @@ int main(int argc, char **argv) {
     ("constTermFix", "constTerm not depending on Et")
     ("alphaGoldFix", "alphaTerm for gold electrons fixed to the low eta region")
     ("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
-    ("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(1), "")
+    ("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(0), "")
     ;
   inputOption.add_options()
     ("chainFileList,f", po::value< string >(&chainFileListName), "Configuration file with input file list")
@@ -338,7 +338,10 @@ int main(int argc, char **argv) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);    
 
-
+  if(!vm.count("invMass_binWidth") && !vm.count("smearerFit")){
+    std::cout << "[INFO] Bin Width=0.5" << std::endl;
+    invMass_binWidth=0.5;
+  }
 
   if (vm.count("help")) {
     cout << desc << "\n";
@@ -356,6 +359,19 @@ int main(int argc, char **argv) {
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV5_pho") energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_ele") energyBranchName = "energySCEle_regrCorrSemiParV6_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_pho") energyBranchName = "energySCEle_regrCorrSemiParV6_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_ele") energyBranchName = "energySCEle_regrCorrSemiParV7_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_pho") energyBranchName = "energySCEle_regrCorrSemiParV7_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_ele") energyBranchName = "energySCEle_regrCorrSemiParV8_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_pho") energyBranchName = "energySCEle_regrCorrSemiParV8_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
+
   else {
     std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
     exit(1);
@@ -633,6 +649,7 @@ int main(int argc, char **argv) {
 	  tag_chain_itr++){
 	if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue;
 	TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+	if((tag_chain_itr->second.count("pileup"))) continue;
 	TString treeName="pileup";
 	TString filename="tmp/mcPUtree"+tag_chain_itr->first+".root";
 	TFile f(filename,"recreate");
@@ -898,7 +915,8 @@ int main(int argc, char **argv) {
   }
 
   TRandom3 g(0);
-  TString filename="tmp/tmpFile-"; filename+=g.Integer(1000000);filename+=".root";
+  Long64_t randomInt=g.Integer(1000000);
+  TString filename="tmp/tmpFile-"; filename+=randomInt;filename+=".root";
   TFile *tmpFile = new TFile(filename,"recreate");
   tmpFile->cd();
   RooSmearer smearer("smearer",(tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL, 
@@ -913,7 +931,7 @@ int main(int argc, char **argv) {
   //smearer.nEventsMinDiag = nEventsMinDiag;
   smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
   smearer.SetSmearingEt(vm.count("smearingEt"));
-  smearer._nSmearToy = nSmearToy;
+  if(nSmearToy>0) smearer._nSmearToy = nSmearToy;
   //------------------------------ Take the list of branches needed for the defined categories
   ElectronCategory_class cutter;
   std::set<TString> activeBranchList;
@@ -933,7 +951,7 @@ int main(int argc, char **argv) {
     mc  = (tagChainMap["s"])["selected"];
   }
   ZFit_class fitter( data, mc, NULL, 
-		    invMass_var.c_str(), invMass_min, invMass_max); 
+		     invMass_var.c_str(), invMass_min, invMass_max, invMass_binWidth); 
 
   fitter._oddMC=vm.count("isOddMC");
   fitter._oddData=vm.count("isOddData");
@@ -997,6 +1015,11 @@ int main(int argc, char **argv) {
 	  args.writeToStream(std::cout, kFALSE);
 	  smearer.Init(commonCut.c_str(), eleID);
 	}
+	myClock.Start();
+	smearer.evaluate();
+	myClock.Stop();
+	myClock.Print();
+	smearer.DumpNLL();
 
 	//if(vm.count("plotOnly")) //smearer.SetNSmear(10);
 	RooMinuit m(smearer);
@@ -1151,6 +1174,7 @@ int main(int argc, char **argv) {
 	  outFile+=r+"-"+TString(commonCut.c_str())+".root";
 	  TFile *fOutProfile = new TFile(outFile,"recreate");
 	  //test/dato/fitres/Hgg_Et_v7/0.03//outProfile-data/regions/test.dat-Et_25-EB.root
+
 	  for (int ivar=0;ivar<args.getSize();++ivar)
 	    {
 	      RooArgList argList(args);
@@ -1159,45 +1183,108 @@ int main(int argc, char **argv) {
 		continue;
 
 	      TString name(var->GetName());
+	      if(name.Contains("scale")) continue;
 	      //if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
 	      // special part for alpha fitting 
 	      double min=0.;
 	      TString  alphaName=name; alphaName.ReplaceAll("constTerm","alpha");
 	      RooRealVar *var2= name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName): NULL;
-	      TGraph *profilePhi=NULL;
 	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
+		TString name2 = name;
+		
+		double rho=0, Emean=0;
 		smearer.SetDataSet(name,TString(var->GetName())+TString(var2->GetName()));
-
-		if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, false, &profilePhi);
-		//MinMCMC2D(var, var2, smearer, 1, 0., min, 1200, false);
-		//MinMCMC2D(var, var2, smearer, 2, 0., min, 800, false);
-		//MinMCMC2D(var, var2, smearer, 3, 0., min, 100, false);
+		if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, rho, Emean, false);
 		smearer.dataset->Write();
-		TString of=outFile; of.ReplaceAll(".root",name+".root");
-		smearer.dataset->SaveAs(of);
+
+		// rho profile
+		name2.ReplaceAll("constTerm", "rho");
+// 		smearer.SetDataSet(name2,"rho");
+// 		Double_t v1=var->getVal();
+// 		Double_t v2=var2->getVal();
+// 		var2->setVal(0);
+// 		var->setVal(rho);
+ 		TGraph *profil = NULL;
+//profil = GetProfile(var, smearer,0);
+// 		var2->setVal(v2);
+// 		var->setVal(v1);
+ 		TString n="profileChi2_"+name2+"_"; n+=randomInt;
+// 		profil->SetName(n);  
+// 		TCanvas c("c_"+name);
+// 		profil->Draw("AP*");
+// 		fOutProfile->cd();
+// 		profil->Write();
+// 		delete profil;
+// 		smearer.dataset->Write();
+
+
+ 		// phi profile
+ 		name2.ReplaceAll("rho", "phi");
+// 		smearer.SetDataSet(name2,"phi");
+// 		profil = GetProfile(var, var2, smearer, true, rho, Emean);
+// 		n="profileChi2_"+name2+"_"; n+=randomInt;
+// 		profil->SetName(n);  
+// 		profil->Draw("AP*");
+// 		fOutProfile->cd();
+// 		profil->Write();
+// 		delete profil;
+// 		smearer.dataset->Write();
+
+		// rho profile with fixed phi!=pi/2
+		name2.ReplaceAll("phi", "rho_phi4");
+		smearer.SetDataSet(name2,"rho_phi4");
+		profil = GetProfile(var, var2, smearer, true, 0, Emean, 0.785);
+		n="profileChi2_"+name2+"_"; n+=randomInt;
+		profil->SetName(n);  
+		profil->Draw("AP*");
+		fOutProfile->cd();
+		profil->Write();
+		delete profil;
+		smearer.dataset->Write();
+
+// 		// rho profile with fixed phi!=pi/2
+// 		name2.ReplaceAll("rho_phi4", "rho_phi6");
+// 		smearer.SetDataSet(name2,"rho_phi6");
+// 		profil = GetProfile(var, var2, smearer, true, 0, Emean, 0.524);
+// 		n="profileChi2_"+name2+"_"; n+=randomInt;
+// 		profil->SetName(n);  
+// 		profil->Draw("AP*");
+// 		fOutProfile->cd();
+// 		profil->Write();
+// 		delete profil;
+// 		smearer.dataset->Write();
+
+// 		// rho profile with fixed phi!=pi/2
+// 		name2.ReplaceAll("rho_phi6", "rho_phi3");
+// 		smearer.SetDataSet(name2,"rho_phi3");
+// 		profil = GetProfile(var, var2, smearer, true, 0, Emean, 1.05);
+// 		n="profileChi2_"+name2+"_"; n+=randomInt;
+// 		profil->SetName(n);  
+// 		profil->Draw("AP*");
+// 		fOutProfile->cd();
+// 		profil->Write();
+// 		delete profil;
+// 		smearer.dataset->Write();
+
 
 	      }
+
 	      //if(!name.Contains("scale")) continue;
 	      std::cout << "Doing " << name << "\t" << var->getVal() << std::endl;
-	      
+	      smearer.SetDataSet(name,name);
+	      //	      if(vm.count("runToy")){
+	      //		MinProfile(var, smearer, -1, 0., min, false);
+	      //}
 	      TGraph *profil = GetProfile(var, smearer,0);
-	      TString n="profileChi2_"+name;
+	      TString n="profileChi2_"+name+"_"; n+=randomInt;
 	      profil->SetName(n);  
 	      TCanvas c("c_"+name);
 	      profil->Draw("AP*");
 	      fOutProfile->cd();
 	      profil->Write();
 	      std::cout << "Saved profile for " << name << std::endl;
-	      if(var2!=NULL && name.Contains("constTerm") && var2->isConstant()==false){
-		n.ReplaceAll("constTerm","phi");
-		profilePhi->SetName(n);
-		profilePhi->Draw("AP*");
-		profilePhi->Write();
-	      }
-	      std::cout << "Saved profile for " << n << std::endl;
-
+	      smearer.dataset->Write();
 	      delete profil;
-	      delete profilePhi;
 	    }
 	  std::cout << "Cloning args" << std::endl;
 	  //	  RooArgSet *mu = (RooArgSet *)args.snapshot();

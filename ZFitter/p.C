@@ -3,13 +3,14 @@
   TString optSmooth="k3a";
   gROOT->ProcessLine(".include /afs/cern.ch/cms/slc5_amd64_gcc462/lcg/roofit/5.32.03-cms16/include");
   gROOT->ProcessLine(".L macro/mcmcDraw.C+");
-  TString filename="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_8/factorizedSherpa_2nd/0.01-0.00/90/2/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF-EB.root";
-  //  TString filename="test/dato/22Jan2012-runDepPowheg-noR9shift/loose/invMass_SC_regrCorrSemiParV5_pho/step4_fixed/fitres/outProfile-scaleStep2smearing_8-Et_25-trigger-noPF.root";
+  //TString filename="test/dato/fitres/Hgg_Et-toys/scaleStep2smearing_9/factorizedSherpaFixed_DataSeedFixed_smooth_autobin_cmscaf1nd/0.007-0.05-1.00/10/3/outProfile-scaleStep2smearing_9-Et_20-trigger-noPF-EB.root";
+  //  TString filename="test/dato/22Jan2012-runDepMC/loose/invMass_SC_regrCorrSemiParV5_pho/step2/fitres/outProfile-scaleStep2smearing_9-Et_20-trigger-noPF.root";
+  TString filename="test/dato/22Jan2012-runDepMCAll/loose/invMass_SC_regrCorrSemiParV5_pho/step8/50/fitres/outProfile-scaleStep2smearing_9-Et_20-trigger-noPF.root";
 
-  MakePlots(filename, 10, 10, optSmooth);
-  MakePlots(filename, 10, 3,  optSmooth);
-  MakePlots(filename, 10, 1,  optSmooth);
-  MakePlots(filename, 10, 0,  optSmooth);
+//   MakePlots(filename, 10, 10, optSmooth);
+//   MakePlots(filename, 10, 3,  optSmooth);
+//   MakePlots(filename, 10, 1,  optSmooth);
+  MakePlots(filename, 300, 0,  optSmooth);
 }
   TCanvas *c = new TCanvas("c","");
   //  gROOT->ProcessLine(".L ~/smooth.C+");
