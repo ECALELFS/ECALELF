@@ -25,17 +25,17 @@ double r9Weights_class::GetWeight(double etaEle_, double R9Ele_){
 #endif
 
     double r9Weight=1.;
-    TString stringa;
+    TString categoryName;
 
-    if(fabs(etaEle_) < 1.) stringa="EBlowEta";
-    if(fabs(etaEle_) >= 1 && fabs(etaEle_) <= 1.479) stringa="EBhighEta";
-    if(fabs(etaEle_) > 1.479 && fabs(etaEle_) < 2) stringa="EElowEta";
-    if(fabs(etaEle_) >= 2) stringa="EEhighEta";
+    if(fabs(etaEle_) < 1.) categoryName="EBlowEta";
+    if(fabs(etaEle_) >= 1 && fabs(etaEle_) <= 1.479) categoryName="EBhighEta";
+    if(fabs(etaEle_) > 1.479 && fabs(etaEle_) < 2) categoryName="EElowEta";
+    if(fabs(etaEle_) >= 2) categoryName="EEhighEta";
 
-    if (R9Ele_>=0.94) stringa+="Gold";
-    if (R9Ele_<0.94 ) stringa+="Bad";
+    if (R9Ele_>=0.94) categoryName+="Gold";
+    if (R9Ele_<0.94 ) categoryName+="Bad";
 
-    if(stringa.Sizeof()>1){ // altrimenti non e' delle categorie definite sopra
+    if(categoryName.Sizeof()>1){ // altrimenti non e' delle categorie definite sopra
       std::vector<TString> WeightCat_vec;
       WeightCat_vec.push_back("R9EtaWeight"); // weights of the eta distribution
       WeightCat_vec.push_back("R9Weight");    // weights of the r9 distribution
@@ -45,17 +45,17 @@ double r9Weights_class::GetWeight(double etaEle_, double R9Ele_){
           itrV!=WeightCat_vec.end();
           itrV++){
         TString hist_prefix = *itrV;
-        if(r9weights.count(hist_prefix+stringa)==0){
-	  std::cerr << "[ERROR]: " << hist_prefix+stringa << " not found in file " << std::endl;
+        if(r9weights.count(hist_prefix+categoryName)==0){
+	  std::cerr << "[ERROR]: " << hist_prefix+categoryName << " not found in file " << std::endl;
 	  std::cerr << etaEle_ << "\t" << R9Ele_ << std::endl;
 	 
 	  exit(1);
           continue;
         }
 
-	r9weights_itr = r9weights.find(hist_prefix+stringa);
+	r9weights_itr = r9weights.find(hist_prefix+categoryName);
 #ifdef DEBUG
-	std::cout << hist_prefix << "\t" << stringa << "\t";
+	std::cout << hist_prefix << "\t" << categoryName << "\t";
 #endif
 
 	r9weight_map_t::const_iterator itr; // first element less than x

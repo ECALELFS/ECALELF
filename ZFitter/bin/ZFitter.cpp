@@ -559,60 +559,54 @@ int main(int argc, char **argv) {
   
 
   ///------------------------------ to obtain r9weights
-  r9Weights_class r9Weights;
   if(vm.count("saveR9TreeWeight") && !vm.count("r9WeightFile")){
     std::cerr << "[ERROR] No r9WeightFile specified" << std::endl;
     return 1;
   }
   if(vm.count("r9WeightFile")){
+    std::cout << "------------------------------------------------------------" << std::endl;
+    std::cout << "[STATUS] Getting r9Weights from file: " << r9WeightFile << std::endl;
+    r9Weights_class r9Weights;
     r9Weights.ReadFromFile(r9WeightFile);
-    
+
+    TString treeName="r9Weight";
+
     // mc // save it in a file and reload it as a chain to be safe against the reference directory for the tree
+    for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
+	tag_chain_itr!=tagChainMap.end();
+	tag_chain_itr++){
+      if(tag_chain_itr->first.CompareTo("d")==0 || !tag_chain_itr->first.Contains("d")) continue; //only data
+      if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //only MC
+      if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
+      TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+     
+      TString filename="tmp/r9Weight_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
+      std::cout << "[STATUS] Saving r9Weights tree to root file:" << filename << std::endl;
+      
+      TFile f(filename,"recreate");
+      if(!f.IsOpen() || f.IsZombie()){
+	std::cerr << "[ERROR] File for r9Weights: " << filename << " not opened" << std::endl;
+	exit(1);
+      }
+      TTree *corrTree = r9Weights.GetTreeWeight(ch);
+      f.cd();
+      corrTree->Write();
+      std::cout << "[INFO] Data      entries: " << ch->GetEntries() << std::endl;
+      std::cout << "       r9Weights entries: " << corrTree->GetEntries() << std::endl;
+      delete corrTree;
+	
+      f.Write();
+      f.Close();
+      std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
+      chain_map_t::iterator chain_itr= ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+      chain_itr->second->SetTitle(tag_chain_itr->first);
+      chain_itr->second->Add(filename);
     
-    TFile r9File_mc("tmp/r9mcTree.root","recreate");
-    if(r9File_mc.IsOpen()){
-      r9File_mc.cd();
-      TTree *r9Tree = r9Weights.GetTreeWeight((tagChainMap["s"])["selected"]);
-      r9Tree->Write();
-      delete r9Tree;
-      r9File_mc.Write();
-      r9File_mc.Close();
-      std::pair<TString, TChain* > pair_tmp("r9Weight", new TChain("r9Weight"));
-      (tagChainMap["s"]).insert(pair_tmp);
-      (tagChainMap["s"])["r9Weight"]->SetTitle("s");
-      (tagChainMap["s"])["r9Weight"]->Add("tmp/r9mcTree.root");
-    } else {
-      std::cerr << "[ERROR] " << std::endl;
-      return 1;
-    }
+    } // end of data samples loop
+  } // end of r9Weight 
     
 
-    // data
-    TFile r9File_data("tmp/r9dataTree.root","recreate");
-    if(r9File_data.IsOpen()){
-      r9File_data.cd();
-      TTree *r9Tree = r9Weights.GetTreeWeight((tagChainMap["d"])["selected"]);
-      r9Tree->Write();
-      delete r9Tree;
-      r9File_data.Write();
-      r9File_data.Close();
-      std::pair<TString, TChain* > pair_tmp("r9Weight", new TChain("r9Weight"));
-      (tagChainMap["d"]).insert(pair_tmp);
-      (tagChainMap["d"])["r9Weight"]->SetTitle("d");
-      (tagChainMap["d"])["r9Weight"]->Add("tmp/r9dataTree.root");
-    }
-  }
   if(vm.count("saveR9TreeWeight")) return 0;
-//   if((tagChainMap["s"]).count("r9Weight")){
-//     std::cout << "[STATUS] Adding r9Weight chain to signal chain as friend chain" << std::endl;
-//   }
-//   if((tagChainMap["d"]).count("r9Weight")){
-//     std::cout << "[STATUS] Adding r9Weight chain to data chain as friend chain" << std::endl;
-//     //	if((tagChainMap["d"])["selected"]->AddFriend((tagChainMap["d"])["r9Weight"])==NULL) return 2;
-// #ifdef DEBUG
-//     std::cout << "[DEBUG] r9Weight branch address " << (tagChainMap["d"])["selected"]->GetBranch("r9Weight") << std::endl;
-// #endif
-//   }
 
 
   //==============================
