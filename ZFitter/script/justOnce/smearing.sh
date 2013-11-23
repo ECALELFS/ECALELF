@@ -6,19 +6,19 @@
 queue=$1
 nEventsPerToy=factorizedSherpaFixed_DataSeedFixed_smooth_autobin_smearingEt_${queue}
 nSmearToy=10
-commonCut=Et_20-trigger-noPF-EB
+commonCut=Et_20-trigger-noPF
 
 #nEventsPerToy=factorized
 if [ -z "${queue}" ];then local=y; fi
 
-for regionsFile in scaleStep2smearing_1 scaleStep2smearing_2 #scaleStep2smearing_9 
+for regionsFile in scaleStep2smearing_9 #scaleStep2smearing_1 scaleStep2smearing_2 #
   do
 dir=test/dato/fitres/Hgg_Et-toys/${regionsFile}
 #alphaConst=C
 
-for scale in 1.00 1.01 0.99 1.02 0.98 #1.05 0.95 1
+for scale in 1.00 1.01 0.99 1.02 0.98 1.05 0.95 
 do
-for constAlpha in  0.01-0.00 0.03-0.00 0.005-0.00 #0.035-0.25 #0.007-0.05 0.01-0.00 0.000-0.07 # #  #0.0005 0.02 0.005
+for constAlpha in  0.02-0.00 0.04-0.00 0.01-0.00 0.03-0.00 0.005-0.00 0.035-0.25 0.007-0.05 0.01-0.00 0.000-0.07 # #  #0.0005 0.02 0.005
   do
   const=`echo $constAlpha | cut -d '-' -f 1`
   alpha=`echo $constAlpha | cut -d '-' -f 2`
@@ -71,6 +71,14 @@ EOF
 #     fi
 
     cat > $baseDir/${alphaConst}/mcToy.txt <<EOF
+scale_absEta_1_1.4442-gold-${commonCut} 	=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_1_1.4442-bad-${commonCut} 	=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_0_1-gold-${commonCut} 		=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_0_1-bad-${commonCut} 		=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_1.566_2-gold-${commonCut} 	=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_1.566_2-bad-${commonCut} 	=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_2_2.5-gold-${commonCut} 	=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
+scale_absEta_2_2.5-bad-${commonCut} 		=  ${scale} +/- 0.0050000 L(0.9 - 1.1) // [GeV]
 scale_Et_58_65-absEta_0_1-bad-${commonCut} =       ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
 scale_Et_58_65-absEta_1_1.4442-bad-${commonCut} =  ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
 scale_Et_55_75-absEta_0_1-gold-${commonCut} =      ${scale} +/- 0.005  L(0.95 - 1.05) // [GeV]
@@ -99,14 +107,22 @@ scale_Et_50_100-absEta_1_1.4442-gold-${commonCut} 	= ${scale} +/- 0.005 L(0.95 -
 scale_Et_55_100-absEta_0_1-gold-${commonCut} 		= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
 scale_Et_58_100-absEta_0_1-bad-${commonCut} 		= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
 scale_Et_58_100-absEta_1_1.4442-bad-${commonCut} 	= ${scale} +/- 0.005 L(0.95 - 1.05) // [GeV]
-constTerm_absEta_0_1-gold-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
-constTerm_absEta_0_1-bad-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
-constTerm_absEta_1_1.4442-gold-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
-constTerm_absEta_1_1.4442-bad-${commonCut} =  ${const} +/- 0.030000 L(0.000 - 0.10) 
-alpha_absEta_0_1-gold-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
-alpha_absEta_0_1-bad-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
-alpha_absEta_1_1.4442-gold-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
-alpha_absEta_1_1.4442-bad-${commonCut} =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+constTerm_absEta_0_1-gold-${commonCut} 		=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_0_1-bad-${commonCut} 		=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_1_1.4442-gold-${commonCut} 	=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_1_1.4442-bad-${commonCut} 	=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+alpha_absEta_0_1-gold-${commonCut} 		=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_0_1-bad-${commonCut} 		=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_1_1.4442-gold-${commonCut} 	=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_1_1.4442-bad-${commonCut} 		=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+constTerm_absEta_1.566_2-gold-${commonCut} 	=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_1.566_2-bad-${commonCut} 	=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_2_2.5-gold-${commonCut} 	=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+constTerm_absEta_2_2.5-bad-${commonCut} 	=  ${const} +/- 0.030000 L(0.000 - 0.10) 
+alpha_absEta_1.566_2-gold-${commonCut} 		=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_1.566_2-bad-${commonCut} 		=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_2_2.5-gold-${commonCut} 	        =  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
+alpha_absEta_2_2.5-bad-${commonCut} 		=  ${alpha} +/- 0.010000 ${alphaConst} L(0 - 0.5) 
 EOF
 
     #sed '/smearEle/ d'  
@@ -114,7 +130,7 @@ EOF
 #    echo "s1	smearEle_HggRunEtaR9	smearEle_HggRunEtaR9_s1-invertedToyMC-${const}-${alpha}.root" >> $baseDir/toyMC.dat
 #    echo "s2	smearEle_HggRunEtaR9	smearEle_HggRunEtaR9_s2-invertedToyMC-${const}-${alpha}.root" >> $baseDir/toyMC.dat
 
-    for nToys in `seq 2 50`; 
+    for nToys in `seq 1 100`; 
       do 
       newDir=${baseDir}/${alphaConst}/${nSmearToy}/${nToys}/
       mkdir -p $newDir 

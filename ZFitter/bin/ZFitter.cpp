@@ -1183,7 +1183,7 @@ int main(int argc, char **argv) {
 		continue;
 
 	      TString name(var->GetName());
-	      if(name.Contains("scale")) continue;
+	      //if(name.Contains("scale")) continue;
 	      //if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
 	      // special part for alpha fitting 
 	      double min=0.;

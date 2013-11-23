@@ -12,6 +12,43 @@
 #include <TStopwatch.h>
 #include "src/ElectronCategory_class.cc"
 #include <iostream>
+#include <fstream>
+#include "src/runDivide_class.cc"
+
+TString GetRunRangeTime(TChain *chain, TString runRange){
+  runDivide_class runDivide;
+  runDivide.LoadRunEventNumbers(chain);
+  return runDivide.GetRunRangeTime(runRange);
+}
+
+std::vector<TString> ReadRegionsFromFile(TString fileName){
+  ifstream file(fileName);
+  std::vector<TString> regions;
+  TString region;
+
+  while(file.peek()!=EOF && file.good()){
+    if(file.peek()==10){ // 10 = \n
+      file.get(); 
+      continue;
+    }
+
+    if(file.peek() == 35){ // 35 = #
+      file.ignore(1000,10); // ignore the rest of the line until \n
+      continue;
+    }
+
+    file >> region;
+    file.ignore(1000,10); // ignore the rest of the line until \n
+#ifdef DEBUG
+    std::cout << "[DEBUG] Reading region: " << region<< std::endl;
+#endif
+    regions.push_back(region);
+
+  }
+  return regions;
+}
+
+
 
 TCut GetCut(TString category, int indexEle=0){
   ElectronCategory_class cutter;
