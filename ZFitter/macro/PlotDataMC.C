@@ -500,7 +500,7 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
 		     TString category, TString selection, 
 		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
-		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false){
+		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false){
   TStopwatch watch;
   watch.Start();
   
@@ -593,8 +593,12 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 // 	mc->SetBranchStatus("puWeight",1);
 
 	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
-	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight*mcGenWeight");
-	else  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC*"mcGenWeight");
+	TString weights="mcGenWeight";
+	
+	if(usePU) weights+="*puWeight";
+	if(useR9Weight) weights+="*r9Weight";
+	mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *weights.Data());
+
       }
     }
 

@@ -87,6 +87,17 @@ esac
 
 
 case ${STEP} in
+    help) 
+	echo "List of steps:"
+	echo "   - 1: stability vs time (runNumber x eta)"
+	echo "   - 2: eta x R9 (smearing method)"
+#	echo "   - 2fit: eta x R9 (fit method)"
+	echo "   - 3: closure test of 2: eta x R9 (fit method)"
+	echo "   - 4: closure test of 2: eta x R9 (smearing method), for final histograms and profiles"
+	echo "   - 5: plot and profile only in Et categories with smearings from step4"
+	echo "   - 6: smearings from step4, scales in Et x eta x R9 categories"
+	echo "   - 7: eta x R9 with R9 reweight"
+	;;
     1)	STEP1=y;;
     2) 	STEP2=y;;
     3) 	STEP3=y;; #SLIDE=y;;
@@ -136,18 +147,25 @@ outDirTable=${outDirData}/table
 
 #if [ ! -e "${outDirTable}/${selection}/${invMass_var}" ];then mkdir -p ${outDirTable}/${selection}/${invMass_var}; fi
 
+if [ ! -e "${outDirData}/table" ];then mkdir ${outDirData}/table -p; fi
+if [ ! -e "${outDirData}/log" ];then mkdir ${outDirData}/log -p; fi
+
+# command="./bin/ZFitter.exe -f ${configFile} --runRangesFile ${runRangesFile} 
+# 	$isOdd $updateOnly --invMass_var ${invMass_var} --commonCut $commonCut
+# 	--outDirFitResMC=${outDirMC}/${STEP}/fitres --outDirFitResData=${outDirData}/${STEP}/fitres \
+# 	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log//step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.log || exit 1
+#     "
+# --regionsFile ${regionFile}
+
 if [ -n "${STEP1}" ];then
-regionFile=data/regions/scaleStep1.dat
-
-
+    regionFile=data/regions/scaleStep1.dat
+    
     if [ ! -e "${outDirMC}/fitres" ];then mkdir ${outDirMC}/fitres -p; fi
     if [ ! -e "${outDirMC}/img" ];then mkdir ${outDirMC}/img -p; fi
-    if [ ! -e "${outDirData}/table" ];then mkdir ${outDirData}/table -p; fi
     if [ ! -e "${outDirData}/fitres" ];then mkdir ${outDirData}/fitres -p; fi
     if [ ! -e "${outDirData}/img" ];then mkdir ${outDirData}/img -p; fi
-    if [ ! -e "${outDirData}/log" ];then mkdir ${outDirData}/log -p; fi
 
-	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile}  \
+    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile}  \
 	$isOdd $updateOnly --invMass_var ${invMass_var} --commonCut $commonCut \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log//step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.log || exit 1

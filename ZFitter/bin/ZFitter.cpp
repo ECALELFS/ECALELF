@@ -575,8 +575,7 @@ int main(int argc, char **argv) {
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
-      if(tag_chain_itr->first.CompareTo("d")==0 || !tag_chain_itr->first.Contains("d")) continue; //only data
-      if(tag_chain_itr->first.CompareTo("s")==0 || !tag_chain_itr->first.Contains("s")) continue; //only MC
+      if(tag_chain_itr->first.CompareTo("d")==0 || tag_chain_itr->first.CompareTo("s")==0) continue; 
       if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
      
