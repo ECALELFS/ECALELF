@@ -115,10 +115,6 @@ $(OBJ_DIR)/TestProposal.o: $(SRC)/TestProposal.cc $(INCLUDEDIR)/TestProposal.h
 	@echo "--> Making class: TestProposal"
 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/TestProposal.o $(SRC)/TestProposal.cc
 
-RooMinimizer: $(OBJ_DIR)/RooMinimizer.o
-$(OBJ_DIR)/RooMinimizer.o: $(SRC)/RooMinimizer.cxx $(INCLUDEDIR)/RooMinimizer.hh 
-	@echo "--> Making class: RooMinimizer"
-	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/RooMinimizer.o $(SRC)/RooMinimizer.cxx
 
 
 #------------------------------ PRINCIPLE CLASS
@@ -136,7 +132,7 @@ ciao:
 	@echo "$(ROOFIT_LIB)"
 	@echo "$(ROOFIT_INCLUDE)"
 
-$(BUILDDIR)/test.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o $(OBJ_DIR)/RooMinimizer.o
+$(BUILDDIR)/test.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o 
 	@echo "---> Making Test ZFitter"
 	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
 	-o $(BUILDDIR)/test.exe $(BUILDDIR)/ZFitter.cpp  -lboost_program_options -lTreePlayer \
@@ -150,7 +146,7 @@ $(BUILDDIR)/test.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 
 
-$(BUILDDIR)/ZFitter.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o $(OBJ_DIR)/RooMinimizer.o
+$(BUILDDIR)/ZFitter.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o 
 	@echo "---> Making ZFitter"
 	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
 	-o $(BUILDDIR)/ZFitter.exe $(BUILDDIR)/ZFitter.cpp  -lboost_program_options -lTreePlayer \

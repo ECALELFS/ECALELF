@@ -33,7 +33,6 @@
 #include <RooMultiVarGaussian.h>
 
 #include "Math/Minimizer.h"
-#include "../interface/RooMinimizer.hh"
 
 #include <TPRegexp.h>
 #include <RooFormulaVar.h>
@@ -101,11 +100,9 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag){
 
       if(chain_itr->first!="selected"){
 	if(chain->GetFriend(chain_itr->first)==NULL){
-	  if(!chain_itr->first.Contains("smearerCat") || (chain_itr->first.Contains("smearerCat") && chain_itr->first.Contains(regionsFileNameTag))){
 	  std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
 		    << " to tag " << tag_chain_itr->first << std::endl;
 	  chain->AddFriend(chain_itr->second);
-	  }
 	} // already added
       }
       chain_itr->second->GetEntries();
@@ -474,7 +471,14 @@ int main(int argc, char **argv) {
     //if (tag.Contains("d") && corrEleFile.empty()) corrEleFile=fileName;
     //continue;
     //}
-
+    
+    if(chainName.Contains("scaleEle")){
+      if(chainName!="scaleEle_"+corrEleType) continue;
+    }
+    if(chainName.Contains("smearerCat")){
+      if(chainName!="smearerCat_"+regionsFileNameTag) continue;
+    }
+    
     if(!tagChainMap.count(tag)){
 #ifdef DEBUG
       std::cout << "[DEBUG] Create new tag map for tag: " << tag << std::endl;
@@ -482,7 +486,7 @@ int main(int argc, char **argv) {
       std::pair<TString, chain_map_t > pair_tmp(tag,chain_map_t()); // make_pair not work with scram b
       tagChainMap.insert(pair_tmp);
     }
-
+    
     if(!tagChainMap[tag].count(chainName)){
       std::pair<TString, TChain* > pair_tmp(chainName, new TChain(chainName));
       (tagChainMap[tag]).insert(pair_tmp);
@@ -513,7 +517,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  
+  return 0;  
 
   ///------------------------------ to obtain run ranges
   if(vm.count("runDivide")){
@@ -1036,52 +1040,6 @@ int main(int argc, char **argv) {
 	    m.fit("");
 	    //m.migrad();
 	    //m.hesse();
-	  } else if(minimType=="shervinDNA"){
-	    RooArgList 	 argList_(args);
-	    TIterator 	*it_ = argList_.createIterator();
-	    for(RooRealVar *var = (RooRealVar*)it_->Next(); var != NULL; var = (RooRealVar*)it_->Next()){
-	      if (var->isConstant() || !var->isLValue()) continue;
-	      TString  name(var->GetName());
-	      if(!name.Contains("scale")) var->setConstant();
-	    }
-	    MinimizationProfile(smearer, args, nIter);	
-	    delete it_;
-	    it_ = argList_.createIterator();
-	    for(RooRealVar *var = (RooRealVar*)it_->Next(); var != NULL; var = (RooRealVar*)it_->Next()){
-	      if (!var->isLValue()) continue;
-	      TString  name(var->GetName());
-	      if(!name.Contains("scale")) var->setConstant(kFALSE);
-	      else var->setConstant();
-	    } 
-	      
-	      
-	    args.writeToStream(std::cout, kFALSE);
-	    RooMinimizer m(smearer);
-	    m._theFitter->Config().SetMinimizer("Genetic","Genetic");
-	    m.setEps(100); // default tolerance
-	    m._theFitter->Config().MinimizerOptions().SetTolerance(2e-5);
-	    // default max number of calls
-	    m._theFitter->Config().MinimizerOptions().SetMaxIterations(50);
- 	    m._theFitter->Config().MinimizerOptions().SetMaxFunctionCalls(10);
-	    //m.setVerbose();
-	    m.setPrintLevel(4);
-	    m.minimize("Genetic","Genetic");
-
-	  } else if(minimType=="genetic"){
-	    RooMinimizer m(smearer);
-	    //m.setMinimizerType("genetic");
-	    m._theFitter->Config().SetMinimizer("Genetic","Genetic");
-	    m.setEps(100); // default tolerance
-	    m._theFitter->Config().MinimizerOptions().SetTolerance(2e-5);
-	    // default max number of calls
-	    m._theFitter->Config().MinimizerOptions().SetMaxIterations(10);
- 	    m._theFitter->Config().MinimizerOptions().SetMaxFunctionCalls(10);
-	    //	    m.setErrorLevel(0.1);
-	    //m.setVerbose();
-	    m.setPrintLevel(4);
-	    m.minimize("Genetic","Genetic");
-	    
-	    //fitres = m.save();
 	  } else if(minimType=="profile"){
 	    MinimizationProfile(smearer, args, nIter);
 	    args.writeToStream(std::cout, kFALSE);
@@ -1156,7 +1114,6 @@ int main(int argc, char **argv) {
 	}
 
 	if(vm.count("profileOnly") || !vm.count("plotOnly")){
-	  Int_t oldMarkovSize=smearer._markov.Size();
 	  //if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
 
 	  std::cout <<"==================PROFILE=================="<<endl;
@@ -1298,9 +1255,6 @@ int main(int argc, char **argv) {
 // 	    }
 // 	    //smearer.evaluate();
 // 	  }
-	  RooStats::MarkovChain mchain;
-	  mchain.AddWithBurnIn(smearer._markov, oldMarkovSize);
-	  mchain.Write();
 	  fOutProfile->Close();
 	  
 	}

@@ -356,6 +356,7 @@ TMatrixDSym* GetCovariance( RooStats::MarkovChain *chain, TString var1, TString 
    return chain->GetAsDataSet()->covarianceMatrix();
 }
 
+#ifdef MCMC
 bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iProfile, 
 	       Double_t min_old, Double_t& min, long unsigned int nIter, bool update=true){ 
   Double_t chi2, chi2init=smearer.evaluate(); 
@@ -395,7 +396,7 @@ bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iPro
   }
 
   //running the mcmc
-  RooStats::MetropolisHastings MCMC(smearer, smearer.GetParams(), *(ph.GetProposalFunction()), nIter);
+  RooStats::MetropolisHastings MCMC(smearer, smearer.GetParams(), *(ph.GetProposalFunction()), (Int_t)nIter);
   MCMC.SetNumBurnInSteps(10);
   MCMC.SetSign(RooStats::MetropolisHastings::kNegative);
   MCMC.SetType(RooStats::MetropolisHastings::kLog);
@@ -481,7 +482,7 @@ bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iPro
   
   return changed;
 }
-
+#endif
 
 void Smooth(TH2F *h, Int_t ntimes, Option_t *option)
 {
