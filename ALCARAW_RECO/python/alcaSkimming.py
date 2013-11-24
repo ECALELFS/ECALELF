@@ -284,6 +284,12 @@ else:
             process.GlobalTag.globaltag = 'START53_V7N::All'
         else:
             process.GlobalTag.globaltag = 'FT_R_53_V21::All' #22Jan rereco
+    elif(re.match("CMSSW_5_3_11_patch3",CMSSW_VERSION)):
+        if(MC):
+            print "[INFO] Using GT START53_LV4::All"
+            process.GlobalTag.globaltag = 'START53_LV4::All'
+        else:
+            process.GlobalTag.globaltag = 'FT_R_53_LV3::All' #21Jun rereco 53X 2011 data
     elif(re.match("CMSSW_5_3_.*",CMSSW_VERSION)):
         if(MC):
             print "[INFO] Using GT START53_V7A::All"
@@ -512,7 +518,7 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process
 
 process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
 
-if(options.doTreeOnly==0):
+if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)
     if(options.type=="ALCARERECO"):
         process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
@@ -623,7 +629,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     else:
         process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                         process.pathALCARECOEcalCalZSCElectron,
-                                        process.ALCARECOoutput_step, process.NtuplePath
+                                        process.ALCARECOoutput_step #, process.NtuplePath
                                         ) # fix the output modules
 
 

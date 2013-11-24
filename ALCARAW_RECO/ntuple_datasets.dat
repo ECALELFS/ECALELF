@@ -179,3 +179,20 @@ allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_S
 194533-194533	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
 200519-200519	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
 206859-206859	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECO		160404-180252-08Nov_v2
+175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECO		160404-180252-08Nov_v2
+160329-173692	/DoubleElectron/Run2011A-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECO		160404-180252-08Nov_v2

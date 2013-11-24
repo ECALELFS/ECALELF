@@ -8,8 +8,8 @@ USEPARENT=0
 SCHEDULER=caf
 USESERVER=0
 TYPE=ALCARECO
-LUMIS_PER_JOBS=3000  # for ZSkim events is good, WSkim events /=4, SingleElectron /=10
-EVENTS_PER_JOB=400000
+LUMIS_PER_JOBS=200  # 4000 for ZSkim events is good, WSkim events /=4, SingleElectron /=10
+EVENTS_PER_JOB=50000
 BLACKLIST=T2_EE_Estonia
 CREATE=yes
 SUBMIT=yes
