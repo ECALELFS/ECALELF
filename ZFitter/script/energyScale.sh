@@ -240,46 +240,39 @@ if [ -n "${STEP2}" ];then
     outFileStep1=step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat
     if [ ! -e "${outDirTable}/${outFileStep1}" ];then
 	echo "[ERROR] Impossible to run step2 without step1" >> /dev/stderr
-	exit 1
+	#exit 1
     fi
-
-    if [ ! -e "${outDirTable}/${outFile}" ];then
     
+    if [ ! -e "${outDirTable}/${outFile}" ];then
+	
 	if [ ! -e "${outDirMC}/fitres" ];then mkdir ${outDirMC}/fitres -p; fi
 	if [ ! -e "${outDirMC}/img" ];then mkdir ${outDirMC}/img -p; fi
 	if [ ! -e "${outDirData}/step2${extension}/fitres" ];then mkdir ${outDirData}/step2${extension}/fitres -p; fi
 	if [ ! -e "${outDirData}/step2${extension}/img" ];then mkdir ${outDirData}/step2${extension}/img -p; fi
-
-	# save the corrections in root files
-	# this way I do not reproduce the ntuples with the corrections any time
-	cat $configFile \
-	    | sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tscaleEle_HggRunEta\t${outDirData}/step1/scaleEle_HggRunEta_\1-`basename $configFile .dat`.root|}" | sort | uniq > $outDirData/step2/`basename $configFile`
 	
 	if [ -e "${outDirTable}/params-`basename ${regionFile} .dat`-${commonCut}.txt" ];then 
 	    initFile="--initFile=${outDirTable}/params-`basename ${regionFile} .dat`-${commonCut}.txt"; 
 	else 
 	    initFile=""
 	fi
-
-	tags=`grep -v '#' $configFile | cut -f 1  | sort | uniq | grep [s,d][1-9]`
+	
+	tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
 	for tag in $tags
 	  do
-
 	  if [ "`grep -v '#' $configFile | grep \"^$tag\" | cut -f 2 | grep -c smearerCat`" == "0" ];then
-	      ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
+	      ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  \
 		  --saveRootMacro \
-		  --addBranch=smearerCat
-	      mv tmp/smearerCat_${tag}-`basename $configFile .dat`.root data/smearerCat/ || exit 1
-	      echo -e "$tag\tsmearerCat_`basename $regionsFile .dat`\tdata/smearerCat/smearerCat_${tag}-`basename $configFile .dat`.root" >> $configFile
+		  --addBranch=smearerCat  --smearerFit
+	      mv tmp/smearerCat_${tag}-`basename $configFile .dat`.root data/smearerCat/data/smearerCat/smearerCat_`basename $regionFile .dat`_${tag}-`basename $configFile .dat`.root || exit 1
+	      echo -e "$tag\tsmearerCat_`basename $regionFile .dat`\tdata/smearerCat/smearerCat_`basename $regionFile .dat`_${tag}-`basename $configFile .dat`.root" >> $configFile
 	  fi
-	cat $configFile \
-	    | sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $configFile .dat`\tdat${outDirData}/step1/scaleEle_HggRunEta_\1-`basename $configFile .dat`.root|}" | sort | uniq > $outDirData/step2/`basename $configFile`
-	
-	  	  d1      smearerCat_scaleStep4smearing_2 data/smearerCat/smearerCat_scaleStep4smearing_2_d1-22Jan2012-runDepMC.root
-
 	done
-
 	
+	# save the corrections in root files
+	# this way I do not reproduce the ntuples with the corrections any time
+	cat $configFile \
+	    | sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tscaleEle_HggRunEta\t${outDirData}/step1/scaleEle_HggRunEta_\1-`basename $configFile .dat`.root|}" | sort | uniq > $outDirData/step2/`basename $configFile`
+
 	for index in `seq 1 50`
 	  do
 	  mkdir ${outDirData}/step2/${index}/fitres/ -p 
@@ -297,16 +290,24 @@ $isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} \
 --outDirFitResData=${outDirData}/step2/${index}/fitres 
 --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  || exit 1"
 	done
-	exit 0
+	
+	./script/haddTGraph.sh -o ${outDirData}/step2/outProfile.root ${outDirData}/step2/*/fitres/10/outProfile*.root 
 
-    
+	######################################################33
+	echo "{" > tmp/fitProfiles.C
+	echo "gROOT->ProcessLine(\".L macro/macro_fit.C+\");" >> tmp/fitProfiles.C
+	echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C.C+\");" >> tmp/fitProfiles.C
+	echo "FitProfile2(\"${outDirData}/step2/outProfile.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
+	echo "}" >> tmp/fitProfiles.C
+	root -l -b -q tmp/fitProfiles.C
 
-    time  ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --smearerFit  --autoBin \
+
+	time  ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --smearerFit  --autoBin \
         $isOdd  $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step2/fitres \
 	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step2/img \
 	--corrEleType HggRunEta --corrEleFile ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat \
-	$initFile > 
+#	$initFile > 
 
 #     cp ${outDirData}/step2/fitres/params-${regionFile}-${commonCut}.txt ${outDirData}/step2/fitres/step2smearing_1.txt
 #     cp ${outDirData}/step2/fitres/histos-${regionFile}-${commonCut}.root ${outDirData}/step2/fitres/histos_step2smearing_1.root
@@ -337,6 +338,7 @@ time   ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --smearer
 
 #      cat ${outDirTable}/step2-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat | cut -f 1,3-6 | awk '{printf("%s\t%s - %s\t%s\t%s \n", $1,$2,$3, $4, $5)}' | sed -r 's|\t|\t\&\t|g;' | sed -f sed/tex.sed | sed 's|R9|\\RNINE|' > ${outDirTable}/correctionNote-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.tex
     
+    fi
 fi
 
 
