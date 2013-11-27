@@ -159,11 +159,16 @@ cat > tmp/load.C <<EOF
 
   setTDRStyle1();
 
-  TChain *signal = (TChain *) _file0->Get("selected");
-  TChain *data   = (TChain *) _file1->Get("selected");
 
-  ReassociateFriends(_file0, signal);
-  ReassociateFriends(_file1, data);
+  TChain *data   = (TChain *) _file0->Get("selected");
+  TChain *signalA = (TChain *) _file1->Get("selected");
+  TChain *signalA = (TChain *) _file2->Get("selected");
+  TChain *signalA = (TChain *) _file3->Get("selected");
+
+  ReassociateFriends(_file0, data);
+  ReassociateFriends(_file1, signalA);
+  ReassociateFriends(_file2, signalB);
+  ReassociateFriends(_file3, signalC);
 
    TDirectory *curDir = new TDirectory("curDir","");
    curDir->cd();
@@ -177,5 +182,6 @@ EOF
 
 echo "Now you can run:"
 echo "root -l $filelist tmp/load.C tmp/standardDataMC.C" 
+#echo "root -l tmp/$filelist tmp/load.C tmp/standardDataMC.C" 
 echo "change the outputPath string in load.C to have the plots in the correct directory"
 
