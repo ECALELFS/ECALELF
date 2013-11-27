@@ -23,7 +23,7 @@ def readResCorr(input):
         if len(l) < 3:
             continue
         key,dmM,dmMErr = str(l[0]),  float(l[1]), float(l[2])
-#        print '%s %f %f' % (key,dmM,dmMErr)
+        print '%s %f %f' % (key,dmM,dmMErr)
         lst[ key ] = ( dmM,dmMErr )
     return lst
 

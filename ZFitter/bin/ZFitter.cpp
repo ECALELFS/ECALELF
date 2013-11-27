@@ -252,6 +252,7 @@ int main(int argc, char **argv) {
     ("smearEleType", po::value<string>(&smearEleType),"Correction type/step")
     //
     ("r9WeightFile", po::value<string>(&r9WeightFile),"File with r9 photon-electron weights")
+    ("useR9weight", "use r9 photon-electron weights")
     ("saveR9TreeWeight", "")
     ("saveRootMacro","")
     //
@@ -517,7 +518,6 @@ int main(int argc, char **argv) {
     }
   }
 
-  return 0;  
 
   ///------------------------------ to obtain run ranges
   if(vm.count("runDivide")){
@@ -928,6 +928,7 @@ int main(int argc, char **argv) {
   //smearer.nEventsMinDiag = nEventsMinDiag;
   smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
   smearer.SetSmearingEt(vm.count("smearingEt"));
+  smearer.SetR9Weight(vm.count("useR9weight"));
   if(nSmearToy>0) smearer._nSmearToy = nSmearToy;
   //------------------------------ Take the list of branches needed for the defined categories
   ElectronCategory_class cutter;

@@ -33,7 +33,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   _paramSet("paramSet","Set of parameters",this),
   invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
   deltaNLLMaxSmearToy(330),
-  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(50), 
+  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(20), 
   nllBase(0),
   nllVar("nll","",0,1e20),
   _isDataSmeared(false),

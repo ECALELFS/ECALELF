@@ -122,7 +122,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
        
     mc->SetLineColor(kRed);
     mc->SetLineWidth(2);
-    mc->SetFillStyle(3002);
+    mc->SetFillStyle(1001); //3002
     mc->SetFillColor(kRed);
 
     mc->Draw();
@@ -145,9 +145,9 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     //    PlotCanvas(c, mc, data, mcSmeared);
 
     legend->Clear();
-    legend->AddEntry(mc,"MC");
-    legend->AddEntry(mcSmeared,"MC smeared");
-    legend->AddEntry(data,"data");
+    legend->AddEntry(mc,"MC","f");
+    legend->AddEntry(mcSmeared,"MC smeared","l");
+    legend->AddEntry(data,"data","p");
     double KS=data->KolmogorovTest(mcSmeared);
     TString ks="Kolmogorov test: ";
     char line[50];
@@ -186,7 +186,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     legend->SetFillStyle(1001);
     legend->Draw();
 
-    
+
     c->SaveAs(img_filename(filename, region, ".eps"));
     c->SaveAs(img_filename(filename, region, ".png"));
     c->SaveAs(img_filename(filename, region, ".C"));
@@ -200,7 +200,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 
 
 
-void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
+void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi="", int rebin=0, TString myRegion=""){
   
 
   TH2F eventFraction("eventFraction", "", 10, 0, 9, 10, 0, 9);
@@ -285,7 +285,7 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
       itr!= dataHist.end(); itr++){
     c->cd();
     TString region=itr->first;
-    
+    if(myRegion!="" && !region.Contains(myRegion)) continue;
     //     for(int i_region=0; i_region < n_region -1; i_region++){
     //       for(int j_region=i_region; j_region < n_region; j_region++){
     // 	region="region_";
@@ -301,32 +301,36 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi=""){
     TH1F *data=GetMeanHist(dataHist[region], h_ref, "data_"+region, true);	
     TH1F *mcSmeared=GetMeanHist(mcSmearedHist[region], h_ref, "mcSmeared_"+region);
 	
-    if(region.Contains("EE")){
-      if(mc_all[1] == NULL) mc_all[1]=(TH1F *) mc->Clone("EE_mc_hist");
-      else mc_all[1]->Add(mc);
-      if(data_all[1] == NULL) data_all[1]=(TH1F *) data->Clone("EE_data_hist");
-      else data_all[1]->Add(data);
-      if(mcSmeared_all[1] == NULL) mcSmeared_all[1]=(TH1F *) mcSmeared->Clone("EE_mcSmeared_hist");
-      else mcSmeared_all[1]->Add(mcSmeared);
-    }
+//     if(region.Contains("EE")){
+//       if(mc_all[1] == NULL) mc_all[1]=(TH1F *) mc->Clone("EE_mc_hist");
+//       else mc_all[1]->Add(mc);
+//       if(data_all[1] == NULL) data_all[1]=(TH1F *) data->Clone("EE_data_hist");
+//       else data_all[1]->Add(data);
+//       if(mcSmeared_all[1] == NULL) mcSmeared_all[1]=(TH1F *) mcSmeared->Clone("EE_mcSmeared_hist");
+//       else mcSmeared_all[1]->Add(mcSmeared);
+//     }
 
-    if(region.Contains("EB")){
-      if(mc_all[0] == NULL) mc_all[0]=(TH1F *) mc->Clone("EB_mc_hist");
-      else mc_all[0]->Add(mc);
-      if(data_all[0] == NULL) data_all[0]=(TH1F *) data->Clone("EB_data_hist");
-      else data_all[0]->Add(data);
-      if(mcSmeared_all[0] == NULL) mcSmeared_all[0]=(TH1F *) mcSmeared->Clone("EB_mcSmeared_hist");
-      else mcSmeared_all[0]->Add(mcSmeared);
+//     if(region.Contains("EB")){
+//       if(mc_all[0] == NULL) mc_all[0]=(TH1F *) mc->Clone("EB_mc_hist");
+//       else mc_all[0]->Add(mc);
+//       if(data_all[0] == NULL) data_all[0]=(TH1F *) data->Clone("EB_data_hist");
+//       else data_all[0]->Add(data);
+//       if(mcSmeared_all[0] == NULL) mcSmeared_all[0]=(TH1F *) mcSmeared->Clone("EB_mcSmeared_hist");
+//       else mcSmeared_all[0]->Add(mcSmeared);
+//     }
+    
+//     if(mc_all[2] == NULL) mc_all[2]=(TH1F *) mc->Clone("all_mc_hist");
+//     else mc_all[2]->Add(mc);
+//     if(data_all[2] == NULL) data_all[2]=(TH1F *) data->Clone("all_data_hist");
+//     else data_all[2]->Add(data);
+//     if(mcSmeared_all[2] == NULL) mcSmeared_all[2]=(TH1F *) mcSmeared->Clone("all_mcSmeared_hist");
+//     else mcSmeared_all[2]->Add(mcSmeared);
+    
+    if(rebin>0){
+      data->Rebin(rebin);
+      mc->Rebin(rebin);
+      mcSmeared->Rebin(rebin);
     }
-    
-    if(mc_all[2] == NULL) mc_all[2]=(TH1F *) mc->Clone("all_mc_hist");
-    else mc_all[2]->Add(mc);
-    if(data_all[2] == NULL) data_all[2]=(TH1F *) data->Clone("all_data_hist");
-    else data_all[2]->Add(data);
-    if(mcSmeared_all[2] == NULL) mcSmeared_all[2]=(TH1F *) mcSmeared->Clone("all_mcSmeared_hist");
-    else mcSmeared_all[2]->Add(mcSmeared);
-    
-
     Plot(c, data,mc,mcSmeared,legend, region, filename, energy, lumi);
   }
 

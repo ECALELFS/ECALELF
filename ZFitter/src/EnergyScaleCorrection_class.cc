@@ -62,8 +62,8 @@ TString EnergyScaleCorrection_class::GetElectronCategory(bool isEBEle, double R9
 
   TString category;
 
-  if(isEBEle) category="EB";
-  else category="EE";
+//   if(isEBEle) category="EB";
+//   else category="EE";
   
   if(isHggCat){
     if(correctionType.Contains("Hgg",TString::kIgnoreCase)){
@@ -71,11 +71,11 @@ TString EnergyScaleCorrection_class::GetElectronCategory(bool isEBEle, double R9
 	
 	//    if(correctionType.CompareTo("Hgg_eta_runNumber")==0){
 	if(isEBEle){
-	  if (fabs(etaSCEle)>1.) category+="-absEta_1_1.4442";
-	  else category+="-absEta_0_1";
+	  if (fabs(etaSCEle)>1.) category+="absEta_1_1.4442";
+	  else category+="absEta_0_1";
 	} else {
-	  if (fabs(etaSCEle) > 2) category+="-absEta_2_2.5";
-	  else category+="-absEta_1.566_2";
+	  if (fabs(etaSCEle) > 2) category+="absEta_2_2.5";
+	  else category+="absEta_1.566_2";
 	}
       }
       if(correctionType.Contains("residual",TString::kIgnoreCase)||correctionType.Contains("R9",TString::kIgnoreCase)){

@@ -28,12 +28,18 @@ double r9Weights_class::GetWeight(double etaEle_, double R9Ele_){
     TString categoryName;
 
     if(fabs(etaEle_) < 1.) categoryName="EBlowEta";
-    if(fabs(etaEle_) >= 1 && fabs(etaEle_) <= 1.479) categoryName="EBhighEta";
-    if(fabs(etaEle_) > 1.479 && fabs(etaEle_) < 2) categoryName="EElowEta";
-    if(fabs(etaEle_) >= 2) categoryName="EEhighEta";
-
+    else if(fabs(etaEle_) >= 1. && fabs(etaEle_) <= 1.479) categoryName="EBhighEta";
+    else if(fabs(etaEle_) > 1.479 && fabs(etaEle_) < 2) categoryName="EElowEta";
+    else if(fabs(etaEle_) >= 2) categoryName="EEhighEta";
+    else{
+      std::cerr << "Category not found: "
+		<< "etaEle = " << etaEle_ << "\t"
+		<< "R9Ele = " << R9Ele_ << std::endl;
+      return 0;
+    }
     if (R9Ele_>=0.94) categoryName+="Gold";
-    if (R9Ele_<0.94 ) categoryName+="Bad";
+    else //if (R9Ele_<0.94 ) 
+      categoryName+="Bad";
 
     if(categoryName.Sizeof()>1){ // altrimenti non e' delle categorie definite sopra
       std::vector<TString> WeightCat_vec;
@@ -102,6 +108,7 @@ void r9Weights_class::ReadFromFile(std::string filename){
     //    TString keyName = (KeyList->At(i))->GetName();
     if(h==NULL) std::cerr << "[ERROR] histogram null from file: " << filename << std::endl;
     TString keyName = h->GetName();
+    //h->Scale(1./h->Integral());
 
     // if the electron category is not yet defined, add it
     if (r9weights.count(keyName)==0){
@@ -143,6 +150,7 @@ void r9Weights_class::ReadFromFile(std::string filename){
 // tree is the input MC tree
 // fastLoop = false if for any reason you don't want to change the branch status of the MC tree
 TTree *r9Weights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString etaElebranchName, TString R9ElebranchName, TString ptElebranchName){
+  tree->ResetBranchAddresses();
   
   Float_t weight[2]={0.};
   Float_t ptWeight[2]={0.};
