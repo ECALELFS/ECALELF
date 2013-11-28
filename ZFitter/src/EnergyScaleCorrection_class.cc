@@ -84,6 +84,12 @@ TString EnergyScaleCorrection_class::GetElectronCategory(bool isEBEle, double R9
 	// 	if(R9Ele>0.94) category+="Gold";
 	// 	else category+="Bad";
       }
+      if(correctionType.Contains("Et",TString::kIgnoreCase)){
+	if(R9Ele>0.94) category+="-gold";
+	else category+="-bad";
+	// 	if(R9Ele>0.94) category+="Gold";
+	// 	else category+="Bad";
+      }
 
     }
   }
@@ -117,7 +123,7 @@ std::map< int, correction_t>::const_iterator EnergyScaleCorrection_class::FindRu
 }
 
   
-float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle){
+float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle){
   if(noCorrections) return 1;
   if(runMin_map.empty()){
     std::cerr << "[ERROR] runMin_map empty and calibration required" << std::endl;
@@ -161,15 +167,27 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
   }
 #endif
 
-  TString category=GetElectronCategory(isEBEle, R9Ele, etaSCEle);
+  //TString category=GetElectronCategory(isEBEle, R9Ele, etaSCEle);
+  correctionCategory_class category(runNumber, etaSCEle, R9Ele,EtEle);
+  //correctionCategory_class category(0, etaSCEle, R9Ele,EtEle);
+//   if(correction_map_p->upper_bound(category) == correction_map_p->end()){
+//     exit (1);
+//   }
+//   std::cout << correction_map_p->upper_bound(category)->first << std::endl;
+
+//   exit (0);
+  if(! (category < (--(correction_map_p->upper_bound(category)))->first))
+    std::cout << category << std::endl <<
+      (--(correction_map_p->upper_bound(category)))->first <<std::endl;
 #ifdef DDEBUG
   std::cout << "[DEBUG] category(isEBEle, R9Ele) = " << category << "(" << isEBEle << ", " << R9Ele << ")" <<   correction_map_p->find(category)->second.first << std::endl;
 
 #endif
 
-  if(correction_map_p->count(category)==1)
+  if(correction_map_p->count(category)==1){
     return correction_map_p->find(category)->second.first;
-  else{
+  } else{
+    return (--(correction_map_p->upper_bound(category)))->second.first; //->second.first(); //upper_bound(category)->second.first;
     std::cerr << "[ERROR] Electron category " << category << " not found!!!!  Scale offset not applied" << std::endl;
     std::cerr << "        " << runNumber << "\t" << runCorrection_itr->first << "\t" << runCorrection_itr->second.runMax << std::endl;
     exit(1);
@@ -193,7 +211,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
 #endif
   //   return;
   // }
-
+  correctionCategory_class cat(category_);
   std::map <int, correction_t >::iterator itr=runMin_map.find(runMin_);
   if (itr!=runMin_map.end()){ // if exists
     if(itr->second.runMax != runMax_){
@@ -206,13 +224,13 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
 
     // probabilmente la categoria non e' ancora stata definita e la aggiungo
     //1-deltaP_; // deltaP_ e' lo shift, devo correggerlo (quindi -deltaP_)
-    itr->second.correction_map[category_].first=deltaP_; // allo stato attuale passo come input il file con le correzioni (1-deltaP/100)
-    itr->second.correction_map[category_].second=err_deltaP_; // inefficiente
+    itr->second.correction_map[cat].first=deltaP_; // allo stato attuale passo come input il file con le correzioni (1-deltaP/100)
+    itr->second.correction_map[cat].second=err_deltaP_; // inefficiente
     //#ifdef DEBUG
     std::cout << "[DEBUG] " << category_ << "\t" 
 	      << itr->first << "-" << itr->second.runMax 
 	      << "\t" << itr->second.correction_map.size() 
-	      << "\t" << itr->second.correction_map[category_].first << std::endl;
+	      << "\t" << itr->second.correction_map[cat].first << std::endl;
     //"\t" << deltaP_ << "\t" << itr->second.correction_map[category_].first << std::endl;
     //std::cout << "[DEBUG] " << err_deltaP_ << "\t" << itr->second.correction_map[category_].second << std::endl;
     //#endif
@@ -224,7 +242,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
     std::pair<double,double> pair_tmp;
     pair_tmp.first=deltaP_;
     pair_tmp.second=err_deltaP_;
-    corr.correction_map[category_]=pair_tmp; //std::make_pair<double,double>(deltaP_, err_deltaP_); //(1-deltaP_, err_deltaP_);
+    corr.correction_map[cat]=pair_tmp; //std::make_pair<double,double>(deltaP_, err_deltaP_); //(1-deltaP_, err_deltaP_);
     //    corr.correction_map[category_].second=err_deltaP_;
     runMin_map[runMin_]=corr; // aggiungo il nuovo
     itr=runMin_map.find(runMin_);
@@ -232,7 +250,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
     std::cout << "[DEBUG] " << category_ << "\t" 
 	      << itr->first << "-" << itr->second.runMax 
 	      << "\t" << itr->second.correction_map.size() 
-	      << "\t" << itr->second.correction_map[category_].first << std::endl;
+	      << "\t" << itr->second.correction_map[cat].first << std::endl;
 
   }
   return;
@@ -298,6 +316,7 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 						TString R9EleBranchName,
 						TString etaEleBranchName,
 						TString etaSCEleBranchName,
+						TString energySCEleBranchName,
 						TString nPVBranchName
 						){
   float nPVmean = 0;
@@ -309,6 +328,7 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
   Float_t etaEle_[2];
   Float_t etaSCEle_[2];
   Float_t R9Ele_[2];
+  Float_t energySCEle_[2];
 
   Float_t scaleEle_[2];
 
@@ -320,6 +340,7 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
     tree->SetBranchStatus(runNumberBranchName,1);
     tree->SetBranchStatus(etaEleBranchName,1);
     tree->SetBranchStatus(etaSCEleBranchName,1);
+    tree->SetBranchStatus(energySCEleBranchName,1);
     tree->SetBranchStatus(R9EleBranchName,1);
     tree->SetBranchStatus(nPVBranchName,1);
   }
@@ -328,6 +349,7 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
   tree->SetBranchAddress(runNumberBranchName, &runNumber_);
   tree->SetBranchAddress(etaEleBranchName,etaEle_);
   tree->SetBranchAddress(etaSCEleBranchName,etaSCEle_);
+  tree->SetBranchAddress(energySCEleBranchName,energySCEle_);
   tree->SetBranchAddress(R9EleBranchName, R9Ele_);
   Long64_t nentries = tree->GetEntries();
 
@@ -341,9 +363,9 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
   for(Long64_t ientry = 0; ientry<nentries; ientry++){
     tree->GetEntry(ientry);
     scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442, 
-				   R9Ele_[0],etaEle_[0], nPV_, nPVmean);
+				   R9Ele_[0],etaEle_[0], energySCEle_[0]/cosh(etaSCEle_[0]), nPV_, nPVmean);
     scaleEle_[1] = ScaleCorrection(runNumber_, fabs(etaSCEle_[1]) < 1.4442, 
-				   R9Ele_[1],etaEle_[1], nPV_, nPVmean);
+				   R9Ele_[1],etaEle_[1], energySCEle_[1]/cosh(etaSCEle_[1]), nPV_, nPVmean);
     newTree->Fill();
     if(ientry%(nentries/100)==0) std::cerr << "\b\b\b\b" << std::setw(2) << ientry/(nentries/100) << "%]";
   }
@@ -494,10 +516,11 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop,
 
 
 
-float EnergyScaleCorrection_class::ScaleCorrection(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, 
+float EnergyScaleCorrection_class::ScaleCorrection(int runNumber, bool isEBEle, 
+						   double R9Ele, double etaSCEle, double EtEle, 
 						   int nPV, float nPVmean){
   float correction = 1;
-  if(correctionType.Contains("Run", TString::kIgnoreCase)) correction*=getScaleOffset(runNumber, isEBEle, R9Ele, etaSCEle);
+  if(correctionType.Contains("Run", TString::kIgnoreCase)) correction*=getScaleOffset(runNumber, isEBEle, R9Ele, etaSCEle, EtEle);
   
   if(correctionType.Contains("nPV",TString::kIgnoreCase)) correction *= 1- (-0.02 * (nPV -nPVmean))/100;
   
@@ -532,3 +555,21 @@ float EnergyScaleCorrection_class::GetMean_nPV(TChain *tree, bool fastLoop,
   //  std::cout << "[WARNING] nPU > nPU max for " << warningCounter << " times" << std::endl;
   return nPVmean;
 }
+
+
+bool correctionCategory_class::operator<(const correctionCategory_class& b) const{
+    if(runmin < b.runmin) return true;  
+    if(runmax > b.runmax) return false; 
+       
+    if(etamin < b.etamin) return true; 
+    if(etamax > b.etamax) return false;
+       
+    if(r9min  < b.r9min) return true; 
+    if(r9max  > b.r9max) return  false;
+       
+    if(etmin  < b.etmin) return true;  
+    if(etmax  > b.etmax) return  false;
+    return false;
+
+  };    
+
