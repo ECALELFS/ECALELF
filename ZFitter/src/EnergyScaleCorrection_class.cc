@@ -1,5 +1,5 @@
 #include "../interface/EnergyScaleCorrection_class.h"
-//#define DEBUG
+#define DEBUG
 
 // for exit(0)
 #include <stdlib.h>
@@ -141,6 +141,7 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
     runCorrection_itr=FindRunCorrection_itr(runNumber);
     if (runCorrection_itr==runMin_map.end()){
       runCorrection_itr=runMin_map.begin(); // lo reinizializzo per i prossimi run
+      exit(0);
       return 0; // se per esempio il runNumber non e' definito nel recalib file
     }
   }
@@ -152,34 +153,18 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
     
     const correction_map_t *correction_map_p = &(runCorrection_itr->second.correction_map);
     
-#ifdef HggCatTry
-  // questo se voglio provare a cercare prima le HggCat nel file 
-  // e poi se non c'e' usare quelle EB/EE standard
-  if(correction_map.count(GetElectronCategory(isEBEle, R9Ele, true))==1)
-    return correction_map[GetElectronCategory(isEBEle, R9Ele, true)].first;
-  else if(correction_map.count(GetElectronCategory(isEBEle, R9Ele, false))==1)
-    return correction_map[GetElectronCategory(isEBEle, R9Ele, false)].first;
-  else {
-    std::cerr << "[ERROR] Electron category not found!!!!  Scale offset not applied" << std::endl;
-    std::cout << "        " << runNumber << "\t" << runCorrection_itr->first << "\t" << runCorrection_itr->second.runMax << std::endl;
-    exit(1);
-    return 1;
-  }
-#endif
 
   //TString category=GetElectronCategory(isEBEle, R9Ele, etaSCEle);
   correctionCategory_class category(runNumber, etaSCEle, R9Ele,EtEle);
-  //correctionCategory_class category(0, etaSCEle, R9Ele,EtEle);
-//   if(correction_map_p->upper_bound(category) == correction_map_p->end()){
-//     exit (1);
-//   }
-//   std::cout << correction_map_p->upper_bound(category)->first << std::endl;
+#ifdef DEBUG
+  std::cout << "[DEBUG] Checking correction for category: " << category << std::endl;
+  std::cout << "[DEBUG] Correction is: " << (--(correction_map_p->upper_bound(category)))->second.first 
+	    << std::endl 
+	    << "        given for category " <<  ((--(correction_map_p->upper_bound(category)))->first) << std::endl;
+#endif
 
-//   exit (0);
-  if(! (category < (--(correction_map_p->upper_bound(category)))->first))
-    std::cout << category << std::endl <<
-      (--(correction_map_p->upper_bound(category)))->first <<std::endl;
 #ifdef DDEBUG
+  if(! (category < (--(correction_map_p->upper_bound(category)))->first))
   std::cout << "[DEBUG] category(isEBEle, R9Ele) = " << category << "(" << isEBEle << ", " << R9Ele << ")" <<   correction_map_p->find(category)->second.first << std::endl;
 
 #endif
@@ -187,12 +172,29 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
   if(correction_map_p->count(category)==1){
     return correction_map_p->find(category)->second.first;
   } else{
-    return (--(correction_map_p->upper_bound(category)))->second.first; //->second.first(); //upper_bound(category)->second.first;
-    std::cerr << "[ERROR] Electron category " << category << " not found!!!!  Scale offset not applied" << std::endl;
-    std::cerr << "        " << runNumber << "\t" << runCorrection_itr->first << "\t" << runCorrection_itr->second.runMax << std::endl;
-    exit(1);
-    return 1;
+    if(fabs(etaSCEle)>2.5) return 1;
+    if(EtEle>20 && EtEle<100){
+      exit(1);
+    std::cout << "[ERROR] Category not found: "<< std::endl;
+    std::cout << category << std::endl;
+    std::cout << (--(correction_map_p->upper_bound(category)))->first << std::endl;
+    } else {
+      return 1;
+    }
   }
+
+//     if ((--(correction_map_p->upper_bound(category)))->second.first==0){
+
+// 	std::cout << category << "\t" << runCorrection_itr->first << "\t" << (--(correction_map_p->upper_bound(category)))->second.first << std::endl;
+// 	exit(1);
+//       } else return 1;
+//     }
+//     return (--(correction_map_p->upper_bound(category)))->second.first; //->second.first(); //upper_bound(category)->second.first;
+//     std::cerr << "[ERROR] Electron category " << category << " not found!!!!  Scale offset not applied" << std::endl;
+//     std::cerr << "        " << runNumber << "\t" << runCorrection_itr->first << "\t" << runCorrection_itr->second.runMax << std::endl;
+//     exit(1);
+//     return 1;
+//   }
 
 }
 
@@ -212,6 +214,8 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
   //   return;
   // }
   correctionCategory_class cat(category_);
+  cat.runmin=runMin_;
+  cat.runmax=runMax_;
   std::map <int, correction_t >::iterator itr=runMin_map.find(runMin_);
   if (itr!=runMin_map.end()){ // if exists
     if(itr->second.runMax != runMax_){
@@ -227,6 +231,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
     itr->second.correction_map[cat].first=deltaP_; // allo stato attuale passo come input il file con le correzioni (1-deltaP/100)
     itr->second.correction_map[cat].second=err_deltaP_; // inefficiente
     //#ifdef DEBUG
+    std::cout << "[DEBUG]" << cat << std::endl;
     std::cout << "[DEBUG] " << category_ << "\t" 
 	      << itr->first << "-" << itr->second.runMax 
 	      << "\t" << itr->second.correction_map.size() 
@@ -246,7 +251,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
     //    corr.correction_map[category_].second=err_deltaP_;
     runMin_map[runMin_]=corr; // aggiungo il nuovo
     itr=runMin_map.find(runMin_);
-    
+    //    std::cout << "[DEBUG]" << cat << std::endl;
     std::cout << "[DEBUG] " << category_ << "\t" 
 	      << itr->first << "-" << itr->second.runMax 
 	      << "\t" << itr->second.correction_map.size() 
@@ -287,11 +292,12 @@ void EnergyScaleCorrection_class::ReadFromFile(TString filename){
 #endif
     
 #ifdef DEBUG
-    std::cout << "[DEBUG]" << "\t" << "category" << "\t" << "runMin" << "\t" <<"deltaM_data" << "\t" << "deltaM_MC" << "\t" << "deltaP" << std::endl;
 #ifdef SHERVIN
+    std::cout << "[DEBUG]" << "\t" << "category" << "\t" << "runMin" << "\t" <<"deltaM_data" << "\t" << "deltaM_MC" << "\t" << "deltaP" << std::endl;
     std::cout << "[DEBUG]" << "\t" << category << "\t" << runMin << "\t" << runMax << "\t" << deltaM_data << "\t" << deltaM_MC << "\t" << deltaP << std::endl;
 #else
-    std::cout << "[DEBUG]" << "\t" << category << "\t" << runMin << "\t" << runMax << "\t" << "\t" << deltaP << "\t" << err_deltaP<< std::endl;
+    std::cout << "[DEBUG]" << "\t" << "category" << "\t" << "runMin" << "\t" << "runMax\t" << "deltaP\terr_DeltaP" << std::endl;
+    std::cout << "[DEBUG]" << "\t" << category << "\t" << runMin << "\t" << runMax <<  "\t" << deltaP << "\t" << err_deltaP<< std::endl;
 #endif
 #endif
     Add(category, runMin, runMax, deltaP, err_deltaP);
@@ -558,18 +564,67 @@ float EnergyScaleCorrection_class::GetMean_nPV(TChain *tree, bool fastLoop,
 
 
 bool correctionCategory_class::operator<(const correctionCategory_class& b) const{
-    if(runmin < b.runmin) return true;  
-    if(runmax > b.runmax) return false; 
+    if(runmin < b.runmin && runmax < b.runmax) return true;  
+    if(runmax > b.runmax && runmin > b.runmin) return false; 
        
-    if(etamin < b.etamin) return true; 
-    if(etamax > b.etamax) return false;
+    if(etamin < b.etamin && etamax<b.etamax) return true; 
+    if(etamax > b.etamax && etamin>b.etamin) return false;
        
-    if(r9min  < b.r9min) return true; 
-    if(r9max  > b.r9max) return  false;
+    if(r9min  < b.r9min && r9max < b.r9max) return true; 
+    if(r9max  > b.r9max && r9min > b.r9min) return  false;
        
-    if(etmin  < b.etmin) return true;  
-    if(etmax  > b.etmax) return  false;
+    if(etmin  < b.etmin && etmax < b.etmax) return true;  
+    if(etmax  > b.etmax && etmin > b.etmin) return  false;
     return false;
 
   };    
 
+correctionCategory_class::correctionCategory_class(TString category_){
+    std::string category(category_.Data());
+#ifdef DEBUG
+    std::cout << "[DEBUG] correctionClass defined for category: " << category << std::endl;
+#endif
+    // default values 
+    runmin=0; runmax=999999;
+    etamin=-1;etamax=10;
+    r9min=-1;r9max=10;
+    etmin=-1;etmax=300.;
+    
+    unsigned int p1,p2; // boundary
+
+    // eta region
+    p1 = category.find("absEta_");
+    p2 = p1+1;
+    if(category.find("absEta_0_1")!=std::string::npos){ etamin=0; etamax=1;}
+    else if(category.find("absEta_1_1.4442")!=std::string::npos){ etamin=1; etamax=1.479;}//etamax=1.4442; }
+    else if(category.find("absEta_1.566_2")!=std::string::npos){ etamin=1.479; etamax=2;} // etamin=1.566}
+    else if(category.find("absEta_2_2.5")!=std::string::npos){ etamin=2; etamax=3;}
+    else{
+      if(p1!=std::string::npos){ 
+	p1 = category.find("_",p1);
+	p2 = category.find("_",p1+1);
+	etamin = TString(category.substr(p1+1, p2-p1-1)).Atof();
+	p1 = p2;
+	p2 = category.find("-",p1); 
+	etamax = TString(category.substr(p1+1, p2-p1-1)).Atof();
+      }
+    }
+
+    // Et region
+    p1 = category.find("-Et_");
+    p2 = p1+1;
+    std::cout << etmin << "\t" << etmax << "\t" << category.substr(p1+1, p2-p1-1) << "\t" << p1 << "\t" << p2 << std::endl;
+    if(p1 !=std::string::npos){ 
+      p1 = category.find("_",p1);
+      p2 = category.find("_",p1+1);
+      etmin = TString(category.substr(p1+1, p2-p1-1)).Atof();
+      p1 = p2;
+      p2 = category.find("-",p1); 
+      etmax = TString(category.substr(p1+1, p2-p1-1)).Atof();
+      std::cout << etmin << "\t" << etmax << "\t" << category.substr(p1+1, p2-p1-1) << std::endl;
+    }
+
+    if(category.find("gold")!=std::string::npos){ r9min=0.94; r9max=10;}
+    else if(category.find("bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
+    
+};

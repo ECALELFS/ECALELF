@@ -31,98 +31,14 @@ class correctionCategory_class{
   //float smearing_err;
 
  public:
-  correctionCategory_class(const unsigned int runNumber, const float etaEle, const float R9Ele, const float EtEle){
+  inline  correctionCategory_class(const unsigned int runNumber, const float etaEle, const float R9Ele, const float EtEle){
     runmin=runNumber; runmax=runNumber;
-    etamin=etaEle; etamax=etaEle;
+    etamin=fabs(etaEle); etamax=fabs(etaEle);
     r9min=R9Ele; r9max=R9Ele;
     etmin=EtEle; etmax=EtEle;
   }
 
-  correctionCategory_class(std::string category){
-    runmin=0; runmax=999999;
-    etamin=-1;etamax=10;
-    r9min=-1;r9max=10;
-    etmin=-1;etmax=1e6;
-
-    unsigned int p1 = category.find("absEta_");
-    unsigned int p2 = p1+1;
-
-    if(category.find("absEta_0_1")!=std::string::npos){ etamin=0; etamax=1;}
-    else if(category.find("absEta_1_1.4442")!=std::string::npos){ etamin=1; etamax=1.4442;}
-    else if(category.find("absEta_1.566_2")!=std::string::npos){ etamin=1.566; etamax=2;}
-    else if(category.find("absEta_2_2.5")!=std::string::npos){ etamin=2; etamax=2.5;}
-    else{
-      if(p1!=std::string::npos){ 
-	p1 = category.find("_",p1);
-	p2 = category.find("_",p1+1);
-	etamin = TString(category.substr(p1+1, p2-p1-1)).Atof();
-	p1 = p2;
-	p2 = category.find("-",p1); 
-	etamax = TString(category.substr(p1+1, p2-p1-1)).Atof();
-      }
-    }
-
-    p1 = category.find("EtEle_");
-    p2 = p1+1;
-    if(p1!=std::string::npos){ 
-      p1 = category.find("_",p1);
-      p2 = category.find("_",p1+1);
-      etmin = TString(category.substr(p1+1, p2-p1-1)).Atof();
-      p1 = p2;
-      p2 = category.find("-",p1); 
-      etmax = TString(category.substr(p1+1, p2-p1-1)).Atof();
-    }
-    //    std::cout << etmin << "\t" << etmax << "\t" << category.substr(p1+1, p2-p1-1) << std::endl;
-
-    
-    if(category.find("gold")!=std::string::npos){ r9min=0.94; r9max=10;}
-    else if(category.find("bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
-
-  };
-
-
-  correctionCategory_class(TString category_){
-    std::string category(category_.Data());
-    runmin=0; runmax=999999;
-    etamin=-1;etamax=10;
-    r9min=-1;r9max=10;
-    etmin=-1;etmax=1e6;
-
-    unsigned int p1 = category.find("absEta_");
-    unsigned int p2 = p1+1;
-
-    if(category.find("absEta_0_1")!=std::string::npos){ etamin=0; etamax=1;}
-    else if(category.find("absEta_1_1.4442")!=std::string::npos){ etamin=1; etamax=1.4442;}
-    else if(category.find("absEta_1.566_2")!=std::string::npos){ etamin=1.566; etamax=2;}
-    else if(category.find("absEta_2_2.5")!=std::string::npos){ etamin=2; etamax=2.5;}
-    else{
-      if(p1!=std::string::npos){ 
-	p1 = category.find("_",p1);
-	p2 = category.find("_",p1+1);
-	etamin = TString(category.substr(p1+1, p2-p1-1)).Atof();
-	p1 = p2;
-	p2 = category.find("-",p1); 
-	etamax = TString(category.substr(p1+1, p2-p1-1)).Atof();
-      }
-    }
-
-    p1 = category.find("EtEle_");
-    p2 = p1+1;
-    if(p1!=std::string::npos){ 
-      p1 = category.find("_",p1);
-      p2 = category.find("_",p1+1);
-      etmin = TString(category.substr(p1+1, p2-p1-1)).Atof();
-      p1 = p2;
-      p2 = category.find("-",p1); 
-      etmax = TString(category.substr(p1+1, p2-p1-1)).Atof();
-    }
-    //    std::cout << etmin << "\t" << etmax << "\t" << category.substr(p1+1, p2-p1-1) << std::endl;
-
-    
-    if(category.find("gold")!=std::string::npos){ r9min=0.94; r9max=10;}
-    else if(category.find("bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
-
-  };
+  correctionCategory_class(TString category_);
 
 /*   friend bool operator < (const correctionCategory_class& a, const correctionCategory_class& b){ */
 /*     if(a.runmin < b.runmin) return true;   */
@@ -208,6 +124,7 @@ class EnergyScaleCorrection_class{
   float GetMean_nPV(TChain *tree, bool fastLoop, TString nPVBranchName);
 
   void Add(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_);
+ public:
   std::map< int, correction_t >::const_iterator runCorrection_itr;
   std::map< int, correction_t >::const_iterator FindRunCorrection_itr(int runNumber);
   std::map< int, correction_t > runMin_map;
