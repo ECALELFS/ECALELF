@@ -673,7 +673,7 @@ int main(int argc, char **argv) {
     std::cout << "------------------------------------------------------------" << std::endl;
     std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
     TString treeName="scaleEle_"+corrEleType;
-    EnergyScaleCorrection_class eScaler(corrEleFile,corrEleType);
+    EnergyScaleCorrection_class eScaler(corrEleFile);
 
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
@@ -691,8 +691,8 @@ int main(int argc, char **argv) {
 	  exit(1);
 	}
 	TTree *corrTree = eScaler.GetCorrTree(ch);
-	//corrTree->SetName("scaleEle");
-	//corrTree->SetTitle(corrEleType.c_str());
+	corrTree->SetName(TString("scaleEle_")+corrEleType.c_str());
+	corrTree->SetTitle(corrEleType.c_str());
 	f.cd();
 	corrTree->Write();
 	std::cout << "[INFO] Data entries: "    << ch->GetEntries() << std::endl;
@@ -715,7 +715,7 @@ int main(int argc, char **argv) {
     std::cout << "------------------------------------------------------------" << std::endl;
     std::cout << "[STATUS] Getting energy smearings from file: " << smearEleFile << std::endl;
     TString treeName="smearEle_"+smearEleType;
-    EnergyScaleCorrection_class eScaler("","", smearEleFile,smearEleType);
+    EnergyScaleCorrection_class eScaler("", smearEleFile);
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
@@ -758,19 +758,31 @@ int main(int argc, char **argv) {
        branch_itr != branchList.end();
        branch_itr++){
     UpdateFriends(tagChainMap, regionsFileNameTag);
+    
     TString treeName=*branch_itr;
-    if(*branch_itr=="smearerCat") treeName+="_"+regionsFileNameTag;
+    TString t;
+    if(treeName=="smearerCat_s"){
+      treeName.ReplaceAll("_s","");
+      t="s";
+    } 
+    if(treeName=="smearerCat_d"){
+      treeName.ReplaceAll("_d","");
+      t="d";
+    }
+    TString branchName=treeName;
+    std::cout << "#### --> " << treeName << "\t" << t << "\t" << *branch_itr <<std::endl;
+    if(branchName=="smearerCat") treeName+="_"+regionsFileNameTag;
 
-    TString branchName=*branch_itr;
     if(treeName.Contains("invMassSigma")){
-      newBrancher.scaler= new EnergyScaleCorrection_class("","", smearEleFile,smearEleType);
+      newBrancher.scaler= new EnergyScaleCorrection_class("", smearEleFile);
     }
 
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
 	tag_chain_itr++){
-      if(tag_chain_itr->first.CompareTo("s")==0 || tag_chain_itr->first.CompareTo("d")==0) continue; //only data
+      if((tag_chain_itr->first.CompareTo("s")==0 || tag_chain_itr->first.CompareTo("d")==0)) continue; //only data
       if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
+      if(t!="" && !tag_chain_itr->first.Contains(t)) continue;
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
 
       //data
@@ -782,7 +794,7 @@ int main(int argc, char **argv) {
 	std::cerr << "[ERROR] File for branch " << branchName << " not created" << std::endl;
 	return 1;
       }
-      TTree *newTree = newBrancher.AddBranch(ch,treeName, branchName);
+      TTree *newTree = newBrancher.AddBranch(ch,treeName, branchName,true,tag_chain_itr->first.Contains("s"));
       if(newTree==NULL){
 	std::cerr << "[ERROR] New tree for branch " << treeName << " is NULL" << std::endl;
 	return 1;
@@ -1150,36 +1162,36 @@ int main(int argc, char **argv) {
 
 		// rho profile
 		name2.ReplaceAll("constTerm", "rho");
-// 		smearer.SetDataSet(name2,"rho");
-// 		Double_t v1=var->getVal();
-// 		Double_t v2=var2->getVal();
-// 		var2->setVal(0);
-// 		var->setVal(rho);
+		smearer.SetDataSet(name2,"rho");
+		Double_t v1=var->getVal();
+		Double_t v2=var2->getVal();
+		var2->setVal(0);
+		var->setVal(rho);
  		TGraph *profil = NULL;
-//profil = GetProfile(var, smearer,0);
-// 		var2->setVal(v2);
-// 		var->setVal(v1);
+		profil = GetProfile(var, smearer,0);
+		var2->setVal(v2);
+		var->setVal(v1);
  		TString n="profileChi2_"+name2+"_"; n+=randomInt;
-// 		profil->SetName(n);  
-// 		TCanvas c("c_"+name);
-// 		profil->Draw("AP*");
-// 		fOutProfile->cd();
-// 		profil->Write();
-// 		delete profil;
-// 		smearer.dataset->Write();
-
-
+		profil->SetName(n);  
+		TCanvas c("c_"+name);
+		profil->Draw("AP*");
+		fOutProfile->cd();
+		profil->Write();
+		delete profil;
+		smearer.dataset->Write();
+		
+		
  		// phi profile
  		name2.ReplaceAll("rho", "phi");
-// 		smearer.SetDataSet(name2,"phi");
-// 		profil = GetProfile(var, var2, smearer, true, rho, Emean);
-// 		n="profileChi2_"+name2+"_"; n+=randomInt;
-// 		profil->SetName(n);  
-// 		profil->Draw("AP*");
-// 		fOutProfile->cd();
-// 		profil->Write();
-// 		delete profil;
-// 		smearer.dataset->Write();
+		smearer.SetDataSet(name2,"phi");
+		profil = GetProfile(var, var2, smearer, true, rho, Emean);
+		n="profileChi2_"+name2+"_"; n+=randomInt;
+		profil->SetName(n);  
+		profil->Draw("AP*");
+		fOutProfile->cd();
+		profil->Write();
+		delete profil;
+		smearer.dataset->Write();
 
 		// rho profile with fixed phi!=pi/2
 		name2.ReplaceAll("phi", "rho_phi4");

@@ -103,6 +103,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(isToy==false || (externToy==true && isToy==true && isMC==false)){
     std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
     chain->SetBranchAddress("scaleEle", corrEle_);
+    cutter._corrEle=true;
     }
   } 
 
@@ -143,6 +144,10 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     hasSmearerCat=true;
   }
 
+  if(hasSmearerCat==false){
+    std::cerr << "[ERROR] Must have smearerCat branch" << std::endl;
+    exit(1);
+  }
   Long64_t entries = chain->GetEntryList()->GetN();
   if(nEvents>0 && nEvents<entries){
     std::cout << "[INFO] Importing only " << nEvents << " events" << std::endl;
@@ -341,6 +346,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   if(_chain->GetBranch("scaleEle")!=NULL){
     std::cout << "[STATUS] Activating branch scaleEle" << std::endl;
     _chain->SetBranchStatus("scaleEle", 1);
+    cutter._corrEle=true;
   }
 
   if(_chain->GetBranch("smearEle")!=NULL){

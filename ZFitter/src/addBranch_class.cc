@@ -256,24 +256,39 @@ TTree* addBranch_class::AddBranch_iSM(TChain* originalChain, TString treename, T
 TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC){
 
   ElectronCategory_class cutter;
+  if(originalChain->GetBranch("scaleEle")!=NULL){
+    cutter._corrEle=true;
+    std::cout << "[INFO] Activating scaleEle for smearerCat" << std::endl;
+    
+  }
   TString oddString="";
 
   //setting the new tree
   TTree *newtree = new TTree(treename, treename);
   Int_t  smearerCat[2];
-  Char_t cat1[100], cat2[100];
+  Char_t cat1[200], cat2[100];
   
   newtree->Branch("smearerCat", smearerCat, "smearerCat[2]/I");
   newtree->Branch("catName", cat1, "catName/C");
   //  newtree->Branch("catName2", cat2, "catName2/C");
   
   /// \todo disable branches using cutter
-  originalChain->SetBranchStatus("*",1);
+  originalChain->SetBranchStatus("*",0);
   
   std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
       region_ele1_itr != _regionList.end();
       region_ele1_itr++){
+
+    // \todo activating branches // not efficient in this loop
+    std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr);
+    for(std::set<TString>::const_iterator itr = branchNames.begin();
+	itr != branchNames.end(); itr++){
+      originalChain->SetBranchStatus(*itr, 1);
+    }
+    if(    cutter._corrEle==true) originalChain->SetBranchStatus("scaleEle", 1);
+
+
     for(std::vector<TString>::const_iterator region_ele2_itr = region_ele1_itr;
 	region_ele2_itr != _regionList.end();
 	region_ele2_itr++){
@@ -281,26 +296,28 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
       if(region_ele2_itr==region_ele1_itr){
 	TString region=*region_ele1_itr;
 	region.ReplaceAll(_commonCut,""); //remove the common Cut!
-	TTreeFormula *selector = new TTreeFormula("selector"+(region), cutter.GetCut(region+oddString, isMC), originalChain);
+	TTreeFormula *selector = new TTreeFormula("selector-"+(region), cutter.GetCut(region+oddString, isMC), originalChain);
 	catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector,NULL));
 	//selector->Print();
+	//std::cout << cutter.GetCut(region+oddString, isMC) << std::endl;
+	//exit(0);
       } else {
 	TString region1=*region_ele1_itr;
 	TString region2=*region_ele2_itr;
 	region1.ReplaceAll(_commonCut,"");
 	region2.ReplaceAll(_commonCut,"");
-	TTreeFormula *selector1 = new TTreeFormula("selector1"+region1+region2, 
+	TTreeFormula *selector1 = new TTreeFormula("selector1-"+region1+region2, 
 						   cutter.GetCut(region1+oddString, isMC, 1) && 
 						   cutter.GetCut(region2+oddString, isMC, 2),
 						   originalChain);
-	TTreeFormula *selector2 = new TTreeFormula("selector2"+region1+region2,
+	TTreeFormula *selector2 = new TTreeFormula("selector2-"+region1+region2,
 						   cutter.GetCut(region1+oddString, isMC, 2) && 
 						   cutter.GetCut(region2+oddString, isMC, 1),
 						   originalChain);
 	catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector1,selector2));
 	//selector1->Print();
-	//selector2->Print();
-	
+	//	selector2->Print();
+	//exit(0);
       } 
 	
     }
