@@ -209,7 +209,7 @@ private:
   Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
 
   // selection
-  Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=WP90, 3=WP90+fiducial, 6=WP80, 7=WP80+fiducial, 14=WP70, 15=WP70+fiducial
+  Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
   Int_t  chargeEle[2];
   Float_t etaSCEle[2], phiSCEle[2]; ///< phi of the SC
@@ -243,16 +243,16 @@ private:
   Float_t energySigmaSCEle_regrCorr_ele[2];
   Float_t energySigmaSCEle_regrCorr_pho[2];
 
-  Float_t energySCEle_regrCorrSemiParV4_pho[2], energySigmaSCEle_regrCorrSemiParV4_pho[2];
-  Float_t energySCEle_regrCorrSemiParV4_ele[2], energySigmaSCEle_regrCorrSemiParV4_ele[2];
-  Float_t energySCEle_regrCorrSemiParV5_pho[2], energySigmaSCEle_regrCorrSemiParV5_pho[2];
-  Float_t energySCEle_regrCorrSemiParV5_ele[2], energySigmaSCEle_regrCorrSemiParV5_ele[2];
-  Float_t energySCEle_regrCorrSemiParV6_pho[2], energySigmaSCEle_regrCorrSemiParV6_pho[2];
-  Float_t energySCEle_regrCorrSemiParV6_ele[2], energySigmaSCEle_regrCorrSemiParV6_ele[2];
-  Float_t energySCEle_regrCorrSemiParV7_pho[2], energySigmaSCEle_regrCorrSemiParV7_pho[2];
-  Float_t energySCEle_regrCorrSemiParV7_ele[2], energySigmaSCEle_regrCorrSemiParV7_ele[2];
-  Float_t energySCEle_regrCorrSemiParV8_pho[2], energySigmaSCEle_regrCorrSemiParV8_pho[2];
-  Float_t energySCEle_regrCorrSemiParV8_ele[2], energySigmaSCEle_regrCorrSemiParV8_ele[2];
+  Float_t energySCEle_regrCorrSemiParV4_pho[2], energySigmaSCEle_regrCorrSemiParV4_pho[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV4_ele[2], energySigmaSCEle_regrCorrSemiParV4_ele[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV5_pho[2], energySigmaSCEle_regrCorrSemiParV5_pho[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV5_ele[2], energySigmaSCEle_regrCorrSemiParV5_ele[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV6_pho[2], energySigmaSCEle_regrCorrSemiParV6_pho[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV6_ele[2], energySigmaSCEle_regrCorrSemiParV6_ele[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV7_pho[2], energySigmaSCEle_regrCorrSemiParV7_pho[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV7_ele[2], energySigmaSCEle_regrCorrSemiParV7_ele[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV8_pho[2], energySigmaSCEle_regrCorrSemiParV8_pho[2]; ///< see documentation on regressions
+  Float_t energySCEle_regrCorrSemiParV8_ele[2], energySigmaSCEle_regrCorrSemiParV8_ele[2]; ///< see documentation on regressions
 
 
   Float_t energySCEle_corr[2];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
