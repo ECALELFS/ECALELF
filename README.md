@@ -10,7 +10,9 @@ Download instructions.
 
 `cp ~shervin/public/setup-devel-42X_44X_53X.sh .`
 
-`./setup.sh CMSSW_5_3_7_patch6`
+`chmod +x setup-devel-42X_44X_53X.sh`
+
+`./setup-devel-42X_44X_53X.sh CMSSW_5_3_7_patch6`
 
 `cd CMSSW_5_3_7_patch6/src/`
 
