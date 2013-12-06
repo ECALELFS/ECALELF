@@ -38,7 +38,7 @@ Add your git repository to the list of remotes to be used like:
 Create a new branch for your development (use a meaningful name)
 `git branch myNewBranch`
 Push it to your git repository
-`git branch push myNewBranch myfork`
+`git push myNewBranch myfork`
 
 Then start to develop, remember to do commits as much as possible
 
