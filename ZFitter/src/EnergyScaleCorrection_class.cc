@@ -256,37 +256,50 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
 
 
 
-float EnergyScaleCorrection_class::getSmearingSigma(float energy, bool isEBEle, float R9Ele, float etaSCEle){
-#ifdef SHERVIN
-  //const correction_map_t *correction_map_p = &(runCorrection_itr->second.correction_map);
-  TString category=GetElectronCategory(isEBEle, R9Ele, etaSCEle);
+float EnergyScaleCorrection_class::getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle){
   
-  if(smearings.count(category)==0){
-    std::cerr << "[ERROR] Electron category " << category << " not found!!!!  Smearing not applied" << std::endl;
-    exit(1);
+  correctionCategory_class category(runNumber, etaSCEle, R9Ele, energy/cosh(etaSCEle));
+  correction_map_t::const_iterator corr_itr = smearings.find(category);
+  if(corr_itr==smearings.end()){ // if not in the standard classes, add it in the list of not defined classes
+    if(smearings_not_defined.count(category)==0){
+      correctionValue_class corr;
+      smearings_not_defined[category]=corr;
+    }
+    corr_itr = smearings_not_defined.find(category);
+    //     std::cout << "[ERROR] Category not found: " << std::endl;
+    //     std::cout << category << std::endl;
+    //     exit(1);
   }
-  
-  double constTerm=smearings.find(category)->second.first;
-  double alpha=smearings.find(category)->second.second;
-  return sqrt(constTerm*constTerm + alpha*alpha/energy);
+
+#ifdef DEBUG
+  std::cout << "[DEBUG] Checking correction for category: " << category << std::endl;
+  std::cout << "[DEBUG] Correction is: " << corr_itr->second
+	    << std::endl 
+    	    << "        given for category " <<  corr_itr->first;
 #endif
-  return 0;
+
+  double constTerm=corr_itr->second.constTerm;
+  double alpha=corr_itr->second.alpha;
+  return sqrt(constTerm*constTerm + alpha*alpha/energy);
+
 }
 
-float EnergyScaleCorrection_class::getSmearing(float energy, bool isEBEle, float R9Ele, float etaSCEle){
+float EnergyScaleCorrection_class::getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle){
 
   if(noSmearings) return 1;
-  return rgen_->Gaus(1,getSmearingSigma(energy, isEBEle, R9Ele, etaSCEle));
+  return rgen_->Gaus(1,getSmearingSigma(runNumber, energy, isEBEle, R9Ele, etaSCEle));
 }
 
 
 TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop, 
 						 TString energyEleBranchName,
+						 TString runNumberBranchName,
 						 TString R9EleBranchName,
 						 TString etaEleBranchName,
 						 TString etaSCEleBranchName
-						 
+
 						 ){
+  Int_t runNumber_;
   Float_t energyEle_[2];
   Float_t etaEle_[2];
   Float_t etaSCEle_[2];
@@ -303,13 +316,14 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop,
   }
   if(fastLoop){
     tree->SetBranchStatus("*",0);
+    tree->SetBranchStatus(runNumberBranchName,1);
     tree->SetBranchStatus(energyEleBranchName,1);
     tree->SetBranchStatus(etaEleBranchName,1);
     tree->SetBranchStatus(etaSCEleBranchName,1);
     tree->SetBranchStatus(R9EleBranchName,1);
   }
 
-
+  tree->SetBranchAddress(runNumberBranchName, &runNumber_);
   tree->SetBranchAddress(energyEleBranchName, energyEle_);
   tree->SetBranchAddress(etaEleBranchName,etaEle_);
   tree->SetBranchAddress(etaSCEleBranchName,etaSCEle_);
@@ -322,9 +336,9 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop,
   Long64_t nentries = tree->GetEntries();
   for(Long64_t ientry = 0; ientry<tree->GetEntriesFast(); ientry++){
     tree->GetEntry(ientry);
-    smearEle_[0] = getSmearing(energyEle_[0], fabs(etaSCEle_[0]) < 1.4442, 
+    smearEle_[0] = getSmearing(runNumber_, energyEle_[0], fabs(etaSCEle_[0]) < 1.4442, 
 			       R9Ele_[0],etaEle_[0]);
-    smearEle_[1] = getSmearing(energyEle_[1], fabs(etaSCEle_[1]) < 1.4442, 
+    smearEle_[1] = getSmearing(runNumber_, energyEle_[1], fabs(etaSCEle_[1]) < 1.4442, 
 			       R9Ele_[1],etaEle_[1]);
     newTree->Fill();
     if(ientry%(nentries/100)==0) std::cerr << "\b\b\b\b" << std::setw(2) << ientry/(nentries/100) << "%]";

@@ -25,7 +25,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _isSmearingEt(false),
   cutter(false)
 {
-
+  cutter.energyBranchName=energyBranchName;
 }
 
 
@@ -275,6 +275,15 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     event.invMass= sqrt(2 * event.energy_ele1 * event.energy_ele2 *
 			(1-((1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[0]-phiEle[1]))/((1+t1q)*(1+t2q)))
 			);
+    if(_isSmearingEt){
+      if(_swap){
+	event.energy_ele2/=cosh(etaEle[0]);
+	event.energy_ele1/=cosh(etaEle[1]);
+      } else{
+	event.energy_ele1/=cosh(etaEle[0]);
+	event.energy_ele2/=cosh(etaEle[1]);
+      }	
+    }
     // to calculate the invMass: invMass = sqrt(2 * energy_ele1 * energy_ele2 * angle_eta_ele1_ele2)
     if(event.invMass < 70 || event.invMass > 110) continue;
 

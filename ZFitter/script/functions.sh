@@ -53,7 +53,7 @@ mcName(){
 
 mkSmearerCatSignal(){
 
-    if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s2-`basename $configFile .dat`.root" ];then
+    if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s2-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s3-`basename $configFile .dat`.root" ];then
 	echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
  	./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
  	    --saveRootMacro  --addBranch=smearerCat_s  || exit 1
@@ -101,7 +101,7 @@ mkSmearerCatData(){
 	mv tmp/smearerCat_`basename $1 .dat`_d*-`basename $configFile .dat`.root $2/ || exit 1
     fi
     cat $3 \
-	| sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat >> $2/`basename $configFile`
+	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $2/`basename $configFile`
 
 	
 }

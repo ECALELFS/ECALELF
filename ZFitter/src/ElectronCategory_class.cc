@@ -37,7 +37,9 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
       itr != cutSet.end();
       itr++){
     TString cut_string = *itr;
-
+#ifdef DEBUG
+    std::cout << cut_string << std::endl;
+#endif
     if(isMC && cut_string.Contains("runNumber")){
       cut_string.Insert(0,"(");
       cut_string+="|| runNumber==1)"; 
@@ -49,6 +51,8 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
       //std::cerr << "[INFO] scaleEle for GetCut" << std::endl;
       cut_string.ReplaceAll(energyBranchName+"_ele1",energyBranchName+"_ele1 * scaleEle_ele1");
       cut_string.ReplaceAll(energyBranchName+"_ele2",energyBranchName+"_ele2 * scaleEle_ele2");
+      TString invMassName=energyBranchName; invMassName.ReplaceAll("energySCEle","invMass_SC");
+      cut_string.ReplaceAll(invMassName,invMassName+"*sqrt(scaleEle_ele1 * scaleEle_ele2)");
     }
     // se contiene solo ele2 rimuovi, altrimenti sostituisci
     if(nEle!=0){
@@ -74,7 +78,9 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 
     cut+=cut_string;
   }
-
+#ifdef DEBUG
+  std::cout << cut << std::endl;
+#endif
   return cut; //full AND of cuts
 
 }
@@ -601,8 +607,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 	TString string1 = Objstring1->GetString();
 	
         
-	TCut cutEle1("("+energyBranchName+"_ele1/cosh(etaSCEle_ele1)) >= "+string1);
-	TCut cutEle2("("+energyBranchName+"_ele2/cosh(etaSCEle_ele2)) >= "+string1);
+	TCut cutEle1(""+energyBranchName+"_ele1/cosh(etaSCEle_ele1) >= "+string1);
+	TCut cutEle2(""+energyBranchName+"_ele2/cosh(etaSCEle_ele2) >= "+string1);
 	
 	cut_string+=cutEle1 && cutEle2;
 	cutSet.insert(TString(cutEle1 && cutEle2));

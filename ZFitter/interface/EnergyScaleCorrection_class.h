@@ -113,14 +113,15 @@ class EnergyScaleCorrection_class{
   void AddSmearing(TString category_, int runMin_, int runMax_, //double smearing_, double err_smearing_);
 		   double constTerm, double err_constTerm, double alpha, double err_alpha);
 
-  float getSmearing(float energy, bool isEBEle, float R9Ele, float etaSCEle);
+  float getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
 
 
  public:
-  float getSmearingSigma(float energy, bool isEBEle, float R9Ele, float etaSCEle);
+  float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
   void ReadSmearingFromFile(TString filename);
   TTree *GetSmearTree(TChain *tree, bool fastLoop, 
 		      TString energyEleBranchName,
+		      TString runNumberBranchName="runNumber",
 		      TString R9EleBranchName="R9Ele",
 		      TString etaEleBranchName="etaEle",
 		      TString etaSCEleBranchName="etaSCEle"
