@@ -2,11 +2,11 @@
 
 
 #tag_name=""
-commonCut=Et_25
-selection=WP80_PU
+commonCut=Et_25-trigger-noPF
+selection=loose
 invMass_var=invMass_SC_regrCorr_ele
 configFile=data/validation/monitoring_2012_53X.dat
-regionsFile=data/regions/scaleStep4smearing_2.dat
+regionsFile=data/regions/scaleStep2smearing_9.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
@@ -138,8 +138,8 @@ fi
 
 # saving the root files with the chains
 rm tmp/*_chain.root
-./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${fitterOptions} || exit 1
-
+./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
+exit 0
 # adding all the chains in one file
 for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
   do

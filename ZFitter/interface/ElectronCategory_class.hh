@@ -54,6 +54,8 @@ public:
   //--------------- flags
   bool _isRooFit; // defines if the cuts are defined for RooFit or not
   bool _roofitNameAsNtuple;
+  TString energyBranchName;
+  bool _corrEle;
   //------------------------------ 
   // this method is though to give smaller formulas in the selection reducing a bit redundant cuts
   std::set<TString> GetCutSet(TString region); // -> make sure that all the cuts that goes in && are inserted separately

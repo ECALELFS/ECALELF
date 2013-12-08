@@ -12,7 +12,7 @@ configFile=data/validation/monitoring_2012_53X.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
-updateOnly="--updateOnly"
+updateOnly="--updateOnly --noPU"
 #extraOptions="--forceNewFit"
 #extraOptions="--addBranch iSM --forceNewFit"
 

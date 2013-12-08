@@ -25,7 +25,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _isSmearingEt(false),
   cutter(false)
 {
-
+  cutter.energyBranchName=energyBranchName;
 }
 
 
@@ -103,6 +103,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(isToy==false || (externToy==true && isToy==true && isMC==false)){
     std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
     chain->SetBranchAddress("scaleEle", corrEle_);
+    cutter._corrEle=true;
     }
   } 
 
@@ -143,6 +144,10 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     hasSmearerCat=true;
   }
 
+  if(hasSmearerCat==false){
+    std::cerr << "[ERROR] Must have smearerCat branch" << std::endl;
+    exit(1);
+  }
   Long64_t entries = chain->GetEntryList()->GetN();
   if(nEvents>0 && nEvents<entries){
     std::cout << "[INFO] Importing only " << nEvents << " events" << std::endl;
@@ -270,6 +275,15 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     event.invMass= sqrt(2 * event.energy_ele1 * event.energy_ele2 *
 			(1-((1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[0]-phiEle[1]))/((1+t1q)*(1+t2q)))
 			);
+    if(_isSmearingEt){
+      if(_swap){
+	event.energy_ele2/=cosh(etaEle[0]);
+	event.energy_ele1/=cosh(etaEle[1]);
+      } else{
+	event.energy_ele1/=cosh(etaEle[0]);
+	event.energy_ele2/=cosh(etaEle[1]);
+      }	
+    }
     // to calculate the invMass: invMass = sqrt(2 * energy_ele1 * energy_ele2 * angle_eta_ele1_ele2)
     if(event.invMass < 70 || event.invMass > 110) continue;
 
@@ -341,6 +355,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   if(_chain->GetBranch("scaleEle")!=NULL){
     std::cout << "[STATUS] Activating branch scaleEle" << std::endl;
     _chain->SetBranchStatus("scaleEle", 1);
+    cutter._corrEle=true;
   }
 
   if(_chain->GetBranch("smearEle")!=NULL){

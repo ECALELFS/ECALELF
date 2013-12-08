@@ -132,16 +132,16 @@ ciao:
 	@echo "$(ROOFIT_LIB)"
 	@echo "$(ROOFIT_INCLUDE)"
 
-$(BUILDDIR)/test.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o 
-	@echo "---> Making Test ZFitter"
-	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
-	-o $(BUILDDIR)/test.exe $(BUILDDIR)/ZFitter.cpp  -lboost_program_options -lTreePlayer \
-	$(OBJ_DIR)/*.o 
+# $(BUILDDIR)/test.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o 
+# 	@echo "---> Making Test ZFitter"
+# 	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
+# 	-o $(BUILDDIR)/test.exe $(BUILDDIR)/ZFitter.cpp  -lboost_program_options -lTreePlayer \
+# 	$(OBJ_DIR)/*.o 
 
-#test/test.cpp #$(SRC)/ElectronCategory_class.cc # quest'ultimo perche' compilo statico
-#	@echo "---> Making test"
-#	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) \
-#	-o $(BUILDDIR)/test.exe test/test.cpp -lboost_program_options 
+$(BUILDDIR)/test.exe: test/test.cpp $(OBJ_DIR)/EnergyScaleCorrection_class.o # quest'ultimo perche' compilo statico
+	@echo "---> Making test"
+	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) \
+	-o $(BUILDDIR)/test.exe test/test.cpp -lboost_program_options -lTreePlayer 	$(OBJ_DIR)/*.o 
 
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 

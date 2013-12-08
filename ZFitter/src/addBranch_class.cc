@@ -100,6 +100,7 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
   //TBranch *b = originalChain-> GetBranch("name of branch");
   //originalChain->GetListOfBranches()->Remove(b);
 
+  Int_t runNumber;
   //add pt branches
   Float_t         phiEle[2];
   Float_t         etaEle[2];
@@ -134,6 +135,7 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 
   if(fastLoop){
     originalChain->SetBranchStatus("*",0);
+    originalChain->SetBranchStatus("runNumber",1);
     originalChain->SetBranchStatus(etaEleBranchName,1);
     originalChain->SetBranchStatus(etaSCEleBranchName,1);
     originalChain->SetBranchStatus(phiEleBranchName,1);
@@ -146,7 +148,7 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
     originalChain->SetBranchStatus(invMassBranchName,1);
 
   }
-
+  originalChain->SetBranchAddress("runNumber", &runNumber);
   if(originalChain->SetBranchAddress(etaEleBranchName, etaEle) < 0){
     std::cerr << "[ERROR] Branch etaEle not defined" << std::endl;
     exit(1);
@@ -170,9 +172,9 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 
     originalChain->GetEntry(ientry);
     float smearEle_[2];
-    smearEle_[0] = scaler->getSmearingSigma(energyEle[0], fabs(etaSCEle_[0]) < 1.4442, 
+    smearEle_[0] = scaler->getSmearingSigma(runNumber,energyEle[0], fabs(etaSCEle_[0]) < 1.4442, 
 			       R9Ele_[0],etaEle[0]);
-    smearEle_[1] = scaler->getSmearingSigma(energyEle[1], fabs(etaSCEle_[1]) < 1.4442, 
+    smearEle_[1] = scaler->getSmearingSigma(runNumber,energyEle[1], fabs(etaSCEle_[1]) < 1.4442, 
 			       R9Ele_[1],etaEle[1]);
 
     invMassSigma = 0.5 * invMass * sqrt( 
@@ -256,24 +258,39 @@ TTree* addBranch_class::AddBranch_iSM(TChain* originalChain, TString treename, T
 TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC){
 
   ElectronCategory_class cutter;
+  if(originalChain->GetBranch("scaleEle")!=NULL){
+    cutter._corrEle=true;
+    std::cout << "[INFO] Activating scaleEle for smearerCat" << std::endl;
+    
+  }
   TString oddString="";
 
   //setting the new tree
   TTree *newtree = new TTree(treename, treename);
   Int_t  smearerCat[2];
-  Char_t cat1[100], cat2[100];
-  
+  Char_t cat1[10];
+  sprintf(cat1,"XX");
   newtree->Branch("smearerCat", smearerCat, "smearerCat[2]/I");
   newtree->Branch("catName", cat1, "catName/C");
   //  newtree->Branch("catName2", cat2, "catName2/C");
   
   /// \todo disable branches using cutter
-  originalChain->SetBranchStatus("*",1);
+  originalChain->SetBranchStatus("*",0);
   
   std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
       region_ele1_itr != _regionList.end();
       region_ele1_itr++){
+
+    // \todo activating branches // not efficient in this loop
+    std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr);
+    for(std::set<TString>::const_iterator itr = branchNames.begin();
+	itr != branchNames.end(); itr++){
+      originalChain->SetBranchStatus(*itr, 1);
+    }
+    if(    cutter._corrEle==true) originalChain->SetBranchStatus("scaleEle", 1);
+
+
     for(std::vector<TString>::const_iterator region_ele2_itr = region_ele1_itr;
 	region_ele2_itr != _regionList.end();
 	region_ele2_itr++){
@@ -281,26 +298,28 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
       if(region_ele2_itr==region_ele1_itr){
 	TString region=*region_ele1_itr;
 	region.ReplaceAll(_commonCut,""); //remove the common Cut!
-	TTreeFormula *selector = new TTreeFormula("selector"+(region), cutter.GetCut(region+oddString, isMC), originalChain);
+	TTreeFormula *selector = new TTreeFormula("selector-"+(region), cutter.GetCut(region+oddString, isMC), originalChain);
 	catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector,NULL));
 	//selector->Print();
+	//std::cout << cutter.GetCut(region+oddString, isMC) << std::endl;
+	//exit(0);
       } else {
 	TString region1=*region_ele1_itr;
 	TString region2=*region_ele2_itr;
 	region1.ReplaceAll(_commonCut,"");
 	region2.ReplaceAll(_commonCut,"");
-	TTreeFormula *selector1 = new TTreeFormula("selector1"+region1+region2, 
+	TTreeFormula *selector1 = new TTreeFormula("selector1-"+region1+region2, 
 						   cutter.GetCut(region1+oddString, isMC, 1) && 
 						   cutter.GetCut(region2+oddString, isMC, 2),
 						   originalChain);
-	TTreeFormula *selector2 = new TTreeFormula("selector2"+region1+region2,
+	TTreeFormula *selector2 = new TTreeFormula("selector2-"+region1+region2,
 						   cutter.GetCut(region1+oddString, isMC, 2) && 
 						   cutter.GetCut(region2+oddString, isMC, 1),
 						   originalChain);
 	catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector1,selector2));
 	//selector1->Print();
-	//selector2->Print();
-	
+	//	selector2->Print();
+	//exit(0);
       } 
 	
     }
@@ -310,6 +329,10 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
   Long64_t entries = originalChain->GetEntries();
   originalChain->LoadTree(originalChain->GetEntryNumber(0));
   Long64_t treenumber=-1;
+
+  std::cout << "[STATUS] Get smearerCat for tree: " << originalChain->GetTitle() 
+	    << "\t" << "with " << entries << " entries" << std::endl;
+  std::cerr << "[00%]";
 
   for(Long64_t jentry=0; jentry < entries; jentry++){
     originalChain->GetEntry(jentry);
@@ -337,9 +360,9 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 	if(sel2==NULL || sel2->EvalInstance()==false) continue;
 	else{
 	  _swap=true;
-	  sprintf(cat1,"%s", sel2->GetName());
+	  //sprintf(cat1,"%s", sel2->GetName());
 	}
-      } else sprintf(cat1,"%s", sel1->GetName());
+      } //else sprintf(cat1,"%s", sel1->GetName());
       
       evIndex=catSelector_itr-catSelectors.begin();
     }
@@ -347,8 +370,12 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
     smearerCat[0]=evIndex;
     smearerCat[1]=_swap ? 1 : 0;
     newtree->Fill();
+    if(jentry%(entries/100)==0) std::cerr << "\b\b\b\b" << std::setw(2) << jentry/(entries/100) << "%]";
   }
+  std::cout << std::endl;
 
+  //if(fastLoop) 
+  originalChain->SetBranchStatus("*",1);
   originalChain->ResetBranchAddresses();
   return newtree;
 }
