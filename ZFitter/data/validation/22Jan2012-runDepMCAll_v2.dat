@@ -45,21 +45,21 @@ s3	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree_s
 #s2	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_s2-22Jan2012-runDepMC.root
 ##s3	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_s3-22Jan2012-runDepMC.root
 #
-d1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d1-22Jan2012-runDepMCAll.root
-d2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d2-22Jan2012-runDepMCAll.root
-d3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d3-22Jan2012-runDepMCAll.root
-d4	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d4-22Jan2012-runDepMCAll.root
-s1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s1-22Jan2012-runDepMCAll.root
-s2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s2-22Jan2012-runDepMCAll.root
-s3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s3-22Jan2012-runDepMCAll.root
+#d1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d1-22Jan2012-runDepMCAll.root
+#d2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d2-22Jan2012-runDepMCAll.root
+#d3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d3-22Jan2012-runDepMCAll.root
+#d4	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d4-22Jan2012-runDepMCAll.root
+#s1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s1-22Jan2012-runDepMCAll.root
+#s2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s2-22Jan2012-runDepMCAll.root
+#s3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s3-22Jan2012-runDepMCAll.root
 #
-d1	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d1-22Jan2012-runDepMCAll.root
-d2	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d2-22Jan2012-runDepMCAll.root
-d3	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d3-22Jan2012-runDepMCAll.root
-d4	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d4-22Jan2012-runDepMCAll.root
-s1	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s1-22Jan2012-runDepMCAll.root
-s2	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s2-22Jan2012-runDepMCAll.root
-s3	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s3-22Jan2012-runDepMCAll.root
+#d1	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d1-22Jan2012-runDepMCAll.root
+#d2	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d2-22Jan2012-runDepMCAll.root
+#d3	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d3-22Jan2012-runDepMCAll.root
+#d4	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d4-22Jan2012-runDepMCAll.root
+#s1	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s1-22Jan2012-runDepMCAll.root
+#s2	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s2-22Jan2012-runDepMCAll.root
+#s3	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s3-22Jan2012-runDepMCAll.root
 #
 #d1	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d1-22Jan2012-runDepMC.root
 #d2	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d2-22Jan2012-runDepMC.root
@@ -77,26 +77,26 @@ s3	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearin
 #s2	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_s2-22Jan2012-runDepMC.root
 ##s3	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_s3-22Jan2012-runDepMC.root
 #
-d1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d1-22Jan2012-runDepMC.root
-d2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d2-22Jan2012-runDepMC.root
-d3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d3-22Jan2012-runDepMC.root
-d4	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d4-22Jan2012-runDepMC.root
+#d1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d1-22Jan2012-runDepMC.root
+#d2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d2-22Jan2012-runDepMC.root
+#d3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d3-22Jan2012-runDepMC.root
+#d4	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d4-22Jan2012-runDepMC.root
 #s1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s1-22Jan2012-runDepMC.root
 #s2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s2-22Jan2012-runDepMC.root
 #s3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s3-22Jan2012-runDepMCAll.root
 #
-d1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d1-22Jan2012-runDepMC.root
-d2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d2-22Jan2012-runDepMC.root
-d3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d3-22Jan2012-runDepMC.root
-d4	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d4-22Jan2012-runDepMC.root
+#d1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d1-22Jan2012-runDepMC.root
+#d2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d2-22Jan2012-runDepMC.root
+#d3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d3-22Jan2012-runDepMC.root
+#d4	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d4-22Jan2012-runDepMC.root
 #s1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s1-22Jan2012-runDepMC.root
 #s2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s2-22Jan2012-runDepMC.root
 #s3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s3-22Jan2012-runDepMCAll.root
 ####################################################
-d1	r9Weight	data/r9weights/r9Weight_d1-22Jan2012-runDepMCAll_v2.root
-d2	r9Weight	data/r9weights/r9Weight_d2-22Jan2012-runDepMCAll_v2.root
-d3	r9Weight	data/r9weights/r9Weight_d3-22Jan2012-runDepMCAll_v2.root
-d4	r9Weight	data/r9weights/r9Weight_d4-22Jan2012-runDepMCAll_v2.root
-s1	r9Weight	data/r9weights/r9Weight_s1-22Jan2012-runDepMCAll_v2.root
-s2	r9Weight	data/r9weights/r9Weight_s2-22Jan2012-runDepMCAll_v2.root
-s3	r9Weight	data/r9weights/r9Weight_s3-22Jan2012-runDepMCAll_v2.root
+###d1	r9Weight	data/r9weights/r9Weight_d1-22Jan2012-runDepMCAll_v2.root
+###d2	r9Weight	data/r9weights/r9Weight_d2-22Jan2012-runDepMCAll_v2.root
+###d3	r9Weight	data/r9weights/r9Weight_d3-22Jan2012-runDepMCAll_v2.root
+###d4	r9Weight	data/r9weights/r9Weight_d4-22Jan2012-runDepMCAll_v2.root
+###s1	r9Weight	data/r9weights/r9Weight_s1-22Jan2012-runDepMCAll_v2.root
+###s2	r9Weight	data/r9weights/r9Weight_s2-22Jan2012-runDepMCAll_v2.root
+###s3	r9Weight	data/r9weights/r9Weight_s3-22Jan2012-runDepMCAll_v2.root
