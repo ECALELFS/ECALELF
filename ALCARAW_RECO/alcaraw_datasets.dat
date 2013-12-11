@@ -14,7 +14,7 @@
 ################################# RUN2011AB CMSSW_4_2_8_patch7 GT: GR_P_V22::All
 # Used for 2011 production
 #
-160329-168437	/DoubleElectron/Run2011A-ZElectron-05Jul2011ReReco-ECAL-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2011A-05Jul-v1	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2011A,RUN2011AB
+#160329-168437	/DoubleElectron/Run2011A-ZElectron-05Jul2011ReReco-ECAL-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2011A-05Jul-v1	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2011A,RUN2011AB
 170053-172778	/DoubleElectron/Run2011A-ZElectron-PromptSkim-v5/RAW-RECO	DoubleElectron-ZSkim-RUN2011A-v5	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2011A,RUN2011AB
 172791-175770	/DoubleElectron/Run2011A-ZElectron-PromptSkim-v6/RAW-RECO	DoubleElectron-ZSkim-RUN2011A-v6	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2011A,RUN2011AB
 175832-180296	/DoubleElectron/Run2011B-ZElectron-PromptSkim-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2011B-v1	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2011B,RUN2011AB
@@ -58,3 +58,9 @@
 198022-203742	/DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012C-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2012C,RUN2012ABC,RUN2012ABCD
 203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcaraw	VALID	RUN2012D,RUN2012ABCD
 #
+
+####### Single Electron 22JanReReco from Skim 
+190645-193621 /SingleElectron/Run2012A-22Jan2013-v1/RECO  SingleElectron-Run2012A-22Jan2013-v1  caf /group/alca_ecalcalib/ecalelf/alcaraw VALID RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+193834-196531 /SingleElectron/Run2012B-22Jan2013-v1/RECO  SingleElectron-Run2012B-22Jan2013-v1  caf /group/alca_ecalcalib/ecalelf/alcaraw VALID RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD
+198022-203742 /SingleElectron/Run2012C-22Jan2013-v1/RECO  SingleElectron-Run2012C-22Jan2013-v1  caf /group/alca_ecalcalib/ecalelf/alcaraw VALID RUN2012C,RUN2012AB,RUN2012ABC,RUN2012ABCD
+203756-208686 /SingleElectron/Run2012D-22Jan2013-v1/AOD   SingleElectron-Run2012D-22Jan2013-v1  caf /group/alca_ecalcalib/ecalelf/alcaraw VALID RUN2012D,RUN2012AB,RUN2012ABC,RUN2012ABCD
