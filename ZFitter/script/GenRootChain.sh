@@ -163,12 +163,12 @@ cat > tmp/load.C <<EOF
   TChain *data   = (TChain *) _file0->Get("selected");
   TChain *signalA = (TChain *) _file1->Get("selected");
   TChain *signalB = (TChain *) _file2->Get("selected");
-  TChain *signalC = (TChain *) _file3->Get("selected");
+//  TChain *signalC = (TChain *) _file3->Get("selected");
 
   ReassociateFriends(_file0, data);
   ReassociateFriends(_file1, signalA);
   ReassociateFriends(_file2, signalB);
-  ReassociateFriends(_file3, signalC);
+//  ReassociateFriends(_file3, signalC);
 
    TDirectory *curDir = new TDirectory("curDir","");
    curDir->cd();

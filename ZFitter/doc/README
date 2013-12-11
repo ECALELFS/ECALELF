@@ -65,7 +65,7 @@ A standard function for data/MC plots have been prepared and is available in mac
 In the following you can find an example of production of data/MC plots with a config file with 
 22Jan rereco data, run dependent MC (three samples with different generators: s1, s2, s3)
 ./script/GenRootChain.sh -f data/validation/22Jan2012-runDepMCAll_v2.dat
-root -l -b -q tmp/d_chain.root tmp/s1_chain.root tmp/s2_chain.root tmp/s3_chain.root tmp/load.C macro/standardDataMC.C
+root -l -b -q tmp/d_chain.root tmp/s1_chain.root tmp/s2_chain.root tmp/load.C macro/standardDataMC.C
 
 *****************
 The load.C script is commented below:
