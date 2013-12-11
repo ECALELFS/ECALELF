@@ -8,16 +8,18 @@
 
 There are three important directories where the proper .dat files should be put:
  - data/validation/
- - data/regions/
- - data/runRanges/
 
 
 
-#============================== validation config .dat file creation
+#============================== validation config .dat file creation to be put in data/validation/
 This config file contains the list of files to run on, the files
 containing the PU histograms for the PU reweighting and all the other
 files needed.
-The main idea in the ECALELF framework is to have a minimum set of variables in very small trees (the tree name is "selected"), while additional branches can be produced and added if needed as tree friends. The advantage is the possibility to produce ntuples for a larger set of studies with small specific trees for each of them.
+The main idea in the ECALELF framework is to have a minimum set of
+variables in very small trees (the tree name is "selected"), while
+additional branches can be produced and added if needed as tree
+friends. The advantage is the possibility to produce ntuples for a
+larger set of studies with small specific trees for each of them. 
 
 
 The file is structured in 3 columns: tag, treeName and filePath as in the follows:
@@ -120,6 +122,10 @@ The standardDataMC.C example:
 }
 
 
+
+
+\endverbatim
+*/
 
 
 #============================================================
@@ -373,6 +379,3 @@ histograms, add all the MC PU histograms, calculates the PU
 reweight, produce a tree with the per event weight for the MC. 
 Then add the tree with the PU weights to the MC chain as a friend
 tree.
-
-\endverbatim
-*/

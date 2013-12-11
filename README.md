@@ -28,7 +28,7 @@ In order to compile Calibration/ZFitter do
 
 ======
 Instructions for developments:
-fork the repository in GIT to your own area
+fork the repository in GIT to your own area (if you didn't it already)
 `git@github.com:ECALELFS/ECALELF.git`
 
 Add your git repository to the list of remotes to be used like:
@@ -37,8 +37,9 @@ Add your git repository to the list of remotes to be used like:
 
 Create a new branch for your development (use a meaningful name)
 `git branch myNewBranch`
-Push it to your git repository
-`git push myNewBranch myfork`
+Switch to the new branch: `git checkout myNewBranch`
+Push it to your git repository (create a new branch with the same name also in your remote GIT repository)
+`git push myfork`
 
 Then start to develop, remember to do commits as much as possible
 

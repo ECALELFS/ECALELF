@@ -226,20 +226,24 @@ TTree* addBranch_class::AddBranch_iSM(TChain* originalChain, TString treename, T
     iSM_[0]=-1;
     iSM_[1]=-1;
     originalChain->GetEntry(ientry);
-    if(seedXSCEle_[0] > 0) {
-      // EB+
-      iSM_[0] = (int)((seedYSCEle_[0]-1))/20 + 1;
-    } else {
-      // EB-
-      iSM_[0] = (int)((seedYSCEle_[0]-1))/20 + 19;
+    if(seedXSCEle_[0]!=0){
+      if(seedXSCEle_[0] > 0) {
+	// EB+
+	iSM_[0] = (int)((seedYSCEle_[0]-1))/20 + 1;
+      } else {
+	// EB-
+	iSM_[0] = (int)((seedYSCEle_[0]-1))/20 + 19;
+      }
     }
     
-    if(seedXSCEle_[1] > 0) {
-      // EB+
-      iSM_[1] = (int)((seedYSCEle_[1]-1))/20 + 1;
-    } else {
+    if(seedYSCEle_[1] !=0){
+      if(seedXSCEle_[1] > 0) {
+	// EB+
+	iSM_[1] = (int)((seedYSCEle_[1]-1))/20 + 1;
+      } else {
       // EB-
-      iSM_[1] = (int)((seedYSCEle_[1]-1))/20 + 19;
+	iSM_[1] = (int)((seedYSCEle_[1]-1))/20 + 19;
+      }
     }
     if(ientry < 10) std::cout << seedXSCEle_[0] << "\t" << seedYSCEle_[0] << "\t" << iSM_[0] << std::endl;
     if(ientry < 10) std::cout << seedXSCEle_[1] << "\t" << seedYSCEle_[1] << "\t" << iSM_[1] << std::endl;
