@@ -35,6 +35,9 @@ Add your git repository to the list of remotes to be used like:
 `git remote add -f myfork git@github.com:hengne/ECALELF.git`
 `git checkout devel-42X_44X_53X`
 
+
+======
+If you want to develop the code:
 Create a new branch for your development (use a meaningful name)
 `git branch myNewBranch`
 Switch to the new branch: `git checkout myNewBranch`
@@ -43,6 +46,9 @@ Push it to your git repository (create a new branch with the same name also in y
 
 Then start to develop, remember to do commits as much as possible
 
+======
+Remember to update regularly the code doing when you are in the branch devel-42X_44X_53X:
+`git pull`
 
 ======
 Code documentation:
