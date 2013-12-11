@@ -6,6 +6,7 @@
 #include <TCut.h>
 #include <iostream>
 #include <TH1F.h>
+#include <TProfile.h>
 #include <TH2F.h>
 #include <TLegend.h>
 #include <TPaveText.h>
@@ -55,7 +56,54 @@ TCut GetCut(TString category, int indexEle=0){
   return cutter.GetCut(category, false,indexEle);
 }
 
+/*TCanvas *Plot2D_my(TChain *data, TChain *mc, TString branchname, TString binning, 
+		      TCut selection, 
+		      TString dataLabel, TString mcLabel, 
+		      TString xLabel, TString yLabel, 
+		      int type=2, TString opt="colz", bool usePU=true, bool smear=false, bool scale=false){*/
+/*TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning,
+                     TString category, TString selection,
+                     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit,
+                     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false){*/
 
+TCanvas *Plot2D_profileX_my(TChain *data, TString branchname, TString binning,TString selection,TString opt,TString xLabel, TString yLabel){
+  //type == 0: data only
+  //type == 1: MC only
+  //type == 2: data/MC
+   
+  TCanvas *c = new TCanvas("c","");
+  data->Draw(branchname+">>data_hist"+binning,selection,opt);
+  TH2F *d = (TH2F *) gROOT->FindObject("data_hist");
+
+  TCanvas *c1 = new TCanvas("c1","");
+  TProfile *prof = d->ProfileX("prof",1,-1,"s");
+  prof->SetMarkerStyle(20);
+  prof->SetMarkerSize(1);
+  prof->Draw();
+  prof->GetYaxis()->SetTitle(yLabel);
+  prof->GetXaxis()->SetTitle(xLabel);
+
+  return c1;
+}
+
+TCanvas *Plot2D_my(TChain *data, TString branchname, TString binning,TString selection,TString opt,TString xLabel, TString yLabel){
+  //type == 0: data only
+  //type == 1: MC only
+  //type == 2: data/MC
+   
+  TCanvas *c = new TCanvas();
+  c->SetRightMargin(0.2);
+  //  data->Draw(branchname+">>data_hist"+binning, selection,opt);
+  data->Draw(branchname+">>data_hist"+binning,selection,opt);
+  TH2F *d = (TH2F *) gROOT->FindObject("data_hist");
+  d->GetYaxis()->SetTitle(yLabel);
+  d->GetXaxis()->SetTitle(xLabel);
+  d->GetZaxis()->SetTitle("Events");
+  d->GetZaxis()->SetNdivisions(510);
+  d->Draw("colz");
+
+  return c;
+}
 
 TCanvas *PlotDataMC2D(TChain *data, TChain *mc, TString branchname, TString binning, 
 		      TCut selection, 
@@ -113,7 +161,7 @@ TCanvas *PlotDataMC2D(TChain *data, TChain *mc,
   if(category.Sizeof()>1) sel= GetCut(category, 0);
   sel+=selection;
   return PlotDataMC2D(data, mc, branchname, binning, sel, dataLabel, mcLabel, xLabel, yLabel, type, opt,usePU, smear, scale);
-}  
+} 
 
 
 TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binning, 
@@ -503,7 +551,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false){
   TStopwatch watch;
   watch.Start();
-  
+  //gStyle->SetOptStat(11);//Giuseppe
 
   int nHist= mc_vec.size();
   int colors[4]={kRed,kGreen,kBlue,kCyan};
