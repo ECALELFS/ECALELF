@@ -52,7 +52,7 @@ in the tmp/ the s_chain.root, d_chain.root load.C are created for MC and data re
 The .root files have the TChains already defined, merging the files with the same treeName in the config file and adding the friends properly. 
 Due to a bug in ROOT in order to properly load the files the load.C script is created.
 
-To work with ntuples you can do:
+To work with ntuples you can do (see pratical example below):
 root -l tmp/d_chain.root tmp/s_chain.root tmp/load.C
 data    -> Draw("*");
 signalA -> Draw("*");

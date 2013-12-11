@@ -5,9 +5,10 @@
   mcLabel_vec.push_back("Sherpa");
 
 
-  c = PlotDataMCs(data, MakeChainVector(signalA,signalB,signalC), "etaEle", "(100,-2.5,2.5)", "eleID_loose-trigger-noPF-Et_25", "", "", mcLabel_vec, "#eta", "", false, true, true,false,false,true); // use r9weight
-   c->SaveAs(outputPath+"etaEle-r9reweighted-Et_25.eps");
-   c->SaveAs(outputPath+"etaEle-r9reweighted-Et_25.C");
+  c = PlotDataMCs(data, MakeChainVector(signalA,signalB,signalC), "etaEle", "(100,-2.5,2.5)", "eleID_loose-trigger-noPF-Et_25", "", "", mcLabel_vec, "#eta", "", false, true, true,false,false,false); 
+   c->SaveAs(outputPath+"etaEle-Et_25.eps");
+   c->SaveAs(outputPath+"etaEle-Et_25.png");
+   c->SaveAs(outputPath+"etaEle-Et_25.C");
   delete c;
 
 
