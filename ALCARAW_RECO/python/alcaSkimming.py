@@ -332,10 +332,10 @@ process.pfiso = cms.Sequence()
 ###############################
 
 if (options.type=="ALCARAW"):
-    process.raw2digi_step = cms.Path(process.RawToDigi)
-    process.L1Reco_step = cms.Path(process.L1Reco)
-    process.reconstruction_step = cms.Path(process.reconstruction)
-    process.endjob_step = cms.EndPath(process.endOfProcess)
+#    process.raw2digi_step = cms.Path(process.RawToDigi)
+#    process.L1Reco_step = cms.Path(process.L1Reco)
+#    process.reconstruction_step = cms.Path(process.reconstruction)
+#    process.endjob_step = cms.EndPath(process.endOfProcess)
 
     process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
 
@@ -580,8 +580,8 @@ else:
 
 
 # # Schedule definition
-# if(options.type=='ALCARAW'):
-#     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
+#if(options.type=='ALCARAW'):
+#     process.schedule = cms.Schedule(process.raw2digi_step,process.ZPath,process.endOfProcess)
 # else:
 #     process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step, process.ntuple)
 
@@ -595,3 +595,10 @@ if(options.type=="ALCARERECO"):
     process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
     process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
                 
+
+############################
+## Dump the output Python ##
+############################
+
+processDumpFile = open('processDump.py', 'w')
+print >> processDumpFile, process.dumpPython()
