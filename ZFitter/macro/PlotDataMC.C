@@ -12,6 +12,43 @@
 #include <TStopwatch.h>
 #include "src/ElectronCategory_class.cc"
 #include <iostream>
+#include <fstream>
+#include "src/runDivide_class.cc"
+
+TString GetRunRangeTime(TChain *chain, TString runRange){
+  runDivide_class runDivide;
+  runDivide.LoadRunEventNumbers(chain);
+  return runDivide.GetRunRangeTime(runRange);
+}
+
+std::vector<TString> ReadRegionsFromFile(TString fileName){
+  ifstream file(fileName);
+  std::vector<TString> regions;
+  TString region;
+
+  while(file.peek()!=EOF && file.good()){
+    if(file.peek()==10){ // 10 = \n
+      file.get(); 
+      continue;
+    }
+
+    if(file.peek() == 35){ // 35 = #
+      file.ignore(1000,10); // ignore the rest of the line until \n
+      continue;
+    }
+
+    file >> region;
+    file.ignore(1000,10); // ignore the rest of the line until \n
+#ifdef DEBUG
+    std::cout << "[DEBUG] Reading region: " << region<< std::endl;
+#endif
+    regions.push_back(region);
+
+  }
+  return regions;
+}
+
+
 
 TCut GetCut(TString category, int indexEle=0){
   ElectronCategory_class cutter;
@@ -463,7 +500,7 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
 		     TString category, TString selection, 
 		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
-		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false){
+		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false){
   TStopwatch watch;
   watch.Start();
   
@@ -556,8 +593,12 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 // 	mc->SetBranchStatus("puWeight",1);
 
 	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
-	if(usePU)  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *"puWeight*mcGenWeight");
-	else  mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC*"mcGenWeight");
+	TString weights="mcGenWeight";
+	
+	if(usePU) weights+="*puWeight";
+	if(useR9Weight) weights+="*r9Weight";
+	mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *weights.Data());
+
       }
     }
 
@@ -587,7 +628,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   yLabel.Form("Events /(%.2f %s)", d->GetBinWidth(2), yLabelUnit.Data());
   
   float max = 0; //1.1 * std::max(
-  max=1.1*d->GetMaximum();
+  max=1.2*d->GetMaximum();
   std::cout << "max = " << max << std::endl;
   std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
     
@@ -616,7 +657,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
     s->GetXaxis()->SetTitle(xLabel);
 
     s->SetMarkerStyle(20);
-    s->SetMarkerSize(2);
+    s->SetMarkerSize(1);
     s->SetMarkerColor(colors[i]);
     s->SetFillStyle(fillstyle[i]);
     s->SetFillColor(colors[i]);

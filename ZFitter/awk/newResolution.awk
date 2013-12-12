@@ -26,8 +26,8 @@ BEGIN{
 # $13 = old_addSmearing     -> not used
 # $14 = err_old_addSmearing -> not used
 
-  b=(91.187+$3); b2=b*b; 
-  c=(91.187+$5); c2=c*c; 
+  b=(91.188+$3); b2=b*b; 
+  c=(91.188+$5); c2=c*c; 
   
   
 #  printf("%s\t& %s", $1, $2);

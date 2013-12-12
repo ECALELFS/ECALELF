@@ -2,7 +2,7 @@
 
 OUTFILE=nPUtrue.root
 usage(){
-    echo "`basename $0` -f file.root -d outDir -o outfile.root"
+    echo "`basename $0` -f file.root -o outfile.root"
 }
 
 # options may be followed by one colon to indicate they have a required argument
@@ -18,7 +18,7 @@ while [ $# -gt 0 ]
 do
     case $1 in
 	-h|--help) usage; exit 0;;
-	-f) FILES="$FILE $2"; shift;;
+	-f) FILES="$FILES $2"; shift;;
 #	-d) FILEDIR=$2; shift;;
 	-o) OUTFILE=$2; shift;;
 	(--) shift; break;;

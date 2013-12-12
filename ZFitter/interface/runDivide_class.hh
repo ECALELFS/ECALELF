@@ -28,7 +28,7 @@ public:
 
   void ReadRunRangeLimits(TString fileName);
   //  void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName);
-  void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName, TString runTime_branchName="runTime");
+  void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName="runNumber", TString runTime_branchName="runTime");
   
   void FillRunLimits(unsigned int nEvents_min=50000); 
   std::vector<TString> GetRunRanges(void);

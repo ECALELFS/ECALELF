@@ -1,7 +1,8 @@
 /** 
 * \mainpage 
 * Introduction: \ref page1
-* 
+*
+* Working with ntuples: \ref page4
 */
 /**
 * \page page1 Code instructions and explanations

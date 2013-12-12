@@ -43,7 +43,7 @@ ZFit_class::~ZFit_class(void){
 ZFit_class::ZFit_class(TChain *data_chain_, 
 		       TChain *signal_chain_,
 		       TChain *bkg_chain_, 
-		       TString invMass_VarName, double invMass_min, double invMass_max
+		       TString invMass_VarName, double invMass_min, double invMass_max, double bin_width
 		       ):
   _isDataUnbinned(false), _isDataSumW2(false),
   _isMCUnbinned(true),    _isMCSumW2(true),
@@ -78,7 +78,7 @@ ZFit_class::ZFit_class(TChain *data_chain_,
   energyVar_name = GetEnergyVarName(invMass_VarName);
 
   /*--------------- imposto il binning */
-  double bin_width=.5;
+  //double bin_width=.5;
   int nBins = (int)((invMass.getMax()-invMass.getMin())/bin_width);
   invMass.setBins(10000);
   invMass.setBins(nBins,"plotRange");
@@ -1128,13 +1128,31 @@ float ZFit_class::GetRescaledWidthError(float width, float width_error, float pe
 
 //implement method for getting the corresponding energy name from invMass_name
 TString	ZFit_class::GetEnergyVarName(TString invMass_name){
-
-  TString energyname="none";
-  if (invMass_name.Contains("regrCorr_fra")) energyname = "energyEle_regrCorr_fra";
-  else if (invMass_name.Contains("regrCorr_ele")) energyname = "energySCEle_regrCorr_ele";
-  else if (invMass_name.Contains("regrCorr_pho")) energyname = "energySCEle_regrCorr_pho";
-  else if(invMass_name.CompareTo("invMass_SC")==0) energyname = "energySCEle";
-  return energyname;
+  TString energyBranchName="";
+  TString invMass_var=invMass_name;
+  if(invMass_var=="invMass_SC_regrCorr_ele") energyBranchName = "energySCEle_regrCorr_ele";
+  else if(invMass_var=="invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
+  else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
+  else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
+  else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
+  else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_pho") energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_ele") energyBranchName = "energySCEle_regrCorrSemiParV6_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_pho") energyBranchName = "energySCEle_regrCorrSemiParV6_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_ele") energyBranchName = "energySCEle_regrCorrSemiParV7_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_pho") energyBranchName = "energySCEle_regrCorrSemiParV7_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_ele") energyBranchName = "energySCEle_regrCorrSemiParV8_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_pho") energyBranchName = "energySCEle_regrCorrSemiParV8_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
+  return energyBranchName;
 }
 
 

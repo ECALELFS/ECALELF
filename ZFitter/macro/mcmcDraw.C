@@ -786,10 +786,13 @@ void MakePlots(TString filename, float zmax=30, int nSmooth=10, TString opt="", 
     TString constTermName = dataset->GetName();
     TString alphaName=constTermName; alphaName.ReplaceAll("constTerm","alpha");
 
+    if(constTermName.Contains("absEta_1_1.4442-gold")) continue;
+    if(constTermName.Contains("rho") || constTermName.Contains("phi")) continue;
+        if(constTermName.Contains("scale")) continue;
     TTree *tree = dataset2tree(dataset);
     TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
     //    TString binning="(241,-0.0005,0.2405,60,0.00025,0.03025)"; 
-    TString binning="(241,-0.0005,0.2405,300,0.00025,0.03025)"; 
+    TString binning="(241,-0.0005,0.2405,301,-0.00005,0.03005)"; 
     
     TH2F *hist = prof2d(tree, constTermName, alphaName, "nll", binning, true,nSmooth, opt);
 //     std::cout << "Bin width = " << hist->GetXaxis()->GetBinWidth(10) << "\t" << hist->GetYaxis()->GetBinWidth(10) << std::endl; 
@@ -826,6 +829,7 @@ void MakePlots(TString filename, float zmax=30, int nSmooth=10, TString opt="", 
 
     c->SaveAs(fileName+".png");
     c->SaveAs(fileName+".eps");
+    if(fileName.Contains("constTerm")) c->SaveAs(fileName+".C");
 
     fileName+="-zoom";
     hist->GetZaxis()->SetRangeUser(0,1);
@@ -915,6 +919,13 @@ void MakePlots(TString filename, float zmax=30, int nSmooth=10, TString opt="", 
   return;
 }
 
+TGraph *GetRho(TTree *t, TString alphaName, TString constTermName){
+  t->Draw("nll:"+constTermName.ReplaceAll("-","_"), alphaName.ReplaceAll("-","_")+" == 0");
+  TGraph *gr0 = (TGraph*) gROOT->FindObject("Graph")->Clone();
+  gr0->SetMarkerStyle(34); gr0->SetMarkerSize(1.0);
+  //if (gr0->GetN() > 1) gr0->Set(1);
+  return gr0;
+}
 
 
 TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString fname="outProfile-scaleStep2smearing_7-Et_25-trigger-noPF-EB.root", TString opt="", int nSmooth=10){
@@ -946,9 +957,9 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
   std::map<TString, Int_t> catIndexMap;
 
   ///1/
-  for(int itoy =2; itoy <= 200; itoy++){
+  for(int itoy =2; itoy <= 50; itoy++){
     TString filename=dirname+"/"; filename+=itoy; filename+="/"+fname;
-    
+    TString fout=dirname+"/"; fout+=itoy; fout+="/";    
     TFile f_in(filename, "read");
     if(f_in.IsZombie()){
       std::cerr << "File opening error: " << filename << std::endl;
@@ -965,12 +976,20 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
     
       TString constTermName = dataset->GetName();
       TString alphaName=constTermName; alphaName.ReplaceAll("constTerm","alpha");
-
+      if(constTermName.Contains("scale")) continue;
+      if(constTermName.Contains("alpha")) continue;
+      if(constTermName.Contains("1.4442-gold")) continue;
       TTree *tree = dataset2tree(dataset);
 
+      TGraph *rhoGraph = GetRho(tree, alphaName, constTermName);
+
+      rhoGraph->SaveAs(fout+"rhoGraph-"+constTermName+".root");
+
+
       TGraphErrors bestFit_ = bestFit(tree, alphaName, constTermName);
-      TString binning="(241,-0.0005,0.2405,61,-0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
-    
+      //TString binning="(241,-0.0005,0.2405,61,-0.00025,0.03025)"; //"(40,0.00025,0.02025,61,-0.0022975,0.1401475)";
+      TString binning="(241,-0.0005,0.2405,301,-0.00005,0.03005)"; 
+
       TH2F *hist = prof2d(tree, constTermName, alphaName, "nll", binning, true, nSmooth, opt);
       //hist->SaveAs("myhist.root");
       
@@ -1002,6 +1021,8 @@ TTree *ToyTree(TString dirname="test/dato/fitres/Hgg_Et-toys/0.01-0.00", TString
 // 	hist->SaveAs("myhist.root");
 // 	exit(0);
       }
+
+      
       delete tree;
       delete hist;
     

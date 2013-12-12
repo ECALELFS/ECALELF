@@ -2,11 +2,11 @@
 
 
 #tag_name=""
-commonCut=Et_25
-selection=WP80_PU
+commonCut=Et_25-trigger-noPF
+selection=loose
 invMass_var=invMass_SC_regrCorr_ele
 configFile=data/validation/monitoring_2012_53X.dat
-regionsFile=data/regions/scaleStep4smearing_2.dat
+regionsFile=data/regions/scaleStep2smearing_9.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
@@ -24,6 +24,8 @@ usage(){
     echo " --outDirImg arg (=${outDirImg})"
     echo " --addBranch arg" 
     echo " --regionsFile arg (=${regionsFile})"
+    echo " --corrEleType arg"
+    echo " --corrEleFile arg"
 #    echo " --puName arg             "
 #    echo " --runRangesFile arg (=${runRangesFile})  run ranges for stability plots"
 #    echo " --selection arg (=${selection})     "
@@ -51,7 +53,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics,slides,onlyTable,test,commonCut:,period:,noPU,outDirImg:,addBranch:,regionsFile: -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics,slides,onlyTable,test,commonCut:,period:,noPU,outDirImg:,addBranch:,regionsFile:,corrEleType:,corrEleFile:,fitterOptions: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -68,6 +70,9 @@ do
 	--noPU) noPU="--noPU";;
 	--addBranch) addBranchList="${addBranchList} --addBranch=$2"; shift;;
 	--regionsFile) regionsFile=$2; shift;;
+	--corrEleType) corrEleType="--corrEleType=$2"; shift;;
+	--corrEleFile) corrEleFile="--corrEleFile=$2"; shift;;
+	--fitterOptions) fitterOptions="$fitterOptions $2"; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--outDirImg) outDirImg=$2; shift;;
 	--puName) puName=$2; shift;;
@@ -133,7 +138,7 @@ fi
 
 # saving the root files with the chains
 rm tmp/*_chain.root
-./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} || exit 1
+./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
 
 # adding all the chains in one file
 for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
@@ -154,11 +159,16 @@ cat > tmp/load.C <<EOF
 
   setTDRStyle1();
 
-  TChain *signal = (TChain *) _file0->Get("selected");
-  TChain *data   = (TChain *) _file1->Get("selected");
 
-  ReassociateFriends(_file0, signal);
-  ReassociateFriends(_file1, data);
+  TChain *data   = (TChain *) _file0->Get("selected");
+  TChain *signalA = (TChain *) _file1->Get("selected");
+  TChain *signalB = (TChain *) _file2->Get("selected");
+//  TChain *signalC = (TChain *) _file3->Get("selected");
+
+  ReassociateFriends(_file0, data);
+  ReassociateFriends(_file1, signalA);
+  ReassociateFriends(_file2, signalB);
+//  ReassociateFriends(_file3, signalC);
 
    TDirectory *curDir = new TDirectory("curDir","");
    curDir->cd();
@@ -172,5 +182,6 @@ EOF
 
 echo "Now you can run:"
 echo "root -l $filelist tmp/load.C tmp/standardDataMC.C" 
+#echo "root -l tmp/$filelist tmp/load.C tmp/standardDataMC.C" 
 echo "change the outputPath string in load.C to have the plots in the correct directory"
 

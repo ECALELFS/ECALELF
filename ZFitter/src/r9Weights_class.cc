@@ -25,17 +25,23 @@ double r9Weights_class::GetWeight(double etaEle_, double R9Ele_){
 #endif
 
     double r9Weight=1.;
-    TString stringa;
+    TString categoryName;
 
-    if(fabs(etaEle_) < 1.) stringa="EBlowEta";
-    if(fabs(etaEle_) >= 1 && fabs(etaEle_) <= 1.479) stringa="EBhighEta";
-    if(fabs(etaEle_) > 1.479 && fabs(etaEle_) < 2) stringa="EElowEta";
-    if(fabs(etaEle_) >= 2) stringa="EEhighEta";
+    if(fabs(etaEle_) < 1.) categoryName="EBlowEta";
+    else if(fabs(etaEle_) >= 1. && fabs(etaEle_) <= 1.479) categoryName="EBhighEta";
+    else if(fabs(etaEle_) > 1.479 && fabs(etaEle_) < 2) categoryName="EElowEta";
+    else if(fabs(etaEle_) >= 2) categoryName="EEhighEta";
+    else{
+      std::cerr << "Category not found: "
+		<< "etaEle = " << etaEle_ << "\t"
+		<< "R9Ele = " << R9Ele_ << std::endl;
+      return 0;
+    }
+    if (R9Ele_>=0.94) categoryName+="Gold";
+    else //if (R9Ele_<0.94 ) 
+      categoryName+="Bad";
 
-    if (R9Ele_>=0.94) stringa+="Gold";
-    if (R9Ele_<0.94 ) stringa+="Bad";
-
-    if(stringa.Sizeof()>1){ // altrimenti non e' delle categorie definite sopra
+    if(categoryName.Sizeof()>1){ // altrimenti non e' delle categorie definite sopra
       std::vector<TString> WeightCat_vec;
       WeightCat_vec.push_back("R9EtaWeight"); // weights of the eta distribution
       WeightCat_vec.push_back("R9Weight");    // weights of the r9 distribution
@@ -45,17 +51,17 @@ double r9Weights_class::GetWeight(double etaEle_, double R9Ele_){
           itrV!=WeightCat_vec.end();
           itrV++){
         TString hist_prefix = *itrV;
-        if(r9weights.count(hist_prefix+stringa)==0){
-	  std::cerr << "[ERROR]: " << hist_prefix+stringa << " not found in file " << std::endl;
+        if(r9weights.count(hist_prefix+categoryName)==0){
+	  std::cerr << "[ERROR]: " << hist_prefix+categoryName << " not found in file " << std::endl;
 	  std::cerr << etaEle_ << "\t" << R9Ele_ << std::endl;
 	 
 	  exit(1);
           continue;
         }
 
-	r9weights_itr = r9weights.find(hist_prefix+stringa);
+	r9weights_itr = r9weights.find(hist_prefix+categoryName);
 #ifdef DEBUG
-	std::cout << hist_prefix << "\t" << stringa << "\t";
+	std::cout << hist_prefix << "\t" << categoryName << "\t";
 #endif
 
 	r9weight_map_t::const_iterator itr; // first element less than x
@@ -102,6 +108,7 @@ void r9Weights_class::ReadFromFile(std::string filename){
     //    TString keyName = (KeyList->At(i))->GetName();
     if(h==NULL) std::cerr << "[ERROR] histogram null from file: " << filename << std::endl;
     TString keyName = h->GetName();
+    //h->Scale(1./h->Integral());
 
     // if the electron category is not yet defined, add it
     if (r9weights.count(keyName)==0){
@@ -143,6 +150,7 @@ void r9Weights_class::ReadFromFile(std::string filename){
 // tree is the input MC tree
 // fastLoop = false if for any reason you don't want to change the branch status of the MC tree
 TTree *r9Weights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString etaElebranchName, TString R9ElebranchName, TString ptElebranchName){
+  tree->ResetBranchAddresses();
   
   Float_t weight[2]={0.};
   Float_t ptWeight[2]={0.};

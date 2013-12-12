@@ -234,7 +234,7 @@ private:
 
   double getLogLikelihood(TH1F* data, TH1F* prob) const;
   void UpdateCategoryNLL(ZeeCategory& cat, unsigned int nLLtoy, bool multiSmearToy=true);
-
+  
 
   int Trag_eq(int row, int col, int N) const;
 
@@ -246,7 +246,8 @@ public:
 			bool smearEnergy, bool forceNew=false, bool multiSmearToy=true);
 
   
-  float getCompatibility(void) const;
+  double getCompatibility(void) const;
+  void DumpNLL(void) const;
   //  float getCompatibility(const RooSmearer *ptr);
   inline RooArgSet GetParams(void){return _paramSet;};
 
