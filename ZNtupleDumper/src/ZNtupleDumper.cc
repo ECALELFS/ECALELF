@@ -228,6 +228,8 @@ private:
   Float_t seedLCSCEle[2];
 
   Float_t avgLCSCEle[2];
+  Bool_t isGainSwitch6[2];///< Gain switch 12->6
+  Bool_t isGainSwitch1[2];///< Gain switch 6->1
 
   Float_t energyMCEle[2];    ///< Electron MC true energy
   Float_t energySCEle[2];    ///< corrected SuperCluster energy
@@ -726,6 +728,8 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("seedLCSCEle",         seedLCSCEle,     "seedLCSCEle[2]/F");
 
   tree->Branch("avgLCSCEle", avgLCSCEle, "avgLCSCEle[2]/F");
+  tree->Branch("isGainSwitch6", isGainSwitch6, "isGainSwitch6[2]/B");
+  tree->Branch("isGainSwitch1", isGainSwitch1, "isGainSwitch1[2]/B");
 
   tree->Branch("energyMCEle", energyMCEle, "energyMCEle[2]/F");
   tree->Branch("energySCEle", energySCEle, "energySCEle[2]/F");
@@ -971,6 +975,10 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     seedEnergySCEle[index]=seedRecHit->energy();
     if(isMC) seedLCSCEle[index]=-10;
     else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
+
+    isGainSwitch6[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6);
+    isGainSwitch1[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1);
+       
   } else {
     EEDetId seedDetId = electron1.superCluster()->seed()->seed();
     EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
@@ -979,6 +987,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     seedEnergySCEle[index]=seedRecHit->energy();
     if(isMC) seedLCSCEle[index]=-10;
     else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
+
+    isGainSwitch6[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6);
+    isGainSwitch1[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1);
   }
   
   float sumLC_E = 0.;
@@ -993,6 +1004,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	sumE    += oneHit->energy();
       }
     avgLCSCEle[index] = sumLC_E / sumE;
+
   } else     avgLCSCEle[index] = -10;
   
   nHitsSCEle[index] = electron1.superCluster()->size();
