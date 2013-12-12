@@ -287,9 +287,11 @@ else:
     elif(re.match("CMSSW_5_3_11_patch3",CMSSW_VERSION)):
         if(MC):
             print "[INFO] Using GT START53_LV4::All"
-            process.GlobalTag.globaltag = 'START53_LV4::All'
+            process.GlobalTag.globaltag = 'START53_V7C::All'
+#            process.GlobalTag.globaltag = 'START53_LV4::All'
         else:
-            process.GlobalTag.globaltag = 'FT_R_53_LV3::All' #21Jun rereco 53X 2011 data
+            process.GlobalTag.globaltag = 'FT_R_53_V21::All' #22Jan rereco
+            #process.GlobalTag.globaltag = 'FT_R_53_LV3::All' #21Jun rereco 53X 2011 data
     elif(re.match("CMSSW_5_3_.*",CMSSW_VERSION)):
         if(MC):
             print "[INFO] Using GT START53_V7A::All"

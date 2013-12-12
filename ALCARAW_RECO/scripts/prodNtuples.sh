@@ -282,8 +282,12 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 
 #${ENERGY}/
 #${DATASETNAME}/tmp-${DATASETNAME}-${RUNRANGE}
+if [ "`echo \"\" | awk \"{print $DOTREE%2}\"`" == "1" ];then 
+    OUTFILES=ntuple.root
+else
+    OUTFILES="extraID.root"
+fi
 
-OUTFILES=ntuple.root
 if [ ! -d "tmp" ];then mkdir tmp/; fi
 cat > tmp/crab.cfg <<EOF
 [CRAB]
@@ -315,7 +319,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 jsonFile=${JSONFILE} isCrab=1
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES}
 get_edm_output=1
 output_file=${OUTFILES}
 
@@ -327,7 +331,7 @@ use_parent=0
 [LSF]
 queue = 1nh
 [CAF]
-queue = cmscaf1nh
+queue = cmscaf1nd
 
 
 [USER]
@@ -375,7 +379,7 @@ if [ -n "${CHECK}" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
     else
-	mergeOutput.sh -u ${UI_WORKING_DIR} -g ntuple
+	mergeOutput.sh -u ${UI_WORKING_DIR} -g `basename $OUTFILES .root`
 	if [ "${isMC}" == "1" ];then
 	    mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper
 	fi

@@ -171,6 +171,21 @@ private:
   std::string regrEleJoshV8_SemiParamFile;
   std::string regrPhoJoshV8_SemiParamFile;
 
+  EGEnergyCorrectorSemiParm cor7TeVtrainV6_ele;
+  EGEnergyCorrectorSemiParm cor7TeVtrainV6_pho;
+  std::string regrEleJoshV6_SemiParam7TeVtrainFile;
+  std::string regrPhoJoshV6_SemiParam7TeVtrainFile;
+
+  EGEnergyCorrectorSemiParm cor7TeVtrainV7_ele;
+  EGEnergyCorrectorSemiParm cor7TeVtrainV7_pho;
+  std::string regrEleJoshV7_SemiParam7TeVtrainFile;
+  std::string regrPhoJoshV7_SemiParam7TeVtrainFile;
+
+  EGEnergyCorrectorSemiParm cor7TeVtrainV8_ele;
+  EGEnergyCorrectorSemiParm cor7TeVtrainV8_pho;
+  std::string regrEleJoshV8_SemiParam7TeVtrainFile;
+  std::string regrPhoJoshV8_SemiParam7TeVtrainFile;
+
   bool ptSplit;
 };
 
@@ -209,6 +224,13 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   regrPhoJoshV7_SemiParamFile(iConfig.getParameter<std::string>("regrPhoJoshV7_SemiParamFile")),
   regrEleJoshV8_SemiParamFile(iConfig.getParameter<std::string>("regrEleJoshV8_SemiParamFile")),
   regrPhoJoshV8_SemiParamFile(iConfig.getParameter<std::string>("regrPhoJoshV8_SemiParamFile")),
+  regrEleJoshV6_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrEleJoshV6_SemiParam7TeVtrainFile")),
+  regrPhoJoshV6_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrPhoJoshV6_SemiParam7TeVtrainFile")),
+  regrEleJoshV7_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrEleJoshV7_SemiParam7TeVtrainFile")),
+  regrPhoJoshV7_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrPhoJoshV7_SemiParam7TeVtrainFile")),
+  regrEleJoshV8_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrEleJoshV8_SemiParam7TeVtrainFile")),
+  regrPhoJoshV8_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrPhoJoshV8_SemiParam7TeVtrainFile")),
+
   ptSplit(iConfig.getParameter<bool>("ptSplit"))
 //     r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 //     puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
@@ -333,6 +355,68 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV8gamma2");
   produces< NewEnergyMap >("energySCEleJoshPhoSemiParamV8pdfval");
 
+
+  //------------------------------
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6ecorr");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6sigmaEoverE");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6cbmean");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6sigma");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6alpha1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6gamma1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6alpha2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6gamma2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV6pdfval");
+						       
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6ecorr");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6sigmaEoverE");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6cbmean");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6sigma");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6alpha1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6gamma1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6alpha2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6gamma2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV6pdfval");
+  //------------------------------		       7TeVtrain
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7ecorr");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7sigmaEoverE");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7cbmean");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7sigma");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7alpha1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7gamma1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7alpha2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7gamma2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV7pdfval");
+						       
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7ecorr");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7sigmaEoverE");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7cbmean");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7sigma");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7alpha1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7gamma1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7alpha2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7gamma2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV7pdfval");
+  //------------------------------		       
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8ecorr");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8sigmaEoverE");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8cbmean");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8sigma");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8alpha1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8gamma1");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8alpha2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8gamma2");
+  produces< NewEnergyMap >("energySCEleJoshEleSemiParam7TeVtrainV8pdfval");
+						       
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8ecorr");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8sigmaEoverE");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8cbmean");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8sigma");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8alpha1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8gamma1");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8alpha2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8gamma2");
+  produces< NewEnergyMap >("energySCEleJoshPhoSemiParam7TeVtrainV8pdfval");
+
  //now do what ever other initialization is needed
   
 }
@@ -420,6 +504,33 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
      energySCEleJoshPhoSemiParamV8_alpha1, energySCEleJoshPhoSemiParamV8_gamma1, energySCEleJoshPhoSemiParamV8_alpha2, 
      energySCEleJoshPhoSemiParamV8_gamma2, energySCEleJoshPhoSemiParamV8_pdfval;
 
+
+   std::vector<v_t>  energySCEleJoshEleSemiParam7TeVtrainV6_ecorr, energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE, 
+     energySCEleJoshEleSemiParam7TeVtrainV6_cbmean,      energySCEleJoshEleSemiParam7TeVtrainV6_sigma, 
+     energySCEleJoshEleSemiParam7TeVtrainV6_alpha1, energySCEleJoshEleSemiParam7TeVtrainV6_gamma1, energySCEleJoshEleSemiParam7TeVtrainV6_alpha2, 
+     energySCEleJoshEleSemiParam7TeVtrainV6_gamma2, energySCEleJoshEleSemiParam7TeVtrainV6_pdfval;
+   std::vector<v_t>  energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr, energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE, 
+     energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean,      energySCEleJoshPhoSemiParam7TeVtrainV6_sigma, 
+     energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1, energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1, energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2, 
+     energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2, energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval;
+
+   std::vector<v_t>  energySCEleJoshEleSemiParam7TeVtrainV7_ecorr, energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE, 
+     energySCEleJoshEleSemiParam7TeVtrainV7_cbmean,      energySCEleJoshEleSemiParam7TeVtrainV7_sigma, 
+     energySCEleJoshEleSemiParam7TeVtrainV7_alpha1, energySCEleJoshEleSemiParam7TeVtrainV7_gamma1, energySCEleJoshEleSemiParam7TeVtrainV7_alpha2, 
+     energySCEleJoshEleSemiParam7TeVtrainV7_gamma2, energySCEleJoshEleSemiParam7TeVtrainV7_pdfval;
+   std::vector<v_t>  energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr, energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE, 
+     energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean,      energySCEleJoshPhoSemiParam7TeVtrainV7_sigma, 
+     energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1, energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1, energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2, 
+     energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2, energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval;
+
+   std::vector<v_t>  energySCEleJoshEleSemiParam7TeVtrainV8_ecorr, energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE, 
+     energySCEleJoshEleSemiParam7TeVtrainV8_cbmean,      energySCEleJoshEleSemiParam7TeVtrainV8_sigma, 
+     energySCEleJoshEleSemiParam7TeVtrainV8_alpha1, energySCEleJoshEleSemiParam7TeVtrainV8_gamma1, energySCEleJoshEleSemiParam7TeVtrainV8_alpha2, 
+     energySCEleJoshEleSemiParam7TeVtrainV8_gamma2, energySCEleJoshEleSemiParam7TeVtrainV8_pdfval;
+   std::vector<v_t>  energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr, energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE, 
+     energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean,      energySCEleJoshPhoSemiParam7TeVtrainV8_sigma, 
+     energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1, energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1, energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2, 
+     energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2, energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval;
 
    std::auto_ptr<NewEnergyMap> energySCEleJoshEleMap(new NewEnergyMap());
    std::auto_ptr<NewEnergyMap> energySCEleJoshEleVarMap(new NewEnergyMap());
@@ -519,6 +630,66 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
    std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParamV8_alpha2_Map(new NewEnergyMap());
    std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParamV8_gamma2_Map(new NewEnergyMap());
    std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParamV8_pdfval_Map(new NewEnergyMap());
+
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_ecorr_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_cbmean_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_sigma_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_alpha1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_gamma1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_alpha2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_gamma2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV6_pdfval_Map(new NewEnergyMap());
+
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_sigma_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval_Map(new NewEnergyMap());
+   //------------------------------
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_ecorr_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_cbmean_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_sigma_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_alpha1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_gamma1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_alpha2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_gamma2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV7_pdfval_Map(new NewEnergyMap());
+
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_sigma_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval_Map(new NewEnergyMap());
+   //------------------------------
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_ecorr_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_cbmean_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_sigma_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_alpha1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_gamma1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_alpha2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_gamma2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshEleSemiParam7TeVtrainV8_pdfval_Map(new NewEnergyMap());
+
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_sigma_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2_Map(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap>  energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval_Map(new NewEnergyMap());
 
    //------------------------------ ELECTRON
    iEvent.getByLabel(electronsTAG, electronsHandle);
@@ -710,6 +881,75 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     energySCEleJoshPhoSemiParamV8_pdfval.push_back(pdfval);
 
 
+
+    //------------------------------
+    cor7TeVtrainV6_ele.CorrectedEnergyWithErrorV6(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
+    energySCEleJoshEleSemiParam7TeVtrainV6_ecorr.push_back(ecor);
+    energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE.push_back(sigmaEoverE);
+    energySCEleJoshEleSemiParam7TeVtrainV6_cbmean.push_back(cbmean);
+    energySCEleJoshEleSemiParam7TeVtrainV6_sigma.push_back(sigma);
+    energySCEleJoshEleSemiParam7TeVtrainV6_alpha1.push_back(alpha1);
+    energySCEleJoshEleSemiParam7TeVtrainV6_gamma1.push_back(n1);
+    energySCEleJoshEleSemiParam7TeVtrainV6_alpha2.push_back(alpha2);
+    energySCEleJoshEleSemiParam7TeVtrainV6_gamma2.push_back(n2);
+    energySCEleJoshEleSemiParam7TeVtrainV6_pdfval.push_back(pdfval);
+
+    cor7TeVtrainV6_pho.CorrectedEnergyWithErrorV6(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr.push_back(ecor);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE.push_back(sigmaEoverE);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean.push_back(cbmean);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_sigma.push_back(sigma);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1.push_back(alpha1);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1.push_back(n1);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2.push_back(alpha2);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2.push_back(n2);
+    energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval.push_back(pdfval);
+    //------------------------------
+    cor7TeVtrainV7_ele.CorrectedEnergyWithErrorV7(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
+    energySCEleJoshEleSemiParam7TeVtrainV7_ecorr.push_back(ecor);
+    energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE.push_back(sigmaEoverE);
+    energySCEleJoshEleSemiParam7TeVtrainV7_cbmean.push_back(cbmean);
+    energySCEleJoshEleSemiParam7TeVtrainV7_sigma.push_back(sigma);
+    energySCEleJoshEleSemiParam7TeVtrainV7_alpha1.push_back(alpha1);
+    energySCEleJoshEleSemiParam7TeVtrainV7_gamma1.push_back(n1);
+    energySCEleJoshEleSemiParam7TeVtrainV7_alpha2.push_back(alpha2);
+    energySCEleJoshEleSemiParam7TeVtrainV7_gamma2.push_back(n2);
+    energySCEleJoshEleSemiParam7TeVtrainV7_pdfval.push_back(pdfval);
+
+    cor7TeVtrainV7_pho.CorrectedEnergyWithErrorV7(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr.push_back(ecor);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE.push_back(sigmaEoverE);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean.push_back(cbmean);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_sigma.push_back(sigma);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1.push_back(alpha1);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1.push_back(n1);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2.push_back(alpha2);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2.push_back(n2);
+    energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval.push_back(pdfval);
+    //------------------------------
+    cor7TeVtrainV8_ele.CorrectedEnergyWithErrorV8(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
+    energySCEleJoshEleSemiParam7TeVtrainV8_ecorr.push_back(ecor);
+    energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE.push_back(sigmaEoverE);
+    energySCEleJoshEleSemiParam7TeVtrainV8_cbmean.push_back(cbmean);
+    energySCEleJoshEleSemiParam7TeVtrainV8_sigma.push_back(sigma);
+    energySCEleJoshEleSemiParam7TeVtrainV8_alpha1.push_back(alpha1);
+    energySCEleJoshEleSemiParam7TeVtrainV8_gamma1.push_back(n1);
+    energySCEleJoshEleSemiParam7TeVtrainV8_alpha2.push_back(alpha2);
+    energySCEleJoshEleSemiParam7TeVtrainV8_gamma2.push_back(n2);
+    energySCEleJoshEleSemiParam7TeVtrainV8_pdfval.push_back(pdfval);
+
+    cor7TeVtrainV8_pho.CorrectedEnergyWithErrorV8(*ele_itr, *primaryVertexHandle, *rhoHandle, lazyTools, iSetup,ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr.push_back(ecor);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE.push_back(sigmaEoverE);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean.push_back(cbmean);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_sigma.push_back(sigma);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1.push_back(alpha1);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1.push_back(n1);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2.push_back(alpha2);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2.push_back(n2);
+    energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval.push_back(pdfval);
+
+
   //  std::cout<<corEle_fra.second<<std::endl;
 
   //fill the vector with the energies
@@ -825,6 +1065,68 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   NewEnergyMap::Filler energySCEleJoshPhoSemiParamV8_gamma2_filler(*energySCEleJoshPhoSemiParamV8_gamma2_Map);
   NewEnergyMap::Filler energySCEleJoshPhoSemiParamV8_pdfval_filler(*energySCEleJoshPhoSemiParamV8_pdfval_Map);
   				      						   
+  //------------------------------
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_ecorr_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_ecorr_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_cbmean_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_cbmean_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_sigma_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_sigma_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_alpha1_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_alpha1_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_gamma1_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_gamma1_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_alpha2_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_alpha2_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_gamma2_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_gamma2_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV6_pdfval_filler(*energySCEleJoshEleSemiParam7TeVtrainV6_pdfval_Map);
+
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr_filler (*energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE_filler (*energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean_filler (*energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_sigma_filler (*energySCEleJoshPhoSemiParam7TeVtrainV6_sigma_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1_filler(*energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1_filler(*energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2_filler(*energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2_filler(*energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval_filler(*energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval_Map);
+  				      						   
+  //------------------------------
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_ecorr_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_ecorr_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_cbmean_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_cbmean_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_sigma_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_sigma_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_alpha1_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_alpha1_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_gamma1_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_gamma1_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_alpha2_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_alpha2_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_gamma2_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_gamma2_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV7_pdfval_filler(*energySCEleJoshEleSemiParam7TeVtrainV7_pdfval_Map);
+
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr_filler (*energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE_filler (*energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean_filler (*energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_sigma_filler (*energySCEleJoshPhoSemiParam7TeVtrainV7_sigma_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1_filler(*energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1_filler(*energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2_filler(*energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2_filler(*energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval_filler(*energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval_Map);
+  				      						   
+  //------------------------------
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_ecorr_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_ecorr_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_cbmean_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_cbmean_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_sigma_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_sigma_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_alpha1_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_alpha1_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_gamma1_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_gamma1_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_alpha2_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_alpha2_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_gamma2_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_gamma2_Map);
+  NewEnergyMap::Filler energySCEleJoshEleSemiParam7TeVtrainV8_pdfval_filler(*energySCEleJoshEleSemiParam7TeVtrainV8_pdfval_Map);
+
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr_filler (*energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE_filler (*energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean_filler (*energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_sigma_filler (*energySCEleJoshPhoSemiParam7TeVtrainV8_sigma_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1_filler(*energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1_filler(*energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2_filler(*energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2_filler(*energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2_Map);
+  NewEnergyMap::Filler energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval_filler(*energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval_Map);
 
   //fill and insert valuemapv
   energySCEleJoshEle_filler.insert(electronsHandle,energySCEleJoshEle.begin(),energySCEleJoshEle.end());
@@ -929,6 +1231,69 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   energySCEleJoshPhoSemiParamV8_gamma2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParamV8_gamma2.begin(),energySCEleJoshPhoSemiParamV8_gamma2.end());
   energySCEleJoshPhoSemiParamV8_pdfval_filler.insert(electronsHandle, energySCEleJoshPhoSemiParamV8_pdfval.begin(),energySCEleJoshPhoSemiParamV8_pdfval.end());
 
+  //------------------------------
+  energySCEleJoshEleSemiParam7TeVtrainV6_ecorr_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_ecorr.begin(), energySCEleJoshEleSemiParam7TeVtrainV6_ecorr.end());
+  energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE.begin(), energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV6_cbmean_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_cbmean.begin(), energySCEleJoshEleSemiParam7TeVtrainV6_cbmean.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV6_sigma_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_sigma.begin(), energySCEleJoshEleSemiParam7TeVtrainV6_sigma.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV6_alpha1_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_alpha1.begin(),energySCEleJoshEleSemiParam7TeVtrainV6_alpha1.end());
+  energySCEleJoshEleSemiParam7TeVtrainV6_gamma1_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_gamma1.begin(),energySCEleJoshEleSemiParam7TeVtrainV6_gamma1.end());
+  energySCEleJoshEleSemiParam7TeVtrainV6_alpha2_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_alpha2.begin(),energySCEleJoshEleSemiParam7TeVtrainV6_alpha2.end());
+  energySCEleJoshEleSemiParam7TeVtrainV6_gamma2_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_gamma2.begin(),energySCEleJoshEleSemiParam7TeVtrainV6_gamma2.end());
+  energySCEleJoshEleSemiParam7TeVtrainV6_pdfval_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV6_pdfval.begin(),energySCEleJoshEleSemiParam7TeVtrainV6_pdfval.end());
+
+  energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr.begin(), energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE.begin(), energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean.begin(), energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV6_sigma_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_sigma.begin(), energySCEleJoshPhoSemiParam7TeVtrainV6_sigma.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1.begin(),energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1.begin(),energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2.begin(),energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2.begin(),energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval.begin(),energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval.end());
+
+  //------------------------------
+  energySCEleJoshEleSemiParam7TeVtrainV7_ecorr_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_ecorr.begin(), energySCEleJoshEleSemiParam7TeVtrainV7_ecorr.end());
+  energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE.begin(), energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV7_cbmean_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_cbmean.begin(), energySCEleJoshEleSemiParam7TeVtrainV7_cbmean.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV7_sigma_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_sigma.begin(), energySCEleJoshEleSemiParam7TeVtrainV7_sigma.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV7_alpha1_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_alpha1.begin(),energySCEleJoshEleSemiParam7TeVtrainV7_alpha1.end());
+  energySCEleJoshEleSemiParam7TeVtrainV7_gamma1_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_gamma1.begin(),energySCEleJoshEleSemiParam7TeVtrainV7_gamma1.end());
+  energySCEleJoshEleSemiParam7TeVtrainV7_alpha2_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_alpha2.begin(),energySCEleJoshEleSemiParam7TeVtrainV7_alpha2.end());
+  energySCEleJoshEleSemiParam7TeVtrainV7_gamma2_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_gamma2.begin(),energySCEleJoshEleSemiParam7TeVtrainV7_gamma2.end());
+  energySCEleJoshEleSemiParam7TeVtrainV7_pdfval_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV7_pdfval.begin(),energySCEleJoshEleSemiParam7TeVtrainV7_pdfval.end());
+
+  energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr.begin(), energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE.begin(), energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean.begin(), energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV7_sigma_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_sigma.begin(), energySCEleJoshPhoSemiParam7TeVtrainV7_sigma.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1.begin(),energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1.begin(),energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2.begin(),energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2.begin(),energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval.begin(),energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval.end());
+
+  //------------------------------
+  energySCEleJoshEleSemiParam7TeVtrainV8_ecorr_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_ecorr.begin(), energySCEleJoshEleSemiParam7TeVtrainV8_ecorr.end());
+  energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE.begin(), energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV8_cbmean_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_cbmean.begin(), energySCEleJoshEleSemiParam7TeVtrainV8_cbmean.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV8_sigma_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_sigma.begin(), energySCEleJoshEleSemiParam7TeVtrainV8_sigma.end()); 
+  energySCEleJoshEleSemiParam7TeVtrainV8_alpha1_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_alpha1.begin(),energySCEleJoshEleSemiParam7TeVtrainV8_alpha1.end());
+  energySCEleJoshEleSemiParam7TeVtrainV8_gamma1_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_gamma1.begin(),energySCEleJoshEleSemiParam7TeVtrainV8_gamma1.end());
+  energySCEleJoshEleSemiParam7TeVtrainV8_alpha2_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_alpha2.begin(),energySCEleJoshEleSemiParam7TeVtrainV8_alpha2.end());
+  energySCEleJoshEleSemiParam7TeVtrainV8_gamma2_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_gamma2.begin(),energySCEleJoshEleSemiParam7TeVtrainV8_gamma2.end());
+  energySCEleJoshEleSemiParam7TeVtrainV8_pdfval_filler.insert(electronsHandle, energySCEleJoshEleSemiParam7TeVtrainV8_pdfval.begin(),energySCEleJoshEleSemiParam7TeVtrainV8_pdfval.end());
+
+  energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr.begin(), energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE.begin(), energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean.begin(), energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV8_sigma_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_sigma.begin(), energySCEleJoshPhoSemiParam7TeVtrainV8_sigma.end()); 
+  energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1.begin(),energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1.begin(),energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2.begin(),energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2.begin(),energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2.end());
+  energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval_filler.insert(electronsHandle, energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval.begin(),energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval.end());
+
   energySCEleJoshEle_filler.fill();
   energySCEleJoshEleVar_filler.fill();//fra
   energySCEleJoshPho_filler.fill();
@@ -1030,6 +1395,69 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   energySCEleJoshPhoSemiParamV8_alpha2_filler.fill();
   energySCEleJoshPhoSemiParamV8_gamma2_filler.fill();
   energySCEleJoshPhoSemiParamV8_pdfval_filler.fill();
+
+  //------------------------------
+  energySCEleJoshEleSemiParam7TeVtrainV6_ecorr_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_cbmean_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_sigma_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_alpha1_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_gamma1_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_alpha2_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_gamma2_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV6_pdfval_filler.fill();
+
+  energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_sigma_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval_filler.fill();
+
+  //------------------------------
+  energySCEleJoshEleSemiParam7TeVtrainV7_ecorr_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_cbmean_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_sigma_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_alpha1_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_gamma1_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_alpha2_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_gamma2_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV7_pdfval_filler.fill();
+
+  energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_sigma_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval_filler.fill();
+
+  //------------------------------
+  energySCEleJoshEleSemiParam7TeVtrainV8_ecorr_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_cbmean_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_sigma_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_alpha1_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_gamma1_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_alpha2_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_gamma2_filler.fill();
+  energySCEleJoshEleSemiParam7TeVtrainV8_pdfval_filler.fill();
+
+  energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_sigma_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2_filler.fill();
+  energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval_filler.fill();
 
   //------------------------------
   // put the ValueMap in the event
@@ -1135,6 +1563,69 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(energySCEleJoshPhoSemiParamV8_alpha2_Map,      "energySCEleJoshPhoSemiParamV8alpha2");
   iEvent.put(energySCEleJoshPhoSemiParamV8_gamma2_Map,      "energySCEleJoshPhoSemiParamV8gamma2");
   iEvent.put(energySCEleJoshPhoSemiParamV8_pdfval_Map,      "energySCEleJoshPhoSemiParamV8pdfval");
+
+  //------------------------------
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_ecorr_Map,       "energySCEleJoshEleSemiParam7TeVtrainV6ecorr");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_sigmaEoverE_Map, "energySCEleJoshEleSemiParam7TeVtrainV6sigmaEoverE");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_cbmean_Map,      "energySCEleJoshEleSemiParam7TeVtrainV6cbmean");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_sigma_Map,       "energySCEleJoshEleSemiParam7TeVtrainV6sigma");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_alpha1_Map,      "energySCEleJoshEleSemiParam7TeVtrainV6alpha1");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_gamma1_Map,      "energySCEleJoshEleSemiParam7TeVtrainV6gamma1");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_alpha2_Map,      "energySCEleJoshEleSemiParam7TeVtrainV6alpha2");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_gamma2_Map,      "energySCEleJoshEleSemiParam7TeVtrainV6gamma2");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV6_pdfval_Map,      "energySCEleJoshEleSemiParam7TeVtrainV6pdfval");
+
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_ecorr_Map,       "energySCEleJoshPhoSemiParam7TeVtrainV6ecorr");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_sigmaEoverE_Map, "energySCEleJoshPhoSemiParam7TeVtrainV6sigmaEoverE");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_cbmean_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV6cbmean");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_sigma_Map,       "energySCEleJoshPhoSemiParam7TeVtrainV6sigma");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_alpha1_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV6alpha1");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_gamma1_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV6gamma1");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_alpha2_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV6alpha2");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_gamma2_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV6gamma2");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV6_pdfval_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV6pdfval");
+  
+//------------------------------
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_ecorr_Map,       "energySCEleJoshEleSemiParam7TeVtrainV7ecorr");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_sigmaEoverE_Map, "energySCEleJoshEleSemiParam7TeVtrainV7sigmaEoverE");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_cbmean_Map,      "energySCEleJoshEleSemiParam7TeVtrainV7cbmean");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_sigma_Map,       "energySCEleJoshEleSemiParam7TeVtrainV7sigma");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_alpha1_Map,      "energySCEleJoshEleSemiParam7TeVtrainV7alpha1");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_gamma1_Map,      "energySCEleJoshEleSemiParam7TeVtrainV7gamma1");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_alpha2_Map,      "energySCEleJoshEleSemiParam7TeVtrainV7alpha2");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_gamma2_Map,      "energySCEleJoshEleSemiParam7TeVtrainV7gamma2");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV7_pdfval_Map,      "energySCEleJoshEleSemiParam7TeVtrainV7pdfval");
+
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_ecorr_Map,       "energySCEleJoshPhoSemiParam7TeVtrainV7ecorr");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_sigmaEoverE_Map, "energySCEleJoshPhoSemiParam7TeVtrainV7sigmaEoverE");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_cbmean_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV7cbmean");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_sigma_Map,       "energySCEleJoshPhoSemiParam7TeVtrainV7sigma");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_alpha1_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV7alpha1");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_gamma1_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV7gamma1");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_alpha2_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV7alpha2");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_gamma2_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV7gamma2");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV7_pdfval_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV7pdfval");
+  
+//------------------------------
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_ecorr_Map,       "energySCEleJoshEleSemiParam7TeVtrainV8ecorr");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_sigmaEoverE_Map, "energySCEleJoshEleSemiParam7TeVtrainV8sigmaEoverE");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_cbmean_Map,      "energySCEleJoshEleSemiParam7TeVtrainV8cbmean");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_sigma_Map,       "energySCEleJoshEleSemiParam7TeVtrainV8sigma");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_alpha1_Map,      "energySCEleJoshEleSemiParam7TeVtrainV8alpha1");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_gamma1_Map,      "energySCEleJoshEleSemiParam7TeVtrainV8gamma1");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_alpha2_Map,      "energySCEleJoshEleSemiParam7TeVtrainV8alpha2");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_gamma2_Map,      "energySCEleJoshEleSemiParam7TeVtrainV8gamma2");
+  iEvent.put(energySCEleJoshEleSemiParam7TeVtrainV8_pdfval_Map,      "energySCEleJoshEleSemiParam7TeVtrainV8pdfval");
+
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_ecorr_Map,       "energySCEleJoshPhoSemiParam7TeVtrainV8ecorr");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_sigmaEoverE_Map, "energySCEleJoshPhoSemiParam7TeVtrainV8sigmaEoverE");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_cbmean_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV8cbmean");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_sigma_Map,       "energySCEleJoshPhoSemiParam7TeVtrainV8sigma");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_alpha1_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV8alpha1");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_gamma1_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV8gamma1");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_alpha2_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV8alpha2");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_gamma2_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV8gamma2");
+  iEvent.put(energySCEleJoshPhoSemiParam7TeVtrainV8_pdfval_Map,      "energySCEleJoshPhoSemiParam7TeVtrainV8pdfval");
   
 }
 
@@ -1187,6 +1678,34 @@ EleNewEnergiesProducer::beginJob()
   if (!corV8_pho.IsInitialized()) {
     std::cout << "[STATUS] Initializing V8 regrPho: " << regrPhoJoshV8_SemiParamFile << std::endl;
     corV8_pho.Initialize(regrPhoJoshV8_SemiParamFile, 8); 
+  }
+
+
+  if (!cor7TeVtrainV6_ele.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V6 regrEle: " << regrEleJoshV6_SemiParam7TeVtrainFile << std::endl;
+    cor7TeVtrainV6_ele.Initialize(regrEleJoshV6_SemiParam7TeVtrainFile, 6); 
+  }
+  if (!cor7TeVtrainV6_pho.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V6 regrPho: " << regrPhoJoshV6_SemiParam7TeVtrainFile << std::endl;
+    cor7TeVtrainV6_pho.Initialize(regrPhoJoshV6_SemiParam7TeVtrainFile, 6); 
+  }
+
+  if (!cor7TeVtrainV7_ele.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V7 regrEle: " << regrEleJoshV7_SemiParam7TeVtrainFile << std::endl;
+    cor7TeVtrainV7_ele.Initialize(regrEleJoshV7_SemiParam7TeVtrainFile, 7); 
+  }
+  if (!cor7TeVtrainV7_pho.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V7 regrPho: " << regrPhoJoshV7_SemiParam7TeVtrainFile << std::endl;
+    cor7TeVtrainV7_pho.Initialize(regrPhoJoshV7_SemiParam7TeVtrainFile, 7); 
+  }
+
+  if (!cor7TeVtrainV8_ele.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V8 regrEle: " << regrEleJoshV8_SemiParam7TeVtrainFile << std::endl;
+    cor7TeVtrainV8_ele.Initialize(regrEleJoshV8_SemiParam7TeVtrainFile, 8); 
+  }
+  if (!cor7TeVtrainV8_pho.IsInitialized()) {
+    std::cout << "[STATUS] Initializing V8 regrPho: " << regrPhoJoshV8_SemiParam7TeVtrainFile << std::endl;
+    cor7TeVtrainV8_pho.Initialize(regrPhoJoshV8_SemiParam7TeVtrainFile, 8); 
   }
 
 }
