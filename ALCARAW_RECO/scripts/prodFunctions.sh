@@ -10,7 +10,7 @@ setStoragePath(){
 		    STORAGE_PATH=root://eoscms//eos/cms/store
 		    ;;
 	    #glite | glidein)
-		remoteGlidein)
+		remoteGlidein|condor)
 		    STORAGE_ELEMENT=srm-eoscms.cern.ch
 		    STORAGE_PATH=/srm/v2/server?SFN=/eos/cms/store
 		#STORAGE_ELEMENT=caf.cern.ch	

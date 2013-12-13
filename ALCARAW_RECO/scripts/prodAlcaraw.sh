@@ -25,7 +25,7 @@ usage(){
     echo "    --remote_dir dir"
     echo "---------- optional"
     echo "    -s skim: ZSkim, WSkim, EleSkim: ZSkim for DoubleElectron and WSkim for SingleElectron are automatically activated"
-    echo "    --scheduler caf,lsf,remoteGlidein (=${SCHEDULER})"
+    echo "    --scheduler caf,lsf,remoteGlidein,condor (=${SCHEDULER})"
     echo "    --createOnly"
     echo "    --submitOnly"
     echo "    --check"

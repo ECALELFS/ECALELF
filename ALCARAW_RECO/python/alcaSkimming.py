@@ -608,14 +608,15 @@ elif(options.skim=='ZSkim'):
         )
 
 if(options.type=='ALCARAW'):
-    process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,
-                                    process.reconstruction_step,process.endjob_step, 
-                                    process.pathALCARECOEcalUncalZElectron, process.pathALCARECOEcalUncalWElectron,
-                                    process.pathALCARECOEcalUncalZSCElectron,
-                                    process.ALCARAWoutput_step,
-                                    process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
-                                    process.pathALCARECOEcalCalZSCElectron,
-                                    process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
+    process.schedule = cms.Schedule(
+        #process.raw2digi_step,process.L1Reco_step,
+        #process.reconstruction_step,process.endjob_step, 
+        process.pathALCARECOEcalUncalZElectron, process.pathALCARECOEcalUncalWElectron,
+        process.pathALCARECOEcalUncalZSCElectron,
+        process.ALCARAWoutput_step,
+        process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+        process.pathALCARECOEcalCalZSCElectron,
+        process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
     
 
 elif(options.type=='ALCARERECO'):
@@ -670,3 +671,10 @@ process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 
+
+
+############################
+## Dump the output Python ##
+############################
+processDumpFile = open('processDump.py', 'w')
+print >> processDumpFile, process.dumpPython()
