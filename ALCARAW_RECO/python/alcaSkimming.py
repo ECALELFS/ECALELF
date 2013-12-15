@@ -332,10 +332,10 @@ process.pfiso = cms.Sequence()
 ###############################
 
 if (options.type=="ALCARAW"):
-#    process.raw2digi_step = cms.Path(process.RawToDigi)
-#    process.L1Reco_step = cms.Path(process.L1Reco)
-#    process.reconstruction_step = cms.Path(process.reconstruction)
-#    process.endjob_step = cms.EndPath(process.endOfProcess)
+    process.raw2digi_step = cms.Path(process.RawToDigi)
+    process.L1Reco_step = cms.Path(process.L1Reco)
+    process.reconstruction_step = cms.Path(process.reconstruction)
+    process.endjob_step = cms.EndPath(process.endOfProcess)
 
     process.load('Calibration.ALCARAW_RECO.sandboxSeq_cff')
 
@@ -580,10 +580,11 @@ else:
 
 
 # # Schedule definition
-#if(options.type=='ALCARAW'):
-#     process.schedule = cms.Schedule(process.raw2digi_step,process.ZPath,process.endOfProcess)
+if(options.type=='ALCARAW'):
+     process.schedule = cms.Schedule(process.ZPath,process.endjob_step)
+
 # else:
-#     process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step, process.ntuple)
+#     process.schedule = cms.Schedule(process.ZPath*process.ALCARECOoutput_step*process.ntuple)
 
 process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
 
