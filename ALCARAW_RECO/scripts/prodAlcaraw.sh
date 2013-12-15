@@ -1,17 +1,17 @@
 #!/bin/bash
 source $CMSSW_BASE/src/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
-#source /tmp/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
+source /tmp/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
 
 ############################### OPTIONS
 #------------------------------ default
-USEPARENT=0
-SCHEDULER=caf
+USEPARENT=1
+SCHEDULER=condor
 USESERVER=0
 TYPE=ALCARAW
 LUMIS_PER_JOBS=1000  # for ZSkim events is good, WSkim events /=4, SingleElectron /=10
 BLACK_LIST=T2_EE_Estonia
-CREATE=yes
-SUBMIT=yes
+CREATE=no
+SUBMIT=no
 OUTPUTFILE=alcaraw
 crabFile=tmp/alcaraw.cfg
 
@@ -25,7 +25,7 @@ usage(){
     echo "    --remote_dir dir"
     echo "---------- optional"
     echo "    -s skim: ZSkim, WSkim, EleSkim: ZSkim for DoubleElectron and WSkim for SingleElectron are automatically activated"
-    echo "    --scheduler caf,lsf,remoteGlidein (=${SCHEDULER})"
+    echo "    --scheduler caf,lsf,remoteGlidein,condor (=${SCHEDULER})"
     echo "    --createOnly"
     echo "    --submitOnly"
     echo "    --check"
@@ -69,7 +69,7 @@ do
 done
 
 #------------------------------ checking
-if [ -z "$DATASETPATH" ];then 
+if [ -z "$DATASETPATH" ];then
     echo "[ERROR] DATASETPATH not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
@@ -78,8 +78,8 @@ if [ -z "$DATASETPATH" ];then
 fi
 
 
-	
-if [ -z "$DATASETNAME" ];then 
+
+if [ -z "$DATASETNAME" ];then
     echo "[ERROR] DATASETNAME not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
@@ -87,20 +87,20 @@ if [ -z "$DATASETNAME" ];then
 #    echo "[INFO] DATASETNAME=${DATASETNAME}"
 fi
 
-if [ -z "$RUNRANGE" ];then 
+if [ -z "$RUNRANGE" ];then
     echo "[ERROR] RUNRANGE not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
 fi
 
-if [ -z "$STORAGE_ELEMENT" ];then 
+if [ -z "$STORAGE_ELEMENT" ];then
     echo "[ERROR] STORAGE_ELEMENT not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
 fi
 
 
-if [ -z "$USER_REMOTE_DIR_BASE" ];then 
+if [ -z "$USER_REMOTE_DIR_BASE" ];then
     echo "[ERROR] USER_REMOTE_DIR_BASE not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
@@ -110,14 +110,14 @@ fi
 
 if [ -n "${TUTORIAL}" ];then
     case $DATASETPATH in
-	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO)
-	    ;;
-	*)
-	    echo "[ERROR] With the tutorial mode, the only permitted datasetpath is:"
-	    echo "        /DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO"
-	    echo "        Be sure to have it in alcaraw_datasets.dat and to have selected it using the parseDatasetFile.sh"
-	    exit 1
-	    ;;
+        /DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO)
+            ;;
+        *)
+            echo "[ERROR] With the tutorial mode, the only permitted datasetpath is:"
+            echo "        /DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO"
+            echo "        Be sure to have it in alcaraw_datasets.dat and to have selected it using the parseDatasetFile.sh"
+            exit 1
+            ;;
     esac
     USER_REMOTE_DIR_BASE=${USER_REMOTE_DIR_BASE}/tutorial/$USER
     echo "============================================================"
@@ -128,83 +128,85 @@ if [ -n "${TUTORIAL}" ];then
 fi
 
 echo "[INFO] ${RUNRANGE} ${DATASETPATH} ${DATASETNAME} ${USER_REMOTE_DIR_BASE}"
+
 ###############################
 
 #------------------------------
 case $DATASETPATH in
     */RECO)
 	echo "[INFO] Dataset is RECO, using parent for RAW"
-	USEPARENT=1
-	;;
+        USEPARENT=1
+        ;;
     */AOD)
-	echo "[ERROR] cannot produce ALCARAW from AOD!!!" >> /dev/stderr
-	exit 1
+        echo "[ERROR] cannot produce ALCARAW from AOD!!!" >> /dev/stderr
+       # exit 1
 	;;
     */RAW-RECO)
-	USEPARENT=0
-	;;
+        USEPARENT=0
+        ;;
     */USER)
-	USEPARENT=0
-	;;
+        USEPARENT=1
+        ;;
     *)
-	echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
+        echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
 	exit 1
-	;;
+        ;;
 esac
+
 
 if [ -z "${SKIM}" ];then
     case $DATASETPATH in
-	*DoubleElectron*)
-	    SKIM=ZSkim
-	    ;;
-	*SingleElectron*USER)
-	    SKIM=fromWSkim
-	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
-	    ;;
-	*SingleElectron*)
-	    SKIM=WSkim
-	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/10
-	    ;;
-	*ZElectron*)
-	    SKIM=ZSkim
-	    ;;
+        *DoubleElectron*)
+            SKIM=ZSkim
+            ;;
+        *SingleElectron*USER)
+            SKIM=fromWSkim
+            let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
+            ;;
+        *SingleElectron*)
+            SKIM=WSkim
+            let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/10
+            ;;
+        *ZElectron*)
+            SKIM=ZSkim
+            ;;
     esac
 fi
 case $DATASETPATH in
-	*SingleElectron*USER)
-	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
-	    ;;
-	*SingleElectron*)
-	    let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/10
+        *SingleElectron*USER)
+            let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
+            ;;
+        *SingleElectron*)
+            let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/10
 esac
 
 echo "[INFO] Applying skim: ${SKIM}"
 
+
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
 
-case $DATASETPATH in 
+case $DATASETPATH in
     *Run2012*)
-	;;
+        ;;
     *Run2011*)
-	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}*3
-	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/2
+        let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}*3
+        let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/2
 	;;
     *Run2010*)
-	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}*3
+        let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}*3
 	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/2
-	;;
+        ;;
 esac
 
-setStoragePath $STORAGE_ELEMENT $SCHEDULER 
+setStoragePath $STORAGE_ELEMENT $SCHEDULER
 
 checkRelease ${DATASETPATH}
 
 USER_REMOTE_DIR=$USER_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE:-allRange}
 UI_WORKING_DIR=prod_alcaraw/${DATASETNAME}/${RUNRANGE}
 
-
-### outfiles in case of splitting of the output 
+### outfiles in case of splitting of the output
 index=001
 #OUTFILES=$OUTPUTFILE$index.root
 #for index in `seq -f %03.0f 2 9`
@@ -243,7 +245,6 @@ get_edm_output=1
 check_user_remote_dir=1
 use_parent=${USEPARENT}
 
-
 [USER]
 ui_working_dir=$UI_WORKING_DIR
 return_data = 0
@@ -253,8 +254,8 @@ storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
 
-thresholdLevel=50
-eMail = shervin@cern.ch
+#thresholdLevel=50
+#eMail = shervin@cern.ch
 
 [GRID]
 rb = HC
@@ -265,44 +266,43 @@ se_black_list=$BLACKLIST
 
 EOF
 
-if [ -n "${CREATE}" ];then
-    crab -cfg ${crabFile} -create
-    ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
+#if [ -n "${CREATE}" ];then
+#    crab -cfg ${crabFile} -create
+#    ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
 #crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARAW
-fi
+#fi
 
-if [ -n "$SUBMIT" ]; then
-    if [ -z "${TUTORIAL}" ];then
-	crab -c ${UI_WORKING_DIR} -submit all
-    else
-	crab -c ${UI_WORKING_DIR} -submit 1
-    fi
-else
-    echo "##############################"
-    echo "To start the crab jobs:"
-    set -- $options
-    echo -n $0
-    while [ $# -gt 0 ]
-      do
-      case $1 in
-	  --createOnly) shift;;
-	  (--) shift; break;;
-	  (*)   echo -n " $1"; shift;;
-      esac
-    done  
-    echo " --submitOnly"
-    echo " or"
-    echo "crab -c ${UI_WORKING_DIR} -submit all"
-fi
-
-if [ -n "${CHECK}" ];then
-    resubmitCrab.sh -u ${UI_WORKING_DIR}
-    if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
-	#echo $dir >> tmp/$TAG.log 
-	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
+#if [ -n "$SUBMIT" ]; then
+#    if [ -z "${TUTORIAL}" ];then
+#    crab -c ${UI_WORKING_DIR} -submit all
 #    else
-#	mergeOutput.sh -u ${UI_WORKING_DIR}
-    fi
-#    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
-fi
+#        crab -c ${UI_WORKING_DIR} -submit 1
+#    fi
+#else
+#    echo "##############################"
+#    echo "To start the crab jobs:"
+#    set -- $options
+#    echo -n $0
+#    while [ $# -gt 0 ]
+#      do
+#      case $1 in
+#          --createOnly) shift;;
+#          (--) shift; break;;
+#          (*)   echo -n " $1"; shift;;
+#      esac
+#    done
+#    echo " --submitOnly"
+#    echo " or"
+#    echo "crab -c ${UI_WORKING_DIR} -submit all"
+#fi
 
+#if [ -n "${CHECK}" ];then
+#    resubmitCrab.sh -u ${UI_WORKING_DIR}
+#    if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
+#        #echo $dir >> tmp/$TAG.log
+#        echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
+#    else
+#       mergeOutput.sh -u ${UI_WORKING_DIR}
+#    fi
+#    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
+#fi

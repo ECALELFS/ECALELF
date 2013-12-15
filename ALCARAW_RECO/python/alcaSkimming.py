@@ -580,10 +580,11 @@ else:
 
 
 # # Schedule definition
-# if(options.type=='ALCARAW'):
-#     process.schedule = cms.Schedule(process.raw2digi_step,process.L1Reco_step,process.reconstruction_step,process.endjob_step, process.ZPath, process.ALCARECOoutput_step)
+if(options.type=='ALCARAW'):
+     process.schedule = cms.Schedule(process.ZPath,process.endjob_step)
+
 # else:
-#     process.schedule = cms.Schedule(process.ZPath, process.ALCARECOoutput_step, process.ntuple)
+#     process.schedule = cms.Schedule(process.ZPath*process.ALCARECOoutput_step*process.ntuple)
 
 process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
 
@@ -595,3 +596,10 @@ if(options.type=="ALCARERECO"):
     process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
     process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
                 
+
+############################
+## Dump the output Python ##
+############################
+
+processDumpFile = open('processDump.py', 'w')
+print >> processDumpFile, process.dumpPython()

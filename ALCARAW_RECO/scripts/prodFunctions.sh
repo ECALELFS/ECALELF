@@ -5,9 +5,9 @@ setStoragePath(){
     case $1 in
 	caf* | T2_CH_CERN)
 	    case $2 in
-		caf|lsf)
-		    STORAGE_ELEMENT=caf.cern.ch	
-		    STORAGE_PATH=root://eoscms//eos/cms/store
+		caf|lsf | condor)
+		    STORAGE_ELEMENT=srm-eoscms.cern.ch	
+		    STORAGE_PATH=/srm/v2/server?SFN=/eos/cms/store
 		    ;;
 	    #glite | glidein)
 		remoteGlidein)
@@ -47,7 +47,7 @@ setEnergy(){
     case $1 in 
 	*Run2012*)
 	    #echo "[INFO] Run on 2012 data: ENERGY=8TeV"
-	    ENERGY=8TeV
+	    ENERGY=8TeV_tmp
 	    ;;
 	*Run2011*)
 	    #echo "[INFO] Run on 2011 data: ENERGY=7TeV"
