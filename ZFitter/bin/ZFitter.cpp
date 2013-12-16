@@ -312,6 +312,7 @@ int main(int argc, char **argv) {
     ("alphaGoldFix", "alphaTerm for gold electrons fixed to the low eta region")
     ("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
     ("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(0), "")
+    ("wide", "")
     ;
   inputOption.add_options()
     ("chainFileList,f", po::value< string >(&chainFileListName), "Configuration file with input file list")
@@ -1026,8 +1027,11 @@ int main(int argc, char **argv) {
 
   myClock.Reset();
   if(vm.count("smearerFit")){
-
-	smearer.SetHistBinning(80,100,invMass_binWidth); // to do before Init
+    if(vm.count("wide")){
+      smearer.SetHistBinning(70,110,invMass_binWidth); // to do before Init
+    } else{
+      smearer.SetHistBinning(80,100,invMass_binWidth); // to do before Init
+    }
 	if(vm.count("runToy")){
 	  smearer.SetPuWeight(false);
 

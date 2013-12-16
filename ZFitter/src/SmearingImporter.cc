@@ -285,7 +285,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       }	
     }
     // to calculate the invMass: invMass = sqrt(2 * energy_ele1 * energy_ele2 * angle_eta_ele1_ele2)
-    if(event.invMass < 70 || event.invMass > 110) continue;
+    if(event.invMass < 60 || event.invMass > 120) continue;
 
     event.weight = 1.;
     if(_usePUweight) event.weight *= weight;

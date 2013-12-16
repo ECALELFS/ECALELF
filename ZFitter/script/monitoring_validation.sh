@@ -343,6 +343,9 @@ if [ -n "$ETA" ];then
     xVar=absEta
     if [ -n "$STEP4" ];then
 	tableFile=${outDirTable}/step2absEta-${invMass_var}-${selection}-${commonCut}.tex
+	if [ ! -d ${outDirData}/img/stability/$xVar/$PERIOD ];then
+	    mkdir -p ${outDirData}/img/stability/$xVar/$PERIOD
+	fi
     else
 	tableFile=${outDirTable}/absEta-${invMass_var}-${selection}-${commonCut}.tex
     fi
@@ -368,8 +371,8 @@ if [ -n "$ETA" ];then
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	${tableCruijffOption} >  ${tableFile} || exit 1
 
-    if [ ! -d ${outDirData}/step4/img/stability/$xVar/$PERIOD ];then
-	mkdir -p ${outDirData}/step4/img/stability/$xVar/$PERIOD
+    if [ ! -d ${outDirData}/img/stability/$xVar/$PERIOD ];then
+	mkdir -p ${outDirData}/img/stability/$xVar/$PERIOD
     fi
 
     ./script/stability.sh -t ${tableFile} \
