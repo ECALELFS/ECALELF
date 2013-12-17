@@ -13,7 +13,9 @@ ElectronCategory_class::~ElectronCategory_class(){
 
 ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAsNtuple_):
   _isRooFit(isRooFit_),
-  _roofitNameAsNtuple(roofitNameAsNtuple_){
+  _roofitNameAsNtuple(roofitNameAsNtuple_),
+  energyBranchName("energySCEle_regrCorrSemiParV5_pho"),
+  _corrEle(false){
 
   return;
 }
@@ -35,7 +37,9 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
       itr != cutSet.end();
       itr++){
     TString cut_string = *itr;
-
+#ifdef DEBUG
+    std::cout << cut_string << std::endl;
+#endif
     if(isMC && cut_string.Contains("runNumber")){
       cut_string.Insert(0,"(");
       cut_string+="|| runNumber==1)"; 
@@ -43,9 +47,12 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
     if(isMC && cut_string.Contains("lumiBlock")) continue;
     //      std::cout << "[DEBUG] Skipping runNumber cut for MC " << isMC << "\t" << string << std::endl;
 
-    if(corrEle){
-      cut_string.ReplaceAll("energySCEle_ele1","energySCEle_ele1 * corrEle_ele1");
-      cut_string.ReplaceAll("energySCEle_ele2","energySCEle_ele2 * corrEle_ele2");
+    if(isMC==false && (corrEle || _corrEle)){
+      //std::cerr << "[INFO] scaleEle for GetCut" << std::endl;
+      cut_string.ReplaceAll(energyBranchName+"_ele1",energyBranchName+"_ele1 * scaleEle_ele1");
+      cut_string.ReplaceAll(energyBranchName+"_ele2",energyBranchName+"_ele2 * scaleEle_ele2");
+      TString invMassName=energyBranchName; invMassName.ReplaceAll("energySCEle","invMass_SC");
+      cut_string.ReplaceAll(invMassName,invMassName+"*sqrt(scaleEle_ele1 * scaleEle_ele2)");
     }
     // se contiene solo ele2 rimuovi, altrimenti sostituisci
     if(nEle!=0){
@@ -71,7 +78,9 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 
     cut+=cut_string;
   }
-
+#ifdef DEBUG
+  std::cout << cut << std::endl;
+#endif
   return cut; //full AND of cuts
 
 }
@@ -598,8 +607,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 	TString string1 = Objstring1->GetString();
 	
         
-	TCut cutEle1("(energySCEle_ele1/cosh(etaSCEle_ele1)) >= "+string1);
-	TCut cutEle2("(energySCEle_ele2/cosh(etaSCEle_ele2)) >= "+string1);
+	TCut cutEle1(""+energyBranchName+"_ele1/cosh(etaSCEle_ele1) >= "+string1);
+	TCut cutEle2(""+energyBranchName+"_ele2/cosh(etaSCEle_ele2) >= "+string1);
 	
 	cut_string+=cutEle1 && cutEle2;
 	cutSet.insert(TString(cutEle1 && cutEle2));
@@ -612,10 +621,10 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 	TString string1 = Objstring1->GetString();
 	TString string2 = Objstring2->GetString();
       
-	TCut cutEle1_1("energySCEle_ele1/cosh(etaSCEle_ele1) >= "+string1);
-	TCut cutEle1_2("energySCEle_ele1/cosh(etaSCEle_ele1) <  "+string2);
-	TCut cutEle2_1("energySCEle_ele2/cosh(etaSCEle_ele2) >= "+string1);
-	TCut cutEle2_2("energySCEle_ele2/cosh(etaSCEle_ele2) <  "+string2);
+	TCut cutEle1_1(""+energyBranchName+"_ele1/cosh(etaSCEle_ele1) >= "+string1);
+	TCut cutEle1_2(""+energyBranchName+"_ele1/cosh(etaSCEle_ele1) <  "+string2);
+	TCut cutEle2_1(""+energyBranchName+"_ele2/cosh(etaSCEle_ele2) >= "+string1);
+	TCut cutEle2_2(""+energyBranchName+"_ele2/cosh(etaSCEle_ele2) <  "+string2);
 
 	TCut ele1_cut = cutEle1_1 && cutEle1_2;
 	TCut ele2_cut = cutEle2_1 && cutEle2_2;
@@ -1238,7 +1247,7 @@ std::set<TString> ElectronCategory_class::GetBranchNameNtuple(TString region){
   reg.Substitute(cut," ","g");
   reg=TPRegexp("SingleEle");
   reg.Substitute(cut," ","g");
-
+  cut.ReplaceAll("scaleEle","");
   
   TObjArray *splitted = cut.Tokenize(" ");
   for(int i =0; i < splitted->GetEntries(); i++){

@@ -2,11 +2,11 @@
 
 
 #tag_name=""
-commonCut=Et_25
-selection=WP80_PU
+commonCut=Et_25-trigger-noPF
+selection=loose
 invMass_var=invMass_SC_regrCorr_ele
 configFile=data/validation/monitoring_2012_53X.dat
-regionsFile=data/regions/scaleStep4smearing_2.dat
+regionsFile=data/regions/scaleStep2smearing_9.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
@@ -138,7 +138,7 @@ fi
 
 # saving the root files with the chains
 rm tmp/*_chain.root
-./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${fitterOptions} || exit 1
+./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
 
 # adding all the chains in one file
 for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
@@ -151,6 +151,7 @@ done
 #hadd tmp/s_chain.root tmp/s_*_chain.root
 #hadd tmp/d_chain.root tmp/d_*_chain.root
 
+#NOTA => previously, 3 times signalA
 cat > tmp/load.C <<EOF
 {
   gROOT->ProcessLine(".L macro/PlotDataMC.C+");
@@ -162,13 +163,13 @@ cat > tmp/load.C <<EOF
 
   TChain *data   = (TChain *) _file0->Get("selected");
   TChain *signalA = (TChain *) _file1->Get("selected");
-  TChain *signalA = (TChain *) _file2->Get("selected");
-  TChain *signalA = (TChain *) _file3->Get("selected");
+  TChain *signalB = (TChain *) _file2->Get("selected");
+  //TChain *signalC = (TChain *) _file3->Get("selected");
 
   ReassociateFriends(_file0, data);
   ReassociateFriends(_file1, signalA);
   ReassociateFriends(_file2, signalB);
-  ReassociateFriends(_file3, signalC);
+//  ReassociateFriends(_file3, signalC);
 
    TDirectory *curDir = new TDirectory("curDir","");
    curDir->cd();

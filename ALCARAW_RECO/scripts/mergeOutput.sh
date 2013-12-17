@@ -98,8 +98,11 @@ fi
 
 #if [ -z "$JSON" ];then
 #    JSON=`echo ${USER_REMOTE_DIR} | sed "s|.*${RUNRANGE}/||;s|/unmerged.*||"`
+
 if [ "${FILENAME_BASE}" == "PUDumper" ];then
     MERGEDFILE=PUDumper-${DATASETNAME}-${RUNRANGE}.root
+elif [ "`echo ${FILENAME_BASE} | awk '(/extraID/){printf(\"1\")}'`" == "1" ]; then
+    MERGEDFILE=extraID-${DATASETNAME}-${RUNRANGE}.root
 else
     MERGEDFILE=${DATASETNAME}-${RUNRANGE}.root
 fi
@@ -107,11 +110,18 @@ fi
 #    MERGEDFILE=${DATASETNAME}-${RUNRANGE}-JSON_${JSON}.root
 #fi
 
+eosFile=${STORAGE_PATH}/${MERGED_REMOTE_DIR}/${MERGEDFILE}
+# eos.select ls $eosFile && {
+#     echo "$eosFile"
+#     echo "[WARNING] Files not merged because merged file already exist" >> /dev/stderr
+#     echo "[WARNING] Files not merged because merged file already exist" >> /dev/stdout
+#     exit 1
+# }
 hadd -f /tmp/$USER/${MERGEDFILE} `cat filelist/unmerged.list` || exit 1
 
 # copy the merged file to the repository
 # dirname is needed to remove "unmerged" subdir from the path
-xrdcp -v /tmp/$USER/${MERGEDFILE} ${STORAGE_PATH}/${MERGED_REMOTE_DIR}/${MERGEDFILE} || exit 1
+xrdcp -v /tmp/$USER/${MERGEDFILE} ${eosFile} || exit 1
 
 # let's remove the files
 if [ -z "${NOREMOVE}" ];then

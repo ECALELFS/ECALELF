@@ -1,3 +1,4 @@
+
 #include "../interface/RooSmearer.hh"
 //#include <RooPullVar.h>
 #define FIXEDSMEARINGS
@@ -102,6 +103,10 @@ void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy, bool externToy){
       data_events_cache = importer.GetCache(_data_chain, false, false, nEvents);
     }
   }
+  if(!mc_events_cache.empty()){
+    std::cerr << "[ERROR] mc_events_cache not empty: " << mc_events_cache.size() << std::endl;
+    exit(1);
+  }
   if(mc_events_cache.empty()){
     if(cacheToy){
       std::cout << "[STATUS] --- Setting toy cache for mc" << std::endl;
@@ -198,9 +203,9 @@ void RooSmearer::InitCategories(bool mcToy){
 
       //------------------------------ deactivating category
       cat.active=true;
-      unsigned int deactiveMinEvents = _deactive_minEventsDiag;
+      unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
       if(cat.categoryIndex1 != cat.categoryIndex2) // not diagonal category
-	deactiveMinEvents=_deactive_minEventsOffDiag;
+	deactiveMinEvents=2000; //_deactive_minEventsOffDiag;
       if(cat.hist_mc->Integral() < deactiveMinEvents){
 	std::cout << "[INFO] Category: " << ZeeCategories.size() 
 		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
@@ -234,7 +239,7 @@ void RooSmearer::InitCategories(bool mcToy){
 
 
       cat.nLLtoy=1;
-
+      cat.nll=0;
       std::cout << "[INFO] Category: " << ZeeCategories.size() 
 		<< "\t" << cat.categoryName1 << "\t" << cat.categoryName2
 		<< "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
