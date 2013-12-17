@@ -8,11 +8,10 @@ Testing
 ======
 Download instructions.
 
-`cp ~shervin/public/setup-devel-42X_44X_53X.sh .`
+`wget https://raw.github.com/ECALELFS/ECALELF/merge-gerosa-condor/setup_git.sh`
+`chmod +x setup_git.sh`
 
-`chmod +x setup-devel-42X_44X_53X.sh`
-
-`./setup-devel-42X_44X_53X.sh CMSSW_5_3_7_patch6`
+`./setup_git.sh CMSSW_5_3_7_patch6`
 
 `cd CMSSW_5_3_7_patch6/src/`
 

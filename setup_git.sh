@@ -51,8 +51,9 @@ sed -i 's|[/]*assert|////assert|' DataFormats/EgammaCandidates/src/GsfElectron.c
 echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
 if [ ! -d "$myDir" ];then
-    git clone https://github.com/rgerosa/ECALELF $myDir #
-    #git clone git://github.com/ECALELFS/ECALELF.git Calibration # read-only mode
+    #git clone https://github.com/ECALELFS/ECALELF $myDir #
+    git clone git://github.com/ECALELFS/ECALELF.git $myDir # read-only mode
+    git checkout merge-gerosa-condor
 fi
 cd $myDir
 
@@ -60,7 +61,7 @@ cd ALCARAW_RECO/
 
 ### if you are not Shervin download this to have some useful scripts
 if [ "$USER" != "shervin" ];then
-svn co svn+ssh://svn.cern.ch/reps/analysis/trunk/bin bin
+git clone git@github.com:ECALELFS/Utilities.git bin
 # Please be sure to add this directory to you default PATH variable
 # for bash
 #PATH=$PATH:$CMSSW_BASE/src/calibration/ALCARAW_RECO/bin
