@@ -3,6 +3,8 @@
 * Introduction: \ref page1
 *
 * Working with ntuples: \ref page4
+*
+* Instructions for ECAL validator (rereco + ntuple production): \ref page5 
 */
 /**
 * \page page1 Code instructions and explanations

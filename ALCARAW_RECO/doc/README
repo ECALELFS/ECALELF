@@ -1,3 +1,6 @@
+/**
+* \page page2 Ciao
+* \verbatim
 Testing the alcaraw + alcareco production
 cmsRun ALCARAW_RECO/python/alcaSkimming.py files=file://../../../B292A7F8-3A7F-E111-A1A5-001D09F29114.root maxEvents=6 &> log2.log
 
@@ -103,3 +106,5 @@ svn ci -m "rereco tag_name done"
 
 
 
+\endverbatim
+*/
