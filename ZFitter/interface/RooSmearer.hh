@@ -12,6 +12,7 @@
 #include <RooAbsReal.h>
 #include <RooSetProxy.h>
 #include <RooStats/MarkovChain.h>
+#include <RooCBShape.h>
 #include "SmearingImporter.hh"
 //#define DEBUG
 /*
@@ -87,7 +88,13 @@ public:
 
 class RooSmearer: public RooAbsReal {
 
+
 public:
+  enum smearFun_t {
+    gausSmearFun=0,
+    CBSmearFun
+  };
+
   ~RooSmearer(void);
 
   inline RooSmearer(){};
@@ -145,7 +152,7 @@ public:
   }
 
   /// Initialize the categories: import from the tree
-  void Init(TString commonCut, TString eleID, Long64_t nEvents=0, bool mcToy=false, bool externToy=true,TString initFile="");
+  void Init(TString commonCut, TString eleID, Long64_t nEvents=0, bool mcToy=false, bool externToy=true,TString initFile="", smearFun_t smearFun=gausSmearFun); //CBSmearFun);
   //  TH1F *GetSmearedHisto(TString categoryName, 
   //			bool smearEnergy=false, TString histoName="") const;
   //  TH1F *GetSmearedHisto(int categoryIndex,
@@ -160,6 +167,8 @@ public:
   inline RooDataSet *GetMarkovChainAsDataSet(){
     return _markov.GetAsDataSet();
   };
+
+  RooDataSet *dataset;
   inline RooDataSet *SetDataSet(TString name="profile", TString title="", double nllMin_=0){
     if(dataset!=NULL){
       std::cerr << "[WARNING] Removing last dataset: " << std::endl;
@@ -173,7 +182,6 @@ public:
   inline RooDataSet *GetDataSet(void){
     return dataset;
   }
-  RooDataSet *dataset;
 private:
   TChain *_data_chain, *_signal_chain;
   SmearingImporter importer;
@@ -200,6 +208,10 @@ private:
 
   unsigned int _nLLtoy;
   TRandom3* rgen_;
+  RooCBShape *CB;
+  RooRealVar *rndValue, *deltaM, *sigmaCB, *alphaCB, *nCB;
+  float SmearFunction(float *smear, unsigned int nGen, double scale, double sigma) const;
+
   TStopwatch *myClock;
   
   double lastNLL;
@@ -220,7 +232,7 @@ private:
 
   //double smearedEnergy(float ene,float scale,float alpha,float
   //constant) const;
-  double smearedEnergy(double *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings=NULL) const;
+  double smearedEnergy(float *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings=NULL) const;
   void SetSmearedHisto(const zee_events_t& cache, 
 		       RooArgSet pars1, RooArgSet pars2, 
 		       TString categoryName1, TString categoryName2, unsigned int nSmearToy,

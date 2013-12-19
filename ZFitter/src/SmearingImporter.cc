@@ -304,21 +304,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	} // else event.weight=1;
       }
     }
-#ifdef FIXEDSMEARINGS
-    if(isMC){
-      event.smearings_ele1 = new float[NSMEARTOYLIM];
-      event.smearings_ele2 = new float[NSMEARTOYLIM];
-      for(int i=0; i < NSMEARTOYLIM; i++){
-	event.smearings_ele1[i] = (float) gen.Gaus(0,1);
-	event.smearings_ele2[i] = (float) gen.Gaus(0,1);
-      }
-    }else{
-      event.smearings_ele1 = new float[1];
-      event.smearings_ele2 = new float[1];
-      event.smearings_ele1[0] = (float) gen.Gaus(0,1);
-      event.smearings_ele2[0] = (float) gen.Gaus(0,1);
-    }	
-#endif
+    event.smearings_ele1 = NULL;
+    event.smearings_ele2 = NULL; 
     includedEvents++;
     cache.at(evIndex).push_back(event);
     //(cache[evIndex]).push_back(event);

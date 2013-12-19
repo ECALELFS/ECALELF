@@ -32,6 +32,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   importer(regionList, energyBranchName),
   _params_vec(params),
   _paramSet("paramSet","Set of parameters",this),
+  dataset(NULL),
   invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
   deltaNLLMaxSmearToy(330),
   _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(20), 
@@ -41,7 +42,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   _autoBin(false),
   _autoNsmear(false),
   smearscan(false),
-  dataset(NULL)
+  CB(NULL)
 {
   _data_chain = data_chain_;
   _signal_chain = signal_chain_;
@@ -127,7 +128,7 @@ void RooSmearer::SetCache(Long64_t nEvents, bool cacheToy, bool externToy){
 }
 
 void RooSmearer::InitCategories(bool mcToy){
-
+  std::cout << "[STATUS] Init categories" << std::endl;
   int index=0;
   ZeeCategories.reserve((int)(importer._regionList.size()*(importer._regionList.size()+1)/2 +1));
   for(std::vector<TString>::const_iterator region_ele1_itr = importer._regionList.begin();
@@ -150,6 +151,37 @@ void RooSmearer::InitCategories(bool mcToy){
 //       }
       cat.data_events = &(data_events_cache[index]);
       cat.mc_events = &(mc_events_cache[index]);
+
+      // caching smearing random values 
+      TH1F *h = new TH1F("cbhist","",20000,-20,20);
+      
+      TStopwatch c;
+      c.Start();
+      for(zee_events_t::iterator event_itr = cat.mc_events->begin(); 
+	  event_itr!= cat.mc_events->end();
+	  event_itr++){
+	//if(isMC){
+	event_itr->smearings_ele1 = new float[NSMEARTOYLIM];
+	event_itr->smearings_ele2 = new float[NSMEARTOYLIM];
+	SmearFunction(event_itr->smearings_ele1, NSMEARTOYLIM, 0,1);
+	SmearFunction(event_itr->smearings_ele2, NSMEARTOYLIM, 0,1);
+	for(int i=0; i < NSMEARTOYLIM; i++){
+	  h->Fill(event_itr->smearings_ele1[i]);
+	  h->Fill(event_itr->smearings_ele2[i]);
+	}
+      }
+      c.Stop();
+      c.Print();
+      h->SaveAs("tmp/h-"+cat.categoryName1+cat.categoryName2+".root");
+      delete h;
+      for(zee_events_t::iterator event_itr = cat.data_events->begin(); 
+	  event_itr!= cat.data_events->end();
+	  event_itr++){
+	event_itr->smearings_ele1 = new float[1];
+	event_itr->smearings_ele2 = new float[1];
+	SmearFunction(event_itr->smearings_ele1, 1, 0,1);
+	SmearFunction(event_itr->smearings_ele2, 1, 0,1);
+      }	
       
       cat.categoryName1 += *region_ele1_itr;
       cat.categoryName2 += *region_ele2_itr;
@@ -378,7 +410,7 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
 //   }
 
   //double smearEne1[NSMEARTOYLIM], smearEne2[NSMEARTOYLIM]; // _nSmearToy<100
-  double smearEne1[1000], smearEne2[1000]; // _nSmearToy<100
+  float smearEne1[1000], smearEne2[1000]; // _nSmearToy<100
   if(cache.begin()->smearings_ele1==NULL){
     std::cerr<< "[ERROR] No smearings" << std::endl;
     exit(1);
@@ -415,7 +447,7 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
 
 
 
-double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings) const
+double RooSmearer::smearedEnergy(float *smear, unsigned int nGen, float ene,float scale,float alpha,float constant, const float *fixedSmearings) const
 {
   // sigmaMB = sigma Material Budget
   // if I want to take into account the non perfet simulation of the
@@ -433,12 +465,10 @@ double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,flo
   for(unsigned int i=0; i < NSMEARTOYLIM && i<nGen; i++){
     smear[i] = (double) (fixedSmearings[i]*sigma)+(scale);
   }
-  for(unsigned int i=NSMEARTOYLIM; i < nGen; i++){
-    smear[i] = rgen_->Gaus(scale,sigma);
-  }
+  SmearFunction(smear+NSMEARTOYLIM, nGen-NSMEARTOYLIM, scale, sigma);
 #else
   for(unsigned int i=0; i < nGen; i++){
-	smear[i] = rgen_->Gaus(scale,sigma);
+	smear[i] = SmearFunction(scale,sigma);
   }
 #endif
   return smear[0];
@@ -765,7 +795,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   for(int iBin=160; iBin>120; iBin/=2){
     //category.nBins= iBin;
     //ResetBinning(category);
-    TH1F *data = GetSmearedHisto(category, false, _isDataSmeared, false, false); ///-----> not need to repeate!
+    GetSmearedHisto(category, false, _isDataSmeared, false, false); ///-----> not need to repeate!
 
     for(category.nLLtoy=1; category.nLLtoy < 2; category.nLLtoy+=2){
       for(category.nSmearToy; category.nSmearToy <= nSmearToyLim && stdDev> stdDevLim; category.nSmearToy*=2){
@@ -1001,7 +1031,7 @@ void RooSmearer::SetNSmear(unsigned int n_smear, unsigned int nlltoy){
 }
 
 
-void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, bool externToy, TString initFile){
+void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, bool externToy, TString initFile, smearFun_t smearFun){
   if(mcToy) _isDataSmeared=!externToy; //mcToy;
   if(initFile.Sizeof()>1){
     std::cout << "[INFO] Truth values for toys initialized to " << std::endl;
@@ -1011,6 +1041,16 @@ void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool m
     _paramSet.readFromFile(initFile);
     _paramSet.writeToStream(std::cout, kFALSE);
   }
+  if(smearFun==CBSmearFun && CB==NULL){
+    std::cout << "Init smear fun" << std::endl;
+    rndValue = new RooRealVar("rndValue","", 0,-100,100);
+    deltaM   = new RooRealVar("deltaM",  "", 1,   0,  2);
+    sigmaCB  = new RooRealVar("sigmaCB", "", 1,   0,  2);
+    alphaCB  = new RooRealVar("alphaCB", "", 1.4,   0.01,  5);
+    nCB      = new RooRealVar("alphaCB", "", 1.86,   0.5,  100);
+    CB       = new RooCBShape("CBgen","", *rndValue, *deltaM, *sigmaCB, *alphaCB, *nCB);
+  }
+
   SetCommonCut(commonCut); SetEleID(eleID);
   SetCache(nEvents, mcToy, externToy); InitCategories(mcToy);
   TStopwatch cl;
@@ -1028,6 +1068,8 @@ void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool m
     std::cout << "------------------------------ Randomize initial value:" << std::endl;
     _paramSet.writeToStream(std::cout, kFALSE);
   }
+
+  
   return;
 }
 
@@ -1061,4 +1103,21 @@ void RooSmearer::DumpNLL(void) const{
       std::cout << "[DUMP NLL] " << std::setprecision(10) << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2 << "\t" << cat_itr->nll << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() << "\t0" << std::endl;
   }
   return;
+}
+
+float RooSmearer::SmearFunction(float *smear, unsigned int nGen, double scale, double sigma) const{
+  if(gausSmearFun)
+    return  rgen_->Gaus(scale,sigma);
+  else if(CBSmearFun){
+    deltaM->setVal(scale);
+    sigmaCB->setVal(sigma);
+    RooDataSet *d = CB->generate(*rndValue, nGen);
+    for(unsigned int iGen=0; iGen < nGen; iGen++){
+      smear[iGen]=d->get(iGen)->getRealValue("rndValue");
+    }
+    return smear[0];
+  }  else{
+    std::cerr << "[ERROR] smearing function not defined" << std::endl;
+    exit(1);
+  }
 }
