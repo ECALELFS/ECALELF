@@ -1,0 +1,28 @@
+s1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECOSIM/DYJets-Summer11-START53-ZSkim/allRange/78TeVtrain_bis/DYJets-Summer11-START53-ZSkim-allRange.root
+s2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer11-START53-ZSkim/allRange/78TeVtrain_tris/DYToEE_M20_powheg-Summer11-START53-ZSkim-allRange.root
+###################
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/1-1-Summer11_START53.true.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/160404-180252-08Nov_7TeV_v2-pixelcorr.true.root
+s1	pileup	data/puFiles/mcPUtree_s1-21Jun2012_7TeV.root
+s2	pileup	data/puFiles/mcPUtree_s2-21Jun2012_7TeV.root
+###################
+d1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECO/DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1/160329-173692/160404-180252-08Nov_v2/78TeVtrain_bis/DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1-160329-173692.root
+d2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECO/DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1/175832-180252/160404-180252-08Nov_v2/78TeVtrain_bis/DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1-175832-180252.root
+###################
+d1	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_d1-21Jun2012_7TeV.root
+d2	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_d2-21Jun2012_7TeV.root
+s1	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s1-21Jun2012_7TeV.root
+s2	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s2-21Jun2012_7TeV.root
+d1	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_d1-21Jun2012_7TeV.root
+d2	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_d2-21Jun2012_7TeV.root
+s1	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s1-21Jun2012_7TeV.root
+s2	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s2-21Jun2012_7TeV.root
+#
+d1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d1-21Jun2012_7TeV.root
+d2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d2-21Jun2012_7TeV.root
+s1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s1-21Jun2012_7TeV.root
+s2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s2-21Jun2012_7TeV.root
+d1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d1-21Jun2012_7TeV.root
+d2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d2-21Jun2012_7TeV.root
+s1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s1-21Jun2012_7TeV.root
+s2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s2-21Jun2012_7TeV.root
