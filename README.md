@@ -8,7 +8,8 @@ Testing
 ======
 Download instructions.
 
-`wget https://raw.github.com/ECALELFS/ECALELF/merge-gerosa-condor/setup_git.sh`
+`wget https://raw.github.com/ECALELFS/ECALELF/master/setup_git.sh`
+
 `chmod +x setup_git.sh`
 
 `./setup_git.sh CMSSW_5_3_7_patch6`
