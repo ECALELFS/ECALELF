@@ -80,9 +80,9 @@ class ValueMapTraslator : public edm::EDProducer {
 //
 ValueMapTraslator::ValueMapTraslator(const edm::ParameterSet& iConfig):
   referenceCollectionTAG(iConfig.getParameter<edm::InputTag>("referenceCollection")),
+  oldreferenceCollectionTAG(iConfig.getParameter<edm::InputTag>("oldreferenceCollection")),
   inputCollectionTAG(iConfig.getParameter<edm::InputTag>("inputCollection")),
-  outputCollectionName(iConfig.getParameter<std::string>("outputCollection")),
-  oldreferenceCollectionTAG(iConfig.getParameter<edm::InputTag>("oldreferenceCollection"))
+  outputCollectionName(iConfig.getParameter<std::string>("outputCollection"))
 {
    //now do what ever other initialization is needed
   /// \todo outputCollectionName = inputCollection+postfix
