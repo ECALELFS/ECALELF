@@ -55,7 +55,7 @@ echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
 if [ ! -d "$myDir" ];then
     #git clone https://github.com/ECALELFS/ECALELF $myDir #
-    git clone git://github.com/ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
     #git checkout merge-gerosa-condor
 fi
 cd $myDir
