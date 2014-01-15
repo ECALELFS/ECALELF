@@ -5,7 +5,7 @@ checkVERSION(){
 	CMSSW_5_3_7_patch6)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
-	CMSSSW_7_0_0_*)
+	CMSSW_7_0_0_*)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
 	*)
@@ -204,8 +204,16 @@ case $CMSSW_VERSION in
 	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
 	cat download.url | xargs wget  >> setup.log || exit 1
 	cd - >> setup.log || exit 1
-###### - Regression from Josh 5_3_X
-	#checkdeps -a
+
+###### New Josh regression
+	mkdir HiggsAnalysis/
+	cd HiggsAnalysis/
+	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihood.git 
+#	git clone -b CMSSW53X git@github.com:bendavid/GBRLikelihood.git
+	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
+	cd -
+	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
+
 
 	echo "[STATUS] applying patch for CMSSW_5_X"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
