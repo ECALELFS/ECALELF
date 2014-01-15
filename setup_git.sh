@@ -40,7 +40,7 @@ cd $CMSSW_BASE/src
 #########################################################################################
 echo "[STATUS] Download of the skims"
 # last WSkim version
-git-cms-addpkg DataFormats/EgammaCandidates  >> setup.log || exit 1
+git-cms-addpkg DataFormats/EgammaCandidates  #>> setup.log || exit 1
 git clone https://github.com/cms-cvs-history/DPGAnalysis-Skims DPGAnalysis/Skims  >> setup.log || exit 1
 cd DPGAnalysis/Skims/
 git checkout DPGAnalysis-Skims-V01-00-07  >> setup.log || exit 1
@@ -54,8 +54,11 @@ sed -i 's|[/]*assert|////assert|' DataFormats/EgammaCandidates/src/GsfElectron.c
 echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
 if [ ! -d "$myDir" ];then
-    #git clone https://github.com/ECALELFS/ECALELF $myDir #
-    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+    if [ "$USER" != "shervin" ];then
+	git clone https://github.com/ECALELFS/ECALELF $myDir >> setup.log || exit 1 # read-only mode
+    else
+	git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+    fi
     #git checkout merge-gerosa-condor
 fi
 cd $myDir
@@ -64,7 +67,7 @@ cd ALCARAW_RECO/
 
 ### if you are not Shervin download this to have some useful scripts
 if [ "$USER" != "shervin" ];then
-git clone git@github.com:ECALELFS/Utilities.git bin
+git clone https://github.com/ECALELFS/Utilities.git bin
 # Please be sure to add this directory to you default PATH variable
 # for bash
 #PATH=$PATH:$CMSSW_BASE/src/calibration/ALCARAW_RECO/bin
@@ -132,8 +135,14 @@ case $CMSSW_VERSION in
 	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
 	cat download.url | xargs wget  >> setup.log || exit 1
 	cd - >> setup.log || exit 1
-###### - Regression from Josh 5_3_X
-	#checkdeps -a
+###### New Josh regression
+	mkdir HiggsAnalysis/
+	cd HiggsAnalysis/
+	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihood.git 
+#	git clone -b CMSSW53X git@github.com:bendavid/GBRLikelihood.git
+	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
+	cd -
+	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
 	echo "[STATUS] applying patch for CMSSW_5_X"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
@@ -221,24 +230,24 @@ esac
 # compile
 scram b -j8
 
-for file in `find -name '*.url'`; 
-  do 
-  if [ "`basename $file`" == "copy.url" ];then 
-      #echo $file; 
-      for cpFile in `cat $file`; 
-	do 
-	cp -u $cpFile `dirname $file`; 
-      done; 
-  fi; 
-  if [ "`basename $file`" == "download.url" ];then 
-      echo $file; 
-      for cpFile in `cat $file`; 
-	do 
-	cvs co -l -d `dirname $file` $cpFile
-      done; 
-  fi; 
+# for file in `find -name '*.url'`; 
+#   do 
+#   if [ "`basename $file`" == "copy.url" ];then 
+#       #echo $file; 
+#       for cpFile in `cat $file`; 
+# 	do 
+# 	cp -u $cpFile `dirname $file`; 
+#       done; 
+#   fi; 
+#   if [ "`basename $file`" == "download.url" ];then 
+#       echo $file; 
+#       for cpFile in `cat $file`; 
+# 	do 
+# 	cvs co -l -d `dirname $file` $cpFile
+#       done; 
+#   fi; 
   
-done
+# done
 
 ####-------->  Each time you set your environment!
 #PATH=$PATH:$CMSSW_BASE/$myDir/ALCARAW_RECO/bin
