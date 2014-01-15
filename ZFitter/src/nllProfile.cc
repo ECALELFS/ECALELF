@@ -51,6 +51,9 @@
 
 #include <TRandom3.h>
 
+#include "../interface/RooSmearer.hh"
+
+
 #define FIT_LIMIT 0.01
 #define ITER_MAX 20
 //#define DEBUG

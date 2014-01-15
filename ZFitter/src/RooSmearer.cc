@@ -768,7 +768,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
     TH1F *data = GetSmearedHisto(category, false, _isDataSmeared, false, false); ///-----> not need to repeate!
 
     for(category.nLLtoy=1; category.nLLtoy < 2; category.nLLtoy+=2){
-      for(category.nSmearToy; category.nSmearToy <= nSmearToyLim && stdDev> stdDevLim; category.nSmearToy*=2){
+      for(; category.nSmearToy <= nSmearToyLim && stdDev> stdDevLim; category.nSmearToy*=2){
 	double  sum=0, sum2=0;
 	TStopwatch cl;
 	cl.Start();
