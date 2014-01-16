@@ -41,10 +41,6 @@ cd $CMSSW_BASE/src
 echo "[STATUS] Download of the skims"
 # last WSkim version
 git-cms-addpkg DataFormats/EgammaCandidates  #>> setup.log || exit 1
-git clone https://github.com/cms-cvs-history/DPGAnalysis-Skims DPGAnalysis/Skims  >> setup.log || exit 1
-cd DPGAnalysis/Skims/
-git checkout DPGAnalysis-Skims-V01-00-07  >> setup.log || exit 1
-cd -
 
 #########################################################################################
 echo "[STATUS] Patch GsfElectrons for ECALELF rereco"
@@ -92,6 +88,11 @@ cd $CMSSW_BASE/src
 # - Last stable pattuple code:
 case $CMSSW_VERSION in
     CMSSW_5_*)
+	git clone https://github.com/cms-cvs-history/DPGAnalysis-Skims DPGAnalysis/Skims  >> setup.log || exit 1
+	cd DPGAnalysis/Skims/
+	git checkout DPGAnalysis-Skims-V01-00-07  >> setup.log || exit 1
+	cd -
+
 	#addpkg  PhysicsTools/PatAlgos V08-10-05 >> setup.log
 ###### - Electron regression 5_3_X
 	git clone https://github.com/cms-cvs-history/DataFormats-PatCandidates DataFormats/PatCandidates >> setup.log || exit 1
@@ -163,47 +164,47 @@ case $CMSSW_VERSION in
     CMSSW_7_*)
 	#addpkg  PhysicsTools/PatAlgos V08-10-05 >> setup.log
 ###### - Electron regression 5_3_X
-	git clone https://github.com/cms-cvs-history/DataFormats-PatCandidates DataFormats/PatCandidates >> setup.log || exit 1
-        cd DataFormats/PatCandidates >> setup.log || exit 1
-        git checkout DataFormats-PatCandidates-V06-05-06-10 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/PhysicsTools-PatAlgos PhysicsTools/PatAlgos  >> setup.log || exit 1
-        cd PhysicsTools/PatAlgos >> setup.log || exit 1
-        git checkout PhysicsTools-PatAlgos-V08-09-56 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/PhysicsTools-PatUtils PhysicsTools/PatUtils  >> setup.log || exit 1
-        cd PhysicsTools/PatUtils >> setup.log || exit 1
-        git checkout PhysicsTools-PatUtils-V03-09-28 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/DataFormats-CaloRecHit DataFormats/CaloRecHit  >> setup.log || exit 1
-        cd DataFormats/CaloRecHit >> setup.log || exit 1
-        git checkout DataFormats-CaloRecHit-V02-05-11 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/DataFormats-StdDictionaries DataFormats/StdDictionaries  >> setup.log || exit 1
-        cd DataFormats/StdDictionaries >> setup.log || exit 1
-        git checkout DataFormats-StdDictionaries-V00-02-14 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/FWCore-GuiBrowsers FWCore/GuiBrowsers  >> setup.log || exit 1
-        cd FWCore/GuiBrowsers >> setup.log || exit 1
-        git checkout FWCore-GuiBrowsers-V00-00-70 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/RecoMET-METProducers RecoMET/METProducers  >> setup.log || exit 1
-        cd RecoMET/METProducers >> setup.log || exit 1
-        git checkout RecoMET-METProducers-V03-03-12-02 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	git clone https://github.com/cms-cvs-history/RecoEgamma-EgammaTools RecoEgamma/EgammaTools  >> setup.log || exit 1
-        cd RecoEgamma/EgammaTools >> setup.log || exit 1
-        git checkout RecoEgamma-EgammaTools-V09-00-01 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-        git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools >> setup.log || exit 1
-        cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
-	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
-        cd - >> setup.log || exit 1
-	patch -p0 < $myDir/ALCARAW_RECO/test/electronRegression.patch >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/DataFormats-PatCandidates DataFormats/PatCandidates >> setup.log || exit 1
+#        cd DataFormats/PatCandidates >> setup.log || exit 1
+#        git checkout DataFormats-PatCandidates-V06-05-06-10 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/PhysicsTools-PatAlgos PhysicsTools/PatAlgos  >> setup.log || exit 1
+#        cd PhysicsTools/PatAlgos >> setup.log || exit 1
+#        git checkout PhysicsTools-PatAlgos-V08-09-56 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/PhysicsTools-PatUtils PhysicsTools/PatUtils  >> setup.log || exit 1
+#        cd PhysicsTools/PatUtils >> setup.log || exit 1
+#        git checkout PhysicsTools-PatUtils-V03-09-28 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/DataFormats-CaloRecHit DataFormats/CaloRecHit  >> setup.log || exit 1
+#        cd DataFormats/CaloRecHit >> setup.log || exit 1
+#        git checkout DataFormats-CaloRecHit-V02-05-11 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/DataFormats-StdDictionaries DataFormats/StdDictionaries  >> setup.log || exit 1
+#        cd DataFormats/StdDictionaries >> setup.log || exit 1
+#        git checkout DataFormats-StdDictionaries-V00-02-14 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/FWCore-GuiBrowsers FWCore/GuiBrowsers  >> setup.log || exit 1
+#        cd FWCore/GuiBrowsers >> setup.log || exit 1
+#        git checkout FWCore-GuiBrowsers-V00-00-70 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/RecoMET-METProducers RecoMET/METProducers  >> setup.log || exit 1
+#        cd RecoMET/METProducers >> setup.log || exit 1
+#        git checkout RecoMET-METProducers-V03-03-12-02 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	git clone https://github.com/cms-cvs-history/RecoEgamma-EgammaTools RecoEgamma/EgammaTools  >> setup.log || exit 1
+#        cd RecoEgamma/EgammaTools >> setup.log || exit 1
+#        git checkout RecoEgamma-EgammaTools-V09-00-01 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#        git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools >> setup.log || exit 1
+#        cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
+#	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
+#        cd - >> setup.log || exit 1
+#	patch -p0 < $myDir/ALCARAW_RECO/test/electronRegression.patch >> setup.log || exit 1
 
-	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
-	cat download.url | xargs wget  >> setup.log || exit 1
-	cd - >> setup.log || exit 1
+#	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
+#	cat download.url | xargs wget  >> setup.log || exit 1
+#	cd - >> setup.log || exit 1
 
 ###### New Josh regression
 	mkdir HiggsAnalysis/
