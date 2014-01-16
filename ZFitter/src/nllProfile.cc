@@ -611,7 +611,7 @@ bool stopFindMin1D(Int_t i, Int_t iLocMin, Double_t chi2, Double_t min, Double_t
 }
 
 Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t min, RooSmearer& smearer, bool update=true, Double_t *Y=NULL, RooRealVar *var2=NULL, Double_t *X2=NULL){
-  Double_t vInit=var->getVal();
+  //Double_t vInit=var->getVal();
   var->setVal(X[iMinStart]);
   float phiMin=1;
   if(var2!=NULL){ 
@@ -624,7 +624,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
   }
   if(Y==NULL) exit(1);
 
-  Double_t chi2, chi2init=smearer.evaluate(), chi2old=chi2init; 
+  Double_t chi2, chi2init=smearer.evaluate(); //, chi2old=chi2init; 
 
   Double_t locmin=1e20;
   Int_t iLocMin=iMinStart;
@@ -649,7 +649,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
     }
       
     if(stopFindMin1D(i,iLocMin, chi2, min, locmin, phiMin)) break;
-    chi2old=chi2;
+    //chi2old=chi2;
     if(i==iLocMin && i-iMinStart==3 && Y[iMinStart]==Y[iMinStart+1] && Y[iMinStart]==Y[iMinStart+2] && Y[iMinStart]==Y[iMinStart+3]){
       std::cerr << "[WARNING] No sensitivity to variable: " << var->GetName() << std::endl;
       std::cerr << "          Variable changed to constant" << std::endl;
@@ -683,7 +683,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
     } 
 
     if(stopFindMin1D(i,iLocMin, chi2, min, locmin, phiMin)) break;
-    chi2old=chi2;
+    //chi2old=chi2;
   }
 
   if(Y!=NULL){  //take the mean!
@@ -870,7 +870,8 @@ bool MinProfile2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int i
     Int_t iBin1max= std::min(iBin1+6,G1->GetN());
     Int_t iBin2max= std::min(iBin2+6,G1->GetN());
     
-    Int_t iBin1_ = iBin1, iBin2_=iBin2, iBinM=(int)(sqrt(iBin1*iBin1+iBin2*iBin2));
+    //Int_t iBin1_ = iBin1, iBin2_=iBin2, 
+    Int_t iBinM=(int)(sqrt(iBin1*iBin1+iBin2*iBin2));
     
     iBin1min=0;
     iBin1max=G1->GetN();

@@ -741,7 +741,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
   AutoNBins(category);
   return;
   //  category.nSmearToy=std::max(NSMEARTOYLIM*2,200);
-  Long64_t catSize=category.mc_events->size();
+  //Long64_t catSize=category.mc_events->size();
 //   if(catSize<3000){ 
 //     category.nBins=40;
 //     ResetBinning(category);
@@ -758,14 +758,15 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
 
   //------------------------------ rescale mc histograms 
   double stdDev=10, stdDevLim=0.3;
-  double min=10; int nBin_min=0;
+  double min=10; //int nBin_min=0;
   int n=0;
   unsigned int nSmearToyLim=1000;
   category.nLLtoy=1;
   for(int iBin=160; iBin>120; iBin/=2){
     //category.nBins= iBin;
     //ResetBinning(category);
-    TH1F *data = GetSmearedHisto(category, false, _isDataSmeared, false, false); ///-----> not need to repeate!
+    //TH1F *data = GetSmearedHisto(category, false, _isDataSmeared, false, false); ///-----> not need to repeate!
+    GetSmearedHisto(category, false, _isDataSmeared, false, false); ///-----> not need to repeate!
 
     for(category.nLLtoy=1; category.nLLtoy < 2; category.nLLtoy+=2){
       for(; category.nSmearToy <= nSmearToyLim && stdDev> stdDevLim; category.nSmearToy*=2){
@@ -784,7 +785,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
 	stdDev= sqrt(sum2 - sum*sum);
 	if(stdDev/sum < min) {
 	  min=stdDev/sum; 
-	  nBin_min=category.nBins;
+	  //nBin_min=category.nBins;
 	}
 
 	

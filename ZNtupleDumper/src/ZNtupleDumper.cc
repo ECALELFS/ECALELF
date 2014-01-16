@@ -403,10 +403,10 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
   metTAG(iConfig.getParameter<edm::InputTag>("metCollection")),
   triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
+  hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
   foutName(iConfig.getParameter<std::string>("foutName")),
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
-  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
-  hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths"))
+  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree"))
 			    //  r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 			    //puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
 			    //puWeights()

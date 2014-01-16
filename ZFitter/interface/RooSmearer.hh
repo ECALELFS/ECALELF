@@ -1,6 +1,8 @@
 #ifndef roosmearer_hh
 #define roosmearer_hh
 
+#include <iomanip>
+
 #include <TChain.h>
 #include <TH1F.h>
 #include <TString.h>
@@ -173,7 +175,6 @@ public:
   inline RooDataSet *GetDataSet(void){
     return dataset;
   }
-  RooDataSet *dataset;
 private:
   TChain *_data_chain, *_signal_chain;
   SmearingImporter importer;
@@ -212,6 +213,7 @@ public:
   bool _autoBin;
   bool _autoNsmear;
   bool smearscan;
+  RooDataSet *dataset;
 
   RooStats::MarkovChain _markov;
 private:
