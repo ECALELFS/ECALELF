@@ -144,9 +144,18 @@ if [ -n "${TUTORIAL}" ];then
     case $DATASETPATH in
 	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO)
 	    ;;
+	/DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO)
+	    ;;
+	/DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO)
+	    ;;
+	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO)
+	    ;;
 	*)
-	    echo "[ERROR] With the tutorial mode, the only permitted datasetpath is:"
+	    echo "[ERROR] With the tutorial mode, the only permitted datasetpaths are:"
 	    echo "        /DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO"
+	    echo "        /DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO"
+	    echo "        /DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO"
+	    echo "        /DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO"
 	    echo "        Be sure to have it in alcaraw_datasets.dat and to have selected it using the parseDatasetFile.sh"
 	    exit 1
 	    ;;
