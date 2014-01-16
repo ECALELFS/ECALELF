@@ -209,9 +209,8 @@ case $CMSSW_VERSION in
 ###### New Josh regression
 	mkdir HiggsAnalysis/
 	cd HiggsAnalysis/
-	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihood.git 
-#	git clone -b CMSSW53X git@github.com:bendavid/GBRLikelihood.git
-	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
+	git clone https://github.com/bendavid/GBRLikelihood.git 
+	git clone https://github.com/bendavid/GBRLikelihoodEGTools.git
 	cd -
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
