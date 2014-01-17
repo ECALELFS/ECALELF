@@ -47,6 +47,11 @@ options.register('doTreeOnly',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
+options.register('pdfSyst',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "bool: pdfSyst=1 true, pdfSyst=0 false")
                  
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
@@ -172,7 +177,8 @@ process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
-
+# pdfSystematics
+process.load('Calibration.ALCARAW_RECO.pdfSystematics_cff')
 
 #process.MessageLogger.cerr.FwkReport.reportEvery = 500
 process.MessageLogger.cerr = cms.untracked.PSet(
@@ -419,7 +425,11 @@ if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree
 if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
 
-
+if(MC and pdfSyst==1):
+    process.pdfWeightsSeq = cms.Sequence(process.pdfWeights)
+else:
+    process.pdfWeightsSeq = cms.Sequence()
+    
 ############################################################
 # OUTPUT MODULES
 ##############################
@@ -518,7 +528,7 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process
                                                    process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalElectron)
 
-process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
+process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.pdfWeightsSeq * process.ntupleSeq)
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)

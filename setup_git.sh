@@ -159,6 +159,11 @@ case $CMSSW_VERSION in
 
 	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root $myDir/EleNewEnergiesProducer/data/ >> setup.log || exit 1
 
+	# for pdfSystematics
+	scram setup lhapdffull
+	eval `scramv1 runtime -sh`
+	git-cms-addpkg ElectroWeakAnalysis/Utilities
+	scram b -j16
 
 	;;
     CMSSW_7_*)
