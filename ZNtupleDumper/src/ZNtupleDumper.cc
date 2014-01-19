@@ -181,6 +181,8 @@ private:
   
   bool doExtraCalibTree;
   bool doEleIDTree;
+
+
   //TString r9weightsFilename;
   //std::string puWeightFile;
   //  puWeights_class puWeights;
@@ -341,6 +343,19 @@ private:
   Float_t eleIDloose[2], eleIDmedium[2], eleIDtight[2];
   //==============================
 
+  //==============================  
+  TTree *pdfSystTree;
+  Float_t pdfSystWeight1[50];
+  Float_t pdfSystWeight2[50];
+  Float_t pdfSystWeight3[50];
+  Float_t pdfSystWeight4[50];
+
+  // pdfWeightTree
+  bool doPdfSystTree;
+  std::vector< edm::InputTag > pdfWeightTAGS;
+  edm::Handle< std::vector<double> > pdfWeightHandle;
+  
+  //==============================
 private:
   TFile *tree_file;
   void InitNewTree(void);
@@ -406,7 +421,9 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
   foutName(iConfig.getParameter<std::string>("foutName")),
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
-  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree"))
+  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
+  doPdfSystTree(iConfig.getParameter<bool>("doPdfSystTree")),
+  pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections"))
 			    //  r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 			    //puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
 			    //puWeights()
@@ -477,6 +494,19 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(metTAG, metHandle); 
   //if(metHandle.isValid()==false) iEvent.getByType(metHandle);
   reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
+
+
+  TreeSetPdfSystVar(iEvent, pdfWeightTag, pdfWeightHandle);
+  
+  iEvent.getByLabel(pdfWeightTag, pdfWeightHandle);
+
+  std::vector<double> weights = (*pdfWeightHandle);
+  std::cout << "Event weight for central PDF:" << weights[0] << std::endl;
+  unsigned int nmembers = weights.size();
+  for (unsigned int j=1; j<nmembers; j+=2) {
+    std::cout << "Event weight for PDF variation +" << (j+1)/2 << ": " << weights[j] << std::endl;
+    std::cout << "Event weight for PDF variation -" << (j+1)/2 << ": " << weights[j+1] << std::endl;
+  }
 
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
@@ -1394,7 +1424,33 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
   return;
 }
 
+//#============================== Ele ID tree
+void ZNtupleDumper::InitPdfSystTree(void){
+  
+  //  tree = new TTree("selected",fChain->GetTitle());
+  std::cout << "[STATUS] InitPdfSystTree" << std::endl;
+  if(pdfSystTree==NULL) return;
+  
+  pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+  pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+  pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+  pdfSystTree->Branch("runTime",       &runTime,         "runTime/l");
+  
+  for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
+      pdfWeightTAGS_itr != pdfWeightTAGS.end();
+      pdfWeightTAGS_itr++){
+    std::string tagName = pdfWeightTAGS_itr;
+    tagName.replace(pdfWeightTAGS_itr->label.size()
+    pdfSystTree->Branch("pdfSystWeight1", pdfSystWeight1, "pdfSystWeight[2]/F");
+    pdfSystTree->Branch("pdfSystWeight1", pdfSystWeight1, "pdfSystWeight[2]/F");
+  return;
+}
 
+ void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent){
+   
+
+   return ;
+ }
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ZNtupleDumper);
