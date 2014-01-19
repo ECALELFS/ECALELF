@@ -425,11 +425,11 @@ if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree
 if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
 
-if(MC and pdfSyst==1):
+if(MC and options.pdfSyst==1):
     process.pdfWeightsSeq = cms.Sequence(process.pdfWeights)
 else:
     process.pdfWeightsSeq = cms.Sequence()
-    
+
 ############################################################
 # OUTPUT MODULES
 ##############################
@@ -662,6 +662,19 @@ process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile = pathPrefix+process.
 process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile.value()
 process.eleNewEnergiesProducer.regrPhoJoshV4_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV4_SemiParamFile.value()
 process.eleNewEnergiesProducer.regrPhoJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV5_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV6_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV6_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV7_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV7_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParamFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV6_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV6_SemiParam7TeVtrainFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParam7TeVtrainFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV7_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV7_SemiParam7TeVtrainFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParam7TeVtrainFile.value()
+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParam7TeVtrainFile.value()
+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile.value()
+
 
 #    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
 process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)
