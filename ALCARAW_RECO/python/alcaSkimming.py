@@ -487,7 +487,12 @@ process.outputRECO = cms.OutputModule("PoolOutputModule",
 
 #print "OUTPUTCOMMANDS"
 #print process.outputALCARECO.outputCommands
-
+if(pdfSyst==1):
+    process.TFileService = cms.Service("TFileService",
+                                       fileName = cms.string("ntupleExtra.root"),
+                                       closeFileFast = cms.untracked.bool(True)
+                                       )
+ 
 
 
 ##############################################################
