@@ -23,6 +23,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _excludeByWeight(true),
   _onlyDiagonal(false),
   _isSmearingEt(false),
+  _pdfWeightIndex(0),
   cutter(false)
 {
   cutter.energyBranchName=energyBranchName;
@@ -119,6 +120,10 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   if(chain->GetBranch("pdfWeights_cteq66")){
     std::cout << "[STATUS] Adding pdfWeight_ctec66 branch from friend" << std::endl;
     chain->SetBranchAddress("pdfWeights_cteq66", &pdfWeights);
+    if((unsigned int) _pdfWeightIndex > pdfWeights->size()){
+      std::cerr << "[ERROR] Requested pdfWeightIndex > pdfWeight size" << std::endl;
+      exit(1);
+    }
   }
 
   chain->SetBranchAddress("etaEle", etaEle);
@@ -298,6 +303,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
+    if(_pdfWeightIndex>0)  event.weight *= (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
     if(mcGenWeight != -1){
       if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
 
