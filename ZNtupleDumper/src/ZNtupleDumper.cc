@@ -1449,7 +1449,7 @@ void ZNtupleDumper::InitPdfSystTree(void){
     //tagName.replace(0,pdfWeightTAGS_itr->label().size());
     //std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
     //pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
-    pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]), (pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()+"/D").c_str());
+    pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
   }
   return;
 }
@@ -1465,7 +1465,7 @@ void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent){
     //pdfSystWeight[i] = 
     std::vector<Double_t> weights = std::vector<Double_t>(*pdfWeightHandle);
     pdfSystWeight[i]=weights;
-    std::cout << "Event weight for central PDF " << pdfWeightTAGS_itr->encode() << ": " << pdfSystWeight[i][0] << std::endl;
+    //std::cout << "Event weight for central PDF " << pdfWeightTAGS_itr->encode() << ": " << pdfSystWeight[i][0] << std::endl;
     //unsigned int nmembers = weights.size();
        //pdfSystWeightNum[i]=pdfSystWeight.size();
 //    for (unsigned int j=1; j<nmembers; j+=2) {

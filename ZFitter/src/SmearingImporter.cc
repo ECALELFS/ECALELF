@@ -89,6 +89,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Float_t         r9weight[2]={1,1};
   Float_t         ptweight[2]={1,1};
   Float_t         mcGenWeight=1;
+  std::vector<double> *pdfWeights = NULL;
+
   Int_t           smearerCat[2];
   bool hasSmearerCat=false;
 
@@ -112,6 +114,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
       chain->SetBranchAddress("smearEle", smearEle_);
     } 
+  }
+
+  if(chain->GetBranch("pdfWeights_cteq66")){
+    std::cout << "[STATUS] Adding pdfWeight_ctec66 branch from friend" << std::endl;
+    chain->SetBranchAddress("pdfWeights_cteq66", &pdfWeights);
   }
 
   chain->SetBranchAddress("etaEle", etaEle);
