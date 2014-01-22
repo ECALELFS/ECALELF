@@ -20,13 +20,19 @@ Download instructions.
 
 `cd Calibration/ZFitter && make && cd -`
 
+If you are using a tcsh shell:
+`cd Calibration && source initCmsEnv.csh`
+
+If you are using a bash shell:
+`cd Calibration && source initCmsEnv.sh`
+
 ======
 Code documentation:
 Once downloaded the code, in Calibration/ you can run the command
 
 `doxygen fulldoc`
 
-to have the code documentation produced by doxygen opening the doc/doxygen/fulldoc/html/index.html with your browser 
+to have the code documentation produced by doxygen opening the `doc/doxygen/fulldoc/html/index.html` with your browser 
 
 
 ======
