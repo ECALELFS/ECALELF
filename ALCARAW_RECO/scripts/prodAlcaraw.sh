@@ -224,7 +224,7 @@ index=001
 
 cat > ${crabFile} <<EOF
 [CRAB]
-use_server = ${USESERVER}
+#use_server = ${USESERVER}
 jobtype = cmssw
 scheduler = ${SCHEDULER}
 

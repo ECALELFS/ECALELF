@@ -6,7 +6,7 @@ source $CMSSW_BASE/src/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
 SKIM=none
 USEPARENT=0
 SCHEDULER=caf
-USESERVER=0
+USESERVER=1
 TYPE=ALCARECO
 LUMIS_PER_JOBS=200  # 4000 for ZSkim events is good, WSkim events /=4, SingleElectron /=10
 EVENTS_PER_JOB=50000
@@ -35,6 +35,7 @@ usage(){
     echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
+    echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
 }
 
 
@@ -42,7 +43,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,tutorial -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,tutorial,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -70,7 +71,7 @@ do
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
         --tutorial)   echo "[OPTION] Activating the tutorial mode"; TUTORIAL=y;;
-
+	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
     (*) break;;
@@ -188,7 +189,7 @@ fi
 #==============================
 cat > ${crabFile} <<EOF
 [CRAB]
-use_server = $USESERVER
+#use_server = $USESERVER
 jobtype = cmssw
 scheduler = $SCHEDULER
 
@@ -221,6 +222,11 @@ lumis_per_job=${LUMIS_PER_JOBS}
 EOF
 fi
 
+if [ -n "${DEVEL_RELEASE}" ]; then
+cat >> tmp/alcareco.cfg <<EOF
+allow_NonProductionCMSSW = 1
+EOF
+fi
 
 ###
 cat >> tmp/alcareco.cfg <<EOF

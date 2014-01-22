@@ -293,7 +293,7 @@ cat > tmp/crab.cfg <<EOF
 [CRAB]
 scheduler=$SCHEDULER
 jobtype=cmssw
-use_server=$USESERVER
+#use_server=$USESERVER
 
 [CMSSW]
 EOF
