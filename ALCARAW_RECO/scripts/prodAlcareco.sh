@@ -32,7 +32,7 @@ usage(){
     echo "    --submitOnly"
     echo "    --check"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
-    echo "    --json jsonFile.root"
+    echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
 }
@@ -42,7 +42,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name: -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,tutorial -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -69,6 +69,8 @@ do
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
+        --tutorial)   echo "[OPTION] Activating the tutorial mode"; TUTORIAL=y;;
+
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
     (*) break;;
@@ -113,6 +115,25 @@ else
     echo "[INFO] USER_REMOTE_DIR_BASE=${USER_REMOTE_DIR_BASE}"
 fi
 
+
+if [ -n "${TUTORIAL}" ];then
+    case $DATASETPATH in
+	/RelVal*)
+	    ;;
+	*)
+	    echo "[ERROR] With the tutorial mode, the only permitted datasetpath is:"
+	    echo "        /RelVal*"
+	    echo "        Be sure to have it in alcareco_datasets.dat and to have selected it using the parseDatasetFile.sh"
+	    exit 1
+	    ;;
+    esac
+    USER_REMOTE_DIR_BASE=${USER_REMOTE_DIR_BASE}/tutorial/$USER
+    echo "============================================================"
+    echo "= [INFO] With the tutorial mode, the output goes into the directory:"
+    echo "=       ${USER_REMOTE_DIR_BASE}"
+    echo "= --> Please, remember to remove it after the tests (ask to shervin@cern.ch)"
+    /bin/sleep 5s
+fi
 
 ###############################
 
