@@ -4,6 +4,11 @@ ECALELF
 Code for electron calibration in CMS
 Testing
 
+======
+Preliminary instructions: GitHub account
+Be sure to have a GitHub account and have followed the instructions here:
+`http://cms-sw.github.io/cmssw/faq.html#how_do_i_subscribe_to_github`
+
 
 ======
 Download instructions.
