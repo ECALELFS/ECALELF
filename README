@@ -2,6 +2,8 @@
 * \mainpage 
 * Introduction: \ref page1
 *
+* \ref page2
+*
 * Working with ntuples: \ref page4
 *
 * Instructions for ECAL validator (rereco + ntuple production): \ref page5 

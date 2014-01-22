@@ -1,10 +1,10 @@
 /**
-* \page page4 Instruction for ALCARAW and ALCARECO production
-* \verbatim
+* \page page2 Instructions for ALCARAW and ALCARECO production
+* \verbatim 
 #============================== ALCARECO and ALCARAW production instructions
 Steps for the production using the CERN batch system (launch from lxplus):
 
-0) Check that there are no updates in the repository:
+0) Check that there are no updates in the repository: 
    git pull # this will merge automatically the updates in the master branch
 
 
@@ -32,7 +32,6 @@ For the detailed content of alcaraw format consult the Calibration/doc/alcaraw.d
 
 4) Commit the changes to alcaraw_datasets.dat!
    svn ci -m "message" 
-
 
 #### ALCARECO private production
 1) Fill the alcareco_datasets.dat with the information of the desired run range
@@ -142,3 +141,5 @@ N.B: max(run.run_number) has to be always greater than the last run in JSON
 Then, copy and past the last updated line from the
 alcaraw_datasets.dat and change the run range accordingly
 
+\endverbatim
+*/
