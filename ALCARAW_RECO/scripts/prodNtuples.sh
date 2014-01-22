@@ -37,6 +37,7 @@ usage(){
     echo "---------- optional common"
     echo "    --doExtraCalibTree"
     echo "    --doEleIDTree"
+    echo "    --doPdfSystTree"
     echo "    --noStandardTree"
     echo "    --createOnly"
     echo "    --submitOnly"
@@ -65,7 +66,7 @@ expertUsage(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,file_per_job: -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -136,6 +137,7 @@ do
 	--extraName) EXTRANAME=$2;shift;;
 	--doExtraCalibTree) let DOTREE=${DOTREE}+2;;
 	--doEleIDTree) let DOTREE=${DOTREE}+4;;
+	--doPdfSystTree) let DOTREE=${DOTREE}+8;;
 	--noStandardTree) let DOTREE=${DOTREE}-1;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
@@ -319,7 +321,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=1 jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES}
 get_edm_output=1
 output_file=${OUTFILES}
 
