@@ -3,6 +3,10 @@
 checkVERSION(){
     case $CMSSW_VERSION in
 	CMSSW_5_3_7_patch6)
+	    echo "[ERROR] $CMSSW_VERSION now deprecated, please use the CMSSW_5_3_14_patch2"
+	    exit 1
+	    ;;
+	CMSSW_5_3_14_patch2)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
 	CMSSW_7_0_0_*)
@@ -22,7 +26,7 @@ case $# in
 	echo "[STATUS] Creating $1 CMSSW release working area"
 	CMSSW_VERSION=$1
 	checkVERSION 
-	scram project CMSSW ${CMSSW_VERSION}
+	scram project CMSSW ${CMSSW_VERSION} || exit 1
 	cd ${CMSSW_VERSION}/src
 	eval `scramv1 runtime -sh`
 	;;
@@ -139,9 +143,8 @@ case $CMSSW_VERSION in
 ###### New Josh regression
 	mkdir HiggsAnalysis/
 	cd HiggsAnalysis/
-	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihood.git 
-#	git clone -b CMSSW53X git@github.com:bendavid/GBRLikelihood.git
-	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
+	git clone https://github.com/bendavid/GBRLikelihood.git 
+	git clone https://github.com/bendavid/GBRLikelihoodEGTools.git
 	cd -
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
