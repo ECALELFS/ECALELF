@@ -98,16 +98,7 @@ recalibration step, the 1-3a) steps can be replaced by
 #performed just once.
 
 
-============================== Code download and setup area (for bash shell)
-The recommended release for 2012 data is the 5_3_7_patch5
-The recommended release for 2011 data is 4_2_8_patch7
-
-if you have not the release area:
-svn export svn+ssh://svn.cern.ch/reps/analysis/trunk/calibration/setup.sh
-./setup.sh CMSSW_5_3_7_patch5
-cd CMSSW_5_3_7_patch5/src/
-cmsenv
-
+============================== 
 
 Instructions for ALCARAW and/or ALCARECO production are in 
 calibration/ALCARAW_RECO/doc/README

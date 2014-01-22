@@ -1,3 +1,6 @@
+/**
+* \page page4 Instruction for ALCARAW and ALCARECO production
+* \verbatim
 #============================== ALCARECO and ALCARAW production instructions
 Steps for the production using the CERN batch system (launch from lxplus):
 
