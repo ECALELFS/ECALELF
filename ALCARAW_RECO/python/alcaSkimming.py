@@ -143,15 +143,6 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
 from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
-#Define the sequences
-#
-# particle flow isolation
-#
-process.pfIsoEgamma = cms.Sequence()
-if(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
-    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
-    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
@@ -304,10 +295,25 @@ else:
             process.GlobalTag.globaltag = 'START61_V11::All'
         else:
             process.GlobalTag.globaltag = 'GR_P_V42B::All' # 5_3_3 Prompt
-
+    elif(re.match("CMSSW_7_0_.*",CMSSW_VERSION)):
+        if(MC):
+            print "[INFO] Using GT POSTLS162_V5::All"
+            process.GlobalTag.globaltag = 'POSTLS162_V5::All'
+        else:
+            print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
     
+
+#Define the sequences
+#
+# particle flow isolation
+#
+process.pfIsoEgamma = cms.Sequence()
+if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
+    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 
 ###############################
 # Event filter sequence: process.filterSeq
