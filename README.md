@@ -31,6 +31,12 @@ If you are using a tcsh shell:
 If you are using a bash shell:
 `cd Calibration && source initCmsEnv.sh`
 
+Every time you enter in a new shell you have to do:
+`source initCmsEnv.csh`
+or
+`source initCmsEnv.sh`
+
+
 ======
 Code documentation:
 Once downloaded the code, in Calibration/ you can run the command
