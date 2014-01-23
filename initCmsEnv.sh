@@ -10,5 +10,5 @@ voms-proxy-init -voms cms -out $HOME/gpi.out
 #PATH=`echo $PATH | sed 's|/afs/cern.ch/project/eos/installation/pro/bin/||'`
 
 PATH=$PATH:/afs/cern.ch/project/eos/installation/pro/bin/
-PATH=$PATH:$CMSSW_BASE/Calibration/ALCARAW_RECO/bin
+PATH=$PATH:$CMSSW_BASE/src/Calibration/ALCARAW_RECO/bin
 
