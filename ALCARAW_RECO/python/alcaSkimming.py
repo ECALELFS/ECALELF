@@ -13,7 +13,7 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
 options.register('isCrab',
-                 '0', # default Value = true
+                 '1', # default Value = true
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "change files path in case of local test")
@@ -646,7 +646,7 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-if(options.isCrab):
+if(options.isCrab==1):
     pathPrefix=""
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
