@@ -272,7 +272,7 @@ fi
 crabFile=tmp/alcarereco.cfg
 cat > $crabFile <<EOF
 [CRAB]
-use_server = 0
+#use_server = 0
 jobtype = cmssw
 scheduler = $SCHEDULER
 
