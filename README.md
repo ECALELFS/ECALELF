@@ -13,7 +13,7 @@ Be sure to have a GitHub account and have followed the instructions here:
 ======
 Download instructions.
 
-`wget https://raw.github.com/ECALELFS/ECALELF/master/setup_git.sh`
+`wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/master/setup_git.sh`
 
 `chmod +x setup_git.sh`
 
