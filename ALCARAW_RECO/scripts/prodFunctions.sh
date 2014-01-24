@@ -1,3 +1,26 @@
+checkInitECALELF(){
+    if [ -z "$ECALELFINIT" ];then
+	echo "[ERROR] ECALELF not initialized: execute the following command" >> /dev/stderr
+	case $SHELL in
+	    *bash)
+		echo "source $CMSSW_BASE/src/Calibration/initCmsEnv.sh">> /dev/stderr
+		;;
+	    *csh)
+		echo "source $CMSSW_BASE/src/Calibration/initCmsEnv.csh">> /dev/stderr
+		;;
+	    *)
+		echo "if you use a bash-like shell:">> /dev/stderr
+		echo "source $CMSSW_BASE/src/Calibration/initCmsEnv.sh">> /dev/stderr
+		echo "if you use a csh-like shell:">> /dev/stderr
+		echo "source $CMSSW_BASE/src/Calibration/initCmsEnv.csh" >> /dev/stderr
+		;;
+	esac
+	exit 1
+    fi
+}
+
+checkInitECALELF
+
 setStoragePath(){
     #$1 = storage_element
     #$2 = scheduler
