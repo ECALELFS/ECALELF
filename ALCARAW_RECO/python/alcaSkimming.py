@@ -669,7 +669,7 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 if(options.isCrab==1):
     pathPrefix=""
 else:
-    pathPrefix=CMSSW_BASE+'/src/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
+    pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
     print "[INFO] Running locally: pathPrefix="+pathPrefix
 
 process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
