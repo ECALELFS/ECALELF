@@ -165,7 +165,6 @@ process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer
 
 
 
-#process.MessageLogger.cerr.FwkReport.reportEvery = 500
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
     INFO = cms.untracked.PSet(
@@ -195,7 +194,9 @@ process.MessageLogger.cerr = cms.untracked.PSet(
     ),
     threshold = cms.untracked.string('INFO')
     )
- 
+if(options.isCrab==0):
+    process.MessageLogger.cerr.FwkReport.reportEvery = 1
+
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents)
 )
@@ -314,6 +315,25 @@ if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("C
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
     process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
+elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+    # getting the ptrs
+    from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
+    process.pfIsoEgamma*=particleFlowPtrs
+    process.load('CommonTools.ParticleFlow.pfNoPileUpIso_cff')
+    process.pfPileUp.PFCandidates = 'particleFlowPtrs'
+    process.pfNoPileUp.bottomCollection = 'particleFlowPtrs'
+    process.pfPileUpIso.PFCandidates = 'particleFlowPtrs'
+    process.pfNoPileUpIso.bottomCollection='particleFlowPtrs'
+    process.pfPileUpJME.PFCandidates = 'particleFlowPtrs'
+    process.pfNoPileUpJME.bottomCollection='particleFlowPtrs'
+
+    #    process.load('RecoParticleFlow/Configuration/python/RecoParticleFlow_cff') #CommonTools.ParticleFlow.PFBRECO_cff')
+    process.pfIsoEgamma*= process.pfNoPileUpSequence * process.pfNoPileUpIsoSequence
+    process.load('CommonTools.ParticleFlow.ParticleSelectors.pfSortByType_cff')
+    process.pfIsoEgamma*=process.pfSortByTypeSequence
+    process.load('RecoEgamma.EgammaElectronProducers.electronPFIsolationDeposits_cff')
+    #pfisoALCARECO = cms.Sequence(eleIsoSequence)
+    process.pfIsoEgamma*= process.electronPFIsolationDepositsSequence #* process.gedElectronPFIsolationDepositsSequence
 
 ###############################
 # Event filter sequence: process.filterSeq
@@ -638,7 +658,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     else:
         process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                         process.pathALCARECOEcalCalZSCElectron,
-                                        process.ALCARECOoutput_step #, process.NtuplePath
+                                        process.ALCARECOoutput_step,  process.NtuplePath
                                         ) # fix the output modules
 
 
@@ -649,7 +669,7 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 if(options.isCrab==1):
     pathPrefix=""
 else:
-    pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
+    pathPrefix=CMSSW_BASE+'/src/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
 
 process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
 process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
