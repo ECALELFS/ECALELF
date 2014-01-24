@@ -76,6 +76,7 @@ ZFit_class::ZFit_class(TChain *data_chain_,
   commonMC(NULL), commonData(NULL), reducedMC(NULL), reducedData(NULL)
 {
   energyVar_name = GetEnergyVarName(invMass_VarName);
+  cutter.energyBranchName=energyBranchName;
 
   /*--------------- imposto il binning */
   //double bin_width=.5;
