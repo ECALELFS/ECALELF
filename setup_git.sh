@@ -199,15 +199,16 @@ case $CMSSW_VERSION in
 #        cd RecoEgamma/EgammaTools >> setup.log || exit 1
 #        git checkout RecoEgamma-EgammaTools-V09-00-01 >> setup.log || exit 1
 #        cd - >> setup.log || exit 1
-#        git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools >> setup.log || exit 1
+	git-cms-addpkg EgammaAnalysis/ElectronTools >> setup.log || exit 1
+#        git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools 
 #        cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
 #	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
 #        cd - >> setup.log || exit 1
 #	patch -p0 < $myDir/ALCARAW_RECO/test/electronRegression.patch >> setup.log || exit 1
 
-#	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
-#	cat download.url | xargs wget  >> setup.log || exit 1
-#	cd - >> setup.log || exit 1
+	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
+	cat download.url | grep '.root' | xargs wget  >> setup.log || exit 1
+	cd - >> setup.log || exit 1
 
 ###### New Josh regression
 	mkdir HiggsAnalysis/
