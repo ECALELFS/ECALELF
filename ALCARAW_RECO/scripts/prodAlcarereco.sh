@@ -283,10 +283,11 @@ queue = cmscaf1nd
 
 
 [CMSSW]
+allow_NonProductionCMSSW = 1
 datasetpath=None
 
 pset=python/alcaSkimming.py
-pycfg_params=output=alcarereco.root type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 jsonFile=${JSONFILE} secondaryOutput=ntuple.root
+pycfg_params=output=alcarereco.root type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1
 
 runselection=${RUNRANGE}
 split_by_run=0
