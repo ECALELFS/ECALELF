@@ -63,7 +63,13 @@ for jobID in `seq 1 $nJobs`
 
   if [ ! -e "$jobReport" ];then
       echo "-> Missing $jobReport"
-      continue;
+      if [ "`grep -c "Exited with exit code 2" $logReport`" != "0" ];then
+	  echo "[INFO] Problem with lxbatch node, resubmitting"
+	  intervals="$intervals $jobID"
+	  continue;
+      else
+	  continue;
+      fi
   fi
 
 
@@ -145,7 +151,9 @@ for jobID in `seq 1 $nJobs`
       50115*50115)
 	  intervals="$intervals $jobID"
 	  ;;
-  
+      50700*50700)
+	  intervals="$intervals $jobID"
+	  ;;
       *)
 	  echo $jobID $ExitCode
 	  
