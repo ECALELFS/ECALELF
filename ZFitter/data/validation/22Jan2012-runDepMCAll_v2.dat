@@ -35,35 +35,35 @@ s3	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree_s
 ##### Scale correction trees
 #d	scaleEle_HggRunEtaR9	HggRunEtaR9-Winter13-RUNABC.root
 ####################################################
-d1	r9Weight	data/r9weights/r9Weight_d1-22Jan2012-runDepMCAll_v2.root
-d2	r9Weight	data/r9weights/r9Weight_d2-22Jan2012-runDepMCAll_v2.root
-d3	r9Weight	data/r9weights/r9Weight_d3-22Jan2012-runDepMCAll_v2.root
-d4	r9Weight	data/r9weights/r9Weight_d4-22Jan2012-runDepMCAll_v2.root
-s1	r9Weight	data/r9weights/r9Weight_s1-22Jan2012-runDepMCAll_v2.root
-s2	r9Weight	data/r9weights/r9Weight_s2-22Jan2012-runDepMCAll_v2.root
-s3	r9Weight	data/r9weights/r9Weight_s3-22Jan2012-runDepMCAll_v2.root
-#####
-s1	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s1-22Jan2012-runDepMCAll_v2.root
-s2	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s2-22Jan2012-runDepMCAll_v2.root
-s3	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s3-22Jan2012-runDepMCAll_v2.root
-#
-s1	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s1-22Jan2012-runDepMCAll_v2.root
-s2	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s2-22Jan2012-runDepMCAll_v2.root
-s3	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s3-22Jan2012-runDepMCAll_v2.root
-#####
-s1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s1-22Jan2012-runDepMCAll_v2.root
-s2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s2-22Jan2012-runDepMCAll_v2.root
-s3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s3-22Jan2012-runDepMCAll_v2.root
-#
-s1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s1-22Jan2012-runDepMCAll_v2.root
-s2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s2-22Jan2012-runDepMCAll_v2.root
-s3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s3-22Jan2012-runDepMCAll_v2.root
-#
-s1	smearerCat_scaleStep4smearing_0	data/smearerCat/smearerCat_scaleStep4smearing_0_s1-22Jan2012-runDepMCAll_v2.root
-s2	smearerCat_scaleStep4smearing_0	data/smearerCat/smearerCat_scaleStep4smearing_0_s2-22Jan2012-runDepMCAll_v2.root
-s3	smearerCat_scaleStep4smearing_0	data/smearerCat/smearerCat_scaleStep4smearing_0_s3-22Jan2012-runDepMCAll_v2.root
-#####
-s1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s1-22Jan2012-runDepMCAll_v2.root
-s2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s2-22Jan2012-runDepMCAll_v2.root
-s3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s3-22Jan2012-runDepMCAll_v2.root
+#d1	r9Weight	data/r9weights/r9Weight_d1-22Jan2012-runDepMCAll_v2.root
+#d2	r9Weight	data/r9weights/r9Weight_d2-22Jan2012-runDepMCAll_v2.root
+#d3	r9Weight	data/r9weights/r9Weight_d3-22Jan2012-runDepMCAll_v2.root
+#d4	r9Weight	data/r9weights/r9Weight_d4-22Jan2012-runDepMCAll_v2.root
+#s1	r9Weight	data/r9weights/r9Weight_s1-22Jan2012-runDepMCAll_v2.root
+#s2	r9Weight	data/r9weights/r9Weight_s2-22Jan2012-runDepMCAll_v2.root
+#s3	r9Weight	data/r9weights/r9Weight_s3-22Jan2012-runDepMCAll_v2.root
+######
+#s1	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s1-22Jan2012-runDepMCAll_v2.root
+#s2	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s2-22Jan2012-runDepMCAll_v2.root
+#s3	smearerCat_scaleStep2smearing_1	data/smearerCat/smearerCat_scaleStep2smearing_1_s3-22Jan2012-runDepMCAll_v2.root
+##
+#s1	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s1-22Jan2012-runDepMCAll_v2.root
+#s2	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s2-22Jan2012-runDepMCAll_v2.root
+#s3	smearerCat_scaleStep2smearing_2	data/smearerCat/smearerCat_scaleStep2smearing_2_s3-22Jan2012-runDepMCAll_v2.root
+######
+#s1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s1-22Jan2012-runDepMCAll_v2.root
+#s2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s2-22Jan2012-runDepMCAll_v2.root
+#s3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s3-22Jan2012-runDepMCAll_v2.root
+##
+#s1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s1-22Jan2012-runDepMCAll_v2.root
+#s2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s2-22Jan2012-runDepMCAll_v2.root
+#s3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s3-22Jan2012-runDepMCAll_v2.root
+##
+#s1	smearerCat_scaleStep4smearing_0	data/smearerCat/smearerCat_scaleStep4smearing_0_s1-22Jan2012-runDepMCAll_v2.root
+#s2	smearerCat_scaleStep4smearing_0	data/smearerCat/smearerCat_scaleStep4smearing_0_s2-22Jan2012-runDepMCAll_v2.root
+#s3	smearerCat_scaleStep4smearing_0	data/smearerCat/smearerCat_scaleStep4smearing_0_s3-22Jan2012-runDepMCAll_v2.root
+######
+#s1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s1-22Jan2012-runDepMCAll_v2.root
+#s2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s2-22Jan2012-runDepMCAll_v2.root
+#s3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s3-22Jan2012-runDepMCAll_v2.root
 
