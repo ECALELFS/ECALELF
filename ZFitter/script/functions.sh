@@ -106,3 +106,27 @@ mkSmearerCatData(){
 	
 }
 	
+
+
+checkStepDep(){
+    for step in $@
+      do
+      index=0
+      for stepName in ${stepNameList[@]}
+	do
+	if [ "${step}" != "$stepName" ];then
+	    let index=$index+1
+	else
+	    break
+	fi
+      done
+      if [ ! -r "${outDirTable}/${outFileList[$index]}" ];then
+	  echo -e "[ERROR] output file for step $step not found:\n ${outDirTable}/${outFileList[$index]}" >> /dev/stderr
+	  exit 1
+      fi
+      if [ "$index" -ge "${#stepNameList[@]}" ];then
+	  echo "[ERROR] step $step not set in output file list" >> /dev/stderr
+	  exit 1
+      fi
+    done
+} 

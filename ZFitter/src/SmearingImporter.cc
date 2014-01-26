@@ -117,7 +117,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     } 
   }
 
-  if(chain->GetBranch("pdfWeights_cteq66")){
+  if(chain->GetBranch("pdfWeights_cteq66") && _pdfWeightIndex>0){
     std::cout << "[STATUS] Adding pdfWeight_ctec66 branch from friend" << std::endl;
     chain->SetBranchAddress("pdfWeights_cteq66", &pdfWeights);
     if((unsigned int) _pdfWeightIndex > pdfWeights->size()){
