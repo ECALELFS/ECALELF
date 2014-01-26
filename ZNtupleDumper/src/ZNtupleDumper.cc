@@ -566,7 +566,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
       if(doPdfSystTree){
 	TreeSetPdfSystVar(iEvent);
-	pdfSystTree->Fill();
+	//pdfSystTree->Fill();
       }
     } else {
       for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
@@ -596,7 +596,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	}
 	if(doPdfSystTree){
 	  TreeSetPdfSystVar(iEvent);
-	  pdfSystTree->Fill();
+	  //pdfSystTree->Fill();
 	}
       }
     }
@@ -652,7 +652,8 @@ void ZNtupleDumper::beginJob()
   
   if(doPdfSystTree){
     std::cout << "[INFO] Doing pdfSystTree" << std::endl;
-    pdfSystTree = fs->make<TTree>("pdfSystTree","pdfSystTree");
+    //pdfSystTree = fs->make<TTree>("pdfSystTree","pdfSystTree");
+    pdfSystTree=tree;
     InitPdfSystTree();
   }
 
@@ -1435,10 +1436,10 @@ void ZNtupleDumper::InitPdfSystTree(void){
   std::cout << "[STATUS] InitPdfSystTree" << std::endl;
   if(pdfSystTree==NULL) return;
   
-  pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
-  pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-  pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-  pdfSystTree->Branch("runTime",       &runTime,         "runTime/l");
+//   pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+//   pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+//   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/l");
   
 
   for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
