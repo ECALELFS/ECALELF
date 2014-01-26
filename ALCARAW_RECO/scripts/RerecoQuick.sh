@@ -117,11 +117,11 @@ fi
 
 if [ -n "${TUTORIAL}" ];then
     case ${PERIOD} in
-	RUN2012)
+	RUN2012A)
 	    ;;
 	*)
 	    echo "[ERROR] With the tutorial mode, the only permitted period is:"
-	    echo "        RUN2012"
+	    echo "        RUN2012A"
 	    #echo "        Be sure to have it in alcaraw_datasets.dat and to have selected it using the parseDatasetFile.sh"
 	    exit 1
 	    ;;

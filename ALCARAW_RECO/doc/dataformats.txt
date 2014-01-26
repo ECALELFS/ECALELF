@@ -12,7 +12,7 @@ ALCARECO and ALCARAW private production logic.
 
 #### Data formats
  - EcalUncalElectron (ALCARAW): Special data format for rereco purpose
-	- in CMSSW from the 6_2_X release
+	- in CMSSW from the 7_X_X release
 	- no official ALCARAW have been produced so far
         - Actually produced privately starting from RAW-RECO Z and W
           skims 
@@ -22,6 +22,8 @@ ALCARECO and ALCARAW private production logic.
           ECALELF (starting from ALCARAW)  
 	- Now in CMSSW and produced centrally with a ZW skim applied
           (WP90 selection) 
+          -> the ALCARECO format has been updated, the CMSSW version 
+             is deprecated
 	- can be produced also privately starting from RAW-RECO Z and
           W skims 
 
@@ -75,7 +77,7 @@ VALIDITY (only meaningful for ALCARAW):
 	In this way it's not necessary to remove the files from EOS
 	and in the alcaraw_datasets.dat there is always the list of
 	folders and files present on EOS.
-PERIOD: in case of rereco, you want run on more than one line (more
+PERIOD: in case of rereco, you want to run on more than one line (more
 	run ranges). 
 	To make life easier, a comma separated list of
 	"periods" can be associated to the line. In this way, when

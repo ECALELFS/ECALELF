@@ -1,0 +1,21 @@
+
+\begin{itemize}
+  \item Download and compile the code
+  \item Read the alcaraw_alcareco_production.txt file
+  \item Read the dataformats.txt file 
+  \item See options for prodAlcareco.sh
+  \item The jobs are launched using the CRAB tool both for jobs on LSF and on the GRID
+\end{itemize}
+
+\begin{itemize}
+  \item Find the RelVal in DBS: RelValZee 
+    \pause
+    \subitem /RelValZEE_13/CMSSW_7_0_0_pre11-PU50ns_POSTLS162_V5-v1/GEN-SIM-RECO
+  \item Add the line to the alcareco_datsets.dat file
+    \pause
+    \subitem allRange	/RelValZEE_13/CMSSW_7_0_0_pre11-PU50ns_POSTLS162_V5-v1/GEN-SIM-RECO	RelValZEE_CMSSW700pre11_POSTLS162_V5-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+  \item launch the production
+    \subitem cat ~/public/launch-alcareco-tutorial.sh
+
+
+  \item 

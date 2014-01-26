@@ -8,7 +8,11 @@
 
 There are three important directories where the proper .dat files should be put:
  - data/validation/
-
+For the validation, the .dat files has to be put in a subdirectory of data/validation:
+   ./data/validation/rereco/rerecoGroupName/
+   where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test
+   for example: you can use ./data/validation/rereco/Cal_Dic2013/
+                or ./data/validation/rereco/ungrouped/
 
 
 #============================== validation config .dat file creation to be put in data/validation/
@@ -142,19 +146,24 @@ s	pileupTree	file.root
 #============================== RERECO VALIDATION instructions
 
 
-1) If it does not exist yet, create the PU distribution in data with the proper script in ZNtupleDumper
-   See PU data section in Calibration/ZNtupleDumper/doc/README for details
+1) If it does not exist yet, create the PU distribution in data -> FIXME 
 
 2) Create the .dat config file and put it into (see previous section for details)
    ./data/validation/rereco/rerecoGroupName/
+   - rerecoGroupName is a name the subdirectory where you want to group 
 
 3) Be sure that the runRanges .dat file has the proper run ranges for the stability plots
    ./data/runRanges/monitoring.dat
 
+4) The fit is done in several di-electron categories defined in .dat files in the following directory:
+   ./data/regions/
+    - the default one used for the validation is ./data/regions/validation.dat
+    - The regions can be defined following the syntax indicated in ZFitter/interface/ElectronCategory_class.hh
+
 4) Launch the fit:
-./script/monitoring_validation.sh -f data/validation/file.dat --selection WP80_PU --invMass_var=invMass_SC --rereco rerecoGroupName 
+./script/monitoring_validation.sh -f data/validation/file.dat --selection loose --invMass_var=invMass_SC --rereco rerecoGroupName 
 
-
+  
 
 
 #============================== produce run ranges file

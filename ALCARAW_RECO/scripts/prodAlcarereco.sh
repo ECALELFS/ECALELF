@@ -203,7 +203,7 @@ esac
 
 
 ALCARAW_REMOTE_DIR=$ALCARAW_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE}
-setUserRemoteDirAlcarereco
+setUserRemoteDirAlcarereco $USER_REMOTE_DIR_BASE
 #USER_REMOTE_DIR=$USER_REMOTE_DIR_BASE/${ENERGY}/${TAG}/${DATASETNAME}/${RUNRANGE}
 
 NTUPLE_REMOTE_DIR=$NTUPLE_REMOTE_DIR_BASE/${ENERGY}/${TYPE}
@@ -272,7 +272,7 @@ fi
 crabFile=tmp/alcarereco.cfg
 cat > $crabFile <<EOF
 [CRAB]
-use_server = 0
+#use_server = 0
 jobtype = cmssw
 scheduler = $SCHEDULER
 
@@ -283,10 +283,11 @@ queue = cmscaf1nd
 
 
 [CMSSW]
+allow_NonProductionCMSSW = 1
 datasetpath=None
 
 pset=python/alcaSkimming.py
-pycfg_params=output=alcarereco.root type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 jsonFile=${JSONFILE} secondaryOutput=ntuple.root
+pycfg_params=output=alcarereco.root type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1
 
 runselection=${RUNRANGE}
 split_by_run=0

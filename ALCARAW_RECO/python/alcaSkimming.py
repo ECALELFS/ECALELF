@@ -13,7 +13,7 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
 options.register('isCrab',
-                 '0', # default Value = true
+                 '1', # default Value = true
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "change files path in case of local test")
@@ -148,15 +148,6 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
 from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
-#Define the sequences
-#
-# particle flow isolation
-#
-process.pfIsoEgamma = cms.Sequence()
-if(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
-    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
-    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
@@ -180,7 +171,6 @@ process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer
 # pdfSystematics
 process.load('Calibration.ALCARAW_RECO.pdfSystematics_cff')
 
-#process.MessageLogger.cerr.FwkReport.reportEvery = 500
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
     INFO = cms.untracked.PSet(
@@ -210,7 +200,9 @@ process.MessageLogger.cerr = cms.untracked.PSet(
     ),
     threshold = cms.untracked.string('INFO')
     )
- 
+if(options.isCrab==0):
+    process.MessageLogger.cerr.FwkReport.reportEvery = 1
+
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents)
 )
@@ -310,10 +302,44 @@ else:
             process.GlobalTag.globaltag = 'START61_V11::All'
         else:
             process.GlobalTag.globaltag = 'GR_P_V42B::All' # 5_3_3 Prompt
-
+    elif(re.match("CMSSW_7_0_.*",CMSSW_VERSION)):
+        if(MC):
+            print "[INFO] Using GT POSTLS162_V5::All"
+            process.GlobalTag.globaltag = 'POSTLS162_V5::All'
+        else:
+            print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
     
+
+#Define the sequences
+#
+# particle flow isolation
+#
+process.pfIsoEgamma = cms.Sequence()
+if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
+    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
+elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+    # getting the ptrs
+    from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
+    process.pfIsoEgamma*=particleFlowPtrs
+    process.load('CommonTools.ParticleFlow.pfNoPileUpIso_cff')
+    process.pfPileUp.PFCandidates = 'particleFlowPtrs'
+    process.pfNoPileUp.bottomCollection = 'particleFlowPtrs'
+    process.pfPileUpIso.PFCandidates = 'particleFlowPtrs'
+    process.pfNoPileUpIso.bottomCollection='particleFlowPtrs'
+    process.pfPileUpJME.PFCandidates = 'particleFlowPtrs'
+    process.pfNoPileUpJME.bottomCollection='particleFlowPtrs'
+
+    #    process.load('RecoParticleFlow/Configuration/python/RecoParticleFlow_cff') #CommonTools.ParticleFlow.PFBRECO_cff')
+    process.pfIsoEgamma*= process.pfNoPileUpSequence * process.pfNoPileUpIsoSequence
+    process.load('CommonTools.ParticleFlow.ParticleSelectors.pfSortByType_cff')
+    process.pfIsoEgamma*=process.pfSortByTypeSequence
+    process.load('RecoEgamma.EgammaElectronProducers.electronPFIsolationDeposits_cff')
+    #pfisoALCARECO = cms.Sequence(eleIsoSequence)
+    process.pfIsoEgamma*= process.electronPFIsolationDepositsSequence #* process.gedElectronPFIsolationDepositsSequence
 
 ###############################
 # Event filter sequence: process.filterSeq
@@ -647,7 +673,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     else:
         process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                         process.pathALCARECOEcalCalZSCElectron,
-                                        process.ALCARECOoutput_step #, process.NtuplePath
+                                        process.ALCARECOoutput_step,  process.NtuplePath
                                         ) # fix the output modules
 
 
@@ -655,10 +681,11 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-if(options.isCrab):
+if(options.isCrab==1):
     pathPrefix=""
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
+    print "[INFO] Running locally: pathPrefix="+pathPrefix
 
 process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
 process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
@@ -679,7 +706,6 @@ process.eleNewEnergiesProducer.regrEleJoshV7_SemiParam7TeVtrainFile = pathPrefix
 process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParam7TeVtrainFile.value()
 process.eleNewEnergiesProducer.regrEleJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParam7TeVtrainFile.value()
 process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile.value()
-
 
 #    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
 process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)

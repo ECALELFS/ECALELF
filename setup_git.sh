@@ -3,6 +3,10 @@
 checkVERSION(){
     case $CMSSW_VERSION in
 	CMSSW_5_3_7_patch6)
+	    echo "[ERROR] $CMSSW_VERSION now deprecated, please use the CMSSW_5_3_14_patch2"
+	    exit 1
+	    ;;
+	CMSSW_5_3_14_patch2)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
 	CMSSW_7_0_0_*)
@@ -10,7 +14,7 @@ checkVERSION(){
 	    ;;
 	*)
 	    echo "[ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
-	    echo "        Be sure that you don't want 4_2_8_patch7 or CMSSW_4_4_5_patch2 or 5_3_7_patch5 or CMSSW_6_1_*"
+	    echo "        Be sure that you don't want 4_2_8_patch7 or CMSSW_4_4_5_patch2 or 5_3_14_patch2 or CMSSW_7_0_*"
 	    
 	    exit 1
 	    ;;
@@ -22,7 +26,7 @@ case $# in
 	echo "[STATUS] Creating $1 CMSSW release working area"
 	CMSSW_VERSION=$1
 	checkVERSION 
-	scram project CMSSW ${CMSSW_VERSION}
+	scram project CMSSW ${CMSSW_VERSION} || exit 1
 	cd ${CMSSW_VERSION}/src
 	eval `scramv1 runtime -sh`
 	;;
@@ -139,9 +143,8 @@ case $CMSSW_VERSION in
 ###### New Josh regression
 	mkdir HiggsAnalysis/
 	cd HiggsAnalysis/
-	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihood.git 
-#	git clone -b CMSSW53X git@github.com:bendavid/GBRLikelihood.git
-	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
+	git clone https://github.com/bendavid/GBRLikelihood.git 
+	git clone https://github.com/bendavid/GBRLikelihoodEGTools.git
 	cd -
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
@@ -201,15 +204,16 @@ case $CMSSW_VERSION in
 #        cd RecoEgamma/EgammaTools >> setup.log || exit 1
 #        git checkout RecoEgamma-EgammaTools-V09-00-01 >> setup.log || exit 1
 #        cd - >> setup.log || exit 1
-#        git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools >> setup.log || exit 1
+	git-cms-addpkg EgammaAnalysis/ElectronTools >> setup.log || exit 1
+#        git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools 
 #        cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
 #	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
 #        cd - >> setup.log || exit 1
 #	patch -p0 < $myDir/ALCARAW_RECO/test/electronRegression.patch >> setup.log || exit 1
 
-#	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
-#	cat download.url | xargs wget  >> setup.log || exit 1
-#	cd - >> setup.log || exit 1
+	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
+	cat download.url | grep '.root' | xargs wget  >> setup.log || exit 1
+	cd - >> setup.log || exit 1
 
 ###### New Josh regression
 	mkdir HiggsAnalysis/
@@ -230,7 +234,7 @@ case $CMSSW_VERSION in
     if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
 	patch  -p0 < $myDir/ALCARAW_RECO/test/clusterLazyTools.patch >> setup.log || exit 1
     fi
-    patch  -p0 < $myDir/ALCARAW_RECO/test/class_def.xml.patch >> setup.log || exit 1
+#    patch  -p0 < $myDir/ALCARAW_RECO/test/class_def.xml.patch >> setup.log || exit 1
 
 	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root $myDir/EleNewEnergiesProducer/data/ >> setup.log || exit 1
 
