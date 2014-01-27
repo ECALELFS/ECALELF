@@ -36,6 +36,28 @@ Every time you enter in a new shell you have to do:
 or
 `source initCmsEnv.sh`
 
+Problem:
+if you have an error in compilation like
+
+consider to edit the following file: `DataFormats/CaloRecHit/src/classes_def.xml`
+changing the following lines:
+
+` <class name="reco::CaloCluster" ClassVersion="11">`
+
+`   <version ClassVersion="11" checksum="3936140"/>`
+
+`  </class>`
+
+to 
+
+` <class name="reco::CaloCluster" ClassVersion="11">`
+
+`   <version ClassVersion="12" checksum="4003646624"/>`
+
+`</class>`
+
+
+
 
 ======
 Code documentation:
