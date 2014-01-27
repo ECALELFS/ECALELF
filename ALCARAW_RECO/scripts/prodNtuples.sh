@@ -366,13 +366,13 @@ if [ -n "${CREATE}" ];then
     splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
 fi
 
-if [ -n "$SUBMIT" ];then
+if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
     crab -c ${UI_WORKING_DIR} -submit
     STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TYPE}\t${TAG}\t${JSONNAME}"
     echo -e $STRING >> ntuple_datasets.dat
 
-else
-    echo "crab -c ${UI_WORKING_DIR} -submit"
+#else
+    #echo "crab -c ${UI_WORKING_DIR} -submit"
 fi
 
 if [ -n "${CHECK}" ];then
