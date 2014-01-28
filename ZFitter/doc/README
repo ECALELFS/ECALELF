@@ -5,16 +5,54 @@
 # ECALELF Z Fitter is designed to be a flexible tool to fit the Z
 # lineshape using the ECALELF ZNtuples.
 
+Go to the Calibration/ZFitter directory and compile it:
+make
+
+Calibration/ZFitter will be your working directory now on.
+
 
 There are three important directories where the proper .dat files should be put:
  - data/validation/
-For the validation, the .dat files has to be put in a subdirectory of data/validation:
+   For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation:
    ./data/validation/rereco/rerecoGroupName/
    where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test
    for example: you can use ./data/validation/rereco/Cal_Dic2013/
                 or ./data/validation/rereco/ungrouped/
+   this way the fit results will be put under the subdirectory
+   rerecoGroupName and you will be able to move or remove it when the
+   set of validations has finished. 
+
+   The logic of the validation .dat files is reported below in a
+   dedicated section.
 
 
+- data/regions/
+  the fits are done in categories, the conditions that the electrons
+  have to fulfil are defined in .dat files in this directory.
+  In each .dat file, a set of categories are defined, one category for
+  each line: for example
+  EB
+  EE
+  EB-gold
+  EB-absEta_0_1-bad
+  the sintax used to define the categories is reported at the
+  beginning of 
+  interface/ElectronCategory_class.hh
+
+  For standard validations you can use the data/regions/validation.dat
+  that is set in the scripts as the default one.
+
+- data/runRanges/
+  contains files that define a set of run ranges in order to perform
+  the fits for the stability plots. The default one to be used is
+  data/runRanges/monitoring.dat
+
+  The syntax is the following:
+  #runMin-runMax nEvents        timeStampMin-timeStampMax
+  190645-190781	28734   	1333819264-1333983242
+  190782-191042	24007		1334023525-1334188134
+  The second and third column are optional.
+  
 #============================== validation config .dat file creation to be put in data/validation/
 This config file contains the list of files to run on, the files
 containing the PU histograms for the PU reweighting and all the other
@@ -45,7 +83,12 @@ s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Sum
 	friends 
 
 
-#======================================== Working with ntuples
+#======================================== Working with ntuples: how to
+#                                         play by hand with ntuples
+
+If you are interested only in using the fit for validations you can
+skip this paragraphs and go directly to "RERECO VALIDATION instructions"
+
 The .dat config file keeping the list of ntuples can be modified according to the needs adding or commenting unuseful ntuples or friend trees.
 It's then important to have a simple way to merge the trees in order to be able to manipulate, scan and plot variables from the ntuples.
 The ZFitter/script/GenRootChain.sh has been designed for this.
@@ -160,12 +203,23 @@ s	pileupTree	file.root
     - the default one used for the validation is ./data/regions/validation.dat
     - The regions can be defined following the syntax indicated in ZFitter/interface/ElectronCategory_class.hh
 
-4) Launch the fit:
+5) Launch the fit:
 ./script/monitoring_validation.sh -f data/validation/file.dat --selection loose --invMass_var=invMass_SC --rereco rerecoGroupName 
+  to see the possible options: ./script/monitoring_validation.sh --help
+
+  the possible energies are:
+  - invMass_SC: standard SC energy
+  - invMass_SC_regrCorrSemiParV5_ele: Josh's regression ele-tuned V5
+  - invMass_SC_regrCorrSemiParV5_pho: Josh's regression pho-tuned V5
+  
+  the possible selections are: loose, medium, tight
+  
+  you can specify --validation to do only the main fits
+                  --stability to run only the fits for the stability plots
+                  --etaScale to run the fits in |eta| bins
+  if you do not specify any of this options the three are executed
 
   
-
-
 #============================== produce run ranges file
 The idea is to produce a file with the run ranges with 100k Zee events
 (to have enough statistics in the EE), but taking into account also
