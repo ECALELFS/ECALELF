@@ -235,8 +235,38 @@ The run ranges
 
 
 
+#============================== Fit results:
+Folder schema:
+ - one folder for data with
+	- one subfolder per selection
+	- for each selection one subfolder with the energy used for the invariant mass
+	- for each energy
+		- table:  store the tables in .dat and .tex formats   
+		- img:    store the plots (fit and other)
+			- fit
+			- history
+		- fitres: store the fit results
+ - one folder for MC with the same structure
 
+At the end of the validation, the makeTable.sh script produces one big latex table in the table/ subdir.
+The meaning of the columns is reported in the first row:
+ 1. category name
+ 2. number of events in that category in data
+ 3. deltaM parameter in data (shift of the CB peak w.r.t. 0)
+ 4. deltaM in MC
+ 5. deltaP = (deltaM_data - delta_M_mc)/deltaM_mc
+ 6. sigmaCB data
+ 7. sigmaCB mc
+ 8. sigmaCB_data/(M_Z+deltaM_data): also defined as sigmaCB/peakCB
+    it is the sigmaCB rescaled for the peak shift
+ 9. sigmaCB_mc/peakCB_mc
+ 10. additional smearing calculated as the quadratic difference between data and simulation of sigmaCB/peakCB
 
+The table for the standard validation categories is monitoring_summary-*.tex
+The table for the stability fits is monitoring_stability-*.tex
+
+the script stability.sh produces the stability plots starting from the monitoring_stability-*.tex
+and are automatically put in the test/dato/...../img/stability/runNumber subdirectory of the validation
 
 
 
@@ -279,17 +309,6 @@ Once the fit is finished:
 
 
 
-Folder schema:
- - one folder for data with
-	- one subfolder per selection
-	- for each selection one subfolder with the energy used for the invariant mass
-	- for each energy
-		- table:  store the tables in .dat and .tex formats   
-		- img:    store the plots (fit and other)
-			- fit
-			- history
-		- fitres: store the fit results
- - one folder for MC with the same structure
 
 
 
