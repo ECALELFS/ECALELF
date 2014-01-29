@@ -63,7 +63,7 @@ to
 Code documentation:
 Code documentation is updated using doxygen system.
 You can find the documentation related to the master branch here:
-`http://ecalelfs.github.io/ECALELF/index.html`
+http://ecalelfs.github.io/ECALELF/index.html
 
 It can be generated locally following the instructions below:
 Once downloaded the code, in Calibration/ you can run the command
