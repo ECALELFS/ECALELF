@@ -13,48 +13,19 @@
     <li><a href="dirs.html"><span>Directories</span></a></li>
     <li><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
   </ul></div>
-<h1><a class="anchor" name="page4">How to work with ECALELF ntuples</a></h1><div class="fragment"><pre class="fragment">############## Introduction to ECALELF Z Fitter 
-# ECALELF Z Fitter is designed to be a flexible tool to fit the Z
-# lineshape using the ECALELF ZNtuples.
-
-Go to the Calibration/ZFitter directory and compile it:
-make
-
-Calibration/ZFitter will be your working directory now on.
-
-
-There are three important directories where the proper .dat files should be put:
- - data/validation/
-   For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation:
-   ./data/validation/rereco/rerecoGroupName/
-   where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test
-   for example: you can use ./data/validation/rereco/Cal_Dic2013/
-                or ./data/validation/rereco/ungrouped/
-   this way the fit results will be put under the subdirectory
-   rerecoGroupName and you will be able to move or remove it when the
-   set of validations has finished. 
-
-   The logic of the validation .dat files is reported below in a
-   dedicated section.
-
-
-- data/regions/
-  the fits are done in categories, the conditions that the electrons
-  have to fulfil are defined in .dat files in this directory.
-  In each .dat file, a set of categories are defined, one category for
-  each line: for example
-  EB
-  EE
-  EB-gold
-  EB-absEta_0_1-bad
-  the sintax used to define the categories is reported at the
-  beginning of 
-  interface/ElectronCategory_class.hh
-
-  For standard validations you can use the data/regions/validation.dat
-  that is set in the scripts as the default one.
-
-- data/runRanges/
+<h1><a class="anchor" name="page4">How to work with ECALELF ntuples</a></h1>Go to the Calibration/ZFitter directory and compile it: <div class="fragment"><pre class="fragment"> make
+</pre></div><p>
+Calibration/ZFitter will be your working directory now on.<p>
+There are three important directories where the proper .dat files should be put:<ul>
+<li>data/validation/ <br>
+ For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation: ./data/validation/rereco/rerecoGroupName/ where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test for example: you can use ./data/validation/rereco/Cal_Dic2013/ or ./data/validation/rereco/ungrouped/ this way the fit results will be put under the subdirectory rerecoGroupName and you will be able to move or remove it when the set of validations has finished. <br>
+ The logic of the validation .dat files is reported below in a dedicated section.</li></ul>
+<p>
+<ul>
+<li>data/regions/ the fits are done in categories, the conditions that the electrons have to fulfil are defined in .dat files in this directory. In each .dat file, a set of categories are defined, one category for each line: see <a class="el" href="d5/d11/classElectronCategory__class.html">ElectronCategory_class</a> for more information about the syntax</li></ul>
+<p>
+For standard validations you can use the data/regions/validation.dat that is set in the scripts as the default one.<p>
+<div class="fragment"><pre class="fragment">- data/runRanges/
   contains files that define a set of run ranges in order to perform
   the fits for the stability plots. The default one to be used is
   data/runRanges/monitoring.dat
