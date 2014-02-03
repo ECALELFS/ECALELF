@@ -245,22 +245,22 @@ private:
   Float_t energySigmaSCEle_regrCorr_ele[2];
   Float_t energySigmaSCEle_regrCorr_pho[2];
 
-  Float_t energySCEle_regrCorrSemiParV4_pho[2], energySigmaSCEle_regrCorrSemiParV4_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV4_ele[2], energySigmaSCEle_regrCorrSemiParV4_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV5_pho[2], energySigmaSCEle_regrCorrSemiParV5_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV5_ele[2], energySigmaSCEle_regrCorrSemiParV5_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV6_pho[2], energySigmaSCEle_regrCorrSemiParV6_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV6_ele[2], energySigmaSCEle_regrCorrSemiParV6_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV7_pho[2], energySigmaSCEle_regrCorrSemiParV7_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV7_ele[2], energySigmaSCEle_regrCorrSemiParV7_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV8_pho[2], energySigmaSCEle_regrCorrSemiParV8_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV8_ele[2], energySigmaSCEle_regrCorrSemiParV8_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV6_pho[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_pho[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV6_ele[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_ele[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV7_pho[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_pho[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV7_ele[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_ele[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV8_pho[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV8_ele[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[2];
+  Float_t energySigmaSCEle_regrCorrSemiParV4_pho[2], energySCEle_regrCorrSemiParV4_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV4_ele[2], energySCEle_regrCorrSemiParV4_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV5_pho[2], energySCEle_regrCorrSemiParV5_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV5_ele[2], energySCEle_regrCorrSemiParV5_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV6_pho[2], energySCEle_regrCorrSemiParV6_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV6_ele[2], energySCEle_regrCorrSemiParV6_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV7_pho[2], energySCEle_regrCorrSemiParV7_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV7_ele[2], energySCEle_regrCorrSemiParV7_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV8_pho[2], energySCEle_regrCorrSemiParV8_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV8_ele[2], energySCEle_regrCorrSemiParV8_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_pho[2], energySCEle_regrCorrSemiPar7TeVtrainV6_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_ele[2], energySCEle_regrCorrSemiPar7TeVtrainV6_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_pho[2], energySCEle_regrCorrSemiPar7TeVtrainV7_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_ele[2], energySCEle_regrCorrSemiPar7TeVtrainV7_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[2], energySCEle_regrCorrSemiPar7TeVtrainV8_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[2], energySCEle_regrCorrSemiPar7TeVtrainV8_ele[2]; ///< see \ref regressions
 
   Float_t energySCEle_corr[2];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 

@@ -6,7 +6,33 @@ Go to the Calibration/ZFitter directory and compile it:
 
 Calibration/ZFitter will be your working directory now on.
 
-\ref ZFitterConfigFiles
+Two methods are used in order to evaluate the energy scale and
+resolution:
+ - fitMethod: consists in fitting the Z lineshape with a parametric
+model
+   This method gives an estimate of the Z peak and width separately
+for data and MC. On the other hand the energy scale and energy
+resolution are estimated for electrons belonging to the same
+di-electron categories. With this method the energy scale and
+resolution are measured for di-electron categories.
+
+ - smearingMethod: consists in using the Z lineshape from MC after the
+scaling and smearing of the single electron energy.
+   The energy scale and smearing is applied to the single electron
+energy before calculating the invariant mass, so they are directly
+the single electron energy scale and smearings.
+
+The methods are implemented in separate classes, there is only one
+executable (./bin/ZFitter.exe) that with command line options can run the fitMethod or the
+smearingMethod.
+
+The inputs to the ZFitter program are given in the form of:
+ - configuration files (.dat)
+ - command line options
+
+The configuration files are described in: \ref ZFitterConfigFiles
+
+The ntuple structure and logic is explained in \ref NtupleStructure
 
 \ref plotNtuple
 
