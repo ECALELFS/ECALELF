@@ -16,7 +16,18 @@
 <h1><a class="anchor" name="page4">How to work with ECALELF ntuples</a></h1>Go to the Calibration/ZFitter directory and compile it: <div class="fragment"><pre class="fragment"> make
 </pre></div><p>
 Calibration/ZFitter will be your working directory now on.<p>
-<a class="el" href="ZFitterConfigFiles.html">Config files syntax and generation</a><p>
+Two methods are used in order to evaluate the energy scale and resolution:<ul>
+<li>fitMethod: consists in fitting the Z lineshape with a parametric model This method gives an estimate of the Z peak and width separately for data and MC. On the other hand the energy scale and energy resolution are estimated for electrons belonging to the same di-electron categories. With this method the energy scale and resolution are measured for di-electron categories.</li></ul>
+<p>
+<ul>
+<li>smearingMethod: consists in using the Z lineshape from MC after the scaling and smearing of the single electron energy. The energy scale and smearing is applied to the single electron energy before calculating the invariant mass, so they are directly the single electron energy scale and smearings.</li></ul>
+<p>
+The methods are implemented in separate classes, there is only one executable (./bin/ZFitter.exe) that with command line options can run the fitMethod or the smearingMethod.<p>
+The inputs to the ZFitter program are given in the form of:<ul>
+<li>configuration files (.dat)</li><li>command line options</li></ul>
+<p>
+The configuration files are described in: <a class="el" href="ZFitterConfigFiles.html">Config files syntax and generation</a><p>
+The ntuple structure and logic is explained in <a class="el" href="NtupleStructure.html">Ntuple content and logic of use</a><p>
 <a class="el" href="plotNtuple.html">How to make plots using ECALELF ntuples</a><p>
 <div class="fragment"><pre class="fragment">#============================================================
 The files containing the histograms for the PU reweight are
@@ -293,7 +304,7 @@ histograms, add all the MC PU histograms, calculates the PU
 reweight, produce a tree with the per event weight for the MC. 
 Then add the tree with the PU weights to the MC chain as a friend
 tree.
-</pre></div> <hr size="1"><address style="align: right;"><small>Generated on 30 Jan 2014 for ECALELF by&nbsp;
+</pre></div> <hr size="1"><address style="align: right;"><small>Generated on 6 Feb 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.7 </small></address>
 </body>
