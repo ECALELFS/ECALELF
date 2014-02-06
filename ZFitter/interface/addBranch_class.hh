@@ -45,7 +45,7 @@ public:
 
 private:
 
-  TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop=true);
+  TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop=true, bool isMC=true);
   TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);
   TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
 

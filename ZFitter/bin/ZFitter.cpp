@@ -744,6 +744,8 @@ int main(int argc, char **argv) {
 
       TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
       f.cd();
+      corrTree->SetName(TString("smearEle_")+smearEleType.c_str());
+      corrTree->SetTitle(smearEleType.c_str());
       corrTree->Write();
       std::cout << "[INFO] Data entries: "    << ch->GetEntries() << std::endl;
       std::cout << "       smearEle entries: " << corrTree->GetEntries() << std::endl;

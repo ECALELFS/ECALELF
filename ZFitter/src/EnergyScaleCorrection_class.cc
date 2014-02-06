@@ -97,6 +97,11 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
   return;
 }
 
+  /** 
+   *  File structure:
+   *  category  "runNumber"   runMin  runMax   deltaP  err_deltaP
+   *  
+   */
 void EnergyScaleCorrection_class::ReadFromFile(TString filename){
   std::cout << "[STATUS] Reading recalibration values from file: " << filename << std::endl;
   ifstream f_in(filename);
@@ -121,6 +126,7 @@ void EnergyScaleCorrection_class::ReadFromFile(TString filename){
   
   f_in.close();
 
+  noCorrections=false;
   return;
 }
 
@@ -200,31 +206,55 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 
 //============================== SMEARING
 void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, int runMax_, 
-					      double constTerm, double err_constTerm, double alpha, double err_alpha){
-#ifdef SHERVIN
-  //double smearing_, double err_smearing_){
-  // se le corrections non sono definite per Hgg (gold e bad) allora ignoro le righe che si riferiscono a queste categorie
-  if( (!isHggCat) && (category_.Contains("gold",TString::kIgnoreCase) || category_.Contains("bad",TString::kIgnoreCase))) {
-    return;
+					      double constTerm, double err_constTerm, double alpha, double err_alpha,
+					      double Emean, double err_Emean){
+
+  correctionCategory_class cat(category_);
+  cat.runmin= (runMin_ < 0) ? 0 : runMin_;
+  cat.runmax=runMax_;
+
+  if(scales.count(cat)!=0){
+    std::cerr << "[ERROR] Category already defined!" << std::endl;
+    std::cerr << "        Adding category:  " << cat << std::endl;
+    std::cerr << "        Defined category: " << scales[cat] << std::endl;
+    exit(1);
   }
 
-  if(smearings.count(category_)!=0){
-    std::cerr << "[WARNING] duplicated smearing number in input file" << std::endl;
-    return;
-  }
-  correction_t corr;
-  corr.runMax=runMax_;
-  std::pair<double,double> pair_tmp;
-  pair_tmp.first=constTerm;
-  pair_tmp.second=alpha;
-  smearings[category_]=pair_tmp; 
+  correctionValue_class corr;
+  corr.constTerm    = constTerm;
+  corr.constTerm_err= err_constTerm;
+  corr.alpha        = alpha;
+  corr.alpha_err    = err_alpha;
+  corr.Emean        = Emean; 
+  corr.Emean_err    = err_Emean;
+  smearings[cat]=corr;
+
+  std::cout << "[INFO:smearings ] " << cat << corr << std::endl;
+#ifdef DEBUG
+  std::cout << corr << std::endl;
 #endif
-
   return;
 }
 
+/** 
+ *  File structure:
+ *  category  "runNumber"   runMin  runMax   deltaP  err_deltaP
+ *  
+ *
+EBlowEtaBad8TeV    0 0.0 1.0 -999. 0.94 -999999 999999 6.73 0. 7.7e-3  6.32e-4 0.00 0.16
+EBlowEtaGold8TeV   0 0.0 1.0 0.94  999. -999999 999999 6.60 0. 7.4e-3  6.50e-4 0.00 0.16
+EBhighEtaBad8TeV   0 1.0 1.5 -999. 0.94 -999999 999999 6.73 0. 1.26e-2 1.03e-3 0.00 0.07
+EBhighEtaGold8TeV  0 1.0 1.5 0.94  999. -999999 999999 6.52 0. 1.12e-2 1.32e-3 0.00 0.22
+##################################################################################################
+EElowEtaBad8TeV    0 1.5 2.0 -999. 0.94 -999999 999999 0.   0. 1.98e-2 3.03e-3 0.  0.
+EElowEtaGold8TeV   0 1.5 2.0 0.94  999. -999999 999999 0.   0. 1.63e-2 1.22e-3 0.  0.
+EEhighEtaBad8TeV   0 2.0 3.0 -999. 0.94 -999999 999999 0.   0. 1.92e-2 9.22e-4 0.  0.
+EEhighEtaGold8TeV  0 2.0 3.0 0.94  999. -999999 999999 0.   0. 1.86e-2 7.81e-4 0.  0.
+##################################################################################################
+*
+ */
+
 void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
-#ifdef SHERVIN
   std::cout << "[STATUS] Reading smearing values from file: " << filename << std::endl;
   ifstream f_in(filename);
   if(!f_in.good()){
@@ -233,24 +263,40 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
   }
   
   int runMin=0, runMax=900000;
+  int unused=0;
   TString category, region2;
   //double smearing, err_smearing;
-  double constTerm, err_constTerm, alpha, err_alpha;
+  double rho, phi, Emean, constTerm, alpha, err_rho, err_phi, err_Emean, err_alpha=0., err_constTerm=0.;
+  double etaMin, etaMax, r9Min, r9Max;
 
   for(f_in >> category; f_in.good(); f_in >> category){
-    f_in //>> region2 
-	 //>> runMin >> runMax 
-      >> constTerm >> alpha;
-    //>> smearing >> err_smearing;
-    
-    AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha);
+    if(category.BeginsWith("#")){ // ignore comments
+      f_in.ignore(1000,10); // ignore the rest of the line until \n
+      continue;
+    } 
+
+    f_in >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >> 
+      Emean >> err_Emean >> 
+      rho >> err_rho >> phi >> err_phi;
+#ifdef DEBUG
+    std::cout << category << "\t" << etaMin << "\t" << etaMax << "\t" << r9Min << "\t" << r9Max << "\t" << runMin << "\t" << runMax << "\tEmean=" << Emean << "\t" << rho << "\t" << phi << std::endl;
+#endif
+    if(Emean!=0){
+      constTerm=rho*sin(phi);
+      alpha=rho*Emean*cos(phi);
+    }else{
+      alpha=0;
+      constTerm=rho;
+    }
+
+    AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
   }
   
   f_in.close();
   //  runCorrection_itr=runMin_map.begin();
   
   noSmearings=false;
-#endif
+
   return;
 }
 
@@ -280,7 +326,27 @@ float EnergyScaleCorrection_class::getSmearingSigma(int runNumber, float energy,
 
   double constTerm=corr_itr->second.constTerm;
   double alpha=corr_itr->second.alpha;
-  return sqrt(constTerm*constTerm + alpha*alpha/energy);
+  return sqrt(constTerm*constTerm + alpha*alpha/(energy/cosh(etaSCEle)));
+
+}
+
+float EnergyScaleCorrection_class::getSmearingRho(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle){
+  
+  correctionCategory_class category(runNumber, etaSCEle, R9Ele, energy/cosh(etaSCEle));
+  correction_map_t::const_iterator corr_itr = smearings.find(category);
+  if(corr_itr==smearings.end()){ // if not in the standard classes, add it in the list of not defined classes
+    if(smearings_not_defined.count(category)==0){
+      correctionValue_class corr;
+      smearings_not_defined[category]=corr;
+    }
+    corr_itr = smearings_not_defined.find(category);
+  }
+
+  double constTerm=corr_itr->second.constTerm;
+  double alpha = (corr_itr->second.Emean==0) ? 0 : corr_itr->second.alpha/corr_itr->second.Emean;
+  
+  //std::cout << (*corr_itr).second << std::endl;
+  return sqrt(constTerm*constTerm + alpha*alpha); ///< return rho
 
 }
 
@@ -422,10 +488,9 @@ correctionCategory_class::correctionCategory_class(TString category_){
     runmin=0; runmax=999999;
     etamin=-1;etamax=10;
     r9min=-1;r9max=10;
-    etmin=-1;etmax=300.;
+    etmin=-1;etmax=99999.;
     
     size_t p1,p2; // boundary
-
     // eta region
     p1 = category.find("absEta_");
     p2 = p1+1;
@@ -444,6 +509,11 @@ correctionCategory_class::correctionCategory_class(TString category_){
       }
     }
 
+    if(category.find("EBlowEta")!=std::string::npos){ etamin=0; etamax=1;};
+    if(category.find("EBhighEta")!=std::string::npos){ etamin=1; etamax=1.479;};
+    if(category.find("EElowEta")!=std::string::npos){ etamin=1.479; etamax=2;};
+    if(category.find("EEhighEta")!=std::string::npos){ etamin=2; etamax=7;};
+
     // Et region
     p1 = category.find("-Et_");
     p2 = p1+1;
@@ -459,7 +529,7 @@ correctionCategory_class::correctionCategory_class(TString category_){
       std::cout << etmin << "\t" << etmax << "\t" << category.substr(p1+1, p2-p1-1) << std::endl;
     }
 
-    if(category.find("gold")!=std::string::npos){ r9min=0.94; r9max=10;}
-    else if(category.find("bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
+    if(category.find("gold")!=std::string::npos || category.find("Gold")!=std::string::npos){ r9min=0.94; r9max=10;}
+    else if(category.find("bad")!=std::string::npos || category.find("Bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
     
 };
