@@ -33,8 +33,6 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
-#include "DataFormats/Math/interface/deltaR.h"
-
 //#define DEBUG
 //
 // class declaration
@@ -142,16 +140,18 @@ ValueMapTraslator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 electron!= oldreferenceHandle->end();
 	 electron++){
        //if(electronNew->GsfTrackF
-       if(fabs(electronNew->eta() - electron->eta())>0.0001) continue;
+       if(electron->gsfTrack() != electronNew->gsfTrack()) continue; ///< requires that the track is the same, so I'm sure the electron object is the same. This to avoid the case when two electrons have the same eta and phi at the vtx 
+       //if(fabs(electronNew->eta() - electron->eta())>0.0001) continue;
        //if(fabs(electronNew->phi() - electron->phi())>0.0001) continue;
-       if(deltaR(electronNew->eta(), electronNew->phi(), electron->eta(), electron->phi() > 0.0001)) continue;
-
+       
        reco::GsfElectronRef eleRef(oldreferenceHandle, electron-oldreferenceHandle->begin());
        reco::GsfElectronRef eleRef2(referenceHandle, electronNew-referenceHandle->begin());
 
 #ifdef DEBUG     
        std::cout << eleRef->eta() << "\t" << eleRef2->eta() << "\t" 
-		 << eleRef->energy() << "\t" << eleRef2->energy() << "\t" 
+		 << eleRef->phi() << "\t" << eleRef2->phi() << "\t"
+		 << eleRef->energy() << "\t" << eleRef2->energy() << "\t"
+		 << (eleRef->gsfTrack() == eleRef2->gsfTrack()) << "\t" 
 		 << (eleRef == eleRef2) << "\t" 
 		 <<  (*inputHandle)[eleRef] << std::endl;
 #endif
