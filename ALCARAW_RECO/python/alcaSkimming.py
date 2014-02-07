@@ -422,7 +422,7 @@ else:
 if(re.match("CMSSW_6_.*", CMSSW_VERSION)):
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
 else:
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
+    process.alcarerecoSeq=cms.Sequence( process.jsonFilter * process.trivialCond * process.sandboxRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
 
 
 process.rhoFastJetSeq = cms.Sequence()
