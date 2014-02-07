@@ -301,7 +301,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
     if(isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
-      if(_pdfWeightIndex > pdfWeights->size()) continue;
+      if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
       event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
 
 #ifdef DEBUG      
