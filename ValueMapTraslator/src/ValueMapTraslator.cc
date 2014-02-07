@@ -33,6 +33,8 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 
+#include "DataFormats/Math/interface/deltaR.h"
+
 //#define DEBUG
 //
 // class declaration
@@ -141,8 +143,9 @@ ValueMapTraslator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 electron++){
        //if(electronNew->GsfTrackF
        if(fabs(electronNew->eta() - electron->eta())>0.0001) continue;
-       if(fabs(electronNew->phi() - electron->phi())>0.0001) continue;
-	   
+       //if(fabs(electronNew->phi() - electron->phi())>0.0001) continue;
+       if(deltaR(electronNew->eta(), electronNew->phi(), electron->eta(), electron->phi() > 0.0001)) continue;
+
        reco::GsfElectronRef eleRef(oldreferenceHandle, electron-oldreferenceHandle->begin());
        reco::GsfElectronRef eleRef2(referenceHandle, electronNew-referenceHandle->begin());
 
