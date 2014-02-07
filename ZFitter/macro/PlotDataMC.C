@@ -607,19 +607,22 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
   if(smear){
     branchNameMC.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(smearEle[0]*smearEle[1]))");
+  branchNameMC.ReplaceAll("invMass_SC_regrCorrSemiParV5_pho","(invMass_SC_regrCorrSemiParV5_pho*sqrt(smearEle[0]*smearEle[1]))");
     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*smearEle) ");
     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*smearEle[0])");
     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*smearEle[1])");
 
   }
   if(scale){
-    branchNameData.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(corrEle[0]*corrEle[1]))");
-    branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*corrEle)");
-    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*corrEle[0])");
-    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*corrEle[1])");
+    std::cout << "Apply scale" << std::endl;
+    branchNameData.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(scaleEle[0]*scaleEle[1]))");
+    branchNameData.ReplaceAll("invMass_SC_regrCorrSemiParV5_pho","(invMass_SC_regrCorrSemiParV5_pho*sqrt(scaleEle[0]*scaleEle[1]))");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*scaleEle)");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*scaleEle[0])");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*scaleEle[1])");
   }
-  //std::cout << branchNameData << "\t" << branchNameMC << std::endl;
-
+    std::cout << branchNameData << "\t" << branchNameMC << std::endl;
+  //  return NULL;
 
   
   // Draw histograms
@@ -696,6 +699,10 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
     TH1F *s = (TH1F *) gROOT->FindObject(mcHistName);
     if(s==NULL) continue;
     std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
+    if(d->Integral()==0 && s->Integral()==0){
+      delete c;
+      return NULL;
+    }
     if(logy){
       s->GetYaxis()->SetRangeUser(0.1,max);
     } else {

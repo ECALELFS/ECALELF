@@ -23,6 +23,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _excludeByWeight(true),
   _onlyDiagonal(false),
   _isSmearingEt(false),
+  _pdfWeightIndex(0),
   cutter(false)
 {
   cutter.energyBranchName=energyBranchName;
@@ -89,6 +90,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Float_t         r9weight[2]={1,1};
   Float_t         ptweight[2]={1,1};
   Float_t         mcGenWeight=1;
+  std::vector<double> *pdfWeights = NULL;
+
   Int_t           smearerCat[2];
   bool hasSmearerCat=false;
 
@@ -112,6 +115,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
       chain->SetBranchAddress("smearEle", smearEle_);
     } 
+  }
+
+  if(isMC && chain->GetBranch("pdfWeights_cteq66")!=NULL && _pdfWeightIndex>0){
+    std::cout << "[STATUS] Adding pdfWeight_ctec66 branch from friend" << std::endl;
+    chain->SetBranchAddress("pdfWeights_cteq66", &pdfWeights);
   }
 
   chain->SetBranchAddress("etaEle", etaEle);
@@ -155,6 +163,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   }
   chain->LoadTree(chain->GetEntryNumber(0));
   Long64_t treenumber=-1;
+
 
   std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
   if(hasSmearerCat==false){
@@ -291,6 +300,22 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
+    if(isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
+      if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
+      event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
+
+#ifdef DEBUG      
+      if(jentry<10 || event.weight!=event.weight){
+	std::cout << "jentry = " << jentry 
+		  << "\tevent.weight = " << event.weight << "\t" << (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0] 
+		  << "\t" << (*pdfWeights)[_pdfWeightIndex] << "\t" << (*pdfWeights)[0] 
+		  << "\t" << r9weight[0] << " " << r9weight[1] 
+		  << "\t" << ptweight[0] << " " << ptweight[1]
+		  << std::endl;
+      }
+#endif
+
+    }
     if(mcGenWeight != -1){
       if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
 
@@ -304,6 +329,9 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	} // else event.weight=1;
       }
     }
+
+    if(event.weight<=0 || event.weight!=event.weight) continue;
+
 #ifdef FIXEDSMEARINGS
     if(isMC){
       event.smearings_ele1 = new float[NSMEARTOYLIM];

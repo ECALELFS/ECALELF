@@ -38,3 +38,8 @@ prod_alcarereco
 # patch
 *.rej
 .__afs*
+
+# Images
+*.png
+*.eps
+*.pdf

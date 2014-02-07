@@ -1,0 +1,29 @@
+/**
+* \page NtupleStructure Ntuple content and logic of use
+*
+* 
+ECALELF ntuples are produced by the ZNtupleDumper class. Follow the
+link to see the branches that are implemented. 
+
+The idea is to keep very small ntuples (almost essential for the needs
+of standard calibration, energy scale and smearings evaluation).  
+One branch with the Z invariant mass for each energy
+version is provided also, in order to speed at maximum the fitting
+procedure avoiding the recalculation of the invariant mass.
+
+Nonetheless, other additional ntuples can be produced in order to save
+additional informations for particular studies. This ntuples are
+complementary to the default ones (the name of the basic tree is
+"selected").
+The additional ntuples should be used adding them to the "selected"
+ntuples as friend trees.
+
+The designed structure should garantie flexibility (additional studies
+can be done with additional ntuples) and fastness (one can use the
+ntuples that really needs).
+
+Ntuples are produced both for centrally produced datasets and private
+ECALELF rerecoes. Additional ntuples are not produced by default but
+only for the cases when they are required.
+
+*/

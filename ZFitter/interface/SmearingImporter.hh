@@ -47,6 +47,7 @@ public:
   inline void SetEleID(TString value){_eleID=value;};
   inline void SetCommonCut(TString cut){_commonCut=cut;};
   inline void SetSmearingEt(bool value){_isSmearingEt=value;};
+  inline void SetPdfSystWeight(int value){_pdfWeightIndex=value;};
 
   std::vector<TString> _regionList;
   float _scaleToy, _constTermToy;
@@ -67,6 +68,8 @@ private:
   bool _excludeByWeight;
   bool _onlyDiagonal;
   bool _isSmearingEt;
+  int  _pdfWeightIndex;
+
   ElectronCategory_class cutter;
 
   void Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents=0, bool isToy=false, bool externToy=true);

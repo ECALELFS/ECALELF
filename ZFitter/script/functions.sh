@@ -101,8 +101,34 @@ mkSmearerCatData(){
 	mv tmp/smearerCat_`basename $1 .dat`_d*-`basename $configFile .dat`.root $2/ || exit 1
     fi
     cat $3 \
-	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $2/`basename $configFile`
-
+	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $3.tmp
+    cat $3.tmp >> $3
+    rm $3.tmp
+    cat $3
 	
 }
 	
+
+
+checkStepDep(){
+    for step in $@
+      do
+      index=0
+      for stepName in ${stepNameList[@]}
+	do
+	if [ "${step}" != "$stepName" ];then
+	    let index=$index+1
+	else
+	    break
+	fi
+      done
+      if [ ! -r "${outDirTable}/${outFileList[$index]}" ];then
+	  echo -e "[ERROR] output file for step $step not found:\n ${outDirTable}/${outFileList[$index]}" >> /dev/stderr
+	  exit 1
+      fi
+      if [ "$index" -ge "${#stepNameList[@]}" ];then
+	  echo "[ERROR] step $step not set in output file list" >> /dev/stderr
+	  exit 1
+      fi
+    done
+} 

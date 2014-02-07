@@ -15,20 +15,24 @@ class correctionValue_class{
   float scale, scale_err;
   float constTerm, constTerm_err;
   float alpha, alpha_err;
+  float Emean, Emean_err;
 
   correctionValue_class(void){
     scale=1;  scale_err=0;
     constTerm=0; constTerm_err=0;
     alpha=0; alpha_err=0;
+    Emean=0; Emean_err=0;
   };
     
   friend ostream& operator << (ostream& os, const correctionValue_class a){
     os <<  " " 
        << a.scale << " +/- " << a.scale_err //<< std::endl
        <<  " " 
-       << a.constTerm << " +/- "<< a.constTerm_err //<< std::endl
+       << a.constTerm << " +/- " << a.constTerm_err //<< std::endl
        <<  " " 
-       << a.alpha << " +/- " << a.alpha_err;
+       << a.alpha << " +/- " << a.alpha_err
+       <<  " " 
+       << a.Emean << " +/- " << a.Emean_err;
     return os;
   };
 };
@@ -59,7 +63,7 @@ class correctionCategory_class{
     etmin=EtEle; etmax=EtEle;
   }
 
-  correctionCategory_class(TString category_);
+  correctionCategory_class(TString category_); ///< constructor with name of the category according to ElectronCategory_class
 
   bool operator<(const correctionCategory_class& b) const;
 
@@ -83,7 +87,7 @@ class EnergyScaleCorrection_class{
 
  public:
   EnergyScaleCorrection_class(TString correctionFileName, 
-			      TString smearingFileName="");
+			      TString smearingFileName=""); ///< constructor with correction file names
   ~EnergyScaleCorrection_class(void);
   void ReadFromFile(TString filename);
   float getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle); // deprecated
@@ -100,8 +104,8 @@ class EnergyScaleCorrection_class{
 
  private:
   float GetMean_nPV(TChain *tree, bool fastLoop, TString nPVBranchName);
-
   void Add(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_);
+
  public:
 
   //============================== smearings
@@ -111,14 +115,14 @@ class EnergyScaleCorrection_class{
   correction_map_t smearings, smearings_not_defined;
 
   void AddSmearing(TString category_, int runMin_, int runMax_, //double smearing_, double err_smearing_);
-		   double constTerm, double err_constTerm, double alpha, double err_alpha);
-
-  float getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
-
-
+		   double constTerm, double err_constTerm, double alpha, double err_alpha, double Emean, double err_Emean);
+  float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); 
  public:
-  float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
-  void ReadSmearingFromFile(TString filename);
+  float getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
+  float getSmearingRho(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); ///< public for sigmaE estimate
+
+
+  void ReadSmearingFromFile(TString filename); ///< File structure: category constTerm alpha;
   TTree *GetSmearTree(TChain *tree, bool fastLoop, 
 		      TString energyEleBranchName,
 		      TString runNumberBranchName="runNumber",

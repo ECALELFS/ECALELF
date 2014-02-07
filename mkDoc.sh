@@ -7,4 +7,10 @@ fi
 
 doxygen fulldoc
 
+cd doc/doxygen/fulldoc/
+git pull
+git add *
+git commit -m "updated documentation" -a
+git push
+cd -
 

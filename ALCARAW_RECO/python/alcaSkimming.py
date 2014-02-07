@@ -47,6 +47,11 @@ options.register('doTreeOnly',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
+options.register('pdfSyst',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "bool: pdfSyst=1 true, pdfSyst=0 false")
                  
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
@@ -163,7 +168,8 @@ process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
-
+# pdfSystematics
+process.load('Calibration.ALCARAW_RECO.pdfSystematics_cff')
 
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
@@ -256,26 +262,6 @@ else:
         else:
             process.GlobalTag.globaltag = 'GR_P_V32::All' # 5_2_0 Prompt
             #            process.GlobalTag.globaltag = 'GR_R_52_V7::All' # 5_2_0
-    elif(re.match("CMSSW_5_3_3.*",CMSSW_VERSION)):
-        if(MC):
-            print "[INFO] Using GT START53_V7A::All"
-            process.GlobalTag.globaltag = 'START53_V7A::All'
-        else:
-            #process.GlobalTag.globaltag = 'GR_P_V41::All' # 5_3_3_patch1 Prompt
-            process.GlobalTag.globaltag = 'GR_R_53_V9F::All' # GT for 53 rereco (2011)
-    elif(re.match("CMSSW_5_3_7.*",CMSSW_VERSION)):
-        if(MC):
-            print "[INFO] Using GT START53_V24::All"
-            process.GlobalTag.globaltag = 'START53_V24::All'
-        else:
-            print "[INFO] Using GT FT_R_53_V21::All"
-            process.GlobalTag.globaltag = 'FT_R_53_V21::All' #22Jan rereco
-    elif(re.match("CMSSW_5_3_9_patch3",CMSSW_VERSION)):
-        if(MC):
-            print "[INFO] Using GT START53_V7N::All"
-            process.GlobalTag.globaltag = 'START53_V7N::All'
-        else:
-            process.GlobalTag.globaltag = 'FT_R_53_V21::All' #22Jan rereco
     elif(re.match("CMSSW_5_3_11_patch3",CMSSW_VERSION)):
         if(MC):
             print "[INFO] Using GT START53_LV4::All"
@@ -283,13 +269,16 @@ else:
 #            process.GlobalTag.globaltag = 'START53_LV4::All'
         else:
             process.GlobalTag.globaltag = 'FT_R_53_V21::All' #22Jan rereco
-            #process.GlobalTag.globaltag = 'FT_R_53_LV3::All' #21Jun rereco 53X 2011 data
     elif(re.match("CMSSW_5_3_.*",CMSSW_VERSION)):
         if(MC):
-            print "[INFO] Using GT START53_V7A::All"
-            process.GlobalTag.globaltag = 'START53_V7A::All'
+            print "[INFO] Using GT START53_V7N::All"
+            process.GlobalTag.globaltag = 'START53_V7N::All' # run dep MC
+            #            print "[INFO] Using GT START53_V7G::All"
+            #            process.GlobalTag.globaltag = 'START53_V7G::All' # suggested for analysis std. MC
         else:
-            process.GlobalTag.globaltag = 'GR_P_V42B::All' # 5_3_3 Prompt
+            process.GlobalTag.globaltag = 'FT_R_53_V21::All' #GR_P_V42B::All' # 5_3_3 Prompt
+            #process.GlobalTag.globaltag = 'FT_R_53_LV3::All' #21Jun rereco 53X 2011 data
+            #process.GlobalTag.globaltag = 'GR_R_53_V9F::All' # GT for 53 rereco (2011)
     elif(re.match("CMSSW_6_1_.*",CMSSW_VERSION)):
         if(MC):
             print "[INFO] Using GT START61_V11::All"
@@ -445,6 +434,11 @@ if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree
 if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
 
+if(MC and options.pdfSyst==1):
+    process.pdfWeightsSeq = cms.Sequence(process.pdfWeights)
+    process.zNtupleDumper.pdfWeightCollections = cms.VInputTag(cms.InputTag('pdfWeights:cteq66'), cms.InputTag("pdfWeights:MRST2006nnlo"), cms.InputTag('pdfWeights:NNPDF10'))
+else:
+    process.pdfWeightsSeq = cms.Sequence()
 
 ############################################################
 # OUTPUT MODULES
@@ -503,7 +497,12 @@ process.outputRECO = cms.OutputModule("PoolOutputModule",
 
 #print "OUTPUTCOMMANDS"
 #print process.outputALCARECO.outputCommands
-
+# if(options.pdfSyst==1):
+#     process.TFileService = cms.Service("TFileService",
+#                                        fileName = cms.string("ntupleExtra.root"),
+#                                        closeFileFast = cms.untracked.bool(True)
+#                                        )
+ 
 
 
 ##############################################################
@@ -544,7 +543,7 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process
                                                    process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalElectron)
 
-process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.ntupleSeq)
+process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.pdfWeightsSeq * process.ntupleSeq)
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO)

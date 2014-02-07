@@ -128,6 +128,7 @@ public:
   inline void SetPtWeight(bool usePtReweight){importer.SetPtWeight(usePtReweight);};
   inline void SetOnlyDiagonal(bool value){importer.SetOnlyDiagonal(value);};
   inline void SetSmearingEt(bool value){importer.SetSmearingEt(value);};
+  inline void SetPdfSystWeight(int value){importer.SetPdfSystWeight(value);};
 
   void SetNSmear(unsigned int n_smear=0, unsigned int nlltoy=0);
 

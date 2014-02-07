@@ -1,0 +1,81 @@
+/**
+* \page ZFitterConfigFiles Config files syntax and generation
+
+There are three important directories where the proper .dat files should be put:
+- data/validation/ <BR>
+   For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation:
+   ./data/validation/rereco/rerecoGroupName/
+   where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test
+   for example: you can use ./data/validation/rereco/Cal_Dic2013/
+                or ./data/validation/rereco/ungrouped/
+   this way the fit results will be put under the subdirectory
+   rerecoGroupName and you will be able to move or remove it when the
+   set of validations has finished. <BR>
+   The logic of the validation .dat files is reported below in a
+   dedicated section.
+
+
+- data/regions/
+  the fits are done in categories, the conditions that the electrons
+  have to fulfil are defined in .dat files in this directory.
+  In each .dat file, a set of categories are defined, one category for
+  each line: see ElectronCategory_class for more information about the syntax
+
+
+  For standard validations you can use the data/regions/validation.dat
+  that is set in the scripts as the default one.
+
+
+- data/runRanges/
+  contains files that define a set of run ranges in order to perform
+  the fits for the stability plots. The default one to be used is
+  data/runRanges/monitoring.dat
+
+  The syntax is the following:
+\verbatim
+  #runMin-runMax nEvents        timeStampMin-timeStampMax
+  190645-190781	28734   	1333819264-1333983242
+  190782-191042	24007		1334023525-1334188134
+\endverbatim
+  The second and third column are optional.
+  
+  For more information on how to produce automatically the runRanges .dat files see:  \ref runDivide
+
+
+#============================== validation config .dat file creation to be put in data/validation/
+This config file contains the list of files to run on, the files
+containing the PU histograms for the PU reweighting and all the other
+files needed.
+The main idea in the ECALELF framework is to have a minimum set of
+variables in very small trees (the tree name is "selected"), while
+additional branches can be produced and added if needed as tree
+friends. The advantage is the possibility to produce ntuples for a
+larger set of studies with small specific trees for each of them. 
+
+
+The file is structured in 3 columns: tag, treeName and filePath as in the follows:
+\verbatim
+# commented lines
+# tag	treeName	file
+s1	selected	root://eoscms//eos/..../file.root
+s2	selected	root://eoscms//eos/..../file.root
+d1	selected	root://eoscms//eos/..../file.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-204567-13Julv2_lastPrompt.69400.observed.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Summer12_DD3.observed.root
+
+\endverbatim
+
+	The first column (tag) indicates if this file is signal MC (s), background MC (b), or data (d). 
+
+        The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)
+
+	The second column (treeName) is the name of the tree in the file
+
+	The third column (filePath) is the full path of the file
+	files with the same tag and the same treeName are put in the
+        same chain
+	files with the same tag but different treeName are added as
+	friends 
+
+
+*/

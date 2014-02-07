@@ -1,0 +1,91 @@
+/** 
+* \page plotNtuple How to make plots using ECALELF ntuples
+#======================================== Working with ntuples: how to
+#                                         play by hand with ntuples
+
+If you are interested only in using the fit for validations you can
+skip this paragraphs and go directly to "RERECO VALIDATION instructions"
+
+The .dat config file keeping the list of ntuples can be modified according to the needs adding or commenting unuseful ntuples or friend trees.
+It's then important to have a simple way to merge the trees in order to be able to manipulate, scan and plot variables from the ntuples.
+The ZFitter/script/GenRootChain.sh has been designed for this.
+
+running the command:
+./script/GenRootChain.sh -f data/validation/myConfigFile.dat 
+in the tmp/ the s_chain.root, d_chain.root load.C are created for MC and data respectively.
+The .root files have the TChains already defined, merging the files with the same treeName in the config file and adding the friends properly. 
+Due to a bug in ROOT in order to properly load the files the load.C script is created.
+
+To work with ntuples you can do (see pratical example below):
+root -l tmp/d_chain.root tmp/s_chain.root tmp/load.C
+data    -> Draw("*");
+signalA -> Draw("*");
+
+NB: Please check in the load.C file the correct assignment of the tree pointer to the correct file.
+
+#============================== Data/MC plots
+A standard function for data/MC plots have been prepared and is available in macro/PlotDataMC.C
+
+In the following you can find an example of production of data/MC plots with a config file with 
+22Jan rereco data, run dependent MC (three samples with different generators: s1, s2, s3)
+./script/GenRootChain.sh -f data/validation/22Jan2012-runDepMCAll_v2.dat
+root -l -b -q tmp/d_chain.root tmp/s1_chain.root tmp/s2_chain.root tmp/load.C macro/standardDataMC.C
+
+*****************
+The load.C script is commented below:
+{
+  gROOT->ProcessLine(".L macro/PlotDataMC.C+"); // -> functions for data/MC plots
+  gROOT->ProcessLine(".L src/setTDRStyle.C");
+  gROOT->ProcessLine(".L macro/addChainWithFriends.C+"); // -> functions to work around ROOT bugs in friend treatment
+
+  setTDRStyle1();
+
+  TChain *data   = (TChain *) _file0->Get("selected");  // -> pointers to samples
+  TChain *signalA = (TChain *) _file1->Get("selected"); // -> pointers to samples
+  TChain *signalB = (TChain *) _file2->Get("selected"); // -> pointers to samples
+  TChain *signalC = (TChain *) _file3->Get("selected"); // -> pointers to samples
+
+  ReassociateFriends(_file0, data);    // -> functions to correct associate the friends to their main trees
+  ReassociateFriends(_file1, signalA); // -> functions to correct associate the friends to their main trees
+  ReassociateFriends(_file2, signalB); // -> functions to correct associate the friends to their main trees
+  ReassociateFriends(_file3, signalC); // -> functions to correct associate the friends to their main trees
+
+   TDirectory *curDir = new TDirectory("curDir","");
+   curDir->cd();
+
+  TString outputPath="tmp/";
+
+// look at standardDataMC.C for some examples  
+}
+*****************
+The standardDataMC.C example:
+{
+  std::vector<TString> mcLabel_vec;  // create a vector of labels for the MC samples
+  mcLabel_vec.push_back("Madgraph");
+  mcLabel_vec.push_back("Powheg");
+  mcLabel_vec.push_back("Sherpa");
+
+  //MakeChainVector(signalA,signalB,signalC) 
+  
+  c = PlotDataMCs(data, // pointer to data chain
+                  MakeChainVector(signalA,signalB,signalC), // creates a vector of chains for MCs
+                  "etaEle",  // variable to be plotted
+                  "(100,-2.5,2.5)", // binning of x axis
+                  "eleID_loose-trigger-noPF-Et_25", // stream based selection with ECALELF convention -> a specific class takes care in parsing the string and provide the selections cuts
+                  "", // additional selection string in standard ROOT syntax,
+                  "Data", // label for data in Legend
+                   mcLabel_vec, // vector of strings for MC labels in legend
+                   "#eta", // x axis title
+                   "", 
+                   false, // do plot in log scale
+                   true // reweight MC for PU
+                   ); // use r9weight
+   c->SaveAs(outputPath+"etaEle-r9reweighted-Et_25.eps");
+   c->SaveAs(outputPath+"etaEle-r9reweighted-Et_25.C");
+  delete c;
+}
+
+
+
+
+*/

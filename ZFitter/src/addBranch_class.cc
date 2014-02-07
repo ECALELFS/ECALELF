@@ -1,7 +1,9 @@
 #include "../interface/addBranch_class.hh"
 #include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
+#include <iostream> 
 
+//#define DEBUG
 //#define NOFRIEND
 
 addBranch_class::addBranch_class(void):
@@ -17,7 +19,7 @@ addBranch_class::~addBranch_class(void){
    *  \param BranchName invMassSigma or iSMEle (important, define which new branch you want)
    */
 TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop, bool isMC){
-  if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop);
+  if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
   if(BranchName.CompareTo("iSM")==0)       return AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
   if(BranchName.CompareTo("smearerCat")==0)       return AddBranch_smearerCat(originalChain, treename, isMC);
 
@@ -80,18 +82,19 @@ TTree* addBranch_class::AddBranch_Pt(TChain* originalChain, TString treename){
 }
 
 
-TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassSigmaName, bool fastLoop){
-  if(scaler==NULL) exit(1);
+TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassSigmaName, bool fastLoop, bool isMC){
+  if(scaler==NULL){
+    std::cerr << "[ERROR] EnergyScaleCorrection class not initialized" << std::endl;
+    exit(1);
+  }
 
   //sanity checks
   TString etaEleBranchName="etaEle", phiEleBranchName="phiEle", etaSCEleBranchName="etaSCEle";
   TString R9EleBranchName="R9Ele";
   TString energyBranchName, invMassBranchName, sigmaEnergyBranchName;
-#ifndef NOFRIEND
+
   TTree *newtree = new TTree(treename, treename);
-#else 
-  TTree *newtree = originalChain->CloneTree();
-#endif
+
   if(newtree==NULL){
     std::cerr << "[ERROR] New tree for branch " << invMassSigmaName << " is NULL" << std::endl;
     exit(1);
@@ -107,6 +110,7 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
   Float_t         energyEle[2];
   Float_t         sigmaEnergyEle[2];
   Float_t         invMass;
+  Float_t         corrEle[2]={1.,1.};
   //Float_t         smearEle[2]={1,1};
   
   Float_t etaSCEle_[2];
@@ -131,6 +135,19 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
     invMassBranchName="invMass_regrCorr_fra";
     energyBranchName="energyEle_regrCorr_fra";
     sigmaEnergyBranchName="energysigmaEle_regrCorr_fra";    
+  }else if(invMassSigmaName.Contains("SemiPar")){
+    //    invMassSigmaRelBranchName=invMassSigmaName;
+    //    invMassSigmaRelBranchName.ReplaceAll("Sigma","SigmaRel");
+
+    invMassBranchName=invMassSigmaName;
+    invMassBranchName.ReplaceAll("Sigma","");
+    energyBranchName=invMassBranchName;
+    energyBranchName.ReplaceAll("invMass_SC","energySCEle");
+    sigmaEnergyBranchName=energyBranchName;
+    sigmaEnergyBranchName.ReplaceAll("energySCEle","energySigmaSCEle");
+  }else{
+    std::cerr << "[ERROR] Energy branch and invMass branch for invMassSigma = " << invMassSigmaName << " not defined" << std::endl;
+    exit(1);
   }
 
   if(fastLoop){
@@ -141,6 +158,10 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
     originalChain->SetBranchStatus(phiEleBranchName,1);
     originalChain->SetBranchStatus(etaSCEleBranchName,1);
     originalChain->SetBranchStatus(R9EleBranchName,1);
+    if(originalChain->GetBranch("scaleEle")!=NULL){
+      std::cout << "[STATUS] Adding electron energy correction branch from friend " << originalChain->GetTitle() << std::endl;
+      originalChain->SetBranchAddress("scaleEle", corrEle);
+    }
 
     //originalChain->SetBranchStatus(smearEleBranchName, true);
     originalChain->SetBranchStatus(energyBranchName,1);
@@ -165,23 +186,53 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
   originalChain->SetBranchAddress(sigmaEnergyBranchName, sigmaEnergyEle);
   originalChain->SetBranchAddress(invMassBranchName, &invMass);
 
-  Float_t invMassSigma;
+  Float_t invMassSigma; //, invMassSigmaRel;
   newtree->Branch(invMassSigmaName, &invMassSigma, invMassSigmaName+"/F");
+  //  newtree->Branch(invMassSigmaRelBranchName, &invMassSigmaRel, invMassSigmaRelBranchName+"/F");
 
   for(Long64_t ientry = 0; ientry<originalChain->GetEntriesFast(); ientry++){
 
     originalChain->GetEntry(ientry);
     float smearEle_[2];
-    smearEle_[0] = scaler->getSmearingSigma(runNumber,energyEle[0], fabs(etaSCEle_[0]) < 1.4442, 
-			       R9Ele_[0],etaEle[0]);
-    smearEle_[1] = scaler->getSmearingSigma(runNumber,energyEle[1], fabs(etaSCEle_[1]) < 1.4442, 
-			       R9Ele_[1],etaEle[1]);
+    smearEle_[0] = scaler->getSmearingRho(runNumber,energyEle[0], fabs(etaSCEle_[0]) < 1.4442, 
+			       R9Ele_[0],etaSCEle_[0]);
+    smearEle_[1] = scaler->getSmearingRho(runNumber,energyEle[1], fabs(etaSCEle_[1]) < 1.4442, 
+			       R9Ele_[1],etaSCEle_[1]);
+    if(smearEle_[0]==0 || smearEle_[1] ==0){
+      std::cerr << "[ERROR] Smearing = 0 " << "\t" << smearEle_[0] << "\t" << smearEle_[1] << std::endl;
+      std::cout << "E_0: " << runNumber << "\t" << energyEle[0] << "\t" 
+		<< etaSCEle_[0] << "\t" << R9Ele_[0] << "\t" << etaEle[0] << "\t" << smearEle_[0] << "\t" << invMass << "\t" << corrEle[0] << "\t" << invMassSigma << "\t" << sigmaEnergyEle[0] << std::endl;
+      std::cout << "E_1: " << runNumber << "\t" << energyEle[1] << "\t" 
+		<< etaSCEle_[1] << "\t" << R9Ele_[1] << "\t" << etaEle[1] << "\t" << smearEle_[1] << "\t" << sigmaEnergyEle[1] << "\t" << corrEle[1] << std::endl;
+      exit(1);
+    }
+    if(isMC) invMass*=sqrt(
+			   scaler->getSmearing(runNumber,energyEle[0], fabs(etaSCEle_[0]) < 1.4442, 
+							    R9Ele_[0],etaSCEle_[0])
+			   *
+			   scaler->getSmearing(runNumber,energyEle[1], fabs(etaSCEle_[1]) < 1.4442, 
+					       R9Ele_[1],etaSCEle_[1])
+			   );
 
-    invMassSigma = 0.5 * invMass * sqrt( 
-					sigmaEnergyEle[0]/energyEle[0] * sigmaEnergyEle[0]/energyEle[0] +
-					sigmaEnergyEle[1]/energyEle[1] * sigmaEnergyEle[1]/energyEle[1] +
-					smearEle_[0] * smearEle_[0] + smearEle_[1] * smearEle_[1]
-					);
+    invMass*=sqrt(corrEle[0]*corrEle[1]);
+
+    invMassSigma = 0.5 * invMass *
+      sqrt( 
+	   sigmaEnergyEle[0]/(energyEle[0]*corrEle[0]) * sigmaEnergyEle[0]/(energyEle[0]*corrEle[0]) +
+	   sigmaEnergyEle[1]/(energyEle[1]*corrEle[1]) * sigmaEnergyEle[1]/(energyEle[1]*corrEle[1]) +
+	   smearEle_[0] * smearEle_[0] + smearEle_[1] * smearEle_[1]
+	   );
+    //    invMassSigmaRel = invMassSigma/invMass;
+#ifdef DEBUG
+  E_0: 203777     55.7019 0.35335 0.958164        0.39268 inf     86.3919 1       inf     0.00636875
+  E_1: 203777     33.6127 -0.309422       0.831792        -0.270196       inf     0.00910235      1
+    if(ientry<10){
+      std::cout << "E_0: " << runNumber << "\t" << energyEle[0] << "\t" 
+		<< etaSCEle_[0] << "\t" << R9Ele_[0] << "\t" << etaEle[0] << "\t" << smearEle_[0] << "\t" << invMass << "\t" << corrEle[0] << "\t" << invMassSigma << "\t" << sigmaEnergyEle[0] << std::endl;
+      std::cout << "E_1: " << runNumber << "\t" << energyEle[1] << "\t" 
+		<< etaSCEle_[1] << "\t" << R9Ele_[1] << "\t" << etaEle[1] << "\t" << smearEle_[1] << "\t" << sigmaEnergyEle[1] << "\t" << corrEle[1] << std::endl;
+    }
+#endif
     newtree->Fill();
   }
 

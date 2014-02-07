@@ -78,6 +78,7 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 
     cut+=cut_string;
   }
+
 #ifdef DEBUG
   std::cout << cut << std::endl;
 #endif
@@ -205,6 +206,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
   //   (17:58:27) Riccardo Paramatti: EB- : 7, 9, 10, 16, 17
   TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
   TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
+
+
   /*
     se region contiene runNumber:
     prendi il primo range dal primo _ _ dopo runNumber 
@@ -296,7 +299,36 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       cutSet.insert(TString(bad_cut));
       continue;
     }
-    
+
+    //---------------
+    //--------------- gain
+    if(string.Contains("gainEle")){
+      TObjArray *splitted = string.Tokenize("_");
+      if(splitted->GetEntries() < 2){
+	std::cerr << "ERROR: incomplete eleID region definition" << std::endl;
+	continue;
+      } 
+      TObjString *Objstring1 = (TObjString *) splitted->At(1);
+            
+      TString string1 = Objstring1->GetString();
+      if(string1=="12") string1="0";
+      if(string1=="6") string1="1";
+      if(string1=="1") string1="2";
+
+      TCut cutEle1("gainEle_ele1 =="+string1);
+      TCut cutEle2("gainEle_ele2 =="+string1);
+
+      if(string.Contains("SingleEle"))
+	cutSet.insert(TString(cutEle1 || cutEle2));
+      else{
+	cutSet.insert(TString(cutEle1));
+	cutSet.insert(TString(cutEle2)); 
+      }
+      delete splitted;
+      continue;
+    }
+
+
     //--------------- ETA
     if(string.Contains("absEta")){
       TObjArray *splitted = string.Tokenize("_");
@@ -983,15 +1015,25 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       if(splitted->GetEntries() < 3){
 	std::cerr << "ERROR: incomplete invMassSigma region definition" << std::endl;
         continue;
-      } 
-      TObjString *Objstring1 = (TObjString *) splitted->At(1);
-      TObjString *Objstring2 = (TObjString *) splitted->At(2);
+      }
+
+      TObjString *Objstring0 = (TObjString *) splitted->At(0);
+      TString string0 = Objstring0->GetString();
+      for(int i=1; i < splitted->GetEntries()-2; i++){
+        Objstring0 = (TObjString *) splitted->At(i);
+        string0+="_"; string0+=Objstring0->GetString();
+      }
+      TObjString *Objstring1 = (TObjString *) splitted->At(splitted->GetEntries()-2);
+      TObjString *Objstring2 = (TObjString *) splitted->At(splitted->GetEntries()-1);
       
+
       TString string1 = Objstring1->GetString();
       TString string2 = Objstring2->GetString();
-      
-      TCut cutEle_1("invMassSigma >= "+string1);
-      TCut cutEle_2("invMassSigma <  "+string2);
+
+      string0.ReplaceAll("invMassSigma","");
+
+      TCut cutEle_1("invMassSigma"+string0+ ">= "+string1);
+      TCut cutEle_2("invMassSigma"+string0+ "< "+string2);
 
       cut_string += cutEle_1 && cutEle_2;
       cutSet.insert(TString(cutEle_1));
@@ -1022,6 +1064,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       TString string2 = Objstring2->GetString();
 
       string0.ReplaceAll("invMassRelSigma","");
+
       TCut cutEle_1("invMassSigma"+string0+"/invMass"+string0+ ">= "+string1);
       TCut cutEle_2("invMassSigma"+string0+"/invMass"+string0+ "< "+string2);
 

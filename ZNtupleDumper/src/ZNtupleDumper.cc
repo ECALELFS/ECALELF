@@ -181,6 +181,8 @@ private:
   
   bool doExtraCalibTree;
   bool doEleIDTree;
+
+
   //TString r9weightsFilename;
   //std::string puWeightFile;
   //  puWeights_class puWeights;
@@ -217,6 +219,8 @@ private:
 
   Int_t recoFlagsEle[2];           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
 
+  UChar_t gainEle[2];     ///< Gain switch 0==gain12, 1==gain6, 2==gain1
+
   Float_t PtEle[2];
   Int_t   classificationEle[2];   ///< electron classification in GOLD, SHOWERING, etc.
 
@@ -228,8 +232,8 @@ private:
   Float_t seedLCSCEle[2];
 
   Float_t avgLCSCEle[2];
-  Bool_t isGainSwitch6[2];///< Gain switch 12->6
-  Bool_t isGainSwitch1[2];///< Gain switch 6->1
+
+
 
   Float_t energyMCEle[2];    ///< Electron MC true energy
   Float_t energySCEle[2];    ///< corrected SuperCluster energy
@@ -245,22 +249,22 @@ private:
   Float_t energySigmaSCEle_regrCorr_ele[2];
   Float_t energySigmaSCEle_regrCorr_pho[2];
 
-  Float_t energySCEle_regrCorrSemiParV4_pho[2], energySigmaSCEle_regrCorrSemiParV4_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV4_ele[2], energySigmaSCEle_regrCorrSemiParV4_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV5_pho[2], energySigmaSCEle_regrCorrSemiParV5_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV5_ele[2], energySigmaSCEle_regrCorrSemiParV5_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV6_pho[2], energySigmaSCEle_regrCorrSemiParV6_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV6_ele[2], energySigmaSCEle_regrCorrSemiParV6_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV7_pho[2], energySigmaSCEle_regrCorrSemiParV7_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV7_ele[2], energySigmaSCEle_regrCorrSemiParV7_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV8_pho[2], energySigmaSCEle_regrCorrSemiParV8_pho[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiParV8_ele[2], energySigmaSCEle_regrCorrSemiParV8_ele[2]; ///< see documentation on regressions
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV6_pho[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_pho[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV6_ele[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_ele[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV7_pho[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_pho[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV7_ele[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_ele[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV8_pho[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[2];
-  Float_t energySCEle_regrCorrSemiPar7TeVtrainV8_ele[2], energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[2];
+  Float_t energySigmaSCEle_regrCorrSemiParV4_pho[2], energySCEle_regrCorrSemiParV4_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV4_ele[2], energySCEle_regrCorrSemiParV4_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV5_pho[2], energySCEle_regrCorrSemiParV5_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV5_ele[2], energySCEle_regrCorrSemiParV5_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV6_pho[2], energySCEle_regrCorrSemiParV6_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV6_ele[2], energySCEle_regrCorrSemiParV6_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV7_pho[2], energySCEle_regrCorrSemiParV7_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV7_ele[2], energySCEle_regrCorrSemiParV7_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV8_pho[2], energySCEle_regrCorrSemiParV8_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiParV8_ele[2], energySCEle_regrCorrSemiParV8_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_pho[2], energySCEle_regrCorrSemiPar7TeVtrainV6_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_ele[2], energySCEle_regrCorrSemiPar7TeVtrainV6_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_pho[2], energySCEle_regrCorrSemiPar7TeVtrainV7_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_ele[2], energySCEle_regrCorrSemiPar7TeVtrainV7_ele[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[2], energySCEle_regrCorrSemiPar7TeVtrainV8_pho[2]; ///< see \ref regressions
+  Float_t energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[2], energySCEle_regrCorrSemiPar7TeVtrainV8_ele[2]; ///< see \ref regressions
 
   Float_t energySCEle_corr[2];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 
@@ -341,6 +345,20 @@ private:
   Float_t eleIDloose[2], eleIDmedium[2], eleIDtight[2];
   //==============================
 
+  //==============================  
+  TTree *pdfSystTree;
+  //std::vector<Int_t>   pdfSystWeightNum;
+  std::vector<Double_t> pdfSystWeight[5];
+
+  // pdfWeightTree
+  bool doPdfSystTree;
+  std::vector< edm::InputTag > pdfWeightTAGS;
+  edm::Handle< std::vector<double> > pdfWeightHandle;
+
+  void InitPdfSystTree(void);
+  void TreeSetPdfSystVar(const edm::Event& iEvent);
+
+  //==============================
 private:
   TFile *tree_file;
   void InitNewTree(void);
@@ -348,6 +366,7 @@ private:
   void TreeSetDiElectronVar(pat::CompositeCandidate ZEE); 
   void TreeSetSingleElectronVar(const pat::Electron& electron1, int index);
   void TreeSetDiElectronVar(const pat::Electron& electron1, const pat::Electron& electron2);
+  DetId findSCseed(const reco::SuperClusterRef& cluster);
 
   void InitExtraCalibTree(void);
   void TreeSetExtraCalibVar(const pat::Electron& electron1, int index);
@@ -406,7 +425,9 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
   foutName(iConfig.getParameter<std::string>("foutName")),
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
-  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree"))
+  doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
+  doPdfSystTree(iConfig.getParameter<bool>("doPdfSystTree")),
+  pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections"))
 			    //  r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 			    //puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
 			    //puWeights()
@@ -478,6 +499,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //if(metHandle.isValid()==false) iEvent.getByType(metHandle);
   reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
 
+
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
   
@@ -545,6 +567,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	TreeSetEleIDVar(*eleIter1, *eleIter1);
 	eleIDTree->Fill();
       }
+      if(doPdfSystTree){
+	TreeSetPdfSystVar(iEvent);
+	//pdfSystTree->Fill();
+      }
     } else {
       for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
 	  eleIter2 != electronsHandle->end();
@@ -570,6 +596,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if(doEleIDTree){
 	  TreeSetEleIDVar(*eleIter1, *eleIter2);
 	  eleIDTree->Fill();
+	}
+	if(doPdfSystTree){
+	  TreeSetPdfSystVar(iEvent);
+	  //pdfSystTree->Fill();
 	}
       }
     }
@@ -611,7 +641,7 @@ void ZNtupleDumper::beginJob()
   
   tree->SetDirectory(tree_file);
   // controllo su tree==NULL
-  
+
   InitNewTree();  // inizializzo il tree dell'ntupla ridotta selezionata
   
   if(doExtraCalibTree){
@@ -623,6 +653,14 @@ void ZNtupleDumper::beginJob()
     InitEleIDTree();
   }
   
+  if(doPdfSystTree){
+    std::cout << "[INFO] Doing pdfSystTree" << std::endl;
+    //pdfSystTree = fs->make<TTree>("pdfSystTree","pdfSystTree");
+    pdfSystTree=tree;
+    InitPdfSystTree();
+  }
+
+
 #ifdef DEBUG
   std::cout << "[DEBUG] End creation of ntuples" << std::endl; 
 #endif
@@ -728,8 +766,8 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("seedLCSCEle",         seedLCSCEle,     "seedLCSCEle[2]/F");
 
   tree->Branch("avgLCSCEle", avgLCSCEle, "avgLCSCEle[2]/F");
-  tree->Branch("isGainSwitch6", isGainSwitch6, "isGainSwitch6[2]/B");
-  tree->Branch("isGainSwitch1", isGainSwitch1, "isGainSwitch1[2]/B");
+
+  tree->Branch("gainEle", gainEle, "gainEle[2]/b");
 
   tree->Branch("energyMCEle", energyMCEle, "energyMCEle[2]/F");
   tree->Branch("energySCEle", energySCEle, "energySCEle[2]/F");
@@ -934,6 +972,27 @@ void ZNtupleDumper::TreeSetDiElectronVar(pat::CompositeCandidate ZEE){
 }
 
 
+DetId ZNtupleDumper::findSCseed(const reco::SuperClusterRef& cluster){
+  DetId seedDetId;
+  float seedEnergy=0;
+  std::vector< std::pair<DetId, float> > hitsFractions = cluster->hitsAndFractions();
+  for(std::vector< std::pair<DetId, float> >::const_iterator hitsAndFractions_itr = hitsFractions.begin();
+      hitsAndFractions_itr != hitsFractions.end();
+      hitsAndFractions_itr++){
+    if(hitsAndFractions_itr->second > seedEnergy)
+      seedDetId=hitsAndFractions_itr->first;
+  }
+#ifdef DEBUG
+  std::cout << "[DEBUG findSCseed] seedDetIt: " << seedDetId.rawId() << std::endl 
+	    << *cluster << std::endl
+	    << *(cluster->seed()) << std::endl;
+#endif
+  if(seedDetId.null()){
+    std::cerr << "[ERROR] Invalid detID: " << *cluster << std::endl;
+  }
+  return seedDetId;
+}
+
 // a negative index means that the corresponding electron does not exist, fill with 0
 void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int index){
 
@@ -967,30 +1026,37 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
   const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
   
-  if(electron1.isEB()){
-    EBDetId seedDetId = electron1.superCluster()->seed()->seed();
-    EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-    seedXSCEle[index]=seedDetId.ieta();
-    seedYSCEle[index]=seedDetId.iphi();
-    seedEnergySCEle[index]=seedRecHit->energy();
-    if(isMC) seedLCSCEle[index]=-10;
-    else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-
-    isGainSwitch6[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6);
-    isGainSwitch1[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1);
-       
-  } else {
-    EEDetId seedDetId = electron1.superCluster()->seed()->seed();
-    EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-    seedXSCEle[index]=(EEDetId)(seedDetId).ix();
-    seedYSCEle[index]=(EEDetId)(seedDetId).iy();
-    seedEnergySCEle[index]=seedRecHit->energy();
-    if(isMC) seedLCSCEle[index]=-10;
-    else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-
-    isGainSwitch6[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6);
-    isGainSwitch1[index]=seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1);
+  DetId seedDetId = electron1.superCluster()->seed()->seed();
+  if(seedDetId.null()){
+    if(electron1.trackerDrivenSeed()) seedDetId = findSCseed(electron1.superCluster());
+    else{
+      //	std::cout << "[ERROR] No SC seed found for ecalDrivenElectron" << electron1.superCluster() << std::endl;
+      exit(1);
+    }
   }
+
+  EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
+
+  if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
+    EBDetId seedDetIdEcal = seedDetId;
+    seedXSCEle[index]=seedDetIdEcal.ieta();
+    seedYSCEle[index]=seedDetIdEcal.iphi();
+  }else if(electron1.isEB() && seedDetId.subdetId() == EcalEndcap){
+    EEDetId seedDetIdEcal = seedDetId;
+    seedXSCEle[index]=seedDetIdEcal.ix();
+    seedYSCEle[index]=seedDetIdEcal.iy();
+  }else{ ///< this case is strange but happens for trackerDriven electrons
+    seedXSCEle[index]=0;
+    seedYSCEle[index]=0;
+  }
+
+  seedEnergySCEle[index]=seedRecHit->energy();
+  if(isMC) seedLCSCEle[index]=-10;
+  else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
+
+  if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
+  else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
+  else gainEle[index]=0;
   
   float sumLC_E = 0.;
   float sumE = 0.;
@@ -1394,7 +1460,54 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
   return;
 }
 
+//#============================== Ele ID tree
+void ZNtupleDumper::InitPdfSystTree(void){
+  
+  //  tree = new TTree("selected",fChain->GetTitle());
+  std::cout << "[STATUS] InitPdfSystTree" << std::endl;
+  if(pdfSystTree==NULL) return;
+  
+//   pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+//   pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+//   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/l");
+  
 
+  for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
+      pdfWeightTAGS_itr != pdfWeightTAGS.end();
+      pdfWeightTAGS_itr++){
+    int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
+    //std::string tagName = pdfWeightTAGS_itr->instance();
+    //tagName.replace(0,pdfWeightTAGS_itr->label().size());
+    //std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
+    //pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
+    pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
+  }
+  return;
+}
+
+void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent){
+
+  for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
+      pdfWeightTAGS_itr != pdfWeightTAGS.end();
+      pdfWeightTAGS_itr++){
+    int i = pdfWeightTAGS_itr-pdfWeightTAGS.begin();
+    iEvent.getByLabel(*pdfWeightTAGS_itr, pdfWeightHandle);
+    
+    //pdfSystWeight[i] = 
+    std::vector<Double_t> weights = std::vector<Double_t>(*pdfWeightHandle);
+    pdfSystWeight[i]=weights;
+    //std::cout << "Event weight for central PDF " << pdfWeightTAGS_itr->encode() << ": " << pdfSystWeight[i][0] << std::endl;
+    //unsigned int nmembers = weights.size();
+       //pdfSystWeightNum[i]=pdfSystWeight.size();
+//    for (unsigned int j=1; j<nmembers; j+=2) {
+//      std::cout << "Event weight for PDF variation +" << (j+1)/2 << ": " << pdfSystWeight[i][j] << std::endl;
+//      std::cout << "Event weight for PDF variation -" << (j+1)/2 << ": " << pdfSystWeight[i][j+1] << std::endl;
+//    }
+  }  
+  
+  return ;
+}
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ZNtupleDumper);
