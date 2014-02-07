@@ -227,6 +227,8 @@ int main(int argc, char **argv) {
   unsigned int nEventsMinDiag=0;
   unsigned int nEventsMinOffDiag=0;
   unsigned int nSmearToy=1;
+ 
+  int pdfSystWeightIndex=-1;
   std::string minimType;
   std::vector<std::string> branchList;
 
@@ -312,6 +314,7 @@ int main(int argc, char **argv) {
     ("alphaGoldFix", "alphaTerm for gold electrons fixed to the low eta region")
     ("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
     ("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(0), "")
+    ("pdfSystWeightIndex", po::value<int>(&pdfSystWeightIndex)->default_value(-1), "Index of the weight to be used")
     ;
   inputOption.add_options()
     ("chainFileList,f", po::value< string >(&chainFileListName), "Configuration file with input file list")
@@ -956,6 +959,7 @@ int main(int argc, char **argv) {
   smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
   smearer.SetSmearingEt(vm.count("smearingEt"));
   smearer.SetR9Weight(vm.count("useR9weight"));
+  smearer.SetPdfSystWeight(pdfSystWeightIndex);
   if(nSmearToy>0) smearer._nSmearToy = nSmearToy;
 
 

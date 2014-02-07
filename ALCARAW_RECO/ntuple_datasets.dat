@@ -196,8 +196,16 @@ allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START5
 175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECO		160404-180252-08Nov_v2
 175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECO		160404-180252-08Nov_v2
 160329-173692	/DoubleElectron/Run2011A-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECO		160404-180252-08Nov_v2
+194533-194533	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+194533-194533	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+200519-200519	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+206859-206859	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+194533-194533	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+200519-200519	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+206859-206859	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
 190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARERECO	rereco_22Jan2013_shervin	190456-208686_22JanReReco_v1
 190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARERECO	rereco_22Jan2013_shervin	190456-208686_22JanReReco_v1
 190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARERECO	rereco_22Jan2013_shervin	190456-208686_22JanReReco_v1
 190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARERECO	rereco_22Jan2013_shervin	190456-208686_22JanReReco_v1
 190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARERECO	rereco_22Jan2013_shervin	190456-208686_22JanReReco_v1
+
