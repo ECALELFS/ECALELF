@@ -12,7 +12,7 @@ configFile=data/validation/monitoring_2012_53X.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
-updateOnly="--updateOnly --noPU"
+updateOnly="--updateOnly"
 #extraOptions="--forceNewFit"
 #extraOptions="--addBranch iSM --forceNewFit"
 
@@ -459,29 +459,30 @@ if [ -n "$SYSTEMATICS" ];then
 # 	> ${tableFile}  || exit 1
 #     exit 0
 
-#     regionFile=data/regions/systematics.dat
-#     tableFile=${outDirTable}/systematics-${invMass_var}-${selection}-${commonCut}.tex
-#     if [ -z "${ONLYTABLE}" ];then
-# 	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
-# 	    ${extraOptions} \
-# 	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
-# 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-# 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/systematics.log || exit 1
-#     fi
-#     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
-# 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
-# 	> ${tableFile}  || exit 1
+    regionFile=data/regions/systematics.dat
+    tableFile=${outDirTable}/systematics-${invMass_var}-${selection}-${commonCut}.tex
+    if [ -z "${ONLYTABLE}" ];then
+	./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
+	    ${extraOptions} \
+	    $updateOnly --invMass_var ${invMass_var} 	--commonCut=${commonCut} --selection=${selection} \
+	    --corrEleType=HggRunEtaR9Et \
+	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/systematics.log || exit 1
+    fi
+    ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
+	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
+	> ${tableFile}  || exit 1
     
-#     for xVar in nPV
-#       do
-#       if [ ! -e "${outDirData}/img/stability/$xVar/$PERIOD" ];then
-# 	  mkdir ${outDirData}/img/stability/$xVar/$PERIOD/ -p
-#       fi
-#       ./script/stability.sh -t ${tableFile} \
-# 	  --outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y peak --column 51 $xMin $xMax || exit 1
-# #      ./script/stability.sh -t ${tableFile} \
-# #	  --outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y scaledWidth --column 51 $xMin $xMax || exit 1
-#     done
+    for xVar in nPV
+      do
+      if [ ! -e "${outDirData}/img/stability/$xVar/$PERIOD" ];then
+	  mkdir ${outDirData}/img/stability/$xVar/$PERIOD/ -p
+      fi
+      ./script/stability.sh -t ${tableFile} \
+	  --outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y peak --column 51 $xMin $xMax || exit 1
+      ./script/stability.sh -t ${tableFile} \
+	  --outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y scaledWidth --column 51 $xMin $xMax || exit 1
+    done
     
     if [ "${SYSTEMATICS}" == "all" -o "${SYSTEMATICS}" == "fitMethod" ];then
 	regionFile=data/regions/validation.dat
