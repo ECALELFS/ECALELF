@@ -366,6 +366,7 @@ private:
   void TreeSetDiElectronVar(pat::CompositeCandidate ZEE); 
   void TreeSetSingleElectronVar(const pat::Electron& electron1, int index);
   void TreeSetDiElectronVar(const pat::Electron& electron1, const pat::Electron& electron2);
+  DetId findSCseed(const reco::SuperClusterRef& cluster);
 
   void InitExtraCalibTree(void);
   void TreeSetExtraCalibVar(const pat::Electron& electron1, int index);
@@ -971,6 +972,22 @@ void ZNtupleDumper::TreeSetDiElectronVar(pat::CompositeCandidate ZEE){
 }
 
 
+DetId ZNtupleDumper::findSCseed(const reco::SuperClusterRef& cluster){
+  DetId seedDetId;
+  float seedEnergy=0;
+  std::vector< std::pair<DetId, float> > hitsFractions = cluster->hitsAndFractions();
+  for(std::vector< std::pair<DetId, float> >::const_iterator hitsAndFractions_itr = hitsFractions.begin();
+      hitsAndFractions_itr != hitsFractions.end();
+      hitsAndFractions_itr++){
+    if(hitsAndFractions_itr->second > seedEnergy)
+      seedDetId=hitsAndFractions_itr->first;
+  }
+#ifdef DEBUG
+  //  std::cout << "[DEBUG findSCseed] seedDetIt: " << seedDetId << std::endl;
+#endif
+  return seedDetId;
+}
+
 // a negative index means that the corresponding electron does not exist, fill with 0
 void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int index){
 
@@ -1006,6 +1023,13 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   
   if(electron1.isEB()){
     EBDetId seedDetId = electron1.superCluster()->seed()->seed();
+    if(seedDetId.null()){
+      if(electron1.trackerDrivenSeed()) seedDetId = findSCseed(electron1.superCluster());
+      else{
+	//	std::cout << "[ERROR] No SC seed found for ecalDrivenElectron" << electron1.superCluster() << std::endl;
+	exit(1);
+      }
+    }
     EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
     seedXSCEle[index]=seedDetId.ieta();
     seedYSCEle[index]=seedDetId.iphi();
@@ -1019,6 +1043,14 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
        
   } else {
     EEDetId seedDetId = electron1.superCluster()->seed()->seed();
+  
+    if(seedDetId.null()){
+      if(electron1.trackerDrivenSeed()) seedDetId = findSCseed(electron1.superCluster());
+      else{
+	//	std::cout << "[ERROR] No SC seed found for ecalDrivenElectron" << electron1.superCluster() << std::endl;
+	exit(1);
+      }
+    }
     EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
     seedXSCEle[index]=(EEDetId)(seedDetId).ix();
     seedYSCEle[index]=(EEDetId)(seedDetId).iy();
