@@ -983,8 +983,13 @@ DetId ZNtupleDumper::findSCseed(const reco::SuperClusterRef& cluster){
       seedDetId=hitsAndFractions_itr->first;
   }
 #ifdef DEBUG
-  //  std::cout << "[DEBUG findSCseed] seedDetIt: " << seedDetId << std::endl;
+  std::cout << "[DEBUG findSCseed] seedDetIt: " << seedDetId.rawId() << std::endl 
+	    << *cluster << std::endl
+	    << *(cluster->seed()) << std::endl;
 #endif
+  if(seedDetId.null()){
+    std::cerr << "[ERROR] Invalid detID: " << *cluster << std::endl;
+  }
   return seedDetId;
 }
 
@@ -1021,47 +1026,37 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
   const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
   
-  if(electron1.isEB()){
-    EBDetId seedDetId = electron1.superCluster()->seed()->seed();
-    if(seedDetId.null()){
-      if(electron1.trackerDrivenSeed()) seedDetId = findSCseed(electron1.superCluster());
-      else{
-	//	std::cout << "[ERROR] No SC seed found for ecalDrivenElectron" << electron1.superCluster() << std::endl;
-	exit(1);
-      }
+  DetId seedDetId = electron1.superCluster()->seed()->seed();
+  if(seedDetId.null()){
+    if(electron1.trackerDrivenSeed()) seedDetId = findSCseed(electron1.superCluster());
+    else{
+      //	std::cout << "[ERROR] No SC seed found for ecalDrivenElectron" << electron1.superCluster() << std::endl;
+      exit(1);
     }
-    EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-    seedXSCEle[index]=seedDetId.ieta();
-    seedYSCEle[index]=seedDetId.iphi();
-    seedEnergySCEle[index]=seedRecHit->energy();
-    if(isMC) seedLCSCEle[index]=-10;
-    else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-
-    if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
-    else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
-    else gainEle[index]=0;
-       
-  } else {
-    EEDetId seedDetId = electron1.superCluster()->seed()->seed();
-  
-    if(seedDetId.null()){
-      if(electron1.trackerDrivenSeed()) seedDetId = findSCseed(electron1.superCluster());
-      else{
-	//	std::cout << "[ERROR] No SC seed found for ecalDrivenElectron" << electron1.superCluster() << std::endl;
-	exit(1);
-      }
-    }
-    EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-    seedXSCEle[index]=(EEDetId)(seedDetId).ix();
-    seedYSCEle[index]=(EEDetId)(seedDetId).iy();
-    seedEnergySCEle[index]=seedRecHit->energy();
-    if(isMC) seedLCSCEle[index]=-10;
-    else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-
-    if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
-    else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
-    else gainEle[index]=0;
   }
+
+  EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
+
+  if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
+    EBDetId seedDetIdEcal = seedDetId;
+    seedXSCEle[index]=seedDetIdEcal.ieta();
+    seedYSCEle[index]=seedDetIdEcal.iphi();
+  }else if(electron1.isEB() && seedDetId.subdetId() == EcalEndcap){
+    EEDetId seedDetIdEcal = seedDetId;
+    seedXSCEle[index]=seedDetIdEcal.ix();
+    seedYSCEle[index]=seedDetIdEcal.iy();
+  }else{ ///< this case is strange but happens for trackerDriven electrons
+    seedXSCEle[index]=0;
+    seedYSCEle[index]=0;
+  }
+
+  seedEnergySCEle[index]=seedRecHit->energy();
+  if(isMC) seedLCSCEle[index]=-10;
+  else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
+
+  if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
+  else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
+  else gainEle[index]=0;
   
   float sumLC_E = 0.;
   float sumE = 0.;
