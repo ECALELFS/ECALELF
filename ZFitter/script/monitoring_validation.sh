@@ -33,6 +33,7 @@ usage(){
     echo " --stability:  run the stability fits only"
     echo " --etaScale:   run the fits in |eta| only"
     echo " --R9Ele:      run the fits in bin of R9 only"
+    echo " --onlyTable:  do not run the fits, recreate only the tables and the stability plots"
     echo " --systematics all/pu      "
     echo " --refreg"
     echo " --slides            "
@@ -368,8 +369,8 @@ if [ -n "$ETA" ];then
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	${tableCruijffOption} >  ${tableFile} || exit 1
 
-    if [ ! -d ${outDirData}/step4/img/stability/$xVar/$PERIOD ];then
-	mkdir -p ${outDirData}/step4/img/stability/$xVar/$PERIOD
+    if [ ! -d ${outDirData}/img/stability/$xVar/$PERIOD ];then
+	mkdir -p ${outDirData}/img/stability/$xVar/$PERIOD
     fi
 
     ./script/stability.sh -t ${tableFile} \

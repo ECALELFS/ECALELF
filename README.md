@@ -36,9 +36,36 @@ Every time you enter in a new shell you have to do:
 or
 `source initCmsEnv.sh`
 
+Problem:
+if you have an error in compilation like
+
+consider to edit the following file: `DataFormats/CaloRecHit/src/classes_def.xml`
+changing the following lines:
+
+` <class name="reco::CaloCluster" ClassVersion="11">`
+
+`   <version ClassVersion="11" checksum="3936140"/>`
+
+`  </class>`
+
+to 
+
+` <class name="reco::CaloCluster" ClassVersion="11">`
+
+`   <version ClassVersion="12" checksum="4003646624"/>`
+
+`</class>`
+
+
+
 
 ======
 Code documentation:
+Code documentation is updated using doxygen system.
+You can find the documentation related to the master branch here:
+http://ecalelfs.github.io/ECALELF/index.html
+
+It can be generated locally following the instructions below:
 Once downloaded the code, in Calibration/ you can run the command
 
 `doxygen fulldoc`

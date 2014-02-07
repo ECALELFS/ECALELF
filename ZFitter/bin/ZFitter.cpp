@@ -249,6 +249,7 @@ int main(int argc, char **argv) {
     ("help,h","Help message")
 
     ("runDivide", "execute the run division")
+    ("nEvents_runDivide", po::value<unsigned int>(&nEvents_runDivide)->default_value(100000), "Minimum number of events in a run range")
 
     //
     ("dataPU", po::value< string >(&dataPUFileName), "")

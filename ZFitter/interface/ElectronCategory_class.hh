@@ -1,16 +1,25 @@
-/*************************************************************
+#ifndef ElectronCategory_class_hh
+#define ElectronCategory_class_hh
+/// Di-electron events are selected using a short special syntax defined in this class
+/**\class ElectronCategory_class ElectronCategory_class.cc Calibration/ZFitter/src/ElectronCategory_class.cc
+ * Description: 
+ * 
+ */
+
+/***********************************************************//**
  * Parser of category class provides a TCut
- *
+ * one di-electron category is difined by a series of cuts to be
+ * applied to both electrons
+ * 
+ * 
  * Syntax:
- *      one di-electron category is difined by a series of cuts to be
- *        applied to both electrons
- *        '-' is the cut separator
- *         es. <cut1>-<cut2>-<cut3> 
- *         es. EB-absEta_0_1-gold: 
+ *  - '-' is the cut separator <BR>
+ *         es. <cut1>-<cut2>-<cut3> <BR> 
+ *         es. EB-absEta_0_1-gold:  <BR>
  *               three cuts are applied: 
- *               EB -> no parameters
+ *               EB -> no parameters,
  *               absEta_0_1 -> two parameters 0 and 1 (parameters are
- *                             separated by _
+ *                             separated by _,
  *               gold -> no parameters
  *
  * List of possible cuts without parameter:
@@ -20,19 +29,17 @@
  * Et_X: Et_
  * eleID_X: eleID == X
  * 
- * List of possible cuts with 2 parameters:  
- * #### ATTENTION! Same syntax but different meaning!
- * runNumber_X_Y: X <= runNumber <= Y
- * IEta_X_Y:      X <= ieta (or iX) <= Y
- * absIEta_X_Y:   X <= abs(ieta) <= Y
- * distIEta_X_Y:  X-Y <= ieta <= X+Y 
- * absEta_X_Y:    X <= |eta| < Y
- * energySC_X_Y:  X <= energySCEle < Y
- * nPV_X_Y:       X <= nPV < Y
+ * List of possible cuts with 2 parameters:  <BR>
+ * <B> ATTENTION! Same syntax but different meaning! </B> <BR>
+ * - runNumber_X_Y: X <= runNumber <= Y
+ * - IEta_X_Y:      X <= ieta (or iX) <= Y
+ * - absIEta_X_Y:   X <= abs(ieta) <= Y
+ * - distIEta_X_Y:  X-Y <= ieta <= X+Y 
+ * - absEta_X_Y:    X <= |eta| < Y
+ * - energySC_X_Y:  X <= energySCEle < Y
+ * - nPV_X_Y:       X <= nPV < Y
  * 
  *************************************************************/
-#ifndef ElectronCategory_class_hh
-#define ElectronCategory_class_hh
 
 #include <TCut.h>
 #include <TString.h>
@@ -57,19 +64,18 @@ public:
   TString energyBranchName;
   bool _corrEle;
   //------------------------------ 
-  // this method is though to give smaller formulas in the selection reducing a bit redundant cuts
-  std::set<TString> GetCutSet(TString region); // -> make sure that all the cuts that goes in && are inserted separately
-  TCut GetCut(TString region, bool isMC, int nEle=0, bool corrEle=false);
-  //inline  TCut GetCut(TString region, bool isMC){ return GetCut(region, isMC, 0,false);};
-  TString GetBranchName(TString region, bool isRooFit);
+  TCut GetCut(TString region, bool isMC, int nEle=0, bool corrEle=false); ///< Returns the TCut correspoding to the categories
 
   //inline void SetExternalFile(TString fileName){_extFileName=fileName;};
   //private:
-  //TCut GetSpecial(void);
-  TString GetBranchNameRooFit(TString region);
-  std::set<TString> GetBranchNameNtuple(TString region);
+  std::set<TString> GetBranchNameNtuple(TString region); ///< returns the list of the branch names used by the cuts
   
 private:
+  TString GetBranchNameRooFit(TString region);
+
+  // this method is though to give smaller formulas in the selection reducing a bit redundant cuts
+  std::set<TString> GetCutSet(TString region); // -> make sure that all the cuts that goes in && are inserted separately
+
   //TString _extFileName;
 };
 

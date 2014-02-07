@@ -1,17 +1,6 @@
-This module is a producer of ValueMaps that associate to each electron
-in the GsfElectron collection, one float that is a new type of energy
-associated to the electron. 
-The core of the module is the plugin EleNewEnergiesProducer.cc whose
-cfi.py file is elenewenergiesproducer_cfi.py
-
-The plugin just create the new collection, loop over the gsfElectron
-collection and calculate the new energy according to a separate class
-that should called by the plugin. The implementation of the
-calculation of the new energy should not be done in the plugin but in
-a separate class in order to keep it more general and flexible.
-The separate class can be added in the src directory or already
-present in some other CMSSW package (add the required lines in the
-BuildFile.xml).
+/**
+* \page regressions Electron energies
 
 
-You should copy the files indicated in data/copy.url in the data/ directory
+*/
+
