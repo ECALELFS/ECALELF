@@ -291,9 +291,10 @@ else:
             process.GlobalTag.globaltag = 'POSTLS162_V5::All'
         else:
             print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
+            sys.exit(1)
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
-    
+        sys.exit()
 
 #Define the sequences
 #
@@ -552,6 +553,7 @@ if(not doTreeOnly):
     if(options.type=="ALCARAW"):
         process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
             
+#process.debug_output_step = cms.EndPath(process.outputRECO)
 
 ############################################################
 # Setting collection names
@@ -648,17 +650,25 @@ elif(options.type=='ALCARERECO'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath)
     else:
-        process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step,
-                                        process.NtuplePath)
+        if(options.doTree==0):
+            process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step)
+        else:
+            process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step,
+                                            process.NtuplePath)
 
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
-        process.schedule = cms.Schedule(process.NtuplePath)
+        process.schedule = cms.Schedule(process.NtuplePath) #,process.debug_output_step)
     else:
-        process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
-                                        process.pathALCARECOEcalCalZSCElectron,
-                                        process.ALCARECOoutput_step,  process.NtuplePath
-                                        ) # fix the output modules
+        if(options.doTree==0):
+            process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                            process.pathALCARECOEcalCalZSCElectron,
+                                            process.ALCARECOoutput_step)
+        else:
+            process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                            process.pathALCARECOEcalCalZSCElectron,
+                                            process.ALCARECOoutput_step,  process.NtuplePath
+                                            ) # fix the output modules
 
 
 process.zNtupleDumper.foutName=options.secondaryOutput
