@@ -209,7 +209,7 @@ case $CMSSW_VERSION in
 #        cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
 #	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
 #        cd - >> setup.log || exit 1
-#	patch -p0 < $myDir/ALCARAW_RECO/test/electronRegression.patch >> setup.log || exit 1
+	patch -p0 < $myDir/ALCARAW_RECO/test/electronRegression.patch >> setup.log || exit 1
 
 	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
 	cat download.url | grep '.root' | xargs wget  >> setup.log || exit 1
@@ -223,6 +223,7 @@ case $CMSSW_VERSION in
 	cd -
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
+	sed -i 's|REGRESSION=3|REGRESSION=4|' Calibration/*/BuildFile.xml
 
 	echo "[STATUS] applying patch for CMSSW_5_X"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
