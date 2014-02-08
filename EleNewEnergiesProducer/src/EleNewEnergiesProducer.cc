@@ -740,10 +740,11 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     //float smearedEnergy = scaler.smear(*ele_itr);
 
     std::pair<double,double> corEle,corPho,corEle_fra;
-   
-#if REGRESSION == 3
-   corEle = josh_Ele.CorrectedEnergyWithErrorV3(*ele_itr,*primaryVertexHandle, *rhoHandle, lazyTools,iSetup);
-   corPho = josh_Pho.CorrectedEnergyWithErrorV3(*ele_itr,*primaryVertexHandle, *rhoHandle, lazyTools,iSetup);
+
+#if REGRESSION == 4
+#elif REGRESSION == 3
+    corEle = josh_Ele.CorrectedEnergyWithErrorV3(*ele_itr,*primaryVertexHandle, *rhoHandle, lazyTools,iSetup);
+    corPho = josh_Pho.CorrectedEnergyWithErrorV3(*ele_itr,*primaryVertexHandle, *rhoHandle, lazyTools,iSetup);
 #elif REGRESSION == 2  
   corEle = josh_Ele.CorrectedEnergyWithErrorV2(*ele_itr,*primaryVertexHandle,  lazyTools,iSetup);
   corPho = josh_Pho.CorrectedEnergyWithErrorV2(*ele_itr,*primaryVertexHandle,  lazyTools,iSetup);
@@ -751,7 +752,11 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   corEle = josh_Ele.CorrectedEnergyWithError(*ele_itr,*primaryVertexHandle,  lazyTools,iSetup);
   corPho = josh_Pho.CorrectedEnergyWithError(*ele_itr,*primaryVertexHandle,  lazyTools,iSetup);
 #endif
+
+#if REGRESSION == 4
+#else
   corEle_fra = fra_Ele.CorrectedEnergyWithErrorTracker(*ele_itr,*primaryVertexHandle, *rhoHandle, lazyTools,iSetup,ptSplit);
+#endif
 
 
   double ecor, sigmaEoverE, cbmean, sigma, alpha1, n1, alpha2, n2, pdfval;
