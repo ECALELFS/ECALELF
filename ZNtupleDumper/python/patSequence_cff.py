@@ -216,6 +216,7 @@ patElectrons.electronIDSources =  cms.PSet(
     tight      = cms.InputTag("eleSelectionProducers", "tight")
     )
 
+electronMatch.src=cms.InputTag('gsfElectrons')
 
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection
