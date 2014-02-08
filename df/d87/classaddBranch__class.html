@@ -88,14 +88,14 @@ specify the new branch you want in BranchName
     <tr><td valign="top"></td><td valign="top"><em>BranchName</em>&nbsp;</td><td>invMassSigma or iSMEle (important, define which new branch you want) </td></tr>
   </table>
 </dl>
-<div class="fragment"><pre class="fragment"><a name="l00019"></a>00019                                                                                                                       {
-<a name="l00020"></a>00020   <span class="keywordflow">if</span>(BranchName.Contains(<span class="stringliteral">"invMassSigma"</span>)) <span class="keywordflow">return</span> AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop);
-<a name="l00021"></a>00021   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">"iSM"</span>)==0)       <span class="keywordflow">return</span> AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
-<a name="l00022"></a>00022   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">"smearerCat"</span>)==0)       <span class="keywordflow">return</span> AddBranch_smearerCat(originalChain, treename, isMC);
-<a name="l00023"></a>00023 
-<a name="l00024"></a>00024   std::cerr &lt;&lt; <span class="stringliteral">"[ERROR] Request to add branch "</span> &lt;&lt; BranchName &lt;&lt; <span class="stringliteral">" but not defined"</span> &lt;&lt; std::endl;
-<a name="l00025"></a>00025   <span class="keywordflow">return</span> NULL;
-<a name="l00026"></a>00026 }
+<div class="fragment"><pre class="fragment"><a name="l00021"></a>00021                                                                                                                       {
+<a name="l00022"></a>00022   <span class="keywordflow">if</span>(BranchName.Contains(<span class="stringliteral">"invMassSigma"</span>)) <span class="keywordflow">return</span> AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
+<a name="l00023"></a>00023   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">"iSM"</span>)==0)       <span class="keywordflow">return</span> AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
+<a name="l00024"></a>00024   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">"smearerCat"</span>)==0)       <span class="keywordflow">return</span> AddBranch_smearerCat(originalChain, treename, isMC);
+<a name="l00025"></a>00025 
+<a name="l00026"></a>00026   std::cerr &lt;&lt; <span class="stringliteral">"[ERROR] Request to add branch "</span> &lt;&lt; BranchName &lt;&lt; <span class="stringliteral">" but not defined"</span> &lt;&lt; std::endl;
+<a name="l00027"></a>00027   <span class="keywordflow">return</span> NULL;
+<a name="l00028"></a>00028 }
 </pre></div>
 <p>
 
@@ -103,7 +103,7 @@ specify the new branch you want in BranchName
 </div><p>
 <hr>The documentation for this class was generated from the following files:<ul>
 <li>ZFitter/interface/addBranch_class.hh<li>ZFitter/src/addBranch_class.cc</ul>
-<hr size="1"><address style="align: right;"><small>Generated on 6 Feb 2014 for ECALELF by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on 8 Feb 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="../../doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.4.7 </small></address>
 </body>
