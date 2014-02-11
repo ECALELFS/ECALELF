@@ -115,7 +115,7 @@
 #include <FWCore/Common/interface/TriggerNames.h>
 #include <DataFormats/Common/interface/TriggerResults.h>
 
-#define DEBUG
+//#define DEBUG
 
 ////////////////////////////////////////////////
 // class declaration
