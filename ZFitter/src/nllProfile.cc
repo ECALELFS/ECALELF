@@ -441,7 +441,7 @@ bool MinMCMC2D(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, int iPro
   if(chi2<chi2init){
     if(chi2<min) min=chi2;
     if(update==true){// && (min<min_old)){
-      std::cout << "[INFO] Updating variables:" << std::endl
+      std::cout << std::setprecision(5) << "[INFO] Updating variables:" << std::endl
 		<< "       " << var1->GetName() << "\t" << var1->getVal() << std::endl
 		<< "       " << var2->GetName() << "\t" << var2->getVal() << std::endl
 		<< "       " << min-chi2init << "\t" << chi2-chi2init << "\t" << chi2init << std::endl;
@@ -640,7 +640,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
   
     //iStep = chi2-chi2old != 0 ? std::max(1,((int) (fabs(0.1/(chi2-chi2old))))) : 1;
     iStep=1;
-    if(var2!=NULL) std::cout << "[DEBUG] "  << std::setprecision(3) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
+    if(var2!=NULL) std::cout << "[FindMin1D] "  << std::setprecision(4) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" << 
       chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << std::endl;
     else std::cout  << std::setprecision(4) << "[DEBUG] " <<  "\t" << iStep << "\t" << var->getVal() << "\t" << chi2-chi2init << "\t" << locmin-chi2init << "\t" << min-chi2init << "\tchi2= " <<  chi2 << std::endl;
     if(chi2<=locmin){ //local minimum
@@ -723,6 +723,7 @@ bool MinProfile(RooRealVar *var, RooSmearer& smearer, int iProfile,
   }
   iMin_= FindMin1D(var, X, N, iMin_, min, smearer, true, Y);
   if(iMin_<0){ // in case of no sensitivity to the variable it is put has constant and the minimization is interrupted
+    std::cerr << "[WARNING] No sensitivity to var: " << var->GetName() << std::endl;
     var->setVal(v1);
     var->setConstant();
     return false;
@@ -733,7 +734,7 @@ bool MinProfile(RooRealVar *var, RooSmearer& smearer, int iProfile,
  
   if(chi2<min){ // updated absolute minimum
     min=chi2; 
-    if(var->getVal() != X[iMin_]) changed=true; //the value has been updated, need a new iteration
+    if(v1 != X[iMin_]) changed=true; //the value has been updated, need a new iteration
     //else a fluctuation changed the min value
    }
 
@@ -965,7 +966,7 @@ void MinimizationProfile(RooSmearer& smearer, RooArgSet args, long unsigned int 
     }
     delete it_;
     iterClock.Stop();
-    std::cout << "[INFO] nIter scale: " << nIter;
+    std::cout << "[INFO] nIter scale: " << nIter << "\t";
     iterClock.Print();
     nIter++;
   }
