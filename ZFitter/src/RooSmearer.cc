@@ -1,4 +1,3 @@
-
 #include "../interface/RooSmearer.hh"
 //#include <RooPullVar.h>
 #define FIXEDSMEARINGS
@@ -513,7 +512,7 @@ double RooSmearer::getLogLikelihood(TH1F* data, TH1F* prob) const
 
 
 
-double RooSmearer::getCompatibility() const
+double RooSmearer::getCompatibility(bool forceUpdate) const
 {
   RooSmearer* myClass=(RooSmearer *) this;
   // myClock->Start();
@@ -541,7 +540,7 @@ double RooSmearer::getCompatibility() const
       cat_itr != myClass->ZeeCategories.end();
       cat_itr++){
     if(!cat_itr->active) continue;
-    if(isCategoryChanged(*cat_itr,true)){ // && withSmearToy){
+    if(forceUpdate||isCategoryChanged(*cat_itr,true)){ // && withSmearToy){
       updated=true;
 #ifdef DEBUG
       std::cout << "[DEBUG] " << cat_itr->categoryName1 << " - " << cat_itr->categoryName2 << "\t isupdated" << std::endl;
@@ -1029,6 +1028,9 @@ void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool m
     std::cout << "------------------------------ Randomize initial value:" << std::endl;
     _paramSet.writeToStream(std::cout, kFALSE);
   }
+
+  // set initial nll values
+  getCompatibility(true);
   return;
 }
 

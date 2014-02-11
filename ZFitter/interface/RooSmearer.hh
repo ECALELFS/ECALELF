@@ -249,7 +249,7 @@ public:
 			bool smearEnergy, bool forceNew=false, bool multiSmearToy=true);
 
   
-  double getCompatibility(void) const;
+  double getCompatibility(bool forceUpdate=false) const;
   void DumpNLL(void) const;
   //  float getCompatibility(const RooSmearer *ptr);
   inline RooArgSet GetParams(void){return _paramSet;};
