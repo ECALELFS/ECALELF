@@ -57,6 +57,8 @@ fi
 
 USER_REMOTE_DIR=`grep '^user_remote_dir=' ${UI_WORKING_DIR}/share/crab.cfg |cut -d '=' -f 2` 
 STORAGE_PATH=`grep 'storage_path=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
+NJOBS=`grep 'number_of_jobs='  ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
+
 echo "RUNRANGE=${RUNRANGE:=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`}"
 if [ -z "$RUNRANGE" ];then 
     echo "RUNRANGE=${RUNRANGE:=allRange}"
@@ -117,6 +119,12 @@ eosFile=${STORAGE_PATH}/${MERGED_REMOTE_DIR}/${MERGEDFILE}
 #     echo "[WARNING] Files not merged because merged file already exist" >> /dev/stdout
 #     exit 1
 # }
+if [ "`cat filelist/unmerged.list | wc -l`" != "${NJOBS}" ];then 
+    echo "[ERROR `basename $0`] Number of files to merge differs with respect to number of jobs: " >> /dev/stderr
+    echo "                      `cat filelist/unmerged.list | wc -l` != ${NJOBS}" >> /dev/stderr
+    exit 1
+fi
+
 hadd -f /tmp/$USER/${MERGEDFILE} `cat filelist/unmerged.list` || exit 1
 
 # copy the merged file to the repository
