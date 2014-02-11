@@ -57,7 +57,7 @@ done
 #------------------------------ checking
 if [ -n "${LIST}" ];then
     echo "[STATUS] Listing available rerecoes on EOS"
-    cut -f 7 $fileList  | sort | uniq
+    cut -f 6 $fileList  | sort | uniq
     exit 0
 fi
 
