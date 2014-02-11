@@ -655,17 +655,23 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath)
     else:
-        process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
-                                        process.pathALCARECOEcalCalZSCElectron,
-                                        process.ALCARECOoutput_step,  process.NtuplePath
-                                        ) # fix the output modules
+        if(options.doTree=='0'):
+            process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                            process.pathALCARECOEcalCalZSCElectron,
+                                            process.ALCARECOoutput_step,  process.NtuplePath
+                                            ) # fix the output modules
+        else:
+            process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
+                                            process.pathALCARECOEcalCalZSCElectron,
+                                            process.ALCARECOoutput_step
+                                            ) # fix the output modules
 
 
 process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-if(options.isCrab==1):
+if(options.isCrab=='1'):
     pathPrefix=""
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
