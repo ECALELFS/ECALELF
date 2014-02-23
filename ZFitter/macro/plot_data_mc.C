@@ -2,6 +2,7 @@
 #include <TFile.h>
 #include <TString.h>
 #include <TGraph.h>
+#include <TGraphErrors.h>
 #include <TH1F.h>
 #include <TH2F.h>
 #include <map>
@@ -112,7 +113,42 @@ void PlotCanvas(TCanvas *c, TH1F *mc, TH1F *data, TH1F *mcSmeared){
 
 
 
-void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="8 TeV", TString lumi=""){
+void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="8 TeV", TString lumi="", bool ratio=true){
+
+  c->Clear();
+  TPad * pad1 = new TPad("pad1", "pad1",0.00,0.20, 1,1.);  
+  TPad * pad2 = new TPad("pad2", "pad2",0.00,0.00, 1,0.2);  
+  TPad * pad3 = new TPad("pad3", "pad3",0.75,0.00, 1.,0.2);
+
+  float yscale=0.75/(pad1->GetYlowNDC() -pad2->GetYlowNDC());
+  float xscale=1;
+
+  if(ratio){
+
+
+  pad1->SetRightMargin(0.1);
+  pad1->SetBottomMargin(0.01);
+  //  pad1->SetLogy();
+  pad1->Draw();
+  pad1->cd();
+  c->cd();
+  pad2->SetGrid();
+  pad2->SetBottomMargin(0.5);
+  pad2->SetTopMargin(0.01);
+  pad2->SetRightMargin(0.1);
+  pad2->Draw();
+  pad2->cd();
+  c->cd();
+  pad3->SetGrid();    
+  //pad2->SetTopMargin(0.01);
+  pad3->SetBottomMargin(0.4);
+  pad3->SetRightMargin(0.1);
+  //  pad3->Draw();
+  //  pad3->cd();
+    
+  pad1->cd();
+
+  }
 
   TGaxis::SetMaxDigits(3);
 
@@ -120,57 +156,58 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 	
   data->SetMarkerStyle(20);
        
-    mc->SetLineColor(kRed);
-    mc->SetLineWidth(2);
-    mc->SetFillStyle(1001); //3002
-    mc->SetFillColor(kRed);
-
-    mc->Draw();
-	
-    mc->GetXaxis()->SetTitle("M_{ee} (GeV/c^{2})");
-    //    mc->GetXaxis()->SetRangeUser(75,105);
-    char ylabel[100];
-    sprintf(ylabel,"Events/%.1f GeV",mc->GetBinWidth(1));
-    mc->GetYaxis()->SetTitle(ylabel);
-    mc->GetYaxis()->SetTitleOffset(1.4);
-
-    mc->DrawNormalized("hist",data->Integral());
-
-    mcSmeared->SetLineWidth(3);
-    mcSmeared->DrawNormalized("same hist",data->Integral());
-
-    data->Draw("E same");
-    //	std::cout << data->Integral() << std::endl;
-
-    //    PlotCanvas(c, mc, data, mcSmeared);
-
-    legend->Clear();
-    legend->AddEntry(mc,"MC","f");
-    legend->AddEntry(mcSmeared,"MC smeared","l");
-    legend->AddEntry(data,"data","p");
-    double KS=data->KolmogorovTest(mcSmeared);
-    TString ks="Kolmogorov test: ";
-    char line[50];
-    sprintf(line, "%.2f", KS);
-    ks+=line;
-    std::cout << "" << ks << std::endl;
-
-    TPaveText pave(0.182,0.8,0.38,0.92, "ndc");
-    // 	pv->DeleteText();
-    pave.SetFillColor(0);
-    pave.SetTextAlign(12);
-    pave.SetBorderSize(0);
-    pave.SetTextSize(0.036);
-    pave.AddText("CMS Preliminary");
-    pave.AddText("#sqrt{s}="+energy);
-    if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
-    //    pave.AddText("");
-
-    //pave.AddText(ks);
-
-    
-    c->cd(0);
-    pave.Draw();	
+  mc->SetLineColor(kRed);
+  mc->SetLineWidth(2);
+  mc->SetFillStyle(1001); //3002
+  mc->SetFillColor(kRed);
+  
+  mc->Draw();
+  
+  mc->GetXaxis()->SetTitle("M_{ee} (GeV/c^{2})");
+  //    mc->GetXaxis()->SetRangeUser(75,105);
+  char ylabel[100];
+  sprintf(ylabel,"Events/%.1f GeV",mc->GetBinWidth(1));
+  mc->GetYaxis()->SetTitle(ylabel);
+  mc->GetYaxis()->SetTitleOffset(1.3);
+  
+  mc->DrawNormalized("hist",data->Integral());
+  
+  mcSmeared->SetLineWidth(3);
+  TH1* mcSmeared_norm = mcSmeared->DrawNormalized("same hist",data->Integral());
+  
+  data->Draw("E same");
+  
+  //	std::cout << data->Integral() << std::endl;
+  
+  //    PlotCanvas(c, mc, data, mcSmeared);
+  
+  legend->Clear();
+  legend->AddEntry(mc,"MC","f");
+  legend->AddEntry(mcSmeared,"MC smeared","l");
+  legend->AddEntry(data,"data","p");
+  double KS=data->KolmogorovTest(mcSmeared);
+  TString ks="Kolmogorov test: ";
+  char line[50];
+  sprintf(line, "%.2f", KS);
+  ks+=line;
+  std::cout << "" << ks << std::endl;
+  
+  TPaveText pave(0.182,0.8,0.38,0.92, "ndc");
+  // 	pv->DeleteText();
+  pave.SetFillColor(0);
+  pave.SetTextAlign(12);
+  pave.SetBorderSize(0);
+  pave.SetTextSize(0.036);
+  pave.AddText("CMS Preliminary");
+  pave.AddText("#sqrt{s}="+energy);
+  if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
+  //    pave.AddText("");
+  
+  //pave.AddText(ks);
+  
+  
+  //c->cd(0);
+  pave.Draw();	
 
 
     //    pave.Paint();
@@ -186,6 +223,34 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     legend->SetFillStyle(1001);
     legend->Draw();
 
+
+    if(ratio){
+      TH1F *sRatio = (TH1F*) data->Clone("sRatio");
+      sRatio->Divide(mcSmeared_norm);
+
+      pad2->cd();
+      sRatio->Draw();
+
+      TGraphErrors *ratioGraph = new TGraphErrors(sRatio);
+      ratioGraph->SetMarkerColor(kBlue);
+      ratioGraph->Draw("AP");
+      ratioGraph->GetXaxis()->SetTitle(mc->GetXaxis()->GetTitle());
+      ratioGraph->GetYaxis()->SetTitle("Data/MC");
+      
+      ratioGraph->GetYaxis()->SetTitleSize(sRatio->GetYaxis()->GetTitleSize()*yscale);
+      ratioGraph->GetYaxis()->SetTitleOffset(sRatio->GetYaxis()->GetTitleOffset()/yscale);
+      ratioGraph->GetYaxis()->SetLabelSize(sRatio->GetYaxis()->GetLabelSize()*yscale);
+      ratioGraph->GetYaxis()->SetLabelOffset(sRatio->GetYaxis()->GetLabelOffset()*yscale);
+      ratioGraph->GetXaxis()->SetTitleSize(sRatio->GetYaxis()->GetTitleSize()    );
+      ratioGraph->GetXaxis()->SetTitleOffset(0.92);
+      ratioGraph->GetXaxis()->SetLabelSize(sRatio->GetYaxis()->GetLabelSize()    );
+      ratioGraph->GetXaxis()->SetLabelOffset(sRatio->GetYaxis()->GetLabelOffset());
+      
+      ratioGraph->GetYaxis()->SetRangeUser(1- 2*ratioGraph->GetRMS(2),1+2*ratioGraph->GetRMS(2));
+      ratioGraph->GetYaxis()->SetNdivisions(5);
+      
+      c->cd();
+    }
 
     c->SaveAs(img_filename(filename, region, ".eps"));
     c->SaveAs(img_filename(filename, region, ".png"));
