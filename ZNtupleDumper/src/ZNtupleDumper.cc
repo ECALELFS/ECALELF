@@ -219,19 +219,20 @@ private:
 
   Int_t recoFlagsEle[2];           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
 
-  UChar_t gainEle[2];     ///< Gain switch 0==gain12, 1==gain6, 2==gain1
-
   Float_t PtEle[2];
   Int_t   classificationEle[2];   ///< electron classification in GOLD, SHOWERING, etc.
 
   Float_t fbremEle[2];
 
-  Float_t seedXSCEle[2];
-  Float_t seedYSCEle[2];
-  Float_t seedEnergySCEle[2];
-  Float_t seedLCSCEle[2];
+  Float_t seedXSCEle[2];        ///< ieta(ix) of the SC seed in EB(EE)
+  Float_t seedYSCEle[2];        ///< iphi(iy) of the SC seed in EB(EE)
+  Float_t seedEnergySCEle[2];   ///< energy of the SC seed 
+  UChar_t gainEle[2];           ///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
+  Float_t seedLCSCEle[2];       ///< laser correction of the SC seed crystal
 
   Float_t avgLCSCEle[2];
+
+
 
 
 
@@ -276,8 +277,8 @@ private:
   Float_t e3x3SCEle[2];   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
   Float_t e5x5SCEle[2];   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
   Float_t eSeedSCEle[2]; 
-  Float_t pModeGsfEle[2];
-  Float_t pAtVtxGsfEle[2];
+  Float_t pModeGsfEle[2];  ///< track momentum from Gsf Track (mode)
+  Float_t pAtVtxGsfEle[2]; ///< momentum estimated at the vertex
   Float_t R9Ele[2];      ///< e3x3/rawEnergySCEle
 
   Float_t invMass;
@@ -831,7 +832,7 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("R9Ele", R9Ele, "R9Ele[2]/F");
 
   tree->Branch("e5x5SCEle", e5x5SCEle, "e5x5SCEle[2]/F");
-  tree->Branch("eSeedSCEle", eSeedSCEle, "eSeedSCEle[2]/F");
+  //tree->Branch("eSeedSCEle", eSeedSCEle, "eSeedSCEle[2]/F");
   tree->Branch("pModeGsfEle", pModeGsfEle, "pModeGsfEle[2]/F");
   tree->Branch("pAtVtxGsfEle", pAtVtxGsfEle, "pAtVtxGsfEle[2]/F");
 
