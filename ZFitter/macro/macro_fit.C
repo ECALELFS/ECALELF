@@ -280,7 +280,7 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
   f2->SetParLimits(0,-100,100);
   f2->SetParLimits(1,rangeLimMin,rangeLimMax);
   //f2->SetParLimits(2,1e5,1e9);
-  f2->SetParLimits(2,0,1e9);
+  f2->SetParLimits(2,0,1e10);
   f2->SetParLimits(3,0,1e10);
   int iter=0;
   do{
@@ -317,8 +317,8 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
     chi2 = fun->GetChisquare()/fun->GetNDF(); //g->Chisquare(fun);
 
     if(isScale){
-      range_min = TMath::Max(minX-30*sigma_minus, rangeLimMin);
-      range_max = TMath::Min(minX+30*sigma_plus, rangeLimMax);   
+      range_min = TMath::Max(minX-10*sigma_minus, rangeLimMin);
+      range_max = TMath::Min(minX+10*sigma_plus, rangeLimMax);   
     } else if(isPhi){
       range_min = TMath::Max(minX-2*sigma_minus, rangeLimMin);
       range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);   
@@ -798,11 +798,12 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
 	Double_t yMax = rangeWithPoints(g, 8, &xMin, &xMax);
 	std::cout << "AAAAAAAAAAAAAAAa" << xMin << "\t" << xMax << "\t" << sigma << "\t" << fun->GetXmin() << std::endl;
 	std::cout << "AAAAAAAAAAAAAAAa" << xMin << "\t" << xMax << "\t" << yMax << std::endl;
-	xMin=std::min((xMin+xMax)/2.-sigma,xMin);
-	xMax=std::max((xMin+xMax)/2.+sigma,xMax);
+	xMin=std::min(fun->GetMinimumX()-7*sigma,xMin);
+	xMax=std::max(fun->GetMinimumX()+7*sigma,xMax);
 	
 	xMin=std::max(xMin,0.96);
 	xMax=std::min(xMax,1.04);
+	yMax=std::max(yMax, std::max(fun->Eval(xMin),fun->Eval(xMax)));
 	std::cout << "EEEEEEEEEEEEEEEEE" << xMin << "\t" << xMax << std::endl;
 	g->GetXaxis()->SetRangeUser(xMin, xMax); 
 	g->GetYaxis()->SetRangeUser(-5, yMax); //std::max(fun->Eval(xMin), fun->Eval(xMax)));
@@ -1084,7 +1085,6 @@ void FitProfile2(TString filename, TString energy="8 TeV", TString lumi="", bool
       gPad->SaveAs(img_filename(filename, variable, region,".C"));
       gPad->SaveAs(img_filename(filename, variable, region,".png"));
       vars->add(*var_);
-
     }
   }
   
