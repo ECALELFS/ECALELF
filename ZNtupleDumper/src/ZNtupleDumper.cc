@@ -1465,8 +1465,11 @@ void ZNtupleDumper::InitPdfSystTree(void){
   
   //  tree = new TTree("selected",fChain->GetTitle());
   std::cout << "[STATUS] InitPdfSystTree" << std::endl;
-  if(pdfSystTree==NULL) return;
-  
+  if(pdfSystTree==NULL){
+    std::cerr << "[ERROR] pdfSystTree==NULL" << std::endl;
+    exit(1);
+    return;
+  }
 //   pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
 //   pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
 //   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
@@ -1477,9 +1480,9 @@ void ZNtupleDumper::InitPdfSystTree(void){
       pdfWeightTAGS_itr != pdfWeightTAGS.end();
       pdfWeightTAGS_itr++){
     int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
-    //std::string tagName = pdfWeightTAGS_itr->instance();
+    std::string tagName = pdfWeightTAGS_itr->instance();
     //tagName.replace(0,pdfWeightTAGS_itr->label().size());
-    //std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
+    std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
     //pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
     pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
   }
