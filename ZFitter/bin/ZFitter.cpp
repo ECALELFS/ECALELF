@@ -311,6 +311,7 @@ int main(int argc, char **argv) {
     ("numIter", po::value<unsigned int>(&nIter)->default_value(300), "number of MCMC steps")
     ("nEventsMinDiag", po::value<unsigned int>(&nEventsMinDiag)->default_value(1000), "min num events in diagonal categories")
     ("nEventsMinOffDiag", po::value<unsigned int>(&nEventsMinOffDiag)->default_value(2000), "min num events in off-diagonal categories")
+    ("onlyScale",    "fix the smearing to constant")
     ("constTermFix", "constTerm not depending on Et")
     ("alphaGoldFix", "alphaTerm for gold electrons fixed to the low eta region")
     ("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
@@ -896,8 +897,8 @@ int main(int argc, char **argv) {
     RooAbsReal *const_term_=NULL;
     RooRealVar *const_term_v = args.getSize() ==0 ? NULL : (RooRealVar *) args.find("constTerm_"+varName);
     if(const_term_v==NULL){
-      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); 
-      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.01, 0.000,0.02);
+      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.00, 0.000,0.05); 
+      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.00, 0.000,0.02);
       const_term_v->setError(0.03); // 1%
       //const_term_v->setConstant(true);
       args.add(*const_term_v);
@@ -934,6 +935,17 @@ int main(int argc, char **argv) {
     } else alpha_ = alpha_v;
     
     args_vec.push_back(RooArgSet(*scale_, *alpha_, *const_term_));
+  }
+
+  if(vm.count("onlyScale")){
+    TIterator *it1=NULL; 
+    it1 = args.createIterator();
+    for(RooRealVar *var = (RooRealVar *) it1->Next(); var!=NULL;
+	var = (RooRealVar *) it1->Next()){
+      TString name(var->GetName());
+      if(name.Contains("scale")) continue;
+      var->setConstant(true);
+    }
   }
 
   args.sort(kFALSE);
@@ -1044,7 +1056,10 @@ int main(int argc, char **argv) {
 	  else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
 	  std::cout << "[DEBUG] " << constTermToy << std::endl;
 	} else{
-	  if(vm.count("initFile")) args.readFromFile(initFileName.c_str());
+	  if(vm.count("initFile")){
+	    std::cout << "[INFO] Reading init file: " << initFileName << std::endl;
+	    args.readFromFile(initFileName.c_str());
+	  }
 	  args.writeToStream(std::cout, kFALSE);
 	  smearer.Init(commonCut.c_str(), eleID);
 	}
