@@ -105,6 +105,8 @@ TCanvas *Plot2D_my(TChain *data, TString branchname, TString binning,TString sel
   return c;
 }
 
+
+
 TCanvas *PlotDataMC2D(TChain *data, TChain *mc, TString branchname, TString binning, 
 		      TCut selection, 
 		      TString dataLabel, TString mcLabel, 
@@ -115,14 +117,16 @@ TCanvas *PlotDataMC2D(TChain *data, TChain *mc, TString branchname, TString binn
   //type == 2: data/MC
    
   TCanvas *c = new TCanvas("c","");
-
-  if(branchname=="map"){
+  TString weightVar;
+  if(branchname.Contains("map")){
+    weightVar=branchname.ReplaceAll("_map","").ReplaceAll("map","");
     branchname="seedXSCEle:seedYSCEle";
-    binning="(360,1,361,171,-85,86)";
+    binning="(361,-0.5,360.5,171,-85.5,85.5)";
     yLabel="iEta";
     xLabel="iPhi";
     c->SetGridx();
   }
+  if(weightVar!="") selection+="*"+weightVar;
   data->Draw(branchname+">>data_hist"+binning, selection,opt);
   if(usePU)  mc->Draw(branchname+">>mc_hist"+binning, selection *"puWeight",opt);
   else  mc->Draw(branchname+">>mc_hist"+binning, selection,opt);
@@ -176,8 +180,11 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
   TString branchNameMC=branchname;
 
   ElectronCategory_class cutter;
+
   TCut selection_data="";
-  if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0);
+  if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0,true);
+  selection_data.Print();
+  return NULL;
   selection_data+=selection;
   TCut selection_MC="";
   if(category.Sizeof()>1) selection_MC = cutter.GetCut(category, false,0);
@@ -195,6 +202,10 @@ TCanvas *PlotDataMC(TChain *data, TChain *mc, TString branchname, TString binnin
     branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*corrEle)");
     branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*corrEle[0])");
     branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*corrEle[1])");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_ele ","(energySCEle_regrCorr_ele*corrEle)");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_ele[0]","(energySCEle_regrCorr_ele[0]*corrEle[0])");
+    branchNameData.ReplaceAll("energySCEle_regrCorr_ele[1]","(energySCEle_regrCorr_ele[1]*corrEle[1])");
+
   }
   //std::cout << branchNameData << "\t" << branchNameMC << std::endl;
 
@@ -546,9 +557,9 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 
 
 TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
-		     TString category, TString selection, 
+		     TString category,  TString selection, 
 		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, 
-		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false){
+		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false, TString pdfIndex=""){
   TStopwatch watch;
   watch.Start();
   //gStyle->SetOptStat(11);//Giuseppe
@@ -598,8 +609,11 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 //   }
 //   data->SetBranchStatus("invMass_SC_regrCorrSemiParV4_ele", 1);
 //   data->SetBranchStatus("invMass_SC_regrCorrSemiParV5_ele", 1);
+  if(branchNameData.Contains("energySCEle_regrCorrSemiParV5_pho")) cutter.energyBranchName="energySCEle_regrCorrSemiParV5_pho";
+  else if(branchNameData.Contains("energySCEle_regrCorrSemiParV5_ele")) cutter.energyBranchName="energySCEle_regrCorrSemiParV5_ele";
+
   TCut selection_data="";
-  if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0);
+  if(category.Sizeof()>1) selection_data = cutter.GetCut(category, false,0,scale);
   selection_data+=selection;
   TCut selection_MC="";
   if(category.Sizeof()>1) selection_MC = cutter.GetCut(category, false,0);
@@ -607,20 +621,27 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
   if(smear){
     branchNameMC.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(smearEle[0]*smearEle[1]))");
-  branchNameMC.ReplaceAll("invMass_SC_regrCorrSemiParV5_pho","(invMass_SC_regrCorrSemiParV5_pho*sqrt(smearEle[0]*smearEle[1]))");
+    branchNameMC.ReplaceAll("invMass_SC_regrCorrSemiParV5_pho","(invMass_SC_regrCorrSemiParV5_pho*sqrt(smearEle[0]*smearEle[1]))");
     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*smearEle) ");
     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*smearEle[0])");
     branchNameMC.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*smearEle[1])");
+    branchNameMC.ReplaceAll("energySCEle_regrCorrSemiParV5_ele[0]","(energySCEle_regrCorrSemiParV5_ele[0]*smearEle[0])");
+    branchNameMC.ReplaceAll("energySCEle_regrCorrSemiParV5_ele[1]","(energySCEle_regrCorrSemiParV5_ele[1]*smearEle[1])");
+    if(!branchNameMC.Contains("smear")) branchNameMC.ReplaceAll("energySCEle_regrCorrSemiParV5_ele","(energySCEle_regrCorrSemiParV5_ele*smearEle)");
 
   }
   if(scale){
     std::cout << "Apply scale" << std::endl;
     branchNameData.ReplaceAll("invMass_SC_regrCorr_pho ","(invMass_SC_regrCorr_pho*sqrt(scaleEle[0]*scaleEle[1]))");
     branchNameData.ReplaceAll("invMass_SC_regrCorrSemiParV5_pho","(invMass_SC_regrCorrSemiParV5_pho*sqrt(scaleEle[0]*scaleEle[1]))");
-    branchNameData.ReplaceAll("energySCEle_regrCorr_pho ","(energySCEle_regrCorr_pho*scaleEle)");
-    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[0]","(energySCEle_regrCorr_pho[0]*scaleEle[0])");
-    branchNameData.ReplaceAll("energySCEle_regrCorr_pho[1]","(energySCEle_regrCorr_pho[1]*scaleEle[1])");
-  }
+    branchNameData.ReplaceAll("energySCEle_regrCorrSemiParV5_pho ","(energySCEle_regrCorrSemiParV5_pho*scaleEle)");
+    branchNameData.ReplaceAll("energySCEle_regrCorrSemiParV5_pho[0]","(energySCEle_regrCorrSemiParV5_pho[0]*scaleEle[0])");
+    branchNameData.ReplaceAll("energySCEle_regrCorrSemiParV5_pho[1]","(energySCEle_regrCorrSemiParV5_pho[1]*scaleEle[1])");
+    branchNameData.ReplaceAll("energySCEle_regrCorrSemiParV5_ele[0]","(energySCEle_regrCorrSemiParV5_ele[0]*scaleEle[0])");
+    branchNameData.ReplaceAll("energySCEle_regrCorrSemiParV5_ele[1]","(energySCEle_regrCorrSemiParV5_ele[1]*scaleEle[1])");
+    if(!branchNameData.Contains("scale"))    branchNameData.ReplaceAll("energySCEle_regrCorrSemiParV5_ele","(energySCEle_regrCorrSemiParV5_ele*scaleEle)");
+  }    
+
     std::cout << branchNameData << "\t" << branchNameMC << std::endl;
   //  return NULL;
 
@@ -645,7 +666,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 
 	TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";
 	TString weights="mcGenWeight";
-	
+	if(pdfIndex!="") weights+="*(pdfWeights_cteq66["+pdfIndex+"]/pdfWeights_cteq66[0])";
 	if(usePU) weights+="*puWeight";
 	if(useR9Weight) weights+="*r9Weight";
 	mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *weights.Data());
