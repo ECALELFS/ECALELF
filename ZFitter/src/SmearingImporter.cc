@@ -81,6 +81,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Float_t         energyEle[2];
   Float_t         corrEle_[2]={1,1};
   Float_t         smearEle_[2]={1,1};
+  bool hasSmearEle=false;
+
   // for the angle calculation
   Float_t         etaEle[2];
   Float_t         phiEle[2];
@@ -113,11 +115,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   if(chain->GetBranch("smearEle")!=NULL){
     if(isToy==false || (externToy==true && isToy==true && isMC==false)){
       std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
-      chain->SetBranchAddress("smearEle", smearEle_);
+      if(isMC) chain->SetBranchAddress("smearSigmaEle", smearEle_);
+      else chain->SetBranchAddress("smearEle", smearEle_);
+      hasSmearEle=true;
     } 
   }
 
-  if(isMC && chain->GetBranch("pdfWeights_cteq66")!=NULL && _pdfWeightIndex>0){
+  if(!isMC && chain->GetBranch("pdfWeights_cteq66")!=NULL && _pdfWeightIndex>0){
     std::cout << "[STATUS] Adding pdfWeight_ctec66 branch from friend" << std::endl;
     chain->SetBranchAddress("pdfWeights_cteq66", &pdfWeights);
   }
@@ -272,6 +276,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     float t1q = t1*t1;
     float t2q = t2*t2;
     
+    if(isMC && hasSmearEle){
+      smearEle_[0]=gen.Gaus(1,smearEle_[0]);
+      smearEle_[1]=gen.Gaus(1,smearEle_[1]);
+    }
+
     //------------------------------
     if(_swap){
       event.energy_ele2 = energyEle[0] * corrEle_[0] * smearEle_[0];
@@ -294,18 +303,18 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       }	
     }
     // to calculate the invMass: invMass = sqrt(2 * energy_ele1 * energy_ele2 * angle_eta_ele1_ele2)
-    if(event.invMass < 70 || event.invMass > 110) continue;
+    //if(event.invMass < 70 || event.invMass > 110) continue;
 
     event.weight = 1.;
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
-    if(isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
+    if(!isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
       if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
       event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
 
 #ifdef DEBUG      
-      if(jentry<10 || event.weight!=event.weight){
+      if(jentry<10 || event.weight!=event.weight || event.weight>1.3){
 	std::cout << "jentry = " << jentry 
 		  << "\tevent.weight = " << event.weight << "\t" << (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0] 
 		  << "\t" << (*pdfWeights)[_pdfWeightIndex] << "\t" << (*pdfWeights)[0] 
@@ -329,6 +338,16 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	} // else event.weight=1;
       }
     }
+#ifdef DEBUG      
+      if(jentry<10 || event.weight!=event.weight || event.weight>2){
+	std::cout << "jentry = " << jentry 
+		  << "\tevent.weight = " << event.weight 
+		  << "\t" << weight << "\t" << mcGenWeight
+		  << "\t" << r9weight[0] << " " << r9weight[1] 
+		  << "\t" << ptweight[0] << " " << ptweight[1]
+		  << std::endl;
+      }
+#endif
 
     if(event.weight<=0 || event.weight!=event.weight) continue;
 

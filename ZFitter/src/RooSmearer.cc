@@ -33,7 +33,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
   _paramSet("paramSet","Set of parameters",this),
   invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
   deltaNLLMaxSmearToy(330),
-  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(20), 
+  _deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(1500), _nSmearToy(20), 
   nllBase(0),
   nllVar("nll","",0,1e20),
   _isDataSmeared(false),
@@ -199,12 +199,13 @@ void RooSmearer::InitCategories(bool mcToy){
       cat.smearHist_data=new TH1F(histoName+"smeardata", histoName+"smeardata", cat.nBins, cat.invMass_min, cat.invMass_max);
       cat.smearHist_data->Sumw2();
       SetHisto(*(cat.mc_events), cat.hist_mc);
+      SetHisto(*(cat.data_events), cat.hist_data);
 
       //------------------------------ deactivating category
       cat.active=true;
       unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
       if(cat.categoryIndex1 != cat.categoryIndex2) // not diagonal category
-	deactiveMinEvents=2000; //_deactive_minEventsOffDiag;
+	deactiveMinEvents=1500; //_deactive_minEventsOffDiag;
       if(cat.hist_mc->Integral() < deactiveMinEvents){
 	std::cout << "[INFO] Category: " << ZeeCategories.size() 
 		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
@@ -229,8 +230,6 @@ void RooSmearer::InitCategories(bool mcToy){
       if (_autoBin){
 	//SetAutoBin(cat,cat.invMass_min-20,cat.invMass_max+20); 
 	AutoNBins(cat);
-	SetHisto(*(cat.mc_events), cat.hist_mc);
-	SetHisto(*(cat.data_events), cat.hist_data);
       }
       cat.nSmearToy=_nSmearToy;
       if(smearscan || (cat.active && _autoNsmear)) AutoNSmear(cat);
@@ -290,6 +289,7 @@ TH1F *RooSmearer::GetSmearedHisto(ZeeCategory& category, bool isMC,
   if(smearEnergy==true && isMC==false && (*h)->GetEntries() != 0) return *h;
 
   zee_events_t *cache = (isMC) ? category.mc_events : category.data_events;
+  if(cache->size()==0) return *h;
 
   if(smearEnergy){
     
@@ -333,6 +333,7 @@ void RooSmearer::SetHisto(const zee_events_t& cache, TH1F *hist) const{
 #ifdef DEBUG
   hist->Print();
 #endif
+  hist->Reset();
   for(zee_events_t::const_iterator event_itr = cache.begin(); 
       event_itr!= cache.end();
       event_itr++){
@@ -403,6 +404,11 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
     }
   }
   hist->Scale(1./nSmearToy);
+//   if(hist->GetEntries()<hist->Integral()){
+//     hist->Print();
+//     std::cout << hist->GetName() << "\t" << hist->GetEntries() << "\t" << hist->Integral() << "\t" << cache.size() << std::endl;
+//   }
+
   //  hist->Scale(1./hist->Integral()); // now saved as pdf
 
 #ifdef CPU_DEBUG
@@ -428,6 +434,11 @@ double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,flo
   //   float sigma = sqrt(alpha/sqrt(ene)*alpha/sqrt(ene) + constant * constant + sigmaMB*sigmaMB);
 
   float sigma = sqrt(alpha*alpha/ene + constant * constant );
+  if(sigma==0){
+    for(unsigned int i=0; i<nGen; i++){
+      smear[i] = scale;
+    }
+  } else {
 #ifdef FIXEDSMEARINGS
   for(unsigned int i=0; i < NSMEARTOYLIM && i<nGen; i++){
     smear[i] = (double) (fixedSmearings[i]*sigma)+(scale);
@@ -440,6 +451,7 @@ double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene,flo
 	smear[i] = rgen_->Gaus(scale,sigma);
   }
 #endif
+  }
   return smear[0];
 }
 
@@ -696,6 +708,9 @@ void RooSmearer::AutoNBins(ZeeCategory& category){
     ResetBinning(category);
   }
     
+  SetHisto(*(category.mc_events),   category.hist_mc);
+  SetHisto(*(category.data_events), category.hist_data);
+
   return;
   //------------------------------ rescale mc histograms 
   
@@ -737,7 +752,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category){
 
   
   if(!category.active) return;
-  AutoNBins(category);
+  //AutoNBins(category);
   return;
   //  category.nSmearToy=std::max(NSMEARTOYLIM*2,200);
   //Long64_t catSize=category.mc_events->size();
@@ -1055,13 +1070,27 @@ void RooSmearer::UpdateCategoryNLL(ZeeCategory& cat, unsigned int nLLtoy, bool m
 }
 
 void RooSmearer::DumpNLL(void) const{
+  std::cout << "[DUMP NLL] " << "Cat1\tCat2\tNLL\tNevt mc\tNevt data\tisActive\tNevt mc\tNevt data" << std::endl;
+
   for(std::vector<ZeeCategory>::const_iterator cat_itr = ZeeCategories.begin();
       cat_itr != ZeeCategories.end();
       cat_itr++){
     if(!cat_itr->active)
-      std::cout << "[DUMP NLL] " << std::setprecision(10) << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2 << "\t" << cat_itr->nll << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() << "\t1" << std::endl;
+      std::cout << "[DUMP NLL] " << std::setprecision(10) 
+		<< cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2 
+		<< "\t" << cat_itr->nll 
+		<< "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() 
+		<< "\t1" 
+		<< "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
+		<< std::endl;
     else 
-      std::cout << "[DUMP NLL] " << std::setprecision(10) << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2 << "\t" << cat_itr->nll << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() << "\t0" << std::endl;
+      std::cout << "[DUMP NLL] " << std::setprecision(10) 
+		<< cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2 
+		<< "\t" << cat_itr->nll 
+		<< "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() << "\t0" 
+		<< "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
+		<< std::endl;
   }
   return;
 }
+

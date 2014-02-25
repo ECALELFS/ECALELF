@@ -59,8 +59,8 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
       scales_not_defined[category]=corr;
     }
     corr_itr = scales_not_defined.find(category);
-    //     std::cout << "[ERROR] Category not found: " << std::endl;
-    //     std::cout << category << std::endl;
+    std::cout << "[ERROR] Category not found: " << std::endl;
+    std::cout << category << std::endl;
     //     exit(1);
   }
 
@@ -357,13 +357,14 @@ float EnergyScaleCorrection_class::getSmearing(int runNumber, float energy, bool
 }
 
 
-TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop, 
+TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, 
+						 bool fastLoop, 
 						 TString energyEleBranchName,
 						 TString runNumberBranchName,
 						 TString R9EleBranchName,
 						 TString etaEleBranchName,
 						 TString etaSCEleBranchName
-
+						 
 						 ){
   Int_t runNumber_;
   Float_t energyEle_[2];
@@ -372,9 +373,11 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop,
   Float_t R9Ele_[2];
 
   Float_t smearEle_[2];
+  Float_t smearSigmaEle_[2];
 
   TTree *newTree = new TTree("smearEle_",""); //+correctionType,correctionType);
   newTree->Branch("smearEle", smearEle_, "smearEle[2]/F");
+  newTree->Branch("smearSigmaEle", smearSigmaEle_, "smearSigmaEle[2]/F");
 
   if(tree==NULL){
     std::cerr << "[ERROR] original chain in GetSmearTree is NULL" << std::endl;
@@ -402,10 +405,15 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree, bool fastLoop,
   Long64_t nentries = tree->GetEntries();
   for(Long64_t ientry = 0; ientry<tree->GetEntriesFast(); ientry++){
     tree->GetEntry(ientry);
+    smearSigmaEle_[0] = getSmearingSigma(runNumber_, energyEle_[0], fabs(etaSCEle_[0]) < 1.4442, 
+					 R9Ele_[0],etaEle_[0]);
+    smearSigmaEle_[1] = getSmearingSigma(runNumber_, energyEle_[1], fabs(etaSCEle_[1]) < 1.4442, 
+					 R9Ele_[1],etaEle_[1]);
     smearEle_[0] = getSmearing(runNumber_, energyEle_[0], fabs(etaSCEle_[0]) < 1.4442, 
 			       R9Ele_[0],etaEle_[0]);
     smearEle_[1] = getSmearing(runNumber_, energyEle_[1], fabs(etaSCEle_[1]) < 1.4442, 
 			       R9Ele_[1],etaEle_[1]);
+    
     newTree->Fill();
     if(ientry%(nentries/100)==0) std::cerr << "\b\b\b\b" << std::setw(2) << ientry/(nentries/100) << "%]";
 
@@ -495,9 +503,9 @@ correctionCategory_class::correctionCategory_class(TString category_){
     p1 = category.find("absEta_");
     p2 = p1+1;
     if(category.find("absEta_0_1")!=std::string::npos){ etamin=0; etamax=1;}
-    else if(category.find("absEta_1_1.4442")!=std::string::npos){ etamin=1; etamax=1.4442; }
-    else if(category.find("absEta_1.566_2")!=std::string::npos){ etamin=1.566; etamax=2;}
-    else if(category.find("absEta_2_2.5")!=std::string::npos){ etamin=2; etamax=2.5;}
+    else if(category.find("absEta_1_1.4442")!=std::string::npos){ etamin=1; etamax=1.479;} //etamax=1.4442; }
+    else if(category.find("absEta_1.566_2")!=std::string::npos){ etamin=1.479; etamax=2;} //etamin=1.566; etamax=2;}
+    else if(category.find("absEta_2_2.5")!=std::string::npos){ etamin=2; etamax=3;}
     else{
       if(p1!=std::string::npos){ 
 	p1 = category.find("_",p1);
