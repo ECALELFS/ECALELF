@@ -9,7 +9,7 @@ SCHEDULER=caf
 USESERVER=1
 TYPE=ALCARECO
 LUMIS_PER_JOBS=200  # 4000 for ZSkim events is good, WSkim events /=4, SingleElectron /=10
-EVENTS_PER_JOB=50000
+EVENTS_PER_JOB=40000
 BLACKLIST=T2_EE_Estonia
 CREATE=yes
 SUBMIT=yes
@@ -206,7 +206,7 @@ queue = cmscaf1nd
 datasetpath=${DATASETPATH}
 
 pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE jsonFile=${JSONFILE} doTree=${DOTREE}
+pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} 
 
 runselection=${RUNRANGE}
 split_by_run=0
@@ -282,8 +282,8 @@ if [ -n "${CHECK}" ];then
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
-#    else
-#	mergeOutput.sh -u ${UI_WORKING_DIR}
+#    elif [ "$TYPE" == "ALCARECOSIM" ];then
+#	mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper --noRemove --merged_remote_dir=/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 fi
