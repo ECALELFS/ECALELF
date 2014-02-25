@@ -362,6 +362,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
+
     //--------------- IETA
     if(string.Contains("absIEta")){
       TObjArray *splitted = string.Tokenize("_");
@@ -665,9 +666,15 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 	  cut_string += ele1_cut || ele2_cut;
 	  cutSet.insert(TString(ele1_cut || ele2_cut));
 	} else {
-	  cut_string+=ele1_cut && ele2_cut;
-	  cutSet.insert(TString(ele1_cut));
-	  cutSet.insert(TString(ele2_cut));
+	  if(string.Contains("!")){
+	    cut_string+=(!ele1_cut) && (!ele2_cut);
+	    cutSet.insert(TString(!ele1_cut));
+	    cutSet.insert(TString(!ele2_cut));
+	  }else{
+	    cut_string+=ele1_cut && ele2_cut;
+	    cutSet.insert(TString(ele1_cut));
+	    cutSet.insert(TString(ele2_cut));
+	  }
 	}
 
 	delete splitted;
@@ -1019,8 +1026,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 
       TObjString *Objstring0 = (TObjString *) splitted->At(0);
       TString string0 = Objstring0->GetString();
-      for(int i=1; i < splitted->GetEntries()-2; i++){
-        Objstring0 = (TObjString *) splitted->At(i);
+      for(int iString=1; iString < splitted->GetEntries()-2; iString++){
+        Objstring0 = (TObjString *) splitted->At(iString);
         string0+="_"; string0+=Objstring0->GetString();
       }
       TObjString *Objstring1 = (TObjString *) splitted->At(splitted->GetEntries()-2);
