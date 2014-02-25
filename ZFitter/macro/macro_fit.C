@@ -50,7 +50,7 @@
 //#define selectedBase_class_cxx
 //#include "RooSmearedHistoCompatibility.h"
 
-//#define DEBUG
+#define DEBUG
 //TString filename=outPrefix+"-"+region_set+"-outProfile.root";
 
 #define FIT_LIMIT 0.01
@@ -310,6 +310,7 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
     g->Fit(f2,"0R+","",range_min, range_max);   
     //    g->Fit(fun,"R+","",min-2*sigma, min+2*sigma);
     //    sigma = 1./sqrt(2* fun->GetParameter(2));
+
     sigma_minus = 1./sqrt(2* f2->GetParameter(2));
     sigma_plus = 1./sqrt(2* f2->GetParameter(3));
     //    min=- fun->GetParameter(1) / (2* fun->GetParameter(2));
@@ -339,7 +340,7 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
 
     std::cout << "[INFO] Points in interval: " << pointsInInterval(X, N, range_min, range_max) << std::endl;
     if(!(TString(g->GetTitle()).Contains("0_1-bad"))){
-    while (pointsInInterval(X, N, range_min, range_max) < 15 && range_min>rangeLimMin && range_max<rangeLimMax){ //((range_max - range_min)/X_bin < 10)){
+    while (pointsInInterval(X, N, range_min, range_max) < 10 && range_min>rangeLimMin && range_max<rangeLimMax){ //((range_max - range_min)/X_bin < 10)){
       // incremento del 10% i range
       std::cout << "[WARNING] Incrementing ranges by 20% because less than 10 points in range" << std::endl;
       std::cout << "Old range: [ " << range_min << " : " << range_max << "]" << std::endl;
@@ -378,6 +379,10 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
 
   //  float chi2_rnd = TMath::ChisquareQuantile(gen.Rndm(),1);
   if(gMinuit->GetStatus()==0){
+#ifdef DEBUG
+    std::cout <<  f2->GetChisquare() << "\t" << f2->GetNumberFitPoints() << "\t" << f2->GetNumberFreeParameters() << std::endl;
+#endif
+
   float errorScale=sqrt(f2->GetChisquare()/(f2->GetNumberFitPoints()-f2->GetNumberFreeParameters()));
   std::cout << "SCALING ERROR by " << errorScale  << std::endl
 	    << "Shifting by " << f2->GetParameter(0) << std::endl;
@@ -402,6 +407,241 @@ typedef struct{
 
 typedef  std::map<Double_t, point_value_t> graphic_t;
 
+TGraphErrors *SumGraph(std::vector<TGraph *> g_vec, bool shift=false){
+  int N = (*g_vec.begin())->GetN(); // number of points
+  TString name=(*g_vec.begin())->GetName();
+  if(8000 <= N) {
+    std::cerr << "ERROR: N_bins too big in MeanGraph:" << N << std::endl;
+    return NULL;
+  }
+
+  
+  Double_t x[20000]={0.}, y[20000]={0.}, y2[20000]={0.}, dev_st[20000], err_x[20000];
+  int n=0;
+  for(std::vector<TGraph *>::const_iterator g_itr = g_vec.begin();
+      g_itr!= g_vec.end();
+      g_itr++){ // loop over TGraphs
+    
+    TGraph *graph = *g_itr;
+    if(graph==NULL) continue; // per sicurezza
+    Double_t *Y = graph->GetY();
+    Double_t *X = graph->GetX();
+    N = graph->GetN();
+
+    double minimum=Y[0];
+    for(int i=0; i< N; i++){ // calcolo il minimo e il punto di minimo
+      if(minimum > Y[i]) minimum=Y[i];
+    }
+
+    //    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
+    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
+      {
+	x[ip+n]=X[ip];
+
+	if(shift) y[ip+n]+=Y[ip]-minimum;
+	else  y[ip+n]+=Y[ip];
+
+	y2[ip+n]+=y[ip+n]*y[ip+n];
+	//	std::cout << ip+n << "\t" << x[ip+n] << "\t" << y[ip+n] << "\t" << Y[ip+n] << std::endl;
+	err_x[ip+n]=0;
+	dev_st[ip+n]++; // used to count the points per bin
+	if(n>19999){
+	  std::cerr << "############################################################" << std::endl;
+	  std::cerr << "############################################################" << std::endl;
+	  std::cerr << "############################################################" << std::endl;
+	  break;
+	}
+
+      }
+    n+=N;
+
+    if(graph->GetN() < 3) std::cerr << "WARNING: low number of points" << std::endl;
+  }
+
+  for (int ip=0;ip<n;++ip){
+    //   y2[ip]/=dev_st[ip];
+    //    y[ip]/=dev_st[ip];
+    //    if(dev_st[ip]!=1) dev_st[ip]=y2[ip]-y[ip]*y[ip];
+    //    else 
+    dev_st[ip]=0;
+  }
+  std::cout << "[INFO] n = " << n << std::endl;
+  TGraphErrors *g = new TGraphErrors(n, x, y, err_x, dev_st);
+
+  return g;
+}
+
+TGraphErrors *MeanGraphNew(TGraphErrors *graph){
+  
+  int N = graph->GetN(); // number of points
+  if(17000 <= N) {
+    std::cerr << "ERROR: N_bins too big in MeanGraph:" << N << std::endl;
+    return NULL;
+  }
+
+  std::map<Double_t, std::pair<Double_t, Double_t> > g_in_map;
+  
+  Double_t x[17000]={0.}, y[17000]={0.}, y2[17000]={0.}, dev_st[17000], err_x[17000];
+  
+  graphic_t graphic, graphic2;
+
+  int n_max=0;
+  
+  double y_min=1e20;  
+
+  if(graph==NULL) return NULL;
+  if(graph->GetN() < 3) std::cerr << "WARNING: low number of points" << std::endl;
+
+  Double_t *Y = graph->GetY();
+  Double_t *X = graph->GetX();
+  Double_t X_bin=0.00001; //fabs(X[1]-X[0]);
+  //    double minimum=TMath::MinElement(graph->GetN(),graph->GetY());
+  double minimum=1e20;
+  double x_minimum=X[0];
+  for(int i=1; i<graph->GetN(); i++){ // calcolo il minimo e il punto di minimo
+    if(minimum > Y[i]){
+      minimum=Y[i];
+      x_minimum=X[i];
+    }
+  }
+  
+  //subtract the minimum?
+  for(int i=1; i<graph->GetN(); i++){ // calcolo il minimo e il punto di minimo
+      Y[i]-=minimum;
+  }
+
+  for(int i =0 ; i < graph->GetN(); i++){
+    graphic_t::iterator itr = graphic.find(X[i]);
+    if(itr!=graphic.end()){
+      itr->second.y+=Y[i];
+      itr->second.y2+=Y[i]*Y[i];
+      itr->second.n++;
+      n_max = std::max(n_max,itr->second.n);
+    } else {
+      point_value_t p;
+      p.y=Y[i];
+      p.y2=Y[i]*Y[i];
+      p.n=1;
+      graphic.insert(std::make_pair<Double_t, point_value_t>(X[i],p));
+      n_max = std::max(n_max,1);
+    }
+  }
+    
+  /*-----------------------------*/
+  //  std::cout << "N_MAX = " << n_max << std::endl;
+  int n=0;
+  y_min=1e10;
+  for(graphic_t::iterator itr=graphic.begin(); itr!=graphic.end(); itr++){
+    
+    if(itr->second.n < n_max*0.2){std::cout << "Removing point " << itr->first << "\t" << itr->second.n << std::endl; continue;}
+    double ym = itr->second.y/itr->second.n;
+    if(itr->second.n>1 && itr->second.y2/itr->second.n >= ym*ym)
+      dev_st[n] =  sqrt( (itr->second.y2/itr->second.n - ym*ym)/(double)(itr->second.n)); //errore sulla media
+    else{
+      std::cout << itr->first << "\t" << itr->second.y << "\t" << itr->second.n 
+		<< "\t" << itr->second.y2/itr->second.n << "\t" << ym*ym
+		<< std::endl;
+      dev_st[n] =  1;
+      //continue;
+    }
+    x[n] = itr->first;
+    y[n] = ym;
+    err_x[n]=0;
+
+    y_min = std::min(y_min,y[n]);
+//     std::cout << graph->GetName() << "\t" << graph->GetTitle() << x[n] << " " 
+//     	      << y[n] << " "
+//     	      << dev_st[n] << " "
+//     	      << itr->second.y2/itr->second.n << " " << ym*ym   << " " 
+// 	      << itr->second.n
+//     	      << std::endl;
+    n++;
+
+  }
+
+  for(int i=0; i< n; i++){ // calcolo il minimo e il punto di minimo
+    y[i]-=y_min;
+  }
+
+//   for(int i =0 ; i < graph->GetN(); i++){
+//     graphic_t::iterator itr1 = graphic.find(X[i]);
+//     graphic_t::iterator itr = graphic2.find(X[i]);
+
+//     double ym = itr1->second.y/itr1->second.n;
+//     double devst = sqrt( (itr1->second.y2/itr1->second.n - ym*ym)/(double)(itr1->second.n)); //errore sulla media
+//     //std::cout << ym << "\t" << devst << std::endl;
+//     //if(devst < 0.1 && fabs(Y[i]-ym) < 4 * devst) continue;
+    
+//     if(itr!=graphic2.end()){
+//       itr->second.y+=Y[i];
+//       itr->second.y2+=Y[i]*Y[i];
+//       itr->second.n++;
+//       n_max = std::max(n_max,itr->second.n);
+//     } else {
+//       point_value_t p;
+//       p.y=Y[i];
+//       p.y2=Y[i]*Y[i];
+//       p.n=1;
+//       graphic2.insert(std::make_pair<Double_t, point_value_t>(X[i],p));
+//       n_max = std::max(n_max,1);
+//     }
+//   }
+    
+//   /*-----------------------------*/
+//   //  std::cout << "N_MAX = " << n_max << std::endl;
+//   n=0;
+//   y_min=1e10;
+//   for(graphic_t::iterator itr=graphic2.begin(); itr!=graphic2.end(); itr++){
+//     x[n] = itr->first;
+//     double ym = itr->second.y/itr->second.n;
+//     y[n] = ym;
+//     dev_st[n] = sqrt( (itr->second.y2/itr->second.n - ym*ym)/(double)(itr->second.n)); //errore sulla media
+//     err_x=0;
+
+//     y_min = std::min(y_min,y[n]);
+//     n++;
+//   }
+
+  TGraphErrors *g = new TGraphErrors(n, x, y, err_x, dev_st);
+  g->SetTitle(graph->GetTitle());
+  g->SetName(graph->GetTitle());
+  //  g->Draw("AP*");
+  return g;
+}
+
+TGraphErrors *MeanGraph2(std::vector<TGraph *> g_vec, float *y_minimum=NULL, TGraphErrors *g_in=NULL){
+  
+  TGraphErrors *newGraph = new TGraphErrors;
+
+  Double_t x[20000]={0.}, y[20000]={0.}, y2[20000]={0.}, dev_st[20000], err_x[20000];
+  int n=0;
+  for(std::vector<TGraph *>::const_iterator g_itr = g_vec.begin();
+      g_itr!= g_vec.end();
+      g_itr++){ // loop over TGraphs
+    
+    TGraph *graph = *g_itr;
+    if(graph==NULL) continue; // per sicurezza
+    Double_t *Y = graph->GetY();
+    Double_t *X = graph->GetX();
+    Int_t N = graph->GetN();
+
+    double minimum=Y[0];
+    for(int i=0; i< N; i++){ // calcolo il minimo e il punto di minimo
+      if(minimum > Y[i]) minimum=Y[i];
+    }
+
+    //    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
+    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
+      {
+	newGraph->SetPoint(ip+n, X[ip], Y[ip]);
+      }
+    n+=N;
+  }
+  newGraph->Set(n);
+  TGraphErrors *returnGraph = MeanGraphNew(newGraph);
+  delete newGraph;
+  return returnGraph;
+}
 
 TGraphErrors *MeanGraph(std::vector<TGraph *> g_vec, float *y_minimum=NULL, TGraphErrors *g_in=NULL){
   int N = (*g_vec.begin())->GetN(); // number of points
@@ -481,64 +721,6 @@ TGraphErrors *MeanGraph(std::vector<TGraph *> g_vec, float *y_minimum=NULL, TGra
   return g;
 }
 
-TGraphErrors *SumGraph(std::vector<TGraph *> g_vec){
-  int N = (*g_vec.begin())->GetN(); // number of points
-  TString name=(*g_vec.begin())->GetName();
-  if(8000 <= N) {
-    std::cerr << "ERROR: N_bins too big in MeanGraph:" << N << std::endl;
-    return NULL;
-  }
-
-  
-  Double_t x[20000]={0.}, y[20000]={0.}, y2[20000]={0.}, dev_st[20000], err_x[20000];
-  int n=0;
-  for(std::vector<TGraph *>::const_iterator g_itr = g_vec.begin();
-      g_itr!= g_vec.end();
-      g_itr++){ // loop over TGraphs
-    
-    TGraph *graph = *g_itr;
-    if(graph==NULL) continue; // per sicurezza
-    Double_t *Y = graph->GetY();
-    Double_t *X = graph->GetX();
-
-    double minimum=Y[0];
-    for(int i=0; i< N; i++){ // calcolo il minimo e il punto di minimo
-      if(minimum > Y[i]) minimum=Y[i];
-    }
-
-    //    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
-    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
-      {
-	x[ip+n]=X[ip];
-	y[ip+n]+=Y[ip];
-	y2[ip+n]+=y[ip+n]*y[ip+n];
-	//	std::cout << ip+n << "\t" << x[ip+n] << "\t" << y[ip+n] << "\t" << Y[ip+n] << std::endl;
-	err_x[ip+n]=0;
-	dev_st[ip+n]++; // used to count the points per bin
-	if(n>19999){
-	  std::cerr << "############################################################" << std::endl;
-	  std::cerr << "############################################################" << std::endl;
-	  std::cerr << "############################################################" << std::endl;
-	  break;
-	}
-
-      }
-    n+=N;
-
-    if(graph->GetN() < 3) std::cerr << "WARNING: low number of points" << std::endl;
-  }
-
-  for (int ip=0;ip<n;++ip){
-    //   y2[ip]/=dev_st[ip];
-    //    y[ip]/=dev_st[ip];
-    //    if(dev_st[ip]!=1) dev_st[ip]=y2[ip]-y[ip]*y[ip];
-    //    else 
-    dev_st[ip]=0;
-  }
-  TGraphErrors *g = new TGraphErrors(n, x, y, err_x, dev_st);
-
-  return g;
-}
 
 TGraphErrors *MeanGraphOld(std::vector<TGraph *> g_vec, float *y_minimum=NULL, TGraphErrors *g_in=NULL){
   
@@ -600,7 +782,7 @@ TGraphErrors *MeanGraphOld(std::vector<TGraph *> g_vec, float *y_minimum=NULL, T
     //    std::cout << "Y[7] = " << Y[7] << std::endl;
 
 
-    for(int i =0 ; i < graph->GetN(); i++){
+    for(int i =0 ; i < graph->GetN(); i+=3){
       if(graphs.count(X[i])==0){
 	point_value_t p;
 	p.y=Y[i];
@@ -953,11 +1135,11 @@ void FitProfile2(TString filename, TString energy="8 TeV", TString lumi="", bool
 
       float y_min=1e10;
       std::cout << "Getting g1 mean graph" << std::endl;
-      TGraphErrors *g1 = MeanGraphOld(map_region_itr->second,&y_min);
+      //      TGraphErrors *g1 = MeanGraph2(map_region_itr->second,&y_min);
       //std::cout << "Getting g mean graph" << std::endl;
-      TGraphErrors *g = g1; //MeanGraph(map_region_itr->second, &y_min,g1);
-      TGraphErrors *g_sum = SumGraph(map_region_itr->second);
 
+      TGraphErrors *g_sum = SumGraph(map_region_itr->second,true);
+      TGraphErrors *g = MeanGraphNew(g_sum);
 //       if(!variable.Contains("rho")){
 // 	continue;
 //       }
@@ -1238,127 +1420,3 @@ void propagate(TString filename, int region){
 
 
 
-TGraphErrors *MeanGraphNew(TGraphErrors *graph){
-  
-  int N = graph->GetN(); // number of points
-  if(17000 <= N) {
-    std::cerr << "ERROR: N_bins too big in MeanGraph:" << N << std::endl;
-    return NULL;
-  }
-
-  std::map<Double_t, std::pair<Double_t, Double_t> > g_in_map;
-  
-  Double_t x[17000]={0.}, y[17000]={0.}, y2[17000]={0.}, dev_st[17000], err_x[17000];
-  
-  graphic_t graphic, graphic2;
-
-  int n_max=0;
-  
-  double y_min=1e20;  
-
-  if(graph==NULL) return NULL;
-  if(graph->GetN() < 3) std::cerr << "WARNING: low number of points" << std::endl;
-
-  Double_t *Y = graph->GetY();
-  Double_t *X = graph->GetX();
-  Double_t X_bin=0.00001; //fabs(X[1]-X[0]);
-  //    double minimum=TMath::MinElement(graph->GetN(),graph->GetY());
-  double minimum=1e20;
-  double x_minimum=X[0];
-  for(int i=1; i<graph->GetN(); i++){ // calcolo il minimo e il punto di minimo
-    if(minimum > Y[i]){
-      minimum=Y[i];
-      x_minimum=X[i];
-    }
-  }
-
-  for(int i =0 ; i < graph->GetN(); i++){
-    graphic_t::iterator itr = graphic.find(X[i]);
-    if(itr!=graphic.end()){
-      itr->second.y+=Y[i];
-      itr->second.y2+=Y[i]*Y[i];
-      itr->second.n++;
-      n_max = std::max(n_max,itr->second.n);
-    } else {
-      point_value_t p;
-      p.y=Y[i];
-      p.y2=Y[i]*Y[i];
-      p.n=1;
-      graphic.insert(std::make_pair<Double_t, point_value_t>(X[i],p));
-      n_max = std::max(n_max,1);
-    }
-  }
-    
-  /*-----------------------------*/
-  //  std::cout << "N_MAX = " << n_max << std::endl;
-  int n=0;
-  y_min=1e10;
-  for(graphic_t::iterator itr=graphic.begin(); itr!=graphic.end(); itr++){
- 
-    //if(itr->second.n < n_max*0.2){std::cout << "Removing point " << itr->first << "\t" << itr->second.n << std::endl; continue;}
-    x[n] = itr->first;
-    double ym = itr->second.y/itr->second.n;
-    y[n] = ym;
-    if(itr->second.n>1 && itr->second.y2/itr->second.n > ym*ym)
-      dev_st[n] =  sqrt( (itr->second.y2/itr->second.n - ym*ym)/(double)(itr->second.n)); //errore sulla media
-    else 
-      dev_st[n] =  1e-6;
-    err_x[n]=0;
-
-    y_min = std::min(y_min,y[n]);
-//     std::cout << graph->GetName() << "\t" << graph->GetTitle() << x[n] << " " 
-//     	      << y[n] << " "
-//     	      << dev_st[n] << " "
-//     	      << itr->second.y2/itr->second.n << " " << ym*ym   << " " 
-// 	      << itr->second.n
-//     	      << std::endl;
-    n++;
-
-  }
-
-
-//   for(int i =0 ; i < graph->GetN(); i++){
-//     graphic_t::iterator itr1 = graphic.find(X[i]);
-//     graphic_t::iterator itr = graphic2.find(X[i]);
-
-//     double ym = itr1->second.y/itr1->second.n;
-//     double devst = sqrt( (itr1->second.y2/itr1->second.n - ym*ym)/(double)(itr1->second.n)); //errore sulla media
-//     //std::cout << ym << "\t" << devst << std::endl;
-//     //if(devst < 0.1 && fabs(Y[i]-ym) < 4 * devst) continue;
-    
-//     if(itr!=graphic2.end()){
-//       itr->second.y+=Y[i];
-//       itr->second.y2+=Y[i]*Y[i];
-//       itr->second.n++;
-//       n_max = std::max(n_max,itr->second.n);
-//     } else {
-//       point_value_t p;
-//       p.y=Y[i];
-//       p.y2=Y[i]*Y[i];
-//       p.n=1;
-//       graphic2.insert(std::make_pair<Double_t, point_value_t>(X[i],p));
-//       n_max = std::max(n_max,1);
-//     }
-//   }
-    
-//   /*-----------------------------*/
-//   //  std::cout << "N_MAX = " << n_max << std::endl;
-//   n=0;
-//   y_min=1e10;
-//   for(graphic_t::iterator itr=graphic2.begin(); itr!=graphic2.end(); itr++){
-//     x[n] = itr->first;
-//     double ym = itr->second.y/itr->second.n;
-//     y[n] = ym;
-//     dev_st[n] = sqrt( (itr->second.y2/itr->second.n - ym*ym)/(double)(itr->second.n)); //errore sulla media
-//     err_x=0;
-
-//     y_min = std::min(y_min,y[n]);
-//     n++;
-//   }
-
-  TGraphErrors *g = new TGraphErrors(n, x, y, err_x, dev_st);
-  g->SetTitle(graph->GetTitle());
-  g->SetName(graph->GetTitle());
-  //  g->Draw("AP*");
-  return g;
-}

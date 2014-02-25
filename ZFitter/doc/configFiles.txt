@@ -15,15 +15,15 @@ There are three important directories where the proper .dat files should be put:
    dedicated section.
 
 
+  For standard validations you can use the data/regions/validation.dat
+  that is set in the scripts as the default one.
+
 - data/regions/
   the fits are done in categories, the conditions that the electrons
   have to fulfil are defined in .dat files in this directory.
   In each .dat file, a set of categories are defined, one category for
   each line: see ElectronCategory_class for more information about the syntax
 
-
-  For standard validations you can use the data/regions/validation.dat
-  that is set in the scripts as the default one.
 
 
 - data/runRanges/
@@ -42,7 +42,7 @@ There are three important directories where the proper .dat files should be put:
   For more information on how to produce automatically the runRanges .dat files see:  \ref runDivide
 
 
-#============================== validation config .dat file creation to be put in data/validation/
+\section validationConfig Validation config files
 This config file contains the list of files to run on, the files
 containing the PU histograms for the PU reweighting and all the other
 files needed.
@@ -76,6 +76,45 @@ s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Sum
         same chain
 	files with the same tag but different treeName are added as
 	friends 
+
+
+\subsection pileupHist	How to get the pileup histogram
+When running the alcareco production for the MC, an additional file called PUDumper.root is produced for each job.
+It contains the 
+
+
+\subsection pileup	Hot to produce ntuples with pileup weights
+In the config file the pileupHist must be indicated. When running the ZFitter.exe it will automatically calculate the weights and create the additional ntuples in the \code tmp/ \endcode directory.
+To just produce the ntuples:
+\code ./bin/ZFitter.exe -f data/validation/22Jan2012-stdMCAll.dat --savePUTreeWeight \endcode
+
+It's sufficient to copy them from the tmp/ directory to another directory and to add them to the config file. 
+Usually the pileupHist and pileup tree are put in the following directory:
+\code /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ \endcode
+
+
+
+
+\section runDivide How to produce runRanges .dat files 
+
+The idea is to produce a file with the run ranges with 100k Zee events
+(to have enough statistics in the EE), but taking into account also
+that some run ranges should not be between to TSs or two era (RUN A
+and B).
+
+
+The run ranges:
+ - put in the data/runRanges/runRangeLimits.dat the runNumber that should start a new run range (TSs for example)
+ - run the command
+\code ./bin/ZFitter.exe -f file.dat --runDivide \endcode
+
+The ZFitter.exe options are:
+\code
+  --runDivide                                  execute the run division
+  --nEvents_runDivide arg (=100000)            Minimum number of events in a 
+                                               run range
+\endcode
+
 
 
 */

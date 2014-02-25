@@ -1,5 +1,5 @@
 /**
- * \page runDivide How to produce runRanges .dat files 
+ * \page runDivideB How to produce runRanges .dat files 
 
 The idea is to produce a file with the run ranges with 100k Zee events
 (to have enough statistics in the EE), but taking into account also
