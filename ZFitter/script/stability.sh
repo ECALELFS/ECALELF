@@ -14,12 +14,13 @@ usage(){
     echo " -l legend"
     echo " --color: make coloured plot (def=$color)"
     echo " --column arg (def=$column)"
-    echo " --allRegions" 
+    echo " --allRegions"
+    echo " -g arg: select regions matching arg, to be used with --allRegions"
     echo " --norm: normalized the y axis to the first point"
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o ht:x:y:l: -l help,tableFile:,xVar:,yVar:,outDirImgData:,noPlot,xMin:,xMax:,tableFile2:,titleFile1:,titleFile2:,color,column:,allRegions,norm -- "$@")
+if ! options=$(getopt -u -o ht:x:y:l:g: -l help,tableFile:,xVar:,yVar:,outDirImgData:,noPlot,xMin:,xMax:,tableFile2:,titleFile1:,titleFile2:,color,column:,allRegions,norm -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -46,6 +47,7 @@ do
 	--xMean) XMEAN=true;;
 	--column) column=$2; shift;;
 	--allRegions) MULTIREGION=y;;
+	-g) REGIONGREP=$2; shift;;
 	--norm) NORM=y;;
 	#--titleFile1) titleOne=$2; shift;;
 	#--titleFile2) titleTwo=$2; shift;;
@@ -83,35 +85,6 @@ if [ ! -e "tmp/" ];then mkdir tmp/; fi
 tmpFile=tmp/tmpFile.dat
 columns=$COLUMNDATA,$COLUMNMC,$COLUMNDATAMC
 #./script/tex2txt.sh $TABLEFILE > $tmpFile
-case $xVar in
-    unixTime)
-	xVarName="date (day/month)"
-	;;
-    runNumber)
-	xVarName=runNumber
-	;;
-    absEta)
-	xVarName="|#eta|"
-	;;
-    absEtaSingleEle)
-        xVarName="|#eta of one electron|"
-        ;;
-    nPV)
-	xVarName="nVtx"
-	;;
-   invMassRelSigma*)
-        xVarName="#sigma_{M}/M"
-        ;;
-    ADC)
-	xVarName="scale shift [%]"
-	;;
-    nHitsSCEle)
-	xVarName="num Hits SC"
-	;;
-    Et)
-	xVarName="Et (GeV)"
-	;;
-esac
 
 case $yVar in
     peak|deltaM)
@@ -119,6 +92,10 @@ case $yVar in
 	yVarName="#Delta m [GeV/c^{2}]"
 	yMin=-1
 	yMax=1
+	if [ -n "${MULTIREGION}" ];then
+	    yMin=10;
+	    yMax=-10;
+	fi
 	;;
     sigmaCB)
 	columns=6-7
@@ -158,6 +135,41 @@ case $yVar in
 	;;
 esac
 
+case $xVar in
+    unixTime)
+	xVarName="date (day/month)"
+	;;
+    runNumber)
+	xVarName=runNumber
+	;;
+    absEta)
+	xVarName="|#eta|"
+	;;
+    absEtaSingleEle)
+        xVarName="|#eta of one electron|"
+        ;;
+    nPV)
+	xVarName="nVtx"
+	;;
+   invMassRelSigma*)
+        xVarName="#sigma_{M}/M"
+        ;;
+    ADC)
+	xVarName="scale shift [%]"
+	;;
+    nHitsSCEle)
+	xVarName="num Hits SC"
+	;;
+    Et)
+	xVarName="Et (GeV)"
+#	yMin=0.994
+#	yMax=1.008
+	yMin=0.999
+	yMax=1.002
+
+	;;
+esac
+
 if [ ! -e "tmp/stability/dat/" ]; then 
     mkdir -p tmp/stability/dat
 else
@@ -191,9 +203,20 @@ for TABLEFILE in $TABLEFILES
   echo $TABLEFILE
   tmpFile=tmp/stability/tmpFile-${index}.tex
   tmpFileDat=tmp/stability/dat/tmpFile-${index}.dat
+  runListFile=tmp/stability/runList-${index}.dat
+  runListSed=tmp/stability/run2time-${index}.sed
   echo $tmpFile
   echo $tmpFileDat
   case $xVar in
+      Et)
+	  grep -v '#' $TABLEFILE | grep -v '^%' | grep ${xVar} | grep scale | sed 's|scale_||;s|=|\& 0 \& -- \& -- \&|;s|+/-|\\pm|;s|L(.*)| \\\\|;s|//.*||' |  sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;s|^\t${xVar}|noname\t${xVar}|;s|^-||" | cut -d '&' -f 1,2,$columns > $tmpFile
+	  ;;
+    unixTime)
+	grep -v '#' $TABLEFILE | grep -v '^%' | grep runNumber | sed "s|[-]*runNumber_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\trunNumber\t\1\t\2|;s|^\trunNumber|noname\trunNumber|;s|^-||" |cut -d '&' -f 1,2,$columns  > $tmpFile
+	cut -d '&' -f 1 $tmpFile | sed 's|.*runNumber\t\([0-9]*\)\t\([0-9]*\)|\1-\2|' |sort | uniq > ${runListFile}
+	for line in `cat ${runListFile}`; do grep $line data/runRanges/*.dat | sed -r 's|[ ]+|\t|g;s|[\t]+|\t|g' | cut -f 1,3 | cut -d ':' -f 2|  awk '(NF>1){print $0}' |sort | uniq | sed 's/\([0-9]*\)-\([0-9]*\)\t\([0-9]*\)-\([0-9]*\)/s|runNumber\t\1\t\2|unixTime\t\3\t\4|/'; done > ${runListSed}
+	sed -i -f ${runListSed} $tmpFile
+	;;
     *)
         grep -v '#' $TABLEFILE | grep -v '^%' | grep ${xVar} | sed "s|[-]*${xVar}_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\t${xVar}\t\1\t\2|;s|^\t${xVar}|noname\t${xVar}|;s|^-||" |cut -d '&' -f 1,2,$columns  > $tmpFile
 	;;
@@ -233,9 +256,12 @@ EOF
 done
 
 
-
-regions=`cat tmp/stability/dat/*.dat | cut -f 1 | sort | uniq`
-
+if [ -n "${REGIONGREP}" ];then
+    regions=`cat tmp/stability/dat/*.dat | cut -f 1 | sort | uniq |grep ${REGIONGREP}`
+    REGIONGREP="-${REGIONGREP}"
+else
+    regions=`cat tmp/stability/dat/*.dat | cut -f 1 | sort | uniq`
+fi
 
 if [ -n "${MULTIREGION}" ];then
     cat >> tmp/stability_macro.C<<EOF
@@ -271,27 +297,27 @@ EOF
 	let index=$index+1
       done
     done
-else
-cat >> tmp/stability_macro.C<<EOF
-  //------------------------------ 
-	//filenameList.clear();
-labelList.clear();
-EOF
-    index=0
-    for region in $regions
-      do
-	    cat >> tmp/stability_macro.C<<EOF
-labelList.push_back("${region}");
-EOF
-	    let index=$index+1
-    done
+#else
+# cat >> tmp/stability_macro.C<<EOF
+#   //------------------------------ 
+# 	//filenameList.clear();
+# labelList.clear();
+# EOF
+#     index=0
+#     for region in $regions
+#       do
+# 	    cat >> tmp/stability_macro.C<<EOF
+# labelList.push_back("${region}");
+# EOF
+# 	    let index=$index+1
+#     done
 fi
 
 if [ -n "${MULTIREGION}" ];then
       cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.eps");
   delete c;
 
 EOF
