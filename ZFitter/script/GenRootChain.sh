@@ -26,6 +26,7 @@ usage(){
     echo " --regionsFile arg (=${regionsFile})"
     echo " --corrEleType arg"
     echo " --corrEleFile arg"
+    echo " --fitterOptions arg"
 #    echo " --puName arg             "
 #    echo " --runRangesFile arg (=${runRangesFile})  run ranges for stability plots"
 #    echo " --selection arg (=${selection})     "

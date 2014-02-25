@@ -58,6 +58,8 @@ mkSmearerCatSignal(){
  	./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
  	    --saveRootMacro  --addBranch=smearerCat_s  || exit 1
 	mv tmp/smearerCat_`basename $1 .dat`_s*-`basename $configFile .dat`.root data/smearerCat/ || exit 1
+	echo "put the smearerCat ntuples to the config file"
+	exit 0
     fi
     
 #     tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
@@ -102,10 +104,17 @@ mkSmearerCatData(){
     fi
     cat $3 \
 	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $3.tmp
+    cat $3.tmp $3 | sort | uniq -d > $3.tmp2
+    for line in `cat $3.tmp2 | sed 's|[ ]+|\t|g' | cut  -f 3`;
+      do
+      sed -i "\#$line# d" $3.tmp
+    done
+    cat $3.tmp
+    echo 
+    echo
+    echo
     cat $3.tmp >> $3
-    rm $3.tmp
-    cat $3
-	
+    rm $3.tmp $3.tmp2
 }
 	
 
