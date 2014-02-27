@@ -1,12 +1,12 @@
 /**
 * \page page5 Instructions for ECAL validator (rereco + ntuple production)
-* \verbatim
-#============================== RERECO
+* 
+\section RERECO RERECO
 The ReReco and the ntuple production can be run with the script 
 ALCARAW_RECO/scripts/RerecoQuick.sh
 from the directory ALCARAW_RECO
 
-
+\verbatim
 ####### Input files
 1. ALCARAW_RECO/config/reRecoTags/tag_name.py: 
    is the file where the GT and the list of tags 
