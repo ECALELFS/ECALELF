@@ -9,7 +9,6 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
     
 #sys.path(".")
 
-electronCollection=cms.InputTag("gsfElectrons")
 ############################################################
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
@@ -303,7 +302,7 @@ else:
 process.pfIsoEgamma = cms.Sequence()
 if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, electronCollection.label, 'PFIso')
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     # getting the ptrs
@@ -349,7 +348,7 @@ process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 #process.filterSeq *= process.ZeeFilterSeq
 #process.filterSeq *= process.WenuFilterSeq
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                          src = electronCollection,
+                                          src = cms.InputTag("gsfElectrons"),
                                           minNumber = cms.uint32(1)
                                           )
 if(options.skim=="" or options.skim=="none" or options.skim=="no"):
@@ -718,19 +717,8 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 
 
 
-#######################################
-# Redefine the electron collection
-process.alcaElectronTracksReducer.electronLabel = electronCollection
-process.PassingHLT.InputProducer = electronCollection
-process.selectedElectrons.src = electronCollection
-process.alCaIsolatedElectrons.electronLabel = electronCollection
-
-
 ############################
 ## Dump the output Python ##
 ############################
 processDumpFile = open('processDump.py', 'w')
 print >> processDumpFile, process.dumpPython()
-
-
-
