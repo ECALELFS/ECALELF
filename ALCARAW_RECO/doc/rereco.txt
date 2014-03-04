@@ -6,81 +6,107 @@ The ReReco and the ntuple production can be run with the script
 ALCARAW_RECO/scripts/RerecoQuick.sh
 from the directory ALCARAW_RECO
 
-\verbatim
-####### Input files
-1. ALCARAW_RECO/config/reRecoTags/tag_name.py: 
-   is the file where the GT and the list of tags 
-   to be used for the rereco and the ntuple production 
-   have to be specified.
-   "tag_name" is the name that will be automatically 
-   assigned to all the directories created for the rereco 
-   and the ntuples (the crab directory in 
-   ALCARAW_RECO/prod_alcarereco 
-   and the directories in eos with the reco files and the ntuples)
-2. alcaraw_datasets.dat is the file with the list of the available alcaraw files
+\subsection RERECO_inputFiles Input files
+   1. ALCARAW_RECO/config/reRecoTags/tag_name.py: 
+      is the file where the GT and the list of tags 
+      to be used for the rereco and the ntuple production 
+      have to be specified.
+      "tag_name" is the name that will be automatically 
+      assigned to all the directories created for the rereco 
+      and the ntuples (the crab directory in 
+      ALCARAW_RECO/prod_alcarereco 
+      and the directories in eos with the reco files and the ntuples)
 
+   2. alcaraw_datasets.dat is the file with the list of the available alcaraw files
 
-####### Output files
-1. alcarereco_datasets.dat is the file with the list of all the
+\subsection RERECO_outputFiles Output files
+ 1. alcarereco_datasets.dat is the file with the list of all the
    rerecos already done  
-2. ntuple_datasets.dat is the file with the list of all the ntuples
+
+ 2. ntuple_datasets.dat is the file with the list of all the ntuples
    already produced 
    These two files are updated automatically with a line that summarizes
    all the relevant information about the rereco/ntuples (run range,
    dataset name, alcaraw name, storage_element, user_remote_dir_base,
    tag_name and, for ntuples, if they are produced from alcareco or
    alcarecosim and ...) when the script RerecoQuick.sh is launched
-3. The rereco files produced are stored in
+
+ 3. The rereco files produced are stored in
    /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/8TeV/tag_name
-4. The final merged ntuple is stored in: 
+
+ 4. The final merged ntuple is stored in: 
    /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/tag_name/
 
-
-Instructions:
+\subsection RERECO_instructions Instructions
 
 1. create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory
    Se more detailes below, in section "TAG FILE" 
 
 2. commit the file in GITHUB:
+\code
 git add config/reRecoTags/tag_name.py
 git commit -m "...." config/reRecoTags/tag_name.py
+\endcode
 
 3. Add the period on which the ReReco has to be run in
    alcaraw_datasets.dat, if not already defined (e.g. RUN2012AB)
 
 4. Run the script RerecoQuick.sh  
+\code
    ./scripts/RerecoQuick.sh -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} 
+\endcode
    where:
     - config/reRecoTags/tag_name.py is the configuration file defined in step1
     - jsonFile.txt is the version of the json file to be used
     - json_name is the name that ECALELF gives to the json file used for the ntuple production. 
 
-For example: 
-./scripts/RerecoQuick.sh -p RUN2012ABCD -t config/reRecoTags/Cal_Dic2013_ZeeIC_v1_mo_b.py --json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt --json_name=190456-208686_22JanReReco_v1  --tutorial
+- if you run this the system with ask you your PEM passphrase, which corresponds to
+the grid passphrase
+- if you don't have caf privilege add the option --scheduler=lsf at the end of
+the command 
+<B>
+Not yet tested!!!
+</B>
 
+For example:
+\code 
+./scripts/RerecoQuick.sh -p RUN2012ABCD -t config/reRecoTags/Cal_Dic2013_ZeeIC_v1_mo_b.py --json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt --json_name=190456-208686_22JanReReco_v1  --tutorial
+\endcode
 The files alcarereco_datasets.dat  and ntuple_datasets.dat ae updated when this script is launched
 
 5. check the exit status of the jobs:
+\code
 ./scripts/RerecoQuick.sh  -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} --check
+\endcode
 
   This command will loop over all folders corresponding to the different
   datasets and check if jobs are exited with status 0 
   If jobs are finished, it merge all the produced ntuples and copy them to the right directory on EOS
 
-6. if all fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files
-git pull 
+6. if all went fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files
+\code
+git pull --no-commit
+\endcode
+this will try to merge your local repository with the central one. If there are no conflicts you just need to commit the changes, otherwise you should go throu the files in conflict, resolve them by hand and do 
+\code git add file.cc \endcode
+to say that the confict on the file.cpp has been solved and now is staged for commit
+
+And then you must:
+\code
 git commit -m "rereco tag_name done" alcarereco_datasets.dat ntuple_datasets.dat
+\endcode
 
 
-##### Script options:
+\subsection RERECO_scriptOptions  Script options
 --singleEle : to rereco also single electron datasets
 
-#============================== TAG FILES
+\section TAGFILES TAG FILES
 To run the Rereco with a new set of conditions it is necessary to have a configuration file with the tags.
 
 An example of a configuration file can be found in Calibration/ALCARAW_RECO/config/reRecoTags/test.py
 
 Here an example:
+\code
 ##############################################################
 import FWCore.ParameterSet.Config as cms
 from CondCore.DBCommon.CondDBSetup_cfi import *
@@ -115,12 +141,10 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                )
 
 #############################################################
-
+\endcode
 
 
 The convention is to name these configuration files in this way: tag_name.py
 
 So, for the rereco production follow the steps below:
-
-\endverbatim
 */

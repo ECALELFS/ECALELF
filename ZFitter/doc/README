@@ -205,7 +205,7 @@ the makeValidationSlides.sh script, create in the tmp directory the following fi
 [STATUS] Creating validation stability slides: tmp/validation-invMass_SC-WP80_PU-stability_slide.tex
 that can be imported in your beamer slide base presentation
 The command is:
-./script/makeValidationSlides.sh --dirData test/data/monitoring_2012_53X --dirMC test/MC/DYJets-Summer12-START53-ZSkim-allRange/190456-203002-13Jul_PromptTS --selection WP80_PU --invMass_var invMass_SC --type validation
+./script/makeValidationSlides.sh --dirData test/dato/monitoring_2012_53X --dirMC test/MC/DYJets-Summer12-START53-ZSkim-allRange/190456-203002-13Jul_PromptTS --selection WP80_PU --invMass_var invMass_SC --type validation
 
 
 ###SMEAR
