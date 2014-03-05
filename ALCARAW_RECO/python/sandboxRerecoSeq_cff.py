@@ -22,7 +22,7 @@ from Calibration.ALCARAW_RECO.electronRecalibSCAssociatorSH_cfi import *
 #electronRecalibSCAssociator.scIslandProducer = cms.string('correctedMulti5x5SuperClustersWithPreshower')
 #electronRecalibSCAssociator.scProducer = cms.string('correctedHybridSuperClusters')
 #electronRecalibSCAssociator.scCollection = cms.string('recalibSC')
-#electronRecalibSCAssociator.electronProducer = 'gsfElectrons'
+#electronRecalibSCAssociator.electronProducer = 'gedGsfElectrons'
 electronClusteringSeq = cms.Sequence(ecalClusters * electronRecalibSCAssociator)
 
 

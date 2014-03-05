@@ -3,7 +3,7 @@
 from PhysicsTools.PatAlgos.mcMatchLayer0.electronMatch_cfi import *
 from PhysicsTools.PatAlgos.producersLayer1.electronProducer_cfi import *
 
-patElectrons.electronSource = cms.InputTag("gsfElectrons")
+patElectrons.electronSource = cms.InputTag("gedGsfElectrons")
 patElectrons.useParticleFlow  =  cms.bool( False )
 patElectrons.addElectronID = cms.bool(False)
 patElectrons.addGenMatch = cms.bool(True)

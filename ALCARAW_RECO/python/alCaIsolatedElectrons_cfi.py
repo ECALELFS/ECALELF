@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
-                                       electronLabel = cms.InputTag("gsfElectrons"),
+                                       electronLabel = cms.InputTag("gedGsfElectrons"),
                                        ebRecHitsLabel = cms.InputTag("reducedEcalRecHitsEB"),
                                        eeRecHitsLabel = cms.InputTag("reducedEcalRecHitsEE"),
                                        isUncalib = cms.bool(False),
