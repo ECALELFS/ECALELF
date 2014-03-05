@@ -4,7 +4,7 @@ from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 
 #------------------------------ pattuple
 from Calibration.ZNtupleDumper.elePat_cfi import *
-#process.patElectrons.electronSource = cms.InputTag("gsfElectrons")
+#process.patElectrons.electronSource = cms.InputTag("gedGsfElectrons")
 #process.patElectrons.addElectronID = cms.bool(False)
 #process.patElectrons.addGenMatch = cms.bool(True)
 #process.patElectrons.pvSrc = cms.InputTag("offlinePrimaryVerticesWithBS")
@@ -18,7 +18,7 @@ eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/
 eleNewEnergiesProducer.ptSplit=cms.bool(False)
 
 from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
-eleRegressionEnergy.inputElectronsTag = cms.InputTag('gsfElectrons')
+eleRegressionEnergy.inputElectronsTag = cms.InputTag('gedGsfElectrons')
 eleRegressionEnergy.inputCollectionType = cms.uint32(0)
 eleRegressionEnergy.useRecHitCollections = cms.bool(True)
 eleRegressionEnergy.produceValueMaps = cms.bool(True)
@@ -216,7 +216,7 @@ patElectrons.electronIDSources =  cms.PSet(
     tight      = cms.InputTag("eleSelectionProducers", "tight")
     )
 
-electronMatch.src=cms.InputTag('gsfElectrons')
+electronMatch.src=cms.InputTag('gedGsfElectrons')
 
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection

@@ -36,7 +36,7 @@ GsfMatchedPhotonCands = cms.EDProducer("ElectronMatchedCandidateProducer",
 ##   
 # Trigger  ##################
 PassingHLT = cms.EDProducer("trgMatchGsfElectronProducer",    
-    InputProducer = cms.InputTag( 'gsfElectrons' ),                          
+    InputProducer = cms.InputTag( 'gedGsfElectrons' ),                          
     hltTags = cms.untracked.string( HLTPath ),
     triggerEventTag = cms.untracked.InputTag("hltTriggerSummaryAOD","",HLTProcessName),
     triggerResultsTag = cms.untracked.InputTag("TriggerResults","",HLTProcessName)   
@@ -63,7 +63,7 @@ ZSCHltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
 
 
 selectedElectrons = cms.EDFilter("GsfElectronRefSelector",
-                                 src = cms.InputTag( 'gsfElectrons' ),
+                                 src = cms.InputTag( 'gedGsfElectrons' ),
                                  cut = cms.string(
     "(abs(superCluster.eta)<2.5) && (energy*sin(superClusterPosition.theta)> 15)")
                                          )

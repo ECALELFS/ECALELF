@@ -168,15 +168,15 @@ elif(file_format == 'sandbox'):
     electronTAG = 'electronRecalibSCAssociator'
 elif(file_format == "AOD"):
     processName = "RECO"
-    electronTAG = 'gsfElectrons'
+    electronTAG = 'gedGsfElectrons'
 elif(file_format == "AlcaFromAOD"):
     processName = "ALCASKIM"
-    electronTAG = 'gsfElectrons'
+    electronTAG = 'gedGsfElectrons'
 elif(file_format == "AlcaFromAOD_Recalib"):
     electronTAG = 'electronRecalibSCAssociator'
     processName = 'ALCASKIM' 
 elif(file_format == "RECO"):
-    electronTAG = "gsfElectrons"
+    electronTAG = "gedGsfElectrons"
     processName = "RECO"
     
 

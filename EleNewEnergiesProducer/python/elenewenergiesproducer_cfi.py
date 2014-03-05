@@ -21,7 +21,7 @@ import FWCore.ParameterSet.Config as cms
 
 # ALCARECO collections
 eleNewEnergiesProducer = cms.EDProducer('EleNewEnergiesProducer',
-                                        electronCollection = cms.InputTag('gsfElectrons'),
+                                        electronCollection = cms.InputTag('gedGsfElectrons'),
                                         recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits"),
                                         recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits"),
                                         rhoFastJet = cms.InputTag('kt6PFJetsForRhoCorrection',"rho"),

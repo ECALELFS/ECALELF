@@ -3,13 +3,13 @@
 from CommonTools.ParticleFlow.Isolation.tools_cfi import *
 import FWCore.ParameterSet.Config as cms
 #Now prepare the iso deposits
-elPFIsoDepositChargedGsf=isoDepositReplace('gsfElectrons','pfAllChargedHadrons')
-elPFIsoDepositChargedAllGsf=isoDepositReplace('gsfElectrons','pfAllChargedParticles')
-elPFIsoDepositNeutralGsf=isoDepositReplace('gsfElectrons','pfAllNeutralHadrons')
-elPFIsoDepositPUGsf=isoDepositReplace('gsfElectrons','pfPileUpAllChargedParticles')
+elPFIsoDepositChargedGsf=isoDepositReplace('gedGsfElectrons','pfAllChargedHadrons')
+elPFIsoDepositChargedAllGsf=isoDepositReplace('gedGsfElectrons','pfAllChargedParticles')
+elPFIsoDepositNeutralGsf=isoDepositReplace('gedGsfElectrons','pfAllNeutralHadrons')
+elPFIsoDepositPUGsf=isoDepositReplace('gedGsfElectrons','pfPileUpAllChargedParticles')
 #elPFIsoDepositGamma=isoDepositReplace('pfSelectedElectrons','pfAllPhotons')
 elPFIsoDepositGammaGsf= cms.EDProducer("CandIsoDepositProducer",
-                                       src = cms.InputTag("gsfElectrons"),
+                                       src = cms.InputTag("gedGsfElectrons"),
                                        MultipleDepositsFlag = cms.bool(False),
                                        trackType = cms.string('candidate'),
                                        ExtractorPSet = cms.PSet(
@@ -26,15 +26,15 @@ elPFIsoDepositGammaGsf= cms.EDProducer("CandIsoDepositProducer",
                                        )
 
 # elPFIsoDepositChargedGsf= elPFIsoDepositCharged.clone()
-# elPFIsoDepositChargedGsf.src = 'gsfElectrons'
+# elPFIsoDepositChargedGsf.src = 'gedGsfElectrons'
 # elPFIsoDepositChargedAllGsf = elPFIsoDepositChargedAll.clone()
-# elPFIsoDepositChargedAllGsf.src = 'gsfElectrons'
+# elPFIsoDepositChargedAllGsf.src = 'gedGsfElectrons'
 # elPFIsoDepositNeutralGsf = elPFIsoDepositNeutral.clone()
-# elPFIsoDepositNeutralGsf.src = 'gsfElectrons'
+# elPFIsoDepositNeutralGsf.src = 'gedGsfElectrons'
 # elPFIsoDepositGammaGsf = elPFIsoDepositGamma.clone()
-# elPFIsoDepositGammaGsf.src = 'gsfElectrons'
+# elPFIsoDepositGammaGsf.src = 'gedGsfElectrons'
 # elPFIsoDepositPUGsf = elPFIsoDepositPU.clone()
-# elPFIsoDepositPUGsf.src = 'gsfElectrons'
+# elPFIsoDepositPUGsf.src = 'gedGsfElectrons'
 
 elPFIsoValueCharged03PFIdGsf = cms.EDProducer("PFCandIsolatorFromDeposits",
                                            deposits = cms.VPSet(

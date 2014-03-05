@@ -143,7 +143,7 @@ handleRhoFastJet = Handle('double')
 
 if (file_format == 'ALCARECO'):
     processName="ALCARECO"
-    electronTAG = 'gsfElectrons'
+    electronTAG = 'gedGsfElectrons'
 elif(file_format == 'sandboxRecalib'):
     processName = "ALCARERECO"
     electronTAG = 'electronRecalibSCAssociator'
@@ -151,18 +151,18 @@ elif(file_format == 'sandboxRecalib'):
 elif(file_format == 'sandbox'):
     processName = "ALCASKIM"
 #    electronTAG = 'electronRecalibSCAssociator'
-    electronTAG = 'gsfElectrons'
+    electronTAG = 'gedGsfElectrons'
 elif(file_format == "AOD"):
     processName = "RECO"
-    electronTAG = 'gsfElectrons'
+    electronTAG = 'gedGsfElectrons'
 elif(file_format == "AlcaFromAOD"):
     processName = "ALCASKIM"
-    electronTAG = 'gsfElectrons'
+    electronTAG = 'gedGsfElectrons'
 elif(file_format == "AlcaFromAOD_Recalib"):
     electronTAG = 'electronRecalibSCAssociator'
     processName = 'ALCASKIM' 
 elif(file_format == "RECO"):
-    electronTAG = "gsfElectrons"
+    electronTAG = "gedGsfElectrons"
     processName = "RECO"
     
 

@@ -5,7 +5,7 @@ electronRecalibSCAssociator = cms.EDProducer("ElectronRecalibSuperClusterAssocia
     scIslandCollection = cms.string('endcapRecalibSC'),
     scIslandProducer = cms.string('correctedMulti5x5SuperClustersWithPreshower'),
     scProducer = cms.string('correctedHybridSuperClusters'),
-    electronProducer = cms.string('gsfElectrons'),
+    electronProducer = cms.string('gedGsfElectrons'),
     scCollection = cms.string('recalibSC')
 )
 
