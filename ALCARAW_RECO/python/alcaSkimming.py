@@ -275,8 +275,7 @@ else:
             print "[INFO] Using GT POSTLS162_V5::All"
             process.GlobalTag.globaltag = 'POSTLS162_V5::All'
         else:
-            print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
-            sys.exit(1)
+            process.GlobalTag.globaltag = 'GR_R_62_V3'
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
         sys.exit(1)
@@ -288,7 +287,7 @@ else:
 process.pfIsoEgamma = cms.Sequence()
 if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
+    process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     # getting the ptrs
@@ -306,11 +305,12 @@ elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMS
     process.pfIsoEgamma*= process.pfNoPileUpSequence * process.pfNoPileUpIsoSequence
     process.load('CommonTools.ParticleFlow.ParticleSelectors.pfSortByType_cff')
     process.pfIsoEgamma*=process.pfSortByTypeSequence
-    process.load('RecoEgamma.EgammaElectronProducers.electronPFIsolationDeposits_cff')
+    #process.load('RecoEgamma.EgammaElectronProducers.electronPFIsolationDeposits_cff') 
+    #process.load('RecoParticleFlow.PFProducer.electronPFIsolationDeposits_cff')  
     #pfisoALCARECO = cms.Sequence(eleIsoSequence)
-    process.pfIsoEgamma*= process.electronPFIsolationDepositsSequence #* process.gedElectronPFIsolationDepositsSequence
+    process.pfIsoEgamma*= process.electronPFIsolationDepositsSequence # * process.gedElectronPFIsolationDepositsSequence
 
-###############################
+###############################/
 # Event filter sequence: process.filterSeq
 # sanbox sequence: process.seqALCARECOEcalUncalElectron + process.alcarecoElectronTracksReducerSeq
 # sandbox rereco sequence: process.sandboxRerecoSeq
@@ -332,7 +332,7 @@ if(MC):
 process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                          src = cms.InputTag("gsfElectrons"),
+                                          src = cms.InputTag("gedGsfElectrons"),
                                           minNumber = cms.uint32(1)
                                           )
 process.filterSeq = cms.Sequence(process.MinEleNumberFilter)
@@ -653,12 +653,12 @@ elif(options.type=='ALCARERECO'):
     else:
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step,
                                         process.NtuplePath, process.NtupleEndPath)
-
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
+                                        process.NtuplePath)
     else:
-        if(options.doTree==0):
+        if(options.doTree=='0'):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
                                             process.ALCARECOoutput_step
@@ -674,7 +674,7 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-if(options.isCrab==1):
+if(options.isCrab=='1'):
     pathPrefix=""
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'

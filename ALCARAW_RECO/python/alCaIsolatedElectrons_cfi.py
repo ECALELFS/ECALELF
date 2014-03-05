@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
-                                       electronLabel = cms.InputTag("gsfElectrons"),
+                                       electronLabel = cms.InputTag("gedGsfElectrons"),
                                        EESuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower"),
                                        minEta_highEtaSC = cms.double(2.4),
                                        ebRecHitsLabel = cms.InputTag("reducedEcalRecHitsEB"),
