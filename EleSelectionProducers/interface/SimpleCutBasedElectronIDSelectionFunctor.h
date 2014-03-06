@@ -492,186 +492,187 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
 #ifdef CMSSW_7_0_X
 
-    double iso_ch = gedGsfElectrons->SumChargedHadronPt;
-    double iso_em = gedGsfElectrons->SumPhotonEt;
-    double iso_nh = gedGsfElectrons->SumNeutralHadronEt;
+		//double iso_ch = gedGsfElectrons->SumChargedHadronPt;
+		//double iso_em = gedGsfElectrons->SumPhotonEt;
+		//double iso_nh = gedGsfElectrons->SumNeutralHadronEt;
 
 #else
-    // get particle flow isolation
-    double iso_ch = (*chIsoValsHandle_)[electronRef];
-    double iso_em = (*emIsoValsHandle_)[electronRef];
-    double iso_nh = (*nhIsoValsHandle_)[electronRef];
-#endif
-    // apply to neutrals
-    double rhoPrime = std::max(*rhoHandle_, 0.0);
-    double iso_n = std::max(iso_nh + iso_em - rhoPrime * AEff, 0.0);
+		// get particle flow isolation
+		double iso_ch = (*chIsoValsHandle_)[electronRef];
+		double iso_em = (*emIsoValsHandle_)[electronRef];
+		double iso_nh = (*nhIsoValsHandle_)[electronRef];
 
-    // compute final isolation
-    double iso = (iso_n + iso_ch) / pt;
+#endif
+		// apply to neutrals
+		double rhoPrime = std::max(*rhoHandle_, 0.0);
+		double iso_n = std::max(iso_nh + iso_em - rhoPrime * AEff, 0.0);
+
+		// compute final isolation
+		double iso = (iso_n + iso_ch) / pt;
 
 #ifdef shervin
-    Double_t cIso    = 0;
-    if (electron.isEB()) { cIso = 
-	( electron.dr03TkSumPt() + std::max(0.,electron.dr03EcalRecHitSumEt() -1.) 
-	  + electron.dr03HcalTowerSumEt() ) / eleET;
-    }
-    else {
-      cIso = ( electron.dr03TkSumPt()+electron.dr03EcalRecHitSumEt()+
-	       electron.dr03HcalTowerSumEt()  ) / eleET;
-    }
+		Double_t cIso    = 0;
+		if (electron.isEB()) { cIso = 
+			( electron.dr03TkSumPt() + std::max(0.,electron.dr03EcalRecHitSumEt() -1.) 
+				+ electron.dr03HcalTowerSumEt() ) / eleET;
+		}
+		else {
+			cIso = ( electron.dr03TkSumPt()+electron.dr03EcalRecHitSumEt()+
+					electron.dr03HcalTowerSumEt()  ) / eleET;
+		}
 #endif
-    // in 39 conversion rejection variables are accessible from Gsf electron
+		// in 39 conversion rejection variables are accessible from Gsf electron
 #ifdef shervin
-    Double_t dist = electron.convDist(); // default value is -9999 if conversion partner not found
-    Double_t dcot = electron.convDcot(); // default value is -9999 if conversion partner not found
-    Bool_t isConv = fabs(dist) < 0.02 && fabs(dcot) < 0.02;
+		Double_t dist = electron.convDist(); // default value is -9999 if conversion partner not found
+		Double_t dcot = electron.convDcot(); // default value is -9999 if conversion partner not found
+		Bool_t isConv = fabs(dist) < 0.02 && fabs(dcot) < 0.02;
 #endif
 
-    Int_t innerHits = electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
-    bool hasMatchedConversion = ConversionTools::hasMatchedConversion(electron, ConversionsHandle_, BeamSpotHandle_->position());
+		Int_t innerHits = electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
+		bool hasMatchedConversion = ConversionTools::hasMatchedConversion(electron, ConversionsHandle_, BeamSpotHandle_->position());
 
-    Double_t absEtaSC = fabs(electron.superCluster()->eta());
-    Double_t rhoRel = *rhoHandle_ / eleET;
- // conversion rejection variables
-
-
+		Double_t absEtaSC = fabs(electron.superCluster()->eta());
+		Double_t rhoRel = *rhoHandle_ / eleET;
+		// conversion rejection variables
 
 
-    //------------------------------ Fiducial region cut
-    if ( (absEtaSC < 1.4442 || (absEtaSC > 1.566 && absEtaSC < 2.5) ) || ignoreCut("fiducial")) passCut(retInternal_, "fiducial");
 
-    //------------------------------ conversion rejection cut
-    if ( innerHits  <= cut("maxNumberOfExpectedMissingHits", int()) || ignoreCut("maxNumberOfExpectedMissingHits")) 
-      passCut(retInternal_, "maxNumberOfExpectedMissingHits");    
-    if ( (!hasMatchedConversion) || ignoreCut("hasMatchedConversion")) passCut(retInternal_, "hasMatchedConversion");
- 
-    if (electron.isEB()) { // BARREL case
-      //#ifdef DEBUG
-      //std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
-      //#endif
-      if ( fabs(Deta)  <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
-      if ( fabs(Dphi)  <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
-      if ( sihih       <  cut("sihih_EB",    double()) || ignoreCut("sihih_EB")   ) passCut(retInternal_, "sihih_EB");
-      if ( HoE         <  cut("hoe_EB",      double()) || ignoreCut("hoe_EB")     ) passCut(retInternal_, "hoe_EB");
-      if ( ignoreCut("ooemoop_EB") || ooemoop     <  cut("ooemoop_EB",     double())  ) passCut(retInternal_, "ooemoop_EB");
-      if ( fabs(d0vtx) <  cut("d0vtx_EB",       double()) || ignoreCut("d0vtx_EB")   ) passCut(retInternal_, "d0vtx_EB");
-      if ( fabs(dzvtx) <  cut("dzvtx_EB",       double()) || ignoreCut("dzvtx_EB")   ) passCut(retInternal_, "dzvtx_EB");
-      
-      if ( pfMVA       >  cut("pfmva_EB",    double()) || ignoreCut("pfmva_EB")   ) passCut(retInternal_, "pfmva_EB");
-      
-      if ( trackIso - AeffTk_EB   *rhoRel <  cut("relTrackIso_EB", double()) || ignoreCut("relTrackIso_EB")) 
-	passCut(retInternal_, "relTrackIso_EB");
-      if ( ecalIso  - AeffECAL_EB *rhoRel <  cut("relEcalIso_EB",  double()) || ignoreCut("relEcalIso_EB") ) 
-	passCut(retInternal_, "relEcalIso_EB");
-      if ( hcalIso  - AeffHCAL_EB *rhoRel <  cut("relHcalIso_EB",  double()) || ignoreCut("relHcalIso_EB") ) 
-	passCut(retInternal_, "relHcalIso_EB");
-      if(pt>=20){
-	if( ignoreCut("pfIso_EB") || iso < cut("pfIso_EB", double()))
-	  passCut(retInternal_, "pfIso_EB");
-	passCut(retInternal_, "pfIsoLowPt_EB");
-      }else{
-	if(iso < cut("pfIsoLowPt_EB", double()) || ignoreCut("pfIsoLowPt_EB") )
-	  passCut(retInternal_, "pfIsoLowPt_EB");
-	passCut(retInternal_, "pfIso_EB");
-      }
-	      
-      // pass all the EE cuts
-      passCut(retInternal_, "deta_EE");	
-      passCut(retInternal_, "dphi_EE");	
-      passCut(retInternal_, "sihih_EE");	
-      passCut(retInternal_, "hoe_EE");
-      passCut(retInternal_, "ooemoop_EE");
-      passCut(retInternal_, "d0vtx_EE");
-      passCut(retInternal_, "dzvtx_EE");
-      passCut(retInternal_, "pfmva_EE");
-      passCut(retInternal_, "relTrackIso_EE");	
-      passCut(retInternal_, "relEcalIso_EE");	
-      passCut(retInternal_, "relHcalIso_EE");	
-      passCut(retInternal_, "pfIso_EE");
-      passCut(retInternal_, "pfIsoLowPt_EE");
-    } else {  // ENDCAPS case
-      //      std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EE", double()) << "\t" << ignoreCut("deta_EE") << std::endl;
-      if ( fabs(Deta)  <  cut("deta_EE",     double()) || ignoreCut("deta_EE")    ) passCut(retInternal_, "deta_EE");
-      if ( fabs(Dphi)  <  cut("dphi_EE",     double()) || ignoreCut("dphi_EE")    ) passCut(retInternal_, "dphi_EE");
-      if ( sihih       <  cut("sihih_EE",    double()) || ignoreCut("sihih_EE")   ) passCut(retInternal_, "sihih_EE");
-      if ( HoE         <  cut("hoe_EE",      double()) || ignoreCut("hoe_EE")     ) passCut(retInternal_, "hoe_EE");
-      if ( ooemoop     <  cut("ooemoop_EE",     double()) || ignoreCut("ooemoop_EE") ) passCut(retInternal_, "ooemoop_EE");
-      if ( fabs(d0vtx) <  cut("d0vtx_EE",       double()) || ignoreCut("d0vtx_EE")   ) passCut(retInternal_, "d0vtx_EE");
-      if ( fabs(dzvtx) <  cut("dzvtx_EE",       double()) || ignoreCut("dzvtx_EE")   ) passCut(retInternal_, "dzvtx_EE");
-      
-      if ( pfMVA       >  cut("pfmva_EE",    double()) || ignoreCut("pfmva_EE")   ) passCut(retInternal_, "pfmva_EE");
-      
-      if ( trackIso - AeffTk_EE   *rhoRel <  cut("relTrackIso_EE", double()) || ignoreCut("relTrackIso_EE")) 
-	passCut(retInternal_, "relTrackIso_EE");
-      if ( ecalIso  - AeffECAL_EE *rhoRel <  cut("relEcalIso_EE",  double()) || ignoreCut("relEcalIso_EE") ) 
-	passCut(retInternal_, "relEcalIso_EE");
-      if ( hcalIso  - AeffHCAL_EE *rhoRel <  cut("relHcalIso_EE",  double()) || ignoreCut("relHcalIso_EE") ) 
-	passCut(retInternal_, "relHcalIso_EE");
-      if(pt>=20){
-	if(iso < cut("pfIso_EE", double()) || ignoreCut("pfIso_EE") )
-	  passCut(retInternal_, "pfIso_EE");
-	passCut(retInternal_, "pfIsoLowPt_EE");
-      }else{
-	if(iso < cut("pfIsoLowPt_EE", double()) || ignoreCut("pfIsoLowPt_EE") )
-	  passCut(retInternal_, "pfIsoLowPt_EE");
-	passCut(retInternal_, "pfIso_EE");
-      }
-	      
-      // pass all the EB cuts
-      passCut(retInternal_, "deta_EB");	
-      passCut(retInternal_, "dphi_EB");	
-      passCut(retInternal_, "sihih_EB");	
-      passCut(retInternal_, "hoe_EB");
-      passCut(retInternal_, "ooemoop_EB");
-      passCut(retInternal_, "d0vtx_EB");
-      passCut(retInternal_, "dzvtx_EB");
-      passCut(retInternal_, "pfmva_EB");
-      passCut(retInternal_, "relTrackIso_EB");	
-      passCut(retInternal_, "relEcalIso_EB");	
-      passCut(retInternal_, "relHcalIso_EB");	
-      passCut(retInternal_, "pfIso_EB");
-      passCut(retInternal_, "pfIsoLowPt_EB");
 
-    }
-    setIgnored(retInternal_);   
+		//------------------------------ Fiducial region cut
+		if ( (absEtaSC < 1.4442 || (absEtaSC > 1.566 && absEtaSC < 2.5) ) || ignoreCut("fiducial")) passCut(retInternal_, "fiducial");
+
+		//------------------------------ conversion rejection cut
+		if ( innerHits  <= cut("maxNumberOfExpectedMissingHits", int()) || ignoreCut("maxNumberOfExpectedMissingHits")) 
+			passCut(retInternal_, "maxNumberOfExpectedMissingHits");    
+		if ( (!hasMatchedConversion) || ignoreCut("hasMatchedConversion")) passCut(retInternal_, "hasMatchedConversion");
+
+		if (electron.isEB()) { // BARREL case
+			//#ifdef DEBUG
+			//std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
+			//#endif
+			if ( fabs(Deta)  <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
+			if ( fabs(Dphi)  <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
+			if ( sihih       <  cut("sihih_EB",    double()) || ignoreCut("sihih_EB")   ) passCut(retInternal_, "sihih_EB");
+			if ( HoE         <  cut("hoe_EB",      double()) || ignoreCut("hoe_EB")     ) passCut(retInternal_, "hoe_EB");
+			if ( ignoreCut("ooemoop_EB") || ooemoop     <  cut("ooemoop_EB",     double())  ) passCut(retInternal_, "ooemoop_EB");
+			if ( fabs(d0vtx) <  cut("d0vtx_EB",       double()) || ignoreCut("d0vtx_EB")   ) passCut(retInternal_, "d0vtx_EB");
+			if ( fabs(dzvtx) <  cut("dzvtx_EB",       double()) || ignoreCut("dzvtx_EB")   ) passCut(retInternal_, "dzvtx_EB");
+
+			if ( pfMVA       >  cut("pfmva_EB",    double()) || ignoreCut("pfmva_EB")   ) passCut(retInternal_, "pfmva_EB");
+
+			if ( trackIso - AeffTk_EB   *rhoRel <  cut("relTrackIso_EB", double()) || ignoreCut("relTrackIso_EB")) 
+				passCut(retInternal_, "relTrackIso_EB");
+			if ( ecalIso  - AeffECAL_EB *rhoRel <  cut("relEcalIso_EB",  double()) || ignoreCut("relEcalIso_EB") ) 
+				passCut(retInternal_, "relEcalIso_EB");
+			if ( hcalIso  - AeffHCAL_EB *rhoRel <  cut("relHcalIso_EB",  double()) || ignoreCut("relHcalIso_EB") ) 
+				passCut(retInternal_, "relHcalIso_EB");
+			if(pt>=20){
+				if( ignoreCut("pfIso_EB") || iso < cut("pfIso_EB", double()))
+					passCut(retInternal_, "pfIso_EB");
+				passCut(retInternal_, "pfIsoLowPt_EB");
+			}else{
+				if(iso < cut("pfIsoLowPt_EB", double()) || ignoreCut("pfIsoLowPt_EB") )
+					passCut(retInternal_, "pfIsoLowPt_EB");
+				passCut(retInternal_, "pfIso_EB");
+			}
+
+			// pass all the EE cuts
+			passCut(retInternal_, "deta_EE");	
+			passCut(retInternal_, "dphi_EE");	
+			passCut(retInternal_, "sihih_EE");	
+			passCut(retInternal_, "hoe_EE");
+			passCut(retInternal_, "ooemoop_EE");
+			passCut(retInternal_, "d0vtx_EE");
+			passCut(retInternal_, "dzvtx_EE");
+			passCut(retInternal_, "pfmva_EE");
+			passCut(retInternal_, "relTrackIso_EE");	
+			passCut(retInternal_, "relEcalIso_EE");	
+			passCut(retInternal_, "relHcalIso_EE");	
+			passCut(retInternal_, "pfIso_EE");
+			passCut(retInternal_, "pfIsoLowPt_EE");
+		} else {  // ENDCAPS case
+			//      std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EE", double()) << "\t" << ignoreCut("deta_EE") << std::endl;
+			if ( fabs(Deta)  <  cut("deta_EE",     double()) || ignoreCut("deta_EE")    ) passCut(retInternal_, "deta_EE");
+			if ( fabs(Dphi)  <  cut("dphi_EE",     double()) || ignoreCut("dphi_EE")    ) passCut(retInternal_, "dphi_EE");
+			if ( sihih       <  cut("sihih_EE",    double()) || ignoreCut("sihih_EE")   ) passCut(retInternal_, "sihih_EE");
+			if ( HoE         <  cut("hoe_EE",      double()) || ignoreCut("hoe_EE")     ) passCut(retInternal_, "hoe_EE");
+			if ( ooemoop     <  cut("ooemoop_EE",     double()) || ignoreCut("ooemoop_EE") ) passCut(retInternal_, "ooemoop_EE");
+			if ( fabs(d0vtx) <  cut("d0vtx_EE",       double()) || ignoreCut("d0vtx_EE")   ) passCut(retInternal_, "d0vtx_EE");
+			if ( fabs(dzvtx) <  cut("dzvtx_EE",       double()) || ignoreCut("dzvtx_EE")   ) passCut(retInternal_, "dzvtx_EE");
+
+			if ( pfMVA       >  cut("pfmva_EE",    double()) || ignoreCut("pfmva_EE")   ) passCut(retInternal_, "pfmva_EE");
+
+			if ( trackIso - AeffTk_EE   *rhoRel <  cut("relTrackIso_EE", double()) || ignoreCut("relTrackIso_EE")) 
+				passCut(retInternal_, "relTrackIso_EE");
+			if ( ecalIso  - AeffECAL_EE *rhoRel <  cut("relEcalIso_EE",  double()) || ignoreCut("relEcalIso_EE") ) 
+				passCut(retInternal_, "relEcalIso_EE");
+			if ( hcalIso  - AeffHCAL_EE *rhoRel <  cut("relHcalIso_EE",  double()) || ignoreCut("relHcalIso_EE") ) 
+				passCut(retInternal_, "relHcalIso_EE");
+			if(pt>=20){
+				if(iso < cut("pfIso_EE", double()) || ignoreCut("pfIso_EE") )
+					passCut(retInternal_, "pfIso_EE");
+				passCut(retInternal_, "pfIsoLowPt_EE");
+			}else{
+				if(iso < cut("pfIsoLowPt_EE", double()) || ignoreCut("pfIsoLowPt_EE") )
+					passCut(retInternal_, "pfIsoLowPt_EE");
+				passCut(retInternal_, "pfIso_EE");
+			}
+
+			// pass all the EB cuts
+			passCut(retInternal_, "deta_EB");	
+			passCut(retInternal_, "dphi_EB");	
+			passCut(retInternal_, "sihih_EB");	
+			passCut(retInternal_, "hoe_EB");
+			passCut(retInternal_, "ooemoop_EB");
+			passCut(retInternal_, "d0vtx_EB");
+			passCut(retInternal_, "dzvtx_EB");
+			passCut(retInternal_, "pfmva_EB");
+			passCut(retInternal_, "relTrackIso_EB");	
+			passCut(retInternal_, "relEcalIso_EB");	
+			passCut(retInternal_, "relHcalIso_EB");	
+			passCut(retInternal_, "pfIso_EB");
+			passCut(retInternal_, "pfIsoLowPt_EB");
+
+		}
+		setIgnored(retInternal_);   
 #ifdef DEBUG
-    std::cout << "------------------------------ " << version_ << std::endl;
-    std::cout << "[DEBUG] retInternal_ = " << retInternal_ << std::endl;
-    std::cout << "[DEBUG] ret = " << ret << std::endl;
-    ret=retInternal_;
-    std::cout << "[DEBUG] copy ret = " << (bool) ret << std::endl;
-    std::cout << "[DEBUG] bitMask = " << bitMask() << std::endl;
-    if(((bool)ret)==0){
-      print(std::cout);
-    }      
+		std::cout << "------------------------------ " << version_ << std::endl;
+		std::cout << "[DEBUG] retInternal_ = " << retInternal_ << std::endl;
+		std::cout << "[DEBUG] ret = " << ret << std::endl;
+		ret=retInternal_;
+		std::cout << "[DEBUG] copy ret = " << (bool) ret << std::endl;
+		std::cout << "[DEBUG] bitMask = " << bitMask() << std::endl;
+		if(((bool)ret)==0){
+			print(std::cout);
+		}      
 #endif
-    //    ret= getBitTemplate();
-    return (bool)retInternal_;
-  }
+		//    ret= getBitTemplate();
+		return (bool)retInternal_;
+	}
 
-  int bitMask(){
-    int mask=0;
-    pat::strbitset::bit_vector retBits = retInternal_.bits();
-    for(pat::strbitset::bit_vector::const_iterator bitIter = retBits.begin();
-	bitIter != retBits.end();
-	bitIter++){
-      int value=*bitIter << (bitIter-retBits.begin());
-      mask = mask | value;
-    }
-    return mask;
-  }
+	int bitMask(){
+		int mask=0;
+		pat::strbitset::bit_vector retBits = retInternal_.bits();
+		for(pat::strbitset::bit_vector::const_iterator bitIter = retBits.begin();
+				bitIter != retBits.end();
+				bitIter++){
+			int value=*bitIter << (bitIter-retBits.begin());
+			mask = mask | value;
+		}
+		return mask;
+	}
 
- private: // member variables
-  // version of the cuts  
-  Version_t version_;
-  const edm::Handle<reco::GsfElectronCollection>& electronsHandle_;
-  const edm::Handle<reco::ConversionCollection>& ConversionsHandle_;
-  const edm::Handle<reco::BeamSpot>& BeamSpotHandle_;
-  const edm::Handle<reco::VertexCollection>& VertexHandle_;
-  const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle_;
-  const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle_;
-  const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle_;
-  const edm::Handle<double>& rhoHandle_;
+	private: // member variables
+	// version of the cuts  
+	Version_t version_;
+	const edm::Handle<reco::GsfElectronCollection>& electronsHandle_;
+	const edm::Handle<reco::ConversionCollection>& ConversionsHandle_;
+	const edm::Handle<reco::BeamSpot>& BeamSpotHandle_;
+	const edm::Handle<reco::VertexCollection>& VertexHandle_;
+	const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle_;
+	const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle_;
+	const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle_;
+	const edm::Handle<double>& rhoHandle_;
 };
 
 
