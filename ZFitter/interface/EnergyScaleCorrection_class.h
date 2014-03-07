@@ -8,6 +8,8 @@
 #include <TChain.h>
 #include <TRandom3.h>
 #include <string>
+#include <RooRealVar.h>
+#include <RooCBShape.h>
 
 class correctionValue_class{
  public:
@@ -110,6 +112,8 @@ class EnergyScaleCorrection_class{
 
   //============================== smearings
  private:
+  int smearingType_;
+
   TRandom3 *rgen_;
   correction_map_t scales, scales_not_defined;
   correction_map_t smearings, smearings_not_defined;
@@ -118,6 +122,10 @@ class EnergyScaleCorrection_class{
 		   double constTerm, double err_constTerm, double alpha, double err_alpha, double Emean, double err_Emean);
   float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); 
  public:
+  inline void SetSmearingType(int value){if(value>=0 && value<=1){smearingType_=value;}else{smearingType_=0;}};
+  inline void SetSmearingCBAlpha(double value){cut.setVal(value);};
+  inline void SetSmearingCBPower(double value){power.setVal(value);};
+
   float getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
   float getSmearingRho(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); ///< public for sigmaE estimate
 
@@ -130,6 +138,24 @@ class EnergyScaleCorrection_class{
 		      TString etaEleBranchName="etaEle",
 		      TString etaSCEleBranchName="etaSCEle"
 		      );
+
+  //---------- CB parameters
+  RooRealVar 	deltaM;
+  RooRealVar 	sigma;
+  RooRealVar 	cut;
+  RooRealVar 	power;
+  RooRealVar    x;
+  //--------------- BW parameters
+  //RooRealVar  mRes;
+  //RooRealVar  Gamma;
+
+  //  RooRealVar& invMass_ref;
+  //RooBreitWigner bw_pdf;
+  RooCBShape resCB;
+  RooDataSet *data;
+  int index_data;
+  // convolution
+  //RooFFTConvPdf conv_pdf;
 
 };
 

@@ -1,17 +1,29 @@
 #include "../interface/EnergyScaleCorrection_class.h"
-//#define DEBUG
+#include <RooDataSet.h>
+#include <RooArgSet.h>
+
+#define NGENMAX 10000
 
 // for exit(0)
 #include <stdlib.h>
 // for setw
 #include <iomanip>
+//for istreamstring
+#include <sstream>
 
 //#define DEBUG
 
 EnergyScaleCorrection_class::EnergyScaleCorrection_class(TString correctionFileName, 
 							 TString smearingFileName):
   noCorrections(true), noSmearings(true), 
-  rgen_(NULL)
+  smearingType_(0),
+  rgen_(NULL),
+  deltaM("\\Delta m",   "Bias",   0, -35, 10, "GeV/c^{2}"),
+  sigma(  "\\sigma_{CB}","Width", 2.14, 0.,  10.0, "GeV/c^{2}"),
+  cut(    "\\alpha",     "Cut",   1.424, 0.01, 5.0),
+  power(  "\\gamma",     "Power", 1.86, 0.5, 100.0),
+  x("x","",0,-50,100,"GeV/c^{2}"),
+  resCB("resCB", "A  Crystal Ball Lineshape", x, deltaM, sigma, cut, power)
 {
   if(smearingFileName.Sizeof()>1) noSmearings=false;
   else noSmearings=true;
@@ -68,7 +80,7 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
   std::cout << "[DEBUG] Checking correction for category: " << category << std::endl;
   std::cout << "[DEBUG] Correction is: " << corr_itr->second
 	    << std::endl 
-    	    << "        given for category " <<  corr_itr->first;
+    	    << "        given for category " <<  corr_itr->first << std::endl;;
 #endif
 
   return corr_itr->second.scale;
@@ -229,7 +241,7 @@ void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, in
   corr.Emean_err    = err_Emean;
   smearings[cat]=corr;
 
-  std::cout << "[INFO:smearings ] " << cat << corr << std::endl;
+  std::cout << "[INFO:smearings] " << cat << corr << std::endl;
 #ifdef DEBUG
   std::cout << corr << std::endl;
 #endif
@@ -238,9 +250,6 @@ void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, in
 
 /** 
  *  File structure:
- *  category  "runNumber"   runMin  runMax   deltaP  err_deltaP
- *  
- *
 EBlowEtaBad8TeV    0 0.0 1.0 -999. 0.94 -999999 999999 6.73 0. 7.7e-3  6.32e-4 0.00 0.16
 EBlowEtaGold8TeV   0 0.0 1.0 0.94  999. -999999 999999 6.60 0. 7.4e-3  6.50e-4 0.00 0.16
 EBhighEtaBad8TeV   0 1.0 1.5 -999. 0.94 -999999 999999 6.73 0. 1.26e-2 1.03e-3 0.00 0.07
@@ -269,34 +278,73 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
   double rho, phi, Emean, constTerm, alpha, err_rho, err_phi, err_Emean, err_alpha=0., err_constTerm=0.;
   double etaMin, etaMax, r9Min, r9Max;
 
-  for(f_in >> category; f_in.good(); f_in >> category){
-    if(category.BeginsWith("#")){ // ignore comments
+  int format=0; ///< 0=unknown; 1=globe; 2=ECALELF toy
+  while(f_in.peek()!=EOF && f_in.good()){
+    if(f_in.peek()==10){ // 10 = \n
+      f_in.get(); 
+      continue;
+    }
+
+    if(f_in.peek() == 35){ // 35 = #
       f_in.ignore(1000,10); // ignore the rest of the line until \n
       continue;
-    } 
+    }
 
-    f_in >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >> 
-      Emean >> err_Emean >> 
-      rho >> err_rho >> phi >> err_phi;
+    if(format==0){
+      std::string line;
+      std::getline(f_in, line);
+      std::istringstream s_in(line);
+      s_in >> category >> unused >> etaMin >> etaMax 
+	   >> r9Min >> r9Max >> runMin >> runMax 
+	   >> Emean >> err_Emean 
+	   >> rho >> err_rho >> phi >> err_phi;
+      if(s_in.eof()){ // this is not the globe format but the ECALELF format
+	std::cout << "[INFO] format=2" << std::endl;
+	format=2;
+	s_in >> category >> constTerm >> alpha;
+	AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+      }else{
+	format=1;
+	std::cout << "[INFO] format=1" << std::endl;
+	if(Emean!=0){
+	  constTerm=rho*sin(phi);
+	  alpha=rho*Emean*cos(phi);
+	}else{
+	  alpha=0;
+	  constTerm=rho;
+	}
+	
+	AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+	
+      }
+    }else if(format==1){
+      f_in >> category >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >> 
+	Emean >> err_Emean >> 
+	rho >> err_rho >> phi >> err_phi;
+      if(Emean!=0){
+	constTerm=rho*sin(phi);
+	alpha=rho*Emean*cos(phi);
+      }else{
+	alpha=0;
+	constTerm=rho;
+      }
+      
+      AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+      
+    }else{
+      f_in >> category >> constTerm >> alpha;
+      AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+    } 
 #ifdef DEBUG
     std::cout << category << "\t" << etaMin << "\t" << etaMax << "\t" << r9Min << "\t" << r9Max << "\t" << runMin << "\t" << runMax << "\tEmean=" << Emean << "\t" << rho << "\t" << phi << std::endl;
 #endif
-    if(Emean!=0){
-      constTerm=rho*sin(phi);
-      alpha=rho*Emean*cos(phi);
-    }else{
-      alpha=0;
-      constTerm=rho;
-    }
-
-    AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
   }
   
   f_in.close();
   //  runCorrection_itr=runMin_map.begin();
   
   noSmearings=false;
-
+  
   return;
 }
 
@@ -351,9 +399,29 @@ float EnergyScaleCorrection_class::getSmearingRho(int runNumber, float energy, b
 }
 
 float EnergyScaleCorrection_class::getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle){
-
+  
   if(noSmearings) return 1;
-  return rgen_->Gaus(1,getSmearingSigma(runNumber, energy, isEBEle, R9Ele, etaSCEle));
+  float smear =getSmearingSigma(runNumber, energy, isEBEle, R9Ele, etaSCEle); 
+  
+  if(smear==0) return 0;
+  if( smear!=smear) exit(1);
+  if(smearingType_==1){
+    if(sigma.getVal()!=smear){
+      sigma.setVal(smear);
+      index_data=NGENMAX; //force to produce new random values
+    }
+    
+    if(index_data>=NGENMAX-1){
+      if(data!=NULL) delete data;
+      data=resCB.generate(x,NGENMAX);
+      index_data=-1;
+    }
+    index_data++;
+    return 1+data->get(index_data)->getRealValue("x");
+
+
+  }else return rgen_->Gaus(1,getSmearingSigma(runNumber, energy, isEBEle, R9Ele, etaSCEle));
+  
 }
 
 
