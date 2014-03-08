@@ -109,7 +109,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
   return;
 }
 
-  /** 
+  /*
    *  File structure:
    *  category  "runNumber"   runMin  runMax   deltaP  err_deltaP
    *  
@@ -360,8 +360,8 @@ float EnergyScaleCorrection_class::getSmearingSigma(int runNumber, float energy,
       smearings_not_defined[category]=corr;
     }
     corr_itr = smearings_not_defined.find(category);
-    //     std::cout << "[ERROR] Category not found: " << std::endl;
-    //     std::cout << category << std::endl;
+    std::cerr << "[WARNING] Category not found: " << std::endl;
+    std::cerr << category << std::endl;
     //     exit(1);
   }
 
@@ -404,7 +404,13 @@ float EnergyScaleCorrection_class::getSmearing(int runNumber, float energy, bool
   float smear =getSmearingSigma(runNumber, energy, isEBEle, R9Ele, etaSCEle); 
   
   if(smear==0) return 0;
-  if( smear!=smear) exit(1);
+  if( smear!=smear) return 0;
+//     correctionCategory_class category(runNumber, etaSCEle, R9Ele, energy/cosh(etaSCEle));
+//     correction_map_t::const_iterator corr_itr = smearings.find(category);
+
+//     std::cerr << category << std::endl << corr_itr->second << std::endl;
+//     exit(1);
+//   }
   if(smearingType_==1){
     if(sigma.getVal()!=smear){
       sigma.setVal(smear);
