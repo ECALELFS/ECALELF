@@ -1,0 +1,20 @@
+/**
+\page scaleSmearings Energy scale and smearings application
+
+\section Use of energy scale and smearings in external frameworks
+The energy scale and smearings derived with ECALELF framework are provided as .dat files.
+
+The module to read and get the energy scale and smearings for the different electron categories is EnergyScaleCorrection_class
+
+Constructor of the class: 
+  EnergyScaleCorrection_class(TString correctionFileName, 
+			      TString smearingFileName=""); 
+
+the method to get the correction is 
+  float ScaleCorrection(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, 
+			double EtEle,
+			int nPV, float nPVmean=0);
+
+
+
+*/
