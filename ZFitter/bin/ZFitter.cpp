@@ -57,6 +57,7 @@ using namespace RooStats;
    \todo
    - remove commonCut from category name and add it in the ZFit_class in order to not repeate the cut
    - make alpha fitting more generic (look for alphaName)
+   - Implement the iterative Et dependent scale corrections
 */
 
 typedef std::map< TString, TChain* > chain_map_t;

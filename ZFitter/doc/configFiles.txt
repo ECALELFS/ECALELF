@@ -1,6 +1,9 @@
 /**
 * \page ZFitterConfigFiles Config files syntax and generation
 
+In order to work with ECALELF ntuples you should move to the Calibration/ZFitter directory.
+Now on the paths are relative to the Calibration/ZFitter directory.
+
 There are three important directories where the proper .dat files should be put:
 - data/validation/ <BR>
    For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation:
