@@ -5,15 +5,15 @@
 #regionsFile=scaleStep2smearing_7
 queue=$1
 nEventsPerToy=factorizedSherpaFixed_DataSeedFixed_smooth_autobin_smearingEt_${queue}
-nSmearToy=10
+nSmearToy=30
 commonCut=Et_20-trigger-noPF
 
 #nEventsPerToy=factorized
 if [ -z "${queue}" ];then local=y; fi
 
-for regionsFile in scaleStep2smearing_9 #scaleStep2smearing_1 scaleStep2smearing_2 #
+for regionsFile in scaleStep2smearing_1 #scaleStep2smearing_9 #scaleStep2smearing_1 scaleStep2smearing_2 #
   do
-dir=test/dato/fitres/Hgg_Et-toys/${regionsFile}
+  dir=test/dato/fitres/toys/${regionsFile}
 #alphaConst=C
 
 for scale in 1.00 1.01 0.99 1.02 0.98 1.05 0.95 

@@ -57,9 +57,15 @@ mkSmearerCatSignal(){
 	echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
  	./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
  	    --saveRootMacro  --addBranch=smearerCat_s  || exit 1
-	mv tmp/smearerCat_`basename $1 .dat`_s*-`basename $configFile .dat`.root data/smearerCat/ || exit 1
-	echo "put the smearerCat ntuples to the config file"
-	exit 0
+	basenameConfig=`basename $1 .dat`
+	for file in tmp/smearerCat_${basenameConfig}_s*-`basename $configFile .dat`.root
+	  do
+	  
+	  tag=`echo $file | sed "s|tmp/smearerCat_${basenameConfig}_s\([0-9]\)-.*|s\1|"`
+	  
+	  mv $file data/smearerCat/ || exit 1
+	  echo -e "$tag\tsmearerCat_${basenameConfig}\tdata/smearerCat/`echo $file | sed 's|tmp/||'`" >> $configFile
+	done
     fi
     
 #     tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
@@ -141,3 +147,39 @@ checkStepDep(){
       fi
     done
 } 
+
+
+
+
+mkSmearEleSignal(){
+    #$1: regionFile
+    #$2: configFile
+    #$3: smearEleFile
+    #$4: smearEleType
+    #$5: smearCBAlpha
+    basenameConfig=`basename $2 .dat`
+    
+    if [ ! -e "data/other/smearEle/smearEle_$4_s1-${basenameConfig}.root" -o  ! -e "data/other/smearEle/smearEle_$4_s2-${basenameConfig}.root" -o  ! -e "data/other/smearEle/smearEle_$4_s3-${basenameConfig}.root" ];then
+	echo "[STATUS] Creating smearEle for signal: ${basenameConfig} `basename $1 .dat`"
+ 	./bin/ZFitter.exe -f $2 --regionsFile=$1  \
+ 	    --saveRootMacro   --noPU \
+	    --smearEleType=$4 --smearEleFile=$3 --smearingCBAlpha=$5 --smearingCBPower=$6 || exit 1 #> ${baseDir}/treeGen.log || exit 1
+
+	for file in tmp/smearEle_$4_s*-${basenameConfig}.root
+	  do
+	  
+	  tag=`echo $file | sed "s|tmp/smearEle_$4_s\([0-9]\)-.*|s\1|"`
+	  
+	  mv $file data/other/smearEle/ || exit 1
+	  echo -e "$tag\tsmearEle_$4\tdata/other/smearEle/`echo $file | sed 's|tmp/||'`" >> $2
+	done
+    fi
+
+#     for file in data/other/smearEle/smearEle_$4_s*-${basenameConfig}.root
+#       do
+      
+#       tag=`echo $file | sed "s|data/other/smearEle/smearEle_.*_s\([0-9]\)-.*|s\1|"`
+      
+#       echo -e "$tag\tsmearEle_$4\tdata/other/`echo $file | sed 's|tmp/||'`" >> $2
+#     done
+}
