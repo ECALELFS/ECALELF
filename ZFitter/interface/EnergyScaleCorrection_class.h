@@ -1,5 +1,14 @@
 #ifndef EnergyScaleCorrection_class_hh
 #define EnergyScaleCorrection_class_hh
+/// Read and get energy scale and smearings from .dat files
+/**\class EnergyScaleCorrection_class EnergyScaleCorrection_class.cc Calibration/ZFitter/src/EnergyScaleCorrection_class.cc
+ * 
+ * 
+ */
+
+/** Description Shervin
+ */
+
 #include <TString.h>
 #include <iostream>
 #include<fstream>
@@ -91,11 +100,11 @@ class EnergyScaleCorrection_class{
   EnergyScaleCorrection_class(TString correctionFileName, 
 			      TString smearingFileName=""); ///< constructor with correction file names
   ~EnergyScaleCorrection_class(void);
-  void ReadFromFile(TString filename);
+
   float getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle); // deprecated
   float ScaleCorrection(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, 
 			double EtEle,
-			int nPV, float nPVmean);
+			int nPV, float nPVmean=0); ///< method to get energy scale corrections
   TTree *GetCorrTree(TChain *tree, bool fastLoop=true, 
 		     TString runNumberBranchName="runNumber",
 		     TString R9EleBranchName="R9Ele",
@@ -105,6 +114,8 @@ class EnergyScaleCorrection_class{
 		     TString nPVBranchName="nPV");
 
  private:
+  void ReadFromFile(TString filename); ///<   category  "runNumber"   runMin  runMax   deltaP  err_deltaP
+
   float GetMean_nPV(TChain *tree, bool fastLoop, TString nPVBranchName);
   void Add(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_);
 
@@ -121,6 +132,7 @@ class EnergyScaleCorrection_class{
   void AddSmearing(TString category_, int runMin_, int runMax_, //double smearing_, double err_smearing_);
 		   double constTerm, double err_constTerm, double alpha, double err_alpha, double Emean, double err_Emean);
   float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); 
+  void ReadSmearingFromFile(TString filename); ///< File structure: category constTerm alpha;
  public:
   inline void SetSmearingType(int value){if(value>=0 && value<=1){smearingType_=value;}else{smearingType_=0;}};
   inline void SetSmearingCBAlpha(double value){cut.setVal(value);};
@@ -130,7 +142,7 @@ class EnergyScaleCorrection_class{
   float getSmearingRho(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); ///< public for sigmaE estimate
 
 
-  void ReadSmearingFromFile(TString filename); ///< File structure: category constTerm alpha;
+
   TTree *GetSmearTree(TChain *tree, bool fastLoop, 
 		      TString energyEleBranchName,
 		      TString runNumberBranchName="runNumber",
