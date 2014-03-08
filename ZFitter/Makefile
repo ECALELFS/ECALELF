@@ -82,6 +82,11 @@ $(OBJ_DIR)/r9Weights_class.o: $(SRC)/r9Weights_class.cc $(INCLUDEDIR)/r9Weights_
 	@echo "--> Making class: r9Weights_class"
 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/r9Weights_class.o $(SRC)/r9Weights_class.cc 
 
+ZPtWeights_class.o: $(OBJ_DIR)/ZPtWeights_class.o
+$(OBJ_DIR)/ZPtWeights_class.o: $(SRC)/ZPtWeights_class.cc $(INCLUDEDIR)/ZPtWeights_class.hh
+	@echo "--> Making class: ZPtWeights_class"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/ZPtWeights_class.o $(SRC)/ZPtWeights_class.cc 
+
 runDivide_class.o: $(OBJ_DIR)/runDivide_class.o
 $(OBJ_DIR)/runDivide_class.o: $(SRC)/runDivide_class.cc $(INCLUDEDIR)/runDivide_class.hh
 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/runDivide_class.o $(SRC)/runDivide_class.cc
@@ -146,7 +151,7 @@ $(BUILDDIR)/test.exe: test/test.cpp $(OBJ_DIR)/EnergyScaleCorrection_class.o # q
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 
 
-$(BUILDDIR)/ZFitter.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o 
+$(BUILDDIR)/ZFitter.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o $(OBJ_DIR)/ZPtWeights_class.o
 	@echo "---> Making ZFitter"
 	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
 	-o $(BUILDDIR)/ZFitter.exe $(BUILDDIR)/ZFitter.cpp  -lboost_program_options -lTreePlayer \

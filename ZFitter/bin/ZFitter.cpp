@@ -15,6 +15,7 @@
 #include "../interface/ZFit_class.hh"
 #include "../interface/puWeights_class.hh"
 #include "../interface/r9Weights_class.hh"
+#include "../interface/ZPtWeights_class.hh"
 
 #include "../interface/runDivide_class.hh"
 #include "../interface/EnergyScaleCorrection_class.h"
@@ -47,6 +48,8 @@
 //#define DEBUG
 #define smooth
 #include "../src/nllProfile.cc"
+//#include "../macro/loop.C" // a way to use compiled macros with ZFitter
+
 //using namespace std;
 using namespace RooStats;
 
@@ -208,6 +211,7 @@ int main(int argc, char **argv) {
   std::string dataPUFileName, mcPUFileName;
   std::vector<TString> dataPUFileNameVec, mcPUFileNameVec;
   std::string r9WeightFile;
+  std::string ZPtWeightFile;
   std::string initFileName;
   //  bool savePUweightTree;
   std::string imgFormat="eps", outDirFitResMC="test/MC/fitres", outDirFitResData="test/dato/fitres", outDirImgMC="test/MC/img", outDirImgData="test/dato/img", outDirTable="test/dato/table", selection;
@@ -216,6 +220,7 @@ int main(int argc, char **argv) {
   std::string commonCut;
   std::string corrEleFile, corrEleType;
   std::string smearEleFile, smearEleType;
+  double smearingCBAlpha=1, smearingCBPower=5;
   std::string invMass_var;
   float invMass_min=0, invMass_max=0, invMass_binWidth=0.250;
   int fit_type_value=1;
@@ -247,7 +252,8 @@ int main(int argc, char **argv) {
 
   desc.add_options()
     ("help,h","Help message")
-
+    ("loop","")
+    
     ("runDivide", "execute the run division")
     ("nEvents_runDivide", po::value<unsigned int>(&nEvents_runDivide)->default_value(100000), "Minimum number of events in a run range")
 
@@ -263,10 +269,14 @@ int main(int argc, char **argv) {
 
     ("smearEleFile", po::value<string>(&smearEleFile),"File with energy smearings")
     ("smearEleType", po::value<string>(&smearEleType),"Correction type/step")
+    ("smearingCBAlpha", po::value<double>(&smearingCBAlpha),"Correction type/step")
+    ("smearingCBPower", po::value<double>(&smearingCBPower),"Correction type/step")
     //
     ("r9WeightFile", po::value<string>(&r9WeightFile),"File with r9 photon-electron weights")
     ("useR9weight", "use r9 photon-electron weights")
     ("saveR9TreeWeight", "")
+    ("ZPtWeightFile", po::value<string>(&ZPtWeightFile),"File with ZPt weights")
+    ("useZPtweight", "use ZPt weights")
     ("saveRootMacro","")
     //
     ("selection", po::value<string>(&selection)->default_value("loose"),"")
@@ -279,7 +289,7 @@ int main(int argc, char **argv) {
     ("isOddData", "Activate if use only odd events in data")    
     //
     ("readDirect","") //read correction directly from config file instead of passing as a command line arg
-    ("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
+    //("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
     ("addBranch", po::value< std::vector<string> >(&branchList), "")
     ("saveAddBranchTree","")
     //    ("signal,s", po::value< std::vector <string> >(&signalFiles), "Signal file (can be called multiple times putting the files in a chain")
@@ -359,6 +369,11 @@ int main(int argc, char **argv) {
   if (vm.count("help")) {
     cout << desc << "\n";
     return 1;
+  }
+
+  if(vm.count("useZPtweight") && !vm.count("pdfSystWeightIndex")){
+    std::cerr << "[ERROR] Asked for ZPt weights but no pdfSystWeightIndex indicated" << std::endl;
+    exit(1);
   }
 
   TString energyBranchName="";
@@ -626,6 +641,50 @@ int main(int argc, char **argv) {
 
   if(vm.count("saveR9TreeWeight")) return 0;
 
+  ///------------------------------ to obtain ZPt weights
+  if(vm.count("ZPtWeightFile")){
+    std::cout << "------------------------------------------------------------" << std::endl;
+    std::cout << "[STATUS] Getting ZPtWeights from file: " << ZPtWeightFile << std::endl;
+    UpdateFriends(tagChainMap, regionsFileNameTag);
+    ZPtWeights_class ZPtWeights;
+    ZPtWeights.ReadFromFile(ZPtWeightFile);
+
+    TString treeName="ZPtWeight";
+
+    // mc // save it in a file and reload it as a chain to be safe against the reference directory for the tree
+    for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
+	tag_chain_itr!=tagChainMap.end();
+	tag_chain_itr++){
+      if(tag_chain_itr->first.Contains("d")) continue; /// \todo ZPtWeight only on MC! because from PdfWeights, to make it more general
+      if(tag_chain_itr->first.CompareTo("d")==0 || tag_chain_itr->first.CompareTo("s")==0) continue; 
+      if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
+      TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+     
+      TString filename="tmp/ZPtWeight_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
+      std::cout << "[STATUS] Saving r9Weights tree to root file:" << filename << std::endl;
+      
+      TFile f(filename,"recreate");
+      if(!f.IsOpen() || f.IsZombie()){
+	std::cerr << "[ERROR] File for ZPtWeights: " << filename << " not opened" << std::endl;
+	exit(1);
+      }
+      TTree *corrTree = ZPtWeights.GetTreeWeight(ch, "ZPt_"+energyBranchName);
+      f.cd();
+      corrTree->Write();
+      std::cout << "[INFO] Data      entries: " << ch->GetEntries() << std::endl;
+      std::cout << "       ZPtWeights entries: " << corrTree->GetEntries() << std::endl;
+      delete corrTree;
+	
+      f.Write();
+      f.Close();
+      std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
+      chain_map_t::iterator chain_itr= ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+      chain_itr->second->SetTitle(tag_chain_itr->first);
+      chain_itr->second->Add(filename);
+    
+    } // end of data samples loop
+  } // end of r9Weight 
+
 
   //==============================
 
@@ -746,7 +805,11 @@ int main(int argc, char **argv) {
 	std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 	exit(1);
       }
-
+      if(TString(smearEleType).Contains("CB")){
+	eScaler.SetSmearingType(1);
+	eScaler.SetSmearingCBAlpha(smearingCBAlpha);
+      }
+      
       TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
       f.cd();
       corrTree->SetName(TString("smearEle_")+smearEleType.c_str());
@@ -973,6 +1036,8 @@ int main(int argc, char **argv) {
   smearer.SetSmearingEt(vm.count("smearingEt"));
   smearer.SetR9Weight(vm.count("useR9weight"));
   smearer.SetPdfSystWeight(pdfSystWeightIndex);
+  smearer.SetZPtWeight(vm.count("useZPtweight"));
+
   if(nSmearToy>0) smearer._nSmearToy = nSmearToy;
 
 
@@ -988,6 +1053,12 @@ int main(int argc, char **argv) {
     // add also the friend branches!
   }
 
+  if(vm.count("loop")){
+//     TFile *file = new TFile("evList.root","read");
+
+//     Loop((tagChainMap["s1"])["selected"],file);
+    return 0;
+  }
   //------------------------------ ZFit_class declare and set the options
   TChain *data = NULL;
   TChain *mc = NULL;
