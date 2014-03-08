@@ -33,6 +33,7 @@ fi
 
 if [ -e "$ui_working_dir/res/finished" ];then
     echo "[REPORT] Jobs successfully finished: $ui_working_dir" 
+    echo 
     exit 0
 fi
 
@@ -58,8 +59,8 @@ cat ${ui_working_dir}/res/status.log
 
 end=(`sed -r '/^[^0-9]+/ d;/^$/ d' ${ui_working_dir}/res/status.log | awk '{print $2}'`)
 status=(`sed -r '/^[^0-9]+/ d;/^$/ d' ${ui_working_dir}/res/status.log | awk '{print $3}'`)
-ExitStatusCMSSW=(`sed -r '/^[^0-9]+/ d;/^$/ d' ${ui_working_dir}/res/status.log | awk '{print $5}'`)
-ExitStatusJOB=(`sed -r '/^[^0-9]+/ d;/^$/ d' ${ui_working_dir}/res/status.log | awk '{print $6}'`)
+ExitStatusCMSSW=(`sed -r '/^[^0-9]+/ d;/^$/ d' ${ui_working_dir}/res/status.log | awk '{if(NF>=6){print $5} else print "-"}'`)
+ExitStatusJOB=(`sed -r '/^[^0-9]+/ d;/^$/ d' ${ui_working_dir}/res/status.log | awk '{if(NF>=6){print $6} else print "-"}'`)
 
 for jobID in `seq 1 $nJobs`
   do
@@ -68,16 +69,23 @@ for jobID in `seq 1 $nJobs`
       continue; 
   fi
 
-  if [ "${status[${jID}]}" == "Running" -o "${status[${jID}]}" == "RUN" -o "${status[${jID}]}" == "Submitting" ]; then
+  if [ "${status[${jID}]}" == "Running" -o "${status[${jID}]}" == "RUN" -o "${status[${jID}]}" == "Submitting" -o "${status[${jID}]}" == "Submitted" ]; then
       continue;
   fi
 
   if [ "${ExitStatusCMSSW[${jID}]}" == "0" -a "${ExitStatusJOB[${jID}]}" == "0" ];then
+      okJobList="${okJobList} $jobID"
       continue;
   fi
 
   case ${ExitStatusJOB[${jID}]} in
       8028) intervals="$intervals $jobID";;
+      8021) intervals="$intervals $jobID";;
+      50664) intervals="$intervals $jobID";;
+      50800) intervals="$intervals $jobID";;
+      60307) intervals="$intervals $jobID";;
+      60317) intervals="$intervals $jobID";;
+      60318) intervals="$intervals $jobID";;
   esac
 
 #  echo ${intervals}
@@ -188,9 +196,11 @@ for jobID in `seq 1 $nJobs`
 done
 
 
-echo $intervals | sed 's| |,|'
+echo $intervals
+echo $okJobList | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/ALCARAW_RECO/awk/compact.awk | sed 's|,$||'
 if [ -n "$intervals" ];then
     crab -c $ui_working_dir/ -resubmit `echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/ALCARAW_RECO/awk/compact.awk | sed 's|,$||'`
+#echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/ALCARAW_RECO/awk/compact.awk | sed 's|,$||'
 else
     if [ "`echo $okJobList |wc -w`" == "$nJobs" ];then
 	echo "[STATUS] All jobs are finished SUCCESSFULLY!"

@@ -1,4 +1,6 @@
 #!/bin/bash
+source $CMSSW_BASE/src/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
+
 usage(){
     echo "`basename $0` parsed_option_line"
     echo "  parsed_option_line: parseProdSandboxOptions.sh sandbox_datasets.dat"
@@ -79,29 +81,7 @@ if [ -z "$USER_REMOTE_DIR_BASE" ];then
     exit 1
 fi
 
-
-case $DATASETPATH in 
-    *Run2012*)
-	echo "[INFO] Run on 2012 data: ENERGY=8TeV"
-	ENERGY=8TeV
-	;;
-    *Run2011*)
-	ENERGY=7TeV
-	;;
-    *Run2010*)
-	ENERGY=7TeV
-	;;
-    *8TeV*)
-	ENERGY=8TeV
-	;;
-    *7TeV*)
-	ENERGY=7TeV
-	;;
-    *)
-	echo "[ERROR] Energy not defined for ${DATASETPATH}" >> /dev/stderr
-	exit 1
-	;;
-esac
+setEnergy $DATASETPATH
 
 
 if [ -n "$TAGFILE" ]; then

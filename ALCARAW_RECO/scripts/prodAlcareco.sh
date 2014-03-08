@@ -169,6 +169,7 @@ esac
 case $SKIM in
     ZSkim)
 	;;
+    none) EVENTS_PER_JOB=20000;;
     *)
 	EVENTS_PER_JOB=20000
 	;;
