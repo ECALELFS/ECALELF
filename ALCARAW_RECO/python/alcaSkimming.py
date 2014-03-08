@@ -13,7 +13,7 @@ from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
 options.register('isCrab',
-                 '1', # default Value = true
+                 1, # default Value = true
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "change files path in case of local test")
@@ -90,7 +90,9 @@ else:
 
 doTreeOnly=False
 if(options.doTree>0 and options.doTreeOnly==1):
+    print "doTreeOnly"
     doTreeOnly=True
+
 
 MC = False  # please specify it if starting from AOD
 if(options.type == "ALCARAW"):
@@ -369,11 +371,14 @@ process.NtupleFilter.throw = cms.bool(False)
 process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalWElectron',
                                   'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron'
                                   ]
-process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCASKIM")
+process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
 if(ZSkim):
     process.NtupleFilterSeq= cms.Sequence(process.ZeeFilter)
 elif(WSkim):
-    process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter)
+    #cms.Sequence(~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter)
+    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
+    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
+    process.zNtupleDumper.isWenu=cms.bool(True)
 elif(ZSCSkim):
     process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
 
@@ -655,15 +660,15 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath)
     else:
-        if(options.doTree=='0'):
+        if(options.doTree==0):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
-                                            process.ALCARECOoutput_step,  process.NtuplePath
+                                            process.ALCARECOoutput_step
                                             ) # fix the output modules
         else:
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
-                                            process.ALCARECOoutput_step
+                                            process.ALCARECOoutput_step,  process.NtuplePath
                                             ) # fix the output modules
 
 
@@ -671,7 +676,7 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-if(options.isCrab=='1'):
+if(options.isCrab==1):
     pathPrefix=""
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
