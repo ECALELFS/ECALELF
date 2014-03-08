@@ -2,7 +2,14 @@
 allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	DYJets-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
 allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
 allRange	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_S10_START53_V7C-v2/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
-################### MC 53 RUN dependent
+#
+allRange	/WToENu_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	Wenu-Summer12-START53-ZSkim-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/WToENu_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM	Wenu-Summer12-START53-ZSkim-v2	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/QCD_Pt-30to40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	QCD_Pt-30to40_doubleEM-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/QCD_Pt-40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	QCD_Pt-40_doubleEM-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+##### Particle gun
+allRange	/SingleElectronFlatPt10To300_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	SingleElectronGun_Pt10to300-Summer12-START53	caf	group/alca_ecalcalib/ecalelf/alcareco
+################## MC 53 RUN dependent
 194533-194533	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 200519-200519	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 206859-206859	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
@@ -14,6 +21,9 @@ allRange	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_S10_S
 194533-194533	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 200519-200519	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 206859-206859	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+#
+allRange	/QCD_Pt-30to40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	QCD_Pt-30to40_doubleEM-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/QCD_Pt-40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	QCD_Pt-40_doubleEM-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
 ################### MC 7TeV 53X
 allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
 allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
