@@ -126,6 +126,7 @@ public:
   inline void SetPuWeight(bool usePuReweight){importer.SetPuWeight(usePuReweight);};
   inline void SetR9Weight(bool useR9Reweight){importer.SetR9Weight(useR9Reweight);};
   inline void SetPtWeight(bool usePtReweight){importer.SetPtWeight(usePtReweight);};
+  inline void SetZPtWeight(bool useZPtReweight){importer.SetZPtWeight(useZPtReweight);};
   inline void SetOnlyDiagonal(bool value){importer.SetOnlyDiagonal(value);};
   inline void SetSmearingEt(bool value){importer.SetSmearingEt(value);};
   inline void SetPdfSystWeight(int value){importer.SetPdfSystWeight(value);};

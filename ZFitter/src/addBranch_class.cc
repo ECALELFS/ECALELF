@@ -1,6 +1,7 @@
 #include "../interface/addBranch_class.hh"
 #include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
+#include <TLorentzVector.h>
 #include <iostream> 
 
 //#define DEBUG
@@ -22,61 +23,63 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
   if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
   if(BranchName.CompareTo("iSM")==0)       return AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
   if(BranchName.CompareTo("smearerCat")==0)       return AddBranch_smearerCat(originalChain, treename, isMC);
-
+  if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_",""), fastLoop);
   std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
   return NULL;
 }
 
-TTree* addBranch_class::AddBranch_Pt(TChain* originalChain, TString treename){
+TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, TString energyBranchName, bool fastLoop){
   //sanity checks
 
   TTree* newtree = new TTree(treename, treename);
-  //delete branches
-  //TBranch *b = originalChain-> GetBranch("name of branch");
-  //originalChain->GetListOfBranches()->Remove(b);
 
   //add pt branches
   Float_t         phiEle[2];
   Float_t         etaEle[2];
-  Float_t         energyEle_regrCorr_fra[2];
-  Float_t         energySCEle_regrCorr_ele[2];
-  Float_t         energySCEle_regrCorr_pho[2];
-  TBranch        *b_etaEle;   
-  TBranch        *b_phiEle;   
-  TBranch        *b_energySCEle_regrCorr_ele;   
-  TBranch        *b_energySCEle_regrCorr_pho;   
-  TBranch        *b_energyEle_regrCorr_fra;   
-  originalChain->SetBranchAddress("etaEle", etaEle, &b_etaEle);
-  originalChain->SetBranchAddress("phiEle", phiEle, &b_phiEle);
-  originalChain->SetBranchAddress("energySCEle_regrCorr_ele", energySCEle_regrCorr_ele, &b_energySCEle_regrCorr_ele);
-  originalChain->SetBranchAddress("energySCEle_regrCorr_pho", energySCEle_regrCorr_pho, &b_energySCEle_regrCorr_pho);
-  originalChain->SetBranchAddress("energyEle_regrCorr_fra", energyEle_regrCorr_fra, &b_energyEle_regrCorr_fra);
+  Float_t         energyEle[2];
+  Float_t         corrEle[2]={1.,1.};
+  Float_t         ZPt, ZPta;
+  TLorentzVector ele1,ele2;
 
-  float ZPt_regrCorr_pho, ZPt_regrCorr_ele, ZPt_regrCorr_fra;
-  newtree->Branch("ZPt_regrCorr_fra", &ZPt_regrCorr_fra, "ZPt_regrCorr_fra/F");
-  newtree->Branch("ZPt_regrCorr_ele", &ZPt_regrCorr_ele, "ZPt_regrCorr_ele/F");
-  newtree->Branch("ZPt_regrCorr_pho", &ZPt_regrCorr_pho, "ZPt_regrCorr_pho/F");
+  originalChain->SetBranchAddress("etaEle", etaEle);
+  originalChain->SetBranchAddress("phiEle", phiEle);
+  originalChain->SetBranchAddress(energyBranchName, energyEle);
+
+  if(fastLoop){
+    originalChain->SetBranchStatus("*",0);
+    originalChain->SetBranchStatus("etaEle",1);
+    originalChain->SetBranchStatus("phiEle",1);
+    originalChain->SetBranchStatus(energyBranchName,1);
+    if(originalChain->GetBranch("scaleEle")!=NULL){
+      std::cout << "[STATUS] Adding electron energy correction branch from friend " << originalChain->GetTitle() << std::endl;
+      originalChain->SetBranchAddress("scaleEle", corrEle);
+    }
+  }
+
+  newtree->Branch("ZPt_"+energyBranchName, &ZPt, "ZPt/F");
   //px = pt*cosphi; py = pt*sinphi; pz = pt*sinh(eta)
   //p^2 = E^2 - m^2 = pt^2*(1+sinh^2(eta)) = pt^2*(cosh^2(eta))
-  float mass = 0.000511;
-  for(Long64_t ientry = 0; ientry<originalChain->GetEntriesFast(); ientry++){
-	originalChain->GetEntry(ientry);
-	float regrCorr_fra_pt0 = sqrt((pow(energyEle_regrCorr_fra[0],2)-mass*mass)/(1+sinh(etaEle[0])*sinh(etaEle[0])));
-	float regrCorr_fra_pt1 = sqrt((pow(energyEle_regrCorr_fra[1],2)-mass*mass)/(1+sinh(etaEle[1])*sinh(etaEle[1])));
-	ZPt_regrCorr_fra = 
-	  TMath::Sqrt(pow(regrCorr_fra_pt0*TMath::Sin(phiEle[0])+regrCorr_fra_pt1*TMath::Sin(phiEle[1]),2)+pow(regrCorr_fra_pt0*TMath::Cos(phiEle[0])+regrCorr_fra_pt1*TMath::Cos(phiEle[1]),2));
+  float mass = 0.; //0.000511;
+  Long64_t nentries= originalChain->GetEntries();
+  for(Long64_t ientry = 0; ientry< nentries; ientry++){
+    originalChain->GetEntry(ientry);
+    float regrCorr_fra_pt0 = sqrt(((energyEle[0]*energyEle[0])-mass*mass)/(1+sinh(etaEle[0])*sinh(etaEle[0])));
+    float regrCorr_fra_pt1 = sqrt(((energyEle[1]*energyEle[1])-mass*mass)/(1+sinh(etaEle[1])*sinh(etaEle[1])));
+    ZPt = 
+      TMath::Sqrt(pow(regrCorr_fra_pt0*TMath::Sin(phiEle[0])+regrCorr_fra_pt1*TMath::Sin(phiEle[1]),2)+pow(regrCorr_fra_pt0*TMath::Cos(phiEle[0])+regrCorr_fra_pt1*TMath::Cos(phiEle[1]),2));
 
-	float regrCorr_ele_pt0 = sqrt((pow(energySCEle_regrCorr_ele[0],2)-mass*mass)/(1+sinh(etaEle[0])*sinh(etaEle[0])));
-	float regrCorr_ele_pt1 = sqrt((pow(energySCEle_regrCorr_ele[1],2)-mass*mass)/(1+sinh(etaEle[1])*sinh(etaEle[1])));
-	ZPt_regrCorr_ele = 
-	  TMath::Sqrt(pow(regrCorr_ele_pt0*TMath::Sin(phiEle[0])+regrCorr_ele_pt1*TMath::Sin(phiEle[1]),2)+pow(regrCorr_ele_pt0*TMath::Cos(phiEle[0])+regrCorr_ele_pt1*TMath::Cos(phiEle[1]),2));
+    ele1.SetPtEtaPhiE(energyEle[0]/cosh(etaEle[0]), etaEle[0], phiEle[0], energyEle[0]);
+    ele2.SetPtEtaPhiE(energyEle[1]/cosh(etaEle[1]), etaEle[1], phiEle[1], energyEle[1]);
+    ZPta = (ele1+ele2).Pt();
+    if(fabs(ZPt - ZPta)>0.001){
+      std::cerr << "[ERROR] ZPt not well calculated" << ZPt << "\t" << ZPta << std::endl;
+      exit(1);
+    }
 
-	float regrCorr_pho_pt0 = sqrt((pow(energySCEle_regrCorr_pho[0],2)-mass*mass)/(1+sinh(etaEle[0])*sinh(etaEle[0])));
-	float regrCorr_pho_pt1 = sqrt((pow(energySCEle_regrCorr_pho[1],2)-mass*mass)/(1+sinh(etaEle[1])*sinh(etaEle[1])));
-	ZPt_regrCorr_pho = 
-	  TMath::Sqrt(pow(regrCorr_pho_pt0*TMath::Sin(phiEle[0])+regrCorr_pho_pt1*TMath::Sin(phiEle[1]),2)+pow(regrCorr_pho_pt0*TMath::Cos(phiEle[0])+regrCorr_pho_pt1*TMath::Cos(phiEle[1]),2));
-	newtree->Fill();
+    newtree->Fill();
   }
+
+  originalChain->SetBranchStatus("*",1);
   originalChain->ResetBranchAddresses();
   return newtree;
 }

@@ -20,6 +20,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _useMCweight(true),
   _useR9weight(false),
   _usePtweight(false),
+  _useZPtweight(false),
   _excludeByWeight(true),
   _onlyDiagonal(false),
   _isSmearingEt(false),
@@ -91,6 +92,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Float_t         weight=1;
   Float_t         r9weight[2]={1,1};
   Float_t         ptweight[2]={1,1};
+  Float_t         zptweight[45]={1};
   Float_t         mcGenWeight=1;
   std::vector<double> *pdfWeights = NULL;
 
@@ -143,6 +145,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   if(chain->GetBranch("ptWeight")!=NULL){
     std::cout << "[STATUS] Getting ptWeight branch for tree: " <<  chain->GetTitle() << std::endl;
     chain->SetBranchAddress("ptWeight", ptweight);
+  }
+
+  if(_useZPtweight && chain->GetBranch("ZPtWeight")!=NULL){
+    std::cout << "[STATUS] Getting ZptWeight branch for tree: " <<  chain->GetTitle() << std::endl;
+    chain->SetBranchAddress("ZPtWeight", zptweight);
   }
 
   if(chain->GetBranch("mcGenWeight")!=NULL){
@@ -309,6 +316,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
+    if(_useZPtweight && isMC && _pdfWeightIndex>0) event.weight *= zptweight[_pdfWeightIndex];
     if(!isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
       if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
       event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
@@ -324,6 +332,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       }
 #endif
 
+    }else{
+      if(!isMC && _pdfWeightIndex>0){
+      std::cerr << "[ERROR] requested pdfWeights but not set by getentry" << std::endl;
+      std::cerr << "[ERROR] jentry=" << jentry << "; chain: " << chain->GetName() << "\t" << chain->GetTitle()  << std::endl;
+      if(jentry<10) continue;
+      else exit(1);
+      }
     }
     if(mcGenWeight != -1){
       if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
@@ -345,6 +360,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 		  << "\t" << weight << "\t" << mcGenWeight
 		  << "\t" << r9weight[0] << " " << r9weight[1] 
 		  << "\t" << ptweight[0] << " " << ptweight[1]
+		  << "\t" << zptweight[0] 
 		  << std::endl;
       }
 #endif
