@@ -627,7 +627,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 
 
     //--------------- Et
-    if(string.Contains("Et_")){
+    if(string.Contains("Et_")||string.Contains("EtSingleEle_")){
       TObjArray *splitted = string.Tokenize("_");
       if(splitted->GetEntries() != 3 && splitted->GetEntries() != 2){
 	std::cerr << "ERROR: incomplete Et region definition" << std::endl;
