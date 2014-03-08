@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <TFile.h>
 #include <TString.h>
 #include <TGraph.h>
@@ -116,8 +117,8 @@ void PlotCanvas(TCanvas *c, TH1F *mc, TH1F *data, TH1F *mcSmeared){
 void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="8 TeV", TString lumi="", bool ratio=true){
 
   c->Clear();
-  TPad * pad1 = new TPad("pad1", "pad1",0.00,0.20, 1,1.);  
-  TPad * pad2 = new TPad("pad2", "pad2",0.00,0.00, 1,0.2);  
+  TPad * pad1 = new TPad("pad1", "pad1",0.00,0.25, 1,1.);  
+  TPad * pad2 = new TPad("pad2", "pad2",0.00,0.00, 1,0.25);  
   TPad * pad3 = new TPad("pad3", "pad3",0.75,0.00, 1.,0.2);
 
   float yscale=0.75/(pad1->GetYlowNDC() -pad2->GetYlowNDC());
@@ -126,7 +127,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   if(ratio){
 
 
-  pad1->SetRightMargin(0.1);
+  pad1->SetRightMargin(0.15);
   pad1->SetBottomMargin(0.01);
   //  pad1->SetLogy();
   pad1->Draw();
@@ -135,7 +136,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   pad2->SetGrid();
   pad2->SetBottomMargin(0.5);
   pad2->SetTopMargin(0.01);
-  pad2->SetRightMargin(0.1);
+  pad2->SetRightMargin(0.15);
   pad2->Draw();
   pad2->cd();
   c->cd();
@@ -273,7 +274,12 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi="", int 
   TH2F eventFraction("eventFraction", "", 10, 0, 9, 10, 0, 9);
   int index_max=0;
   double  region_array[20][20];
-  
+
+  TString pdfWeightIndex=filename;
+  pdfWeightIndex.ReplaceAll("test/dato/22Jan2012-runDepMCAll_v3/loose/invMass_SC_regrCorrSemiParV5_pho/step9pdfWeight/","");
+  pdfWeightIndex.ReplaceAll("/fitres/histos-scaleStep2smearing_9-Et_20-trigger-noPF.root","");
+  std::ofstream f_out("tmp/stat-"+pdfWeightIndex+".dat");
+
   TFile f_in(filename, "read");
   if(f_in.IsZombie()){
     std::cerr << "File opening error: " << filename << std::endl;
@@ -367,7 +373,12 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi="", int 
     //	return;;
     TH1F *data=GetMeanHist(dataHist[region], h_ref, "data_"+region, true);	
     TH1F *mcSmeared=GetMeanHist(mcSmearedHist[region], h_ref, "mcSmeared_"+region);
-	
+    f_out << pdfWeightIndex 
+	  << "\t" << data->GetName() << "\t" << data->GetTitle() 
+	  << "\t" << data->GetEntries() << "\t" << data->Integral() 
+	  << "\t" << data->GetMean() << "\t" << data->GetMeanError() 
+	  << "\t" << data->GetRMS() << "\t" << data->GetRMSError() 
+	  << std::endl;
 //     if(region.Contains("EE")){
 //       if(mc_all[1] == NULL) mc_all[1]=(TH1F *) mc->Clone("EE_mc_hist");
 //       else mc_all[1]->Add(mc);
@@ -398,9 +409,10 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi="", int 
       mc->Rebin(rebin);
       mcSmeared->Rebin(rebin);
     }
-    Plot(c, data,mc,mcSmeared,legend, region, filename, energy, lumi);
+    if(data->Integral()!=0 && mc->Integral()!=0 && mcSmeared->Integral()!=0)
+      Plot(c, data,mc,mcSmeared,legend, region, filename, energy, lumi);
   }
-
+  
   //    Plot(c, data_all[0],mc_all[0],mcSmeared_all[0],legend, "EBinclusive", filename, energy, lumi);
   //  Plot(c, data_all[1],mc_all[1],mcSmeared_all[1],legend, "EEinclusive", filename, energy, lumi);
   //  Plot(c, data_all[2],mc_all[2],mcSmeared_all[2],legend, "Allinclusive", filename, energy, lumi);
@@ -458,7 +470,7 @@ void PlotMeanHist(TString filename, TString energy="8TeV", TString lumi="", int 
 //       std::cout << "\t\\\\" << std::endl;
 //   }
 //   std::cout << "\\end{pmatrix}" << std::endl;
-
+  f_out.close();
   return;
 }
 

@@ -972,7 +972,8 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
   if(column>0){
     pad2->cd();
   }
-  legend->Draw();
+
+  if(legendList[0]!="") legend->Draw();
   if(pt!=NULL) pt->Draw();
   
   pad1->cd();

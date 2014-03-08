@@ -2,15 +2,19 @@
   std::vector<TString> mcLabel_vec;
   mcLabel_vec.push_back("Madgraph");
   mcLabel_vec.push_back("Powheg");
-  //mcLabel_vec.push_back("Sherpa");
+  mcLabel_vec.push_back("Sherpa");
 
 
-  //  c = PlotDataMCs(data, MakeChainVector(signalA,signalB,signalC), "etaEle", "(100,-2.5,2.5)", "eleID_loose-trigger-noPF-Et_25", "", "", mcLabel_vec, "#eta", "", false, true, true,false,false,false); 
-  c = PlotDataMCs(data, MakeChainVector(signalA,signalB), "etaEle", "(100,-2.5,2.5)", "eleID_loose-trigger-noPF-Et_25", "", "", mcLabel_vec, "#eta", "", false, true, true,false,false,false); 
-   c->SaveAs(outputPath+"etaEle-Et_25.eps");
-   c->SaveAs(outputPath+"etaEle-Et_25.png");
-   c->SaveAs(outputPath+"etaEle-Et_25.C");
+  // pileup
+  c = PlotDataMC(data, signal, "nPV", "(30,0,30)", ""+commonCut, "", dataLabel+*l_itr, mcLabel, "nVtx", ""); 
+  c->SaveAs(outputPath+"nPV.eps");
   delete c;
+
+//   c = PlotDataMCs(data, MakeChainVector(signalA,signalB,signalC), "etaEle", "(100,-2.5,2.5)", "eleID_loose-trigger-noPF-Et_25", "", "", mcLabel_vec, "#eta", "", false, true, true,false,false,false); 
+//    c->SaveAs(outputPath+"etaEle-Et_25.eps");
+//    //c->SaveAs(outputPath+"etaEle-Et_25.png");
+//    c->SaveAs(outputPath+"etaEle-Et_25.C");
+//   delete c;
 
 
 }

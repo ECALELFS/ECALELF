@@ -50,6 +50,18 @@ std::vector<TString> ReadRegionsFromFile(TString fileName){
 }
 
 
+void DisableBranchNameNtuple(TChain *chain, TString region){
+  ElectronCategory_class cutter;
+  std::set<TString> tmpList = cutter.GetBranchNameNtuple(region);
+  chain->SetBranchStatus("*",1);
+
+  for(std::set<TString>::const_iterator branch_itr= tmpList.begin();
+      branch_itr!=tmpList.end();
+      branch_itr++){
+    chain->SetBranchStatus(*branch_itr,1);
+  }
+
+}
 
 TCut GetCut(TString category, int indexEle=0){
   ElectronCategory_class cutter;

@@ -196,17 +196,19 @@ double rangeWithPoints(TGraphErrors *g, int nPoints, Double_t *xMin, Double_t* x
   Double_t *Y = g->GetY();
   Double_t *X = g->GetX();
   Double_t min=1e20;
-  for(int i=1; i < g->GetN(); i++) if(Y[i] <= min){
-    iMin=i;
-    min=Y[i];
+  for(int i=1; i < g->GetN(); i++){
+    if(Y[i] <= min){
+      iMin=i;
+      min=Y[i];
+    }
   }
 
   int _iMax=std::min(g->GetN(),iMin+ nPoints);  
   int _iMin=std::max(0,iMin- nPoints);
 
   double dist = std::max(X[_iMax]-X[iMin],X[iMin]-X[_iMin]);
-  (*xMin)= X[iMin]-dist;
-  (*xMax)= X[iMin]+dist;
+  (*xMin)= X[iMin]-dist/2;
+  (*xMax)= X[iMin]+dist/2;
   return std::max(Y[_iMin],Y[_iMax]);
 }
 
@@ -318,7 +320,7 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
     chi2 = fun->GetChisquare()/fun->GetNDF(); //g->Chisquare(fun);
 
     if(isScale){
-      range_min = TMath::Max(minX-10*sigma_minus, rangeLimMin);
+      range_min = TMath::Max(minX-15*sigma_minus, rangeLimMin);
       range_max = TMath::Min(minX+10*sigma_plus, rangeLimMax);   
     } else if(isPhi){
       range_min = TMath::Max(minX-2*sigma_minus, rangeLimMin);
@@ -334,8 +336,8 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
 	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0.5; range_max=1.6;};
       }
     } else {
-      range_min = TMath::Max(minX-8*sigma_minus, rangeLimMin);
-      range_max = TMath::Min(minX+8*sigma_plus,  rangeLimMax);   
+      range_min = TMath::Max(minX-5*sigma_minus, rangeLimMin);
+      range_max = TMath::Min(minX+5*sigma_plus,  rangeLimMax);   
     }
 
     std::cout << "[INFO] Points in interval: " << pointsInInterval(X, N, range_min, range_max) << std::endl;
@@ -348,7 +350,7 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
       range_min = TMath::Max(range_min-(rangeLimMax-rangeLimMin)*0.05, rangeLimMin);
       range_max = TMath::Min(range_max+(rangeLimMax-rangeLimMin)*0.05, rangeLimMax);   
     }
-    while (pointsInInterval(X, N, minX, range_max) < 5 && range_max<rangeLimMax){ //((range_max - range_min)/X_bin < 10)){
+    while (pointsInInterval(X, N, minX, range_max) < 10 && range_max<rangeLimMax){ //((range_max - range_min)/X_bin < 10)){
       // incremento del 10% i range
       std::cout << "[WARNING] Incrementing ranges by 20% because less than 10 points in range" << std::endl;
       std::cout << "Old range: [ " << range_min << " : " << range_max << "]" << std::endl;
@@ -433,27 +435,34 @@ TGraphErrors *SumGraph(std::vector<TGraph *> g_vec, bool shift=false){
       if(minimum > Y[i]) minimum=Y[i];
     }
 
-    //    for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
+    //devo evitare punti con la stessa x fatti dallo stesso scan perche' a causa del deterministic smearing 
+    //hanno per costruzione la stessa likelihood
+
+    std::set<double> uniqX;
     for (int ip=0;ip<N;++ip) //sottraggo il minimo per avere un DeltaL in ordinata
       {
-	x[ip+n]=X[ip];
+	if((uniqX.insert(X[ip])).second==false){
+	  std::cout << "[INFO] Point already included: " << X[ip] << std::endl;
+	  continue;
+	}
+	x[n]=X[ip];
+	
+	if(shift) y[n]+=Y[ip]-minimum;
+	else  y[n]+=Y[ip];
 
-	if(shift) y[ip+n]+=Y[ip]-minimum;
-	else  y[ip+n]+=Y[ip];
-
-	y2[ip+n]+=y[ip+n]*y[ip+n];
+	y2[n]+=y[n]*y[n];
 	//	std::cout << ip+n << "\t" << x[ip+n] << "\t" << y[ip+n] << "\t" << Y[ip+n] << std::endl;
-	err_x[ip+n]=0;
-	dev_st[ip+n]++; // used to count the points per bin
+	err_x[n]=0;
+	dev_st[n]++; // used to count the points per bin
 	if(n>19999){
 	  std::cerr << "############################################################" << std::endl;
 	  std::cerr << "############################################################" << std::endl;
 	  std::cerr << "############################################################" << std::endl;
 	  break;
 	}
-
+	n++;
       }
-    n+=N;
+    //n+=N;
 
     if(graph->GetN() < 3) std::cerr << "WARNING: low number of points" << std::endl;
   }
@@ -512,6 +521,23 @@ TGraphErrors *MeanGraphNew(TGraphErrors *graph){
 
   for(int i =0 ; i < graph->GetN(); i++){
     graphic_t::iterator itr = graphic.find(X[i]);
+    if(!graphic.empty() && itr == graphic.end()) {
+      // controllo se e' vicino al primo bordo, poi al secondo e altrimenti lo butto
+      itr = graphic.lower_bound(X[i]);
+      //	  if(itr== graphic.end()) std::cout << "Error: graphic empty" << std::endl;
+      if(itr!=graphic.begin()) itr--;
+      if( (fabs(itr->first - X[i]) > 0.00000001)){ // check del bin prima
+	itr++;
+	if( itr!=graphic.end() && (fabs(itr->first - X[i]) > 0.00000001)){ // check del bin
+	  itr++;
+	  if( itr!=graphic.end() && (fabs(itr->first - X[i]) > 0.00000001)){ // check del bin dopo
+	    itr=graphic.end();
+	  } //else std::cout << "[DEBUG] New point: " << itr->first  << "\t" << X[i] << std::endl; 
+	} //else std::cout << "[DEBUG] moving to upper bound: " << itr->first  << "\t" << X[i] << std::endl;
+      } //else std::cout << "[DEBUG] moving to lower bound: " << itr->first  << "\t" << X[i] << std::endl;
+    }
+    
+    
     if(itr!=graphic.end()){
       itr->second.y+=Y[i];
       itr->second.y2+=Y[i]*Y[i];
@@ -533,7 +559,7 @@ TGraphErrors *MeanGraphNew(TGraphErrors *graph){
   y_min=1e10;
   for(graphic_t::iterator itr=graphic.begin(); itr!=graphic.end(); itr++){
     
-    if(itr->second.n < n_max*0.2){std::cout << "Removing point " << itr->first << "\t" << itr->second.n << std::endl; continue;}
+    if(itr->second.n < n_max*0.30){std::cout << "Removing point " << itr->first << "\t" << itr->second.n << "\t" << n_max << std::endl; continue;}
     double ym = itr->second.y/itr->second.n;
     if(itr->second.n>1 && itr->second.y2/itr->second.n >= ym*ym)
       dev_st[n] =  sqrt( (itr->second.y2/itr->second.n - ym*ym)/(double)(itr->second.n)); //errore sulla media
@@ -977,7 +1003,7 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
 	//	g->Draw("PSAME");
 
 	Double_t xMin, xMax;
-	Double_t yMax = rangeWithPoints(g, 8, &xMin, &xMax);
+	Double_t yMax = rangeWithPoints(g, 3, &xMin, &xMax);
 	std::cout << "AAAAAAAAAAAAAAAa" << xMin << "\t" << xMax << "\t" << sigma << "\t" << fun->GetXmin() << std::endl;
 	std::cout << "AAAAAAAAAAAAAAAa" << xMin << "\t" << xMax << "\t" << yMax << std::endl;
 	xMin=std::min(fun->GetMinimumX()-7*sigma,xMin);
