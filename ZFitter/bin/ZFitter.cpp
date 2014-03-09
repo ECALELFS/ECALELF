@@ -507,6 +507,10 @@ int main(int argc, char **argv) {
     if(chainName.Contains("scaleEle")){
       if(chainName!="scaleEle_"+corrEleType) continue;
     }
+    if(chainName.Contains("smearEle")){
+      if(chainName!="smearEle_"+smearEleType) continue;
+    }
+
     if(chainName.Contains("smearerCat")){
       if(chainName!="smearerCat_"+regionsFileNameTag) continue;
     }
@@ -1123,8 +1127,8 @@ int main(int argc, char **argv) {
 	  smearer.SetPuWeight(false);
 
 	  smearer.SetToyScale(1, constTermToy);
-	  //if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
-	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
+	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
+	  //	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
 	  else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
 	  std::cout << "[DEBUG] " << constTermToy << std::endl;
 	} else{
