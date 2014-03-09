@@ -13,3 +13,19 @@ pdfWeights = cms.EDProducer("PdfWeightProducer",
     , "NNPDF10_100.LHgrid"
     )
                             )
+
+# Produce event weights to estimate missing O(alpha) terms + NLO QED terms
+fsrWeight = cms.EDProducer("FSRWeightProducer",
+                           GenTag = cms.untracked.InputTag("genParticles"),
+                           )
+
+
+# Produce event weights to estimate missing weak terms (=> include missing rho factor for Z diagrams)
+weakWeight = cms.EDProducer("WeakEffectsWeightProducer",
+                            GenParticlesTag = cms.untracked.InputTag("genParticles"),
+                            RhoParameter = cms.untracked.double(1.004)
+                            )
+
+
+
+    

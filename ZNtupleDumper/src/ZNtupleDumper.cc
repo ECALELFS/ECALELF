@@ -350,11 +350,15 @@ private:
   TTree *pdfSystTree;
   //std::vector<Int_t>   pdfSystWeightNum;
   std::vector<Double_t> pdfSystWeight[5];
-
   // pdfWeightTree
   bool doPdfSystTree;
   std::vector< edm::InputTag > pdfWeightTAGS;
   edm::Handle< std::vector<double> > pdfWeightHandle;
+
+  Float_t fsrWeight;
+  Float_t weakWeight;
+  edm::InputTag fsrWeightTAG, weakWeightTAG;
+  edm::Handle<Double_t> fsrWeightHandle, weakWeightHandle;
 
   void InitPdfSystTree(void);
   void TreeSetPdfSystVar(const edm::Event& iEvent);
@@ -428,7 +432,9 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
   doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
   doPdfSystTree(iConfig.getParameter<bool>("doPdfSystTree")),
-  pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections"))
+  pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections")),
+  fsrWeightTAG(iConfig.getParameter< edm::InputTag>("fsrWeightCollection")),
+  weakWeightTAG(iConfig.getParameter< edm::InputTag>("weakWeightCollection"))
 			    //  r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 			    //puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
 			    //puWeights()
@@ -928,6 +934,9 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
 void ZNtupleDumper::TreeSetPileupVar(void){
   rho=*rhoHandle;
   nPV=0;
+  nPU[0]=-1;
+  mcGenWeight=-1;
+
   if(primaryVertexHandle->size() > 0) {
     for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin();
 	v != primaryVertexHandle->end(); ++v){
@@ -947,14 +956,15 @@ void ZNtupleDumper::TreeSetPileupVar(void){
 	nPU[0]=PVI->getTrueNumInteractions();
       }
     }
-    
-    mcGenWeight=(GenEventInfoHandle->weights())[0];
+  
+    if(!GenEventInfoHandle->weights().empty())
+      mcGenWeight=(GenEventInfoHandle->weights())[0];
 
-  } else {
-    //weight= 1.;
-    nPU[0]=-1;
-    mcGenWeight=-1;
-  }
+  } // else {
+//     //weight= 1.;
+//     nPU[0]=-1;
+//     mcGenWeight=-1;
+//   }
   return;
 }
 
@@ -1487,6 +1497,9 @@ void ZNtupleDumper::InitPdfSystTree(void){
     //pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
     pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
   }
+
+  pdfSystTree->Branch("fsrWeight", &fsrWeight, "fsrWeight/F");
+  pdfSystTree->Branch("weakWeight", &weakWeight, "weakWeight/F");
   return;
 }
 
@@ -1510,6 +1523,12 @@ void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent){
 //    }
   }  
   
+  iEvent.getByLabel(fsrWeightTAG, fsrWeightHandle);
+  iEvent.getByLabel(weakWeightTAG, weakWeightHandle);
+
+  fsrWeight = (Float_t) *fsrWeightHandle;
+  weakWeight = (Float_t) *weakWeightHandle;
+
   return ;
 }
 

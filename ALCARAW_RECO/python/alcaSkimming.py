@@ -440,7 +440,8 @@ if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
 
 if(MC and options.pdfSyst==1):
-    process.pdfWeightsSeq = cms.Sequence(process.pdfWeights)
+    process.pdfWeightsSeq = cms.Sequence(process.pdfWeights + process.weakWeight + process.fsrWeight)
+
     process.zNtupleDumper.pdfWeightCollections = cms.VInputTag(cms.InputTag('pdfWeights:cteq66'), cms.InputTag("pdfWeights:MRST2006nnlo"), cms.InputTag('pdfWeights:NNPDF10'))
 else:
     process.pdfWeightsSeq = cms.Sequence()
