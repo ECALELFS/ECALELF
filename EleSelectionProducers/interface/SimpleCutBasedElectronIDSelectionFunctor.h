@@ -1,5 +1,6 @@
 #ifndef SimpleCutBasedElectronIDSelectionFunctorShervin_h
 #define SimpleCutBasedElectronIDSelectionFunctorShervin_h
+#define CMSSW_7_0_X
 
 //#define DEBUG
 
