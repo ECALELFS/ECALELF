@@ -1,5 +1,5 @@
 diff --git a/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc b/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc
-index a3c33f0..713a6ab 100644
+index a3c33f0..6875eab 100644
 --- a/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc
 +++ b/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc
 @@ -81,8 +81,8 @@ ElectronRegressionEnergyProducer::ElectronRegressionEnergyProducer(const edm::Pa
@@ -19,12 +19,12 @@ index a3c33f0..713a6ab 100644
  
 -  std::auto_ptr<edm::ValueMap<double> > regrEnergyMap(new edm::ValueMap<double>() );
 -  edm::ValueMap<double>::Filler energyFiller(*regrEnergyMap);
-+  std::auto_ptr<edm::ValueMap<float> > regrEnergyMap(new edm::ValueMap<double>() );
++  std::auto_ptr<edm::ValueMap<float> > regrEnergyMap(new edm::ValueMap<float>() );
 +  edm::ValueMap<float>::Filler energyFiller(*regrEnergyMap);
  
 -  std::auto_ptr<edm::ValueMap<double> > regrEnergyErrorMap(new edm::ValueMap<double>() );
 -  edm::ValueMap<double>::Filler energyErrorFiller(*regrEnergyErrorMap);
-+  std::auto_ptr<edm::ValueMap<float> > regrEnergyErrorMap(new edm::ValueMap<double>() );
++  std::auto_ptr<edm::ValueMap<float> > regrEnergyErrorMap(new edm::ValueMap<float>() );
 +  edm::ValueMap<float>::Filler energyErrorFiller(*regrEnergyErrorMap);
  
    Handle<reco::GsfElectronCollection> egCollection;
