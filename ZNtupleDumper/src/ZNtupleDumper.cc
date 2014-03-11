@@ -1052,7 +1052,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
-  }else if(electron1.isEB() && seedDetId.subdetId() == EcalEndcap){
+  }else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap){
     EEDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ix();
     seedYSCEle[index]=seedDetIdEcal.iy();
