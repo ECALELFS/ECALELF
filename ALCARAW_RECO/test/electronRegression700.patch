@@ -1,0 +1,40 @@
+diff --git a/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc b/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc
+index a3c33f0..713a6ab 100644
+--- a/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc
++++ b/EgammaAnalysis/ElectronTools/plugins/ElectronRegressionEnergyProducer.cc
+@@ -81,8 +81,8 @@ ElectronRegressionEnergyProducer::ElectronRegressionEnergyProducer(const edm::Pa
+   hVertexToken_ = consumes<reco::VertexCollection>(edm::InputTag("offlinePrimaryVertices"));
+   hRhoKt6PFJetsToken_ = consumes<double>(edm::InputTag("kt6PFJets","rho"));
+ 
+-  produces<edm::ValueMap<double> >(nameEnergyReg_);
+-  produces<edm::ValueMap<double> >(nameEnergyErrorReg_);
++  produces<edm::ValueMap<float> >(nameEnergyReg_);
++  produces<edm::ValueMap<float> >(nameEnergyErrorReg_);
+ 
+   regressionEvaluator = new ElectronEnergyRegressionEvaluate();
+ 
+@@ -122,18 +122,18 @@ bool ElectronRegressionEnergyProducer::filter(edm::Event& iEvent, const edm::Eve
+     geomInitialized_ = true;
+   }
+ 
+-  std::auto_ptr<edm::ValueMap<double> > regrEnergyMap(new edm::ValueMap<double>() );
+-  edm::ValueMap<double>::Filler energyFiller(*regrEnergyMap);
++  std::auto_ptr<edm::ValueMap<float> > regrEnergyMap(new edm::ValueMap<double>() );
++  edm::ValueMap<float>::Filler energyFiller(*regrEnergyMap);
+ 
+-  std::auto_ptr<edm::ValueMap<double> > regrEnergyErrorMap(new edm::ValueMap<double>() );
+-  edm::ValueMap<double>::Filler energyErrorFiller(*regrEnergyErrorMap);
++  std::auto_ptr<edm::ValueMap<float> > regrEnergyErrorMap(new edm::ValueMap<double>() );
++  edm::ValueMap<float>::Filler energyErrorFiller(*regrEnergyErrorMap);
+ 
+   Handle<reco::GsfElectronCollection> egCollection;
+   iEvent.getByToken(electronToken_,egCollection);
+   const reco::GsfElectronCollection egCandidates = (*egCollection.product());
+ 
+-  std::vector<double> energyValues;
+-  std::vector<double> energyErrorValues;
++  std::vector<float> energyValues;
++  std::vector<float> energyErrorValues;
+   energyValues.reserve(egCollection->size());
+   energyErrorValues.reserve(egCollection->size());
+   //
