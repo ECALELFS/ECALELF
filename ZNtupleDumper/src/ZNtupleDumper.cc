@@ -355,10 +355,10 @@ private:
   std::vector< edm::InputTag > pdfWeightTAGS;
   edm::Handle< std::vector<double> > pdfWeightHandle;
 
-  Float_t fsrWeight;
-  Float_t weakWeight;
   edm::InputTag fsrWeightTAG, weakWeightTAG;
   edm::Handle<Double_t> fsrWeightHandle, weakWeightHandle;
+  Float_t fsrWeight;
+  Float_t weakWeight;
 
   void InitPdfSystTree(void);
   void TreeSetPdfSystVar(const edm::Event& iEvent);
@@ -434,7 +434,8 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   doPdfSystTree(iConfig.getParameter<bool>("doPdfSystTree")),
   pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections")),
   fsrWeightTAG(iConfig.getParameter< edm::InputTag>("fsrWeightCollection")),
-  weakWeightTAG(iConfig.getParameter< edm::InputTag>("weakWeightCollection"))
+  weakWeightTAG(iConfig.getParameter< edm::InputTag>("weakWeightCollection")),
+  fsrWeight(1.), weakWeight(1.)
 			    //  r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
 			    //puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
 			    //puWeights()
@@ -574,7 +575,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	TreeSetEleIDVar(*eleIter1, *eleIter1);
 	eleIDTree->Fill();
       }
-      if(doPdfSystTree){
+      if(doPdfSystTree && isMC){
 	TreeSetPdfSystVar(iEvent);
 	//pdfSystTree->Fill();
       }
@@ -604,7 +605,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  TreeSetEleIDVar(*eleIter1, *eleIter2);
 	  eleIDTree->Fill();
 	}
-	if(doPdfSystTree){
+	if(doPdfSystTree && isMC){
 	  TreeSetPdfSystVar(iEvent);
 	  //pdfSystTree->Fill();
 	}
