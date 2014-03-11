@@ -189,6 +189,11 @@ fi
 setEnergy $DATASETPATH
 
 
+case ${isMC} in 
+    1) PDFSYST=1;;
+    0) PDFSYST=0;;
+esac
+
 if [ "${TYPE}" != "ALCARERECO" -a "${TYPE}" != "ALCARAW" ];then
     ORIGIN_REMOTE_DIR_BASE=`echo ${ORIGIN_REMOTE_DIR_BASE} | sed 's|alcaraw|alcareco|g'`
 elif [ "${TYPE}" != "alcarereco" ];then
@@ -323,7 +328,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES} skim=${SKIM}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} Jsonfile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES} skim=${SKIM}
 get_edm_output=1
 output_file=${OUTFILES}
 
