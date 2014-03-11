@@ -278,6 +278,8 @@ int main(int argc, char **argv) {
     ("saveR9TreeWeight", "")
     ("ZPtWeightFile", po::value<string>(&ZPtWeightFile),"File with ZPt weights")
     ("useZPtweight", "use ZPt weights")
+    ("useFSRweight", "activate the FSR weight in MC")
+    ("useWEAKweight", "activate the WEAK interference weight in MC")
     ("saveRootMacro","")
     //
     ("selection", po::value<string>(&selection)->default_value("loose"),"")
@@ -1042,6 +1044,8 @@ int main(int argc, char **argv) {
   smearer.SetR9Weight(vm.count("useR9weight"));
   smearer.SetPdfSystWeight(pdfSystWeightIndex);
   smearer.SetZPtWeight(vm.count("useZPtweight"));
+  smearer.SetFsrWeight(vm.count("useFSRweight"));
+  smearer.SetWeakWeight(vm.count("useWEAKweight"));
 
   if(nSmearToy>0) smearer._nSmearToy = nSmearToy;
 

@@ -43,6 +43,8 @@ public:
   inline void SetR9Weight(bool value){_useR9weight=value;};
   inline void SetPtWeight(bool value){_usePtweight=value;};
   inline void SetZPtWeight(bool value){_useZPtweight=value;};
+  inline void SetFsrWeight(bool value){_useFSRweight=value;};
+  inline void SetWeakWeight(bool value){_useWEAKweight=value;};
   inline void SetExcludeByWeight(bool value){_excludeByWeight=value;};
   inline void SetOnlyDiagonal(bool value){_onlyDiagonal=value;};
   inline void SetEleID(TString value){_eleID=value;};
@@ -67,6 +69,8 @@ private:
   bool _useR9weight;
   bool _usePtweight;
   bool _useZPtweight;
+  bool _useFSRweight;
+  bool _useWEAKweight;
   bool _excludeByWeight;
   bool _onlyDiagonal;
   bool _isSmearingEt;

@@ -183,3 +183,12 @@ mkSmearEleSignal(){
 #       echo -e "$tag\tsmearEle_$4\tdata/other/`echo $file | sed 's|tmp/||'`" >> $2
 #     done
 }
+
+
+
+######
+# Convert RooRealVar .config files into smearEle config files
+getSmearEleCfg(){
+    #$1= config file
+    sed 's|_| |;' $1 | awk -f awk/smearEleCfg.awk
+}

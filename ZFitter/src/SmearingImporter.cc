@@ -21,6 +21,8 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
   _useR9weight(false),
   _usePtweight(false),
   _useZPtweight(false),
+  _useFSRweight(false),
+  _useWEAKweight(false),
   _excludeByWeight(true),
   _onlyDiagonal(false),
   _isSmearingEt(false),
@@ -89,9 +91,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   Float_t         phiEle[2];
 
   // for the weight calculation
-  Float_t         weight=1;
+  Float_t         weight=1.;
   Float_t         r9weight[2]={1,1};
   Float_t         ptweight[2]={1,1};
+  Float_t         FSRweight=1.;
+  Float_t         WEAKweight=1.;
   Float_t         zptweight[45]={1};
   Float_t         mcGenWeight=1;
   std::vector<double> *pdfWeights = NULL;
@@ -104,6 +108,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
   //------------------------------
   chain->SetBranchAddress("eventNumber", &eventNumber);
+  chain->SetBranchAddress("etaEle", etaEle);
+  chain->SetBranchAddress("phiEle", phiEle);
 
   chain->SetBranchAddress(_energyBranchName, energyEle);
   if(chain->GetBranch("scaleEle")!=NULL){
@@ -128,9 +134,17 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     chain->SetBranchAddress("pdfWeights_cteq66", &pdfWeights);
   }
 
-  chain->SetBranchAddress("etaEle", etaEle);
-  chain->SetBranchAddress("phiEle", phiEle);
-
+  // the second term is to ensure that in case of toy study it is applied only to pseudo-data otherwise to MC
+  // the third is only temporary because old ntuples does not have the branch
+  // probably it will be needed in the future if the pdfSystematic branches are put in a separate tree
+  if(_useFSRweight &&  isMC==false && (isToy==false || (externToy==true && isToy==true && isMC==false)) && chain->GetBranch("fsrWeight")!=NULL){
+    std::cout << "[STATUS] Getting fsrWeight branch for tree: " << chain->GetTitle() << std::endl;
+    chain->SetBranchAddress("fsrWeight", &FSRweight);
+  }
+  if(_useWEAKweight  && isMC==false && (isToy==false || (externToy==true && isToy==true && isMC==false)) && chain->GetBranch("weakWeight")!=NULL){
+    std::cout << "[STATUS] Getting weakWeight branch for tree: " << chain->GetTitle() << std::endl;
+    chain->SetBranchAddress("weakWeight", &WEAKweight);
+  }
 
   if(chain->GetBranch("puWeight")!=NULL){
     std::cout << "[STATUS] Getting puWeight branch for tree: " << chain->GetTitle() << std::endl;
@@ -316,18 +330,22 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
+    if(_useFSRweight) event.weight *= FSRweight;
+    if(_useWEAKweight) event.weight *= WEAKweight;
     if(_useZPtweight && isMC && _pdfWeightIndex>0) event.weight *= zptweight[_pdfWeightIndex];
     if(!isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
       if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
       event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
 
+      
 #ifdef DEBUG      
       if(jentry<10 || event.weight!=event.weight || event.weight>1.3){
 	std::cout << "jentry = " << jentry 
-		  << "\tevent.weight = " << event.weight << "\t" << (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0] 
-		  << "\t" << (*pdfWeights)[_pdfWeightIndex] << "\t" << (*pdfWeights)[0] 
+		  << "\tevent.weight = " << event.weight 
+	  //<< "\t" << (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0] << "\t" << (*pdfWeights)[_pdfWeightIndex] << "\t" << (*pdfWeights)[0] 
 		  << "\t" << r9weight[0] << " " << r9weight[1] 
 		  << "\t" << ptweight[0] << " " << ptweight[1]
+		  << "\t" << WEAKweight << "\t" << FSRweight
 		  << std::endl;
       }
 #endif
@@ -353,7 +371,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	} // else event.weight=1;
       }
     }
-#ifdef DEBUG      
+    //#ifdef DEBUG      
       if(jentry<10 || event.weight!=event.weight || event.weight>2){
 	std::cout << "jentry = " << jentry 
 		  << "\tevent.weight = " << event.weight 
@@ -361,11 +379,12 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 		  << "\t" << r9weight[0] << " " << r9weight[1] 
 		  << "\t" << ptweight[0] << " " << ptweight[1]
 		  << "\t" << zptweight[0] 
+		  << "\t" << WEAKweight << "\t" << FSRweight
 		  << std::endl;
       }
-#endif
+      //#endif
 
-    if(event.weight<=0 || event.weight!=event.weight) continue;
+    if(event.weight<=0 || event.weight!=event.weight || event.weight>10) continue;
 
 #ifdef FIXEDSMEARINGS
     if(isMC){
