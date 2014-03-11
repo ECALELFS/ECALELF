@@ -302,35 +302,10 @@ else:
 process.pfIsoEgamma = cms.Sequence()
 if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-#<<<<<<< HEAD
-#    process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons', 'PFIso')
-#    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
-#elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
-#    # getting the ptrs
-#    from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
-#    process.pfIsoEgamma*=particleFlowPtrs
-#    process.load('CommonTools.ParticleFlow.pfNoPileUpIso_cff')
-#    process.pfPileUp.PFCandidates = 'particleFlowPtrs'
-#    process.pfNoPileUp.bottomCollection = 'particleFlowPtrs'
-#    process.pfPileUpIso.PFCandidates = 'particleFlowPtrs'
-#    process.pfNoPileUpIso.bottomCollection='particleFlowPtrs'
-#    process.pfPileUpJME.PFCandidates = 'particleFlowPtrs'
-#    process.pfNoPileUpJME.bottomCollection='particleFlowPtrs'
-#
-    #    process.load('RecoParticleFlow/Configuration/python/RecoParticleFlow_cff') #CommonTools.ParticleFlow.PFBRECO_cff')
-#    process.pfIsoEgamma*= process.pfNoPileUpSequence * process.pfNoPileUpIsoSequence
-#    process.load('CommonTools.ParticleFlow.ParticleSelectors.pfSortByType_cff')
-#    process.pfIsoEgamma*=process.pfSortByTypeSequence
-    #process.load('RecoEgamma.EgammaElectronProducers.electronPFIsolationDeposits_cff') 
-    #process.load('RecoParticleFlow.PFProducer.electronPFIsolationDeposits_cff')  
-    #pfisoALCARECO = cms.Sequence(eleIsoSequence)
-#    process.pfIsoEgamma*= process.electronPFIsolationDepositsSequence # * process.gedElectronPFIsolationDepositsSequence
-#=======
     process.eleIsoSequence = setupPFElectronIso(process, 'gsfGsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     process.pfisoALCARECO = cms.Sequence() # remove any modules
-#>>>>>>> d77713791fb77360d18365c16133d080c8ac8766
 
 ###############################/
 # Event filter sequence: process.filterSeq

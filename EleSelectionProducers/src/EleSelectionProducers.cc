@@ -15,7 +15,7 @@
 
 //#define DEBUG
 // system include files
-#define CMSSW_7_0_X
+
 #include <memory>
 
 // user include files
