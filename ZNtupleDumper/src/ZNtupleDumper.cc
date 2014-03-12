@@ -146,6 +146,7 @@ private:
   
   bool isMC;
   bool isWenu;
+  bool isPartGun;
 
   //Handles and inputTags
 private:
@@ -417,6 +418,7 @@ private:
 ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   //  isMC(iConfig.getParameter<bool>("isMC")), 
   isWenu(iConfig.getParameter<bool>("isWenu")),
+  isPartGun(iConfig.getParameter<bool>("isPartGun")),
   vtxCollectionTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
   BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
   electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
@@ -553,61 +555,99 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
   }
 
-  for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
-       eleIter1 != electronsHandle->end();
-       eleIter1++){
-    if(isWenu){
-      if(! eleIter1->electronID("tight") ) continue;
-      if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
+  if(isPartGun){
+    pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
+    pat::ElectronCollection::const_iterator eleIter2 = eleIter1;
+    for(eleIter1 = electronsHandle->begin();
+	eleIter1 != electronsHandle->end() && eleIter1->genLepton()==0;
+	eleIter1++){
+    }
+    
+    //if no electron matching the gen particles then the event is skipped
+    //if(eleIter1 == electronsHandle->end()) return;
+    if(eleIter1 == electronsHandle->end()) eleIter1=electronsHandle->begin();
+    
+    //in order to not put duplicate electrons, remove the ones not matching the genparticle
+    for(eleIter2=eleIter1, eleIter2++;
+	eleIter2 != electronsHandle->end() && eleIter2->genLepton()==0;
+	eleIter2++){
+    }
+    if(eleIter2 == electronsHandle->end()){
+      if(eleIter1->genLepton()!=0 || electronsHandle->size() < 2) eleIter2=eleIter1;
+      else eleIter2=eleIter1+1;
+    }
 
-      // MET/MT selection
-      if(  met.et() < 25. ) continue;
-      if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 50. ) continue;
-      if( eleIter1->et()<30) continue;
-
-      TreeSetDiElectronVar(*eleIter1, *eleIter1);
-      tree->Fill();
-      if(doExtraCalibTree){
-	TreeSetExtraCalibVar(*eleIter1, *eleIter1);
-	extraCalibTree->Fill();
-      }
-      if(doEleIDTree){
-	TreeSetEleIDVar(*eleIter1, *eleIter1);
-	eleIDTree->Fill();
-      }
-      if(doPdfSystTree && isMC){
-	TreeSetPdfSystVar(iEvent);
-	//pdfSystTree->Fill();
-      }
-    } else {
-      for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
-	  eleIter2 != electronsHandle->end();
-	  eleIter2++){
-	// should exit when eleIter1 == end-1
-	//if(! eleIter2->electronID("loose") ) continue;
-	
-	//pat::CompositeCandidate zeeCandidate;
-	//if(! (eleIter1->electronID("WP90PU") && eleIter1->electronID("fiducial"))) continue;
-	//if(! (eleIter2->electronID("WP90PU") && eleIter2->electronID("fiducial"))) continue;
-	//zeeCandidate.addDaughter(*eleIter1, "electron1");
-	//zeeCandidate.addDaughter(*eleIter2, "electron2");
-	float mass=(eleIter1->p4()+eleIter2->p4()).mass();
-	if(mass < 55 || mass > 125) continue;
+    //if one electron matching the gen particles then eleIter2 = eleIter1
+    //else we have two electrons
+    TreeSetDiElectronVar(*eleIter1, *eleIter2);
+    tree->Fill();
+    if(doExtraCalibTree){
+      TreeSetExtraCalibVar(*eleIter1, *eleIter2);
+      extraCalibTree->Fill();
+    }
+    if(doEleIDTree){
+      TreeSetEleIDVar(*eleIter1, *eleIter2);
+      eleIDTree->Fill();
       
-	//       ZCandidatesCollection.push_back(zeeCandidate);
-	TreeSetDiElectronVar(*eleIter1, *eleIter2);
+    }
+  } else{
+
+    for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
+	 eleIter1 != electronsHandle->end();
+	 eleIter1++){
+      if(isWenu){
+	if(! eleIter1->electronID("tight") ) continue;
+	if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
+	
+	// MET/MT selection
+	if(  met.et() < 25. ) continue;
+	if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 50. ) continue;
+	if( eleIter1->et()<30) continue;
+	
+	TreeSetDiElectronVar(*eleIter1, *eleIter1);
 	tree->Fill();
 	if(doExtraCalibTree){
-	  TreeSetExtraCalibVar(*eleIter1, *eleIter2);
+	  TreeSetExtraCalibVar(*eleIter1, *eleIter1);
 	  extraCalibTree->Fill();
 	}
 	if(doEleIDTree){
-	  TreeSetEleIDVar(*eleIter1, *eleIter2);
+	  TreeSetEleIDVar(*eleIter1, *eleIter1);
 	  eleIDTree->Fill();
 	}
 	if(doPdfSystTree && isMC){
 	  TreeSetPdfSystVar(iEvent);
 	  //pdfSystTree->Fill();
+	}
+      }else {
+	for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
+	    eleIter2 != electronsHandle->end();
+	    eleIter2++){
+	  // should exit when eleIter1 == end-1
+	  //if(! eleIter2->electronID("loose") ) continue;
+	  
+	  //pat::CompositeCandidate zeeCandidate;
+	  //if(! (eleIter1->electronID("WP90PU") && eleIter1->electronID("fiducial"))) continue;
+	  //if(! (eleIter2->electronID("WP90PU") && eleIter2->electronID("fiducial"))) continue;
+	  //zeeCandidate.addDaughter(*eleIter1, "electron1");
+	  //zeeCandidate.addDaughter(*eleIter2, "electron2");
+	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
+	  if((mass < 55 || mass > 125)) continue;
+	  
+	  //       ZCandidatesCollection.push_back(zeeCandidate);
+	  TreeSetDiElectronVar(*eleIter1, *eleIter2);
+	  tree->Fill();
+	  if(doExtraCalibTree){
+	    TreeSetExtraCalibVar(*eleIter1, *eleIter2);
+	    extraCalibTree->Fill();
+	  }
+	  if(doEleIDTree){
+	    TreeSetEleIDVar(*eleIter1, *eleIter2);
+	    eleIDTree->Fill();
+	  }
+	  if(doPdfSystTree && isMC){
+	    TreeSetPdfSystVar(iEvent);
+	    //pdfSystTree->Fill();
+	  }
 	}
       }
     }

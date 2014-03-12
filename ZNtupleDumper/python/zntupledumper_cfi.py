@@ -24,6 +24,7 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                fsrWeightCollection = cms.InputTag("fsrWeight"),
                                weakWeightCollection = cms.InputTag("weakWeight"),
                                isWenu = cms.bool(False),
+                               isPartGun = cms.bool(False),
 #                               hltPaths = cms.vstring()
                                hltPaths = cms.vstring('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15',
                                                       'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16',

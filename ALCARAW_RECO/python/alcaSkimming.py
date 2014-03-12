@@ -31,7 +31,7 @@ options.register('skim',
                  "", 
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
-                 "type of skim: ZSkim, WSkim, fromWSkim (from USER format), EleSkim (at least one electron), ''")
+                 "type of skim: ZSkim, WSkim, partGun, fromWSkim (from USER format), EleSkim (at least one electron), ''")
 options.register('jsonFile',
                  "",
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -78,7 +78,6 @@ elif(options.skim=="WSkim"):
     WSkim=True
 elif(options.skim=="ZSCSkim"):
     ZSCSkim=True
-
 elif(options.skim=="fromWSkim"):
     print "[INFO] producing from WSkim files (USER format)"
     WSkim=False
@@ -353,7 +352,7 @@ process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = cms.InputTag("gsfElectrons"),
                                           minNumber = cms.uint32(1)
                                           )
-if(options.skim=="" or options.skim=="none" or options.skim=="no"):
+if(options.skim=="" or options.skim=="none" or options.skim=="no" or options.skim=="partGun"):
     process.ZeeFilterSeq = cms.Sequence(process.MinEleNumberFilter)
     process.WenuFilterSeq = cms.Sequence(process.MinEleNumberFilter)
     process.ZSCFilterSeq = cms.Sequence(process.MinEleNumberFilter)
@@ -384,6 +383,10 @@ elif(ZSCSkim):
 
 else:
     process.NtupleFilterSeq = cms.Sequence()
+
+if(options.skim=="partGun"):
+    process.zNtupleDumper.isPartGun = cms.bool(True)
+
 #process.NtupleFilter)
 #process.filterSeq *= process.NtupleFilter
 
@@ -445,6 +448,8 @@ if(MC and options.pdfSyst==1):
     process.zNtupleDumper.pdfWeightCollections = cms.VInputTag(cms.InputTag('pdfWeights:cteq66'), cms.InputTag("pdfWeights:MRST2006nnlo"), cms.InputTag('pdfWeights:NNPDF10'))
 else:
     process.pdfWeightsSeq = cms.Sequence()
+    process.zNtupleDumper.doPdfSystTree = cms.bool(False)
+
 
 ############################################################
 # OUTPUT MODULES
