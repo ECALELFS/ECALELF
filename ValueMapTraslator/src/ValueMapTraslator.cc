@@ -39,7 +39,7 @@
 //
 
 class ValueMapTraslator : public edm::EDProducer {
-  typedef double value_t;
+  typedef float value_t;
   typedef edm::ValueMap<value_t> Map_t;
 
    public:

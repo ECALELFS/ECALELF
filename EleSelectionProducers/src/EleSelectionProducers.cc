@@ -43,7 +43,7 @@ class EleSelectionProducers : public edm::EDProducer {
   //  typedef pat::strbitset SelectionValue_t;
   typedef float SelectionValue_t;
   typedef edm::ValueMap<SelectionValue_t> SelectionMap;
-  typedef std::vector< edm::Handle< edm::ValueMap<double> > > IsoDepositValsHandles_t;
+  typedef std::vector< edm::Handle< edm::ValueMap<float> > > IsoDepositValsHandles_t;
 
 public:
   explicit EleSelectionProducers(const edm::ParameterSet&);
@@ -67,7 +67,7 @@ private:
   edm::Handle<reco::ConversionCollection> conversionsHandle;
   edm::Handle<reco::BeamSpot> bsHandle;
   edm::Handle<reco::VertexCollection> vertexHandle;
-  edm::Handle< edm::ValueMap<double> > chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle;
+  edm::Handle< edm::ValueMap<float> > chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle;
   edm::Handle<double> rhoHandle;
 
 

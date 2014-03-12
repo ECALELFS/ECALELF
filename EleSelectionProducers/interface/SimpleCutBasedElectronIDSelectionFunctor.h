@@ -163,7 +163,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
 					   const edm::Handle<double>& rhoHandle,
 					   //edm::Handle< edm::ValueMap<reco::IsoDeposit> >,
-					   edm::Handle< edm::ValueMap<double> > &isoVals
+					   edm::Handle< edm::ValueMap<float> > &isoVals
 					   ):
     ConversionsHandle_(ConversionsHandle),
     BeamSpotHandle_(BeamSpotHandle),
@@ -186,9 +186,9 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 					   const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
 					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
 					   const edm::Handle<reco::VertexCollection>& VertexHandle,
-					   const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle,
-					   const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle,
-					   const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle,
+					   const edm::Handle< edm::ValueMap<float> >& chIsoValsHandle,
+					   const edm::Handle< edm::ValueMap<float> >& emIsoValsHandle,
+					   const edm::Handle< edm::ValueMap<float> >& nhIsoValsHandle,
 					   const edm::Handle<double>& rhoHandle):
     electronsHandle_(electronsHandle),
     ConversionsHandle_(ConversionsHandle),
@@ -669,9 +669,9 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 	const edm::Handle<reco::ConversionCollection>& ConversionsHandle_;
 	const edm::Handle<reco::BeamSpot>& BeamSpotHandle_;
 	const edm::Handle<reco::VertexCollection>& VertexHandle_;
-	const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle_;
-	const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle_;
-	const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle_;
+	const edm::Handle< edm::ValueMap<float> >& chIsoValsHandle_;
+	const edm::Handle< edm::ValueMap<float> >& emIsoValsHandle_;
+	const edm::Handle< edm::ValueMap<float> >& nhIsoValsHandle_;
 	const edm::Handle<double>& rhoHandle_;
 };
 
