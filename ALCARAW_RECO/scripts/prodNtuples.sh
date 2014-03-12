@@ -32,6 +32,7 @@ usage(){
     echo "           ALCARERECO: alcareco format after rereco on ALCARAW"
     echo " *** for MC ***"
     echo "    --isMC"
+    echo "    --isParticleGun: redundant, --skim=partGun is the same"
     echo " *** for DATA ***"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root"
@@ -68,7 +69,7 @@ expertUsage(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job: -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -125,6 +126,7 @@ do
 	    esac
 	    ;;
 	--isMC) isMC=1; TYPE=ALCARECOSIM;;
+	--isParticleGun) isPARTICLEGUN="y"; SKIM=partGun;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
 
