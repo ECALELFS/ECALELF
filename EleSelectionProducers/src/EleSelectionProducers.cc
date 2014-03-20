@@ -194,7 +194,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   //------------------------------ ISO DEPOSITS
 #ifdef CMSSW_7_0_X
 #else
-Event.getByLabel(chIsoValsTAG, chIsoValsHandle);
+  iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
   if(!chIsoValsHandle.isValid()){
     chIsoValsTAG=edm::InputTag(chIsoValsTAG.label().substr(0,chIsoValsTAG.label().find("PFIso",chIsoValsTAG.label().size()-6))+"Gsf", chIsoValsTAG.instance(), chIsoValsTAG.process());
     emIsoValsTAG=edm::InputTag(emIsoValsTAG.label().substr(0,emIsoValsTAG.label().find("PFIso",emIsoValsTAG.label().size()-6))+"Gsf", emIsoValsTAG.instance(), emIsoValsTAG.process());

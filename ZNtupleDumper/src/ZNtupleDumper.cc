@@ -480,7 +480,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
 
   //------------------------------ HLT
-  iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
+  if(triggerResultsTAG.label()!="") iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
 
   //------------------------------
   clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
@@ -908,6 +908,8 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     lumiBlock = -1;
   }
 
+  if(!hltPaths.empty()){
+
   edm::TriggerNames HLTNames_ = iEvent.triggerNames(*triggerResultsHandle);
   int hltCount = triggerResultsHandle->size();
   HLTNames[0].clear();
@@ -918,7 +920,7 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     (HLTResults[0]).push_back(triggerResultsHandle->accept(i));
     HLTBits.insert(std::pair<std::string, bool>( hltName_str, triggerResultsHandle->accept(i)));
   } // for i
-
+  }
 
   return;
 }    
