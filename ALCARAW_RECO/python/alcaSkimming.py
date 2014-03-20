@@ -638,15 +638,15 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath)
     else:
-        if(options.doTree=='0'):
+        if(options.doTree==1):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
                                             process.ALCARECOoutput_step,  process.NtuplePath
-                                            ) # fix the output modules
+                                            ) # fix the output module
         else:
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
-                                            process.ALCARECOoutput_step
+                                            process.ALCARECOoutput_step,
                                             ) # fix the output modules
 
 
