@@ -224,8 +224,9 @@ case $CMSSW_VERSION in
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
 	sed -i 's|REGRESSION=3|REGRESSION=4|' Calibration/*/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_0_X\"/>" >> EleSelectionProducers/BuildFile.xml
 
-	echo "[STATUS] applying patch for CMSSW_5_X"
+	echo "[STATUS] applying patch for CMSSW_5_X and following"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
 
 
