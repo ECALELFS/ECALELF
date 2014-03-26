@@ -62,7 +62,8 @@ if [ ! -d "$myDir" ];then
     #git checkout merge-gerosa-condor
 fi
 cd $myDir
-
+git branch --track devel-700pre13 origin/devel-700pre12
+git checkout devel-700pre13
 cd ALCARAW_RECO/
 
 ### if you are not Shervin download this to have some useful scripts
@@ -224,7 +225,7 @@ case $CMSSW_VERSION in
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
 	sed -i 's|REGRESSION=3|REGRESSION=4|' Calibration/*/BuildFile.xml
-	echo "<Flags CppDefines=\"CMSSW_7_0_X\"/>" >> EleSelectionProducers/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_0_X\"/>" >> $myDir/EleSelectionProducers/BuildFile.xml
 
 	echo "[STATUS] applying patch for CMSSW_5_X and following"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
@@ -247,7 +248,7 @@ esac
 
 
 # compile
-scram b -j8
+scram b -j16
 
 # for file in `find -name '*.url'`; 
 #   do 
