@@ -109,3 +109,5 @@ allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-
 175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf	group/alca_ecalcalib/ecalelf/alcareco/	VALID	RUN2011B, RUN2011AB
 ###########
 allRange	/RelValZEE_13/CMSSW_7_0_0_pre11-PU50ns_POSTLS162_V5_OldEG-v1/GEN-SIM-RECO	RelValZEE_13-CMSSW_700_pre11-POSTLS162_V5_OldEG-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+################ personal alcareco for sam harper's test sample of CMSSW70x Drell-Yan process
+allRange	/DYJetsToLL_M-50_13TeV-pythia6/sharper-EGM700_PU40bx25_POSTLS170_V4-v1-df875c51917b2b4016d74c118f018fcb/USER DYJetsToLL_M-50_13TeV-pythia6	caf	group/alca_ecalcalib/ecalelf/alcareco
