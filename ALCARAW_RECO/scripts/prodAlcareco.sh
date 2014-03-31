@@ -26,6 +26,7 @@ usage(){
     echo "    -n, --datasetname name"
     echo "    --store dir"
     echo "    --remote_dir dir"
+    echo "    --dbs_url url: for not global dbs (user production)"
     echo "---------- optional"
     echo "    --isMC: specify is the dataset is MC"
     echo "    -s skim: ZSkim, WSkim, EleSkim"
@@ -47,7 +48,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,njobs:,tutorial,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,njobs:,tutorial,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -65,6 +66,7 @@ do
 	-r|--runrange) RUNRANGE=$2; shift;;
 	--store) STORAGE_ELEMENT=$2; shift;;
 	--remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
+	--dbs_url)    DBS_URL=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
 	--isMC) TYPE=ALCARECOSIM;;
 	--white_list) WHITELIST=$2; shift;;
@@ -207,7 +209,6 @@ cat > ${crabFile} <<EOF
 #use_server = $USESERVER
 jobtype = cmssw
 scheduler = $SCHEDULER
-
 [LSF]
 queue = 1nd
 #resource = type==SLC5_64
@@ -218,8 +219,11 @@ queue = cmscaf1nd
 
 [CMSSW]
 datasetpath=${DATASETPATH}
+use_dbs3  = 1
 EOF
-
+if [ -n "${DBS_URL}" ];then
+    echo "dbs_url=${DBS_URL}" >> tmp/alcareco.cfg
+fi
 
 cat >> ${crabFile} <<EOF
 pset=python/alcaSkimming.py
