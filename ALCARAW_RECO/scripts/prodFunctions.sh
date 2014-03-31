@@ -104,6 +104,9 @@ setEnergy(){
 	*SingleElectronFlat*)
 	    ENERGY=gun
 	    ;;
+	*sharper*)
+	    ENERGY=13TeV
+	    ;;
 	*)
 	    echo "[ERROR] Center of mass energy not determined for $1" >> /dev/stderr
 	    echo "        Check implementation in prodFunctions.sh"    >> /dev/stderr
