@@ -192,7 +192,6 @@ cat > ${crabFile} <<EOF
 #use_server = $USESERVER
 jobtype = cmssw
 scheduler = $SCHEDULER
-
 [LSF]
 queue = 1nd
 [CAF]
@@ -201,7 +200,8 @@ queue = cmscaf1nd
 
 [CMSSW]
 datasetpath=${DATASETPATH}
-
+use_dbs3  = 1
+dbs_url=phys03
 pset=python/alcaSkimming.py
 pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE jsonFile=${JSONFILE}
 
