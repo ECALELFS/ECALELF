@@ -61,7 +61,6 @@ expertUsage(){
     echo "    --file_per_job arg: number of files to process in 1 job (=1)"
 }
 
-    
 #------------------------------ parsing
 
 
@@ -223,7 +222,7 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 	fi
 
 	if [ ! -e "${FILELIST}" ];then
-	    filelistDatasets.sh $options || exit 1
+			filelistDatasets.sh $options || exit 1
 	fi
 	;;
 esac
@@ -321,7 +320,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=1 jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=0 jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES}
 get_edm_output=1
 output_file=${OUTFILES}
 

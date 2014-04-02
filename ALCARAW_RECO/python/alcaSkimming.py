@@ -6,7 +6,8 @@ import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 
-    
+
+myEleCollection =  cms.InputTag("gedGsfElectrons")
 #sys.path(".")
 
 ############################################################
@@ -146,6 +147,7 @@ process.load('Configuration.EventContent.EventContent_cff')
 
 # import of ALCARECO sequences
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
+
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
 from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
 
@@ -163,7 +165,6 @@ process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
 
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
-
 # ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
@@ -302,7 +303,7 @@ else:
 process.pfIsoEgamma = cms.Sequence()
 if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfGsfElectrons', 'PFIso')
+    process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     process.pfisoALCARECO = cms.Sequence() # remove any modules
@@ -331,7 +332,7 @@ process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 #process.filterSeq *= process.ZeeFilterSeq
 #process.filterSeq *= process.WenuFilterSeq
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                          src = cms.InputTag("gedGsfElectrons"),
+                                          src = myEleCollection,
                                           minNumber = cms.uint32(1)
                                           )
 if(options.skim=="" or options.skim=="none" or options.skim=="no"):
@@ -694,6 +695,9 @@ if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
 
 
 process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
+process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
+process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
+process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
@@ -705,3 +709,14 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 ############################
 processDumpFile = open('processDump.py', 'w')
 print >> processDumpFile, process.dumpPython()
+
+
+process.eleRegressionEnergy.inputElectronsTag = myEleCollection
+process.patElectrons.electronSource = myEleCollection
+process.eleSelectionProducers.electronCollection = myEleCollection
+process.PassingHLT.InputProducer = myEleCollection
+process.selectedElectrons.src = myEleCollection
+process.eleNewEnergiesProducer.electronCollection = myEleCollection
+process.alCaIsolatedElectrons.electronLabel = myEleCollection 
+process.alcaElectronTracksReducer.electronLabel = myEleCollection
+process.elPFIsoDepositGammaGsf.src = myEleCollection

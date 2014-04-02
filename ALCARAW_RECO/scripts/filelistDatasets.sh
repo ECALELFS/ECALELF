@@ -79,7 +79,6 @@ if [ -z "$USER_REMOTE_DIR_BASE" ];then
     exit 1
 fi
 
-
 case $DATASETPATH in 
     *Run2012*)
 	echo "[INFO] Run on 2012 data: ENERGY=8TeV"
@@ -93,6 +92,9 @@ case $DATASETPATH in
 	;;
     *8TeV*)
 	ENERGY=8TeV
+	;;
+    *13TeV*)
+	ENERGY=13TeV
 	;;
     *7TeV*)
 	ENERGY=7TeV
