@@ -1,0 +1,39 @@
+/**
+ * \page Devel Guide for ECALELF development
+
+ \section Devel_git Setting up the working directory
+If you downloaded the code following the instructions (* <A HREF="https://github.com/ECALELFS/ECALELF/blob/master/README.md"> Download instructions </A>) you now have a local copy of the ECALELF package.
+
+In order to be able to make new development you need to setup an ECALELF git repository in your personal gitHub area.
+The easiest way to do this is to fork the ECALELF repository.
+ - fork the repository as indicated in "step1" in this <A HREF="https://help.github.com/articles/fork-a-repo"> page </A>.
+ - set your fork as a new remote repository (only the first time, just to point to the right remote, not ECALELF)
+\code 
+git remote add myfork git@github.com:myGitHubUser/ECALELF.git
+git fetch myfork
+\endcode
+ - move to the ECALELF branch you want to start working on (usually the master but can be some different ECALELF branch like devel-700pre12)
+\code 
+git checkout master
+\endcode
+ - create a new branch and make it poiting to the ECALELF branch you started from. This way you can keep your development updated with the ECALELF branch. In the example below I'm assuming you are developing from the master
+\code 
+git branch myNewBranch 
+git checkout myNewBranch
+git branch --set-upstream-to=origin/master
+\endcode
+ - make your changes (example)
+\code 
+emacs test.txt
+git add test.txt
+git commit -m "test"
+\endcode
+ - now you have committed some changes in your local repository and you need to propage them to your gitHub fork
+git push myfork myNewBranch
+ - to keep the code updated (this must point to ECALELF)
+   - Before pull, be sure that everithing is committed and in case commit it
+\code git status -uno \endcode
+   - update the code from ECALELF (the --no-commit option make sure that the files modified on the ECALELF side are changed locally but not yet committed. You have the possibility to change them)
+\code git pull --no-commit \endcode
+
+ */
