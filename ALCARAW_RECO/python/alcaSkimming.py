@@ -695,9 +695,6 @@ if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
 
 
 process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
-process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
-process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
-process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
@@ -710,7 +707,9 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 processDumpFile = open('processDump.py', 'w')
 print >> processDumpFile, process.dumpPython()
 
-
+##########################################################
+## Set correct electron definition for required methods ##
+##########################################################
 process.eleRegressionEnergy.inputElectronsTag = myEleCollection
 process.patElectrons.electronSource = myEleCollection
 process.eleSelectionProducers.electronCollection = myEleCollection
@@ -720,3 +719,6 @@ process.eleNewEnergiesProducer.electronCollection = myEleCollection
 process.alCaIsolatedElectrons.electronLabel = myEleCollection 
 process.alcaElectronTracksReducer.electronLabel = myEleCollection
 process.elPFIsoDepositGammaGsf.src = myEleCollection
+process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
+process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
+process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
