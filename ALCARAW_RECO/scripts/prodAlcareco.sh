@@ -5,6 +5,7 @@ source $CMSSW_BASE/src/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
 #------------------------------ default
 SKIM=none
 USEPARENT=0
+STORAGE_ELEMENT=T2_CH_CERN
 SCHEDULER=caf
 USESERVER=1
 TYPE=ALCARECO
@@ -16,6 +17,10 @@ SUBMIT=yes
 OUTPUTFILE=alcareco
 crabFile=tmp/alcareco.cfg
 DOTREE=1
+DOHIGHETA=0
+WHITELIST="T2_CH,T2_US,T2_IT,T2_DE"
+NJOBS=100
+NEVENTS_TOTAL=0
 
 usage(){
     echo "`basename $0` options"
@@ -34,7 +39,9 @@ usage(){
     echo "    --check"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
-    echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree"
+    echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree only, 2=extratree-only, 3=standard+extra trees"
+    echo "    --doHighEta arg (=${DOHIGHETA}): 0=not use HighEta SC; 1= use them"
+    echo "    --njobs nJobs : number of jobs, an integer"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
     echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
@@ -45,7 +52,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,tutorial,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,doHighEta:,njobs:,tutorial,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -75,6 +82,8 @@ do
         --tutorial)   echo "[OPTION] Activating the tutorial mode"; TUTORIAL=y;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 	--doTree) DOTREE=$2; shift; echo "[OPTION] Request doTree = ${DOTREE}";;
+	--doHighEta) DOHIGHETA=$2; shift; echo "[OPTION] Request doHighEta = ${DOHIGHETA}";;
+        --njobs) NJOBS=$2; shift; echo "[OPTION] Request njobs = ${NJOBS}";;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
     (*) break;;
@@ -175,6 +184,10 @@ case $SKIM in
 	;;
 esac
 
+
+#get total n events in dataset
+#NEVENTS_TOTAL=`das_client.py --query="dataset=$DATASETPATH | grep dataset.nevents" --limit=0`
+
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
 
@@ -189,6 +202,16 @@ if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`"
     unset RUNRANGE
 fi
 
+# make argument.xml file if do MC
+if [ "$TYPE" == "ALCARECOSIM" ] && [ -n "${CREATE}" ];then
+  makeArgumentsWithDataPath.sh -d ${DATASETPATH} -n ${NJOBS} -o _tmp_argument.xml
+  #redefine the NJOBS
+  NJOBS=`grep "</Job>" _tmp_argument.xml | wc -l`
+fi
+
+
+user=`whoami`
+cert=`ls -l /tmp/x509* | grep ${user} | awk {'print $9'}`
 
 #==============================
 cat > ${crabFile} <<EOF
@@ -199,41 +222,61 @@ scheduler = $SCHEDULER
 
 [LSF]
 queue = 1nd
+resource = type==SLC5_64
 [CAF]
 queue = cmscaf1nd
+resource = type==SLC5_64
 
 
 [CMSSW]
-datasetpath=${DATASETPATH}
+EOF
 
+if [ "$TYPE" == "ALCARECOSIM" ];then
+  cat >> ${crabFile} <<EOF
+allow_NonProductionCMSSW=1
+datasetpath=None
+EOF
+else
+  cat >> ${crabFile} <<EOF
+datasetpath=${DATASETPATH}
+EOF
+fi
+
+cat >> ${crabFile} <<EOF
 pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} 
+pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} doHighEta=${DOHIGHETA} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
 
 runselection=${RUNRANGE}
 split_by_run=0
 EOF
 
-if [ "$TYPE" == "ALCARECOSIM" ];then
-    cat >> tmp/alcareco.cfg <<EOF
-total_number_of_events = -1
-events_per_job=${EVENTS_PER_JOB}
+if [ "$DOTREE" -gt "0" ]; then
+   cat >> ${crabFile} <<EOF
+output_file=ntuple.root
 EOF
+fi 
 
+
+if [ "$TYPE" == "ALCARECOSIM" ];then
+    cat >> ${crabFile} <<EOF
+total_number_of_events=${NJOBS}
+number_of_jobs=${NJOBS}
+EOF
 else
-    cat >> tmp/alcareco.cfg <<EOF
+    cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 EOF
 fi
 
 if [ -n "${DEVEL_RELEASE}" ]; then
-cat >> tmp/alcareco.cfg <<EOF
+cat >> ${crabFile} <<EOF
 allow_NonProductionCMSSW = 1
 EOF
 fi
 
 ###
-cat >> tmp/alcareco.cfg <<EOF
+cat >> ${crabFile} <<EOF
 #output_file=${OUTFILES}
 get_edm_output=1
 check_user_remote_dir=1
@@ -247,26 +290,45 @@ local_stage_out = 1
 storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
+EOF
 
+if [ "$TYPE" == "ALCARECOSIM" ];then
+   cat >> ${crabFile} <<EOF
+script_exe=initdata.sh
+additional_input_files=${cert}
+EOF
+fi
 
+cat >> ${crabFile} <<EOF
 thresholdLevel=80
-eMail = shervin@cern.ch
+eMail = Hengne.Li@cern.ch
 
 [GRID]
-
 rb = HC
 rb = CERN
 proxy_server = myproxy.cern.ch
 #se_white_list=$WHITELIST
 se_black_list=$BLACKLIST
+#data_location_override = se_white_list
+
 EOF
 
 
 
 if [ -n "${CREATE}" ];then
-crab -cfg ${crabFile} -create || exit 1
+ crab -cfg ${crabFile} -create || exit 1
+
+ if [ "$TYPE" == "ALCARECOSIM" ];then
+   mv _tmp_argument.xml ${UI_WORKING_DIR}/share/arguments.xml 
+ fi 
+ 
 ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
 #crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
+
+ #clean up extral lines
+ awk ' /file_list=\"\"/ &&c++>0 {next} 1 ' ${UI_WORKING_DIR}/job/CMSSW.sh > _tmp_CMSSW.sh
+ chmod +x _tmp_CMSSW.sh
+ mv _tmp_CMSSW.sh ${UI_WORKING_DIR}/job/CMSSW.sh
 fi
 
 if [ -n "$SUBMIT" ]; then
@@ -287,6 +349,9 @@ if [ -n "${CHECK}" ];then
 #	mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper --noRemove --merged_remote_dir=/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
+   #else
+   #  mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
+   #fi   
 fi
 
 ################

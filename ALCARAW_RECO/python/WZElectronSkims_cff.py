@@ -139,13 +139,27 @@ PassingTightId = selectedElectrons.clone(
     )
     )
 
+HighEtaPhotons = cms.EDFilter("PhotonSelector",
+     src = cms.InputTag("photons"),
+     cut = cms.string("hadronicOverEm<0.05"
+          " && (superCluster.rawEnergy*sin(superCluster.position.theta)>20.0)"
+          " && (abs(superCluster.eta)>2.4) " # && abs(superCluster.eta)<2.8
+          " && (sigmaIetaIeta<0.029)"
+          " && (ecalRecHitSumEtConeDR03/(p4.Pt) < 0.035)"
+          " && (hcalTowerSumEtConeDR03/(p4.Pt) < 0.11)"
+          " && (r9>0.89 && r9<1.02)"
+         )
+     )
+
+
 #------------------------------ electronID producer
 from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
 # process.EleSelectionProducers
 
 SCselector = cms.EDFilter("SuperClusterSelector",
                           src = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower'),
-                          cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
+                          #cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
+                          cut = cms.string('(energy*sin(position.theta)> 15)')
                           )
 
 ### Build candidates from all the merged superclusters
@@ -224,6 +238,8 @@ FilterSeq = cms.Sequence(eleSelSeq * (ZeeSelector + WenuSelector + EleSCSelector
 ZeeFilterSeq = cms.Sequence(eleSelSeq * ZeeSelector * ZeeFilter)    
 WenuFilterSeq = cms.Sequence(eleSelSeq * WenuSelector * WenuFilter)
 WZFilterSeq = cms.Sequence(eleSelSeq * WZFilter)
-ZSCFilterSeq    = cms.Sequence(ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
-
+#ZSCFilterSeq    = cms.Sequence(ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
+#ZSCFilterSeq    = cms.Sequence(eleSelSeq * EleSCSelector * ZSCFilter)
+ZSCFilterSeq    = cms.Sequence(eleSelSeq * EleSCSelector)
+HighEtaFilterSeq    = cms.Sequence(eleSelSeq * HighEtaPhotons)
 

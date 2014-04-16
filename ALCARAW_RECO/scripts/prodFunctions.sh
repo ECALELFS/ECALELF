@@ -86,6 +86,9 @@ setEnergy(){
 	*Summer12*)
 	    ENERGY=8TeV
 	    ;;
+        *13TeV*)
+            ENERGY=13TeV
+            ;;
 	*8TeV*)
 	    ENERGY=8TeV
 	    ;;

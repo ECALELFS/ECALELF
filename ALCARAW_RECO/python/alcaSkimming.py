@@ -31,7 +31,7 @@ options.register('skim',
                  "", 
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
-                 "type of skim: ZSkim, WSkim, partGun, fromWSkim (from USER format), EleSkim (at least one electron), ''")
+                 "type of skim: ZSkim, WSkim, partGun, fromWSkim (from USER format), EleSkim (at least one electron), HighEtaSkim (for higheta calibration) ''")
 options.register('jsonFile',
                  "",
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -43,10 +43,15 @@ options.register('doTree',
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "doTree=0: no tree; 1: standard tree; 2: onlyExtraTree; 3: standard+extra; 4:only eleID; 5:eleID+standard; 6: eleID+extra; 7: standard+extra+eleID")
 options.register('doTreeOnly',
-                 1, #default value False
+                 0, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
+options.register('doHighEta',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "bool: doHighEta=1 true, doHighEta=0 false")
 options.register('pdfSyst',
                  0, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -71,6 +76,7 @@ HLTFilter = False
 ZSkim = False
 WSkim = False
 ZSCSkim = False
+HighEtaSkim = False
 
 if(options.skim=="ZSkim"):
     ZSkim=True
@@ -81,6 +87,8 @@ elif(options.skim=="ZSCSkim"):
 elif(options.skim=="fromWSkim"):
     print "[INFO] producing from WSkim files (USER format)"
     WSkim=False
+elif(options.skim=="HighEtaSkim"):
+    HighEtaSkim=True
 else:
     if(options.type=="ALCARAW"):
         print "[ERROR] no skim selected"
@@ -379,13 +387,19 @@ elif(WSkim):
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
     process.zNtupleDumper.isWenu=cms.bool(True)
 elif(ZSCSkim):
-    process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
-
+    #process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
+    process.NtupleFilterSeq= cms.Sequence(process.ZSCFilterSeq)
+elif(HighEtaSkim):
+    process.NtupleFilterSeq= cms.Sequence(process.HighEtaFilterSeq)
 else:
     process.NtupleFilterSeq = cms.Sequence()
 
 if(options.skim=="partGun"):
     process.zNtupleDumper.isPartGun = cms.bool(True)
+
+if(options.doTree>0 and options.doHighEta>0):
+    process.zNtupleDumper.doHighEta=cms.bool(True)
+
 
 #process.NtupleFilter)
 #process.filterSeq *= process.NtupleFilter
@@ -550,7 +564,8 @@ process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.f
                                                  process.seqALCARECOEcalCalElectron)
 process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
                                                    process.FilterSeq *
-                                                   ~process.ZeeFilter * process.ZSCFilterSeq *
+                                                   #~process.ZeeFilter * process.ZSCFilterSeq *
+                                                   process.ZSCFilterSeq *
                                                    process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalElectron)
 
@@ -605,6 +620,10 @@ process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHit
 process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
 process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
 
+if(options.doTree>0 and options.doHighEta>0):
+  process.zNtupleDumper.recHitCollectionEE = cms.InputTag("reducedEcalRecHitsEE")
+  process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower")
+  process.zNtupleDumper.PhotonCollection = cms.InputTag("HighEtaPhotons")
 
 ############### JSON Filter
 if((options.doTree>0 and options.doTreeOnly==0)):
