@@ -1285,7 +1285,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     seedYSCEle[index]=0;
   }
 
-std::cout << "point 31 energy = " << seedRecHit->energy() << std::endl;
   seedEnergySCEle[index]=seedRecHit->energy();
   if(isMC) seedLCSCEle[index]=-10;
   else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
@@ -1430,8 +1429,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 
   //checks
 
-std::cout << "point 1" << std::endl;
-
   PtEle[index]     = electron1.energy()/cosh(electron1.eta());
   chargeEle[index] = -100; // dont know the charge for SC
   etaEle[index]    = electron1.eta(); 
@@ -1439,14 +1436,10 @@ std::cout << "point 1" << std::endl;
 
   recoFlagsEle[index] = -1; // define -1 as a SC
 
-std::cout << "point 2" << std::endl;
-
   fbremEle[index] = -1; // no bremstrahlung for SC 
 
   etaSCEle[index] = electron1.eta(); // itself is a SC
   phiSCEle[index] = electron1.phi(); 
-
-  //const EcalRecHitCollection *recHits = (electron1.caloID().detector()==reco::CaloID::DET_ECAL_BARREL) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
 
   const EcalRecHitCollection *recHitsEB = clustertools->getEcalEBRecHitCollection();
   const EcalRecHitCollection *recHitsEE = clustertools->getEcalEERecHitCollection();
@@ -1454,18 +1447,12 @@ std::cout << "point 2" << std::endl;
   const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
   DetId seedDetId = electron1.seed()->seed();
-std::cout << "point 21 seed pointer " << int(seedDetId) << std::endl;
   if(seedDetId.null()){
-std::cout << "point 22 " << "No seed found" << std::endl;
     seedDetId = findSCseed(electron1);
   }
 
-  //EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-  //if(electron1.caloID().detector()==reco::CaloID::DET_ECAL_BARREL && seedDetId.subdetId() == EcalBarrel){
   if(seedDetId.subdetId() == EcalBarrel){
-std::cout << "point 23 seedRecHit in EB " <<  std::endl;
     EcalRecHitCollection::const_iterator seedRecHit = recHitsEB->find(seedDetId) ;
- if (seedRecHit==recHitsEB->end()) std::cout << "point 23 seedRecHit in EB: reach the end of recHitsEB" << std::endl;
     seedEnergySCEle[index]=seedRecHit->energy();
     if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
     else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
@@ -1473,44 +1460,30 @@ std::cout << "point 23 seedRecHit in EB " <<  std::endl;
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
-  //}else if(electron1.caloID().detector()==reco::CaloID::DET_ECAL_ENDCAP && seedDetId.subdetId() == EcalEndcap){
   }else if(seedDetId.subdetId() == EcalEndcap){
-std::cout << "point 23 seedRecHit in EE " <<  std::endl;
     EcalRecHitCollection::const_iterator seedRecHit = recHitsEE->find(seedDetId) ;
- if (seedRecHit==recHitsEE->end()) std::cout << "point 23 seedRecHit in EE: reach the end of recHitsEE" << std::endl;
-std::cout << "point 23 seedRecHit in EE get energy " <<  std::endl;
     EEDetId seedDetIdEcal = seedDetId;
-std::cout << "point 23 seedRecHit in EE: energy=" << seedRecHit->energy() << "; IX=" << seedDetIdEcal.ix() << "; IY=" << seedDetIdEcal.iy()  <<  std::endl;
     seedEnergySCEle[index]=seedRecHit->energy();
-std::cout << "point 23 seedRecHit in EE after get energy " <<  std::endl;
     if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
     else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
     else gainEle[index]=0;
     seedXSCEle[index]=seedDetIdEcal.ix();
     seedYSCEle[index]=seedDetIdEcal.iy();
   }else{ ///< this case is strange but happens for trackerDriven electrons
-std::cout << "point 23 seedRecHit in Nowhere " <<  std::endl;
     seedXSCEle[index]=0;
     seedYSCEle[index]=0;
   }
 
-std::cout << "point 3" << std::endl;
   if(isMC) seedLCSCEle[index]=-10;
   else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-std::cout << "point 32" << std::endl;
  
-std::cout << "point 33" << std::endl;
-
   float sumLC_E = 0.;
   float sumE = 0.;
   if( !isMC){
     std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
-std::cout << "point 34" << std::endl;
     for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
 	 detitr != hitsAndFractions_ele1.end(); detitr++ )
       {
-//std::cout << "point 35 " << detitr << std::endl;
-	//EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
         double hitenergy = 0;
         if ((detitr->first).subdetId() == EcalBarrel)
         {
@@ -1523,19 +1496,15 @@ std::cout << "point 34" << std::endl;
           hitenergy = oneHit->energy();
         }
         else hitenergy = 0;
-	//sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
-	//sumE    += oneHit->energy();
 	sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * hitenergy;
 	sumE    += hitenergy;
       }
     avgLCSCEle[index] = sumLC_E / sumE;
 
   } else     avgLCSCEle[index] = -10;
-std::cout << "point 36" << std::endl;
 
   nHitsSCEle[index] = electron1.size();
 
-std::cout << "point 4" << std::endl;
   // no MC matching has been considered yet for SCV
   energyMCEle[index]=-100;
   etaMCEle[index]=-100;
@@ -1588,7 +1557,6 @@ std::cout << "point 4" << std::endl;
   energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[index] = -1;
   energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[index] = -1;
 
-std::cout << "point 5" << std::endl;
   // change in an electron properties please, EleNewEnergyProducer
   e3x3SCEle[index] = clustertools->e3x3(*electron1.seed());
   e5x5SCEle[index] = clustertools->e5x5(*electron1.seed());
@@ -1597,7 +1565,6 @@ std::cout << "point 5" << std::endl;
   pModeGsfEle[index] = -100; // no track, though ..
   pAtVtxGsfEle[index] = -100;
 
-std::cout << "point 6" << std::endl;
   R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();
 
 
