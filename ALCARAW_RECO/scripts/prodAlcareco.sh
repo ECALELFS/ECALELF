@@ -250,7 +250,7 @@ storage_path=$STORAGE_PATH
 
 
 thresholdLevel=80
-eMail = shervin@cern.ch
+eMail = Hengne.Li@cern.ch
 
 [GRID]
 
