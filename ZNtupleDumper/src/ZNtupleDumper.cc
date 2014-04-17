@@ -713,12 +713,24 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
     }
 
-    // make combination
-    if (NHighEtaSCs==0) {
+    // make combination and decide if to fill tree
+    bool filltree=false;
+    if (NHighEtaSCs==0 && NPatEles>1) {
       // if no HighEtaSC, can only be two pat electrons
       TreeSetDiElectronVar(*PatEle1, *PatEle2);
+      filltree=true;
     }
-    else if (NHighEtaSCs>0) {
+    else if (NHighEtaSCs>0&&NPatEles==1){
+      TLorentzVector v4pat1, v4sc1;
+      v4pat1.SetPxPyPzE(PatEle1->px(), PatEle1->py(), PatEle1->pz(), PatEle1->energy());
+      v4sc1.SetPtEtaPhiM(HighEtaSC1->energy()/cosh(HighEtaSC1->eta()), HighEtaSC1->eta(), HighEtaSC1->phi(), HighEtaSC1->energy());
+      double mass = (v4pat1+v4sc1).M();
+      if (mass>55&&mass<125) {
+        TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
+        filltree=true;
+      } 
+    }
+    else if (NHighEtaSCs>0&&NPatEles>1) {
       // if at least one HighEtaSC, compare the mass, choose the nearest to the mass
       TLorentzVector v4pat1, v4pat2, v4sc1;
       v4pat1.SetPxPyPzE(PatEle1->px(), PatEle1->py(), PatEle1->pz(), PatEle1->energy());
@@ -728,20 +740,30 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       double mass13 = (v4pat1+v4sc1).M();
       double mass23 = (v4pat2+v4sc1).M();
       const double MZ=91.188;
+      // select the combination nearest to the Z mass, but always check if it is in the mass window.
       if (fabs(mass12-MZ)<fabs(mass13-MZ)&&fabs(mass12-MZ)<fabs(mass23-MZ)) {
-        TreeSetDiElectronVar(*PatEle1, *PatEle2);
+        if (mass12>55 && mass12<125){
+          TreeSetDiElectronVar(*PatEle1, *PatEle2);
+          filltree=true;
+        }
       }
       else if (fabs(mass13-MZ)<fabs(mass23-MZ)){
-        TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
+        if (mass13>55 && mass13<125){
+          TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
+          filltree=true;
+        }
       }
       else {
-        TreeSetDiElectronVar(*PatEle2, *HighEtaSC1);
+        if (mass23>55 && mass23<125){
+          TreeSetDiElectronVar(*PatEle2, *HighEtaSC1);
+          filltree=true;
+        }
       }
       
     }
 
     // fill the tree
-    tree->Fill();
+    if (filltree) tree->Fill();
 
   } else {
 
