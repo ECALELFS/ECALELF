@@ -47,6 +47,11 @@ options.register('doTreeOnly',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
+options.register('doHighEta',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "bool: doHighEta=1 true, doHighEta=0 false")
 options.register('pdfSyst',
                  0, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -387,6 +392,9 @@ else:
 if(options.skim=="partGun"):
     process.zNtupleDumper.isPartGun = cms.bool(True)
 
+if(options.doTree>0 and options.doHighEta>0):
+    process.zNtupleDumper.doHighEta=cms.bool(True)
+
 #process.NtupleFilter)
 #process.filterSeq *= process.NtupleFilter
 
@@ -605,6 +613,8 @@ process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHit
 process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
 process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
 
+if(options.doTree>0 and options.doHighEta>0):
+  process.zNtupleDumper.recHitCollectionEE = cms.InputTag("reducedEcalRecHitsEE")
 
 ############### JSON Filter
 if((options.doTree>0 and options.doTreeOnly==0)):
