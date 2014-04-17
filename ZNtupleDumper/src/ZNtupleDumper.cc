@@ -1255,6 +1255,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   phiSCEle[index] = electron1.superCluster()->phi();
 
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+  //const EcalRecHitColloection* recHitsEB = clustertools->getEcalEBRecHitCollection();
+  //const EcalRecHitColloection* recHitsEE = clustertools->getEcalEERecHitCollection();
+
   const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
   
   DetId seedDetId = electron1.superCluster()->seed()->seed();
@@ -1269,6 +1272,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
 
   if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
+ 
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
@@ -1442,9 +1446,10 @@ std::cout << "point 2" << std::endl;
   etaSCEle[index] = electron1.eta(); // itself is a SC
   phiSCEle[index] = electron1.phi(); 
 
-  const EcalRecHitCollection *recHits = (electron1.caloID().detector()==reco::CaloID::DET_ECAL_BARREL) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+  //const EcalRecHitCollection *recHits = (electron1.caloID().detector()==reco::CaloID::DET_ECAL_BARREL) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
 
-  recHits->sort();
+  const EcalRecHitCollection *recHitsEB = clustertools->getEcalEBRecHitCollection();
+  const EcalRecHitCollection *recHitsEE = clustertools->getEcalEERecHitCollection();
 
   const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
@@ -1455,32 +1460,45 @@ std::cout << "point 22 " << "No seed found" << std::endl;
     seedDetId = findSCseed(electron1);
   }
 
-  EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-  if (seedRecHit==recHits->end()) 
-std::cout << "point 23 seedRecHit pointer at End " <<  std::endl;
-  if(electron1.caloID().detector()==reco::CaloID::DET_ECAL_BARREL && seedDetId.subdetId() == EcalBarrel){
+  //EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
+  //if(electron1.caloID().detector()==reco::CaloID::DET_ECAL_BARREL && seedDetId.subdetId() == EcalBarrel){
+  if(seedDetId.subdetId() == EcalBarrel){
+std::cout << "point 23 seedRecHit in EB " <<  std::endl;
+    EcalRecHitCollection::const_iterator seedRecHit = recHitsEB->find(seedDetId) ;
+ if (seedRecHit==recHitsEB->end()) std::cout << "point 23 seedRecHit in EB: reach the end of recHitsEB" << std::endl;
+    seedEnergySCEle[index]=seedRecHit->energy();
+    if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
+    else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
+    else gainEle[index]=0;
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
-  }else if(electron1.caloID().detector()==reco::CaloID::DET_ECAL_ENDCAP && seedDetId.subdetId() == EcalEndcap){
+  //}else if(electron1.caloID().detector()==reco::CaloID::DET_ECAL_ENDCAP && seedDetId.subdetId() == EcalEndcap){
+  }else if(seedDetId.subdetId() == EcalEndcap){
+std::cout << "point 23 seedRecHit in EE " <<  std::endl;
+    EcalRecHitCollection::const_iterator seedRecHit = recHitsEE->find(seedDetId) ;
+ if (seedRecHit==recHitsEE->end()) std::cout << "point 23 seedRecHit in EE: reach the end of recHitsEE" << std::endl;
+std::cout << "point 23 seedRecHit in EE get energy " <<  std::endl;
     EEDetId seedDetIdEcal = seedDetId;
+std::cout << "point 23 seedRecHit in EE: energy=" << seedRecHit->energy() << "; IX=" << seedDetIdEcal.ix() << "; IY=" << seedDetIdEcal.iy()  <<  std::endl;
+    seedEnergySCEle[index]=seedRecHit->energy();
+std::cout << "point 23 seedRecHit in EE after get energy " <<  std::endl;
+    if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
+    else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
+    else gainEle[index]=0;
     seedXSCEle[index]=seedDetIdEcal.ix();
     seedYSCEle[index]=seedDetIdEcal.iy();
   }else{ ///< this case is strange but happens for trackerDriven electrons
+std::cout << "point 23 seedRecHit in Nowhere " <<  std::endl;
     seedXSCEle[index]=0;
     seedYSCEle[index]=0;
   }
 
 std::cout << "point 3" << std::endl;
-  seedEnergySCEle[index]=seedRecHit->energy();
-std::cout << "point 31 energy = " << seedRecHit->energy() << std::endl;
   if(isMC) seedLCSCEle[index]=-10;
   else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
 std::cout << "point 32" << std::endl;
-
-  if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
-  else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
-  else gainEle[index]=0;
+ 
 std::cout << "point 33" << std::endl;
 
   float sumLC_E = 0.;
@@ -1492,9 +1510,23 @@ std::cout << "point 34" << std::endl;
 	 detitr != hitsAndFractions_ele1.end(); detitr++ )
       {
 //std::cout << "point 35 " << detitr << std::endl;
-	EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-	sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
-	sumE    += oneHit->energy();
+	//EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
+        double hitenergy = 0;
+        if ((detitr->first).subdetId() == EcalBarrel)
+        {
+          EcalRecHitCollection::const_iterator oneHit = recHitsEB->find( (detitr -> first) ) ;
+          hitenergy = oneHit->energy();
+        }
+        else if ( (detitr->first).subdetId() == EcalEndcap)
+        {
+          EcalRecHitCollection::const_iterator oneHit = recHitsEE->find( (detitr -> first) ) ;
+          hitenergy = oneHit->energy();
+        }
+        else hitenergy = 0;
+	//sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
+	//sumE    += oneHit->energy();
+	sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * hitenergy;
+	sumE    += hitenergy;
       }
     avgLCSCEle[index] = sumLC_E / sumE;
 
