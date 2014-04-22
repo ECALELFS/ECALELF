@@ -43,7 +43,7 @@ options.register('doTree',
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "doTree=0: no tree; 1: standard tree; 2: onlyExtraTree; 3: standard+extra; 4:only eleID; 5:eleID+standard; 6: eleID+extra; 7: standard+extra+eleID")
 options.register('doTreeOnly',
-                 1, #default value False
+                 0, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
