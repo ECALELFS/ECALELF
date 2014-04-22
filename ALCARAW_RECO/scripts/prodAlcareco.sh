@@ -213,11 +213,17 @@ resource = type==SLC5_64
 datasetpath=${DATASETPATH}
 
 pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} doHighEta=${DOHIGHETA} jsonFile=${JSONFILE} 
+pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} doHighEta=${DOHIGHETA} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
 
 runselection=${RUNRANGE}
 split_by_run=0
 EOF
+
+if [ "$DOTREE" -gt "0" ]; then
+   cat >> tmp/alcareco.cfg <<EOF
+output_file=ntuple.root
+EOF
+fi 
 
 if [ "$TYPE" == "ALCARECOSIM" ];then
     cat >> tmp/alcareco.cfg <<EOF
@@ -293,6 +299,9 @@ if [ -n "${CHECK}" ];then
 #	mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper --noRemove --merged_remote_dir=/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
+   #else
+   #  mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
+   #fi   
 fi
 
 ################
