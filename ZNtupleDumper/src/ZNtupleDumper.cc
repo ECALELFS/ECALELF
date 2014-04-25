@@ -668,7 +668,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         PatEle1 = eleIter1;
       }
     }
-
+         
     // next leading
     if (NPatEles>1) {
       maxpT = -100000.0;
@@ -679,10 +679,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         if (eleIter1->pt() > maxpT) {
           maxpT = eleIter1->pt();
           PatEle2 = eleIter1;
-        }
-      }
-    }
-
+        }  
+      }  
+    }  
+          
     // look for 2 leading HighEta photons
     // leading
     if (NHighEtaSCs>0) {
@@ -697,7 +697,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         }
       }
     }
-
+         
     // next to leading
     if (NHighEtaSCs>1) {
       maxpT = -10000.0;
@@ -712,7 +712,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
         }
       }
     }
-
+       
     // make combination and decide if to fill tree
     bool filltree=false;
     if (NHighEtaSCs==0 && NPatEles>1) {
@@ -735,11 +735,12 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       TLorentzVector v4pat1, v4pat2, v4sc1;
       v4pat1.SetPxPyPzE(PatEle1->px(), PatEle1->py(), PatEle1->pz(), PatEle1->energy());
       v4pat2.SetPxPyPzE(PatEle2->px(), PatEle2->py(), PatEle2->pz(), PatEle2->energy());
-      v4sc1.SetPtEtaPhiM(HighEtaSC1->energy()/cosh(HighEtaSC1->eta()), HighEtaSC1->eta(), HighEtaSC1->phi(), HighEtaSC1->energy());
+      v4sc1.SetPtEtaPhiE(HighEtaSC1->energy()/cosh(HighEtaSC1->eta()), HighEtaSC1->eta(), HighEtaSC1->phi(), HighEtaSC1->energy());
       double mass12 = (v4pat1+v4pat2).M();
       double mass13 = (v4pat1+v4sc1).M();
       double mass23 = (v4pat2+v4sc1).M();
       const double MZ=91.188;
+
       // select the combination nearest to the Z mass, but always check if it is in the mass window.
       if (fabs(mass12-MZ)<fabs(mass13-MZ)&&fabs(mass12-MZ)<fabs(mass23-MZ)) {
         if (mass12>55 && mass12<125){
