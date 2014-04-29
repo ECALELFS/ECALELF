@@ -384,8 +384,8 @@ elif(WSkim):
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
     process.zNtupleDumper.isWenu=cms.bool(True)
 elif(ZSCSkim):
-    process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
-
+    #process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
+    process.NtupleFilterSeq= cms.Sequence(process.ZSCFilterSeq)
 else:
     process.NtupleFilterSeq = cms.Sequence()
 
@@ -558,7 +558,8 @@ process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.f
                                                  process.seqALCARECOEcalCalElectron)
 process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
                                                    process.FilterSeq *
-                                                   ~process.ZeeFilter * process.ZSCFilterSeq *
+                                                   #~process.ZeeFilter * process.ZSCFilterSeq *
+                                                   process.ZSCFilterSeq *
                                                    process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalElectron)
 

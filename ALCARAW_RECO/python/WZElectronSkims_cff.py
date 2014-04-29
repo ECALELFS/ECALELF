@@ -145,7 +145,8 @@ from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
 
 SCselector = cms.EDFilter("SuperClusterSelector",
                           src = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower'),
-                          cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
+                          #cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
+                          cut = cms.string('(energy*sin(position.theta)> 15)')
                           )
 
 ### Build candidates from all the merged superclusters
@@ -224,6 +225,8 @@ FilterSeq = cms.Sequence(eleSelSeq * (ZeeSelector + WenuSelector + EleSCSelector
 ZeeFilterSeq = cms.Sequence(eleSelSeq * ZeeSelector * ZeeFilter)    
 WenuFilterSeq = cms.Sequence(eleSelSeq * WenuSelector * WenuFilter)
 WZFilterSeq = cms.Sequence(eleSelSeq * WZFilter)
-ZSCFilterSeq    = cms.Sequence(ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
+#ZSCFilterSeq    = cms.Sequence(ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
+#ZSCFilterSeq    = cms.Sequence(eleSelSeq * EleSCSelector * ZSCFilter)
+ZSCFilterSeq    = cms.Sequence(eleSelSeq * EleSCSelector)
 
 

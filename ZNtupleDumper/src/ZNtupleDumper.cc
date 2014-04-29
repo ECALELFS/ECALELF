@@ -555,15 +555,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   } 
 
   // number of pat Electrons and SuperClusters
-  int NPatEles = 0; 
-  //int NEBSCs = 0; 
-  //int NEESCs = 0; 
-
-  NPatEles = (int)electronsHandle->size();
-  //if (doHighEta) {
-  //  NEBSCs = (int)EBSuperClustersHandle->size();
-  //  NEESCs = (int)EESuperClustersHandle->size();
-  //}
+  int NPatEles = (int)electronsHandle->size();
 
   // number of High Eta SuperClusters
   int NHighEtaSCs = 0;
@@ -657,15 +649,20 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     reco::SuperClusterCollection::const_iterator HighEtaSC2(NULL);
 
     // 
+    // number of high pT (>20GeV) Electrons
+    int NHighPtPatEles=0;
+    int NHighPtHighEtaSCs=0;
+
     // look for 2 leading pT pat electrons
     // leading
     double maxpT(-10000.0);
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
          eleIter1 != electronsHandle->end();
          eleIter1++){
-      if (eleIter1->pt() > maxpT) {
+      if (eleIter1->pt() > maxpT && eleIter1->pt()>20.0) {
         maxpT = eleIter1->pt();
         PatEle1 = eleIter1;
+        NHighPtPatEles++;
       }
     }
          
@@ -676,9 +673,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            eleIter1 != electronsHandle->end();
            eleIter1++){
         if (eleIter1 == PatEle1) continue;
-        if (eleIter1->pt() > maxpT) {
+        if (eleIter1->pt() > maxpT&& eleIter1->pt()>20.0) {
           maxpT = eleIter1->pt();
           PatEle2 = eleIter1;
+          NHighPtPatEles++;
         }  
       }  
     }  
@@ -691,9 +689,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            eleIter1 != EESuperClustersHandle->end();
            eleIter1++){
         if (fabs(eleIter1->eta()) < doHighEta_LowerEtaCut) continue;
-        if (eleIter1->energy()/cosh(eleIter1->eta()) > maxpT) {
-          maxpT = eleIter1->energy()/cosh(eleIter1->eta());
+        double pt=eleIter1->energy()/cosh(eleIter1->eta());
+        if (pt > maxpT&&pt>20.0) {
+          maxpT = pt;
           HighEtaSC1 = eleIter1;
+          NHighPtHighEtaSCs++;
         }
       }
     }
@@ -706,61 +706,28 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            eleIter1++){
         if (fabs(eleIter1->eta()) < doHighEta_LowerEtaCut) continue;
         if (eleIter1 == HighEtaSC1) continue;
-        if (eleIter1->energy()/cosh(eleIter1->eta()) > maxpT) {
-          maxpT = eleIter1->energy()/cosh(eleIter1->eta());
+        double pt=eleIter1->energy()/cosh(eleIter1->eta());
+        if (pt > maxpT&&pt>20.0) {
+          maxpT = pt;
           HighEtaSC2 = eleIter1;
+          NHighPtHighEtaSCs++;
         }
       }
     }
-       
+
+    //debug
+    //std::cout << "NHighPtPatEles=" << NHighPtPatEles << "; NHighPtHighEtaSCs=" << NHighPtHighEtaSCs << std::endl;       
     // make combination and decide if to fill tree
     bool filltree=false;
-    if (NHighEtaSCs==0 && NPatEles>1) {
-      // if no HighEtaSC, can only be two pat electrons
+    if (NHighPtPatEles>1) {
+      // if two pat electrons with high pT always use them
       TreeSetDiElectronVar(*PatEle1, *PatEle2);
       filltree=true;
     }
-    else if (NHighEtaSCs>0&&NPatEles==1){
-      TLorentzVector v4pat1, v4sc1;
-      v4pat1.SetPxPyPzE(PatEle1->px(), PatEle1->py(), PatEle1->pz(), PatEle1->energy());
-      v4sc1.SetPtEtaPhiM(HighEtaSC1->energy()/cosh(HighEtaSC1->eta()), HighEtaSC1->eta(), HighEtaSC1->phi(), HighEtaSC1->energy());
-      double mass = (v4pat1+v4sc1).M();
-      if (mass>55&&mass<125) {
-        TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
-        filltree=true;
-      } 
-    }
-    else if (NHighEtaSCs>0&&NPatEles>1) {
-      // if at least one HighEtaSC, compare the mass, choose the nearest to the mass
-      TLorentzVector v4pat1, v4pat2, v4sc1;
-      v4pat1.SetPxPyPzE(PatEle1->px(), PatEle1->py(), PatEle1->pz(), PatEle1->energy());
-      v4pat2.SetPxPyPzE(PatEle2->px(), PatEle2->py(), PatEle2->pz(), PatEle2->energy());
-      v4sc1.SetPtEtaPhiE(HighEtaSC1->energy()/cosh(HighEtaSC1->eta()), HighEtaSC1->eta(), HighEtaSC1->phi(), HighEtaSC1->energy());
-      double mass12 = (v4pat1+v4pat2).M();
-      double mass13 = (v4pat1+v4sc1).M();
-      double mass23 = (v4pat2+v4sc1).M();
-      const double MZ=91.188;
-
-      // select the combination nearest to the Z mass, but always check if it is in the mass window.
-      if (fabs(mass12-MZ)<fabs(mass13-MZ)&&fabs(mass12-MZ)<fabs(mass23-MZ)) {
-        if (mass12>55 && mass12<125){
-          TreeSetDiElectronVar(*PatEle1, *PatEle2);
-          filltree=true;
-        }
-      }
-      else if (fabs(mass13-MZ)<fabs(mass23-MZ)){
-        if (mass13>55 && mass13<125){
-          TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
-          filltree=true;
-        }
-      }
-      else {
-        if (mass23>55 && mass23<125){
-          TreeSetDiElectronVar(*PatEle2, *HighEtaSC1);
-          filltree=true;
-        }
-      }
-      
+    else if (NHighPtHighEtaSCs>0&&NHighPtPatEles==1){
+      // if only one pat electron and the SC is high pT enough, use this too, otherwise do not use.
+      TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
+      filltree=true;
     }
 
     // fill the tree
