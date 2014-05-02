@@ -31,7 +31,7 @@ options.register('skim',
                  "", 
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
-                 "type of skim: ZSkim, WSkim, partGun, fromWSkim (from USER format), EleSkim (at least one electron), ''")
+                 "type of skim: ZSkim, WSkim, partGun, fromWSkim (from USER format), EleSkim (at least one electron), HighEtaSkim (for higheta calibration) ''")
 options.register('jsonFile',
                  "",
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -76,6 +76,7 @@ HLTFilter = False
 ZSkim = False
 WSkim = False
 ZSCSkim = False
+HighEtaSkim = False
 
 if(options.skim=="ZSkim"):
     ZSkim=True
@@ -86,6 +87,8 @@ elif(options.skim=="ZSCSkim"):
 elif(options.skim=="fromWSkim"):
     print "[INFO] producing from WSkim files (USER format)"
     WSkim=False
+elif(options.skim=="HighEtaSkim"):
+    HighEtaSkim=True
 else:
     if(options.type=="ALCARAW"):
         print "[ERROR] no skim selected"
@@ -386,6 +389,8 @@ elif(WSkim):
 elif(ZSCSkim):
     #process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
     process.NtupleFilterSeq= cms.Sequence(process.ZSCFilterSeq)
+elif(HighEtaSkim):
+    process.NtupleFilterSeq= cms.Sequence(process.HighEtaFilterSeq)
 else:
     process.NtupleFilterSeq = cms.Sequence()
 
@@ -394,6 +399,7 @@ if(options.skim=="partGun"):
 
 if(options.doTree>0 and options.doHighEta>0):
     process.zNtupleDumper.doHighEta=cms.bool(True)
+
 
 #process.NtupleFilter)
 #process.filterSeq *= process.NtupleFilter
@@ -616,6 +622,8 @@ process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.
 
 if(options.doTree>0 and options.doHighEta>0):
   process.zNtupleDumper.recHitCollectionEE = cms.InputTag("reducedEcalRecHitsEE")
+  process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower")
+  process.zNtupleDumper.PhotonCollection = cms.InputTag("HighEtaPhotons")
 
 ############### JSON Filter
 if((options.doTree>0 and options.doTreeOnly==0)):

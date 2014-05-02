@@ -155,6 +155,7 @@ private:
 private:
   //------------------------------ Handles
   edm::Handle<std::vector<pat::Electron> > electronsHandle;
+  edm::Handle<reco::PhotonCollection> PhotonsHandle;
   edm::Handle<std::vector<reco::SuperCluster>> EBSuperClustersHandle;
   edm::Handle<std::vector<reco::SuperCluster>> EESuperClustersHandle;
   edm::Handle<reco::BeamSpot> bsHandle;
@@ -173,6 +174,7 @@ private:
   edm::InputTag BeamSpotTAG;
   // input tag for electrons
   edm::InputTag electronsTAG;
+  edm::InputTag PhotonsTAG;
   edm::InputTag ZCandidateTAG;
   edm::InputTag recHitCollectionEBTAG;
   edm::InputTag recHitCollectionEETAG;
@@ -437,6 +439,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   vtxCollectionTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
   BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
   electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
+  PhotonsTAG(iConfig.getParameter<edm::InputTag>("PhotonCollection")),
   //  ZCandidateTAG(iConfig.getParameter<edm::InputTag>("ZCandidateCollection")),
   recHitCollectionEBTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEB")),
   recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
@@ -512,6 +515,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //------------------------------ electrons
   iEvent.getByLabel(electronsTAG, electronsHandle);
 
+  //------------------------------ photons
+  iEvent.getByLabel(PhotonsTAG, PhotonsHandle);
+
   //------------------------------ SuperClusters
   iEvent.getByLabel(EBSuperClustersTAG, EBSuperClustersHandle);
   iEvent.getByLabel(EESuperClustersTAG, EESuperClustersHandle);
@@ -569,11 +575,24 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
+  // number of HighEta Photons
+  int NHighEtaPhotons = 0;
+  if (doHighEta) {
+    for( reco::PhotonCollection::const_iterator eleIter1 = PhotonsHandle->begin();
+         eleIter1 != PhotonsHandle->end();
+         eleIter1++){
+      if (fabs(eleIter1->superCluster()->eta()) > doHighEta_LowerEtaCut ) {
+        NHighEtaPhotons++;
+      }
+    }
+  }
+
   // at least one Pat::Electron
   if (NPatEles<1) return;
 
   // at least two EM particles if doHighEta
-  if (doHighEta && (NPatEles+NHighEtaSCs)<2) return;
+  //if (doHighEta && (NPatEles+NHighEtaSCs)<2) return;
+  if (doHighEta && (NPatEles+NHighEtaPhotons)<2) return;
 
   // at least two pat Electrons if not do HighEta and not isWenu
   if (!doHighEta && !isWenu && NPatEles<2 ) return;
@@ -645,13 +664,21 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     // iterators storing pat Electons and HighEta SCs
     pat::ElectronCollection::const_iterator PatEle1(NULL);
     pat::ElectronCollection::const_iterator PatEle2(NULL);
+
+    // iterators storing HighEta SCs
     reco::SuperClusterCollection::const_iterator HighEtaSC1(NULL);
     reco::SuperClusterCollection::const_iterator HighEtaSC2(NULL);
+ 
+    // iterators storing HighEta Photons
+    reco::PhotonCollection::const_iterator Photon1(NULL);
+    reco::PhotonCollection::const_iterator Photon2(NULL);
+    
 
     // 
     // number of high pT (>20GeV) Electrons
     int NHighPtPatEles=0;
     int NHighPtHighEtaSCs=0;
+    int NHighPtHighEtaPhotons=0;
 
     // look for 2 leading pT pat electrons
     // leading
@@ -689,7 +716,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            eleIter1 != EESuperClustersHandle->end();
            eleIter1++){
         if (fabs(eleIter1->eta()) < doHighEta_LowerEtaCut) continue;
-        double pt=eleIter1->energy()/cosh(eleIter1->eta());
+        //double pt=eleIter1->energy()/cosh(eleIter1->eta());
+        double pt=eleIter1->energy()*sin(eleIter1->position().theta());
         if (pt > maxpT&&pt>20.0) {
           maxpT = pt;
           HighEtaSC1 = eleIter1;
@@ -706,11 +734,44 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            eleIter1++){
         if (fabs(eleIter1->eta()) < doHighEta_LowerEtaCut) continue;
         if (eleIter1 == HighEtaSC1) continue;
-        double pt=eleIter1->energy()/cosh(eleIter1->eta());
+        //double pt=eleIter1->energy()/cosh(eleIter1->eta());
+        double pt=eleIter1->energy()*sin(eleIter1->position().theta());
         if (pt > maxpT&&pt>20.0) {
           maxpT = pt;
           HighEtaSC2 = eleIter1;
           NHighPtHighEtaSCs++;
+        }
+      }
+    }
+
+    // look for 2 leading pT photons
+    // leading
+    if (NHighEtaPhotons>0) {
+      maxpT = -10000.0;
+      for( reco::PhotonCollection::const_iterator eleIter1 = PhotonsHandle->begin();
+           eleIter1 != PhotonsHandle->end();
+           eleIter1++){
+        if (fabs(eleIter1->superCluster()->eta()) < doHighEta_LowerEtaCut) continue;
+        if (eleIter1->pt() > maxpT && eleIter1->pt()>20.0) {
+          maxpT = eleIter1->pt();
+          Photon1 = eleIter1;
+          NHighPtHighEtaPhotons++;
+        }
+      }
+    }
+
+    // next to leading
+    if (NHighEtaPhotons>1) {
+      maxpT = -10000.0;
+      for( reco::PhotonCollection::const_iterator eleIter1 = PhotonsHandle->begin();
+           eleIter1 != PhotonsHandle->end();
+           eleIter1++){
+        if (fabs(eleIter1->superCluster()->eta()) < doHighEta_LowerEtaCut) continue;
+        if (eleIter1 == Photon1) continue;
+        if (eleIter1->pt() > maxpT && eleIter1->pt()>20.0) {
+          maxpT = eleIter1->pt();
+          Photon2 = eleIter1;
+          NHighPtHighEtaPhotons++;
         }
       }
     }
@@ -721,14 +782,27 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     bool filltree=false;
     if (NHighPtPatEles>1) {
       // if two pat electrons with high pT always use them
-      TreeSetDiElectronVar(*PatEle1, *PatEle2);
-      filltree=true;
+      float mass=(PatEle1->p4()+PatEle2->p4()).mass();
+      if(mass > 55 && mass < 125) {
+        TreeSetDiElectronVar(*PatEle1, *PatEle2);
+        filltree=true;
+      }
     }
-    else if (NHighPtHighEtaSCs>0&&NHighPtPatEles==1){
-      // if only one pat electron and the SC is high pT enough, use this too, otherwise do not use.
-      TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
-      filltree=true;
+    else if (NHighPtHighEtaPhotons>0&&NHighPtPatEles==1){
+      // if only one pat electron and the Photon is high pT enough, use this too, otherwise do not use.
+      float mass=(PatEle1->p4()+Photon1->p4()).mass();
+      if(mass > 55 && mass < 125) {
+        TreeSetDiElectronVar(*PatEle1, *(Photon1->superCluster()));
+        filltree=true;
+      }
     }
+    //else if (NHighPtHighEtaSCs>0&&NHighPtPatEles==1){
+    //  // if only one pat electron and the SC is high pT enough, use this too, otherwise do not use.
+    //  TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
+    //  filltree=true;
+    //}
+
+     
 
     // fill the tree
     if (filltree) tree->Fill();
@@ -1674,7 +1748,6 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
  
   return;
 }
-
 
 void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const reco::SuperCluster& electron2){
 
