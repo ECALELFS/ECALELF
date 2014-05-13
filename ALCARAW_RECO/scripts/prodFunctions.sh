@@ -29,8 +29,10 @@ setStoragePath(){
 	caf* | T2_CH_CERN)
 	    case $2 in
 		caf|lsf)
-		    STORAGE_ELEMENT=caf.cern.ch	
-		    STORAGE_PATH=root://eoscms//eos/cms/store
+		    STORAGE_ELEMENT=srm-eoscms.cern.ch
+		    STORAGE_PATH=/srm/v2/server?SFN=/eos/cms/store
+		#STORAGE_ELEMENT=caf.cern.ch	
+		#STORAGE_PATH=root://eoscms//eos/cms/store
 		    ;;
 	    #glite | glidein)
 		remoteGlidein|condor)
