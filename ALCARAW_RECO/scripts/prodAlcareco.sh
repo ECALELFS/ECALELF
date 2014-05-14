@@ -18,6 +18,9 @@ OUTPUTFILE=alcareco
 crabFile=tmp/alcareco.cfg
 DOTREE=1
 DOHIGHETA=0
+WHITELIST="T2_CH,T2_US,T2_IT,T2_DE"
+NJOBS=10
+NEVENTS_TOTAL=0
 
 usage(){
     echo "`basename $0` options"
@@ -36,7 +39,7 @@ usage(){
     echo "    --check"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
-    echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree"
+    echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree only, 2=extratree-only, 3=standard+extra trees"
     echo "    --doHighEta arg (=${DOHIGHETA}): 0=not use HighEta SC; 1= use them"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
@@ -179,6 +182,10 @@ case $SKIM in
 	;;
 esac
 
+
+#get total n events in dataset
+NEVENTS_TOTAL=`das_client.py --query="dataset=$DATASETPATH | grep dataset.nevents" --limit=0`
+
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
 
@@ -210,8 +217,20 @@ resource = type==SLC5_64
 
 
 [CMSSW]
-datasetpath=${DATASETPATH}
+EOF
 
+if [ "$TYPE" == "ALCARECOSIM" ];then
+  cat >> ${crabFile} <<EOF
+allow_NonProductionCMSSW=1
+datasetpath=None
+EOF
+else
+  cat >> ${crabFile} <<EOF
+datasetpath=${DATASETPATH}
+EOF
+fi
+
+cat >> ${crabFile} <<EOF
 pset=python/alcaSkimming.py
 pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} doHighEta=${DOHIGHETA} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
 
@@ -220,32 +239,32 @@ split_by_run=0
 EOF
 
 if [ "$DOTREE" -gt "0" ]; then
-   cat >> tmp/alcareco.cfg <<EOF
+   cat >> ${crabFile} <<EOF
 output_file=ntuple.root
 EOF
 fi 
 
-if [ "$TYPE" == "ALCARECOSIM" ];then
-    cat >> tmp/alcareco.cfg <<EOF
-total_number_of_events = -1
-events_per_job=${EVENTS_PER_JOB}
-EOF
 
+if [ "$TYPE" == "ALCARECOSIM" ];then
+    cat >> ${crabFile} <<EOF
+total_number_of_events=${NEVENTS_TOTAL}
+number_of_jobs=${NJOBS}
+EOF
 else
-    cat >> tmp/alcareco.cfg <<EOF
+    cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 EOF
 fi
 
 if [ -n "${DEVEL_RELEASE}" ]; then
-cat >> tmp/alcareco.cfg <<EOF
+cat >> ${crabFile} <<EOF
 allow_NonProductionCMSSW = 1
 EOF
 fi
 
 ###
-cat >> tmp/alcareco.cfg <<EOF
+cat >> ${crabFile} <<EOF
 #output_file=${OUTFILES}
 get_edm_output=1
 check_user_remote_dir=1
@@ -259,24 +278,30 @@ local_stage_out = 1
 storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
-
+script_exe=initdata.sh
 
 thresholdLevel=80
 eMail = Hengne.Li@cern.ch
 
 [GRID]
-
 rb = HC
 rb = CERN
 proxy_server = myproxy.cern.ch
 #se_white_list=$WHITELIST
 se_black_list=$BLACKLIST
+#data_location_override = se_white_list
+
 EOF
 
 
 
 if [ -n "${CREATE}" ];then
 crab -cfg ${crabFile} -create || exit 1
+
+ if [ "$TYPE" == "ALCARECOSIM" ];then
+
+ 
+
 ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
 #crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
 fi
