@@ -1,13 +1,13 @@
 #!/bin/sh
 
 usage(){
-  echo "`basename $0` -d datapath -u ui_working_dir -n njobs "
+  echo "`basename $0` -d datapath -n njobs -o outputfile "
 }
 
 
 
 #------------------------------ parsing
-while getopts "hd:d:u:n:" OPTION;
+while getopts "hd:d:n:o:" OPTION;
 do
      case $OPTION in
          h)
@@ -17,11 +17,11 @@ do
          d)
              DATAPATH=$OPTARG
              ;;
-         u)
-             UI_WORKING_DIR=$OPTARG
-             ;;
          n)
              NJOBS=$OPTARG
+             ;;
+         o)
+             OUTPUTFILE=$OPTARG
              ;;
          ?)
              usage
@@ -39,18 +39,17 @@ if [ -z "$DATAPATH" ];then
     exit 1
 fi
 
-if [ -z "$UI_WORKING_DIR" ];then
-    echo "[ERROR] UI_WORKING_DIR not defined" >> /dev/stderr
-    usage >> /dev/stderr
-    exit 1
-fi
-
 if [ -z "$NJOBS" ];then
     echo "[ERROR] NJOBS not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
 fi
 
+if [ -z "$OUTPUTFILE" ];then
+    echo "[ERROR] OUTPUTFILE not defined" >> /dev/stderr
+    usage >> /dev/stderr
+    exit 1
+fi
 
 # get the list of files
 if [ -e _filelist.txt ]; then
@@ -76,11 +75,11 @@ NFILES_PERJOB2=$(( NFILES_TOTAL % NFILES_PERJOB1 ))  # N files for the last job
 echo "NJOBS=$NJOBS; NFILES_PERJOB1=$NFILES_PERJOB1; NFILES_PERJOB2=$NFILES_PERJOB2"
 
 #============================== Writing the argumets file
-if [ ! -d "$UI_WORKING_DIR/share" ]; then
-  mkdir -p $UI_WORKING_DIR/share;
+if [ -e $OUTPUTFILE ]; then
+  rm $OUTPUTFILE
 fi
 
-ARGUMENT=$UI_WORKING_DIR/share/arguments.xml
+ARGUMENT=$OUTPUTFILE
 
 #begin the argument file
 echo "<arguments>" > $ARGUMENT
@@ -120,11 +119,10 @@ do
 done
 
 # end the argument file
-echo "<arguments>" >> $ARGUMENT
+echo "</arguments>" >> $ARGUMENT
 
 
-
-
+rm _filelist.txt
 
 
 

@@ -19,7 +19,7 @@ crabFile=tmp/alcareco.cfg
 DOTREE=1
 DOHIGHETA=0
 WHITELIST="T2_CH,T2_US,T2_IT,T2_DE"
-NJOBS=10
+NJOBS=100
 NEVENTS_TOTAL=0
 
 usage(){
@@ -41,6 +41,7 @@ usage(){
     echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
     echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree only, 2=extratree-only, 3=standard+extra trees"
     echo "    --doHighEta arg (=${DOHIGHETA}): 0=not use HighEta SC; 1= use them"
+    echo "    --njobs nJobs : number of jobs, an integer"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
     echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
@@ -51,7 +52,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,doHighEta:,tutorial,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,doHighEta:,njobs:,tutorial,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -82,6 +83,7 @@ do
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 	--doTree) DOTREE=$2; shift; echo "[OPTION] Request doTree = ${DOTREE}";;
 	--doHighEta) DOHIGHETA=$2; shift; echo "[OPTION] Request doHighEta = ${DOHIGHETA}";;
+        --njobs) NJOBS=$2; shift; echo "[OPTION] Request njobs = ${NJOBS}";;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
     (*) break;;
@@ -184,7 +186,7 @@ esac
 
 
 #get total n events in dataset
-NEVENTS_TOTAL=`das_client.py --query="dataset=$DATASETPATH | grep dataset.nevents" --limit=0`
+#NEVENTS_TOTAL=`das_client.py --query="dataset=$DATASETPATH | grep dataset.nevents" --limit=0`
 
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
@@ -198,6 +200,13 @@ UI_WORKING_DIR=prod_alcareco/${DATASETNAME}/${RUNRANGE}
 
 if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`" == "0" ];then
     unset RUNRANGE
+fi
+
+# make argument.xml file if do MC
+if [ "$TYPE" == "ALCARECOSIM" ] && [ -n "${CREATE}" ];then
+  makeArgumentsWithDataPath.sh -d ${DATASETPATH} -n ${NJOBS} -o _tmp_argument.xml
+  #redefine the NJOBS
+  NJOBS=`grep "</Job>" _tmp_argument.xml | wc -l`
 fi
 
 
@@ -247,7 +256,7 @@ fi
 
 if [ "$TYPE" == "ALCARECOSIM" ];then
     cat >> ${crabFile} <<EOF
-total_number_of_events=${NEVENTS_TOTAL}
+total_number_of_events=${NJOBS}
 number_of_jobs=${NJOBS}
 EOF
 else
@@ -278,8 +287,15 @@ local_stage_out = 1
 storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
-script_exe=initdata.sh
+EOF
 
+if [ "$TYPE" == "ALCARECOSIM" ];then
+   cat >> ${crabFile} <<EOF
+script_exe=initdata.sh
+EOF
+fi
+
+cat >> ${crabFile} <<EOF
 thresholdLevel=80
 eMail = Hengne.Li@cern.ch
 
@@ -296,11 +312,11 @@ EOF
 
 
 if [ -n "${CREATE}" ];then
-crab -cfg ${crabFile} -create || exit 1
+ crab -cfg ${crabFile} -create || exit 1
 
  if [ "$TYPE" == "ALCARECOSIM" ];then
-
- 
+   mv _tmp_argument.xml ${UI_WORKING_DIR}/share/arguments.xml 
+ fi 
 
 ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
 #crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
