@@ -1948,8 +1948,10 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
       //      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
       EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
       if(oneHit==recHits->end()){
-	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
-	assert(0);
+	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() 
+             << " in subdetector " << (detitr->first).subdetId() << " bailing out";
+	//assert(0);
+        continue;
       }
       recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
       rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
@@ -1976,7 +1978,8 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
 	// std::cout << "icalconst set to: " << icalconst << std::endl;
       } else {
 	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
-	assert(0);
+	//assert(0);
+        continue;
       }
       // 3) get adc2GeV
       //float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ? 
