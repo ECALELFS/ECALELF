@@ -11,9 +11,9 @@ who am i
 whoami
 id -nu
 user=`whoami`
-cert=`ls -l $CMSSW_BASE/src/data/x509* | grep $user | awk {'print $9'}`
+cert=`ls -l x509* | grep $user | awk {'print $9'}`
 cert=`basename $cert`
-cp $CMSSW_BASE/src/data/$cert /tmp/$cert
+cp $cert /tmp/$cert
 
 echo "INITDATA:: user=$user ; cert=$cert ; CMSSW_BASE=$CMSSW_BASE "
 echo "INITDATA:: ls -l /tmp/$cert"
