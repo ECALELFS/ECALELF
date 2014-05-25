@@ -7,8 +7,6 @@
 <use name="RecoEcal/EgammaCoreTools"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="FWCore/ServiceRegistry"/> 
-<use   name="RecoEgamma/EgammaTools"/>
-#<Flags CppDefines="CMSSW42X=1"/>
+<use name="RecoEgamma/EgammaTools"/>
 <flags EDM_PLUGIN="1"/>
-<Flags CXXFLAGS="-g"/>
 

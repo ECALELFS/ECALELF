@@ -47,11 +47,6 @@ options.register('doTreeOnly',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
-options.register('doHighEta',
-                 0, #default value False
-                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
-                 VarParsing.VarParsing.varType.int,          # string, int, or float
-                 "bool: doHighEta=1 true, doHighEta=0 false")
 options.register('pdfSyst',
                  0, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -76,7 +71,6 @@ HLTFilter = False
 ZSkim = False
 WSkim = False
 ZSCSkim = False
-HighEtaSkim = False
 
 if(options.skim=="ZSkim"):
     ZSkim=True
@@ -87,8 +81,6 @@ elif(options.skim=="ZSCSkim"):
 elif(options.skim=="fromWSkim"):
     print "[INFO] producing from WSkim files (USER format)"
     WSkim=False
-elif(options.skim=="HighEtaSkim"):
-    HighEtaSkim=True
 else:
     if(options.type=="ALCARAW"):
         print "[ERROR] no skim selected"
@@ -389,8 +381,6 @@ elif(WSkim):
 elif(ZSCSkim):
     #process.NtupleFilterSeq= cms.Sequence(~process.ZeeFilter * process.ZSCFilterSeq)
     process.NtupleFilterSeq= cms.Sequence(process.ZSCFilterSeq)
-elif(HighEtaSkim):
-    process.NtupleFilterSeq= cms.Sequence(process.HighEtaFilterSeq)
 else:
     process.NtupleFilterSeq = cms.Sequence()
 
@@ -620,10 +610,6 @@ process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHit
 process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
 process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
 
-if(options.doTree>0 and options.doHighEta>0):
-  process.zNtupleDumper.recHitCollectionEE = cms.InputTag("reducedEcalRecHitsEE")
-  process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower")
-  process.zNtupleDumper.PhotonCollection = cms.InputTag("HighEtaPhotons")
 
 ############### JSON Filter
 if((options.doTree>0 and options.doTreeOnly==0)):

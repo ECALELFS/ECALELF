@@ -329,7 +329,7 @@ cat >> tmp/crab.cfg <<EOF
 runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
-pset=$CMSSW_BASE/src/Calibration/ALCARAW_RECO/python/alcaSkimming.py
+pset=python/alcaSkimming.py
 pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES} skim=${SKIM}
 get_edm_output=1
 output_file=${OUTFILES}
@@ -341,11 +341,8 @@ use_parent=0
 
 [LSF]
 queue = 1nh
-resource = type==SLC5_64
-
 [CAF]
 queue = cmscaf1nd
-resource = type==SLC5_64
 
 
 [USER]
@@ -359,7 +356,7 @@ user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
 
 thresholdLevel=50
-eMail = Hengne.Li@cern.ch
+eMail = shervin@cern.ch
 
 [GRID]
 

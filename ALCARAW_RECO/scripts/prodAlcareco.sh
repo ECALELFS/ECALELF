@@ -5,7 +5,6 @@ source $CMSSW_BASE/src/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
 #------------------------------ default
 SKIM=none
 USEPARENT=0
-STORAGE_ELEMENT=T2_CH_CERN
 SCHEDULER=caf
 USESERVER=1
 TYPE=ALCARECO
@@ -18,9 +17,7 @@ OUTPUTFILE=alcareco
 crabFile=tmp/alcareco.cfg
 DOTREE=1
 DOHIGHETA=0
-WHITELIST="T2_CH,T2_US,T2_IT,T2_DE"
 NJOBS=100
-NEVENTS_TOTAL=0
 
 usage(){
     echo "`basename $0` options"
@@ -185,9 +182,6 @@ case $SKIM in
 esac
 
 
-#get total n events in dataset
-#NEVENTS_TOTAL=`das_client.py --query="dataset=$DATASETPATH | grep dataset.nevents" --limit=0`
-
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
 
@@ -203,15 +197,12 @@ if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`"
 fi
 
 # make argument.xml file if do MC
-if [ "$TYPE" == "ALCARECOSIM" ] && [ -n "${CREATE}" ];then
-  makeArgumentsWithDataPath.sh -d ${DATASETPATH} -n ${NJOBS} -o _tmp_argument.xml
-  #redefine the NJOBS
-  NJOBS=`grep "</Job>" _tmp_argument.xml | wc -l`
-fi
+#if [ "$TYPE" == "ALCARECOSIM" ] && [ -n "${CREATE}" ];then
+#  makeArgumentsWithDataPath.sh -d ${DATASETPATH} -n ${NJOBS} -o _tmp_argument.xml
+#  #redefine the NJOBS
+#  NJOBS=`grep "</Job>" _tmp_argument.xml | wc -l`
+#fi
 
-
-user=`whoami`
-cert=`ls -l /tmp/x509* | grep ${user} | awk {'print $9'}`
 
 #==============================
 cat > ${crabFile} <<EOF
@@ -222,22 +213,14 @@ scheduler = $SCHEDULER
 
 [LSF]
 queue = 1nd
-resource = type==SLC5_64
+#resource = type==SLC5_64
 [CAF]
 queue = cmscaf1nd
-resource = type==SLC5_64
+#resource = type==SLC5_64
 
 
 [CMSSW]
-EOF
-
-if [ "$TYPE" == "ALCARECOSIM" ];then
-  cat >> ${crabFile} <<EOF
-allow_NonProductionCMSSW=1
-datasetpath=None
-EOF
-else
-  cat >> ${crabFile} <<EOF
+cat >> ${crabFile} <<EOF
 datasetpath=${DATASETPATH}
 EOF
 fi
@@ -256,12 +239,16 @@ output_file=ntuple.root
 EOF
 fi 
 
-
 if [ "$TYPE" == "ALCARECOSIM" ];then
-    cat >> ${crabFile} <<EOF
-total_number_of_events=${NJOBS}
-number_of_jobs=${NJOBS}
+    cat >> tmp/alcareco.cfg <<EOF
+total_number_of_events = -1
+events_per_job=${EVENTS_PER_JOB}
 EOF
+#if [ "$TYPE" == "ALCARECOSIM" ];then
+#    cat >> ${crabFile} <<EOF
+#total_number_of_events=${NJOBS}
+#number_of_jobs=${NJOBS}
+#EOF
 else
     cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
@@ -292,16 +279,16 @@ user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
 EOF
 
-if [ "$TYPE" == "ALCARECOSIM" ];then
-   cat >> ${crabFile} <<EOF
-script_exe=initdata.sh
-additional_input_files=${cert}
-EOF
-fi
+#if [ "$TYPE" == "ALCARECOSIM" ];then
+#   cat >> ${crabFile} <<EOF
+#script_exe=initdata.sh
+#additional_input_files=${cert}
+#EOF
+#fi
 
 cat >> ${crabFile} <<EOF
 thresholdLevel=80
-eMail = Hengne.Li@cern.ch
+eMail = shervin@cern.ch
 
 [GRID]
 rb = HC
@@ -309,26 +296,25 @@ rb = CERN
 proxy_server = myproxy.cern.ch
 #se_white_list=$WHITELIST
 se_black_list=$BLACKLIST
-#data_location_override = se_white_list
 
 EOF
 
 
 
 if [ -n "${CREATE}" ];then
- crab -cfg ${crabFile} -create || exit 1
+    crab -cfg ${crabFile} -create || exit 1
 
- if [ "$TYPE" == "ALCARECOSIM" ];then
-   mv _tmp_argument.xml ${UI_WORKING_DIR}/share/arguments.xml 
- fi 
+ #if [ "$TYPE" == "ALCARECOSIM" ];then
+ #  mv _tmp_argument.xml ${UI_WORKING_DIR}/share/arguments.xml 
+ #fi 
  
 ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
 #crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
 
  #clean up extral lines
- awk ' /file_list=\"\"/ &&c++>0 {next} 1 ' ${UI_WORKING_DIR}/job/CMSSW.sh > _tmp_CMSSW.sh
- chmod +x _tmp_CMSSW.sh
- mv _tmp_CMSSW.sh ${UI_WORKING_DIR}/job/CMSSW.sh
+ #awk ' /file_list=\"\"/ &&c++>0 {next} 1 ' ${UI_WORKING_DIR}/job/CMSSW.sh > _tmp_CMSSW.sh
+ #chmod +x _tmp_CMSSW.sh
+ #mv _tmp_CMSSW.sh ${UI_WORKING_DIR}/job/CMSSW.sh
 fi
 
 if [ -n "$SUBMIT" ]; then
@@ -347,11 +333,11 @@ if [ -n "${CHECK}" ];then
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
 #    elif [ "$TYPE" == "ALCARECOSIM" ];then
 #	mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper --noRemove --merged_remote_dir=/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/
-    fi
+    #fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
-   #else
-   #  mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
-   #fi   
+    else
+	mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
+    fi   
 fi
 
 ################

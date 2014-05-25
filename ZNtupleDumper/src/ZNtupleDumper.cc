@@ -155,9 +155,7 @@ private:
 private:
   //------------------------------ Handles
   edm::Handle<std::vector<pat::Electron> > electronsHandle;
-  edm::Handle<reco::PhotonCollection> PhotonsHandle;
-  edm::Handle<std::vector<reco::SuperCluster>> EBSuperClustersHandle;
-  edm::Handle<std::vector<reco::SuperCluster>> EESuperClustersHandle;
+  edm::Handle<std::vector<reco::SuperCluster>> EESuperClustersHandle; //used only for high-eta 
   edm::Handle<reco::BeamSpot> bsHandle;
   edm::Handle<reco::VertexCollection> primaryVertexHandle;
   edm::ESHandle<CaloTopology> topologyHandle;
@@ -174,11 +172,8 @@ private:
   edm::InputTag BeamSpotTAG;
   // input tag for electrons
   edm::InputTag electronsTAG;
-  edm::InputTag PhotonsTAG;
-  edm::InputTag ZCandidateTAG;
   edm::InputTag recHitCollectionEBTAG;
   edm::InputTag recHitCollectionEETAG;
-  edm::InputTag EBSuperClustersTAG;
   edm::InputTag EESuperClustersTAG;
   // input rho
   edm::InputTag rhoTAG;
@@ -219,9 +214,6 @@ private:
   Float_t rho;            ///< rho fast jet
   Int_t   nPV;            ///< nVtx
   Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
-
-  // ZStat, 1: both electrons are pat Electrons, 2: one pat electron one SuperCluster
-  Int_t ZStat;
 
   // selection
   Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
@@ -386,7 +378,6 @@ private:
   void TreeSetSingleElectronVar(const reco::SuperCluster& electron1, int index);
   void TreeSetDiElectronVar(const pat::Electron& electron1, const pat::Electron& electron2);
   void TreeSetDiElectronVar(const pat::Electron& electron1, const reco::SuperCluster& electron2);
-  DetId findSCseed(const reco::SuperClusterRef& cluster);
   DetId findSCseed(const reco::SuperCluster& cluster);
 
   void InitExtraCalibTree(void);
@@ -441,11 +432,8 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   vtxCollectionTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
   BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
   electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
-  PhotonsTAG(iConfig.getParameter<edm::InputTag>("PhotonCollection")),
-  //  ZCandidateTAG(iConfig.getParameter<edm::InputTag>("ZCandidateCollection")),
   recHitCollectionEBTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEB")),
   recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
-  EBSuperClustersTAG(iConfig.getParameter<edm::InputTag>("EBSuperClusterCollection")),
   EESuperClustersTAG(iConfig.getParameter<edm::InputTag>("EESuperClusterCollection")),
   rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
   conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
@@ -514,14 +502,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //------------------------------ HLT
   iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
 
+  //------------------------------
+  clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
+					   recHitCollectionEETAG);  
+
   //------------------------------ electrons
   iEvent.getByLabel(electronsTAG, electronsHandle);
 
-  //------------------------------ photons
-  iEvent.getByLabel(PhotonsTAG, PhotonsHandle);
-
-  //------------------------------ SuperClusters
-  iEvent.getByLabel(EBSuperClustersTAG, EBSuperClustersHandle);
+  //------------------------------ SuperClusters (for high Eta studies)
   iEvent.getByLabel(EESuperClustersTAG, EESuperClustersHandle);
 
   // for conversions with full vertex fit
@@ -537,6 +525,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
+
+  if(doPdfSystTree && isMC){
+    TreeSetPdfSystVar(iEvent);
+  }
+
   
   // at least one of the triggers
   HLTfire=false;
@@ -562,49 +555,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   } 
 
-  // number of pat Electrons and SuperClusters
-  int NPatEles = (int)electronsHandle->size();
+  // count electrons: needed to avoid double counting events in Wenu and Zee samples
+  // in Wenu is required ONLY ONE tight electron 
+  // in Zee at least two loose electrons
+  // in particle gun case, the matching with the gen particle is required
 
-  // number of High Eta SuperClusters
-  int NHighEtaSCs = 0;
-  if (doHighEta) {
-    for( reco::SuperClusterCollection::const_iterator eleIter1 = EESuperClustersHandle->begin();
-         eleIter1 != EESuperClustersHandle->end();
-         eleIter1++){
-      if (fabs(eleIter1->eta())>doHighEta_LowerEtaCut) {
-        NHighEtaSCs++;
-      }
-    }
-  }
-
-  // number of HighEta Photons
-  int NHighEtaPhotons = 0;
-  if (doHighEta) {
-    for( reco::PhotonCollection::const_iterator eleIter1 = PhotonsHandle->begin();
-         eleIter1 != PhotonsHandle->end();
-         eleIter1++){
-      if (fabs(eleIter1->superCluster()->eta()) > doHighEta_LowerEtaCut ) {
-        NHighEtaPhotons++;
-      }
-    }
-  }
-
-  // at least one Pat::Electron
-  if (NPatEles<1) return;
-
-  // at least two EM particles if doHighEta
-  //if (doHighEta && (NPatEles+NHighEtaSCs)<2) return;
-  if (doHighEta && (NPatEles+NHighEtaPhotons)<2) return;
-
-  // at least two pat Electrons if not do HighEta and not isWenu
-  if (!doHighEta && !isWenu && NPatEles<2 ) return;
-
-  // move the clustertools initialization here after protections 
-  //------------------------------
-  clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
-					   recHitCollectionEETAG);  
-
-  // count electrons
   int nWP70 = 0; //only WP70
   int nWP90 = 0; //only WP90
   for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
@@ -659,161 +614,44 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   } else if (doHighEta&&!isWenu) {
 
-    // let's always only take 2
-    //_tnPar = 2;
-
-
+    //leading pt electron in EB (patElectrons should be pt-ordered)
     // iterators storing pat Electons and HighEta SCs
     pat::ElectronCollection::const_iterator PatEle1(NULL);
-    pat::ElectronCollection::const_iterator PatEle2(NULL);
+    for( PatEle1 = electronsHandle->begin();
+         eleIter1 != electronsHandle->end() && !eleIter1->isEB();
+         eleIter1++){
+    }
 
     // iterators storing HighEta SCs
+    // select the highest pt SC in the highEta region
     reco::SuperClusterCollection::const_iterator HighEtaSC1(NULL);
-    reco::SuperClusterCollection::const_iterator HighEtaSC2(NULL);
- 
-    // iterators storing HighEta Photons
-    reco::PhotonCollection::const_iterator Photon1(NULL);
-    reco::PhotonCollection::const_iterator Photon2(NULL);
+    double HighEtaSCPt=0;
+    for( reco::SuperClusterCollection::const_iterator iter = EESuperClustersHandle->begin();
+	 iter!= EESuperClustersHandle->end();
+	 iter++){
+        if (fabs(iter->eta()) < doHighEta_LowerEtaCut) continue;
+	float mass=(PatEle1->p4()+iter->p4()).mass();
+	if((mass < 55 || mass > 125)) continue;
+
+	double pt=iter->energy()/cosh(iter->eta());
+        if(HighEtaSCPt<pt){
+	  HighEtaSCPt=pt;
+	  HighEtaSC1=iter;
+	}
+    }
     
-
-    // 
-    // number of high pT (>20GeV) Electrons
-    int NHighPtPatEles=0;
-    int NHighPtHighEtaSCs=0;
-    int NHighPtHighEtaPhotons=0;
-
-    // look for 2 leading pT pat electrons
-    // leading
-    double maxpT(-10000.0);
-    for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
-         eleIter1 != electronsHandle->end();
-         eleIter1++){
-      if (eleIter1->pt() > maxpT && eleIter1->pt()>20.0) {
-        maxpT = eleIter1->pt();
-        PatEle1 = eleIter1;
-        NHighPtPatEles++;
-      }
-    }
-         
-    // next leading
-    if (NPatEles>1) {
-      maxpT = -100000.0;
-      for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
-           eleIter1 != electronsHandle->end();
-           eleIter1++){
-        if (eleIter1 == PatEle1) continue;
-        if (eleIter1->pt() > maxpT&& eleIter1->pt()>20.0) {
-          maxpT = eleIter1->pt();
-          PatEle2 = eleIter1;
-          NHighPtPatEles++;
-        }  
-      }  
-    }  
-          
-    // look for 2 leading HighEta photons
-    // leading
-    if (NHighEtaSCs>0) {
-      maxpT = -10000.0;
-      for( reco::SuperClusterCollection::const_iterator eleIter1 = EESuperClustersHandle->begin();
-           eleIter1 != EESuperClustersHandle->end();
-           eleIter1++){
-        if (fabs(eleIter1->eta()) < doHighEta_LowerEtaCut) continue;
-        double pt=eleIter1->energy()*sin(eleIter1->position().theta());
-        if (pt > maxpT&&pt>20.0) {
-          maxpT = pt;
-          HighEtaSC1 = eleIter1;
-          NHighPtHighEtaSCs++;
-        }
-      }
-    }
-         
-    // next to leading
-    if (NHighEtaSCs>1) {
-      maxpT = -10000.0;
-      for( reco::SuperClusterCollection::const_iterator eleIter1 = EESuperClustersHandle->begin();
-           eleIter1 != EESuperClustersHandle->end();
-           eleIter1++){
-        if (fabs(eleIter1->eta()) < doHighEta_LowerEtaCut) continue;
-        if (eleIter1 == HighEtaSC1) continue;
-        double pt=eleIter1->energy()*sin(eleIter1->position().theta());
-        if (pt > maxpT&&pt>20.0) {
-          maxpT = pt;
-          HighEtaSC2 = eleIter1;
-          NHighPtHighEtaSCs++;
-        }
-      }
-    }
-
-    // look for 2 leading pT photons
-    // leading
-    if (NHighEtaPhotons>0) {
-      maxpT = -10000.0;
-      for( reco::PhotonCollection::const_iterator eleIter1 = PhotonsHandle->begin();
-           eleIter1 != PhotonsHandle->end();
-           eleIter1++){
-        if (fabs(eleIter1->superCluster()->eta()) < doHighEta_LowerEtaCut) continue;
-        if (eleIter1->pt() > maxpT && eleIter1->pt()>20.0) {
-          maxpT = eleIter1->pt();
-          Photon1 = eleIter1;
-          NHighPtHighEtaPhotons++;
-        }
-      }
-    }
-
-    // next to leading
-    if (NHighEtaPhotons>1) {
-      maxpT = -10000.0;
-      for( reco::PhotonCollection::const_iterator eleIter1 = PhotonsHandle->begin();
-           eleIter1 != PhotonsHandle->end();
-           eleIter1++){
-        if (fabs(eleIter1->superCluster()->eta()) < doHighEta_LowerEtaCut) continue;
-        if (eleIter1 == Photon1) continue;
-        if (eleIter1->pt() > maxpT && eleIter1->pt()>20.0) {
-          maxpT = eleIter1->pt();
-          Photon2 = eleIter1;
-          NHighPtHighEtaPhotons++;
-        }
-      }
-    }
-
-    //debug
-    //std::cout << "NHighPtPatEles=" << NHighPtPatEles << "; NHighPtHighEtaSCs=" << NHighPtHighEtaSCs << std::endl;       
-    // make combination and decide if to fill tree
-    bool filltree=false;
-    if (NHighPtPatEles>1) {
-      // if two pat electrons with high pT always use them
-      float mass=(PatEle1->p4()+PatEle2->p4()).mass();
-      if(mass > 55 && mass < 125) {
-        TreeSetDiElectronVar(*PatEle1, *PatEle2);
-        if(doExtraCalibTree){
-          TreeSetExtraCalibVar(*PatEle1, *PatEle2);
-        }
-        filltree=true;
-      }
-    }
-    else if (NHighPtHighEtaPhotons>0&&NHighPtPatEles==1){
-      // if only one pat electron and the Photon is high pT enough, use this too, otherwise do not use.
-      float mass=(PatEle1->p4()+Photon1->p4()).mass();
-      if(mass > 55 && mass < 125) {
-        TreeSetDiElectronVar(*PatEle1, *(Photon1->superCluster()));
-        if(doExtraCalibTree){
-          TreeSetExtraCalibVar(*PatEle1, *(Photon1->superCluster()));
-        }
-        filltree=true;
-      }
-    }
-
-
-    // fill the tree
-    if (filltree) {
-      // fill the normal tree
-      tree->Fill();
-      // 
+    if(HighEtaSCPt!=NULL){
+      TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
       if(doExtraCalibTree){
-        extraCalibTree->Fill();
-      }
+          TreeSetExtraCalibVar(*PatEle1, *HighEtaSC1);
+        }
     }
-
+    // fill the normal tree
+    tree->Fill();
+    // 
+    if(doExtraCalibTree){
+      extraCalibTree->Fill();
+    }
   } else {
 
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
@@ -837,10 +675,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if(doEleIDTree){
 	  TreeSetEleIDVar(*eleIter1, *eleIter1);
 	  eleIDTree->Fill();
-	}
-	if(doPdfSystTree && isMC){
-	  TreeSetPdfSystVar(iEvent);
-	  //pdfSystTree->Fill();
 	}
       }else {
 	for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
@@ -876,17 +710,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
     }
   }
-  //   //     // riempi il tree degli eventi selezionati
-  //   std::cout << "N Zcandidates: " <<   ZCandidatesCollection->size() << std::endl;
-  //   for( pat::CompositeCandidateCollection::const_iterator ZIter = ZCandidatesCollection.begin();
-  //       ZIter != ZCandidatesCollection.end();
-  //       ZIter++){
-  //     std::cout << "Zcandidate: " << ZIter-ZCandidatesCollection.begin() << std::endl;
-  //     TreeSetDiElectronVar(*ZIter); 
-  //     tree->Fill();
-  
-  //   }
-
   delete clustertools;
   return;
 
@@ -1023,9 +846,6 @@ void ZNtupleDumper::InitNewTree(){
 
   tree->Branch("eleID",eleID, "eleID[2]/I");
   //  tree->Branch("nBCSCEle", nBCSCEle, "nBCSCEle[2]/I");
-
-  // ZStat, 1: both are pat electrons, 2: one pat electron one supercluster
-  tree->Branch("ZStat", &ZStat, "ZStat/I");
 
   tree->Branch("chargeEle",   chargeEle,    "chargeEle[2]/I");	//[nEle]
   tree->Branch("etaSCEle",      etaSCEle,       "etaSCEle[2]/F");	//[nSCEle]
@@ -1252,8 +1072,6 @@ void ZNtupleDumper::TreeSetDiElectronVar(pat::CompositeCandidate ZEE){
 
   TreeSetDiElectronVar(electron1, electron2);
 
-  ZStat=1;
-
   return;
 }
 
@@ -1278,26 +1096,6 @@ DetId ZNtupleDumper::findSCseed(const reco::SuperCluster& cluster){
   return seedDetId;
 }
 
-DetId ZNtupleDumper::findSCseed(const reco::SuperClusterRef& cluster){
-  DetId seedDetId;
-  float seedEnergy=0;
-  std::vector< std::pair<DetId, float> > hitsFractions = cluster->hitsAndFractions();
-  for(std::vector< std::pair<DetId, float> >::const_iterator hitsAndFractions_itr = hitsFractions.begin();
-      hitsAndFractions_itr != hitsFractions.end();
-      hitsAndFractions_itr++){
-    if(hitsAndFractions_itr->second > seedEnergy)
-      seedDetId=hitsAndFractions_itr->first;
-  }
-#ifdef DEBUG
-  std::cout << "[DEBUG findSCseed] seedDetIt: " << seedDetId.rawId() << std::endl 
-	    << *cluster << std::endl
-	    << *(cluster->seed()) << std::endl;
-#endif
-  if(seedDetId.null()){
-    std::cerr << "[ERROR] Invalid detID: " << *cluster << std::endl;
-  }
-  return seedDetId;
-}
 
 // a negative index means that the corresponding electron does not exist, fill with 0
 void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int index){
@@ -1345,7 +1143,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
 
   if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
- 
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
@@ -1504,7 +1301,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 
   PtEle[index]     = electron1.energy()/cosh(electron1.eta());
   chargeEle[index] = -100; // dont know the charge for SC
-  etaEle[index]    = electron1.eta(); 
+  etaEle[index]    = electron1.eta(); // eta = etaSC
   phiEle[index]    = electron1.phi();
 
   recoFlagsEle[index] = -1; // define -1 as a SC
@@ -1524,28 +1321,23 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
     seedDetId = findSCseed(electron1);
   }
 
+  EcalRecHitCollection::const_iterator seedRecHit = NULL;
   if(seedDetId.subdetId() == EcalBarrel){
-    EcalRecHitCollection::const_iterator seedRecHit = recHitsEB->find(seedDetId) ;
-    seedEnergySCEle[index]=seedRecHit->energy();
-    if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
-    else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
-    else gainEle[index]=0;
+    seedRecHit = recHitsEB->find(seedDetId) ;
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
   }else if(seedDetId.subdetId() == EcalEndcap){
-    EcalRecHitCollection::const_iterator seedRecHit = recHitsEE->find(seedDetId) ;
+    seedRecHit = recHitsEE->find(seedDetId) ;
     EEDetId seedDetIdEcal = seedDetId;
-    seedEnergySCEle[index]=seedRecHit->energy();
-    if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
-    else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
-    else gainEle[index]=0;
     seedXSCEle[index]=seedDetIdEcal.ix();
     seedYSCEle[index]=seedDetIdEcal.iy();
-  }else{ ///< this case is strange but happens for trackerDriven electrons
-    seedXSCEle[index]=0;
-    seedYSCEle[index]=0;
-  }
+  }else assert(false);
+
+  seedEnergySCEle[index]=seedRecHit->energy();
+  if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
+  else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
+  else gainEle[index]=0;
 
   if(isMC) seedLCSCEle[index]=-10;
   else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
@@ -1752,8 +1544,6 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
     //  r9weight[1]=r9Weight(etaEle[1], R9Ele[1]);
     //#endif
   }
- 
-  ZStat=1;
  
   return;
 }
