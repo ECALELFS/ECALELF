@@ -165,6 +165,7 @@ private:
   edm::Handle<reco::ConversionCollection> conversionsHandle;
   edm::Handle< reco::PFMETCollection > metHandle;
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
+  edm::Handle<edm::TriggerResults> WZSkimResultsHandle;
 
   //------------------------------ Input Tags
   // input tag for primary vertex
@@ -180,6 +181,7 @@ private:
   edm::InputTag conversionsProducerTAG;
   edm::InputTag metTAG;
   edm::InputTag triggerResultsTAG;
+  edm::InputTag WZSkimResultsTAG;
   std::vector< std::string> hltPaths;
 private:
   std::string foutName;
@@ -439,6 +441,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
   metTAG(iConfig.getParameter<edm::InputTag>("metCollection")),
   triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
+  WZSkimResultsTAG(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection")),
   hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
   foutName(iConfig.getParameter<std::string>("foutName")),
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
@@ -501,7 +504,23 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   //------------------------------ HLT
   iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
+  iEvent.getByLabel(WZSkimResultsTAG,  WZSkimResultsHandle);
 
+  //Check if it is Wenu, Z or ZSC event according to triggerResults
+  edm::TriggerNames HLTNames_ = iEvent.triggerNames(*WZSkimResultsHandle);
+  //unsigned int hltCount = triggerResultsHandle->size(); ///\todo bug, wrong size = 444
+  unsigned int hltCount=HLTNames_.size(); // should have the same size of WZSkimResultsHandle
+  for(unsigned int i=0; i < hltCount; i++){
+    if(WZSkimResultsHandle->accept(i)){
+      std::string hltName_str(HLTNames_.triggerName(i));
+      if(hltName_str.find("WElectron")!=std::string::npos)
+	isWenu=true;
+      else if(hltName_str.find("ZSCElectron")!=std::string::npos)
+	isHighEta=true;
+      // this paths are exclusive, then we can skip the check of the others
+      break;
+    }
+  }
   //------------------------------
   clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
 					   recHitCollectionEETAG);  
@@ -523,6 +542,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
 
 
+  //Here the HLTBits are filled. TriggerResults
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
 
@@ -1011,7 +1031,7 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
   int hltCount = triggerResultsHandle->size();
   HLTNames[0].clear();
   HLTBits.clear();
-  for (int i = 0 ; i != hltCount; ++i) {
+  for (int i = 0 ; i < hltCount; ++i) {
     std::string hltName_str(HLTNames_.triggerName(i));
     (HLTNames[0]).push_back(hltName_str);
     (HLTResults[0]).push_back(triggerResultsHandle->accept(i));
