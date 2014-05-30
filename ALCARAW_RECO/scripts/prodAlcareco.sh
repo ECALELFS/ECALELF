@@ -15,8 +15,7 @@ CREATE=yes
 SUBMIT=yes
 OUTPUTFILE=alcareco
 crabFile=tmp/alcareco.cfg
-DOTREE=1
-DOHIGHETA=0
+DOTREE=0
 NJOBS=100
 
 usage(){
@@ -37,7 +36,6 @@ usage(){
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
     echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree only, 2=extratree-only, 3=standard+extra trees"
-    echo "    --doHighEta arg (=${DOHIGHETA}): 0=not use HighEta SC; 1= use them"
     echo "    --njobs nJobs : number of jobs, an integer"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
@@ -49,7 +47,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,doHighEta:,njobs:,tutorial,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,njobs:,tutorial,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -79,7 +77,6 @@ do
         --tutorial)   echo "[OPTION] Activating the tutorial mode"; TUTORIAL=y;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 	--doTree) DOTREE=$2; shift; echo "[OPTION] Request doTree = ${DOTREE}";;
-	--doHighEta) DOHIGHETA=$2; shift; echo "[OPTION] Request doHighEta = ${DOHIGHETA}";;
         --njobs) NJOBS=$2; shift; echo "[OPTION] Request njobs = ${NJOBS}";;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
@@ -220,14 +217,13 @@ queue = cmscaf1nd
 
 
 [CMSSW]
-cat >> ${crabFile} <<EOF
 datasetpath=${DATASETPATH}
 EOF
-fi
+
 
 cat >> ${crabFile} <<EOF
 pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} doHighEta=${DOHIGHETA} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
+pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
 
 runselection=${RUNRANGE}
 split_by_run=0
@@ -335,8 +331,8 @@ if [ -n "${CHECK}" ];then
 #	mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper --noRemove --merged_remote_dir=/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/
     #fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
-    else
-	mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
+#    else
+#	mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
     fi   
 fi
 
