@@ -16,6 +16,7 @@ SUBMIT=y
 DOTREE=1
 PDFSYST=1
 SKIM=""
+OUTFILES="ntuple.root"
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -139,10 +140,11 @@ do
 	--scheduler) SCHEDULER=$2; shift;;
 	#--puWeight) PUWEIGHTFILE=$2; shift;;
 	--extraName) EXTRANAME=$2;shift;;
-	--doExtraCalibTree) let DOTREE=${DOTREE}+2;;
+        #name of the output files is hardcoded in ZNtupleDumper
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
 	--doEleIDTree) let DOTREE=${DOTREE}+4;;
 	--doPdfSystTree) let DOTREE=${DOTREE}+8;;
-	--noStandardTree) let DOTREE=${DOTREE}-1;;
+	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
 	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
@@ -293,11 +295,7 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 
 #${ENERGY}/
 #${DATASETNAME}/tmp-${DATASETNAME}-${RUNRANGE}
-if [ "`echo \"\" | awk \"{print $DOTREE%2}\"`" == "1" ];then 
-    OUTFILES=ntuple.root
-else
-    OUTFILES="extraID.root"
-fi
+OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 if [ ! -d "tmp" ];then mkdir tmp/; fi
 cat > tmp/crab.cfg <<EOF
@@ -330,7 +328,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 secondaryOutput=${OUTFILES} skim=${SKIM}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM}
 get_edm_output=1
 output_file=${OUTFILES}
 
@@ -390,10 +388,14 @@ if [ -n "${CHECK}" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
     else
-	mergeOutput.sh -u ${UI_WORKING_DIR} -g `basename $OUTFILES .root`
 	if [ "${isMC}" == "1" ];then
-	    mergeOutput.sh -u ${UI_WORKING_DIR} -g PUDumper
+	    OUTFILES="$OUTFILES PUDumper"
 	fi
+	for file in $OUTFILES
+	  do
+	  file=`basename $file .root`
+	  mergeOutput.sh -u ${UI_WORKING_DIR} -g $file
+	done
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 fi

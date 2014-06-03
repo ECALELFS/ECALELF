@@ -286,6 +286,9 @@ private:
   Float_t eSeedSCEle[2]; 
   Float_t pModeGsfEle[2];  ///< track momentum from Gsf Track (mode)
   Float_t pAtVtxGsfEle[2]; ///< momentum estimated at the vertex
+  Float_t trackMomentumErrorEle[2]; ///< track momentum error from standard electron method
+  Float_t pNormalizedChi2Ele[2];  ///< track normalized chi2 of the fit (GSF)
+
   Float_t R9Ele[2];      ///< e3x3/rawEnergySCEle
 
   Float_t invMass;
@@ -323,6 +326,7 @@ private:
 #endif
 
   //============================== ExtraCalibTree
+  TFile *extraCalibTreeFile;
   TTree *extraCalibTree;
   edm::Timestamp runTime_;
   Int_t nRecHitsEle[2];
@@ -777,8 +781,15 @@ void ZNtupleDumper::beginJob()
   if(doExtraCalibTree){
     //extraCalibTree = fs->make<TTree>("extraCalibTree","");
     // put the extraCalibTree into the default outfile
+    extraCalibTreeFile = new TFile("extraCalibTree.root", "recreate");
+    if(extraCalibTreeFile->IsZombie()){
+      throw cms::Exception("OutputError") <<  "Output tree for extra calib not created (Zombie): " << foutName;
+      return;
+    }
+    extraCalibTreeFile->cd();
+  
     extraCalibTree = new TTree("extraCalibTree", "extraCalibTree");
-    extraCalibTree->SetDirectory(tree_file);
+    extraCalibTree->SetDirectory(extraCalibTreeFile);
     InitExtraCalibTree();
   }
   if(doEleIDTree){
@@ -805,16 +816,19 @@ void ZNtupleDumper::endJob()
   
   if(tree->GetEntries()>0){
     tree->BuildIndex("runNumber","eventNumber");
-    if(doExtraCalibTree)  extraCalibTree->BuildIndex("runNumber","eventNumber");
     if(doEleIDTree)       eleIDTree->BuildIndex("runNumber","eventNumber");
   }
   // save the tree into the file
   tree_file->cd();
   tree->Write();
-  if(doExtraCalibTree)  extraCalibTree->Write();
   tree_file->Close();
   
-  
+  if(doExtraCalibTree){
+    extraCalibTree->BuildIndex("runNumber","eventNumber");
+    extraCalibTreeFile->cd();
+    extraCalibTree->Write();  
+    extraCalibTreeFile->Close();
+  }
 }
 
 // ------------ method called when starting to processes a run  ------------
@@ -968,6 +982,8 @@ void ZNtupleDumper::InitNewTree(){
   //tree->Branch("eSeedSCEle", eSeedSCEle, "eSeedSCEle[2]/F");
   tree->Branch("pModeGsfEle", pModeGsfEle, "pModeGsfEle[2]/F");
   tree->Branch("pAtVtxGsfEle", pAtVtxGsfEle, "pAtVtxGsfEle[2]/F");
+  tree->Branch("pNormalizedChi2Ele", pNormalizedChi2Ele, "pNormalizedChi2Ele[2]/F");
+  tree->Branch("trackMomentumErrorEle", trackMomentumErrorEle, "trackMomentumErrorEle[2]/F");
 
   tree->Branch("invMass",    &invMass,      "invMass/F");  
   tree->Branch("invMass_SC", &invMass_SC,   "invMass_SC/F");
@@ -1276,7 +1292,10 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   e3x3SCEle[index] = clustertools->e3x3(*electron1.superCluster()->seed());
   e5x5SCEle[index] = clustertools->e5x5(*electron1.superCluster()->seed());
   eSeedSCEle[index]= electron1.superCluster()->seed()->energy();
+
   pModeGsfEle[index] = electron1.gsfTrack()->pMode();
+  trackMomentumErrorEle[index] = electron1.trackMomentumError();
+  pNormalizedChi2Ele[index] = electron1.gsfTrack()->normalizedChi2();
   pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
 
   R9Ele[index] = e3x3SCEle[index]/electron1.superCluster()->rawEnergy();
@@ -1429,8 +1448,10 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   e5x5SCEle[index] = clustertools->e5x5(*electron1.seed());
   eSeedSCEle[index]= electron1.seed()->energy();
 
-  pModeGsfEle[index] = -100; // no track, though ..
-  pAtVtxGsfEle[index] = -100;
+  pModeGsfEle[index] = -1; // no track, though ..
+  trackMomentumErrorEle[index] = -1;
+  pNormalizedChi2Ele[index] = -1; 
+  pAtVtxGsfEle[index] = -1;
 
   R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();
 
