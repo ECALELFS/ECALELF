@@ -31,7 +31,7 @@ options.register('skim',
                  "", 
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
-                 "type of skim: ZSkim, WSkim, partGun, fromWSkim (from USER format), EleSkim (at least one electron), ''")
+                 "type of skim: ZSkim, WSkim, partGun, EleSkim (at least one electron), ''")
 options.register('jsonFile',
                  "",
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -67,7 +67,6 @@ print options
 # Use the options
 
 # Do you want to filter events? 
-HLTFilter = False
 ZSkim = False
 WSkim = False
 
@@ -75,26 +74,15 @@ if(options.skim=="ZSkim"):
     ZSkim=True
 elif(options.skim=="WSkim"):
     WSkim=True
-elif(options.skim=="fromWSkim"):
-    print "[INFO] producing from WSkim files (USER format)"
-    WSkim=False
 else:
     if(options.type=="ALCARAW"):
         print "[ERROR] no skim selected"
-#        sys.exit(-1)
+        sys.exit(-1)
     
-
-doTreeOnly=False
-if(options.doTree>0 and options.doTreeOnly==1):
-    print "doTreeOnly"
-    doTreeOnly=True
-
 
 MC = False  # please specify it if starting from AOD
 if(options.type == "ALCARAW"):
     processName = 'ALCASKIM'
-#    ZSkim = True
-#    WSkim = True
 elif(options.type == "ALCARERECO"):
     processName = 'ALCARERECO'
 elif(options.type == "ALCARECOSIM"):
@@ -107,9 +95,10 @@ else:
     print "[ERROR] wrong type defined"
     sys.exit(-1)
     
-
-
-if(doTreeOnly):
+doTreeOnly=False
+if(options.doTree>0 and options.doTreeOnly==1):
+    print "doTreeOnly"
+    doTreeOnly=True
     processName = processName+'DUMP'
     
 
@@ -125,10 +114,7 @@ if(doTreeOnly):
 
 
 process = cms.Process(processName)
-#process.prescaler = cms.EDFilter("Prescaler",
-#                                    prescaleFactor = cms.int32(prescale),
-#                                    prescaleOffset = cms.int32(0)
-#                                    )
+
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
@@ -198,6 +184,7 @@ process.MessageLogger.cerr = cms.untracked.PSet(
     ),
     threshold = cms.untracked.string('INFO')
     )
+
 if(options.isCrab==0):
     process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
@@ -289,9 +276,10 @@ else:
             process.GlobalTag.globaltag = 'POSTLS162_V5::All'
         else:
             print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
+            sys.exit(1)
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
-    
+        sys.exit(1)
 
 #Define the sequences
 #
@@ -350,34 +338,28 @@ process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
 process.filterSeq = cms.Sequence(process.MinEleNumberFilter)
 
 
-if (HLTFilter):
-    from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-    process.ZEEHltFilter = copy.deepcopy(hltHighLevel)
-    process.ZEEHltFilter.throw = cms.bool(False)
-    process.ZEEHltFilter.HLTPaths = ["HLT_Ele*"]
-    process.filterSeq *= process.ZEEHltFilter
-
-from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-process.NtupleFilter = copy.deepcopy(hltHighLevel)
-process.NtupleFilter.throw = cms.bool(False)
-process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZWElectron',
-                                  'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron'
-                                  ]
-process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
-
-if(ZSkim):
-    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
-    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
-                                      'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
-                                      ]
-    process.zNtupleDumper.isWenu=cms.bool(False)
-elif(WSkim):
-    #cms.Sequence(~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter)
-    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
-    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
-    process.zNtupleDumper.isWenu=cms.bool(True)
-else:
-    process.NtupleFilterSeq = cms.Sequence()
+#from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+#process.NtupleFilter = copy.deepcopy(hltHighLevel)
+#process.NtupleFilter.throw = cms.bool(False)
+#process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
+#                                  'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
+#                                  'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
+#                                  ]
+#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
+#
+#if(ZSkim):
+#    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
+#    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
+#                                      'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
+#                                      ]
+#elif(WSkim):
+#    #cms.Sequence(~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter)
+#    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
+#    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
+#    process.zNtupleDumper.isWenu=cms.bool(True)
+#else:
+#    process.NtupleFilterSeq = cms.Sequence()
+process.NtupleFilterSeq = cms.Sequence()
 
 if(options.skim=="partGun"):
     process.zNtupleDumper.isPartGun = cms.bool(True)
@@ -400,10 +382,10 @@ process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 try:
     EcalTrivialConditionRetriever
 except NameError:
-    print "well, it WASN'T defined after all!"
+    #print "well, it WASN'T defined after all!"
     process.trivialCond = cms.Sequence()
 else:
-    print "sure, it was defined."
+    print "** TrivialConditionRetriver defined"
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
 
@@ -415,16 +397,13 @@ else:
 
 process.rhoFastJetSeq = cms.Sequence()
 if((not options.type=="ALCARERECO") ):
-    if(options.skim!="fromWSkim"):
-        process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection) 
-    else:
-        process.rhoFastJetSeq = cms.Sequence()
+    process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection) 
 
 
 if(MC):
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC * process.zNtupleDumper)
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
 else:
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence * process.zNtupleDumper)
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
     
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -547,24 +526,8 @@ process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.f
                                                  process.pfIsoEgamma *
                                                  process.seqALCARECOEcalCalElectron)
 
-process.load('Calibration.HLTReporter.hltreporter_cfi')
-process.load('CommonTools.CandAlgos.genParticleCustomSelector_cfi')
-process.genParticleCustomSelector.pdgId=[ 11, -11]
-process.genParticleCustomSelector.minRapidity = cms.double(2.5)
-process.genParticleCustomSelector.maxRapidity = cms.double(3)
-process.genParticleCustomSelector.ptMin = cms.double(15)
-process.genParticleCustomSelector2 = process.genParticleCustomSelector.copy()
-process.genParticleCustomSelector2.minRapidity = cms.double(-3)
-process.genParticleCustomSelector2.maxRapidity = cms.double(-2.5)
-
-process.MinHighEtaGenEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                          src = cms.InputTag("genParticleCustomSelector"),
-                                          minNumber = cms.uint32(1)
-                                          )
 
 process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq *
-#                                                   process.genParticleCustomSelector *
-#                                                   process.MinHighEtaGenEleNumberFilter *
                                                    process.filterSeq * process.FilterSeq *
                                                    ~process.ZeeFilter * process.ZSCFilter * 
 #                                                   process.ZSCHltFilter *
@@ -572,7 +535,10 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq *
                                                    process.seqALCARECOEcalCalElectron ) #* process.hltReporter)
 
 
-process.NtuplePath = cms.Path(process.filterSeq *  process.NtupleFilterSeq * process.pdfWeightsSeq * process.ntupleSeq)
+process.NtuplePath = cms.Path(process.filterSeq * process.FilterSeq * process.WZFilter * process.NtupleFilterSeq 
+                              * process.pdfWeightsSeq * process.ntupleSeq)
+process.NtupleEndPath = cms.EndPath( process.zNtupleDumper)
+
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
@@ -683,14 +649,14 @@ if(options.type=='ALCARAW'):
 
 elif(options.type=='ALCARERECO'):
     if(doTreeOnly):
-        process.schedule = cms.Schedule(process.NtuplePath)
+        process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step,
-                                        process.NtuplePath)
+                                        process.NtuplePath, process.NtupleEndPath)
 
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
-        process.schedule = cms.Schedule(process.NtuplePath)
+        process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
         if(options.doTree==0):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
@@ -700,7 +666,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         else:
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
-                                            process.ALCARECOoutput_step,  process.NtuplePath
+                                            process.ALCARECOoutput_step,  process.NtuplePath, process.NtupleEndPath
                                             ) # fix the output modules
 
 
