@@ -216,6 +216,12 @@ ZSCFilter = cms.EDFilter("CandViewCountFilter",
                          src = cms.InputTag("EleSCSelector"),
                          minNumber = cms.uint32(1)
                          )
-FilterSeq = cms.Sequence(eleSelSeq * (ZeeSelector + WenuSelector + EleSCSelector))
 
+WZFilter = cms.EDFilter("CandViewCountFilter",
+                        src = cms.InputTag("WZSelector"),
+                        minNumber = cms.uint32(1)
+                        )
+
+FilterSeq = cms.Sequence(eleSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
+ZSCSingleEleFilterSeq = cms.Sequence(~ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
 
