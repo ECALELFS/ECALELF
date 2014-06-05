@@ -4,7 +4,7 @@ source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh
 eval `scramv1 runtime -sh`
 source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
 #voms-proxy-init -voms cms -out $HOME/gpi.out
-voms-proxy-init -voms cms
+voms-proxy-init -voms cms -valid 500:00
 
 user=`whoami`
 cert=`ls -l /tmp/x509* | grep heli | awk {'print $9'}`

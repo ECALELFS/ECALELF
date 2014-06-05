@@ -25,9 +25,10 @@ int main(int argc, char* argv[])
     }
   }
   
+  std::cout << "Input file : " << inrootfilename.c_str() << std::endl;
 
   // reading data
-  TFile* infile = new TFile(inrootfilename.c_str());
+  TFile* infile = TFile::Open(inrootfilename.c_str());
   TTree* tree = (TTree*)infile->Get("selected");
   TTree* extree = (TTree*)infile->Get("extraCalibTree");
   extree->BuildIndex("runNumber","eventNumber");

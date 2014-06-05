@@ -4,6 +4,11 @@
 echo "INITDATA:: PWD=$PWD"
 echo "INITDATA:: ls -l "
 ls -l
+echo "INITDATA:: ls -l /tmp/$cert"
+ls -l /tmp/$cert
+echo "INITDATA:: voms-proxy-info, before copy"
+voms-proxy-info
+
 echo "INITDATA:: ls -l $CMSSW_BASE/src/data/ "
 ls -l $CMSSW_BASE/src/data/
 echo "INITDATA:: who am i "
@@ -18,6 +23,9 @@ cp $cert /tmp/$cert
 echo "INITDATA:: user=$user ; cert=$cert ; CMSSW_BASE=$CMSSW_BASE "
 echo "INITDATA:: ls -l /tmp/$cert"
 ls -l /tmp/$cert
+
+echo "INITDATA:: voms-proxy-info, after copy"
+voms-proxy-info
 
 echo "INITDATA:: RUNTIME_AREA=$RUNTIME_AREA"
 echo "INITDATA:: NJob=$NJob"

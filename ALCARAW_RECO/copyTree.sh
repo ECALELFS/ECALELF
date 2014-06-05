@@ -11,17 +11,42 @@ g++ -o copyTree.exe copyTree.cc \
 tag="_EEn"
 sele="etaSCEle[1]<-2.2&&ZStat==2"
 
-#./copyTree.exe ntuple.root ntuple_out.root -1 "etaSCEle[1]>2.3"
-date
+#./copyTree.exe "root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB.root" \
+# ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB-EEN.root \
+#      -1 "etaSCEle[1]<-2.2&&ZStat==2" &
 
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012A-22Jan-v1-Extra.root copyTreeExtra_out_A${tag}.root -1 "$sele"
-date
+./copyTree.exe root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB.root  ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB-EEP.root \
+      -1 "etaSCEle[1]>2.2&&ZStat==2" &
 
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012B-22Jan-v1-Extra.root copyTreeExtra_out_B${tag}.root -1 "$sele"
-date
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012C-22Jan-v1-Extra.root copyTreeExtra_out_C${tag}.root -1 "$sele"
-date
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012D-22Jan-v1-Extra.root copyTreeExtra_out_D${tag}.root -1 "$sele"
+./copyTree.exe root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012C.root  ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012C-EEN.root \
+      -1 "etaSCEle[1]<-2.2&&ZStat==2" &
+
+./copyTree.exe root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012C.root  ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012C-EEP.root \
+      -1 "etaSCEle[1]>2.2&&ZStat==2" &
+
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root \
+#   ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012ABC-EEN.root \
+#      -1 "(runNumber==194533||runNumber==200519)&&etaSCEle[1]<-2.2&&ZStat==2" &
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root \
+#   ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012ABC-EEP.root  \
+#      -1 "(runNumber==194533||runNumber==200519)&&etaSCEle[1]>2.2&&ZStat==2" &
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root \
+#   ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012D-EEN.root  \
+#     -1 "(runNumber==206859)&&etaSCEle[1]<-2.2&&ZStat==2" &
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root \
+#   ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012D-EEP.root \
+#     -1 "(runNumber==206859)&&etaSCEle[1]>2.2&&ZStat==2" &
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB.root  -1 "runNumber==194533" &
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012C.root  -1 "runNumber==200519" &
+
+#./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4.root ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012D.root  -1 "runNumber==206859"&
+
 date
 
 #hadd copyTreeExtra_out_ABCD${tag}.root  \
