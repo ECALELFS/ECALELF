@@ -5,7 +5,7 @@
 // 
 /**\class EleSelectionProducers EleSelectionProducers.cc Calibration/EleSelectionProducers/src/EleSelectionProducers.cc
 
-*/
+ */
 //
 // Original Author:  Shervin Nourbakhsh,40 1-B24,+41227671643,
 //         Created:  Tue Jul 17 20:57:01 CEST 2012
@@ -15,6 +15,7 @@
 
 //#define DEBUG
 // system include files
+
 #include <memory>
 
 // user include files
@@ -106,17 +107,17 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   fiducial_selector("fiducial", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   WP70_PU_selector("WP70PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+		   chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   WP80_PU_selector("WP80PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+		   chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   WP90_PU_selector("WP90PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+		   chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   loose_selector("loose", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   medium_selector("medium", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   tight_selector("tight", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
   //register your products
   /* Examples
@@ -191,18 +192,19 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.getByLabel(rhoTAG,rhoHandle);
 
   //------------------------------ ISO DEPOSITS
+#ifdef CMSSW_7_0_X
+#else
   iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
   if(!chIsoValsHandle.isValid()){
     chIsoValsTAG=edm::InputTag(chIsoValsTAG.label().substr(0,chIsoValsTAG.label().find("PFIso",chIsoValsTAG.label().size()-6))+"Gsf", chIsoValsTAG.instance(), chIsoValsTAG.process());
     emIsoValsTAG=edm::InputTag(emIsoValsTAG.label().substr(0,emIsoValsTAG.label().find("PFIso",emIsoValsTAG.label().size()-6))+"Gsf", emIsoValsTAG.instance(), emIsoValsTAG.process());
     nhIsoValsTAG=edm::InputTag(nhIsoValsTAG.label().substr(0,nhIsoValsTAG.label().find("PFIso",nhIsoValsTAG.label().size()-6))+"Gsf", nhIsoValsTAG.instance(), nhIsoValsTAG.process());
 
-  iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
-
+    iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
   }
   iEvent.getByLabel(emIsoValsTAG, emIsoValsHandle);  
   iEvent.getByLabel(nhIsoValsTAG, nhIsoValsHandle);
-  
+#endif  
    
 #ifdef DEBUG
   std::cout << "[DEBUG] Starting loop over electrons" << std::endl;
@@ -350,14 +352,14 @@ EleSelectionProducers::fillDescriptions(edm::ConfigurationDescriptions& descript
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
-//   desc.add<edm::InputTag>("electronCollection","gsfElectrons");
-//   desc.add<edm::InputTag>("rhoFastJet","kt6PFJetsForRhoCorrection:rho");
-//   desc.add<edm::InputTag>("vertexCollection","offlinePrimaryVertices");
-//   desc.add<edm::InputTag>("conversionCollection","allConversions");
-//   desc.add<edm::InputTag>("BeamSpotCollection","offlineBeamSpot");
-//   desc.add<edm::InputTag>("chIsoVals","elPFIsoValueCharged03PFIdPFIso");
-//   desc.add<edm::InputTag>("emIsoVals","elPFIsoValueGamma03PFIdPFIso");
-//   desc.add<edm::InputTag>("nhIsoVals","elPFIsoValueNeutral03PFIdPFIso");
+  //   desc.add<edm::InputTag>("electronCollection","gsfElectrons");
+  //   desc.add<edm::InputTag>("rhoFastJet","kt6PFJetsForRhoCorrection:rho");
+  //   desc.add<edm::InputTag>("vertexCollection","offlinePrimaryVertices");
+  //   desc.add<edm::InputTag>("conversionCollection","allConversions");
+  //   desc.add<edm::InputTag>("BeamSpotCollection","offlineBeamSpot");
+  //   desc.add<edm::InputTag>("chIsoVals","elPFIsoValueCharged03PFIdPFIso");
+  //   desc.add<edm::InputTag>("emIsoVals","elPFIsoValueGamma03PFIdPFIso");
+  //   desc.add<edm::InputTag>("nhIsoVals","elPFIsoValueNeutral03PFIdPFIso");
   desc.setUnknown();
   descriptions.addDefault(desc);
 }

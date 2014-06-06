@@ -72,53 +72,53 @@
 #include "EgammaAnalysis/ElectronTools/interface/EGammaCutBasedEleId.h"
 //#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 /*
-___________________________________________________________________________________
+  ___________________________________________________________________________________
 
-Description:
-^^^^^^^^^^^^
-    This is a class that implements the Simple Cut Based Electron 
-    Identification cuts.  A more detailed description of the cuts
-    and the tuning method can be found on this twiki:
+  Description:
+  ^^^^^^^^^^^^
+  This is a class that implements the Simple Cut Based Electron 
+  Identification cuts.  A more detailed description of the cuts
+  and the tuning method can be found on this twiki:
     
-    https://twiki.cern.ch/twiki/bin/view/CMS/SimpleCutBasedEleID
+  https://twiki.cern.ch/twiki/bin/view/CMS/SimpleCutBasedEleID
 
-    For more information on how to calculate the magnetic field
-    look here:
+  For more information on how to calculate the magnetic field
+  look here:
 
-    https://twiki.cern.ch/twiki/bin/viewauth/CMS/ConversionBackgroundRejection
-___________________________________________________________________________________
+  https://twiki.cern.ch/twiki/bin/viewauth/CMS/ConversionBackgroundRejection
+  ___________________________________________________________________________________
 
-How to use:
-^^^^^^^^^^^
-    From CMSSW39 onwards you can simply define an instance of this class:
+  How to use:
+  ^^^^^^^^^^^
+  From CMSSW39 onwards you can simply define an instance of this class:
 
-      SimpleCutBasedElectronIDSelectionFunctor patSele95
-      (SimpleCutBasedElectronIDSelectionFunctor::relIso95);
+  SimpleCutBasedElectronIDSelectionFunctor patSele95
+  (SimpleCutBasedElectronIDSelectionFunctor::relIso95);
 
-    and get the decision with the following method:
-      pat::Electron *myElec = .....;
-      bool pass = patSele90(*myElec);
+  and get the decision with the following method:
+  pat::Electron *myElec = .....;
+  bool pass = patSele90(*myElec);
 
-    The various options are listed in the enumeration Version_t. There
-    is also the option to enter as a constructor argument a PSet
-    with your favorite cuts.
-___________________________________________________________________________________
+  The various options are listed in the enumeration Version_t. There
+  is also the option to enter as a constructor argument a PSet
+  with your favorite cuts.
+  ___________________________________________________________________________________
 
-    Contacts: Nikolaos Rompotis and Chris Seez
-    Nikolaos dot Rompotis at Cern dot ch
-    Chris    dot Seez     at Cern dot ch
+  Contacts: Nikolaos Rompotis and Chris Seez
+  Nikolaos dot Rompotis at Cern dot ch
+  Chris    dot Seez     at Cern dot ch
 
-    Author:    Nikolaos Rompotis
-               many thanks to Sal Rappoccio
-    Imperial College London
-    7 June 2010, first commit for CMSSW_3_6_1_patchX
-    11July 2010, implementing the ICHEP Egamma recommendation for 
-                 removing the Delta Eta cut in the endcaps
-    30Sept 2010, simplification of conversion rejection in CMSSW39X
-___________________________________________________________________________________
+  Author:    Nikolaos Rompotis
+  many thanks to Sal Rappoccio
+  Imperial College London
+  7 June 2010, first commit for CMSSW_3_6_1_patchX
+  11July 2010, implementing the ICHEP Egamma recommendation for 
+  removing the Delta Eta cut in the endcaps
+  30Sept 2010, simplification of conversion rejection in CMSSW39X
+  ___________________________________________________________________________________
 
 
-Strongly modified by Shervin
+  Strongly modified by Shervin
 */
 
 
@@ -157,14 +157,14 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
 
   // initialize it by using only the version name
-  SimpleCutBasedElectronIDSelectionFunctor(Version_t  version, 
-					   const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
-					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
-					   const edm::Handle<double>& rhoHandle,
-					   //edm::Handle< edm::ValueMap<reco::IsoDeposit> >,
-					   edm::Handle< edm::ValueMap<double> > &isoVals
-					   ):
-    ConversionsHandle_(ConversionsHandle),
+ SimpleCutBasedElectronIDSelectionFunctor(Version_t  version, 
+					  const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
+					  const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
+					  const edm::Handle<double>& rhoHandle,
+					  //edm::Handle< edm::ValueMap<reco::IsoDeposit> >,
+					  edm::Handle< edm::ValueMap<double> > &isoVals
+					  ):
+  ConversionsHandle_(ConversionsHandle),
     BeamSpotHandle_(BeamSpotHandle),
     rhoHandle_(rhoHandle),EgammaCutBasedEleId::IsoDepositMaps
     {
@@ -180,16 +180,16 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
 #endif
 
-  SimpleCutBasedElectronIDSelectionFunctor(TString versionStr, 
-					   const edm::Handle<reco::GsfElectronCollection>& electronsHandle,
-					   const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
-					   const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
-					   const edm::Handle<reco::VertexCollection>& VertexHandle,
-					   const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle,
-					   const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle,
-					   const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle,
-					   const edm::Handle<double>& rhoHandle):
-    electronsHandle_(electronsHandle),
+ SimpleCutBasedElectronIDSelectionFunctor(TString versionStr, 
+					  const edm::Handle<reco::GsfElectronCollection>& electronsHandle,
+					  const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
+					  const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
+					  const edm::Handle<reco::VertexCollection>& VertexHandle,
+					  const edm::Handle< edm::ValueMap<double> >& chIsoValsHandle,
+					  const edm::Handle< edm::ValueMap<double> >& emIsoValsHandle,
+					  const edm::Handle< edm::ValueMap<double> >& nhIsoValsHandle,
+					  const edm::Handle<double>& rhoHandle):
+  electronsHandle_(electronsHandle),
     ConversionsHandle_(ConversionsHandle),
     BeamSpotHandle_(BeamSpotHandle),
     VertexHandle_(VertexHandle),
@@ -461,7 +461,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     //    Double_t eleET = electron.p4().Pt();
     Double_t eleET = electron.et();
     Double_t etaSC = electron.superCluster()->eta();
-  // effective area for isolation
+    // effective area for isolation
     float AEff = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, 
 								 etaSC, ElectronEffectiveArea::kEleEAData2011);
 
@@ -491,15 +491,20 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       dzvtx = electron.gsfTrack()->dz();
     }
 
+#ifdef CMSSW_7_0_X
+    double iso_ch = electron.pfIsolationVariables().sumChargedHadronPt;
+    double iso_em = electron.pfIsolationVariables().sumPhotonEt;
+    double iso_nh = electron.pfIsolationVariables().sumNeutralHadronEt;
+#else
     // get particle flow isolation
     double iso_ch = (*chIsoValsHandle_)[electronRef];
     double iso_em = (*emIsoValsHandle_)[electronRef];
     double iso_nh = (*nhIsoValsHandle_)[electronRef];
 
+#endif
     // apply to neutrals
     double rhoPrime = std::max(*rhoHandle_, 0.0);
     double iso_n = std::max(iso_nh + iso_em - rhoPrime * AEff, 0.0);
-
     // compute final isolation
     double iso = (iso_n + iso_ch) / pt;
 
@@ -526,7 +531,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
     Double_t absEtaSC = fabs(electron.superCluster()->eta());
     Double_t rhoRel = *rhoHandle_ / eleET;
- // conversion rejection variables
+    // conversion rejection variables
 
 
 
@@ -538,7 +543,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     if ( innerHits  <= cut("maxNumberOfExpectedMissingHits", int()) || ignoreCut("maxNumberOfExpectedMissingHits")) 
       passCut(retInternal_, "maxNumberOfExpectedMissingHits");    
     if ( (!hasMatchedConversion) || ignoreCut("hasMatchedConversion")) passCut(retInternal_, "hasMatchedConversion");
- 
+
     if (electron.isEB()) { // BARREL case
       //#ifdef DEBUG
       //std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
@@ -550,9 +555,9 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       if ( ignoreCut("ooemoop_EB") || ooemoop     <  cut("ooemoop_EB",     double())  ) passCut(retInternal_, "ooemoop_EB");
       if ( fabs(d0vtx) <  cut("d0vtx_EB",       double()) || ignoreCut("d0vtx_EB")   ) passCut(retInternal_, "d0vtx_EB");
       if ( fabs(dzvtx) <  cut("dzvtx_EB",       double()) || ignoreCut("dzvtx_EB")   ) passCut(retInternal_, "dzvtx_EB");
-      
+
       if ( pfMVA       >  cut("pfmva_EB",    double()) || ignoreCut("pfmva_EB")   ) passCut(retInternal_, "pfmva_EB");
-      
+
       if ( trackIso - AeffTk_EB   *rhoRel <  cut("relTrackIso_EB", double()) || ignoreCut("relTrackIso_EB")) 
 	passCut(retInternal_, "relTrackIso_EB");
       if ( ecalIso  - AeffECAL_EB *rhoRel <  cut("relEcalIso_EB",  double()) || ignoreCut("relEcalIso_EB") ) 
@@ -568,7 +573,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 	  passCut(retInternal_, "pfIsoLowPt_EB");
 	passCut(retInternal_, "pfIso_EB");
       }
-	      
+
       // pass all the EE cuts
       passCut(retInternal_, "deta_EE");	
       passCut(retInternal_, "dphi_EE");	
@@ -592,9 +597,9 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       if ( ooemoop     <  cut("ooemoop_EE",     double()) || ignoreCut("ooemoop_EE") ) passCut(retInternal_, "ooemoop_EE");
       if ( fabs(d0vtx) <  cut("d0vtx_EE",       double()) || ignoreCut("d0vtx_EE")   ) passCut(retInternal_, "d0vtx_EE");
       if ( fabs(dzvtx) <  cut("dzvtx_EE",       double()) || ignoreCut("dzvtx_EE")   ) passCut(retInternal_, "dzvtx_EE");
-      
+
       if ( pfMVA       >  cut("pfmva_EE",    double()) || ignoreCut("pfmva_EE")   ) passCut(retInternal_, "pfmva_EE");
-      
+
       if ( trackIso - AeffTk_EE   *rhoRel <  cut("relTrackIso_EE", double()) || ignoreCut("relTrackIso_EE")) 
 	passCut(retInternal_, "relTrackIso_EE");
       if ( ecalIso  - AeffECAL_EE *rhoRel <  cut("relEcalIso_EE",  double()) || ignoreCut("relEcalIso_EE") ) 
@@ -610,7 +615,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 	  passCut(retInternal_, "pfIsoLowPt_EE");
 	passCut(retInternal_, "pfIso_EE");
       }
-	      
+
       // pass all the EB cuts
       passCut(retInternal_, "deta_EB");	
       passCut(retInternal_, "dphi_EB");	
