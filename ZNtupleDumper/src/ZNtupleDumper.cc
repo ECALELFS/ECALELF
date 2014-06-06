@@ -506,7 +506,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
 
   //------------------------------ HLT
-  iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
+  /// \todo check why
+  if(triggerResultsTAG.label()!="") iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
   iEvent.getByLabel(WZSkimResultsTAG,  WZSkimResultsHandle);
 
   //Check if it is Wenu, Z or ZSC event according to triggerResults
@@ -524,6 +525,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       break;
     }
   }
+
   //------------------------------
   clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
 					   recHitCollectionEETAG);  
@@ -1058,6 +1060,8 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     lumiBlock = -1;
   }
 
+  if(!hltPaths.empty()){
+
   edm::TriggerNames HLTNames_ = iEvent.triggerNames(*triggerResultsHandle);
   int hltCount = triggerResultsHandle->size();
   HLTNames[0].clear();
@@ -1068,7 +1072,7 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent){
     (HLTResults[0]).push_back(triggerResultsHandle->accept(i));
     HLTBits.insert(std::pair<std::string, bool>( hltName_str, triggerResultsHandle->accept(i)));
   } // for i
-
+  }
 
   return;
 }    
