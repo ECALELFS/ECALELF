@@ -1,0 +1,21 @@
+/**
+ *
+
+\page testingLocally Run locally to test
+
+\section localAlcareco Alcareco production
+ - Only alcareco:
+\code 
+cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=0 maxEvents=300
+\endcode
+ - Alcareco + ntuples
+\code 
+cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=0 maxEvents=300
+\endcode
+
+the \code skim=ZSkim \endcode option can be added to select events passing the ZSkim or the ZSCSkim
+
+Filelist:
+ - CMSSW_7_0_X: root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root
+
+*/
