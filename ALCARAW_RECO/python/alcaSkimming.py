@@ -6,7 +6,7 @@ import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 
-    
+myEleCollection =  cms.InputTag("gedGsfElectrons")
 #sys.path(".")
 
 ############################################################
@@ -275,7 +275,7 @@ else:
             print "[INFO] Using GT POSTLS162_V5::All"
             process.GlobalTag.globaltag = 'POSTLS162_V5::All'
         else:
-            process.GlobalTag.globaltag = 'GR_R_62_V3'
+            process.GlobalTag.globaltag = 'GR_R_62_V3::All'
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
         sys.exit(1)
@@ -287,28 +287,10 @@ else:
 process.pfIsoEgamma = cms.Sequence()
 if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gedGsfElectrons', 'PFIso')
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfGsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
-    # getting the ptrs
-    from RecoParticleFlow.PFProducer.pfLinker_cff import particleFlowPtrs
-    process.pfIsoEgamma*=particleFlowPtrs
-    process.load('CommonTools.ParticleFlow.pfNoPileUpIso_cff')
-    process.pfPileUp.PFCandidates = 'particleFlowPtrs'
-    process.pfNoPileUp.bottomCollection = 'particleFlowPtrs'
-    process.pfPileUpIso.PFCandidates = 'particleFlowPtrs'
-    process.pfNoPileUpIso.bottomCollection='particleFlowPtrs'
-    process.pfPileUpJME.PFCandidates = 'particleFlowPtrs'
-    process.pfNoPileUpJME.bottomCollection='particleFlowPtrs'
-
-    #    process.load('RecoParticleFlow/Configuration/python/RecoParticleFlow_cff') #CommonTools.ParticleFlow.PFBRECO_cff')
-    process.pfIsoEgamma*= process.pfNoPileUpSequence * process.pfNoPileUpIsoSequence
-    process.load('CommonTools.ParticleFlow.ParticleSelectors.pfSortByType_cff')
-    process.pfIsoEgamma*=process.pfSortByTypeSequence
-    #process.load('RecoEgamma.EgammaElectronProducers.electronPFIsolationDeposits_cff') 
-    #process.load('RecoParticleFlow.PFProducer.electronPFIsolationDeposits_cff')  
-    #pfisoALCARECO = cms.Sequence(eleIsoSequence)
-    process.pfIsoEgamma*= process.electronPFIsolationDepositsSequence # * process.gedElectronPFIsolationDepositsSequence
+    process.pfisoALCARECO = cms.Sequence() # remove any modules
 
 ###############################/
 # Event filter sequence: process.filterSeq
@@ -332,7 +314,7 @@ if(MC):
 process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                          src = cms.InputTag("gedGsfElectrons"),
+                                          src = myEleCollection,
                                           minNumber = cms.uint32(1)
                                           )
 process.filterSeq = cms.Sequence(process.MinEleNumberFilter)
@@ -658,7 +640,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
                                         process.NtuplePath)
     else:
-        if(options.doTree=='0'):
+        if(options.doTree==1):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
                                             process.ALCARECOoutput_step
@@ -727,3 +709,18 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 processDumpFile = open('processDump.py', 'w')
 print >> processDumpFile, process.dumpPython()
 
+##########################################################
+## Set correct electron definition for required methods ##
+##########################################################
+process.eleRegressionEnergy.inputElectronsTag = myEleCollection
+process.patElectrons.electronSource = myEleCollection
+process.eleSelectionProducers.electronCollection = myEleCollection
+process.PassingHLT.InputProducer = myEleCollection
+process.selectedElectrons.src = myEleCollection
+process.eleNewEnergiesProducer.electronCollection = myEleCollection
+process.alCaIsolatedElectrons.electronLabel = myEleCollection 
+process.alcaElectronTracksReducer.electronLabel = myEleCollection
+process.elPFIsoDepositGammaGsf.src = myEleCollection
+process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
+process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
+process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
