@@ -275,6 +275,7 @@ else:
             process.GlobalTag.globaltag = 'POSTLS162_V5::All'
         else:
             process.GlobalTag.globaltag = 'GR_R_62_V3::All'
+            process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
         sys.exit(1)
@@ -324,25 +325,23 @@ process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
 process.filterSeq = cms.Sequence(process.MinEleNumberFilter)
 
 
-#from HLTrigger.HLTfilters.hltHighLevel_cfi import *
-#process.NtupleFilter = copy.deepcopy(hltHighLevel)
-#process.NtupleFilter.throw = cms.bool(False)
-#process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
-#                                  'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
-#                                  'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
-#                                  ]
-#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
+from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+process.NtupleFilter = copy.deepcopy(hltHighLevel)
+process.NtupleFilter.throw = cms.bool(False)
+process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
+                                 'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
+                                 'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
+                                 ]
+process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
 #
-#if(ZSkim):
-#    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
-#    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
-#                                      'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
-#                                      ]
-#elif(WSkim):
-#    #cms.Sequence(~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter)
-#    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
-#    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
-#    process.zNtupleDumper.isWenu=cms.bool(True)
+if(ZSkim):
+    #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
+    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
+                                      'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
+                                      ]
+elif(WSkim):
+    #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
+    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
 #else:
 #    process.NtupleFilterSeq = cms.Sequence()
 process.NtupleFilterSeq = cms.Sequence()
@@ -436,6 +435,9 @@ process.outputALCARECO = cms.OutputModule("PoolOutputModule",
     dataTier = cms.untracked.string('ALCARECO')
     )
                                           )
+
+process.zNtupleDumper.SelectEvents = process.NtupleFilter.HLTPaths
+
 process.outputALCARERECO = cms.OutputModule("PoolOutputModule",
                                           # after 5 GB split the file
                                           maxSize = cms.untracked.int32(5120000),
@@ -643,7 +645,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
-        if(options.doTree==1):
+        if(options.doTree==0):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron,
                                             process.ALCARECOoutput_step
@@ -653,6 +655,8 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
                                             process.pathALCARECOEcalCalZSCElectron,
                                             process.ALCARECOoutput_step,  process.NtuplePath, process.NtupleEndPath
                                             ) # fix the output modules
+        if(options.skim==""):
+            process.schedule += cms.Schedule(process.pathALCARECOEcalCalSingleElectron)
 
 
 process.zNtupleDumper.foutName=options.secondaryOutput

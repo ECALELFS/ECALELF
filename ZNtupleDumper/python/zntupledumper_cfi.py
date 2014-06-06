@@ -24,8 +24,6 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                pdfWeightCollections = cms.VInputTag(),
                                fsrWeightCollection = cms.InputTag("fsrWeight"),
                                weakWeightCollection = cms.InputTag("weakWeight"),
-                               isWenu = cms.bool(False),
-                               doHighEta = cms.bool(False),
                                doHighEta_LowerEtaCut = cms.double(2.4),
                                isPartGun = cms.bool(False),
 #                               hltPaths = cms.vstring()
@@ -34,7 +32,8 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                                       'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17',
                                                       'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18',
                                                       'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v19'
-                                                      )
+                                                      ),
+                               SelectEvents = cms.vstring('')
                                #isMC = cms.bool(False),
                                
                                #                      jsonFile = cms.string(options.json),

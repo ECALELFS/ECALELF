@@ -193,7 +193,7 @@ EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
 #                               cut   = cms.string("40 <mass < 140 && daughter(0).pt>27")
                                cut   = cms.string("40 <mass < 140")
                                )
-WZSelector = cms.EDProducer("CandMerger",
+WZSelector = cms.EDProducer("CandViewMerger",
                             src = cms.VInputTag("WenuSelector", "ZeeSelector", "EleSCSelector")
                             )
 
