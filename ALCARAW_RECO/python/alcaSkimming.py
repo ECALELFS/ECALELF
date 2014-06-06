@@ -6,7 +6,6 @@ import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 
-myEleCollection =  cms.InputTag("gedGsfElectrons")
 #sys.path(".")
 
 ############################################################
@@ -279,6 +278,11 @@ else:
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
         sys.exit(1)
+
+if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
+    myEleCollection =  cms.InputTag("gedGsfElectrons")
+else:
+    myEleCollection =  cms.InputTag("gsfElectrons")
 
 #Define the sequences
 #
