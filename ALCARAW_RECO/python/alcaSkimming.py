@@ -642,7 +642,6 @@ elif(options.type=='ALCARERECO'):
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
-                                        process.NtuplePath)
     else:
         if(options.doTree==1):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
