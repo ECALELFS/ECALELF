@@ -341,7 +341,7 @@ use_parent=0
 queue = 1nh
 [CAF]
 queue = cmscaf1nd
-
+resource = type==SLC5_64
 
 [USER]
 

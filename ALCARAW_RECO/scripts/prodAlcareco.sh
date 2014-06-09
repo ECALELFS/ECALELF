@@ -214,7 +214,7 @@ queue = 1nd
 #resource = type==SLC5_64
 [CAF]
 queue = cmscaf1nd
-#resource = type==SLC5_64
+resource = type==SLC5_64
 
 
 [CMSSW]
