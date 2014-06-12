@@ -30,7 +30,7 @@ options.register('skim',
                  "", 
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
-                 "type of skim: ZSkim, WSkim, partGun, EleSkim (at least one electron), ''")
+                 "type of skim: ZSkim, WSkim, ZHLTSkim, partGun, EleSkim (at least one electron), ''")
 options.register('jsonFile',
                  "",
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -55,7 +55,7 @@ options.register('pdfSyst',
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
 options.secondaryOutput="ntuple.root"
-options.files= "root://eoscms//eos/cms/store/group/alca_ecalcalib/ALCARAW/RAW-RECO_533.root"
+options.files= ""
 options.maxEvents = -1 # -1 means all events
 ### get and parse the command line arguments
 options.parseArguments()
@@ -65,7 +65,8 @@ print options
 ############################################################
 # Use the options
 
-# Do you want to filter events? 
+# Do you want to filter events?
+HLTFilter = False
 ZSkim = False
 WSkim = False
 
@@ -73,6 +74,8 @@ if(options.skim=="ZSkim"):
     ZSkim=True
 elif(options.skim=="WSkim"):
     WSkim=True
+elif(options.skim=="ZHLTSkim"):
+    HLTFilter=True
 else:
     if(options.type=="ALCARAW"):
         print "[ERROR] no skim selected"
@@ -275,7 +278,8 @@ else:
             process.GlobalTag.globaltag = 'POSTLS162_V5::All'
         else:
             process.GlobalTag.globaltag = 'GR_R_62_V3::All'
-            process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
+            if(options.files==""):
+                process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
         sys.exit(1)
@@ -324,16 +328,24 @@ process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           )
 process.filterSeq = cms.Sequence(process.MinEleNumberFilter)
 
+if (HLTFilter):
+    from HLTrigger.HLTfilters.hltHighLevel_cfi import *
+    process.ZEEHltFilter = copy.deepcopy(hltHighLevel)
+    process.ZEEHltFilter.throw = cms.bool(False)
+    process.ZEEHltFilter.HLTPaths = [ "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*"]
+    process.filterSeq *= process.ZEEHltFilter
 
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.NtupleFilter = copy.deepcopy(hltHighLevel)
 process.NtupleFilter.throw = cms.bool(False)
 process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
-                                 'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
-                                 'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
+                                  'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
+                                  'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
+                                  'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron',
                                  ]
 process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
 #
+process.NtupleFilterSeq = cms.Sequence()
 if(ZSkim):
     #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
@@ -342,9 +354,10 @@ if(ZSkim):
 elif(WSkim):
     #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
-#else:
-#    process.NtupleFilterSeq = cms.Sequence()
-process.NtupleFilterSeq = cms.Sequence()
+else:
+    
+    process.NtupleFilterSeq = cms.Sequence()
+
 
 if(options.skim=="partGun"):
     process.zNtupleDumper.isPartGun = cms.bool(True)
@@ -523,7 +536,7 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq *
                                                    process.seqALCARECOEcalCalElectron ) #* process.hltReporter)
 
 
-process.NtuplePath = cms.Path(process.filterSeq * process.FilterSeq * process.WZFilter * process.NtupleFilterSeq 
+process.NtuplePath = cms.Path(process.filterSeq * process.FilterSeq *  process.NtupleFilterSeq 
                               * process.pdfWeightsSeq * process.ntupleSeq)
 process.NtupleEndPath = cms.EndPath( process.zNtupleDumper)
 
@@ -607,6 +620,7 @@ if(options.skim=='WSkim'):
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')
         )
+    process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
 elif(options.skim=='ZSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
@@ -614,6 +628,7 @@ elif(options.skim=='ZSkim'):
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron')
         )
+    process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
 else:
     #if(options.skim=="" or options.skim=="none" or options.skim=="no" or options.skim=="partGun"):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
@@ -622,7 +637,7 @@ else:
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalCalSingleElectron')
         )
-    
+
 if(options.type=='ALCARAW'):
     process.schedule = cms.Schedule(
         #process.raw2digi_step,process.L1Reco_step,
@@ -655,7 +670,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
                                             process.pathALCARECOEcalCalZSCElectron,
                                             process.ALCARECOoutput_step,  process.NtuplePath, process.NtupleEndPath
                                             ) # fix the output modules
-        if(options.skim==""):
+        if(options.skim=="" or options.skim=="ZHLTSkim"):
             process.schedule += cms.Schedule(process.pathALCARECOEcalCalSingleElectron)
 
 
@@ -719,6 +734,12 @@ print >> processDumpFile, process.dumpPython()
 ##########################################################
 ## Set correct electron definition for required methods ##
 ##########################################################
+process.selectedElectrons.src = myEleCollection
+process.PassingVeryLooseId.src = myEleCollection
+process.PassingMediumId.src = myEleCollection
+process.PassingTightId.src = myEleCollection
+process.PassingHLT.InputProducer = myEleCollection
+
 process.eleRegressionEnergy.inputElectronsTag = myEleCollection
 process.patElectrons.electronSource = myEleCollection
 process.eleSelectionProducers.electronCollection = myEleCollection

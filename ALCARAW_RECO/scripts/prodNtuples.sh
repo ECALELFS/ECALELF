@@ -17,6 +17,7 @@ DOTREE=1
 PDFSYST=1
 SKIM=""
 OUTFILES="ntuple.root"
+crabFile=tmp/ntuple.cfg
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -63,6 +64,7 @@ expertUsage(){
     echo "    --ui_working_dir arg: crab task folder (=${UI_WORKING_DIR})"
     echo "    --extraName arg: additional name for folder structure (to make different versions) (='')"
     echo "    --file_per_job arg: number of files to process in 1 job (=1)"
+    echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
 }
 
     
@@ -70,7 +72,7 @@ expertUsage(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job: -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -150,6 +152,8 @@ do
 	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
 
  	--file_per_job) FILE_PER_JOB=$2; shift ;;
+	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
+
 	(--) shift; break;;
 	(-*) usage; echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
 	(*) break;;
@@ -298,7 +302,7 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 if [ ! -d "tmp" ];then mkdir tmp/; fi
-cat > tmp/crab.cfg <<EOF
+cat > ${crabFile} <<EOF
 [CRAB]
 scheduler=$SCHEDULER
 jobtype=cmssw
@@ -308,14 +312,14 @@ jobtype=cmssw
 EOF
 case ${ORIGIN_REMOTE_DIR_BASE} in
         database)
-        cat >> tmp/crab.cfg <<EOF
+        cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 datasetpath=${DATASETPATH}
 EOF
         ;;
         *)
-        cat >> tmp/crab.cfg <<EOF
+        cat >> ${crabFile} <<EOF
 total_number_of_events=${NJOBS}
 number_of_jobs=${NJOBS}
 datasetpath=None
@@ -323,7 +327,13 @@ EOF
 	;;
 esac
 
-cat >> tmp/crab.cfg <<EOF
+if [ -n "${DEVEL_RELEASE}" ]; then
+cat >> ${crabFile} <<EOF
+allow_NonProductionCMSSW = 1
+EOF
+fi
+
+cat >> ${crabFile} <<EOF
 runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
@@ -366,7 +376,7 @@ EOF
 
 
 if [ -n "${CREATE}" ];then
-    crab -cfg tmp/crab.cfg -create || exit 1
+    crab -cfg ${crabFile} -create || exit 1
     if [ -n "$FILELIST" ];then
 	makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
     fi
