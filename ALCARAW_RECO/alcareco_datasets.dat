@@ -111,3 +111,8 @@ allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-
 allRange	/RelValZEE_13/CMSSW_7_0_0_pre11-PU50ns_POSTLS162_V5_OldEG-v1/GEN-SIM-RECO	RelValZEE_13-CMSSW_700_pre11-POSTLS162_V5_OldEG-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
 ################ personal alcareco for sam harper's test sample of CMSSW70x Drell-Yan process
 allRange	/DYJetsToLL_M-50_13TeV-pythia6/sharper-EGM700_PU40bx25_POSTLS170_V4-v1-df875c51917b2b4016d74c118f018fcb/USER DYJetsToLL_M-50_13TeV-pythia6	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	None	phys03
+################ CMSSW_7_0_1 2012 data rereco
+190645-193621	/DoubleElectron/Run2012A-15Apr2014-v2/AOD	DoubleElectron-ZHLTSkimPath-RUN2012A-15Apr-v2	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD	-
+193834-196531	/DoubleElectron/Run2012B-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012B-15Apr-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD	-
+198022-203742	/DoubleElectron/Run2012C-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012C-15Apr-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABC,RUN2012ABCD	-
+203777-208686	/DoubleElectron/Run2012D-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012D-15Apr-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD	-
