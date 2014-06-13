@@ -430,7 +430,8 @@ private:
     ZEE=0,
     WENU,
     ZSC,
-    PARTGUN
+    PARTGUN,
+    UNKNOWN
   }eventType_t;
 
   eventType_t eventType;
@@ -503,7 +504,7 @@ ZNtupleDumper::~ZNtupleDumper()
 void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   //  using namespace edm;
-  eventType=ZEE;
+  eventType= isPartGun ? PARTGUN : UNKNOWN;
 
   pEvent = &iEvent;
   pSetup = &iSetup;
@@ -555,12 +556,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  eventType=WENU;
 	else if(hltName_str.find("ZSCElectron")!=std::string::npos)
 	  eventType=ZSC;
+	else if(hltName_str.find("ZElectron")!=std::string::npos)
+	  eventType=ZEE;
+	else if(hltName_str.find("SingleElectron")!=std::string::npos)
+	  eventType=UNKNOWN;
 	// this paths are exclusive, then we can skip the check of the others
 	break;
       }
 
     }
-
+    assert(!skipEvent);
     if(skipEvent) return; // event not coming from any skim or paths
   }
   //------------------------------ CONVERSIONS
@@ -637,7 +642,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
   
   bool doFill=false;
-  if(isPartGun){
+  if(eventType==PARTGUN){
     pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
     pat::ElectronCollection::const_iterator eleIter2 = eleIter1;
     for(eleIter1 = electronsHandle->begin();
@@ -668,6 +673,58 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
     if(doEleIDTree){
       TreeSetEleIDVar(*eleIter1, *eleIter2);
+    }
+  } else if(eventType==ZEE || eventType==WENU || eventType==UNKNOWN){
+    for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
+	 eleIter1 != electronsHandle->end();
+	 eleIter1++){
+      if(eventType==WENU){
+	if(! eleIter1->electronID("tight") ) continue;
+	if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
+	
+	// MET/MT selection
+	if(  met.et() < 25. ) continue;
+	if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 50. ) continue;
+	if( eleIter1->et()<30) continue;
+
+	doFill=true;	
+	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
+	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
+
+	if(doExtraCalibTree){
+	  TreeSetExtraCalibVar(*eleIter1, 0);
+	  TreeSetExtraCalibVar(*eleIter1, -1);
+	}
+	if(doEleIDTree){
+	  TreeSetEleIDVar(*eleIter1, 0);
+	  TreeSetEleIDVar(*eleIter1, -1);
+	}
+      }else { //ZEE or UNKNOWN
+	// take only the fist di-electron pair (highest pt)
+	for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
+	    eleIter2 != electronsHandle->end() && doFill==false;
+	    eleIter2++){
+	  // should exit when eleIter1 == end-1
+	  //if(! eleIter2->electronID("loose") ) continue;
+	  
+	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
+	  if((mass < 55 || mass > 125)) continue;
+	  
+	  doFill=true;
+	  TreeSetDiElectronVar(*eleIter1, *eleIter2);
+	  
+	  if(doExtraCalibTree){
+	    TreeSetExtraCalibVar(*eleIter1, *eleIter2);
+	  }
+	  if(doEleIDTree){
+	    TreeSetEleIDVar(*eleIter1, *eleIter2);
+	  }
+	  if(doPdfSystTree && isMC){
+	    TreeSetPdfSystVar(iEvent);
+	    //pdfSystTree->Fill();
+	  }
+	}
+      }
     }
   } else if (eventType==ZSC){
     
@@ -736,59 +793,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	TreeSetExtraCalibVar(*PatEle1, *HighEtaSC1);
       }
     }
-  
-  } else {
-    for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
-	 eleIter1 != electronsHandle->end();
-	 eleIter1++){
-      if(eventType==WENU){
-	if(! eleIter1->electronID("tight") ) continue;
-	if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
-	
-	// MET/MT selection
-	if(  met.et() < 25. ) continue;
-	if( sqrt( 2.*eleIter1->et()*met.et()*(1 -cos(eleIter1->phi()-met.phi()))) < 50. ) continue;
-	if( eleIter1->et()<30) continue;
-
-	doFill=true;	
-	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
-	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
-
-	if(doExtraCalibTree){
-	  TreeSetExtraCalibVar(*eleIter1, 0);
-	  TreeSetExtraCalibVar(*eleIter1, -1);
-	}
-	if(doEleIDTree){
-	  TreeSetEleIDVar(*eleIter1, 0);
-	  TreeSetEleIDVar(*eleIter1, -1);
-	}
-      }else {
-	for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
-	    eleIter2 != electronsHandle->end();
-	    eleIter2++){
-	  // should exit when eleIter1 == end-1
-	  //if(! eleIter2->electronID("loose") ) continue;
-	  
-	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
-	  if((mass < 55 || mass > 125)) continue;
-	  
-	  doFill=true;
-	  TreeSetDiElectronVar(*eleIter1, *eleIter2);
-	  
-	  if(doExtraCalibTree){
-	    TreeSetExtraCalibVar(*eleIter1, *eleIter2);
-	  }
-	  if(doEleIDTree){
-	    TreeSetEleIDVar(*eleIter1, *eleIter2);
-	  }
-	  if(doPdfSystTree && isMC){
-	    TreeSetPdfSystVar(iEvent);
-	    //pdfSystTree->Fill();
-	  }
-	}
-      }
-    }
   }
+  
 
   if(doFill){
     tree->Fill();
