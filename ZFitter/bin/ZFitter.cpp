@@ -1,5 +1,19 @@
-#include <iostream>
-#include <fstream>
+/// Zee Fit program
+
+/**\file 
+The aim of the program is to provide a common interface to all the Z
+fitting algorithms reading and combining in the proper way the
+configuration files.
+
+   \todo
+   - remove commonCut from category name and add it in the ZFit_class in order to not repeate the cut
+   - make alpha fitting more generic (look for alphaName)
+   - Implement the iterative Et dependent scale corrections
+
+*/
+
+#include <iostream> 
+#include <fstream> 
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -12,6 +26,8 @@
 #include <TH2F.h>
 #include <TFriendElement.h>
 
+/// @cond SHOW
+/// \code
 #include "../interface/ZFit_class.hh"
 #include "../interface/puWeights_class.hh"
 #include "../interface/r9Weights_class.hh"
@@ -22,6 +38,11 @@
 #include "../interface/addBranch_class.hh"
 
 #include "../interface/RooSmearer.hh"
+
+#include "../src/nllProfile.cc"
+/// \endcode
+/// @endcond
+
 #include <RooMinuit.h>
 //#include <RooStats/UniformProposal.h>
 //#include <RooStats/PdfProposal.h>
@@ -43,26 +64,29 @@
 
 #include <TRandom3.h>
 #include <queue>
+
 #define profile
 
 //#define DEBUG
 #define smooth
-#include "../src/nllProfile.cc"
+
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
 //using namespace std;
 using namespace RooStats;
 
-/**
-   \todo
-   - remove commonCut from category name and add it in the ZFit_class in order to not repeate the cut
-   - make alpha fitting more generic (look for alphaName)
-   - Implement the iterative Et dependent scale corrections
-*/
+///\endcond
 
+
+/// map that associates the name of the tree and the pointer to the chain
 typedef std::map< TString, TChain* > chain_map_t;
+/// map that associates the name of the tag to the chain_map_t
 typedef std::map< TString, chain_map_t > tag_chain_map_t;
 
+
+/** Function parsing the region files
+ * \retval vector of strings, each string is one region
+ */
 std::vector<TString> ReadRegionsFromFile(TString fileName){
   ifstream file(fileName);
   std::vector<TString> regions;
