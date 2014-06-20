@@ -68,17 +68,21 @@ s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Sum
 
 \endverbatim
 
-	The first column (tag) indicates if this file is signal MC (s), background MC (b), or data (d). 
+The first column (\b tag) indicates if this file is signal MC (s), background MC (b), or data (d). 
 
-        The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)
+The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)
 
-	The second column (treeName) is the name of the tree in the file
+The second column (\b treeName) is the name of the tree in the file
 
-	The third column (filePath) is the full path of the file
-	files with the same tag and the same treeName are put in the
-        same chain
-	files with the same tag but different treeName are added as
-	friends 
+The third column (\b filePath) is the full path of the file
+files with the same tag and the same treeName are put in the
+same chain files with the same tag but different treeName are added as friends 
+
+
+For each \b tag (e.g. s1) one can have multiple chains 
+with different \b treeName (e.g. selected, pileup, r9Weight, etc.), 
+a chain with treeName=="selected" is mandatory since it is the main tree,
+all the other chains are considered as friends of the "selected".
 
 
 \subsection pileupHist	How to get the pileup histogram
