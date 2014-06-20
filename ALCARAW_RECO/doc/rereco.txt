@@ -1,5 +1,5 @@
 /**
-* \page page5 Instructions for ECAL validator (rereco + ntuple production)
+* \page page5 Rereco production
 * 
 \section RERECO RERECO
 The ReReco and the ntuple production can be run with the script 
@@ -167,4 +167,8 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
 The convention is to name these configuration files in this way: tag_name.py
 
 So, for the rereco production follow the steps below:
+
+
+
 */
+

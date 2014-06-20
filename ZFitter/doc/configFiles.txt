@@ -90,7 +90,7 @@ When running the alcareco production for the MC, an additional file called PUDum
 It contains the 
 
 
-\subsection pileup	Hot to produce ntuples with pileup weights
+\subsection pileup	How to produce ntuples with pileup weights
 In the config file the pileupHist must be indicated. When running the ZFitter.exe it will automatically calculate the weights and create the additional ntuples in the \code tmp/ \endcode directory.
 To just produce the ntuples:
 \code ./bin/ZFitter.exe -f data/validation/22Jan2012-stdMCAll.dat --savePUTreeWeight \endcode
@@ -98,6 +98,33 @@ To just produce the ntuples:
 It's sufficient to copy them from the tmp/ directory to another directory and to add them to the config file. 
 Usually the pileupHist and pileup tree are put in the following directory:
 \code /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ \endcode
+
+The tree name of the pileup weight files is \b pileup:
+\code 
+s1    pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root
+\endcode
+
+\subsection scaleSmearing Energy scale and smearing corrections 
+Energy scale and smearings can be applied to the already existing ntuples.
+One can have different sets of energy scales and smearings, depending
+on 
+ - the particular energy used for the invariant mass, 
+ - the particular algorithm
+ - the number of steps in iterative procedure 
+
+For more details see the section dedicated to the energy scale and
+smearing derivation.
+
+Each set of energy scale and smearing corrections is defined by a
+"type" name. You can add all the wanted set of scale and smearing
+correction files to the same validation config file, but only the one
+specified by the --corrEleType and --smearEleType options are used.
+The name of the trees of the corrections are defined as follows:
+ <basename>_<type>, where <basename> is scaleEle for energy scale
+ corrections and smearEle for energy smearings.
+This way you don't need to modify your validation config file each
+time you want to run with a different set of corrections, you just
+need to pass the appropriate type name at the command line.
 
 
 

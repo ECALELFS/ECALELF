@@ -526,18 +526,18 @@ int main(int argc, char **argv) {
       else std::cerr << "[ERROR] in configuration file Hist not recognized" << std::endl;
       continue;
     }
-    //else if (chainName.Contains("corr")){
-    //if (tag.Contains("d") && corrEleFile.empty()) corrEleFile=fileName;
-    //continue;
-    //}
-    
+
+    // discard file with energy corrections different from the specified type
     if(chainName.Contains("scaleEle")){
       if(chainName!="scaleEle_"+corrEleType) continue;
     }
+
+    // discard file with energy smearings different from the specified type
     if(chainName.Contains("smearEle")){
       if(chainName!="smearEle_"+smearEleType) continue;
     }
 
+    // discard file with categories for "smearingMethod" different from the region file name
     if(chainName.Contains("smearerCat")){
       if(chainName!="smearerCat_"+regionsFileNameTag) continue;
     }
@@ -563,7 +563,7 @@ int main(int argc, char **argv) {
 
   }
   
-  //init chains
+  //init chains and print 
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
       tag_chain_itr++){

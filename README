@@ -14,8 +14,12 @@
 *
 * Working with ntuples: \ref page4
 *
-* Instructions for ECAL validator (rereco + ntuple production): \ref page5 
+* Instructions for ECAL validator:
+ - \ref page5 
+ - \ref page6
+ - \ref page7
 * 
+
 * Small eveloper guide: \ref Devel
 */
 
