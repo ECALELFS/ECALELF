@@ -80,12 +80,16 @@ using namespace RooStats;
 
 /// map that associates the name of the tree and the pointer to the chain
 typedef std::map< TString, TChain* > chain_map_t;
-/// map that associates the name of the tag to the chain_map_t
+ 
+/** \brief map that associates the name of the tag to the chain_map_t
+ *
+ * the logic is better described in \ref validationConfig
+ */
 typedef std::map< TString, chain_map_t > tag_chain_map_t;
 
 
 /** Function parsing the region files
- * \retval vector of strings, each string is one region
+ * \retval vector of strings, each string is the name of one region
  */
 std::vector<TString> ReadRegionsFromFile(TString fileName){
   ifstream file(fileName);
@@ -115,18 +119,27 @@ std::vector<TString> ReadRegionsFromFile(TString fileName){
 }
 
 
+/**
+ * This function reassociates the chains as friends of the "selected" tree.
+ *
+ * This function should be run when new chains or files are added to the tagChainMap.
+ * 
+ */
 void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag){
-
+//void UpdateFriends(tag_chain_map_t& tagChainMap){
+  // loop over all the tags
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
       tag_chain_itr++){
+    // take the selected tree of that tag
     TChain *chain = (tag_chain_itr->second.find("selected"))->second;
-    //    std::cout << chain->GetName() << std::endl;
+
+    // loop over all the trees
     for(chain_map_t::const_iterator chain_itr=tag_chain_itr->second.begin();
 	chain_itr!=tag_chain_itr->second.end();
 	chain_itr++){
 
-      if(chain_itr->first!="selected"){
+      if(chain_itr->first!="selected"){ //except the selected
 	if(chain->GetFriend(chain_itr->first)==NULL){
 	  std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
 		    << " to tag " << tag_chain_itr->first << std::endl;
@@ -147,18 +160,28 @@ void Dump(tag_chain_map_t& tagChainMap, TString tag="s", Long64_t firstentry=0){
   (tagChainMap[tag])["selected"]->Scan("etaEle:R9Ele:energySCEle_regrCorrSemiParV5_pho/cosh(etaSCEle):smearerCat:catName","","col=5:4:5:3:50",5,firstentry);
 };
 
+/**
+ * \param tagChainMap map of all the tags declared in the validation config file 
+ * \param tag name of the new \b tag created by the function, all the existent tags with name starting with 
+b tag are merged in the new \b tag
+ *
+ * A new tagChain with name=tag is added to the tagChainMap. All the tagChains with tag starting with \b tag are merged
+ * After the merging the friend list is updated by \ref UpdateFriends
+ */
 void MergeSamples(tag_chain_map_t& tagChainMap, TString regionsFileNameTag, TString tag="s"){
   
   std::pair<TString, chain_map_t > pair_tmp_tag(tag,chain_map_t()); // make_pair not work with scram b
   tagChainMap.insert(pair_tmp_tag);
   
+  //loop over all the tags
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
       tag_chain_itr++){
 
+    // consider tags matching the tag input parameter
     if(tag_chain_itr->first.CompareTo(tag)==0 || !tag_chain_itr->first.Contains(tag)) continue; //do it for each sample
-    //TChain *chain = (tag_chain_itr->second.find("selected"))->second;
-    //    std::cout << chain->GetName() << std::endl;
+
+    // loop over all the trees
     for(chain_map_t::const_iterator chain_itr=tag_chain_itr->second.begin();
 	chain_itr!=tag_chain_itr->second.end();
 	chain_itr++){
@@ -178,45 +201,47 @@ void MergeSamples(tag_chain_map_t& tagChainMap, TString regionsFileNameTag, TStr
 }
 
 
-TChain * addChainAndFriends(TString chainName, std::vector<TChain *> chain_vec){
-  TChain *sumChain = new TChain(chainName,"");
-  
-  std::map<TString, TChain *> friends_map;
-  for(std::vector<TChain *>::const_iterator chain_itr = chain_vec.begin();
-      chain_itr!=chain_vec.end();
-      chain_itr++){
-    
-    TList *friendList= (*chain_itr)->GetListOfFriends();
-    TIter newfriend_itr(friendList);
+/**
+ * \brief Function returning the name of the energy branch given the name of the invariant mass
+ */
+std::string energyBranchNameFromInvMassName(std::string invMass_var){
 
-    for(TFriendElement *friendElement = (TFriendElement*) newfriend_itr.Next(); 
-	friendElement != NULL; friendElement = (TFriendElement*) newfriend_itr.Next()){
-      TString treeName=friendElement->GetTreeName();
-      std::cout << "[STATUS] Adding new friend " << treeName  << std::endl;
-      std::map<TString, TChain*>::iterator map_itr = friends_map.find(treeName);
-      if(map_itr==friends_map.end()){
-	friends_map[treeName] = new TChain(treeName,"");
-      }
-      friends_map[treeName]->Add((TChain *)friendElement->GetTree());
-    }
-  }
+  std::string energyBranchName="";
+  if(invMass_var=="invMass_SC_regrCorr_ele") energyBranchName = "energySCEle_regrCorr_ele";
+  else if(invMass_var=="invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
+  else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
+  else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
+  else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
+  else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_pho") energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_ele") energyBranchName = "energySCEle_regrCorrSemiParV6_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_pho") energyBranchName = "energySCEle_regrCorrSemiParV6_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_ele") energyBranchName = "energySCEle_regrCorrSemiParV7_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_pho") energyBranchName = "energySCEle_regrCorrSemiParV7_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_ele") energyBranchName = "energySCEle_regrCorrSemiParV8_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_pho") energyBranchName = "energySCEle_regrCorrSemiParV8_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
+  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
 
-  for(std::vector<TChain *>::const_iterator chain_itr = chain_vec.begin();
-      chain_itr!=chain_vec.end();
-      chain_itr++){
-    sumChain->Add(*chain_itr);  
+  else {
+    std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
+    exit(1);
   }
-
-  for(std::map<TString,TChain *>::const_iterator map_itr = friends_map.begin();
-      map_itr != friends_map.end();
-      map_itr++){
-    sumChain->AddFriend(map_itr->second);
-  }
-  sumChain->GetListOfFriends()->Print();
-  return sumChain;
+  return energyBranchName;
 }
 
 
+
+TString energyBranchNameFromInvMassName(TString invMass_var){
+  return TString( (energyBranchNameFromInvMassName(std::string(invMass_var))).c_str());
+}
 
 
 int main(int argc, char **argv) {
@@ -227,6 +252,8 @@ int main(int argc, char **argv) {
   puWeights_class puWeights;
   std::cout << "============================== Z General Fitter" << std::endl;
 
+  //------------------------------------------------------------
+  // parsing input options to the program
   using namespace boost;
   namespace po = boost::program_options;
   unsigned int nEvents_runDivide=100000;
@@ -262,9 +289,7 @@ int main(int argc, char **argv) {
   std::string minimType;
   std::vector<std::string> branchList;
 
-  //  std::vector<std::string> signalFriends,
-  //  bool _ZFit_class, _RooSmearer;
-
+  //------------------------------ setting option categories
   po::options_description desc("Main options");
   po::options_description outputOption("Output options");
   po::options_description inputOption("Input options");
@@ -275,6 +300,7 @@ int main(int argc, char **argv) {
   //po::options_description cmd_line_options;
   //cmd_line_options.add(desc).add(fitOption).add(smearOption);
 
+  //------------------------------ adding options' description
   desc.add_options()
     ("help,h","Help message")
     ("loop","")
@@ -388,6 +414,8 @@ int main(int argc, char **argv) {
   po::store(po::parse_command_line(argc, argv, desc), vm);
   po::notify(vm);    
 
+
+  //------------------------------ checking options
   if(!vm.count("invMass_binWidth") && !vm.count("smearerFit")){
     std::cout << "[INFO] Bin Width=0.5" << std::endl;
     invMass_binWidth=0.5;
@@ -403,34 +431,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
-  TString energyBranchName="";
-  if(invMass_var=="invMass_SC_regrCorr_ele") energyBranchName = "energySCEle_regrCorr_ele";
-  else if(invMass_var=="invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
-  else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
-  else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
-  else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
-  else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV5_pho") energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_ele") energyBranchName = "energySCEle_regrCorrSemiParV6_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV6_pho") energyBranchName = "energySCEle_regrCorrSemiParV6_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_ele") energyBranchName = "energySCEle_regrCorrSemiParV7_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV7_pho") energyBranchName = "energySCEle_regrCorrSemiParV7_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_ele") energyBranchName = "energySCEle_regrCorrSemiParV8_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiParV8_pho") energyBranchName = "energySCEle_regrCorrSemiParV8_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV6_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
-  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
-  else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
-
-  else {
-    std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
-    exit(1);
-  }
+  TString energyBranchName=energyBranchNameFromInvMassName(invMass_var).c_str();
 
   if(!vm.count("chainFileList") && !vm.count("runToy")){
     std::cerr << "[ERROR] Missing mandatory option \"chainFile\"" << std::endl;
@@ -525,18 +526,18 @@ int main(int argc, char **argv) {
       else std::cerr << "[ERROR] in configuration file Hist not recognized" << std::endl;
       continue;
     }
-    //else if (chainName.Contains("corr")){
-    //if (tag.Contains("d") && corrEleFile.empty()) corrEleFile=fileName;
-    //continue;
-    //}
-    
+
+    // discard file with energy corrections different from the specified type
     if(chainName.Contains("scaleEle")){
       if(chainName!="scaleEle_"+corrEleType) continue;
     }
+
+    // discard file with energy smearings different from the specified type
     if(chainName.Contains("smearEle")){
       if(chainName!="smearEle_"+smearEleType) continue;
     }
 
+    // discard file with categories for "smearingMethod" different from the region file name
     if(chainName.Contains("smearerCat")){
       if(chainName!="smearerCat_"+regionsFileNameTag) continue;
     }
@@ -562,7 +563,7 @@ int main(int argc, char **argv) {
 
   }
   
-  //init chains
+  //init chains and print 
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
       tag_chain_itr!=tagChainMap.end();
       tag_chain_itr++){

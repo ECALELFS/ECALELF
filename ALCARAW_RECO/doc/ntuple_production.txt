@@ -1,3 +1,8 @@
+/**
+  * \page page6 Ntuple production
+
+\section NTUPLE Ntuple production
+
 Ntuples are produced starting from ALCARECO, ALCARECOSIM or ALCARERECO files.
 
 alcareco_datasets.dat, alcarereco_datasets.dat provide the useful informations to build the list of files on EOS and process them.
@@ -16,3 +21,4 @@ Better to use the quick script, but if you want to process only one specific dat
 
 
 
+*/

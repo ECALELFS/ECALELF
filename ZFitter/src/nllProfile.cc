@@ -1,3 +1,8 @@
+/// ZFitter function library
+/** \file 
+ * function library for ZFitter.cpp
+ */
+
 #include <TGraphErrors.h>
 #include <TF1.h>
 #include <TFitResult.h>

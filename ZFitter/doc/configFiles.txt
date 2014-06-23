@@ -68,17 +68,21 @@ s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Sum
 
 \endverbatim
 
-	The first column (tag) indicates if this file is signal MC (s), background MC (b), or data (d). 
+The first column (\b tag) indicates if this file is signal MC (s), background MC (b), or data (d). 
 
-        The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)
+The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)
 
-	The second column (treeName) is the name of the tree in the file
+The second column (\b treeName) is the name of the tree in the file
 
-	The third column (filePath) is the full path of the file
-	files with the same tag and the same treeName are put in the
-        same chain
-	files with the same tag but different treeName are added as
-	friends 
+The third column (\b filePath) is the full path of the file
+files with the same tag and the same treeName are put in the
+same chain files with the same tag but different treeName are added as friends 
+
+
+For each \b tag (e.g. s1) one can have multiple chains 
+with different \b treeName (e.g. selected, pileup, r9Weight, etc.), 
+a chain with treeName=="selected" is mandatory since it is the main tree,
+all the other chains are considered as friends of the "selected".
 
 
 \subsection pileupHist	How to get the pileup histogram
@@ -86,7 +90,7 @@ When running the alcareco production for the MC, an additional file called PUDum
 It contains the 
 
 
-\subsection pileup	Hot to produce ntuples with pileup weights
+\subsection pileup	How to produce ntuples with pileup weights
 In the config file the pileupHist must be indicated. When running the ZFitter.exe it will automatically calculate the weights and create the additional ntuples in the \code tmp/ \endcode directory.
 To just produce the ntuples:
 \code ./bin/ZFitter.exe -f data/validation/22Jan2012-stdMCAll.dat --savePUTreeWeight \endcode
@@ -94,6 +98,33 @@ To just produce the ntuples:
 It's sufficient to copy them from the tmp/ directory to another directory and to add them to the config file. 
 Usually the pileupHist and pileup tree are put in the following directory:
 \code /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ \endcode
+
+The tree name of the pileup weight files is \b pileup:
+\code 
+s1    pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root
+\endcode
+
+\subsection scaleSmearing Energy scale and smearing corrections 
+Energy scale and smearings can be applied to the already existing ntuples.
+One can have different sets of energy scales and smearings, depending
+on 
+ - the particular energy used for the invariant mass, 
+ - the particular algorithm
+ - the number of steps in iterative procedure 
+
+For more details see the section dedicated to the energy scale and
+smearing derivation.
+
+Each set of energy scale and smearing corrections is defined by a
+"type" name. You can add all the wanted set of scale and smearing
+correction files to the same validation config file, but only the one
+specified by the --corrEleType and --smearEleType options are used.
+The name of the trees of the corrections are defined as follows:
+ <basename>_<type>, where <basename> is scaleEle for energy scale
+ corrections and smearEle for energy smearings.
+This way you don't need to modify your validation config file each
+time you want to run with a different set of corrections, you just
+need to pass the appropriate type name at the command line.
 
 
 
