@@ -39,7 +39,7 @@
 <div align="center">
 <img src="ecalelf_schema.png" alt="ecalelf_schema.png"/>
 </div>
- <p>1) start from AOD/RECO or AOD/RECO+RAW</p>
+ <p>1) start from AOD/RECO or AOD/RECO+RAW datasets for the production of ALCARECO and ALCARAW respectively.</p>
 <p>1.1a) apply a ZSkim or a ZSCSkim or a WSkim selection to reduce the size of the dataset</p>
 <p>2a) produce the ALCARAW from AOD/RECO+RAW: in this format most of the collections are dropped and only the electrons, the uncalibrated rec hits and few other collections like the beamspot, the conversions, the rhoFastJet are kept</p>
 <p>3a) Apply whatever ECAL tags (ADCtoGeV, IC, LC, Alpha) needed for test or calibration and produce a new file in ALCARECO format. The new file has a reduced collection of calibrated rechit of the reco electrons, new SC collections produced with the new calibrated recHits, the old reco electrons with a new SC associated CAVEAT: all the electron variables are still the old RECO one, only the reference to the new SC has been updated. This will not be fixed, since it's a wanted feature that ensures that the selected events are not changed and permit to check effectively the impact of the calibration on the same events.</p>
