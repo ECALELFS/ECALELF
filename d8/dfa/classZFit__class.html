@@ -13,9 +13,7 @@
     <ul>
       <li><a href="../../index.html"><span>Main&nbsp;Page</span></a></li>
       <li><a href="../../pages.html"><span>Related&nbsp;Pages</span></a></li>
-      <li><a href="../../modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="../../annotated.html"><span>Classes</span></a></li>
-      <li><a href="../../files.html"><span>Files</span></a></li>
       <li><a href="../../dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
@@ -27,99 +25,107 @@
   </div>
 </div>
 <div class="contents">
-<h1>ZFit_class Class Reference<br/>
-<small>
-[<a class="el" href="../../d2/de9/group__ZFitter__GROUP.html">ZFitter: module for working with ECALELF ntuples, in particular for fitting the Z lineshape</a>]</small>
-</h1><!-- doxytag: class="ZFit_class" -->
-<p>Class for parametric fit to the Z lineshape from any RooAbsData.  
+<h1>ZFit_class Class Reference</h1><!-- doxytag: class="ZFit_class" -->
+<p>Zee Fit class: BW+CB and Cruijff.  
 <a href="#_details">More...</a></p>
 
-<p><code>#include &lt;Calibration/ZFitter/interface/ZFit_class.hh&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for ZFit_class:</div>
-<div class="dynsection">
-<div class="center"><img src="../../dc/d29/classZFit__class__coll__graph.png" border="0" usemap="#ZFit__class_coll__map" alt="Collaboration graph"/></div>
-<map name="ZFit__class_coll__map" id="ZFit__class_coll__map">
-<area shape="rect" id="node2" href="../../d6/d3e/classCruijff__pdf__class.html" title="Return RooPdf corresponding to Cruijff function." alt="" coords="5,23,171,420"/><area shape="rect" id="node4" href="../../db/d44/classBW__CB__pdf__class.html" title="Breit&#45;Wigner convoluted with Crystal Ball function PDF." alt="" coords="195,5,368,437"/><area shape="rect" id="node6" href="../../d5/d11/classElectronCategory__class.html" title="Di&#45;electron events are selected using a short special syntax defined in this class..." alt="" coords="392,109,608,333"/></map>
-<center><span class="legend">[<a href="../../graph_legend.html">legend</a>]</span></center></div>
+<p><code>#include &lt;Calibration/ZFitter/src/ZNtupleDumper.cc&gt;</code></p>
 
 <p><a href="../../d8/d4e/classZFit__class-members.html">List of all members.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfa/classZFit__class.html#ab4612bd5c0eee403ff040e5acb053696">ZFit_class</a> (TChain *data_chain_, TChain *signal_chain_, TChain *bkg_chain_, TString invMass_VarName=&quot;invMass_SC&quot;, double invMass_min=65, double invMass_max=115, double bin_width=0.5)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfa/classZFit__class.html#a4e6d11d88a1547adc65defe46cebd413">~ZFit_class</a> (void)</td></tr>
+<tr><td colspan="2"><h2>Private Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dfa/classZFit__class.html#ae46ab362d4eb6f9cf158ae997c66f70d">SetFitPar</a> (RooFitResult *fitres_MC=NULL)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
-<p>Class for parametric fit to the Z lineshape from any RooAbsData. </p>
-<p>This class provide a unified way of dealing with multiple possible parametric fits to the Z lineshape. The implemented fit PDFs are:</p>
+<p>Zee Fit class: BW+CB and Cruijff. </p>
+<p>Description: class that provide flexible and simple way to fit the Zee invariant mass shape with different pdfs:</p>
 <ul>
 <li>BW+CB</li>
-<li>Cruijff</li>
+<li>Cruijff </li>
 </ul>
-<dl class="todo"><dt><b><a class="el" href="../../todo.html#_todo000006">Todo:</a></b></dt><dd>mettere i throw exception e sistemare gli errori </dd></dl>
 <hr/><h2>Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ab4612bd5c0eee403ff040e5acb053696"></a><!-- doxytag: member="ZFit_class::ZFit_class" ref="ab4612bd5c0eee403ff040e5acb053696" args="(TChain *data_chain_, TChain *signal_chain_, TChain *bkg_chain_, TString invMass_VarName=&quot;invMass_SC&quot;, double invMass_min=65, double invMass_max=115, double bin_width=0.5)" -->
+<a class="anchor" id="a4e6d11d88a1547adc65defe46cebd413"></a><!-- doxytag: member="ZFit_class::~ZFit_class" ref="a4e6d11d88a1547adc65defe46cebd413" args="(void)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">ZFit_class::ZFit_class </td>
+          <td class="memname">ZFit_class::~ZFit_class </td>
           <td>(</td>
-          <td class="paramtype">TChain *&nbsp;</td>
-          <td class="paramname"> <em>data_chain_</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">void&nbsp;</td>
+          <td class="paramname"></td>
+          <td>&nbsp;)&nbsp;</td>
           <td></td>
-          <td class="paramtype">TChain *&nbsp;</td>
-          <td class="paramname"> <em>signal_chain_</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TChain *&nbsp;</td>
-          <td class="paramname"> <em>bkg_chain_</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TString&nbsp;</td>
-          <td class="paramname"> <em>invMass_VarName</em> = <code>&quot;invMass_SC&quot;</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&nbsp;</td>
-          <td class="paramname"> <em>invMass_min</em> = <code>65</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&nbsp;</td>
-          <td class="paramname"> <em>invMass_max</em> = <code>115</code>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&nbsp;</td>
-          <td class="paramname"> <em>bin_width</em> = <code>0.5</code></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
-<dl><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>data_chain_</em>&nbsp;</td><td>pointer to the chain "selected" of data. The chain should have already all the friends </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>signal_chain_</em>&nbsp;</td><td>pointer to the chain "selected" of signal MC (Zee). The chain should have already all the friends </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>bkg_chain_</em>&nbsp;</td><td>pointer to the chain "selected" of background MC (QCD). The chain should have already all the friends. <b>ACTUALLY</b> NOT USED! </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>invMass_VarName</em>&nbsp;</td><td>name of the branch containing the invariant mass to be used </td></tr>
-  </table>
-  </dd>
-</dl>
+<dl class="todo"><dt><b><a class="el" href="../../todo.html#_todo000004">Todo:</a></b></dt><dd></dd></dl>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00032"></a>00032                            {
+<a name="l00033"></a>00033   std::cout &lt;&lt; <span class="stringliteral">&quot;[STATUS] DESTROY ZFitter&quot;</span> &lt;&lt; std::endl;
+<a name="l00034"></a>00034   <span class="keywordflow">if</span>(commonMC  !=NULL) <span class="keyword">delete</span> commonMC;
+<a name="l00035"></a>00035   <span class="keywordflow">if</span>(commonData!=NULL) <span class="keyword">delete</span> commonData;
+<a name="l00036"></a>00036   <span class="keywordflow">if</span>(reducedMC  !=NULL) <span class="keyword">delete</span> reducedMC;
+<a name="l00037"></a>00037   <span class="keywordflow">if</span>(reducedData!=NULL) <span class="keyword">delete</span> reducedData;
+<a name="l00038"></a>00038 
+<a name="l00039"></a>00039   <span class="keywordflow">return</span>;
+<a name="l00040"></a>00040 }
+</pre></div></p>
+
+</div>
+</div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ae46ab362d4eb6f9cf158ae997c66f70d"></a><!-- doxytag: member="ZFit_class::SetFitPar" ref="ae46ab362d4eb6f9cf158ae997c66f70d" args="(RooFitResult *fitres_MC=NULL)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ZFit_class::SetFitPar </td>
+          <td>(</td>
+          <td class="paramtype">RooFitResult *&nbsp;</td>
+          <td class="paramname"> <em>fitres_MC</em> = <code>NULL</code></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>if fitres_MC != NULL take the fit parameters from that and set fit_type for the pdf to fit_type, put fit_type=0 otherwise </p>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00458"></a>00458                                                  {
+<a name="l00459"></a>00459 
+<a name="l00460"></a>00460   <span class="keywordflow">if</span>(fitres_MC != NULL){
+<a name="l00461"></a>00461     <span class="keywordflow">switch</span>(signal_pdf_type){ <span class="comment">// this is not elegant....</span>
+<a name="l00462"></a>00462     <span class="keywordflow">case</span> 0:
+<a name="l00463"></a>00463       convBwCbPdf.<a class="code" href="../../db/d44/classBW__CB__pdf__class.html#af6f8acf3abafa363b3245f02be3f5f89" title="0=all floating, 1=fixed tail">SetFitType</a>(_fit_type);
+<a name="l00464"></a>00464     <span class="keywordflow">case</span> 1:
+<a name="l00465"></a>00465       cruijffPdf.SetFitType(_fit_type);
+<a name="l00466"></a>00466     }
+<a name="l00467"></a>00467 
+<a name="l00468"></a>00468     RooArgList argList = fitres_MC-&gt;floatParsFinal();
+<a name="l00469"></a>00469     <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;argList.getSize(); i++){ <span class="comment">// copy fitresults to </span>
+<a name="l00470"></a>00470       RooRealVar *listVar = (RooRealVar *) &amp;argList[i];
+<a name="l00471"></a>00471       RooRealVar *var;
+<a name="l00472"></a>00472       var =  (RooRealVar *)  &amp;((*params)[listVar-&gt;GetName()]);
+<a name="l00473"></a>00473       var-&gt;setVal(listVar-&gt;getVal()); <span class="comment">// unuseful the pdf is the same, it has the previous value by default</span>
+<a name="l00474"></a>00474     }
+<a name="l00475"></a>00475   }
+<a name="l00476"></a>00476   <span class="keywordflow">else</span>{
+<a name="l00477"></a>00477     <span class="keywordflow">switch</span>(signal_pdf_type){ <span class="comment">// this is not elegant....</span>
+<a name="l00478"></a>00478     <span class="keywordflow">case</span> 0:
+<a name="l00479"></a>00479       convBwCbPdf.<a class="code" href="../../db/d44/classBW__CB__pdf__class.html#af6f8acf3abafa363b3245f02be3f5f89" title="0=all floating, 1=fixed tail">SetFitType</a>(0);
+<a name="l00480"></a>00480       convBwCbPdf.InitFitValues();      
+<a name="l00481"></a>00481     <span class="keywordflow">case</span> 1:
+<a name="l00482"></a>00482       cruijffPdf.SetFitType(0);
+<a name="l00483"></a>00483       cruijffPdf.InitFitValues();      
+<a name="l00484"></a>00484     }
+<a name="l00485"></a>00485   }
+<a name="l00486"></a>00486    
+<a name="l00487"></a>00487   <span class="keywordflow">return</span>;
+<a name="l00488"></a>00488 }
+</pre></div></p>
 
 </div>
 </div>

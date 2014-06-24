@@ -13,9 +13,7 @@
     <ul>
       <li><a href="../../index.html"><span>Main&nbsp;Page</span></a></li>
       <li><a href="../../pages.html"><span>Related&nbsp;Pages</span></a></li>
-      <li><a href="../../modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="../../annotated.html"><span>Classes</span></a></li>
-      <li><a href="../../files.html"><span>Files</span></a></li>
       <li><a href="../../dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
@@ -32,19 +30,12 @@
 <a href="#_details">More...</a></p>
 
 <p><code>#include &lt;Calibration/ZFitter/interface/addBranch_class.hh&gt;</code></p>
-<div class="dynheader">
-Collaboration diagram for addBranch_class:</div>
-<div class="dynsection">
-<div class="center"><img src="../../d7/dc2/classaddBranch__class__coll__graph.png" border="0" usemap="#addBranch__class_coll__map" alt="Collaboration graph"/></div>
-<map name="addBranch__class_coll__map" id="addBranch__class_coll__map">
-<area shape="rect" id="node2" href="../../d6/dfa/classEnergyScaleCorrection__class.html" title="Read and get energy scale and smearings from .dat files." alt="" coords="5,6,256,629"/></map>
-<center><span class="legend">[<a href="../../graph_legend.html">legend</a>]</span></center></div>
 
 <p><a href="../../d9/d29/classaddBranch__class-members.html">List of all members.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">TTree *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d87/classaddBranch__class.html#adf241f8a43e949aea81c57d09b8f73f9">AddBranch</a> (TChain *originalChain, TString treename, TString BranchName, bool fastLoop=true, bool isMC=false)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">specify the new branch you want in BranchName  <a href="#adf241f8a43e949aea81c57d09b8f73f9"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">TTree *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d87/classaddBranch__class.html#a53e37f858ad98ee4d12e7fdbf89b7b24">AddBranch</a> (TChain *originalChain, TChain *secondChain, TString treename, TString BranchName, bool fastLoop=true, bool isMC=false)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">specify the new branch you want in BranchName  <a href="#a53e37f858ad98ee4d12e7fdbf89b7b24"></a><br/></td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
 <p>starting from standard ntuple, produce new tree with additional branches </p>
@@ -55,7 +46,7 @@ Collaboration diagram for addBranch_class:</div>
 <li>iSM </li>
 </ul>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="adf241f8a43e949aea81c57d09b8f73f9"></a><!-- doxytag: member="addBranch_class::AddBranch" ref="adf241f8a43e949aea81c57d09b8f73f9" args="(TChain *originalChain, TString treename, TString BranchName, bool fastLoop=true, bool isMC=false)" -->
+<a class="anchor" id="a53e37f858ad98ee4d12e7fdbf89b7b24"></a><!-- doxytag: member="addBranch_class::AddBranch" ref="a53e37f858ad98ee4d12e7fdbf89b7b24" args="(TChain *originalChain, TChain *secondChain, TString treename, TString BranchName, bool fastLoop=true, bool isMC=false)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -64,6 +55,12 @@ Collaboration diagram for addBranch_class:</div>
           <td>(</td>
           <td class="paramtype">TChain *&nbsp;</td>
           <td class="paramname"> <em>originalChain</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TChain *&nbsp;</td>
+          <td class="paramname"> <em>secondChain</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -107,6 +104,17 @@ Collaboration diagram for addBranch_class:</div>
   </table>
   </dd>
 </dl>
+
+<p><div class="fragment"><pre class="fragment"><a name="l00028"></a>00028                                                                                                                                            {
+<a name="l00029"></a>00029   <span class="keywordflow">if</span>(BranchName.Contains(<span class="stringliteral">&quot;invMassSigma&quot;</span>)) <span class="keywordflow">return</span> AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
+<a name="l00030"></a>00030   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">&quot;iSM&quot;</span>)==0)       <span class="keywordflow">return</span> AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
+<a name="l00031"></a>00031   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">&quot;smearerCat&quot;</span>)==0)       <span class="keywordflow">return</span> AddBranch_smearerCat(originalChain, treename, isMC);
+<a name="l00032"></a>00032   <span class="comment">//if(BranchName.Contains(&quot;ZPt&quot;))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll(&quot;ZPt_&quot;,&quot;&quot;), fastLoop);</span>
+<a name="l00033"></a>00033         <span class="keywordflow">if</span>(BranchName.Contains(<span class="stringliteral">&quot;Map&quot;</span>)) <span class="keywordflow">return</span> AddBranch_Map(originalChain, secondChain ,treename,BranchName);
+<a name="l00034"></a>00034   std::cerr &lt;&lt; <span class="stringliteral">&quot;[ERROR] Request to add branch &quot;</span> &lt;&lt; BranchName &lt;&lt; <span class="stringliteral">&quot; but not defined&quot;</span> &lt;&lt; std::endl;
+<a name="l00035"></a>00035   <span class="keywordflow">return</span> NULL;
+<a name="l00036"></a>00036 }
+</pre></div></p>
 
 </div>
 </div>

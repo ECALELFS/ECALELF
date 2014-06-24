@@ -32,12 +32,56 @@
 <h1>nllProfile.cc File Reference</h1>
 <p>ZFitter function library.  
 <a href="#_details">More...</a></p>
+<code>#include &lt;TGraphErrors.h&gt;</code><br/>
+<code>#include &lt;TF1.h&gt;</code><br/>
+<code>#include &lt;TFitResult.h&gt;</code><br/>
+<code>#include &lt;TString.h&gt;</code><br/>
+<code>#include &lt;TFile.h&gt;</code><br/>
+<code>#include &lt;TObjArray.h&gt;</code><br/>
+<code>#include &lt;TObjString.h&gt;</code><br/>
+<code>#include &lt;TCanvas.h&gt;</code><br/>
+<code>#include &lt;TH2F.h&gt;</code><br/>
+<code>#include &lt;TROOT.h&gt;</code><br/>
+<code>#include &lt;TStyle.h&gt;</code><br/>
+<code>#include &lt;RooRealVar.h&gt;</code><br/>
+<code>#include &quot;RooMinuit.h&quot;</code><br/>
+<code>#include &quot;RooBinning.h&quot;</code><br/>
+<code>#include &quot;RooFitResult.h&quot;</code><br/>
+<code>#include &quot;TPostScript.h&quot;</code><br/>
+<code>#include &quot;TStopwatch.h&quot;</code><br/>
+<code>#include &quot;TMath.h&quot;</code><br/>
+<code>#include &quot;TMinuit.h&quot;</code><br/>
+<code>#include &quot;TCut.h&quot;</code><br/>
+<code>#include &lt;TList.h&gt;</code><br/>
+<code>#include &lt;TObject.h&gt;</code><br/>
+<code>#include &lt;TKey.h&gt;</code><br/>
+<code>#include &lt;TPaveText.h&gt;</code><br/>
+<code>#include &lt;TSystem.h&gt;</code><br/>
+<code>#include &lt;iostream&gt;</code><br/>
+<code>#include &lt;vector&gt;</code><br/>
+<code>#include &lt;ctype.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;unistd.h&gt;</code><br/>
+<code>#include &lt;math.h&gt;</code><br/>
+<code>#include &lt;RooStats/UniformProposal.h&gt;</code><br/>
+<code>#include &lt;RooStats/PdfProposal.h&gt;</code><br/>
+<code>#include &lt;RooGaussian.h&gt;</code><br/>
+<code>#include &lt;RooStats/MetropolisHastings.h&gt;</code><br/>
+<code>#include &lt;RooStats/ProposalHelper.h&gt;</code><br/>
+<code>#include &lt;RooMultiVarGaussian.h&gt;</code><br/>
+<code>#include &lt;TRandom3.h&gt;</code><br/>
+<code>#include &quot;../interface/RooSmearer.hh&quot;</code><br/>
+<div class="dynheader">
+Include dependency graph for nllProfile.cc:</div>
+<div class="dynsection">
+<div class="center"><img src="../../d9/d46/nllProfile_8cc__incl.png" border="0" usemap="#ZFitter_2src_2nllProfile_8cc_map" alt=""/></div>
+</div>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4d/nllProfile_8cc.html#a2f4bd275663775f0f9d1b16de232b754">MinProfile2D</a> (RooRealVar *var1, RooRealVar *var2, <a class="el" href="../../d1/d6a/classRooSmearer.html">RooSmearer</a> &amp;smearer, int iProfile, Double_t min_old, Double_t &amp;min, double &amp;rho, double &amp;Emean, bool update=true, bool dscan=false)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d4d/nllProfile_8cc.html#a2f4bd275663775f0f9d1b16de232b754">MinProfile2D</a> (RooRealVar *var1, RooRealVar *var2, RooSmearer &amp;smearer, int iProfile, Double_t min_old, Double_t &amp;min, double &amp;rho, double &amp;Emean, bool update=true, bool dscan=false)</td></tr>
 </table>
 <hr/><a name="_details"></a><h2>Detailed Description</h2>
-<p>ZFitter function library. </p>
 <p>function library for <a class="el" href="../../dd/d99/ZFitter_8cpp.html" title="Zee Fit program.">ZFitter.cpp</a> </p>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="a2f4bd275663775f0f9d1b16de232b754"></a><!-- doxytag: member="nllProfile.cc::MinProfile2D" ref="a2f4bd275663775f0f9d1b16de232b754" args="(RooRealVar *var1, RooRealVar *var2, RooSmearer &amp;smearer, int iProfile, Double_t min_old, Double_t &amp;min, double &amp;rho, double &amp;Emean, bool update=true, bool dscan=false)" -->
@@ -59,7 +103,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="../../d1/d6a/classRooSmearer.html">RooSmearer</a> &amp;&nbsp;</td>
+          <td class="paramtype">RooSmearer &amp;&nbsp;</td>
           <td class="paramname"> <em>smearer</em>, </td>
         </tr>
         <tr>

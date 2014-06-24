@@ -23,9 +23,8 @@
 <div class="contents">
 
 
-<h1><a class="anchor" id="DATAFORMATS">Dataformats </a></h1><p>The calibration in 2012 with electrons (single and double electron samples) will be performed using the alcareco data format that contains only relevant collections for the ECAL calibration with electrons.</p>
-<p>If you have not followed the instructions in the Calibration/README file please do it.</p>
-<p>ALCARECO and ALCARAW private production logic.</p>
+<h1><a class="anchor" id="DATAFORMATS">Dataformats </a></h1><h2><a class="anchor" id="dataformats">
+Data formats</a></h2>
 <ul>
 <li>EcalUncalElectron (ALCARAW): Special data format for rereco purpose<ul>
 <li>in CMSSW from the 7_X_X release</li>
@@ -41,13 +40,16 @@
 </ul>
 </li>
 </ul>
-<p>production</p>
+<h2><a class="anchor" id="bookKeeping">
+Files for book keeping: used to create, submit and book-keep the production</a></h2>
 <ul>
 <li>alcaraw_datasets.dat</li>
 <li>alcareco_datasets.dat</li>
 <li>alcarereco_datasets.dat</li>
 <li>ntuple_datasets.dat</li>
 </ul>
+<h2><a class="anchor" id="bookKeepingFormat">
+Book-keeping files content and syntax</a></h2>
 <ul>
 <li>For each line one crab task is created.</li>
 <li>Their contents are not exactly the same.</li>
