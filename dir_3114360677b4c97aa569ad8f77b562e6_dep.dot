@@ -1,9 +1,0 @@
-digraph G {
-  compound=true
-  node [ fontsize=10, fontname="FreeSans.ttf"];
-  edge [ labelfontsize=9, labelfontname="FreeSans.ttf"];
-  subgraph clusterdir_615fc3a30cfff95dfe44722732b04ee1 {
-    graph [ bgcolor="#ddddee", pencolor="black", label="ValueMapTraslator" fontname="FreeSans.ttf", fontsize=10, URL="dir_615fc3a30cfff95dfe44722732b04ee1.html"]
-  dir_3114360677b4c97aa569ad8f77b562e6 [shape=box, label="python", style="filled", fillcolor="#eeeeff", pencolor="black", URL="dir_3114360677b4c97aa569ad8f77b562e6.html"];
-  }
-}

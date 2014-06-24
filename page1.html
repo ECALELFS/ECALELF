@@ -13,6 +13,7 @@
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="dirs.html"><span>Directories</span></a></li>
@@ -39,23 +40,33 @@
 <div align="center">
 <img src="ecalelf_schema.png" alt="ecalelf_schema.png"/>
 </div>
- <p>1) start from AOD/RECO or AOD/RECO+RAW datasets for the production of ALCARECO and ALCARAW respectively.</p>
-<p>1.1a) apply a ZSkim or a ZSCSkim or a WSkim selection to reduce the size of the dataset</p>
-<p>2a) produce the ALCARAW from AOD/RECO+RAW: in this format most of the collections are dropped and only the electrons, the uncalibrated rec hits and few other collections like the beamspot, the conversions, the rhoFastJet are kept</p>
-<p>3a) Apply whatever ECAL tags (ADCtoGeV, IC, LC, Alpha) needed for test or calibration and produce a new file in ALCARECO format. The new file has a reduced collection of calibrated rechit of the reco electrons, new SC collections produced with the new calibrated recHits, the old reco electrons with a new SC associated CAVEAT: all the electron variables are still the old RECO one, only the reference to the new SC has been updated. This will not be fixed, since it's a wanted feature that ensures that the selected events are not changed and permit to check effectively the impact of the calibration on the same events.</p>
-<p>4) calculate new electron energies with the <a class="el" href="d5/dbe/classEleNewEnergiesProducer.html">EleNewEnergiesProducer</a> that creates ValueMaps that associate a float (the new energy) to the electrons</p>
-<p>5) define if the electron pass some selections running the EleSelectionProducer that creates valueMaps of floats with the following meaning: for cut-based selections 1=pass, 0=fail for MVA selections the float is the output of the MVA</p>
-<p>6.0) for MC, produce an association map between reco electron and gen electron (data-MC match)</p>
-<p>6.1) produce a patElectron collection where the electronID floats and the new energies are imported by the patElectron and accessible by electron.electronID("selectionName") electron.userFloat("energyName") the gen electron identified by the data-MC matching step are embended in the patElectron and accessible by: electron.genLepton().eta() electron.genLepton().energy()</p>
-<p>7) Filter the events requiring that the electron has passed at least one selection</p>
-<p>8) dump the event content to a flat tree with one entry for Zee candidate (the variables are array of two elements with one electron per element)</p>
-<p>9) Run the analysis tools (Z fitter, smearing, etc.)</p>
-<p>In case the purpose is just to run on a particular dataset without any recalibration step, the 1-3a) steps can be replaced by</p>
-<p>1b) Start from RECO or AOD 2b) Produce directly the ALCARECO, dropping all the unuseful collections and reducing the recHit maps to the one related to the electrons 3b) nothing</p>
-<p>## For further implementations Step 5) could be done after step 1) since electronID and isolations are not updated by the sandbox recalibration and then could be performed just once.</p>
+ <ol type="1">
+<li>start from AOD/RECO or AOD/RECO+RAW datasets for the production of ALCARECO and ALCARAW respectively.</li>
+<li>apply a Skim to reduce the size of the dataset. The three skims are based on a very loose electron identification criteria (cut based selection) and pt &gt;15 GeV and are:<ul>
+<li>ZSkim: selects Zee candidates with two electrons with invariant mass in the 40&lt;m&lt;130 GeV range</li>
+<li>ZSCSkim: selects Zee candidats with the ZSkim criteria using one electron + one SuperCluster in the high eta region (eta&gt;2.4)</li>
+<li>WSkim: selects W-&gt;enu candidats with one electron with pt&gt;30 GeV, MET&gt;30 GeV and Mt...</li>
+</ul>
+</li>
+<li>produce the <b>ALCARECO</b> from the AOD or RECO data formats: in this format most of the collections are dropped and only the electrons, the <b>calibrated</b> rec hits and few other collections like the beamspot, the conversions, the rhoFastJet are kept</li>
+<li>produce the <b>ALCARAW</b> from AOD/RECO+RAW: in this format most of the collections are dropped and only the electrons, the <b>uncalibrated</b> rec hits and few other collections like the beamspot, the conversions, the rhoFastJet are kept</li>
+<li>Apply whatever ECAL tags (ADCtoGeV, IC, LC, Alpha) needed for test or calibration to the <b>ALCARAW</b> and produce a new file in <b>ALCARECO</b> format. The new file has a reduced collection of calibrated rechit of the reco electrons, new SC collections produced with the new calibrated recHits, the old reco electrons with a new SC associated CAVEAT: all the electron variables are still the old RECO one, only the reference to the new SC has been updated. This will not be fixed, since it's a wanted feature that ensures that the selected events are not changed and permit to check effectively the impact of the calibration on the same events.</li>
+<li>Produce ntuples<ol type="a">
+<li>calculate new electron energies with the <a class="el" href="d5/dbe/classEleNewEnergiesProducer.html">EleNewEnergiesProducer</a> that creates ValueMaps that associate a float (the new energy) to the electrons</li>
+<li>define if the electron pass some selections running the EleSelectionProducer that creates valueMaps of floats with the following meaning: for cut-based selections 1=pass, 0=fail for MVA selections the float is the output of the MVA</li>
+<li>for MC, produce an association map between reco electron and gen electron (data-MC match)</li>
+<li>produce a patElectron collection where the electronID floats and the new energies are imported by the patElectron and accessible by electron.electronID("selectionName") electron.userFloat("energyName") the gen electron identified by the data-MC matching step are embended in the patElectron and accessible by: <div class="fragment"><pre class="fragment">    electron.genLepton().eta()
+    electron.genLepton().energy()
+</pre></div></li>
+<li>Filter the events requiring that the electron has passed at least one selection</li>
+<li>dump the event content to a flat tree with one entry for Zee candidate (the variables are array of two elements with one electron per element)</li>
+</ol>
+</li>
+<li>Run the analysis tools (Z fitter, smearing, etc.)</li>
+</ol>
 <p>Good luck! </p>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 23 Jun 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 24 Jun 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

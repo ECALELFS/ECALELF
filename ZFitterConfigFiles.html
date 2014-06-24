@@ -13,6 +13,7 @@
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="dirs.html"><span>Directories</span></a></li>
@@ -63,6 +64,7 @@ s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Sum
 <p>For each <b>tag</b> (e.g. s1) one can have multiple chains with different <b>treeName</b> (e.g. selected, pileup, r9Weight, etc.), a chain with treeName=="selected" is mandatory since it is the main tree, all the other chains are considered as friends of the "selected".</p>
 <h3><a class="anchor" id="pileupHist">
 How to get the pileup histogram</a></h3>
+<p>The files containing the histograms for the PU reweight are indicated with pileupHist as treeName and they are treated in a different way. There must be only one pileupHist for d and one for s, then the program calculates the weights for the MC, produces a temporary file with just one tree containing the weights (pileupTree) and it is added as friend to the chain of MC. You can also provide directly the "temporary" root file indicating s pileupTree file.root</p>
 <p>When running the alcareco production for the MC, an additional file called PUDumper.root is produced for each job. It contains the</p>
 <h3><a class="anchor" id="pileup">
 How to produce ntuples with pileup weights</a></h3>
@@ -98,7 +100,7 @@ How to produce runRanges .dat files</a></h2>
   --nEvents_runDivide arg (=100000)            Minimum number of events in a 
                                                run range
 </pre></div> </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 23 Jun 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 24 Jun 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
