@@ -431,10 +431,12 @@ private:
     WENU,
     ZSC,
     PARTGUN,
-    UNKNOWN
+    UNKNOWN,
+    DEBUG
   }eventType_t;
 
   eventType_t eventType;
+  unsigned int eventTypeCounter[6];
 };
 
 
@@ -461,7 +463,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   foutName(iConfig.getParameter<std::string>("foutName")),
   doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
   doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
-  doPdfSystTree(iConfig.getParameter<bool>("doPdfSystTree")),
+  doPdfSystTree(false),
   pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections")),
   fsrWeightTAG(iConfig.getParameter< edm::InputTag>("fsrWeightCollection")),
   weakWeightTAG(iConfig.getParameter< edm::InputTag>("weakWeightCollection")),
@@ -472,7 +474,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 			    //puWeights()
 {
   
-  //if(isMC && puWeightFile.size()>1) puWeights.ReadFromFile(puWeightFile);
+  if(pdfWeightTAGS.size()>0) doPdfSystTree=true;
 
 
 
@@ -533,22 +535,27 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
       for(unsigned int i=0; i < alcaSkimPathNameSize; i++){ // look over alcaSkimPaths
 	std::string trgName = alcaSkimPathNames.triggerName(i);
+	
 	for(std::vector<std::string>::const_iterator selectEvents_itr = SelectEvents.begin();
 	    selectEvents_itr!=SelectEvents.end();
 	    selectEvents_itr++){
 	  if(std::regex_match(trgName, std::regex(*selectEvents_itr))){
 	    alcaSkimPathIndexes.insert(i);
-
+	    //std::cout << " - Trigger path saved in ntuples: " << trgName << "\t" << i << std::endl;
+	    break;
 	  }
 	}
+	//if(alcaSkimPathIndexes.count(i)==0){
+	  //std::cout << " -! Trigger path not saved in ntuples: " << trgName <<  "\t" << i << std::endl;
+	//}
       }
     }
-
+    eventType=DEBUG;
     bool skipEvent=true;
     for(std::set<unsigned int>::const_iterator alcaSkimPath_itr = alcaSkimPathIndexes.begin(); 
 	alcaSkimPath_itr != alcaSkimPathIndexes.end() && skipEvent==true; 
 	alcaSkimPath_itr++){
-
+      //std::cout << *alcaSkimPath_itr << std::endl;
       if(WZSkimResultsHandle->accept(*alcaSkimPath_itr)){
 	skipEvent=false;
 	std::string hltName_str(alcaSkimPathNames.triggerName(*alcaSkimPath_itr));
@@ -561,11 +568,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	else if(hltName_str.find("SingleElectron")!=std::string::npos)
 	  eventType=UNKNOWN;
 	// this paths are exclusive, then we can skip the check of the others
+	//
+	//	std::cout << alcaSkimPathNames.triggerName(*alcaSkimPath_itr) << "\t" << eventType << std::endl;
 	break;
       }
 
+
     }
-    assert(!skipEvent);
+    //std::cout << "skip event: " << skipEvent << "\t" << eventType << std::endl;
+    //assert(!skipEvent);
+    eventTypeCounter[eventType]++;
     if(skipEvent) return; // event not coming from any skim or paths
   }
   //------------------------------ CONVERSIONS
@@ -596,7 +608,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   TreeSetEventSummaryVar(iEvent);
   TreeSetPileupVar(); // this can be filled once per event
 
-  if(doPdfSystTree && isMC){
+  if(doPdfSystTree && isMC){ 
     TreeSetPdfSystVar(iEvent);
   }
 
@@ -881,6 +893,9 @@ void ZNtupleDumper::endJob()
     extraCalibTree->Write();  
     extraCalibTreeFile->Close();
   }
+  for(int i=ZEE; i <= DEBUG; i++){
+    std::cout << "[NTUPLEDUMPER] EventTypeCounter[" << i << "]\t"<< eventTypeCounter[i] << std::endl;
+  }  
 }
 
 // ------------ method called when starting to processes a run  ------------
@@ -1996,7 +2011,7 @@ void ZNtupleDumper::InitPdfSystTree(void){
     int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
     std::string tagName = pdfWeightTAGS_itr->instance();
     //tagName.replace(0,pdfWeightTAGS_itr->label().size());
-    std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
+    //std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
     //pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
     pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
   }
