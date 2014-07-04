@@ -54,23 +54,23 @@ sed -i 's|[/]*assert|////assert|' DataFormats/EgammaCandidates/src/GsfElectron.c
 echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
 if [ ! -d "$myDir" ];then
-    if [ "$USER" != "shervin" ];then
-	git clone https://github.com/ECALELFS/ECALELF $myDir >> setup.log || exit 1 # read-only mode
-    else
-	git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-    fi
+    case "$USER" in 
+	shervin)
+	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    ;;
+	hengne)
+	    git clone git@github.com:hengne/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    cd $myDir/ALCARAW_RECO/
+	    git clone https://github.com/hengne/Utilities.git bin
+	    ;;
+	*)
+            ### if you are not Shervin download this to have some useful scripts
+	    git clone https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    cd $myDir/ALCARAW_RECO/
+	    git clone https://github.com/ECALELFS/Utilities.git bin
+	    ;;
+    esac
 fi
-
-cd $myDir/ALCARAW_RECO/
-
-### if you are not Shervin download this to have some useful scripts
-if [ "$USER" != "shervin" ];then
-    git clone https://github.com/ECALELFS/Utilities.git bin
-fi
-
-#cd EgammaAnalysis/ElectronTools/data/
-#cat download.url | xargs wget
-#cd -
 
 cd $CMSSW_BASE/src
 
@@ -144,7 +144,7 @@ case $CMSSW_VERSION in
     if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
 	patch  -p0 < $myDir/ALCARAW_RECO/test/clusterLazyTools.patch >> setup.log || exit 1
     fi
-    patch  -p0 < $myDir/ALCARAW_RECO/test/class_def.xml.patch >> setup.log || exit 1
+    #patch  -p0 < $myDir/ALCARAW_RECO/test/class_def.xml.patch >> setup.log || exit 1
 
 	cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root $myDir/EleNewEnergiesProducer/data/ >> setup.log || exit 1
 
