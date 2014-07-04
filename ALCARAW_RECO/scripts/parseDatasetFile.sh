@@ -25,7 +25,7 @@ case `basename $FILE` in
 	awk '($NF!=0 && (! /^#/)) {print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, "-t", $6}' $FILE
 	;;
     alcareco_datasets.dat)
-	awk '($NF!=0 && (! /^#/) && (NF>7 && $8!="-")) {print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, $6, $7, "--dbs_url", $8}; ($NF!=0 && (! /^#/) && (NF==7|| $8=="-")){print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, $6, $7};' $FILE
+	awk '($NF!=0 && (! /^#/) && (NF>7 && $8!="-")) {print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, $6, $7, "--dbs_url", $8}; ($NF!=0 && (! /^#/) && (NF==7|| $8=="-")){print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, $6, $7};' $FILE | grep -v INVALID
 	;;
     ntuple_datasets.dat)
 	awk -F '\t' '($NF!=0 && (! /^#/)){if($7!=""){print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, "--type", $6, "-t", $7, "--json_name", $8} else {print "-r",$1, "-d", $2, "-n", $3, "--store", $4, "--remote_dir", $5, "--type", $6, "--json_name", $8}}' $FILE
