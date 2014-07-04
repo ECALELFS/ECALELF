@@ -9,7 +9,7 @@ SCHEDULER=caf
 USESERVER=1
 TYPE=ALCARECO
 LUMIS_PER_JOBS=200  # 4000 for ZSkim events is good, WSkim events /=4, SingleElectron /=10
-EVENTS_PER_JOB=40000
+EVENTS_PER_JOB=150000 #150k for ZSkim DYtoEE powheg
 BLACKLIST=T2_EE_Estonia
 CREATE=yes
 SUBMIT=yes
@@ -17,6 +17,7 @@ OUTPUTFILE=alcareco
 crabFile=tmp/alcareco.cfg
 DOTREE=0
 NJOBS=100
+OUTFILES="ntuple.root"
 
 usage(){
     echo "`basename $0` options"
@@ -36,7 +37,7 @@ usage(){
     echo "    --check"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root: better to not use a json file for the alcareco production"
-    echo "    --doTree arg (=${DOTREE}): 0=no tree, 1=standard tree only, 2=extratree-only, 3=standard+extra trees"
+    echo "    --doTree" # arg (=${DOTREE}): 0=no tree, 1=standard tree only, 2=extratree-only, 3=standard+extra trees"
     echo "    --njobs nJobs : number of jobs, an integer"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
@@ -48,7 +49,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree:,njobs:,tutorial,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,json_name:,doTree,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,njobs:,tutorial,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -78,7 +79,12 @@ do
 	--json_name) JSONNAME=$2; shift;;
         --tutorial)   echo "[OPTION] Activating the tutorial mode"; TUTORIAL=y;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
-	--doTree) DOTREE=$2; shift; echo "[OPTION] Request doTree = ${DOTREE}";;
+	--doTree) let DOTREE=${DOTREE}+1; OUTFILES="${OUTFILES},ntuple.root";;
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doEleIDTree) let DOTREE=${DOTREE}+4;;
+	--doPdfSystTree) let DOTREE=${DOTREE}+8;;
+	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
+
         --njobs) NJOBS=$2; shift; echo "[OPTION] Request njobs = ${NJOBS}";;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
@@ -202,6 +208,7 @@ fi
 #  NJOBS=`grep "</Job>" _tmp_argument.xml | wc -l`
 #fi
 
+OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 #==============================
 cat > ${crabFile} <<EOF
@@ -235,7 +242,7 @@ EOF
 
 if [ "$DOTREE" -gt "0" ]; then
    cat >> ${crabFile} <<EOF
-output_file=ntuple.root
+output_file=${OUTFILES}
 EOF
 fi 
 
@@ -264,7 +271,6 @@ fi
 
 ###
 cat >> ${crabFile} <<EOF
-#output_file=${OUTFILES}
 get_edm_output=1
 check_user_remote_dir=1
 use_parent=${USEPARENT}

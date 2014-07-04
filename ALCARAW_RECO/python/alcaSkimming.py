@@ -263,9 +263,12 @@ else:
             #            print "[INFO] Using GT START53_V7G::All"
             #            process.GlobalTag.globaltag = 'START53_V7G::All' # suggested for analysis std. MC
         else:
+            print "[INFO] Using GT FT_R_53_V21N::All"
             process.GlobalTag.globaltag = 'FT_R_53_V21::All' #GR_P_V42B::All' # 5_3_3 Prompt
             #process.GlobalTag.globaltag = 'FT_R_53_LV3::All' #21Jun rereco 53X 2011 data
             #process.GlobalTag.globaltag = 'GR_R_53_V9F::All' # GT for 53 rereco (2011)
+            if(options.files==""):
+                process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012A/DoubleElectron/AOD/22Jan2013-v1/20000/003EC246-5E67-E211-B103-00259059642E.root' ]
     elif(re.match("CMSSW_6_1_.*",CMSSW_VERSION)):
         if(MC):
             print "[INFO] Using GT START61_V11::All"
@@ -296,7 +299,7 @@ else:
 process.pfIsoEgamma = cms.Sequence()
 if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfGsfElectrons', 'PFIso')
+    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
 elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     process.pfisoALCARECO = cms.Sequence() # remove any modules
@@ -345,17 +348,20 @@ process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCAR
                                  ]
 process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
 #
+
 process.NtupleFilterSeq = cms.Sequence()
+#process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
 if(ZSkim):
+    process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
     #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
                                       'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
                                       ]
 elif(WSkim):
+    process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
     #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
-else:
-    
+elif(options.skim=="no" or options.skim=="NO" or options.skim=="none" or options.skim=="NONE"):
     process.NtupleFilterSeq = cms.Sequence()
 
 
@@ -416,7 +422,7 @@ if(MC and options.pdfSyst==1):
     process.zNtupleDumper.pdfWeightCollections = cms.VInputTag(cms.InputTag('pdfWeights:cteq66'), cms.InputTag("pdfWeights:MRST2006nnlo"), cms.InputTag('pdfWeights:NNPDF10'))
 else:
     process.pdfWeightsSeq = cms.Sequence()
-    process.zNtupleDumper.doPdfSystTree = cms.bool(False)
+
 
 
 ############################################################
@@ -537,6 +543,8 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq *
 
 
 process.NtuplePath = cms.Path(process.filterSeq * process.FilterSeq *  process.NtupleFilterSeq 
+#                              * process.pfIsoEgamma 
+#                              * process.seqALCARECOEcalCalElectron 
                               * process.pdfWeightsSeq * process.ntupleSeq)
 process.NtupleEndPath = cms.EndPath( process.zNtupleDumper)
 
@@ -620,7 +628,6 @@ if(options.skim=='WSkim'):
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')
         )
-    process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
 elif(options.skim=='ZSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
@@ -628,7 +635,6 @@ elif(options.skim=='ZSkim'):
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
         SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron')
         )
-    process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
 else:
     #if(options.skim=="" or options.skim=="none" or options.skim=="no" or options.skim=="partGun"):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
