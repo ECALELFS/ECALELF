@@ -1728,7 +1728,7 @@ void ZNtupleDumper::InitExtraCalibTree(){
   extraCalibTree->Branch("runNumber",     &runNumber,     "runNumber/I");
   extraCalibTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
   extraCalibTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-  extraCalibTree->Branch("runTime",       &runTime, "        runTime/l");
+  extraCalibTree->Branch("runTime",       &runTime, "        runTime/i");
  
   extraCalibTree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[2]/I");
 
@@ -1932,7 +1932,7 @@ void ZNtupleDumper::InitEleIDTree(){
   eleIDTree->Branch("runNumber",     &runNumber,     "runNumber/I");
   eleIDTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
   eleIDTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-  eleIDTree->Branch("runTime",       &runTime,         "runTime/l");
+  eleIDTree->Branch("runTime",       &runTime,         "runTime/i");
  
   eleIDTree->Branch("dr03TkSumPt", dr03TkSumPt, "dr03TkSumPt[2]/F");
   eleIDTree->Branch("dr03EcalRecHitSumEt", dr03EcalRecHitSumEt, "dr03EcalRecHitSumEt[2]/F");
@@ -2002,7 +2002,7 @@ void ZNtupleDumper::InitPdfSystTree(void){
 //   pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
 //   pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
 //   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/l");
+//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/i");
   
 
   for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
