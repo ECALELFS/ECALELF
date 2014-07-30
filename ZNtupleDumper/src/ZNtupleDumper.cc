@@ -700,6 +700,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if( eleIter1->et()<30) continue;
 
 	doFill=true;	
+	if(eventType==UNKNOWN) eventType=WENU;
 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
@@ -723,6 +724,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  if((mass < 55 || mass > 125)) continue;
 	  
 	  doFill=true;
+	if(eventType==UNKNOWN) eventType=ZEE;
 	  TreeSetDiElectronVar(*eleIter1, *eleIter2);
 	  
 	  if(doExtraCalibTree){
@@ -738,7 +740,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	}
       }
     }
-  } else if (eventType==ZSC){
+  } 
+  if (eventType==ZSC || eventType==UNKNOWN){
     
     //leading pt electron in EB (patElectrons should be pt-ordered)
     // iterators storing pat Electons and HighEta SCs
@@ -868,6 +871,9 @@ void ZNtupleDumper::beginJob()
     InitPdfSystTree();
   }
 
+  for(int i=ZEE; i <= DEBUG; i++){
+    eventTypeCounter[i]=0;
+  }  
 
 #ifdef DEBUG
   std::cout << "[DEBUG] End creation of ntuples" << std::endl; 

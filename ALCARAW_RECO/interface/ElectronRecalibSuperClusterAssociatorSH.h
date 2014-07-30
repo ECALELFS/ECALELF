@@ -12,6 +12,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/EventSetup.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
 #include "DataFormats/Common/interface/EDProduct.h"
 
@@ -39,8 +40,7 @@ class ElectronRecalibSuperClusterAssociatorSH : public edm::EDProducer
   std::string scIslandProducer_;
   std::string scIslandCollection_;
   
-  std::string electronProducer_;
-  std::string electronCollection_;
+  edm::InputTag electronSrc_;
 
 };
 #endif

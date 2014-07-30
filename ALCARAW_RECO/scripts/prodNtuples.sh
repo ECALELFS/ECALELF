@@ -72,7 +72,7 @@ expertUsage(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,sandbox_remote_dir:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job:,develRelease -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -138,7 +138,6 @@ do
  	-t | --tag) TAGFILE=$2; echo "[OPTION] TAGFILE:$TAGFILE"; TAG=`basename $TAGFILE .py`; shift;;
 	--ntuple_store) STORAGE_ELEMENT=$2; shift;;
 	--ui_working_dir) UI_WORKING_DIR=$2; shift;;
-	--sandbox_remote_dir) shift;; # ignore the option
 	--scheduler) SCHEDULER=$2; shift;;
 	#--puWeight) PUWEIGHTFILE=$2; shift;;
 	--extraName) EXTRANAME=$2;shift;;
@@ -223,6 +222,11 @@ if [ "${TYPE}" == "ALCARERECO" ];then
 fi
 fi
 
+setStoragePath $STORAGE_ELEMENT $SCHEDULER 
+###
+setUserRemoteDirAlcarereco $ORIGIN_REMOTE_DIR_BASE
+ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+###
 # make the filelist before parsing the options and arguments
 options="-d ${DATASETPATH} -n ${DATASETNAME} -r ${RUNRANGE} --remote_dir ${ORIGIN_REMOTE_DIR_BASE}"
 if [ -n "${TAGFILE}" ];then options="$options -t ${TAGFILE}"; fi
@@ -238,7 +242,9 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 	fi
 
 	if [ ! -e "${FILELIST}" ];then
-	    filelistDatasets.sh $options || exit 1
+	    #sample=tempFileList-${DATASETNAME}-${RUNRANGE}-${TAG}
+	    makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/${ORIGIN_REMOTE_DIR}  || exit 1
+	    #filelistDatasets.sh $options || exit 1
 	fi
 	;;
 esac
@@ -281,7 +287,6 @@ fi
 
 
 
-setStoragePath $STORAGE_ELEMENT $SCHEDULER in
 
 
 #------------------------------

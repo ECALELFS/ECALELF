@@ -41,3 +41,7 @@
 203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICRunD_v1
 203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICRunD_v2
 203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICRunD_v3
+190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
+193834-196531	/DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012B-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
+198022-203742	/DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012C-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
+203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
