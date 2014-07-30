@@ -39,19 +39,19 @@ from the directory ALCARAW_RECO
 
 \subsection RERECO_instructions Instructions
 
-1. create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory
+-# create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory
    Se more detailes below, in section "TAG FILE" 
-
-2. commit the file in GITHUB:
+-# check the syntax of the tag_name.py file
+\code
+\endcode
+-# commit the file in GITHUB:
 \code
 git add config/reRecoTags/tag_name.py
 git commit -m "...." config/reRecoTags/tag_name.py
 \endcode
-
-3. Add the period on which the ReReco has to be run in
+-# Add the period on which the ReReco has to be run in
    alcaraw_datasets.dat, if not already defined (e.g. RUN2012AB)
-
-4. Run the script RerecoQuick.sh  
+-# Run the script RerecoQuick.sh  
 \code
    ./scripts/RerecoQuick.sh -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} 
 \endcode
@@ -103,7 +103,7 @@ The files alcarereco_datasets.dat  and ntuple_datasets.dat ae updated when this 
   datasets and check if jobs are exited with status 0 
   If jobs are finished, it merge all the produced ntuples and copy them to the right directory on EOS
 
-6. if all went fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files
+-# if all went fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files
 \code
 git pull --no-commit
 \endcode
