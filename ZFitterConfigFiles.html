@@ -14,6 +14,7 @@
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
       <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
@@ -55,22 +56,35 @@ d1	selected	root://eoscms//eos/..../file.root
 d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-204567-13Julv2_lastPrompt.69400.observed.root
 s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Summer12_DD3.observed.root
 
-</pre></div><p>The first column (tag) indicates if this file is signal MC (s), background MC (b), or data (d).</p>
+</pre></div><p>The first column (<b>tag</b>) indicates if this file is signal MC (s), background MC (b), or data (d).</p>
 <p>The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)</p>
-<p>The second column (treeName) is the name of the tree in the file</p>
-<p>The third column (filePath) is the full path of the file files with the same tag and the same treeName are put in the same chain files with the same tag but different treeName are added as friends</p>
+<p>The second column (<b>treeName</b>) is the name of the tree in the file</p>
+<p>The third column (<b>filePath</b>) is the full path of the file files with the same tag and the same treeName are put in the same chain files with the same tag but different treeName are added as friends</p>
+<p>For each <b>tag</b> (e.g. s1) one can have multiple chains with different <b>treeName</b> (e.g. selected, pileup, r9Weight, etc.), a chain with treeName=="selected" is mandatory since it is the main tree, all the other chains are considered as friends of the "selected".</p>
 <h3><a class="anchor" id="pileupHist">
 How to get the pileup histogram</a></h3>
 <p>When running the alcareco production for the MC, an additional file called PUDumper.root is produced for each job. It contains the</p>
 <h3><a class="anchor" id="pileup">
-Hot to produce ntuples with pileup weights</a></h3>
+How to produce ntuples with pileup weights</a></h3>
 <p>In the config file the pileupHist must be indicated. When running the ZFitter.exe it will automatically calculate the weights and create the additional ntuples in the </p>
 <div class="fragment"><pre class="fragment"> tmp/ 
 </pre></div><p> directory. To just produce the ntuples: </p>
 <div class="fragment"><pre class="fragment"> ./bin/ZFitter.exe -f data/validation/22Jan2012-stdMCAll.dat --savePUTreeWeight 
 </pre></div><p>It's sufficient to copy them from the tmp/ directory to another directory and to add them to the config file. Usually the pileupHist and pileup tree are put in the following directory: </p>
 <div class="fragment"><pre class="fragment"> /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ 
-</pre></div><h2><a class="anchor" id="runDivide">
+</pre></div><p>The tree name of the pileup weight files is <b>pileup:</b> </p>
+<div class="fragment"><pre class="fragment">s1    pileup    /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root
+</pre></div><h3><a class="anchor" id="scaleSmearing">
+Energy scale and smearing corrections</a></h3>
+<p>Energy scale and smearings can be applied to the already existing ntuples. One can have different sets of energy scales and smearings, depending on</p>
+<ul>
+<li>the particular energy used for the invariant mass,</li>
+<li>the particular algorithm</li>
+<li>the number of steps in iterative procedure</li>
+</ul>
+<p>For more details see the section dedicated to the energy scale and smearing derivation.</p>
+<p>Each set of energy scale and smearing corrections is defined by a "type" name. You can add all the wanted set of scale and smearing correction files to the same validation config file, but only the one specified by the --corrEleType and --smearEleType options are used. The name of the trees of the corrections are defined as follows: &lt;basename&gt;_&lt;type&gt;, where &lt;basename&gt; is scaleEle for energy scale corrections and smearEle for energy smearings. This way you don't need to modify your validation config file each time you want to run with a different set of corrections, you just need to pass the appropriate type name at the command line.</p>
+<h2><a class="anchor" id="runDivide">
 How to produce runRanges .dat files</a></h2>
 <p>The idea is to produce a file with the run ranges with 100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
 <p>The run ranges:</p>
@@ -84,7 +98,7 @@ How to produce runRanges .dat files</a></h2>
   --nEvents_runDivide arg (=100000)            Minimum number of events in a 
                                                run range
 </pre></div> </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 16 Apr 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 30 Jul 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

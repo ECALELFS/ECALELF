@@ -14,6 +14,7 @@
       <li><a href="../../index.html"><span>Main&nbsp;Page</span></a></li>
       <li><a href="../../pages.html"><span>Related&nbsp;Pages</span></a></li>
       <li class="current"><a href="../../annotated.html"><span>Classes</span></a></li>
+      <li><a href="../../files.html"><span>Files</span></a></li>
       <li><a href="../../dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
@@ -99,16 +100,6 @@
   </dd>
 </dl>
 
-<p><div class="fragment"><pre class="fragment"><a name="l00022"></a>00022                                                                                                                       {
-<a name="l00023"></a>00023   <span class="keywordflow">if</span>(BranchName.Contains(<span class="stringliteral">&quot;invMassSigma&quot;</span>)) <span class="keywordflow">return</span> AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
-<a name="l00024"></a>00024   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">&quot;iSM&quot;</span>)==0)       <span class="keywordflow">return</span> AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
-<a name="l00025"></a>00025   <span class="keywordflow">if</span>(BranchName.CompareTo(<span class="stringliteral">&quot;smearerCat&quot;</span>)==0)       <span class="keywordflow">return</span> AddBranch_smearerCat(originalChain, treename, isMC);
-<a name="l00026"></a>00026   <span class="keywordflow">if</span>(BranchName.Contains(<span class="stringliteral">&quot;ZPt&quot;</span>))   <span class="keywordflow">return</span> AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll(<span class="stringliteral">&quot;ZPt_&quot;</span>,<span class="stringliteral">&quot;&quot;</span>), fastLoop);
-<a name="l00027"></a>00027   std::cerr &lt;&lt; <span class="stringliteral">&quot;[ERROR] Request to add branch &quot;</span> &lt;&lt; BranchName &lt;&lt; <span class="stringliteral">&quot; but not defined&quot;</span> &lt;&lt; std::endl;
-<a name="l00028"></a>00028   <span class="keywordflow">return</span> NULL;
-<a name="l00029"></a>00029 }
-</pre></div></p>
-
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
@@ -116,7 +107,7 @@
 <li>ZFitter/src/addBranch_class.cc</li>
 </ul>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 16 Apr 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 30 Jul 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
