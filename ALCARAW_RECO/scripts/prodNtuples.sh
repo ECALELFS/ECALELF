@@ -224,12 +224,17 @@ fi
 
 setStoragePath $STORAGE_ELEMENT $SCHEDULER 
 ###
-setUserRemoteDirAlcarereco $ORIGIN_REMOTE_DIR_BASE
-ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
 ###
 # make the filelist before parsing the options and arguments
 options="-d ${DATASETPATH} -n ${DATASETNAME} -r ${RUNRANGE} --remote_dir ${ORIGIN_REMOTE_DIR_BASE}"
-if [ -n "${TAGFILE}" ];then options="$options -t ${TAGFILE}"; fi
+if [ -n "${TAGFILE}" ];then 
+    options="$options -t ${TAGFILE}"; 
+    setUserRemoteDirAlcarereco $ORIGIN_REMOTE_DIR_BASE
+    ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+else
+    setUserRemoteDirAlcareco $ORIGIN_REMOTE_DIR_BASE
+    ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+fi
 
 case ${ORIGIN_REMOTE_DIR_BASE} in
     database)
@@ -245,6 +250,12 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 	    #sample=tempFileList-${DATASETNAME}-${RUNRANGE}-${TAG}
 	    makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/${ORIGIN_REMOTE_DIR}  || exit 1
 	    #filelistDatasets.sh $options || exit 1
+            # remove PUDumper files!
+	    if [ -n "$TAG" ];then
+		sed -i '/PUDumper/ d' filelist/*/*.list
+	    else
+		sed -i '/PUDumper/ d' filelist/*.list
+	    fi
 	fi
 	;;
 esac
