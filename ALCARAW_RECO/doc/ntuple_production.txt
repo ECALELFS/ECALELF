@@ -10,15 +10,21 @@ All commands should be executed from the Calibration/ALCARAW_RECO directory.
 alcareco_datasets.dat, alcarereco_datasets.dat provide the useful informations to build the list of files on EOS and process them.
 as for the alcareco and alcaraw productions, you have to provide such informations using the parseDatasetFile.sh script with the right book-keeping file.
 
-### from alcareco
-## for data:
+\subsection fromALCARECO From alcareco
+for data:
+\code
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {string to select your dataset}` --type=ALCARECO --json jsonFile.txt --json_name
-## for MC:
+\endcode
+for MC:
+\code
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {string to select your dataset}` --type=ALCARECOSIM
+\endcode
 
-### from alcarereco
+\subsection fromALCARERECO From alcarereco
 Better to use the quick script, but if you want to process only one specific dataset:
+\code
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {string to select your dataset}` --type=ALCARERECO 
+\endcode
 
 
 
