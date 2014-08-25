@@ -65,7 +65,8 @@ ZSCHltFilter = HLTrigger.HLTfilters.hltHighLevel_cfi.hltHighLevel.clone(
 selectedElectrons = cms.EDFilter("GsfElectronRefSelector",
                                  src = cms.InputTag( 'gedGsfElectrons' ),
                                  cut = cms.string(
-    "(abs(superCluster.eta)<2.5) && (energy*sin(superClusterPosition.theta)> 15)")
+#    "(abs(superCluster.eta)<2.5) && (energy*sin(superClusterPosition.theta)> 15)")
+    "(abs(superCluster.eta)<3) && (energy*sin(superClusterPosition.theta)> 15)")
                                          )
 # This are the cuts at trigger level except ecalIso
 PassingVeryLooseId = selectedElectrons.clone(
@@ -159,7 +160,7 @@ selectedCands = cms.EDFilter("AssociatedVariableMaxCutCandRefSelector",
                              max = cms.double("0.5")
                              )
 
-eleSelSeq = cms.Sequence( PassingVeryLooseId + PassingTightId + 
+eleSelSeq = cms.Sequence( selectedElectrons + PassingVeryLooseId + PassingTightId + 
                           (SCselector*eleSC)
                           )
 
@@ -189,9 +190,11 @@ WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
 
 EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
                                decay = cms.string("PassingVeryLooseId eleSC"),
+#                               decay = cms.string("selectedElectrons eleSC"),
+#                               decay = cms.string("PassingVeryLooseId photons"),
                                checkCharge = cms.bool(False), 
 #                               cut   = cms.string("40 <mass < 140 && daughter(0).pt>27")
-                               cut   = cms.string("40 <mass < 140")
+                               cut = cms.string("40 < mass < 140 ")
                                )
 WZSelector = cms.EDProducer("CandViewMerger",
                             src = cms.VInputTag("WenuSelector", "ZeeSelector", "EleSCSelector")
@@ -212,6 +215,11 @@ ZeeFilter = cms.EDFilter("CandViewCountFilter",
                          minNumber = cms.uint32(1)
                          )
 
+MinZSCNumberFilter = cms.EDFilter("CandViewCountFilter",
+                                  #src = cms.InputTag('SCselector'),
+                                  src = cms.InputTag('eleSC'),
+                                  minNumber = cms.uint32(1)
+                                  )
 ZSCFilter = cms.EDFilter("CandViewCountFilter",
                          src = cms.InputTag("EleSCSelector"),
                          minNumber = cms.uint32(1)

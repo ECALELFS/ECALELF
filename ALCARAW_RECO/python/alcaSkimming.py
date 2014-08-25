@@ -20,7 +20,7 @@ options.register ('type',
                   "ALCARAW",
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.string,
-                  "type of operations: ALCARAW, ALCARERECO, ALCARECO, ALCARECOSIM, AOD, RECO")
+                  "type of operations: ALCARAW, ALCARERECO, ALCARECO, ALCARECOSIM, AOD, RECO, SKIMEFFTEST")
 options.register ('tagFile',
                   "",
                   VarParsing.VarParsing.multiplicity.singleton,
@@ -93,6 +93,9 @@ elif(options.type == "ALCARECOSIM"):
 elif(options.type == "ALCARECO"):
     processName = 'ALCARECO'
     MC = False
+elif(options.type == 'SKIMEFFTEST'):
+    processName = 'SKIMEFFTEST'
+    MC = True
 else:
     print "[ERROR] wrong type defined"
     sys.exit(-1)
@@ -501,6 +504,53 @@ process.L1Reco_step = cms.Path(process.L1Reco)
 process.reconstruction_step = cms.Path(process.reconstruction)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 #process.endjob_step*=process.outputRECO
+# Skim check paths to measure efficiency and purity of the skims
+# reco efficiencies are not taken into account
+# eff = N_skim/N_gen | after reco requirements and gen filter
+# purity = N_gen/N_skim | after reco requirements and skim filter
+process.GenSkimFilter = cms.EDFilter("SkimCheck",
+                                     type=cms.int32(0)
+                                     )
+process.GenZSCSkimFilter = cms.EDFilter("SkimCheck",
+                                        type= cms.int32(2)
+                                        )
+process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
+                                       type= cms.int32(1)
+                                       )
+process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
+                                               process.GenSkimFilter *
+                                               process.ZeeFilter
+                                               )
+process.pathZSCElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq * process.MinZSCNumberFilter *
+                                                 process.GenZSCSkimFilter *
+                                                 ~process.ZeeFilter * process.ZSCFilter 
+                                                 )
+process.pathWElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
+                                               process.GenWSkimFilter *
+                                               ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter
+                                               )
+process.pathZElectronSkim = cms.Path(process.filterSeq * process.FilterSeq *
+                                           process.ZeeFilter
+#                                           process.GenSkimFilter
+                                           )
+process.pathZSCElectronSkim = cms.Path(process.filterSeq * process.FilterSeq * process.MinZSCNumberFilter *
+                                             ~process.ZeeFilter * process.ZSCFilter
+#                                             process.GenZSCSkimFilter
+                                             )
+process.pathWElectronSkim = cms.Path(process.filterSeq * process.FilterSeq *
+                                           ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter
+#                                           process.GenWSkimFilter
+                                           )
+process.pathZElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
+                                    process.GenSkimFilter
+                                    )
+process.pathZSCElectronGen = cms.Path(process.filterSeq * process.FilterSeq * process.MinZSCNumberFilter *
+                                      process.GenZSCSkimFilter
+                                      )
+process.pathWElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
+                                    process.GenWSkimFilter
+                                    )
+
 # ALCARAW
 process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
@@ -640,7 +690,11 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
                                             ) # fix the output modules
         if(options.skim=="" or options.skim=="ZHLTSkim"):
             process.schedule += cms.Schedule(process.pathALCARECOEcalCalSingleElectron)
-
+elif(options.type=='SKIMEFFTEST'):
+    process.schedule = cms.Schedule(process.pathWElectronSkimGen, process.pathZSCElectronSkimGen, process.pathZElectronSkimGen,
+                                    process.pathWElectronSkim, process.pathZSCElectronSkim, process.pathZElectronSkim,
+                                    process.pathWElectronGen, process.pathZSCElectronGen, process.pathZElectronGen,
+                                    )
 
 process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
