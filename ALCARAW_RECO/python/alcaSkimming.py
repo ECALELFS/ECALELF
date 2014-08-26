@@ -763,6 +763,7 @@ process.eleNewEnergiesProducer.electronCollection = myEleCollection
 process.alCaIsolatedElectrons.electronLabel = myEleCollection 
 process.alcaElectronTracksReducer.electronLabel = myEleCollection
 process.elPFIsoDepositGammaGsf.src = myEleCollection
+process.elPFIsoDepositChargedGsf.src = myEleCollection
 process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
 process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
 process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
