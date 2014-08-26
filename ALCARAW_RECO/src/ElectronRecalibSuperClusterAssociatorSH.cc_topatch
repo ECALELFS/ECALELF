@@ -38,8 +38,8 @@ ElectronRecalibSuperClusterAssociatorSH::ElectronRecalibSuperClusterAssociatorSH
   scIslandProducer_ = iConfig.getParameter<std::string>("scIslandProducer");
   scIslandCollection_ = iConfig.getParameter<std::string>("scIslandCollection");
 
-  electronProducer_ = iConfig.getParameter<std::string > ("electronProducer");
-  electronCollection_ = iConfig.getParameter<std::string > ("electronCollection");
+  electronSrc_ = iConfig.getParameter<std::string > ("electronSrc");
+
 #ifdef DEBUG
   std::cout<< "ElectronRecalibSuperClusterAssociatorSH::ElectronRecalibSuperClusterAssociatorSH::end" << std::endl;
 #endif
@@ -89,7 +89,7 @@ void ElectronRecalibSuperClusterAssociatorSH::produce(edm::Event& e, const edm::
 
   // Get Electrons
   Handle<edm::View<reco::GsfElectron> > pElectrons;
-  e.getByLabel(electronProducer_, electronCollection_, pElectrons);
+  e.getByLabel(electronSrc_, pElectrons);
   if (!pElectrons.isValid()) {
     std::cerr << "Error! can't get the product ElectronCollection "<< std::endl;
   }

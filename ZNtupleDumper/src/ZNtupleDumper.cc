@@ -321,8 +321,8 @@ private:
   Float_t invMass_inGsf;
   Float_t invMass_outGsf;
   Float_t invMass_SC_etaphiSC;
-  Int_t           nBX;
-  Int_t           bxPU[5];   //[nBX]
+  Int_t   nBX;
+  Int_t   bxPU[5];   //[nBX]
   Int_t tagProbe_check; 
   Int_t nBCSCEle[2];
 #endif
