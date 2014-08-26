@@ -297,7 +297,7 @@ else:
 # particle flow isolation
 #
 process.pfIsoEgamma = cms.Sequence()
-if((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+if((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='ALCARAW') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
     process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
@@ -503,16 +503,20 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 #process.endjob_step*=process.outputRECO
 # ALCARAW
 process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
-                                                   (process.ALCARECOEcalCalElectronPreSeq +
-                                                    process.seqALCARECOEcalUncalElectron ))
+                                                       process.pfIsoEgamma *
+                                                       (process.ALCARECOEcalCalElectronPreSeq +
+                                                        process.seqALCARECOEcalUncalElectron ))
 process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                   process.pfIsoEgamma *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
 process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                     process.pfIsoEgamma *
                                                      ~process.ZeeFilter * process.ZSCFilter *
                                                      (process.ALCARECOEcalCalElectronPreSeq +
                                                       process.seqALCARECOEcalUncalElectron ))
 process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                   process.pfIsoEgamma *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
