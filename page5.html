@@ -39,19 +39,21 @@ Output files</a></h3>
 <p>4. The final merged ntuple is stored in: /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/tag_name/</p>
 <h3><a class="anchor" id="RERECO_instructions">
 Instructions</a></h3>
-<p>1. create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory Se more detailes below, in section "TAG FILE"</p>
-<p>2. commit the file in GITHUB: </p>
-<div class="fragment"><pre class="fragment">git add config/reRecoTags/tag_name.py
+<ol type="1">
+<li>create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory Se more detailes below, in section "TAG FILE"</li>
+<li>check the syntax of the tag_name.py file <div class="fragment"><pre class="fragment"></pre></div></li>
+<li>commit the file in GITHUB: <div class="fragment"><pre class="fragment">git add config/reRecoTags/tag_name.py
 git commit -m <span class="stringliteral">&quot;....&quot;</span> config/reRecoTags/tag_name.py
-</pre></div><p>3. Add the period on which the ReReco has to be run in alcaraw_datasets.dat, if not already defined (e.g. RUN2012AB)</p>
-<p>4. Run the script RerecoQuick.sh </p>
-<div class="fragment"><pre class="fragment">   ./scripts/RerecoQuick.sh -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} 
-</pre></div><p> where:</p>
-<ul>
+</pre></div></li>
+<li>Add the period on which the ReReco has to be run in alcaraw_datasets.dat, if not already defined (e.g. RUN2012AB)</li>
+<li>Run the script RerecoQuick.sh <div class="fragment"><pre class="fragment">   ./scripts/RerecoQuick.sh -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} 
+</pre></div> where:<ul>
 <li>config/reRecoTags/tag_name.py is the configuration file defined in step1</li>
 <li>jsonFile.txt is the version of the json file to be used</li>
 <li>json_name is the name that ECALELF gives to the json file used for the ntuple production.</li>
 </ul>
+</li>
+</ol>
 <ul>
 <li>if you run this the system with ask you your PEM passphrase, which corresponds to the grid passphrase</li>
 <li>if you don't have caf privilege add the option --scheduler=lsf at the end of the command <b> Not yet tested!!! </b></li>
@@ -63,11 +65,11 @@ Rereco example:</a></h3>
 <p>5. check the exit status of the jobs: </p>
 <div class="fragment"><pre class="fragment">./scripts/RerecoQuick.sh  -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} --check
 </pre></div><p>This command will loop over all folders corresponding to the different datasets and check if jobs are exited with status 0 If jobs are finished, it merge all the produced ntuples and copy them to the right directory on EOS</p>
-<p>6. if all went fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files </p>
-<div class="fragment"><pre class="fragment">git pull --no-commit
-</pre></div><p> this will try to merge your local repository with the central one. If there are no conflicts you just need to commit the changes, otherwise you should go throu the files in conflict, resolve them by hand and do </p>
-<div class="fragment"><pre class="fragment"> git add file.cc 
-</pre></div><p> to say that the confict on the file.cpp has been solved and now is staged for commit</p>
+<ol type="1">
+<li>if all went fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files <div class="fragment"><pre class="fragment">git pull --no-commit
+</pre></div> this will try to merge your local repository with the central one. If there are no conflicts you just need to commit the changes, otherwise you should go throu the files in conflict, resolve them by hand and do <div class="fragment"><pre class="fragment"> git add file.cc 
+</pre></div> to say that the confict on the file.cpp has been solved and now is staged for commit</li>
+</ol>
 <p>And then you must: </p>
 <div class="fragment"><pre class="fragment">git commit -m <span class="stringliteral">&quot;rereco tag_name done&quot;</span> alcarereco_datasets.dat ntuple_datasets.dat
 </pre></div><h3><a class="anchor" id="RERECO_scriptOptions">
@@ -115,7 +117,7 @@ RerecoGlobalTag = cms.ESSource(<span class="stringliteral">&quot;PoolDBESSource&
 </pre></div><p>The convention is to name these configuration files in this way: tag_name.py</p>
 <p>So, for the rereco production follow the steps below: </p>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 1 Aug 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Sep 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

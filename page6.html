@@ -26,10 +26,27 @@
 Ntuple production</a></h2>
 <p>Ntuples are produced starting from ALCARECO, ALCARECOSIM or ALCARERECO files. All commands should be executed from the Calibration/ALCARAW_RECO directory.</p>
 <p>alcareco_datasets.dat, alcarereco_datasets.dat provide the useful informations to build the list of files on EOS and process them. as for the alcareco and alcaraw productions, you have to provide such informations using the parseDatasetFile.sh script with the right book-keeping file.</p>
-<p>### from alcareco ## for data: ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {string to select your dataset}` --type=ALCARECO --json jsonFile.txt --json_name ## for MC: ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {string to select your dataset}` --type=ALCARECOSIM</p>
-<p>### from alcarereco Better to use the quick script, but if you want to process only one specific dataset: ./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {string to select your dataset}` --type=ALCARERECO </p>
-</div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 1 Aug 2014 for ECALELF by&nbsp;
+<h3><a class="anchor" id="fromALCARECO">
+From alcareco</a></h3>
+<p>for data: </p>
+<div class="fragment"><pre class="fragment">./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {<span class="keywordtype">string</span> to select your dataset}` --type=ALCARECO --json jsonFile.txt --json_name &lt;jsonName&gt;
+</pre></div><p> &lt;jsonName&gt; is a name used to build the subdirectory where storing the files and keep memory of the json file used for the ntuple production. Usual syntax is:</p>
+<p>{runMin}-{runMax}_{rerecoName/prompt}_{version}:</p>
+<ul>
+<li>runMin is the minimum run in the json file</li>
+<li>runMax is the maximum run in the json file</li>
+<li>indicate prompt if is a json for prompt dataset, indicate the name of the rereco (e.g. 22Jan) if it is for a reprocessed data</li>
+<li>indicate the version of the json For example, for the json file: <div class="fragment"><pre class="fragment">
+ /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt
+</pre></div> the jsonName should be: 190456-208686_22Jan-v1 for MC: <div class="fragment"><pre class="fragment">./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {<span class="keywordtype">string</span> to select your dataset}` --type=ALCARECOSIM
+</pre></div></li>
+</ul>
+<h3><a class="anchor" id="fromALCARERECO">
+From alcarereco</a></h3>
+<p>Better to use the quick script, but if you want to process only one specific dataset: </p>
+<div class="fragment"><pre class="fragment">./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {<span class="keywordtype">string</span> to select your dataset}` --type=ALCARERECO 
+</pre></div> </div>
+<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Sep 2014 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
