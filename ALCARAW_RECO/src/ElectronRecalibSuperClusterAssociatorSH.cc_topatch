@@ -38,7 +38,7 @@ ElectronRecalibSuperClusterAssociatorSH::ElectronRecalibSuperClusterAssociatorSH
   scIslandProducer_ = iConfig.getParameter<std::string>("scIslandProducer");
   scIslandCollection_ = iConfig.getParameter<std::string>("scIslandCollection");
 
-  electronSrc_ = iConfig.getParameter<std::string > ("electronSrc");
+  electronSrc_ = iConfig.getParameter<edm::InputTag > ("electronSrc");
 
 #ifdef DEBUG
   std::cout<< "ElectronRecalibSuperClusterAssociatorSH::ElectronRecalibSuperClusterAssociatorSH::end" << std::endl;
