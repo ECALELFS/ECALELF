@@ -263,3 +263,4 @@ allRange	/SingleElectronFlatPt10To300_pythia6/Summer12_DR53X-PU_S10_START53_V7A-
 194533-194533	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkimPath-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
 200519-200519	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkimPath-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
 206859-206859	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkimPath-runDependent	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
+allRange	/DYEE_8TeV_53X_MatBudget/Summer12ExtendedGeo14DR-PU2012ABCD_START53_V29A-v3/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-runDependent-Ext14DR	caf.cern.ch	group/alca_ecalcalib/ecalelf/ntuples	ALCARECOSIM		
