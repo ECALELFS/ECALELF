@@ -25,9 +25,20 @@
 <h1><a class="anchor" id="testingLocally">Run locally to test </a></h1><h2><a class="anchor" id="localAlcareco">
 Alcareco production</a></h2>
 <ul>
-<li>Only alcareco: <div class="fragment"><pre class="fragment">cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=0 maxEvents=300
+<li>Find a AOD or AODSIM file with DAS: <a href="https://cmsweb.cern.ch/das/">https://cmsweb.cern.ch/das/</a> <div class="fragment"><pre class="fragment">dataset=/QCD_Pt_*_EMEnriched_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM
 </pre></div></li>
-<li>Alcareco + ntuples <div class="fragment"><pre class="fragment">cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=0 maxEvents=300
+<li>click on one dataset of interest</li>
+<li>click on "file" to get the list of files for a particular dataset</li>
+<li>click on "download"</li>
+<li>download one file locally: <div class="fragment"><pre class="fragment">xrdcp root:<span class="comment">//xrootd.unl.edu//store/mc/Summer12_DR53X/QCD_Pt-40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/AODSIM/PU_RD1_START53_V7N-v1/20000/000107B2-2FD2-E211-9956-00261894397B.root myFile.root</span>
+</pre></div></li>
+</ul>
+<ul>
+<li>Only alcareco: <div class="fragment"><pre class="fragment">cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=0 maxEvents=300 file=file:<span class="comment">//myFile.root</span>
+</pre></div></li>
+<li>Alcareco + ntuples <div class="fragment"><pre class="fragment">cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=1 doTreeOnly=0 maxEvents=300 file=file:<span class="comment">//myFile.root</span>
+</pre></div></li>
+<li>ntuples <div class="fragment"><pre class="fragment">cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=1 doTreeOnly=1 maxEvents=300 file=file:<span class="comment">//myFile.root</span>
 </pre></div></li>
 </ul>
 <p>the </p>
