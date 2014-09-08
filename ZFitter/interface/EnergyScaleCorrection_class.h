@@ -104,7 +104,7 @@ class EnergyScaleCorrection_class{
   float getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle); // deprecated
   float ScaleCorrection(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, 
 			double EtEle,
-			int nPV, float nPVmean=0); ///< method to get energy scale corrections
+			int nPV=0, float nPVmean=0); ///< method to get energy scale corrections
   TTree *GetCorrTree(TChain *tree, bool fastLoop=true, 
 		     TString runNumberBranchName="runNumber",
 		     TString R9EleBranchName="R9Ele",
