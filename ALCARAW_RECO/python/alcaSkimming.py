@@ -304,7 +304,7 @@ if((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='AL
     from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
     process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
     process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
-elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='ALCARAW') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
     process.pfisoALCARECO = cms.Sequence() # remove any modules
 
 ###############################/
