@@ -1,0 +1,5 @@
+##/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/DoubleElectron_Run2011AB-29Jun2012.root
+/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012A-13Jul-v1.root
+/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012B-13Jul-v1.root
+/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012C-v2.root
+/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012C-v3.root
