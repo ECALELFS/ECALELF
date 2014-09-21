@@ -225,6 +225,7 @@ private:
   Int_t  chargeEle[2];
   Float_t etaSCEle[2], phiSCEle[2]; ///< phi of the SC
   Float_t   etaEle[2],   phiEle[2]; ///< phi of the electron (electron object)
+  Int_t isEBEle[2];
 
   Int_t recoFlagsEle[2];           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
 
@@ -335,12 +336,16 @@ private:
   Int_t nHitsSCEle[2];
   std::vector<int> recoFlagRecHitSCEle[2];
   std::vector<float>  rawIdRecHitSCEle[2];
-  std::vector<float>      XRecHitSCEle[2];
-  std::vector<float>      YRecHitSCEle[2];
+  std::vector<int>        XRecHitSCEle[2];
+  std::vector<int>        YRecHitSCEle[2];
+  std::vector<int>        ZRecHitSCEle[2];
   std::vector<float> energyRecHitSCEle[2];
   std::vector<float>     LCRecHitSCEle[2];
   std::vector<float>     ICRecHitSCEle[2];
   std::vector<float>  AlphaRecHitSCEle[2];
+  Int_t isW;
+  Int_t isZ;
+
   //==============================
 
   //============================== check ele-id and iso
@@ -654,6 +659,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
   
   bool doFill=false;
+  isW=0;
+  isZ=0;
   if(eventType==PARTGUN){
     pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
     pat::ElectronCollection::const_iterator eleIter2 = eleIter1;
@@ -700,6 +707,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if( eleIter1->et()<30) continue;
 
 	doFill=true;	
+        isW=1; 
 	if(eventType==UNKNOWN) eventType=WENU;
 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
@@ -724,6 +732,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  if((mass < 55 || mass > 125)) continue;
 	  
 	  doFill=true;
+          isZ=1;
 	if(eventType==UNKNOWN) eventType=ZEE;
 	  TreeSetDiElectronVar(*eleIter1, *eleIter2);
 	  
@@ -803,6 +812,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     // save the event in the tree
     if(HighEtaSC1!= EESuperClustersHandle->end()){
       doFill=true;
+      isZ=1;
       TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
       if(doExtraCalibTree){
 	TreeSetExtraCalibVar(*PatEle1, *HighEtaSC1);
@@ -1217,6 +1227,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     chargeEle[-index] = 0;
     etaEle[-index]    = 0; 
     phiEle[-index]    = 0;
+    isEBEle[-index]   = 0;
     return;
   }   
 
@@ -1224,6 +1235,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   chargeEle[index] = electron1.charge();
   etaEle[index]    = electron1.eta(); // degli elettroni
   phiEle[index]    = electron1.phi();
+  isEBEle[-index]   = electron1.isEB();
+
 
   if(electron1.ecalDrivenSeed()){
     if(electron1.trackerDrivenSeed()) recoFlagsEle[index]=3;
@@ -1404,6 +1417,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
     chargeEle[-index] = 0;
     etaEle[-index]    = 0;
     phiEle[-index]    = 0;
+    isEBEle[-index]   = 0;
     return;
   }
 
@@ -1413,6 +1427,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   chargeEle[index] = -100; // dont know the charge for SC
   etaEle[index]    = electron1.eta(); // eta = etaSC
   phiEle[index]    = electron1.phi();
+  isEBEle[index]   = -100;
 
   recoFlagsEle[index] = -1; // define -1 as a SC
 
@@ -1738,12 +1753,16 @@ void ZNtupleDumper::InitExtraCalibTree(){
  
   extraCalibTree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[2]/I");
 
+  extraCalibTree->Branch("recoFlagRecHitSCEle1", &(recoFlagRecHitSCEle[0]));
+  extraCalibTree->Branch("recoFlagRecHitSCEle2", &(recoFlagRecHitSCEle[1]));
   extraCalibTree->Branch("rawIdRecHitSCEle1", &(rawIdRecHitSCEle[0]));
   extraCalibTree->Branch("rawIdRecHitSCEle2", &(rawIdRecHitSCEle[1]));
   extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
   extraCalibTree->Branch("XRecHitSCEle2", &(XRecHitSCEle[1]));
   extraCalibTree->Branch("YRecHitSCEle1", &(YRecHitSCEle[0]));
   extraCalibTree->Branch("YRecHitSCEle2", &(YRecHitSCEle[1]));
+  extraCalibTree->Branch("ZRecHitSCEle1", &(ZRecHitSCEle[0]));
+  extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
   extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
   extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
   extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
@@ -1752,6 +1771,10 @@ void ZNtupleDumper::InitExtraCalibTree(){
   extraCalibTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
   extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
   extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
+
+  extraCalibTree->Branch("isW",&isW, "isW/I");
+  extraCalibTree->Branch("isZ",&isZ, "isZ/I");
+  extraCalibTree->Branch("isEBEle",&isEBEle, "isEBEle[2]/I");
 
   return;
 }
@@ -1776,6 +1799,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   rawIdRecHitSCEle[index].clear();
   XRecHitSCEle[index].clear();
   YRecHitSCEle[index].clear();
+  ZRecHitSCEle[index].clear();
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
@@ -1784,6 +1808,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   //  EcalIntercalibConstantMap icMap = icHandle->get()
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
+  isEBEle[index] = electron1.isEB();
   
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
   const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
@@ -1805,11 +1830,13 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
         EBDetId recHitId(detitr->first);
 	XRecHitSCEle[index].push_back(recHitId.ieta());
 	YRecHitSCEle[index].push_back(recHitId.iphi());
+	ZRecHitSCEle[index].push_back(recHitId.zside());
       }
       else{
         EEDetId recHitId(detitr->first);
 	XRecHitSCEle[index].push_back(recHitId.ix());
 	YRecHitSCEle[index].push_back(recHitId.iy());
+	ZRecHitSCEle[index].push_back(recHitId.zside());
       }
       energyRecHitSCEle[index].push_back(oneHit->energy());
       // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
@@ -1842,6 +1869,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
   rawIdRecHitSCEle[index].clear();
   XRecHitSCEle[index].clear();
   YRecHitSCEle[index].clear();
+  ZRecHitSCEle[index].clear();
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
@@ -1877,6 +1905,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
       EBDetId recHitId(hitId);
       XRecHitSCEle[index].push_back(recHitId.ieta());
       YRecHitSCEle[index].push_back(recHitId.iphi());
+      ZRecHitSCEle[index].push_back(recHitId.zside());
     }
     else if ( hitId.subdetId() == EcalEndcap )
     {
@@ -1890,6 +1919,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
       EEDetId recHitId(hitId);
       XRecHitSCEle[index].push_back(recHitId.ix());
       YRecHitSCEle[index].push_back(recHitId.iy());
+      ZRecHitSCEle[index].push_back(recHitId.zside());
     }
     else
     {
