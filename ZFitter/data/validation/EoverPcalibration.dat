@@ -1,0 +1,4 @@
+#################input list for the E/p calibration ############################
+#d    selected            /afs/cern.ch/user/l/lbrianza/work/public/ntuple_numEvent100.root
+#d    extraCalibTree      /afs/cern.ch/user/l/lbrianza/work/public/extraCalibTree.root
+d    selected            /afs/cern.ch/user/l/lbrianza/work/public/RUND_DoubleElectron.root
