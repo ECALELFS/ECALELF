@@ -4,49 +4,9 @@
 
 Compile the package :  scramv1 b -j16
 
-List of codes for intercalibration:
+List of codes:
 
-1) Intercalibration on EB (Ecal Barrel) :
-
-Run the code: FastCalibratorEB cfg/FastCalibrator_EB_split_cfg.py
-
-Paramters to set in the cfg file:   -> inputFile = Root file input data to analyse WZtoenu
-                                    -> inputFileDeadXtal= Add dead Channel to evaluate the effect on the IC
-                                    -> inputTree =  tree name
-                                    -> isMiscalib = Miscalibration 5% option  
-                                    -> isSaveEPDistribution = save E/p pdf 
-                                    -> isEPselection = apply E/p selection setted in the .cc
-                                    -> isR9selection = apply R9 selection > 0.9 
-                                    -> isMCTruth = use calibration E/E_{Truth}
-                                    -> outputFile = output file
-                                    -> numberOfEvents = -1 (all statistic) 
-                                    -> useZ = 1 (use Z event) 0 (no Z event in IC procedure)
-                                    -> useW = 1 (use W event) 0 (no W event in IC procedure)
-                                    -> splitStat = 1 (split odd and even event) 0 (no split)
-                                    -> nLoops = number of L3 iteration
-
-2) Intercalibration on EE (Ecal EndCaps) :
-
-Run the code: FastCalibratorEE cfg/FastCalibrator_EE_split_cfg.py
-
-Paramters to set in the cfg file:   -> inputFile = Root file input data to analyse WZtoenu
-                                    -> inputFileDeadXtal= Add dead Channel to evaluate the effect on the IC
-                                    -> inputTree =  tree name
-                                    -> isMiscalib = Miscalibration 5% option  
-                                    -> isSaveEPDistribution = save E/p pdf 
-                                    -> isEPselection = apply E/p selection setted in the .cc
-                                    -> isR9selection = apply R9 selection > 0.9 
-                                    -> isfbrem = apply fbrem selection < 0.4
-                                    -> isMCTruth = use calibration E/E_{Truth}
-                                    -> outputFile = output file
-                                    -> numberOfEvents = -1 (all statistic) 
-                                    -> useZ = 1 (use Z event) 0 (no Z event in IC procedure)
-                                    -> useW = 1 (use W event) 0 (no W event in IC procedure)
-                                    -> splitStat = 1 (split odd and even event) 0 (no split)
-                                    -> nLoops = number of L3 iteration
-
-
-1b-2b) CalibrationPlots.cpp -->    draw results of calibration (run it after FastCalibratorEB (EE))
+1) CalibrationPlots.cpp -->    draw results of calibration (run it after FastCalibratorEB (EE))
 
 Run the code: CalibrationPlots cfg/calibrationPlots_EB_cfg.py
 

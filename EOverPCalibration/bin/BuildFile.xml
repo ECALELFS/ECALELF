@@ -8,8 +8,6 @@
 <export>
 <lib name="1"/>
 </export>
-<bin file="FastCalibratorEB.cpp" name="FastCalibratorEB"></bin>
-<bin file="FastCalibratorEE.cpp" name="FastCalibratorEE"></bin>
 <bin file="RateHLTvsEta.cpp" name="RateHLTvsEta"> </bin>
 <bin file="OccupancyPlot.cpp" name="OccupancyPlot"> </bin>
 <bin file="MomentumCorrection_MC.cpp" name="MomentumCorrection_MC"> </bin>

@@ -138,7 +138,6 @@ void FastCalibratorEE::Init(TTree *tree){
   fChain->SetBranchStatus("energySCEle", 1);             fChain->SetBranchAddress("energySCEle", &energySCEle, &b_energySCEle);
   fChain->SetBranchStatus("etaSCEle", 1);             fChain->SetBranchAddress("etaSCEle", &etaSCEle, &b_etaSCEle);
   fChain->SetBranchStatus("esEnergySCEle", 1);             fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle, &b_esEnergySCEle);
-  fChain->SetBranchStatus("e3x3SCEle", 1);             fChain->SetBranchAddress("e3x3SCEle", &e3x3SCEle, &b_e3x3SCEle);
   fChain->SetBranchStatus("pAtVtxGsfEle", 1);             fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle, &b_pAtVtxGsfEle);
   fChain->SetBranchStatus("fbremEle", 1);             fChain->SetBranchAddress("fbremEle", &fbremEle, &b_fbremEle);
   fChain->SetBranchStatus("isEBEle", 1);             fChain->SetBranchAddress("isEBEle", &isEBEle, &b_isEBEle);
