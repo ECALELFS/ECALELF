@@ -459,7 +459,7 @@ int main(int argc, char **argv) {
     ("useZ", po::value<int>(&useZ)->default_value(1),"use Z events") 
     ("useW", po::value<int>(&useW)->default_value(1),"use W events") 
     ("splitStat", po::value<int>(&splitStat)->default_value(1),"split statistic")             
-    ("nLoops", po::value<int>(&nLoops)->default_value(1),"number of iteration of the L3 algorithm") 
+    ("nLoops", po::value<int>(&nLoops)->default_value(20),"number of iteration of the L3 algorithm") 
     ("isDeadTriggerTower", po::value<bool>(&isDeadTriggerTower)->default_value(false),"") 
     ("inputFileDeadXtal", po::value<string>(&inputFileDeadXtal)->default_value("NULL"),"") 
     ;
