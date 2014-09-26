@@ -704,7 +704,7 @@ process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
-if(options.isCrab=='1'):
+if(options.isCrab==1):
     pathPrefix=""
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
