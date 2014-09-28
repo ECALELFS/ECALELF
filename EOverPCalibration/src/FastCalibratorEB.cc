@@ -121,8 +121,6 @@ void FastCalibratorEB::Init(TTree *tree){
   fChain->SetBranchStatus("runNumber", 1);   fChain->SetBranchAddress("runNumber", &runNumber, &b_runNumber);
   fChain->SetBranchStatus("lumiBlock", 1);  fChain->SetBranchAddress("lumiBlock", &lumiBlock, &b_lumiBlock);
   fChain->SetBranchStatus("eventNumber", 1); fChain->SetBranchAddress("eventNumber", &eventNumber, &b_eventNumber);
-  fChain->SetBranchStatus("isW", 1);     fChain->SetBranchAddress("isW", &isW, &b_isW);
-  fChain->SetBranchStatus("isZ", 1);     fChain->SetBranchAddress("isZ", &isZ, &b_isZ);
   
   fChain->SetBranchStatus("chargeEle", 1);             fChain->SetBranchAddress("chargeEle", chargeEle);
   fChain->SetBranchStatus("etaEle", 1);             fChain->SetBranchAddress("etaEle", &etaEle, &b_etaEle);
@@ -134,7 +132,6 @@ void FastCalibratorEB::Init(TTree *tree){
   fChain->SetBranchStatus("esEnergySCEle", 1);             fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle, &b_esEnergySCEle);
   fChain->SetBranchStatus("pAtVtxGsfEle", 1);             fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle, &b_pAtVtxGsfEle);
   fChain->SetBranchStatus("fbremEle", 1);             fChain->SetBranchAddress("fbremEle", &fbremEle, &b_fbremEle);
-  fChain->SetBranchStatus("isEBEle", 1);             fChain->SetBranchAddress("isEBEle", &isEBEle, &b_isEBEle);
   fChain->SetBranchStatus("energyMCEle", 1);             fChain->SetBranchAddress("energyMCEle", &energyMCEle, &b_energyMCEle);
   fChain->SetBranchStatus("etaMCEle", 1);             fChain->SetBranchAddress("etaMCEle", &etaMCEle, &b_etaMCEle);
   fChain->SetBranchStatus("phiMCEle", 1);             fChain->SetBranchAddress("phiMCEle", &phiMCEle, &b_phiMCEle);
@@ -229,9 +226,9 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 
    float pIn, FdiEta;
 
-   ///! Tight electron from W or Z only barrel
+   ///! Tight electron from W or Z only barrel (if chargeEle[1]==0: event from W)
    
-   if ( isEBEle[0] == 1 && (( useW == 1 && isW == 1 ) ||  ( useZ== 1 && isZ == 1 ))) {
+   if ( fabs(etaSCEle[0]) < 1.479 && (( useW == 1 && chargeEle[1]==0 ) ||  ( useZ== 1 && chargeEle[1]!=0 ))) {
 
     FdiEta = energySCEle[0]/rawEnergySCEle[0]; /// FEta approximation
     
@@ -309,7 +306,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
   }
   ///=== Second medium electron from Z
   
-  if ( isEBEle[1] == 1 && (( useW == 1 && isW == 1 ) || ( useZ == 1 && isZ == 1 )) ){
+   if ( fabs(etaSCEle[1]) < 1.479 && ( useZ == 1 && chargeEle[1]!=0 ) ){
 
     FdiEta = energySCEle[1]/rawEnergySCEle[1]; /// FEta approximation
  
@@ -519,9 +516,9 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
         std::map<int,double> map;
         bool skipElectron=false;
        
-        /// Tight electron information from W and Z, it depends on the flag variable isW, isZ
-	
-        if ( isEBEle[0] == 1 && (( useW == 1 && isW == 1 ) || ( useZ == 1 && isZ == 1 )) ) {
+        /// Tight electron information from W and Z
+
+        if ( fabs(etaSCEle[0]) < 1.479 && (( useW == 1 && chargeEle[1]==0 ) || ( useZ == 1 && chargeEle[1]!=0 )) ) {
                   
          /// SCL energy containment correction
           FdiEta = energySCEle[0]/rawEnergySCEle[0];
@@ -646,7 +643,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
         skipElectron = false;
       
         /// Ele2 medium from Z only Barrel
-        if ( isEBEle[1] == 1 && (( useW == 1 && isW == 1 ) || ( useZ == 1 && isZ == 1 )) ) {
+        if ( fabs(etaSCEle[1]) < 1.479 && ( useZ == 1 && chargeEle[1]!=0 ) ) {
   
           FdiEta = energySCEle[1]/rawEnergySCEle[1];
           // Electron energy
