@@ -295,6 +295,31 @@ fi
 
 
 ###############################
+case $DOTREE in
+
+	1) 
+		OUTFILES="ntuple.root"
+		;;
+	2)
+		OUTFILES="extraCalibTree.root"
+		;;
+	3)
+		OUTFILES="ntuple.root eleIDTree.root"
+		;;
+	4)
+		OUTFILES="extraEleIDTree.root"
+		;;
+	5)
+		OUTFILES="ntuple.root,eleIDTree.root"
+		;;
+	6)
+		OUTFILES="extraCalibTree.root eleIDTree.root"
+		;;
+	7)
+		OUTFILES="ntuple.root extraCalibTree.root eleIDTree.root"
+		;;
+
+esac
 
 
 

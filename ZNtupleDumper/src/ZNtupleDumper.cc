@@ -344,6 +344,7 @@ private:
   //==============================
 
   //============================== check ele-id and iso
+  TFile *eleIDTreeFile;
   TTree *eleIDTree;
   Float_t sigmaIEtaIEtaSCEle[2];
   Float_t sigmaIPhiIPhiSCEle[2];
@@ -357,6 +358,7 @@ private:
   Int_t maxNumberOfExpectedMissingHits[2];
   Float_t pfMVA[2];
   Float_t eleIDloose[2], eleIDmedium[2], eleIDtight[2];
+	Int_t nEle;
   //==============================
 
   //==============================  
@@ -431,7 +433,7 @@ private:
     WENU,
     ZSC,
     PARTGUN,
-    UNKNOWN,
+    LOUIE,
     DEBUG
   }eventType_t;
 
@@ -506,7 +508,7 @@ ZNtupleDumper::~ZNtupleDumper()
 void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   //  using namespace edm;
-  eventType= isPartGun ? PARTGUN : UNKNOWN;
+  eventType= isPartGun ? PARTGUN : LOUIE;
 
   pEvent = &iEvent;
   pSetup = &iSetup;
@@ -566,7 +568,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	else if(hltName_str.find("ZElectron")!=std::string::npos)
 	  eventType=ZEE;
 	else if(hltName_str.find("SingleElectron")!=std::string::npos)
-	  eventType=UNKNOWN;
+	  eventType=LOUIE;
 	// this paths are exclusive, then we can skip the check of the others
 	//
 	//	std::cout << alcaSkimPathNames.triggerName(*alcaSkimPath_itr) << "\t" << eventType << std::endl;
@@ -686,7 +688,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if(doEleIDTree){
       TreeSetEleIDVar(*eleIter1, *eleIter2);
     }
-  } else if(eventType==ZEE || eventType==WENU || eventType==UNKNOWN){
+  } else if(eventType==ZEE || eventType==WENU || eventType==LOUIE){
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 	 eleIter1 != electronsHandle->end();
 	 eleIter1++){
@@ -700,7 +702,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if( eleIter1->et()<30) continue;
 
 	doFill=true;	
-	if(eventType==UNKNOWN) eventType=WENU;
+	if(eventType==LOUIE) eventType=WENU;
 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
@@ -711,6 +713,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if(doEleIDTree){
 	  TreeSetEleIDVar(*eleIter1, 0);
 	  TreeSetEleIDVar(*eleIter1, -1);
+			nEle = electronsHandle->size();
+			std::cout << nEle << std::endl;
 	}
       }else { //ZEE or UNKNOWN
 	// take only the fist di-electron pair (highest pt)
@@ -724,7 +728,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  if((mass < 55 || mass > 125)) continue;
 	  
 	  doFill=true;
-	if(eventType==UNKNOWN) eventType=ZEE;
+	if(eventType==LOUIE) eventType=ZEE;
 	  TreeSetDiElectronVar(*eleIter1, *eleIter2);
 	  
 	  if(doExtraCalibTree){
@@ -732,16 +736,35 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  }
 	  if(doEleIDTree){
 	    TreeSetEleIDVar(*eleIter1, *eleIter2);
+			nEle = electronsHandle->size();
+			std::cout << nEle << std::endl;
 	  }
 	  if(doPdfSystTree && isMC){
 	    TreeSetPdfSystVar(iEvent);
 	    //pdfSystTree->Fill();
 	  }
 	}
+
+	if(electronsHandle->size() < 2) eventType = LOUIE;
+	
+	doFill=true;	
+	if(eventType==LOUIE) eventType=WENU;
+	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
+	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
+
+	if(doExtraCalibTree){
+	  TreeSetExtraCalibVar(*eleIter1, 0);
+	  TreeSetExtraCalibVar(*eleIter1, -1);
+	}
+	if(doEleIDTree){
+	  TreeSetEleIDVar(*eleIter1, 0);
+	  TreeSetEleIDVar(*eleIter1, -1);
+	}
+
       }
     }
   } 
-  if (eventType==ZSC || eventType==UNKNOWN){
+  if (eventType==ZSC || eventType==LOUIE){
     
     //leading pt electron in EB (patElectrons should be pt-ordered)
     // iterators storing pat Electons and HighEta SCs
@@ -814,7 +837,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   if(doFill){
     tree->Fill();
     if(doExtraCalibTree)  extraCalibTree->Fill();
-    if(doEleIDTree)       eleIDTree->Fill();
+    if(doEleIDTree)      eleIDTree->Fill();
   }
   delete clustertools;
   return;
@@ -859,8 +882,17 @@ void ZNtupleDumper::beginJob()
     extraCalibTree->SetDirectory(extraCalibTreeFile);
     InitExtraCalibTree();
   }
+
   if(doEleIDTree){
-    eleIDTree = fs->make<TTree>("eleIDTree","");
+		eleIDTreeFile = new TFile("eleIDTree.root","recreate");
+    if(eleIDTreeFile->IsZombie()){
+      throw cms::Exception("OutputError") <<  "Output tree for extra calib not created (Zombie): " << foutName;
+      return;
+    }
+		eleIDTreeFile->cd();
+		eleIDTree = new TTree("eleIDTree","eleIDTree");
+		eleIDTree->SetDirectory(eleIDTreeFile);
+    //eleIDTree = fs->make<TTree>("eleIDTree","");
     InitEleIDTree();
   }
   
@@ -899,6 +931,14 @@ void ZNtupleDumper::endJob()
     extraCalibTree->Write();  
     extraCalibTreeFile->Close();
   }
+  if(doEleIDTree){
+    eleIDTree->BuildIndex("runNumber","eventNumber");
+    eleIDTreeFile->cd();
+    eleIDTree->Write();  
+    eleIDTreeFile->Close();
+  }
+
+
   for(int i=ZEE; i <= DEBUG; i++){
     std::cout << "[NTUPLEDUMPER] EventTypeCounter[" << i << "]\t"<< eventTypeCounter[i] << std::endl;
   }  
@@ -1933,7 +1973,7 @@ void ZNtupleDumper::InitEleIDTree(){
   
   //  tree = new TTree("selected",fChain->GetTitle());
   std::cout << "[STATUS] InitEleIDTree" << std::endl;
-  if(eleIDTree==NULL) return;
+  if(eleIDTree==NULL) {std::cout << "NULL" << std::endl;}
   
   eleIDTree->Branch("runNumber",     &runNumber,     "runNumber/I");
   eleIDTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
@@ -1951,6 +1991,7 @@ void ZNtupleDumper::InitEleIDTree(){
   eleIDTree->Branch("pfMVA", pfMVA, "pfMVA[2]/F");
   eleIDTree->Branch("hasMatchedConversion", hasMatchedConversion, "hasMatchedConversion[2]/b");
   eleIDTree->Branch("maxNumberOfExpectedMissingHits", maxNumberOfExpectedMissingHits, "maxNumberOfExpectedMissingHits[2]/I");
+  eleIDTree->Branch("nEle", &nEle, "nEle/I");
   return;
 }
 
@@ -1979,6 +2020,7 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
   pfMVA[index]   = electron1.mva();
   hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
   maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();
+	
 
 //   if (primaryVertexHandle->size() > 0) {
 //     reco::VertexRef vtx(primaryVertexHandle, 0);    
