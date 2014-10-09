@@ -24,4 +24,3 @@
 <export>
    <lib name="1"/>
 </export>
-<Flags CppDefines="CMSSW_7_0_X"/>
