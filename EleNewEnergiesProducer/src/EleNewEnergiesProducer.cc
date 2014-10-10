@@ -27,7 +27,8 @@
 
 // system include files
 #include <memory>
-#include <TString.h>
+//#include <TString.h>
+
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -121,7 +122,7 @@ private:
   edm::InputTag conversionsProducerTAG;
 
   std::string foutName;
-  TString r9weightsFilename;
+//  TString r9weightsFilename;
   std::string puWeightFile;
 
 private:
