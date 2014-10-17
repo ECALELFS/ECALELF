@@ -437,6 +437,8 @@ int main(int argc, char **argv) {
   EoverPOption.add_options()
     ("EOverPCalib",  "call the E/p calibration")
     ("isBarrel", po::value<int>(&isBarrel)->default_value(1),"1=barrel, 0=endcap")
+    ("doEB", "do EoP IC calibration for EB")
+    ("doEE", "do EoP IC calibration for EE")
     ("jsonFileName", po::value<string>(&jsonFileName)->default_value("../EOverPCalibration/json/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt"), "jsonFileName")
     ("isMiscalib", po::value<bool>(&isMiscalib)->default_value(false),"apply the initial miscalibration")
     ("miscalibMethod", po::value<int>(&miscalibMethod)->default_value(1),"miscalibration method")  
@@ -1165,7 +1167,7 @@ int main(int argc, char **argv) {
     mc  = (tagChainMap["s"])["selected"];
   }
 
-  if(vm.count("EOverPCalib") && isBarrel==1) {	
+  if(vm.count("EOverPCalib") && vm.count("doEB")) {	
 ///////// E/P calibration
 
     std::cout<<"---- START E/P CALIBRATION: BARREL ----"<<std::endl;
@@ -1397,7 +1399,7 @@ int main(int argc, char **argv) {
   }
 
 
-  if(vm.count("EOverPCalib") && isBarrel!=1) {	
+  if(vm.count("EOverPCalib") && vm.count("doEE")){
 ///////// E/P calibration
 
     std::cout<<"---- START E/P CALIBRATION: ENDCAP ----"<<std::endl;
