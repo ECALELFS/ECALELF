@@ -452,7 +452,7 @@ int main(int argc, char **argv) {
     ("fbremMax", po::value<float>(&fbremMax)->default_value(100.),"fbrem treshold")  
     ("isR9selection", po::value<bool>(&isR9selection)->default_value(false),"apply R9 selection")  
     ("R9Min", po::value<float>(&R9Min)->default_value(-1.),"R9 treshold")  
-    ("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("../EOverPCalibration/output/MomentumCalibration2012"),"input momentum scale")  
+    ("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/EOverPCalibration/MomentumCalibration2012"),"input momentum scale")  
     ("typeEB", po::value<string>(&typeEB)->default_value("eta1"),"")  
     ("typeEE", po::value<string>(&typeEE)->default_value("eta1"),"")  
     ("outputPath", po::value<string>(&outputPath)->default_value("output/output_runD/"),"output dir for E/P calibration")  
