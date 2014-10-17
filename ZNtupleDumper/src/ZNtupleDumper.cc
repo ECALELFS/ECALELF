@@ -335,12 +335,14 @@ private:
   Int_t nHitsSCEle[2];
   std::vector<int> recoFlagRecHitSCEle[2];
   std::vector<float>  rawIdRecHitSCEle[2];
-  std::vector<float>      XRecHitSCEle[2];
-  std::vector<float>      YRecHitSCEle[2];
+  std::vector<int>        XRecHitSCEle[2];
+  std::vector<int>        YRecHitSCEle[2];
+  std::vector<int>        ZRecHitSCEle[2];
   std::vector<float> energyRecHitSCEle[2];
   std::vector<float>     LCRecHitSCEle[2];
   std::vector<float>     ICRecHitSCEle[2];
   std::vector<float>  AlphaRecHitSCEle[2];
+
   //==============================
 
   //============================== check ele-id and iso
@@ -1225,6 +1227,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   etaEle[index]    = electron1.eta(); // degli elettroni
   phiEle[index]    = electron1.phi();
 
+
   if(electron1.ecalDrivenSeed()){
     if(electron1.trackerDrivenSeed()) recoFlagsEle[index]=3;
     else recoFlagsEle[index] = 2;
@@ -1738,12 +1741,16 @@ void ZNtupleDumper::InitExtraCalibTree(){
  
   extraCalibTree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[2]/I");
 
+  extraCalibTree->Branch("recoFlagRecHitSCEle1", &(recoFlagRecHitSCEle[0]));
+  extraCalibTree->Branch("recoFlagRecHitSCEle2", &(recoFlagRecHitSCEle[1]));
   extraCalibTree->Branch("rawIdRecHitSCEle1", &(rawIdRecHitSCEle[0]));
   extraCalibTree->Branch("rawIdRecHitSCEle2", &(rawIdRecHitSCEle[1]));
   extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
   extraCalibTree->Branch("XRecHitSCEle2", &(XRecHitSCEle[1]));
   extraCalibTree->Branch("YRecHitSCEle1", &(YRecHitSCEle[0]));
   extraCalibTree->Branch("YRecHitSCEle2", &(YRecHitSCEle[1]));
+  extraCalibTree->Branch("ZRecHitSCEle1", &(ZRecHitSCEle[0]));
+  extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
   extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
   extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
   extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
@@ -1776,6 +1783,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   rawIdRecHitSCEle[index].clear();
   XRecHitSCEle[index].clear();
   YRecHitSCEle[index].clear();
+  ZRecHitSCEle[index].clear();
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
@@ -1805,11 +1813,13 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
         EBDetId recHitId(detitr->first);
 	XRecHitSCEle[index].push_back(recHitId.ieta());
 	YRecHitSCEle[index].push_back(recHitId.iphi());
+	ZRecHitSCEle[index].push_back(recHitId.zside());
       }
       else{
         EEDetId recHitId(detitr->first);
 	XRecHitSCEle[index].push_back(recHitId.ix());
 	YRecHitSCEle[index].push_back(recHitId.iy());
+	ZRecHitSCEle[index].push_back(recHitId.zside());
       }
       energyRecHitSCEle[index].push_back(oneHit->energy());
       // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
@@ -1842,6 +1852,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
   rawIdRecHitSCEle[index].clear();
   XRecHitSCEle[index].clear();
   YRecHitSCEle[index].clear();
+  ZRecHitSCEle[index].clear();
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
@@ -1877,6 +1888,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
       EBDetId recHitId(hitId);
       XRecHitSCEle[index].push_back(recHitId.ieta());
       YRecHitSCEle[index].push_back(recHitId.iphi());
+      ZRecHitSCEle[index].push_back(recHitId.zside());
     }
     else if ( hitId.subdetId() == EcalEndcap )
     {
@@ -1890,6 +1902,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
       EEDetId recHitId(hitId);
       XRecHitSCEle[index].push_back(recHitId.ix());
       YRecHitSCEle[index].push_back(recHitId.iy());
+      ZRecHitSCEle[index].push_back(recHitId.zside());
     }
     else
     {
