@@ -222,7 +222,7 @@ private:
   // selection
   Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
-  Int_t  chargeEle[2];
+  Int_t  chargeEle[2]; ///< -100: SC, 0: no electron, -1 or +1: normal charge
   Float_t etaSCEle[2], phiSCEle[2]; ///< phi of the SC
   Float_t   etaEle[2],   phiEle[2]; ///< phi of the electron (electron object)
   Int_t isEBEle[2];
