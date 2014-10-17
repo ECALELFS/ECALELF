@@ -1,22 +1,10 @@
 #ifndef CalibrationUtils_h
 #define CalibrationUtils_h
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cmath>
+#include <TGraphErrors.h>
+#include <TH2F.h>
+#include <TEndcapRings.h>
 
-#include "TFile.h"
-#include "TChain.h"
-#include "TCanvas.h"
-#include "TPaveStats.h"
-#include "TH1F.h"
-#include "TF1.h"
-#include "TRandom3.h"
-#include "TGraphErrors.h"
-#include "TH2F.h"
-#include "TEndcapRings.h"
-#include "geometryUtils.h"
 
 
 //############## ECAL BARREL ####################

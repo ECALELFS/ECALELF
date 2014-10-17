@@ -28,23 +28,20 @@ SRCDIR=./src
 BUILDDIR=./bin
 OBJ_DIR=./lib
 
-EoPDir:=../EOverPCalibration
-EoPNtupleDir:=../NtuplePackage
+INCLUDENPDIR=../NtuplePackage/interface
+SRCNPDIR=../NtuplePackage/src
 
 #################
-INCLUDE=-I$(INCLUDEDIR) -I$(INCLUDEEPDIR) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
+INCLUDE=-I$(INCLUDEDIR) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
 LIB=-L$(BOOST)/lib -L/usr/lib64 # -L/usr/lib 
 
 
 #### Make the list of modules from the list of .cc files in the SRC directory
 MODULES=$(shell ls $(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
-MODULESEoP=$(shell ls $(EoPDir)/$(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
-MODULESEoPNtuples=$(shell ls $(EoPNtupleDir)/$(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
+
 #### Make the list of dependencies for a particular module
 
-default: $(MODULES)  ZFitter.exe
-
-#------------------------------ MODULES (static libraries)
+default: $(MODULES)
 
 MAKEDEPEND = -MMD  -MT '$@ lib/$*.d'
 
@@ -58,19 +55,7 @@ lib/%.o: $(SRCDIR)/%.cc
 
 -include $(MODULES:.o=.d)
 
-
-# $(OBJ_DIR)/setTDRStyle.o: $(SRC)/setTDRStyle.C $(INCLUDEDIR)/setTDRStyle.hh
-# 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/setTDRStyle.o $(SRC)/setTDRStyle.C 
-
-
-###### Main program
-ZFitter.exe: $(BUILDDIR)/ZFitter.exe
-$(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp 
-	cd $(EoPDir) && make
-	cd $(EoPNtupleDir) && make
-	@echo "---> Making ZFitter $(COMPILE.exe)"
-	@g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULESEoP) $(MODULESEoPNtuples) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
-	-lboost_program_options -lTreePlayer 
+#$(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o $(OBJ_DIR)/ZPtWeights_class.o $(OBJ_DIR)/hChain.o $(OBJ_DIR)/h2Chain.o $(OBJ_DIR)/readJSONFile.o $(OBJ_DIR)/CalibrationUtils.o $(OBJ_DIR)/TEndcapRings.o $(OBJ_DIR)/GetHashedIndexEB.o $(OBJ_DIR)/GetHashedIndexEE.o $(OBJ_DIR)/FastCalibratorEB.o $(OBJ_DIR)/FastCalibratorEE.o
 
 clean:
 	rm -f $(OBJ_DIR)/*.o

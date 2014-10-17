@@ -1,14 +1,6 @@
 #include "../interface/ntpleUtils.h"
 
 
-
-bool maggiore(double i, double j)
-{
-  return( i>j );
-}
-
-
-
 //  ------------------------------------------------------------
 
 
@@ -195,20 +187,20 @@ double deltaR(const double& eta1, const double& phi1,
 
 
 
-void Print4V(const ROOT::Math::XYZTVector& p)
-{
-  std::cout << std::fixed << std::setprecision(2)
-            << "(E,px,py,pz) = " 
-            << "(" << std::setw(8) << p.energy() 
-            << "," << std::setw(8) << p.px()
-            << "," << std::setw(8) << p.py()
-            << "," << std::setw(8) << p.pz()
-            << ")" 
-            << "\tpt = " 
-            << std::setw(7) << p.pt()
-            << "\teta = " 
-            << std::setw(6) << p.eta()
-            << "\tphi = " 
-            << std::setw(5) << p.phi()
-            << std::endl;
-}
+// void Print4V(const ROOT::Math::XYZTVector& p)
+// {
+//   std::cout << std::fixed << std::setprecision(2)
+//             << "(E,px,py,pz) = " 
+//             << "(" << std::setw(8) << p.energy() 
+//             << "," << std::setw(8) << p.px()
+//             << "," << std::setw(8) << p.py()
+//             << "," << std::setw(8) << p.pz()
+//             << ")" 
+//             << "\tpt = " 
+//             << std::setw(7) << p.pt()
+//             << "\teta = " 
+//             << std::setw(6) << p.eta()
+//             << "\tphi = " 
+//             << std::setw(5) << p.phi()
+//             << std::endl;
+// }

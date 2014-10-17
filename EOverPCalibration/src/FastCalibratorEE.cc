@@ -1,15 +1,11 @@
 #include "../interface/FastCalibratorEE.h"
 #include "../interface/GetHashedIndexEE.h"
-#include <TH2.h>
-#include <TF1.h>
-#include <TStyle.h>
-#include <TCanvas.h>
-#include <iostream>
-#include <vector>
 #include <fstream>
-#include <sstream>
-#include <TRandom.h>
-#include <TMath.h>
+#include <TRandom3.h>
+#include <TString.h>
+#include "../interface/CalibrationUtils.h"
+#include "../../NtuplePackage/interface/readJSONFile.h"
+
 
 /// Default constructor 
 FastCalibratorEE::FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, const std::string& typeEE, TString outEPDistribution):

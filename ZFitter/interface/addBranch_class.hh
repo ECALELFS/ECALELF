@@ -9,6 +9,7 @@
  * - invMassSigma
  * - iSM
  */
+
 /**
    \todo
    - move addbranch_pt to private and correct the usage in ZFitter.cpp
@@ -26,7 +27,8 @@
 #include <TBranch.h>
 #include <TChain.h>
 
-#include "EnergyScaleCorrection_class.h"
+#include "EnergyScaleCorrection_class.hh"
+
 
 using namespace std;
 

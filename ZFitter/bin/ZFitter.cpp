@@ -34,12 +34,12 @@ configuration files.
 #include "../interface/ZPtWeights_class.hh"
 
 #include "../interface/runDivide_class.hh"
-#include "../interface/EnergyScaleCorrection_class.h"
+#include "../interface/EnergyScaleCorrection_class.hh"
 #include "../interface/addBranch_class.hh"
 
 #include "../interface/RooSmearer.hh"
 
-#include "../src/nllProfile.cc"
+#include "../interface/nllProfile.hh"
 
 #include "../../NtuplePackage/interface/ntpleUtils.h"
 #include "../../EOverPCalibration/interface/CalibrationUtils.h"
@@ -163,7 +163,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag){
 
 void Dump(tag_chain_map_t& tagChainMap, TString tag="s", Long64_t firstentry=0){
   (tagChainMap[tag])["selected"]->Scan("etaEle:R9Ele:energySCEle_regrCorrSemiParV5_pho/cosh(etaSCEle):smearerCat:catName","","col=5:4:5:3:50",5,firstentry);
-};
+}
 
 /**
  * \param tagChainMap map of all the tags declared in the validation config file 

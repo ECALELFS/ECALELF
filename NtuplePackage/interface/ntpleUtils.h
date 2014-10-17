@@ -14,14 +14,9 @@
 #include "TH1F.h"
 #include "TChain.h"
 #include "TVector3.h"
-#include "Math/Vector3D.h"
-#include "Math/Vector4D.h"
-#include "Math/Boost.h"
-
-
-
-bool maggiore(double i, double j);
-
+//#include "Math/Vector3D.h"
+//#include "Math/Vector4D.h"
+//#include "Math/Boost.h"
 
 
 /** get the number of events from a list of files */
@@ -46,6 +41,6 @@ double deltaR (const double& eta1, const double& phi1,
 
 
 /** print 4-vector */
-void Print4V(const ROOT::Math::XYZTVector& p);
+//void Print4V(const ROOT::Math::XYZTVector& p);
 
 #endif
