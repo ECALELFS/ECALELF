@@ -34,7 +34,10 @@ INCLUDEDIR=./interface
 SRCDIR=./src
 BUILDDIR=./bin
 OBJ_DIR=./lib
-
+INCLUDEEPDIR=../EOverPCalibration/interface
+SRCEPDIR=../EOverPCalibration/src
+INCLUDENPDIR=../NtuplePackage/interface
+SRCNPDIR=../NtuplePackage/src
 
 #MODULES=hist_class
 #LINKER=g++
@@ -120,6 +123,41 @@ $(OBJ_DIR)/TestProposal.o: $(SRC)/TestProposal.cc $(INCLUDEDIR)/TestProposal.h
 	@echo "--> Making class: TestProposal"
 	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/TestProposal.o $(SRC)/TestProposal.cc
 
+$(OBJ_DIR)/hChain.o: $(SRCNPDIR)/hChain.cc $(INCLUDENPDIR)/hChain.h
+	@echo "--> Making class: hChain"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/hChain.o $(SRCNPDIR)/hChain.cc 
+
+$(OBJ_DIR)/h2Chain.o: $(SRCNPDIR)/h2Chain.cc $(INCLUDENPDIR)/h2Chain.h
+	@echo "--> Making class: h2Chain"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/h2Chain.o $(SRCNPDIR)/h2Chain.cc 
+
+$(OBJ_DIR)/readJSONFile.o: $(SRCNPDIR)/readJSONFile.cc $(INCLUDENPDIR)/readJSONFile.h
+	@echo "--> Making class: readJSONFile"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/readJSONFile.o $(SRCNPDIR)/readJSONFile.cc 
+
+$(OBJ_DIR)/CalibrationUtils.o: $(SRCEPDIR)/CalibrationUtils.cc $(INCLUDEEPDIR)/CalibrationUtils.h
+	@echo "--> Making class: CalibrationUtils"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/CalibrationUtils.o $(SRCEPDIR)/CalibrationUtils.cc 
+
+$(OBJ_DIR)/TEndcapRings.o: $(SRCEPDIR)/TEndcapRings.cc $(INCLUDEEPDIR)/TEndcapRings.h
+	@echo "--> Making class: TEndcapRings"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/TEndcapRings.o $(SRCEPDIR)/TEndcapRings.cc 
+
+$(OBJ_DIR)/GetHashedIndexEB.o: $(SRCEPDIR)/GetHashedIndexEB.cc $(INCLUDEEPDIR)/GetHashedIndexEB.h
+	@echo "--> Making class: GetHashedIndexEB"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/GetHashedIndexEB.o $(SRCEPDIR)/GetHashedIndexEB.cc 
+
+$(OBJ_DIR)/GetHashedIndexEE.o: $(SRCEPDIR)/GetHashedIndexEE.cc $(INCLUDEEPDIR)/GetHashedIndexEE.h
+	@echo "--> Making class: GetHashedIndexEE"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/GetHashedIndexEE.o $(SRCEPDIR)/GetHashedIndexEE.cc 
+
+$(OBJ_DIR)/FastCalibratorEB.o: $(SRCEPDIR)/FastCalibratorEB.cc $(INCLUDEEPDIR)/FastCalibratorEB.h
+	@echo "--> Making class: FastCalibratorEB"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/FastCalibratorEB.o $(SRCEPDIR)/FastCalibratorEB.cc 
+
+$(OBJ_DIR)/FastCalibratorEE.o: $(SRCEPDIR)/FastCalibratorEE.cc $(INCLUDEEPDIR)/FastCalibratorEE.h
+	@echo "--> Making class: FastCalibratorEE"
+	@g++ $(OPT) $(INCLUDE) -c -o $(OBJ_DIR)/FastCalibratorEE.o $(SRCEPDIR)/FastCalibratorEE.cc 
 
 
 #------------------------------ PRINCIPLE CLASS
@@ -151,7 +189,7 @@ $(BUILDDIR)/test.exe: test/test.cpp $(OBJ_DIR)/EnergyScaleCorrection_class.o # q
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 
 
-$(BUILDDIR)/ZFitter.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o $(OBJ_DIR)/ZPtWeights_class.o
+$(BUILDDIR)/ZFitter.exe: $(BUILDDIR)/ZFitter.cpp $(OBJ_DIR)/ZFit_class.o $(OBJ_DIR)/ElectronCategory_class.o EnergyScaleCorrection_class.o $(OBJ_DIR)/puWeights_class.o $(OBJ_DIR)/runDivide_class.o  $(OBJ_DIR)/r9Weights_class.o $(OBJ_DIR)/addBranch_class.o $(OBJ_DIR)/RooSmearer.o $(OBJ_DIR)/SmearingImporter.o $(OBJ_DIR)/ZPtWeights_class.o $(OBJ_DIR)/hChain.o $(OBJ_DIR)/h2Chain.o $(OBJ_DIR)/readJSONFile.o $(OBJ_DIR)/CalibrationUtils.o $(OBJ_DIR)/TEndcapRings.o $(OBJ_DIR)/GetHashedIndexEB.o $(OBJ_DIR)/GetHashedIndexEE.o $(OBJ_DIR)/FastCalibratorEB.o $(OBJ_DIR)/FastCalibratorEE.o
 	@echo "---> Making ZFitter"
 	@g++ $(OPT) $(INCLUDE) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
 	-o $(BUILDDIR)/ZFitter.exe $(BUILDDIR)/ZFitter.cpp  -lboost_program_options -lTreePlayer \
