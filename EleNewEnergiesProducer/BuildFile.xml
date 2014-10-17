@@ -24,3 +24,4 @@
 <flags EDM_PLUGIN="1"/>
 <Flags CppDefines="REGRESSION=4"/>
 #<Flags CppDefines="CMSSW42X=1"/>
+<Flags CXXFLAGS="-fPIC"/>

@@ -9,7 +9,7 @@ STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
 USER_REMOTE_DIR_BASE=group/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOBS=2000
+LUMIS_PER_JOBS=50
 DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
@@ -143,7 +143,7 @@ do
 	--extraName) EXTRANAME=$2;shift;;
         #name of the output files is hardcoded in ZNtupleDumper
 	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4;;
+	--doEleIDTree) let DOTREE=${DOTREE}+4;OUTFILES="${OUTFILES},eleIDTree.root";;
 	--doPdfSystTree) let DOTREE=${DOTREE}+8;;
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
@@ -297,9 +297,6 @@ fi
 ###############################
 
 
-
-
-
 #------------------------------
 
 UI_WORKING_DIR=$UI_WORKING_DIR/${TYPE}/${TAG}/${DATASETNAME}/${RUNRANGE}/${JSONNAME}/${EXTRANAME}
@@ -367,7 +364,7 @@ use_parent=0
 queue = 1nh
 [CAF]
 queue = cmscaf1nd
-resource = type==SLC5_64
+resource = type==SLC6_64
 
 [USER]
 
@@ -407,6 +404,8 @@ if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
 #else
     #echo "crab -c ${UI_WORKING_DIR} -submit"
 fi
+
+OUTFILES=`echo ${OUTFILES} | sed 's|,| |'`
 
 if [ -n "${CHECK}" ];then
     resubmitCrab.sh -u ${UI_WORKING_DIR}

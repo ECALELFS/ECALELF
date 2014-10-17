@@ -199,7 +199,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
-                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles)
+                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
+                          #  skipEvents = cms.untracked.uint32(2119)
                             )
 
 # try to drop as much as possible to reduce the running time
