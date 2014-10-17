@@ -20,7 +20,7 @@ if __name__ == '__main__':
     parser = OptionParser()
 
     parser.add_option ('--inputFile', action="store", dest="inputFile", default="data/validation/EoverPcalibration.dat", help="config file")
-    parser.add_option ("--isBarrel", action="store", dest="isBarrel", default="1", help="1=barrel, 0=endcap")
+    parser.add_option ("--isBarrel", action="store", dest="isBarrel", default=1, help="1=barrel, 0=endcap")
     parser.add_option ("--jsonFileName", action="store", dest="jsonFileName", default="../EOverPCalibration/json/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt", help="jsonFileName")
     parser.add_option ("--isMiscalib", action="store", dest="isMiscalib", default="false", help="apply the initial miscalibration")
     parser.add_option ("--miscalibMethod", action="store", dest="miscalibMethod", default="1", help="miscalibration method")
@@ -49,7 +49,12 @@ if __name__ == '__main__':
 
     (options, args) = parser.parse_args()
 
-    command = "ZFitter.exe --EOverPCalib -f %s --doEB %s --jsonFileName %s --isMiscalib %s --miscalibMethod %s --miscalibMap %s --isSaveEPDistribution %s --isMCTruth %s --isEPselection %s --isPtCut %s --PtMin %s --isfbrem %s --fbremMax %s --isR9selection %s --R9Min %s --inputMomentumScale %s --typeEB %s --typeEE %s --outputPath %s --outputFile %s --numberOfEvents %s --useZ %s --useW %s --splitStat %s --nLoops %s --isDeadTriggerTower %s --inputFileDeadXtal %s"%(options.inputFile, options.isBarrel, options.jsonFileName, options.isMiscalib, options.miscalibMethod, options.miscalibMap, options.isSaveEPDistribution, options.isMCTruth, options.isEPselection, options.isPtCut, options.PtMin, options.isfbrem, options.fbremMax, options.isR9selection, options.R9Min, options.inputMomentumScale, options.typeEB, options.typeEE, options.outputPath, options.outputFile, options.numberOfEvents, options.useZ, options.useW, options.splitStat, options.nLoops, options.isDeadTriggerTower, options.inputFileDeadXtal) 
+    if options.isBarrel==1:
+        command = "ZFitter.exe --EOverPCalib -f %s --doEB --jsonFileName %s --isMiscalib %s --miscalibMethod %s --miscalibMap %s --isSaveEPDistribution %s --isMCTruth %s --isEPselection %s --isPtCut %s --PtMin %s --isfbrem %s --fbremMax %s --isR9selection %s --R9Min %s --inputMomentumScale %s --typeEB %s --typeEE %s --outputPath %s --outputFile %s --numberOfEvents %s --useZ %s --useW %s --splitStat %s --nLoops %s --isDeadTriggerTower %s --inputFileDeadXtal %s"%(options.inputFile, options.jsonFileName, options.isMiscalib, options.miscalibMethod, options.miscalibMap, options.isSaveEPDistribution, options.isMCTruth, options.isEPselection, options.isPtCut, options.PtMin, options.isfbrem, options.fbremMax, options.isR9selection, options.R9Min, options.inputMomentumScale, options.typeEB, options.typeEE, options.outputPath, options.outputFile, options.numberOfEvents, options.useZ, options.useW, options.splitStat, options.nLoops, options.isDeadTriggerTower, options.inputFileDeadXtal) 
+
+    else:
+        command = "ZFitter.exe --EOverPCalib -f %s --doEE --jsonFileName %s --isMiscalib %s --miscalibMethod %s --miscalibMap %s --isSaveEPDistribution %s --isMCTruth %s --isEPselection %s --isPtCut %s --PtMin %s --isfbrem %s --fbremMax %s --isR9selection %s --R9Min %s --inputMomentumScale %s --typeEB %s --typeEE %s --outputPath %s --outputFile %s --numberOfEvents %s --useZ %s --useW %s --splitStat %s --nLoops %s --isDeadTriggerTower %s --inputFileDeadXtal %s"%(options.inputFile, options.jsonFileName, options.isMiscalib, options.miscalibMethod, options.miscalibMap, options.isSaveEPDistribution, options.isMCTruth, options.isEPselection, options.isPtCut, options.PtMin, options.isfbrem, options.fbremMax, options.isR9selection, options.R9Min, options.inputMomentumScale, options.typeEB, options.typeEE, options.outputPath, options.outputFile, options.numberOfEvents, options.useZ, options.useW, options.splitStat, options.nLoops, options.isDeadTriggerTower, options.inputFileDeadXtal) 
+
 
     currentDir = os.getcwd()+'/';
 
