@@ -52,10 +52,8 @@ if __name__ == '__main__':
     command = "ZFitter.exe --EOverPCalib -f %s --doEB %s --jsonFileName %s --isMiscalib %s --miscalibMethod %s --miscalibMap %s --isSaveEPDistribution %s --isMCTruth %s --isEPselection %s --isPtCut %s --PtMin %s --isfbrem %s --fbremMax %s --isR9selection %s --R9Min %s --inputMomentumScale %s --typeEB %s --typeEE %s --outputPath %s --outputFile %s --numberOfEvents %s --useZ %s --useW %s --splitStat %s --nLoops %s --isDeadTriggerTower %s --inputFileDeadXtal %s"%(options.inputFile, options.isBarrel, options.jsonFileName, options.isMiscalib, options.miscalibMethod, options.miscalibMap, options.isSaveEPDistribution, options.isMCTruth, options.isEPselection, options.isPtCut, options.PtMin, options.isfbrem, options.fbremMax, options.isR9selection, options.R9Min, options.inputMomentumScale, options.typeEB, options.typeEE, options.outputPath, options.outputFile, options.numberOfEvents, options.useZ, options.useW, options.splitStat, options.nLoops, options.isDeadTriggerTower, options.inputFileDeadXtal) 
 
     currentDir = os.getcwd()+'/';
-    storageDir = "/afs/cern.ch/user/l/lbrianza/work/PHD/ECALELF_EP/"
 
     print currentDir;
-    print storageDir;
 
     outScript = open("script/Job.sh","w");
 
@@ -66,7 +64,6 @@ if __name__ == '__main__':
     #outScript.write("\n cd /tmp/");
 
     outScript.write("\n"+ command )
-   #outScript.write("\n"+'cmsStage '+outFile+' '+storageDir);
 
     outScript.close();
 
