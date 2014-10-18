@@ -343,8 +343,6 @@ private:
   std::vector<float>     LCRecHitSCEle[2];
   std::vector<float>     ICRecHitSCEle[2];
   std::vector<float>  AlphaRecHitSCEle[2];
-  Int_t isW;
-  Int_t isZ;
 
   //==============================
 
@@ -659,8 +657,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
   
   bool doFill=false;
-  isW=0;
-  isZ=0;
   if(eventType==PARTGUN){
     pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
     pat::ElectronCollection::const_iterator eleIter2 = eleIter1;
@@ -707,7 +703,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	if( eleIter1->et()<30) continue;
 
 	doFill=true;	
-        isW=1; 
 	if(eventType==UNKNOWN) eventType=WENU;
 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
@@ -1772,8 +1767,6 @@ void ZNtupleDumper::InitExtraCalibTree(){
   extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
   extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
 
-  extraCalibTree->Branch("isW",&isW, "isW/I");
-  extraCalibTree->Branch("isZ",&isZ, "isZ/I");
   extraCalibTree->Branch("isEBEle",&isEBEle, "isEBEle[2]/I");
 
   return;

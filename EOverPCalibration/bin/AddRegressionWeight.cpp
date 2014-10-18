@@ -85,7 +85,7 @@ int main(int argc, char**argv){
  TMVA::Reader *TMVAreader_1 = new TMVA::Reader( "!Color:!Silent" );
  TMVA::Reader *TMVAreader_2 = new TMVA::Reader( "!Color:!Silent" );
  
- int ele1_isEB,isW;
+ int ele1_isEB;
  float ele1_eRegrInput_nPV,ele1_eRegrInput_r9,ele1_fbrem,ele1_eta,ele1_DphiIn,ele1_DetaIn,ele1_sigmaIetaIeta, ele1_E_true, ele1_scE, ele1_tkP,ele1_eRegrInput_etaW,ele1_eRegrInput_phiW,ele1_scERaw;
 
 
@@ -113,7 +113,6 @@ int main(int argc, char**argv){
 
 
  treeDATA -> SetBranchAddress("ele1_isEB",  &ele1_isEB);
- treeDATA -> SetBranchAddress("isW",  &isW);
  treeDATA -> SetBranchAddress("ele1_scE",  &ele1_scE);
  treeDATA -> SetBranchAddress("ele1_scERaw",  &ele1_scERaw);
  treeDATA -> SetBranchAddress("ele1_tkP",  &ele1_tkP);
@@ -407,7 +406,7 @@ if(RegionOfTraining=="EE"){
  TMVA::Reader *TMVAreader_2 = new TMVA::Reader( "!Color:!Silent" );
 
 
- int ele1_isEB,isW;
+ int ele1_isEB;
  float ele1_eRegrInput_nPV,ele1_eRegrInput_r9,ele1_fbrem,ele1_eta,ele1_DphiIn,ele1_DetaIn,ele1_sigmaIetaIeta, ele1_E_true, ele1_scE, ele1_tkP,ele1_eRegrInput_etaW,ele1_eRegrInput_phiW,ele1_scERaw;
 
 
@@ -436,7 +435,6 @@ if(RegionOfTraining=="EE"){
 
 
  treeDATA -> SetBranchAddress("ele1_isEB",  &ele1_isEB);
- treeDATA -> SetBranchAddress("isW",  &isW);
 
  if(isMC == true) treeDATA -> SetBranchAddress("ele1_E_true",  &ele1_E_true);
  treeDATA -> SetBranchAddress("ele1_scE",  &ele1_scE);
