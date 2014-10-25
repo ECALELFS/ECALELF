@@ -1,0 +1,15 @@
+diff --git a/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorTraditional.h b/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorTraditional.h
+--- a/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorTraditional.h
++++ b/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorTraditional.h
+@@ -16,10 +16,10 @@
+ #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+ #include "DataFormats/VertexReco/interface/VertexFwd.h"
+ #include "RecoEgamma/EgammaTools/interface/EcalClusterLocal.h"
++#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+ #include "RooArgList.h"
+ 
+ class GBRForest;
+-class EcalClusterLazyTools;
+ 
+ class EGEnergyCorrectorTraditional {
+   public:
