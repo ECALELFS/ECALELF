@@ -1,0 +1,14 @@
+diff --git a/HiggsAnalysis/GBRLikelihoodEGTools/plugins/EGEnergyAnalyzerSemiParm.cc b/HiggsAnalysis/GBRLikelihoodEGTools/plugins/EGEnergyAnalyzerSemiParm.cc
+--- a/HiggsAnalysis/GBRLikelihoodEGTools/plugins/EGEnergyAnalyzerSemiParm.cc
++++ b/HiggsAnalysis/GBRLikelihoodEGTools/plugins/EGEnergyAnalyzerSemiParm.cc
+@@ -142,8 +142,8 @@
+   Handle<reco::PhotonCollection> hPhotonProduct;
+   iEvent.getByLabel("photons",hPhotonProduct);
+   
+-  EcalClusterLazyTools lazyTools(iEvent, iSetup, edm::InputTag("reducedEcalRecHitsEB"), 
+-                                 edm::InputTag("reducedEcalRecHitsEE"));  
++  EcalClusterLazyTools lazyTools(iEvent, iSetup, consumes<EcalRecHitCollection>(edm::InputTag("reducedEcalRecHitsEB")), 
++                                 consumes<EcalRecHitCollection>(edm::InputTag("reducedEcalRecHitsEE")));  
+   
+   Handle<reco::VertexCollection> hVertexProduct;
+   iEvent.getByLabel("offlinePrimaryVerticesWithBS", hVertexProduct);      

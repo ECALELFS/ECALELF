@@ -1,0 +1,19 @@
+diff --git a/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorSemiParm.h b/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorSemiParm.h
+--- a/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorSemiParm.h
++++ b/HiggsAnalysis/GBRLikelihoodEGTools/interface/EGEnergyCorrectorSemiParm.h
+@@ -16,6 +16,7 @@
+ #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+ #include "DataFormats/VertexReco/interface/VertexFwd.h"
+ #include "RecoEgamma/EgammaTools/interface/EcalClusterLocal.h"
++#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+ #include "RooArgList.h"
+ 
+ class RooWorkspace;
+@@ -24,7 +25,6 @@
+ class RooAbsReal;
+ class HybridGBRForest;
+ class HybridGBRForestD;
+-class EcalClusterLazyTools;
+ 
+ class EGEnergyCorrectorSemiParm {
+   public:
