@@ -36,7 +36,14 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Framework/interface/ESHandle.h"
+
+#ifdef 7_2_X
+   #include "FWCore/Framework/interface/ESHandle.h"
+   #include "FWCore/Utilities/interface/EDGetToken.h"
+#else
+   #include "FWCore/Framework/interface/ESHandle.h"
+#endif
+
 // for the output
 #include "DataFormats/Common/interface/ValueMap.h"
 
@@ -111,8 +118,14 @@ private:
   
   /// input tag for electrons
   edm::InputTag electronsTAG;
+
+#ifdef CMSSW_7_2_X
+  edm::EDGetTokenT <EcalRecHitCollection> recHitCollectionEBTAG;
+  edm::EDGetTokenT <EcalRecHitCollection> recHitCollectionEETAG;
+#else
   edm::InputTag recHitCollectionEBTAG;
   edm::InputTag recHitCollectionEETAG;
+#endif
 
   /// input rho
   edm::InputTag rhoTAG;
@@ -204,8 +217,15 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   vtxCollectionTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
   BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
   electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
+
+#ifdef CMSSW_7_2_X
+  recHitCollectionEBTAG(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEB" ))),
+  recHitCollectionEETAG(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEE" ))),
+#else
   recHitCollectionEBTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEB")),
   recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
+#endif
+
   rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
   conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
   //  foutName(iConfig.getParameter<std::string>("foutName")),
