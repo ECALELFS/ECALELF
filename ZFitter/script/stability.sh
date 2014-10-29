@@ -183,7 +183,7 @@ cat > tmp/stability_macro.C <<EOF
   gROOT->ProcessLine(".L src/setTDRStyle.C+");
   gROOT->ProcessLine(".L macro/stability.C+");
 
-  setTDRStyle1();
+  setTDRStyle();
   tdrStyle->SetOptTitle(0);
    gROOT->SetStyle("tdrStyle");  
   TCanvas *c;
@@ -454,7 +454,7 @@ cat > tmp/stability_macro.C <<EOF
   gROOT->ProcessLine(".L src/setTDRStyle.C+");
   gROOT->ProcessLine(".L macro/stability.C+");
 
-  setTDRStyle1();
+  setTDRStyle();
   tdrStyle->SetOptTitle(0);
    gROOT->SetStyle("tdrStyle");  
   TCanvas *c;
