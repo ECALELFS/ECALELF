@@ -758,7 +758,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  }
 	}
 
-	if(electronsHandle->size() < NELE &&  eventType = SINGLEELE);
+	if(electronsHandle->size() < NELE &&  eventType == SINGLEELE);
 	
 	doFill=true;	
 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
@@ -838,7 +838,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     // save the event in the tree
     if(HighEtaSC1!= EESuperClustersHandle->end()){
       doFill=true;
-      isZ=1;
       TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
       if(doExtraCalibTree){
 	TreeSetExtraCalibVar(*PatEle1, *HighEtaSC1);
@@ -1964,71 +1963,37 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
     }
     else
     {
-      // get out the DetId of the hit
-      DetId hitId = (detitr -> first);
-      // define a iterator of the EcalRecoHit
-      EcalRecHitCollection::const_iterator oneHit(NULL);
-
-      // treat it seperately for EB and EE
-      if ( hitId.subdetId() == EcalBarrel)
-	{
-	  oneHit = recHitsEB->find( hitId );
-	  // protection of the missing hit
-	  if(oneHit==recHitsEB->end()){
-	    edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
-	    assert(0);
-	  }
-	  // redifine EBDetId and get EB hit position
-	  EBDetId recHitId(hitId);
-	  XRecHitSCEle[index].push_back(recHitId.ieta());
-	  YRecHitSCEle[index].push_back(recHitId.iphi());
-	}
-      else if ( hitId.subdetId() == EcalEndcap )
-	{
-	  oneHit = recHitsEE->find( hitId );
-	  // protection of the missing hit
-	  if(oneHit==recHitsEE->end()){
-	    edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
-	    assert(0);
-	  }
-	  // redifine EEDetId and get EE hit position
-	  EEDetId recHitId(hitId);
-	  XRecHitSCEle[index].push_back(recHitId.ix());
-	  YRecHitSCEle[index].push_back(recHitId.iy());
-	}
-      else
-	{
-	  // error if not able to find the hit in EE and EB
-	  edm::LogError("ZNtupleDumper") << "SC hit cannot be found in EB and EE. " ;
-	  assert(0);
-	}
-
-      // other information
-      recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-      rawIdRecHitSCEle[index].push_back(hitId.rawId());
-
-      energyRecHitSCEle[index].push_back(oneHit->energy());
-
-      // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-      // 1) get laser correction coefficient
-      LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(hitId, runTime_));
-      // 2) get intercalibration
-      EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(hitId);
-      EcalIntercalibConstant icalconst = 1.;
-      if( icalit!=icalMap.end() ) {
-	icalconst = (*icalit);
-	// std::cout << "icalconst set to: " << icalconst << std::endl;
-      } else {
-	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (hitId).rawId() << "bailing out";
+        // error if not able to find the hit in EE and EB
+	edm::LogError("ZNtupleDumper") << "SC hit cannot be found in EB and EE. " ;
 	assert(0);
-      }
-      // 3) get adc2GeV
-      //float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ?
-      // float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-      ICRecHitSCEle[index].push_back(icalconst);
- 
     }
+   
+    // other information
+    recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
+    rawIdRecHitSCEle[index].push_back(hitId.rawId());
 
+    energyRecHitSCEle[index].push_back(oneHit->energy());
+
+    // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
+    // 1) get laser correction coefficient
+    LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(hitId, runTime_));
+    // 2) get intercalibration
+    EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(hitId);
+    EcalIntercalibConstant icalconst = 1.;
+    if( icalit!=icalMap.end() ) {
+      icalconst = (*icalit);
+      // std::cout << "icalconst set to: " << icalconst << std::endl;
+    } else {
+      edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (hitId).rawId() << "bailing out";
+      assert(0);
+    }
+    // 3) get adc2GeV
+    //float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ); 
+    // float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
+    ICRecHitSCEle[index].push_back(icalconst);
+ 
+  }
+  
   return;
 }
 
@@ -2084,12 +2049,10 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
 
 #ifdef CMSSW_7_2_X
   pfMVA[index]   = electron1.mva_e_pi();
-
   hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
   maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
 #else
   pfMVA[index]   = electron1.mva();
-
   hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
   maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();
 #endif
