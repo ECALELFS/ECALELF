@@ -497,7 +497,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       dzvtx = electron.gsfTrack()->dz();
     }
 
-#ifdef CMSSW_7_0_X
+#ifdef CMSSW_7_2_X
     double iso_ch = electron.pfIsolationVariables().sumChargedHadronPt;
     double iso_em = electron.pfIsolationVariables().sumPhotonEt;
     double iso_nh = electron.pfIsolationVariables().sumNeutralHadronEt;
@@ -532,7 +532,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     Bool_t isConv = fabs(dist) < 0.02 && fabs(dcot) < 0.02;
 #endif
 
-#ifdef
+#ifdef CMSSW_7_2_X
     Int_t innerHits = electron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS);
 #else
     Int_t innerHits = electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
