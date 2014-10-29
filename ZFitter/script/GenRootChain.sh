@@ -159,7 +159,7 @@ cat > tmp/load.C <<EOF
   gROOT->ProcessLine(".L src/setTDRStyle.C");
   gROOT->ProcessLine(".L macro/addChainWithFriends.C+");
 
-  setTDRStyle1();
+  setTDRStyle();
 
 
   TChain *data   = (TChain *) _file0->Get("selected");

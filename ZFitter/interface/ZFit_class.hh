@@ -35,7 +35,7 @@
 #include "BW_CB_pdf_class.hh"
 #include "Cruijff_pdf_class.hh"
 
-#include "setTDRStyle.hh"
+#include "setTDRStyle.h"
 //#include <functions.h>
 
 

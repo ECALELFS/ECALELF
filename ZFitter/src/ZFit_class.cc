@@ -89,7 +89,7 @@ ZFit_class::ZFit_class(TChain *data_chain_,
 
   SetPDF_model();
 
-  setTDRStyle1();
+  setTDRStyle();
   //  TGaxis::SetMaxDigits(3);
   //  gStyle->SetLegendFillColor(0);
   gStyle->SetLegendBorderSize(1);
