@@ -3,6 +3,7 @@
 <use name="rootgraphics"/>
 <use name="Calibration/NtuplePackage"/>
 <use name="Calibration/EOverPCalibration"/>
+<use name="Calibration/ZFitter"/>
 <use name="FWCore/PythonParameterSet"/>
 <flags CXXFLAGS="-g -Wall -fpermissive -std=c++0x -Wno-reorder"/>
 <export>
