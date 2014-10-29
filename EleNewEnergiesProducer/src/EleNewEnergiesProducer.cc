@@ -37,7 +37,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#ifdef 7_2_X
+#ifdef CMSSW_7_2_X
    #include "FWCore/Framework/interface/ESHandle.h"
    #include "FWCore/Utilities/interface/EDGetToken.h"
 #else
