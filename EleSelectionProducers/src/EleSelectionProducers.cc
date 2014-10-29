@@ -192,7 +192,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.getByLabel(rhoTAG,rhoHandle);
 
   //------------------------------ ISO DEPOSITS
-#ifdef CMSSW_7_0_X
+#ifdef CMSSW_7_2_X
 #else
   iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
   if(!chIsoValsHandle.isValid()){
