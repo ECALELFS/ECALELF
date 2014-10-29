@@ -26,7 +26,7 @@
 #include "../../NtuplePackage/interface/ntpleUtils.h"
 #include "../interface/CalibrationUtils.h"
 #include "../interface/DrawingUtils.h"
-#include "../interface/setTDRStyle.h"
+#include "../../ZFitter/interface/setTDRStyle.h"
 
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
