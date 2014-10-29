@@ -2,7 +2,7 @@
 /** \file 
  * function library for ZFitter.cpp
  */
-#include "nllProfile.hh"
+#include "../interface/nllProfile.hh"
 
 TGraph *GetProfile(RooRealVar *var1, RooRealVar *var2, RooSmearer& smearer, bool trueEval, double rho, double Emean, float phi){
   if(var2==NULL) return GetProfile(var1, smearer, -1, false, trueEval, rho, Emean);
