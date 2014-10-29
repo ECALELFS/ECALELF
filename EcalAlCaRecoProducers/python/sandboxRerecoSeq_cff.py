@@ -8,7 +8,7 @@ electronRecoSeq = cms.Sequence( ecalRecHit * ecalCompactTrigPrim * ecalTPSkim + 
 
 from RecoParticleFlow.PFClusterProducer.particleFlowCluster_cff import *
 #pfClusteringECAL = cms.Sequence(particleFlowRecHitECAL*particleFlowClusterECAL)
-rerecoPFClusteringSeq = cms.Sequence(pfClusteringECAL + pfClusteringPS)
+rerecoPFClusteringSeq = cms.Sequence(pfClusteringPS + pfClusteringECAL)
 
 from  RecoEcal.Configuration.RecoEcal_cff import *
 #correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
