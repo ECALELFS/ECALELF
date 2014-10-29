@@ -5,6 +5,8 @@ import subprocess
 import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+from Configuration.StandardSequences.RawToDigi_Data_cff import *
+from RecoLocalCalo.Configuration.RecoLocalCalo_cff import *
 
 #sys.path(".")
 
@@ -117,6 +119,8 @@ if(options.doTree>0 and options.doTreeOnly==1):
 #              |___/
 
 
+CMSSW_VERSION=os.getenv("CMSSW_VERSION")
+CMSSW_BASE=os.getenv("CMSSW_BASE")
 
 process = cms.Process(processName)
 
@@ -141,7 +145,10 @@ from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
 process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
+if (re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*",CMSSW_VERSION)):
+    process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
+    from Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff import *
+
 # this module provides:
 #process.seqALCARECOEcalUncalElectron  = uncalibRecHitSeq
 process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
@@ -219,8 +226,6 @@ process.options = cms.untracked.PSet(
 # Other statements
 #
 
-CMSSW_VERSION=os.getenv("CMSSW_VERSION")
-CMSSW_BASE=os.getenv("CMSSW_BASE")
 if(len(options.tagFile)>0):
     execfile(options.tagFile) # load the GT 
     process.GlobalTag = RerecoGlobalTag 
@@ -326,7 +331,10 @@ if(MC):
         )
     process.PUDumperSeq *= process.PUDumper
     
-process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
+if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
+    process.load('Calibration.ALCARAW_RECO.WZElectronSkims_72X_cff')
+else:
+    process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = myEleCollection,
@@ -396,7 +404,7 @@ else:
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
 
-if(re.match("CMSSW_6_.*", CMSSW_VERSION)):
+if(re.match("CMSSW_6_.*", CMSSW_VERSION) or re.match("CMSSW_7_.*", CMSSW_VERSION)):
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
 else:
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
@@ -517,6 +525,7 @@ process.GenZSCSkimFilter = cms.EDFilter("SkimCheck",
 process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
                                        type= cms.int32(1)
                                        )
+
 process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
                                                process.GenSkimFilter *
                                                process.ZeeFilter
@@ -551,21 +560,47 @@ process.pathWElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
                                     process.GenWSkimFilter
                                     )
 
+
+
 # ALCARAW
-process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
+if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
+    uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)  #containing the new local reco for 72X
+
+    process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                        process.pfIsoEgamma *
                                                        (process.ALCARECOEcalCalElectronPreSeq +
-                                                        process.seqALCARECOEcalUncalElectron ))
-process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                        uncalibRecHitSeq ))
+    process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
                                                    process.pfIsoEgamma *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
-                                                    process.seqALCARECOEcalUncalElectron ))
-process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                    uncalibRecHitSeq ))
+    process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
                                                      process.pfIsoEgamma *
                                                      ~process.ZeeFilter * process.ZSCFilter *
                                                      (process.ALCARECOEcalCalElectronPreSeq +
+                                                      uncalibRecHitSeq ))
+    process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                   process.pfIsoEgamma *
+                                                   ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
+                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                    uncalibRecHitSeq ))
+
+else:
+
+    process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
+                                                       process.pfIsoEgamma *
+                                                       (process.ALCARECOEcalCalElectronPreSeq +
+                                                        process.seqALCARECOEcalUncalElectron ))
+    process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                   process.pfIsoEgamma *
+                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                    process.seqALCARECOEcalUncalElectron ))
+    process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+                                                    process.pfIsoEgamma *
+                                                     ~process.ZeeFilter * process.ZSCFilter *
+                                                     (process.ALCARECOEcalCalElectronPreSeq +
                                                       process.seqALCARECOEcalUncalElectron ))
-process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
                                                    process.pfIsoEgamma *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
@@ -780,12 +815,16 @@ process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedEl
 process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
 if(options.type=="ALCARERECO"):        
-    process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
-    process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
+    if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
+        process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEB")
+        process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE")
+    else:
+        process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
+        process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
 
     process.correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
     process.correctedMulti5x5SuperClustersWithPreshower.corectedSuperClusterCollection = 'endcapRecalibSC'
-    if(re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*", CMSSW_VERSION)):
+    if(re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*", CMSSW_VERSION) or re.match("CMSSW_7_.*", CMSSW_VERSION)):
         process.multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
 
     # in sandboxRereco
