@@ -9,12 +9,12 @@ checkVERSION(){
 	CMSSW_5_3_14_patch2)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
-	CMSSW_7_0_*)
+	CMSSW_7_2_*)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
 	*)
 	    echo "[ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
-	    echo "        Be sure that you don't want 4_2_8_patch7 or CMSSW_4_4_5_patch2 or 5_3_14_patch2 or CMSSW_7_0_*"
+	    echo "        Be sure that you don't want 5_3_14_patch2 or CMSSW_7_2_*"
 	    
 	    exit 1
 	    ;;
@@ -57,6 +57,17 @@ if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
 	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    ;;
+	lbrianza)
+	    git clone git@github.com:lbrianza/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    case $CMSSW_VERSION in
+		CMSSW_7_2_*)
+		    cd $myDir/ALCARAW_RECO/
+		    git checkout EoP-devel-720pre7
+		    cd -
+		    ;;
+		*)
+	    esac
 	    ;;
 	hengne)
 	    git clone git@github.com:hengne/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
@@ -172,11 +183,21 @@ case $CMSSW_VERSION in
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
 
 	sed -i 's|REGRESSION=3|REGRESSION=4|' Calibration/*/BuildFile.xml
-	echo "<Flags CppDefines=\"CMSSW_7_0_X\"/>" >> $myDir/EleSelectionProducers/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EleSelectionProducers/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EOverPCalibration/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EOverPCalibration/bin/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EleNewEnergiesProducer/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/ZFitter/BuildFile.xml
+	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/ZNtupleDumper/BuildFile.xml
+
 
 	echo "[STATUS] applying patch for CMSSW_5_X and following"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
 
+	echo "[STATUS] applying patch for CMSSW_7_2_0_pre7"
+	patch -p1 < $myDir/ALCARAW_RECO/test/EGEnergyCorrectorSemiParm.h.patch >> setup.log || exit 1
+	patch -p1 < $myDir/ALCARAW_RECO/test/EGEnergyCorrectorTraditional.h.patch >> setup.log || exit 1
+	patch -p1 < $myDir/ALCARAW_RECO/test/EGEnergyAnalyzerSemiParm.cc.patch >> setup.log || exit 1
 
     if [ ! -e "$CMSSW_BASE/src/RecoEcal/EgammaCoreTools" ];then
         git-cms-addpkg RecoEcal/EgammaCoreTools >> setup.log || exit 1
