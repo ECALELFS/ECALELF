@@ -3,18 +3,18 @@
 * 
 \section RERECO RERECO
 The ReReco and the ntuple production can be run with the script 
-ALCARAW_RECO/scripts/RerecoQuick.sh
-from the directory ALCARAW_RECO
+EcalAlCaRecoProducers/scripts/RerecoQuick.sh
+from the directory EcalAlCaRecoProducers
 
 \subsection RERECO_inputFiles Input files
--# ALCARAW_RECO/config/reRecoTags/tag_name.py: 
+-# EcalAlCaRecoProducers/config/reRecoTags/tag_name.py: 
       is the file where the GT and the list of tags 
       to be used for the rereco and the ntuple production 
       have to be specified.
       "tag_name" is the name that will be automatically 
       assigned to all the directories created for the rereco 
       and the ntuples (the crab directory in 
-      ALCARAW_RECO/prod_alcarereco 
+      EcalAlCaRecoProducers/prod_alcarereco 
       and the directories in eos with the reco files and the ntuples).
       \b More info in \ref TAGFILES
 -# alcaraw_datasets.dat is the file with the list of the available alcaraw files
@@ -39,7 +39,7 @@ from the directory ALCARAW_RECO
 
 \subsection RERECO_instructions Instructions
 
--# <b>CREATE</b> the tag_name.py in ALCARAW_RECO/config/reRecoTags directory \n
+-# <b>CREATE</b> the tag_name.py in EcalAlCaRecoProducers/config/reRecoTags directory \n
   Se more detailes below, in section "TAG FILE" 
 -# check the syntax of the tag_name.py file
 \code
@@ -104,7 +104,7 @@ git commit -m "rereco tag_name done" alcarereco_datasets.dat ntuple_datasets.dat
 \section TAGFILES TAG FILES
 To run the Rereco with a new set of conditions it is necessary to have a configuration file with the tags.
 
-An example of a configuration file can be found in Calibration/ALCARAW_RECO/config/reRecoTags/test.py
+An example of a configuration file can be found in Calibration/EcalAlCaRecoProducers/config/reRecoTags/test.py
 
 Here an example:
 \code

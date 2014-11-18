@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 #restarting from ECAL RAW to reconstruct amplitudes and energies
 # create uncalib recHit collections
-from Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff import *
+from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *
 from Configuration.StandardSequences.RawToDigi_Data_cff import *
 from RecoLocalCalo.Configuration.RecoLocalCalo_cff import *
 ecalUncalibRecHitSequence = cms.Sequence(ecalGlobalUncalibRecHit * ecalDetIdToBeRecovered)

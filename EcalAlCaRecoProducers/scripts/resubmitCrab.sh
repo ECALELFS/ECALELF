@@ -197,10 +197,10 @@ done
 
 
 echo $intervals
-echo $okJobList | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/ALCARAW_RECO/awk/compact.awk | sed 's|,$||'
+echo $okJobList | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/awk/compact.awk | sed 's|,$||'
 if [ -n "$intervals" ];then
-    crab -c $ui_working_dir/ -resubmit `echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/ALCARAW_RECO/awk/compact.awk | sed 's|,$||'`
-#echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/ALCARAW_RECO/awk/compact.awk | sed 's|,$||'
+    crab -c $ui_working_dir/ -resubmit `echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/awk/compact.awk | sed 's|,$||'`
+#echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/awk/compact.awk | sed 's|,$||'
 else
     if [ "`echo $okJobList |wc -w`" == "$nJobs" ];then
 	echo "[STATUS] All jobs are finished SUCCESSFULLY!"

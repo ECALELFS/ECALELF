@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cmsRun ALCARAW_RECO/python/alcaSkimming.py \
+cmsRun EcalAlCaRecoProducers/python/alcaSkimming.py \
 type="ALCARECO" \
 skim="ZSkim" \
 doTree=1 \

@@ -1,4 +1,4 @@
-#include "Calibration/ALCARAW_RECO/interface/AlCaECALRecHitReducer.h"
+#include "Calibration/EcalAlCaRecoProducers/plugins/AlCaECALRecHitReducer.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/SiStripElectron.h"

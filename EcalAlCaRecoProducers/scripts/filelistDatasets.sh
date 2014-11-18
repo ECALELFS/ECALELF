@@ -1,5 +1,5 @@
 #!/bin/bash
-source $CMSSW_BASE/src/Calibration/ALCARAW_RECO/scripts/prodFunctions.sh
+source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.sh
 
 usage(){
     echo "`basename $0` parsed_option_line"

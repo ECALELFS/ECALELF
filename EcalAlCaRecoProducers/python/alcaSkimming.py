@@ -134,17 +134,17 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration.EventContent.EventContent_cff')
 
 # import of ALCARECO sequences
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
-from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
+from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
-process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
+process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
 # this module provides:
 #process.seqALCARECOEcalUncalElectron  = uncalibRecHitSeq
-process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
+process.load('Calibration.EcalAlCaRecoProducers.sandboxRerecoSeq_cff')    # ALCARERECO
 # this module provides:
 # process.electronRecoSeq
 # process.electronClusteringSeq # with ele-SC reassociation
@@ -158,7 +158,7 @@ process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
 # pdfSystematics
-process.load('Calibration.ALCARAW_RECO.pdfSystematics_cff')
+process.load('Calibration.EcalAlCaRecoProducers.pdfSystematics_cff')
 
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
@@ -317,7 +317,7 @@ elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='
 
 ################################# FILTERING EVENTS
 process.PUDumperSeq = cms.Sequence()
-#process.load('Calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
+#process.load('Calibration.EcalAlCaRecoProducers.trackerDrivenFinder_cff')
 if(MC):
     # PUDumper
     process.TFileService = cms.Service(
@@ -326,7 +326,7 @@ if(MC):
         )
     process.PUDumperSeq *= process.PUDumper
     
-process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
+process.load('Calibration.EcalAlCaRecoProducers.WZElectronSkims_cff')
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = myEleCollection,
@@ -744,7 +744,7 @@ if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
     #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
 
 
-process.load('Calibration.ALCARAW_RECO.valuemaptraslator_cfi')
+process.load('Calibration.EcalAlCaRecoProducers.valuemaptraslator_cfi')
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib

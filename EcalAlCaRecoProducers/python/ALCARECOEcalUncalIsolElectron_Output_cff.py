@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-from Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff import *
+from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff import *
 import copy
 
 OutALCARECOEcalUncalElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop_)
