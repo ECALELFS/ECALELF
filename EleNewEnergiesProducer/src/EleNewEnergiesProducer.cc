@@ -27,7 +27,6 @@
 
 // system include files
 #include <memory>
-#include <TString.h>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -121,7 +120,6 @@ private:
   edm::InputTag conversionsProducerTAG;
 
   std::string foutName;
-  TString r9weightsFilename;
   std::string puWeightFile;
 
 private:
@@ -232,12 +230,6 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
   regrPhoJoshV8_SemiParam7TeVtrainFile(iConfig.getParameter<std::string>("regrPhoJoshV8_SemiParam7TeVtrainFile")),
 
   ptSplit(iConfig.getParameter<bool>("ptSplit"))
-//     r9weightsFilename(iConfig.getParameter<std::string>("r9weightsFile")),
-//     puWeightFile(iConfig.getParameter<std::string>("puWeightFile")),
-//     puWeights(),
-//     oddEventFilter(iConfig.getParameter<bool>("oddEventFilter")),
-//     scaleCorrections_(iConfig.getParameter<std::string>("correctionFileName"),iConfig.getParameter<std::string>("correctionType"))
-  
 {
    //register your products
 /* Examples

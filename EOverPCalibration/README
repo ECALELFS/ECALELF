@@ -1,0 +1,120 @@
+-------------------------------------
+------- Intercalibration Tool -------
+-------------------------------------
+
+Compile the package :  scramv1 b -j16
+
+List of codes:
+
+1) CalibrationPlots.cpp -->    draw results of calibration (run it after FastCalibratorEB (EE))
+
+Run the code: CalibrationPlots cfg/calibrationPlots_EB_cfg.py
+
+
+
+3) CompareSCalibMCTruth_EB.cpp --> Comaparison beetween scalib MC with the truth in EB
+
+Run the code: CompareSCalibMCTruth_EB.exe cfg/comparisonEB_cfg.py
+
+Paramters to set in the cfg file:   -> inputFile = Root file input MC scalib to analyse
+                                    -> fileMCTruth = MC truth IC map for EB
+                                    -> fileMCRecoIC = MC Reco IC map for EB 
+                                    -> fileStatPrecision = stat precision on non scalib MC in EB
+
+
+
+4) CompareSCalibMCTruth_EE.cpp --> Comaparison beetween scalib MC with the truth in EE
+
+Run the code: CompareSCalibMCTruth_EE cfg/comparisonEE_cfg.py
+
+Paramters to set in the cfg file:   -> inputFile = Root file input MC scalib to analyse
+                                    -> fileMCTruth = MC truth IC map for EE
+                                    -> fileMCRecoIC = MC Reco IC map for EE 
+                                    -> fileStatPrecision = stat precision on non scalib MC in EE
+                                    -> outputFile = output file for residual systematic
+
+
+
+5) CompareICSet.cpp  --> compare two set of ICs taken by repository 
+
+Run the code: CompareICSet.exe file1_IC_Set.txt file2_IC_Set.txt
+
+
+
+6) CalibrationMomentum.cpp --> study momentum scale vs phi in EB and EE
+
+Run the code: CalibrationMomentum cfg/calibrationMomentum_cfg.py
+
+Paramters to set in the cfg file:   -> TreeName = name of the tree contained in each root file input
+                                    -> infileDATA = txt file with the list of .root data files
+                                    -> infileMC = txt file with the list of .root MC files
+                                    -> WeightforMC = .root file for weight MC events
+                                    -> nPhiBinsEB = number of phi bin in EB -> for data and MC dist
+                                    -> nPhiBinsEE = number of phi bin in EE -> for data and MC dist
+                                    -> nEtaBinsEB = number of eta bin in EB -> for template, data and MC dist
+                                    -> nEtaBinsEB = number of eta bin in EE -> for template, data and MC dist
+                                    -> nPhiBinsTempEB = number of phi bin in EB -> for template
+                                    -> nPhiBinsTempEE = number of phi bin in EB -> for template
+                                    -> rebinEB = rebin Template, MC and Data in EB
+                                    -> rebinEE = rebin Template, MC and Data in EE
+                                    -> outputFile = path of .root output file
+
+
+
+7) test/NormalizeIC_EE.cpp -->    make normalization eta ring EE+ and EE- 
+
+Run the code: ./bin/NormalizeIC_EE.exe cfg/NormalizeEE_cfg.cfg
+
+Paramters to set in the cfg file:   -> Inputfile1 = L3 calib output on full stat
+                                    -> Inputfile2 = L3 calib output on half stat (even or odd)
+                                    -> Inputfile3 = L3 calib output on half stat (even or odd)
+                                    -> evalStat = 0 -> normalize only file1 1 -> normalize all files 1,2 and 3
+                                    -> isMC = true -> calib mC false -> calib data
+                                    -> fileType = for plot image production
+                                    -> dirName = dir for output plots
+                                    -> printPlots = true -> print false -> no print
+
+Normalized map are insert in the input root file with the name h_scale_map_EEP h_scale_map_EEM
+
+
+
+#####################  OBSOLETE  ##########
+
+8) test/CalibrationBarrel.cpp --> make precision plot + normalization + momentum and crack correction in EB
+                                  make .txt IC output file
+
+Run the code: ./bin/CalibrationBarrel.exe cfg/calibrationEB_cfg.cfg
+
+Paramters to set in the cfg file:   -> Inputfile1 = L3 calib output on full stat
+                                    -> Inputfile2 = L3 calib output on half stat (even or odd)
+                                    -> Inputfile3 = L3 calib output on half stat (even or odd)
+                                    -> inputMomentumScale = momentum scale correction
+                                    -> evalStat = 0 -> no statistical precision 1 -> stat prec
+                                    -> isMC = true -> calib mC false -> calib data
+                                    -> fileType = for plot image production
+                                    -> dirName = dir for output plots
+                                    -> printPlots = true -> print false -> no print
+                                    -> outputTxt = output IC txt file
+
+
+
+
+8) test/CalibrationEndcap.cpp --> make precision plot + momentum correction + sys add in EE
+                                  make .txt IC output file
+
+Run the code: ./bin/CalibrationEndcap.exe cfg/calibrationEE_cfg.cfg
+
+Paramters to set in the cfg file:   -> Inputfile1 = L3 calib output on full stat
+                                    -> Inputfile2 = L3 calib output on half stat (even or odd)
+                                    -> Inputfile3 = L3 calib output on half stat (even or odd)
+                                    -> inputMomentumScale = momentum scale correction
+                                    -> SystematicToAdd = file from scalib MC of the residual sys to Add
+                                    -> evalStat = 0 -> no statistical precision 1 -> stat prec
+                                    -> isMC = true -> calib mC false -> calib data
+                                    -> fileType = for plot image production
+                                    -> dirName = dir for output plots
+                                    -> printPlots = true -> print false -> no print
+                                    -> outputTxt = output IC txt file
+
+
+ 

@@ -2,6 +2,7 @@
 #define zeeevent_hh
 
 /// class ZeeEvent ZeeEvent.h "interface/ZeeEvent.h"
+
 class ZeeEvent{
  public:
   float energy_ele1;

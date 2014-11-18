@@ -1,0 +1,5 @@
+/afs/cern.ch/user/l/lbrianza/work/public/RUND_DoubleElectron.root
+#/gwteray/users/brianza/ntuple.root
+#/gwteray/users/gerosa/ECALNTUPLES/22JanReReco/SingleElectron_RUN2012A_22Jan2013-v1.root
+#/gwteray/users/gerosa/ECALNTUPLES/22JanReReco/SingleElectron_RUN2012B_22Jan2013-v1.root
+#/gwteray/users/gerosa/ECALNTUPLES/22JanReReco/SingleElectron_RUN2012D_22Jan2013-v1.root
