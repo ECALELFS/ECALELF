@@ -39,8 +39,8 @@ from the directory ALCARAW_RECO
 
 \subsection RERECO_instructions Instructions
 
--# create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory
-   Se more detailes below, in section "TAG FILE" 
+-# <b>CREATE</b> the tag_name.py in ALCARAW_RECO/config/reRecoTags directory \n
+  Se more detailes below, in section "TAG FILE" 
 -# check the syntax of the tag_name.py file
 \code
 \endcode
