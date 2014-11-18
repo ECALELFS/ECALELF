@@ -744,7 +744,7 @@ if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
     #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
 
 
-process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
+process.load('Calibration.ALCARAW_RECO.valuemaptraslator_cfi')
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib

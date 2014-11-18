@@ -30,7 +30,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
-#include "Calibration/EleSelectionProducers/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
+#include "Calibration/ZNtupleDumper/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 

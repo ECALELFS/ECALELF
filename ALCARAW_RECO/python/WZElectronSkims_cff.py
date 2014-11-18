@@ -141,9 +141,6 @@ PassingTightId = selectedElectrons.clone(
     )
 
 #------------------------------ electronID producer
-from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
-# process.EleSelectionProducers
-
 SCselector = cms.EDFilter("SuperClusterSelector",
                           src = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower'),
                           cut = cms.string('(eta>2.4 || eta<-2.4) && (energy*sin(position.theta)> 15)')
