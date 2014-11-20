@@ -235,7 +235,6 @@ private:
   Int_t  chargeEle[2]; ///< -100: SC, 0: no electron, -1 or +1: normal charge
   Float_t etaSCEle[2], phiSCEle[2]; ///< phi of the SC
   Float_t   etaEle[2],   phiEle[2]; ///< phi of the electron (electron object)
-  Int_t isEBEle[2];
 
   Int_t recoFlagsEle[2];           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
 
@@ -1268,7 +1267,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     chargeEle[-index] = 0;
     etaEle[-index]    = 0; 
     phiEle[-index]    = 0;
-    isEBEle[-index]   = 0;
     return;
   }   
 
@@ -1276,7 +1274,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   chargeEle[index] = electron1.charge();
   etaEle[index]    = electron1.eta(); // degli elettroni
   phiEle[index]    = electron1.phi();
-  isEBEle[-index]   = electron1.isEB();
 
 
   if(electron1.ecalDrivenSeed()){
@@ -1458,7 +1455,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
     chargeEle[-index] = 0;
     etaEle[-index]    = 0;
     phiEle[-index]    = 0;
-    isEBEle[-index]   = 0;
     return;
   }
 
@@ -1468,7 +1464,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   chargeEle[index] = -100; // dont know the charge for SC
   etaEle[index]    = electron1.eta(); // eta = etaSC
   phiEle[index]    = electron1.phi();
-  isEBEle[index]   = -100;
 
   recoFlagsEle[index] = -1; // define -1 as a SC
 
@@ -1813,8 +1808,6 @@ void ZNtupleDumper::InitExtraCalibTree(){
   extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
   extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
 
-  extraCalibTree->Branch("isEBEle",&isEBEle, "isEBEle[2]/I");
-
   return;
 }
 
@@ -1847,7 +1840,6 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   //  EcalIntercalibConstantMap icMap = icHandle->get()
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
-  isEBEle[index] = electron1.isEB();
   
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
   const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
