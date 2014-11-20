@@ -9,6 +9,9 @@ checkVERSION(){
 	CMSSW_5_3_14_patch2)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
+	CMSSW_5_3_21)
+	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
+	    ;;
 	CMSSW_7_2_*)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
@@ -60,14 +63,9 @@ if [ ! -d "$myDir" ];then
 	    ;;
 	lbrianza)
 	    git clone git@github.com:lbrianza/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-	    case $CMSSW_VERSION in
-		CMSSW_7_2_*)
-		    cd $myDir/ALCARAW_RECO/
-		    git checkout EoP-devel-720pre7
-		    cd -
-		    ;;
-		*)
-	    esac
+	    cd $myDir/ALCARAW_RECO/
+	    git checkout EoP-devel-720pre7
+	    cd -
 	    ;;
 	hengne)
 	    git clone git@github.com:hengne/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
@@ -128,6 +126,7 @@ case $CMSSW_VERSION in
         cd RecoEgamma/EgammaTools >> setup.log || exit 1
         git checkout RecoEgamma-EgammaTools-V09-00-01 >> setup.log || exit 1
         cd - >> setup.log || exit 1
+	patch -p0 < $myDir/ALCARAW_RECO/test/ggPFPhotons.cc.patch >> setup.log || exit 1
         git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools >> setup.log || exit 1
         cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
 	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
