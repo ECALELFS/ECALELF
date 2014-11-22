@@ -9,7 +9,10 @@ checkVERSION(){
 	CMSSW_5_3_14_patch2)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
-	CMSSW_7_0_*)
+	CMSSW_5_3_21)
+	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
+	    ;;
+	CMSSW_7_2_*)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
 	*)
@@ -117,6 +120,7 @@ case $CMSSW_VERSION in
         cd RecoEgamma/EgammaTools >> setup.log || exit 1
         git checkout RecoEgamma-EgammaTools-V09-00-01 >> setup.log || exit 1
         cd - >> setup.log || exit 1
+	patch -p1 < $myDir/ALCARAW_RECO/test/ggPFPhotons.cc.patch >> setup.log || exit 1
         git clone https://github.com/cms-analysis/EgammaAnalysis-ElectronTools EgammaAnalysis/ElectronTools >> setup.log || exit 1
         cd EgammaAnalysis/ElectronTools  >> setup.log || exit 1
 	git checkout EgammaAnalysis-ElectronTools-MD-21Apr2013-test-2 >> setup.log || exit 1
