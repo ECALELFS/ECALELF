@@ -329,11 +329,7 @@ if(MC):
         )
     process.PUDumperSeq *= process.PUDumper
     
-<<<<<<< HEAD:EcalAlCaRecoProducers/python/alcaSkimming.py
 process.load('Calibration.EcalAlCaRecoProducers.WZElectronSkims_cff')
-=======
-process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
->>>>>>> b1136f2... WZElectronSkims for 72x put into alcaskimming.py:ALCARAW_RECO/python/alcaSkimming.py
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = myEleCollection,
