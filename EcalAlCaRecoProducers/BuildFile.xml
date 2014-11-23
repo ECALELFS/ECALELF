@@ -22,7 +22,7 @@
 <use   name="RecoLocalCalo/EcalRecAlgos"/>
 <use   name="SimDataFormats/GeneratorProducts"/>
 <use   name="TrackingTools/TrackAssociator"/>
-<use   name="Utilities/Timing"/>
+#<use   name="Utilities/Timing"/>
 <use name="FWCore/ServiceRegistry"/> 
 <use name="DataFormats/HepMCCandidate"/>
 <use   name="clhep"/>

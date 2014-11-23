@@ -15,7 +15,6 @@
 <use   name="Geometry/CaloGeometry"/>
 <use   name="Geometry/CaloTopology"/>
 <use   name="Geometry/EcalAlgo"/>
-<use   name="HiggsAnalysis/GBRLikelihoodEGTools"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <use   name="PhysicsTools/UtilAlgos"/>
 <use   name="RecoEcal/EgammaClusterAlgos"/>
@@ -28,3 +27,4 @@
 #<Flags CppDefines="CMSSW42X=1"/>
 <Flags CppDefines="REGRESSION=4"/>
 <flags EDM_PLUGIN="1"/>
+<Flags CppDefines="CMSSW_7_2_X"/>

@@ -148,6 +148,8 @@ case $CMSSW_VERSION in
 	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
 	cd -
 	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
+	echo "<use   name=\"HiggsAnalysis/GBRLikelihoodEGTools\"/>" >> $myDir/ZNtupleDumper/BuildFile.xml
+
 
 	echo "[STATUS] applying patch for CMSSW_5_X"
 	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
