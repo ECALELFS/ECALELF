@@ -138,7 +138,7 @@ process.load('Configuration.EventContent.EventContent_cff')
 # import of ALCARECO sequences
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
-from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
+#from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
@@ -522,7 +522,7 @@ process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
                                        )
 
 
-if (re.match("CMSSW_7_2_.*",CMSSW_VERSION)):
+if (re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
   # This are the cuts at trigger level except ecalIso  
   process.PassingVeryLooseId.cut = cms.string(
     process.selectedElectrons.cut.value() +
@@ -608,7 +608,8 @@ process.pathWElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
 
 # ALCARAW
 if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
-    uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)  #containing the new local reco for 72X
+    #uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)  #containing the new local reco for 72X
+    #process.ecalUncalibRecHitSequence=
 
     process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                        process.pfIsoEgamma *
