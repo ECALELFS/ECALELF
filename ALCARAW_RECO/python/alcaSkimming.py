@@ -524,7 +524,7 @@ process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
                                        )
 
 
-if (re.match("CMSSW_7_2_.*",CMSSW_VERSION)):
+if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
   # This are the cuts at trigger level except ecalIso  
   process.PassingVeryLooseId.cut = cms.string(
     process.selectedElectrons.cut.value() +
