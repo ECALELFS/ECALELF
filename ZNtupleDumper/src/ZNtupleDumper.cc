@@ -1837,6 +1837,10 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   ICRecHitSCEle[index].clear();
   AlphaRecHitSCEle[index].clear();
 
+  if(index<0){
+    return;
+  }
+
   //  EcalIntercalibConstantMap icMap = icHandle->get()
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
