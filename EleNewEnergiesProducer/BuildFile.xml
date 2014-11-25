@@ -23,4 +23,5 @@
 <use   name="HiggsAnalysis/GBRLikelihoodEGTools"/>
 <flags EDM_PLUGIN="1"/>
 <Flags CppDefines="REGRESSION=4"/>
++<flags CXXFLAGS="-fPIC"/>
 #<Flags CppDefines="CMSSW42X=1"/>
