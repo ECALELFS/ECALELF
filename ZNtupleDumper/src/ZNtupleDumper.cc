@@ -1910,6 +1910,10 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
   ICRecHitSCEle[index].clear();
   AlphaRecHitSCEle[index].clear();
 
+  if(index<0){
+    return;
+  }
+
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
 
