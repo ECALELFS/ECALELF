@@ -331,7 +331,10 @@ if(MC):
         )
     process.PUDumperSeq *= process.PUDumper
     
-process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
+if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
+    process.load('Calibration.ALCARAW_RECO.WZElectronSkims53X_cff')
+else:
+    process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = myEleCollection,
@@ -522,54 +525,6 @@ process.GenZSCSkimFilter = cms.EDFilter("SkimCheck",
 process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
                                        type= cms.int32(1)
                                        )
-
-
-if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
-  # This are the cuts at trigger level except ecalIso  
-  process.PassingVeryLooseId.cut = cms.string(
-    process.selectedElectrons.cut.value() +
-    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=1)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits  
-    " && ((isEB"
-    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.01)"
-    " && ( -0.15<deltaPhiSuperClusterTrackAtVtx<0.15 )"
-    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
-    " && (hadronicOverEm<0.12)"
-    ")"
-    " || (isEE"
-    " && ( dr03TkSumPt/p4.Pt <0.2"
-    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3 
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.03)"
-    " && ( -0.10<deltaPhiSuperClusterTrackAtVtx<0.10 )"
-    " && ( -0.009<deltaEtaSuperClusterTrackAtVtx<0.009 )"
-    " && (hadronicOverEm<0.10) "
-    "))"
-    )
-
-  process.PassingTightId.cut = cms.string(
-    process.selectedElectrons.cut.value() +
-    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=0)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
-    " && ((isEB"
-    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.01)"
-    " && ( -0.03<deltaPhiSuperClusterTrackAtVtx<0.03 )"
-    " && ( -0.004<deltaEtaSuperClusterTrackAtVtx<0.004 )"
-    " && (hadronicOverEm<0.12)"
-    ")"
-    " || (isEE"
-    " && ( dr03TkSumPt/p4.Pt <0.2"
-    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.03)"
-    " && ( -0.02<deltaPhiSuperClusterTrackAtVtx<0.02 )"
-    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
-    " && (hadronicOverEm<0.10) "
-    "))"
-    )
-    
 
 
 process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
@@ -835,9 +790,12 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 # Setting collection names
 ##############################
 process.selectedElectrons.src = myEleCollection
-process.PassingVeryLooseId.src = myEleCollection
-process.PassingMediumId.src = myEleCollection
-process.PassingTightId.src = myEleCollection
+if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
+    process.PassingVeryLooseId.src = myEleCollection
+    process.PassingMediumId.src = myEleCollection
+    process.PassingTightId.src = myEleCollection
+else:
+    process.PassingVetoId.src = myEleCollection
 process.PassingHLT.InputProducer = myEleCollection
 
 process.eleRegressionEnergy.inputElectronsTag = myEleCollection
