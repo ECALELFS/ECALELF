@@ -126,7 +126,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
  public: // interface  
   
-  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight };
+  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose_run2_25ns, medium_run2_25ns, tight_run2_25ns, loose_run2_50ns, medium_run2_50ns, tight_run2_50ns};
   
   //  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
@@ -212,6 +212,12 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       else if (versionStr.CompareTo("loose")==0) version=loose;
       else if (versionStr.CompareTo("medium")==0) version=medium;
       else if (versionStr.CompareTo("tight")==0) version=tight;
+      else if (versionStr.CompareTo("loose_run2_25ns")==0) version=loose_run2_25ns;
+      else if (versionStr.CompareTo("medium_run2_25ns")==0) version=medium_run2_25ns;
+      else if (versionStr.CompareTo("tight_run2_25ns")==0) version=tight_run2_25ns;
+      else if (versionStr.CompareTo("loose_run2_50ns")==0) version=loose_run2_50ns;
+      else if (versionStr.CompareTo("medium_run2_50ns")==0) version=medium_run2_50ns;
+      else if (versionStr.CompareTo("tight_run2_50ns")==0) version=tight_run2_50ns;
       else {
 	std::cerr << "[ERROR] version type not defined" << std::endl;
 	std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -380,6 +386,108 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
+    else if (version_ == loose_run2_25ns) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.141);         set("hoe_EE",          0.1115);
+      set("deta_EB",       0.0181);         set("deta_EE",         0.0124);
+      set("dphi_EB",       0.0936);         set("dphi_EE",         0.0642);
+      set("sihih_EB",      0.0123);         set("sihih_EE",        0.035);
+      set("ooemoop_EB",    0.1353,false);   set("ooemoop_EE",      0.1443,false);  
+      set("d0vtx_EB",      0.0166);         set("d0vtx_EE",        0.098);
+      set("dzvtx_EB",      0.54342);         set("dzvtx_EE",        0.9187);
+      set("pfIso_EB",      0.24);         set("pfIso_EE",        0.3529);         
+      set("pfIsoLowPt_EB", 0.24);         set("pfIsoLowPt_EE",   0.3529);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == medium_run2_25ns) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.067);         set("hoe_EE",          0.097);
+      set("deta_EB",       0.0106);         set("deta_EE",         0.0108);
+      set("dphi_EB",       0.0323);         set("dphi_EE",         0.0455);
+      set("sihih_EB",      0.0107);         set("sihih_EE",        0.0318);
+      set("ooemoop_EB",    0.1043,false);   set("ooemoop_EE",      0.1201,false);  
+      set("d0vtx_EB",      0.0131);         set("d0vtx_EE",        0.0845);
+      set("dzvtx_EB",      0.22310);         set("dzvtx_EE",        0.7523);
+      set("pfIso_EB",      0.2179);         set("pfIso_EE",        0.254);         
+      set("pfIsoLowPt_EB", 0.2179);         set("pfIsoLowPt_EE",   0.254);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == tight_run2_25ns) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.0532);         set("hoe_EE",          0.0835);
+      set("deta_EB",       0.0091);         set("deta_EE",         0.0106);
+      set("dphi_EB",       0.031);         set("dphi_EE",         0.0359);
+      set("sihih_EB",      0.0106);         set("sihih_EE",        0.0305);
+      set("ooemoop_EB",    0.0609,false);   set("ooemoop_EE",      0.1126,false);  
+      set("d0vtx_EB",      0.0126);         set("d0vtx_EE",        0.0163);
+      set("dzvtx_EB",      0.0116);         set("dzvtx_EE",        0.5999);
+      set("pfIso_EB",      0.1649);         set("pfIso_EE",        0.2075);         
+      set("pfIsoLowPt_EB", 0.1649);         set("pfIsoLowPt_EE",   0.2075);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == loose_run2_50ns) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.150);         set("hoe_EE",          0.120);
+      set("deta_EB",       0.016);         set("deta_EE",         0.025);
+      set("dphi_EB",       0.080);         set("dphi_EE",         0.097);
+      set("sihih_EB",      0.012);         set("sihih_EE",        0.032);
+      set("ooemoop_EB",    0.110,false);   set("ooemoop_EE",      0.110,false);  
+      set("d0vtx_EB",      0.019);         set("d0vtx_EE",        0.099);
+      set("dzvtx_EB",      0.036);         set("dzvtx_EE",        0.880);
+      set("pfIso_EB",      0.180);         set("pfIso_EE",        0.210);         
+      set("pfIsoLowPt_EB", 0.180);         set("pfIsoLowPt_EE",   0.210);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == medium_run2_50ns) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.100);         set("hoe_EE",          0.099);
+      set("deta_EB",       0.015);         set("deta_EE",         0.023);
+      set("dphi_EB",       0.051);         set("dphi_EE",         0.056);
+      set("sihih_EB",      0.010);         set("sihih_EE",        0.030);
+      set("ooemoop_EB",    0.053,false);   set("ooemoop_EE",      0.110,false);  
+      set("d0vtx_EB",      0.012);         set("d0vtx_EE",        0.068);
+      set("dzvtx_EB",      0.030);         set("dzvtx_EE",        0.780);
+      set("pfIso_EB",      0.140);         set("pfIso_EE",        0.150);         
+      set("pfIsoLowPt_EB", 0.140);         set("pfIsoLowPt_EE",   0.150);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
+    else if (version_ == tight_run2_50ns) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.074);         set("hoe_EE",          0.080);
+      set("deta_EB",       0.012);         set("deta_EE",         0.019);
+      set("dphi_EB",       0.024);         set("dphi_EE",         0.043);
+      set("sihih_EB",      0.010);         set("sihih_EE",        0.029);
+      set("ooemoop_EB",    0.026,false);   set("ooemoop_EE",      0.076,false);  
+      set("d0vtx_EB",      0.0091);         set("d0vtx_EE",        0.037);
+      set("dzvtx_EB",      0.017);         set("dzvtx_EE",        0.065);
+      set("pfIso_EB",      0.100);         set("pfIso_EE",        0.140);         
+      set("pfIsoLowPt_EB", 0.100);         set("pfIsoLowPt_EE",   0.140);         
+      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
+      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
+      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+    }
 
   }
 
@@ -457,14 +565,17 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     float AeffECAL_EE = 0.044;
     float AeffHCAL_EE = 0.041;
 
-    //
+#ifdef CMSSW_7_2_X
+    Double_t eleET = electron.et();
+#else
     //    Double_t eleET = electron.p4().Pt();
     Double_t eleET = electron.et();
     Double_t etaSC = electron.superCluster()->eta();
     // effective area for isolation
+
     float AEff = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, 
 								 etaSC, ElectronEffectiveArea::kEleEAData2011);
-
+#endif
 
     float ooemoop     = (1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
     //    Double_t etSCEle = electron.superCluster()->energy() *sin(electron.superCluster()->position().theta());
@@ -501,18 +612,24 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     double iso_ch = electron.pfIsolationVariables().sumChargedHadronPt;
     double iso_em = electron.pfIsolationVariables().sumPhotonEt;
     double iso_nh = electron.pfIsolationVariables().sumNeutralHadronEt;
+    double PU_ch  = electron.pfIsolationVariables().sumPUPt;
+
+    // apply to neutrals
+    double iso_n = std::max(iso_nh + iso_em - PU_ch * 0.5, 0.0); //relIsoWithDBeta_:look inside EgammaAnalysis/ElectronTools/test/ElectronIDValidationAnalyzer.cc
+    // compute final isolation
+    double iso = (iso_n + iso_ch) / pt;
 #else
     // get particle flow isolation
     double iso_ch = (*chIsoValsHandle_)[electronRef];
     double iso_em = (*emIsoValsHandle_)[electronRef];
     double iso_nh = (*nhIsoValsHandle_)[electronRef];
 
-#endif
     // apply to neutrals
     double rhoPrime = std::max(*rhoHandle_, 0.0);
     double iso_n = std::max(iso_nh + iso_em - rhoPrime * AEff, 0.0);
     // compute final isolation
     double iso = (iso_n + iso_ch) / pt;
+#endif
 
 #ifdef shervin
     Double_t cIso    = 0;
