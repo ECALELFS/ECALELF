@@ -68,32 +68,30 @@ selectedElectrons = cms.EDFilter("GsfElectronRefSelector",
 #    "(abs(superCluster.eta)<2.5) && (energy*sin(superClusterPosition.theta)> 15)")
     "(abs(superCluster.eta)<3) && (energy*sin(superClusterPosition.theta)> 15)")
                                          )
+
 # This are the cuts at trigger level except ecalIso
 PassingVetoId = selectedElectrons.clone(
     cut = cms.string(
     selectedElectrons.cut.value() +
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
     " && ((isEB"
-    " && ( dr03TkSumPt/p4.Pt <0.3313 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.3313 )"
+    " && ( (pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt<0.3313)"
     " && (sigmaIetaIeta<0.0125)"
     " && ( -0.2579<deltaPhiSuperClusterTrackAtVtx<0.2579 )"
     " && ( -0.021<deltaEtaSuperClusterTrackAtVtx<0.021 )"
     " && (hadronicOverEm<0.2564)"
-    " && (-0.031<gsfTrack.d0<0.031)"
-    " && (-0.5863<gsfTrack.dz<0.5863)"
+#    " && (-0.031<gsfTrack.d0vtx<0.031)"
+#    " && (-0.5863<gsfTrack.dzvtx<0.5863)"
     ")"
     " || (isEE"
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=3)"
-    " && ( dr03TkSumPt/p4.Pt <0.38"
-    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.38 )"
+    " && ( (pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt<0.3816)"
     " && (sigmaIetaIeta<0.0371)"
     " && ( -0.2591<deltaPhiSuperClusterTrackAtVtx<0.2591 )"
     " && ( -0.028<deltaEtaSuperClusterTrackAtVtx<0.028 )"
     " && (hadronicOverEm<0.19) "
-    " && (-0.2232<gsfTrack.d0<0.2232)"
-    " && (-0.9513<gsfTrack.dz<0.9513)"
+#    " && (-0.2232<gsfTrack.d0vtx<0.2232)"
+#    " && (-0.9513<gsfTrack.dzvtx<0.9513)"
     "))"
     )
     )
@@ -149,7 +147,7 @@ WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
 EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
                                decay = cms.string("PassingVetoId eleSC"),
 #                               decay = cms.string("selectedElectrons eleSC"),
-#                               decay = cms.string("PassingVeryLooseId photons"),
+#                               decay = cms.string("PassingVetoId photons"),
                                checkCharge = cms.bool(False), 
 #                               cut   = cms.string("40 <mass < 140 && daughter(0).pt>27")
                                cut = cms.string("40 < mass < 140 ")
