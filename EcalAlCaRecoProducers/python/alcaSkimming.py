@@ -5,6 +5,8 @@ import subprocess
 import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+from Configuration.StandardSequences.RawToDigi_Data_cff import *
+from RecoLocalCalo.Configuration.RecoLocalCalo_cff import *
 
 #sys.path(".")
 
@@ -136,20 +138,20 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration.EventContent.EventContent_cff')
 
 # import of ALCARECO sequences
-process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
-process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
-#from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
+from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
-process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
-process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
+process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
+process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
 if (re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*",CMSSW_VERSION)):
-    process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
-    #from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *
+    process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
+    from Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff import *
 
 # this module provides:
 #process.seqALCARECOEcalUncalElectron  = uncalibRecHitSeq
-process.load('Calibration.EcalAlCaRecoProducers.sandboxRerecoSeq_cff')    # ALCARERECO
+process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
 # this module provides:
 # process.electronRecoSeq
 # process.electronClusteringSeq # with ele-SC reassociation
@@ -163,7 +165,7 @@ process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
 # pdfSystematics
-process.load('Calibration.EcalAlCaRecoProducers.pdfSystematics_cff')
+process.load('Calibration.ALCARAW_RECO.pdfSystematics_cff')
 
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
@@ -320,7 +322,7 @@ elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='
 
 ################################# FILTERING EVENTS
 process.PUDumperSeq = cms.Sequence()
-#process.load('Calibration.EcalAlCaRecoProducers.trackerDrivenFinder_cff')
+#process.load('Calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
 if(MC):
     # PUDumper
     process.TFileService = cms.Service(
@@ -329,7 +331,10 @@ if(MC):
         )
     process.PUDumperSeq *= process.PUDumper
     
-process.load('Calibration.EcalAlCaRecoProducers.WZElectronSkims_cff')
+if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
+    process.load('Calibration.ALCARAW_RECO.WZElectronSkims53X_cff')
+else:
+    process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
 
 process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = myEleCollection,
@@ -522,54 +527,6 @@ process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
                                        )
 
 
-if (re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
-  # This are the cuts at trigger level except ecalIso  
-  process.PassingVeryLooseId.cut = cms.string(
-    process.selectedElectrons.cut.value() +
-    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=1)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits  
-    " && ((isEB"
-    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.01)"
-    " && ( -0.15<deltaPhiSuperClusterTrackAtVtx<0.15 )"
-    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
-    " && (hadronicOverEm<0.12)"
-    ")"
-    " || (isEE"
-    " && ( dr03TkSumPt/p4.Pt <0.2"
-    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3 
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.03)"
-    " && ( -0.10<deltaPhiSuperClusterTrackAtVtx<0.10 )"
-    " && ( -0.009<deltaEtaSuperClusterTrackAtVtx<0.009 )"
-    " && (hadronicOverEm<0.10) "
-    "))"
-    )
-
-  process.PassingTightId.cut = cms.string(
-    process.selectedElectrons.cut.value() +
-    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=0)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
-    " && ((isEB"
-    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.01)"
-    " && ( -0.03<deltaPhiSuperClusterTrackAtVtx<0.03 )"
-    " && ( -0.004<deltaEtaSuperClusterTrackAtVtx<0.004 )"
-    " && (hadronicOverEm<0.12)"
-    ")"
-    " || (isEE"
-    " && ( dr03TkSumPt/p4.Pt <0.2"
-    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
-    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
-    " && (sigmaIetaIeta<0.03)"
-    " && ( -0.02<deltaPhiSuperClusterTrackAtVtx<0.02 )"
-    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
-    " && (hadronicOverEm<0.10) "
-    "))"
-    )
-    
-
-
 process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
                                                process.GenSkimFilter *
                                                process.ZeeFilter
@@ -608,8 +565,7 @@ process.pathWElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
 
 # ALCARAW
 if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
-    #uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)  #containing the new local reco for 72X
-    #process.ecalUncalibRecHitSequence=
+    uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)  #containing the new local reco for 72X
 
     process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                        process.pfIsoEgamma *
@@ -824,7 +780,7 @@ if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
     #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
 
 
-process.load('Calibration.EcalAlCaRecoProducers.valuemaptraslator_cfi')
+process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
@@ -834,9 +790,12 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 # Setting collection names
 ##############################
 process.selectedElectrons.src = myEleCollection
-process.PassingVeryLooseId.src = myEleCollection
-process.PassingMediumId.src = myEleCollection
-process.PassingTightId.src = myEleCollection
+if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
+    process.PassingVeryLooseId.src = myEleCollection
+    process.PassingMediumId.src = myEleCollection
+    process.PassingTightId.src = myEleCollection
+else:
+    process.PassingVetoId.src = myEleCollection
 process.PassingHLT.InputProducer = myEleCollection
 
 process.eleRegressionEnergy.inputElectronsTag = myEleCollection

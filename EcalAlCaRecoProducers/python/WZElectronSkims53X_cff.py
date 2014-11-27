@@ -68,30 +68,74 @@ selectedElectrons = cms.EDFilter("GsfElectronRefSelector",
 #    "(abs(superCluster.eta)<2.5) && (energy*sin(superClusterPosition.theta)> 15)")
     "(abs(superCluster.eta)<3) && (energy*sin(superClusterPosition.theta)> 15)")
                                          )
-
 # This are the cuts at trigger level except ecalIso
-PassingVetoId = selectedElectrons.clone(
+PassingVeryLooseId = selectedElectrons.clone(
     cut = cms.string(
     selectedElectrons.cut.value() +
-    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
+    " && (gsfTrack.trackerExpectedHitsInner.numberOfHits<=1)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
     " && ((isEB"
-    " && ( (pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt<0.3313)"
-    " && (sigmaIetaIeta<0.0125)"
-    " && ( -0.2579<deltaPhiSuperClusterTrackAtVtx<0.2579 )"
-    " && ( -0.021<deltaEtaSuperClusterTrackAtVtx<0.021 )"
-    " && (hadronicOverEm<0.2564)"
-#    " && (-0.031<gsfTrack.d0vtx<0.031)"
-#    " && (-0.5863<gsfTrack.dzvtx<0.5863)"
+    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.01)"
+    " && ( -0.15<deltaPhiSuperClusterTrackAtVtx<0.15 )"
+    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
+    " && (hadronicOverEm<0.12)"
     ")"
     " || (isEE"
-    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=3)"
-    " && ( (pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt<0.3816)"
-    " && (sigmaIetaIeta<0.0371)"
-    " && ( -0.2591<deltaPhiSuperClusterTrackAtVtx<0.2591 )"
-    " && ( -0.028<deltaEtaSuperClusterTrackAtVtx<0.028 )"
-    " && (hadronicOverEm<0.19) "
-#    " && (-0.2232<gsfTrack.d0vtx<0.2232)"
-#    " && (-0.9513<gsfTrack.dzvtx<0.9513)"
+    " && ( dr03TkSumPt/p4.Pt <0.2"
+    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.03)"
+    " && ( -0.10<deltaPhiSuperClusterTrackAtVtx<0.10 )"
+    " && ( -0.009<deltaEtaSuperClusterTrackAtVtx<0.009 )"
+    " && (hadronicOverEm<0.10) "
+    "))"
+    )
+    )
+PassingMediumId = selectedElectrons.clone(
+    cut = cms.string(
+    selectedElectrons.cut.value() +
+    " && (gsfTrack.trackerExpectedHitsInner.numberOfHits<=1)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
+    " && ((isEB"
+    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.01)"
+    " && ( -0.06<deltaPhiSuperClusterTrackAtVtx<0.06 )"
+    " && ( -0.004<deltaEtaSuperClusterTrackAtVtx<0.004 )"
+    " && (hadronicOverEm<0.12)"
+    ")"
+    " || (isEE"
+    " && ( dr03TkSumPt/p4.Pt <0.2"
+    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.03)"
+    " && ( -0.03<deltaPhiSuperClusterTrackAtVtx<0.03 )"
+    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
+    " && (hadronicOverEm<0.10) "
+    "))"
+    )
+    )
+
+PassingTightId = selectedElectrons.clone(
+    cut = cms.string(
+    selectedElectrons.cut.value() +
+    " && (gsfTrack.trackerExpectedHitsInner.numberOfHits<=0)" #wrt std WP90 allowing 1 numberOfMissingExpectedHits
+    " && ((isEB"
+    " && ( dr03TkSumPt/p4.Pt <0.2 "#&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.01)"
+    " && ( -0.03<deltaPhiSuperClusterTrackAtVtx<0.03 )"
+    " && ( -0.004<deltaEtaSuperClusterTrackAtVtx<0.004 )"
+    " && (hadronicOverEm<0.12)"
+    ")"
+    " || (isEE"
+    " && ( dr03TkSumPt/p4.Pt <0.2"
+    #&& dr03EcalRecHitSumEt/p4.Pt < 0.3
+    " && dr03HcalTowerSumEt/p4.Pt  < 0.2 )"
+    " && (sigmaIetaIeta<0.03)"
+    " && ( -0.02<deltaPhiSuperClusterTrackAtVtx<0.02 )"
+    " && ( -0.007<deltaEtaSuperClusterTrackAtVtx<0.007 )"
+    " && (hadronicOverEm<0.10) "
     "))"
     )
     )
@@ -116,7 +160,7 @@ selectedCands = cms.EDFilter("AssociatedVariableMaxCutCandRefSelector",
                              max = cms.double("0.5")
                              )
 
-eleSelSeq = cms.Sequence( selectedElectrons + PassingVetoId +
+eleSelSeq = cms.Sequence( selectedElectrons + PassingVeryLooseId + PassingTightId + 
                           (SCselector*eleSC)
                           )
 
@@ -125,7 +169,7 @@ eleSelSeq = cms.Sequence( selectedElectrons + PassingVetoId +
 # Selectors
 ##############################
 ZeeSelector =  cms.EDProducer("CandViewShallowCloneCombiner",
-                              decay = cms.string("PassingVetoId PassingVetoId"),
+                              decay = cms.string("PassingVeryLooseId PassingVeryLooseId"),
                               checkCharge = cms.bool(False),
                               cut   = cms.string("mass > 40 && mass < 140")
                               )
@@ -138,16 +182,16 @@ W_ELECTRON_ET_CUT_MIN = 30.0
 MT_CUT_MIN = 50.
 
 WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("pfMet PassingVetoId"), # charge coniugate states are implied
+    decay = cms.string("pfMet PassingTightId"), # charge coniugate states are implied
     checkCharge = cms.bool(False),                           
     cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
 )
 
 
 EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
-                               decay = cms.string("PassingVetoId eleSC"),
+                               decay = cms.string("PassingVeryLooseId eleSC"),
 #                               decay = cms.string("selectedElectrons eleSC"),
-#                               decay = cms.string("PassingVetoId photons"),
+#                               decay = cms.string("PassingVeryLooseId photons"),
                                checkCharge = cms.bool(False), 
 #                               cut   = cms.string("40 <mass < 140 && daughter(0).pt>27")
                                cut = cms.string("40 < mass < 140 ")
