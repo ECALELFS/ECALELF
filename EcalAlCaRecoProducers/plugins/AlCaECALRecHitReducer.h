@@ -98,6 +98,7 @@ class AlCaECALRecHitReducer : public edm::EDProducer {
   //  int minEleNumber_;
   //  double minElePt_;
   double minEta_highEtaSC_;
+  std::string alcaCaloClusterCollection_;
 
   void AddMiniRecHitCollection(const reco::SuperCluster& sc,
 			       std::set<DetId>& reducedRecHitMap,
