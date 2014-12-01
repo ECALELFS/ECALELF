@@ -7,6 +7,7 @@ alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
                                        ebRecHitsLabel = cms.InputTag("reducedEcalRecHitsEB"),
                                        eeRecHitsLabel = cms.InputTag("reducedEcalRecHitsEE"),
 
+                                       alcaCaloClusterCollection = cms.string('alcaCaloCluster'),
 #                                       isUncalib = cms.bool(False),
                                        phiSize = cms.int32(61),
                                        etaSize = cms.int32(15),
