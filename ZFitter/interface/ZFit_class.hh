@@ -108,6 +108,8 @@ public:
 
   void Import(TString commonCut, TString eleID_, std::set<TString>& branchList);
 
+  double GetEffectiveSigma(RooAbsData *dataset);
+
   // this method makes the fit on data and MC
   void Fit(TString region="", bool doPlot=true);
   void Fit(TH1F *hist, bool isMC=true);
