@@ -214,12 +214,12 @@ patElectrons.electronIDSources =  cms.PSet(
     loose       = cms.InputTag("eleSelectionProducers", "loose"),
     medium      = cms.InputTag("eleSelectionProducers", "medium"),
     tight      = cms.InputTag("eleSelectionProducers", "tight"),
-    loose_run2_25ns       = cms.InputTag("eleSelectionProducers", "loose_run2_25ns"),
-    medium_run2_25ns       = cms.InputTag("eleSelectionProducers", "medium_run2_25ns"),
-    tight_run2_25ns       = cms.InputTag("eleSelectionProducers", "tight_run2_25ns"),
-    loose_run2_50ns       = cms.InputTag("eleSelectionProducers", "loose_run2_50ns"),
-    medium_run2_50ns       = cms.InputTag("eleSelectionProducers", "medium_run2_50ns"),
-    tight_run2_50ns       = cms.InputTag("eleSelectionProducers", "tight_run2_50ns")
+    loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
+    medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+    tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
+    loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
+    medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+    tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
     )
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')

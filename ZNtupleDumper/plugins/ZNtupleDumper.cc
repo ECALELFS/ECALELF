@@ -230,7 +230,7 @@ private:
   Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
 
   // selection
-  Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose_run2_25ns, 384=medium_run2_25ns, 896=tight_run2_25ns, 1024=loose_run2_50ns, 3072=medium_run2_50ns, 7168=tight_run2_50ns. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+  Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
   Int_t  chargeEle[2]; ///< -100: SC, 0: no electron, -1 or +1: normal charge
   Float_t etaSCEle[2], phiSCEle[2]; ///< phi of the SC
@@ -1441,12 +1441,12 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
   eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
   //LUCA: need to decide if to put the run2 selection here (bits 7-12) or not. Also, need to modify the ElectronCategory_class according to this..
-  eleID[index] += ((bool) electron1.electronID("loose_run2_25ns")) << 7;  
-  eleID[index] += ((bool) electron1.electronID("medium_run2_25ns")) << 8;
-  eleID[index] += ((bool) electron1.electronID("tight_run2_25ns")) << 9;
-  eleID[index] += ((bool) electron1.electronID("loose_run2_50ns")) << 10;
-  eleID[index] += ((bool) electron1.electronID("medium_run2_50ns")) << 11;
-  eleID[index] += ((bool) electron1.electronID("tight_run2_50ns")) << 12;
+  eleID[index] += ((bool) electron1.electronID("loose25nsRun2")) << 7;  
+  eleID[index] += ((bool) electron1.electronID("medium25nsRun2")) << 8;
+  eleID[index] += ((bool) electron1.electronID("tight25nsRun2")) << 9;
+  eleID[index] += ((bool) electron1.electronID("loose50nsRun2")) << 10;
+  eleID[index] += ((bool) electron1.electronID("medium50nsRun2")) << 11;
+  eleID[index] += ((bool) electron1.electronID("tight50nsRun2")) << 12;
 
   classificationEle[index] = electron1.classification();
 
