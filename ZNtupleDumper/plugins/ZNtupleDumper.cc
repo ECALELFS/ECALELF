@@ -230,7 +230,7 @@ private:
   Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
 
   // selection
-  Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+  Int_t eleID[2];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose_run2_25ns, 384=medium_run2_25ns, 896=tight_run2_25ns, 1024=loose_run2_50ns, 3072=medium_run2_50ns, 7168=tight_run2_50ns. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
   Int_t  chargeEle[2]; ///< -100: SC, 0: no electron, -1 or +1: normal charge
   Float_t etaSCEle[2], phiSCEle[2]; ///< phi of the SC
@@ -352,7 +352,6 @@ private:
   std::vector<float>     LCRecHitSCEle[2];
   std::vector<float>     ICRecHitSCEle[2];
   std::vector<float>  AlphaRecHitSCEle[2];
-
   //==============================
 
   //============================== check ele-id and iso
@@ -1441,6 +1440,13 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
   eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
   eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
+  //LUCA: need to decide if to put the run2 selection here (bits 7-12) or not. Also, need to modify the ElectronCategory_class according to this..
+  eleID[index] += ((bool) electron1.electronID("loose_run2_25ns")) << 7;  
+  eleID[index] += ((bool) electron1.electronID("medium_run2_25ns")) << 8;
+  eleID[index] += ((bool) electron1.electronID("tight_run2_25ns")) << 9;
+  eleID[index] += ((bool) electron1.electronID("loose_run2_50ns")) << 10;
+  eleID[index] += ((bool) electron1.electronID("medium_run2_50ns")) << 11;
+  eleID[index] += ((bool) electron1.electronID("tight_run2_50ns")) << 12;
 
   classificationEle[index] = electron1.classification();
 
@@ -1838,6 +1844,10 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   ICRecHitSCEle[index].clear();
   AlphaRecHitSCEle[index].clear();
 
+  if(index<0){
+    return;
+  }
+
   //  EcalIntercalibConstantMap icMap = icHandle->get()
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
@@ -1906,6 +1916,10 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
   AlphaRecHitSCEle[index].clear();
+
+  if(index<0){
+    return;
+  }
 
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
