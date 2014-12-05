@@ -487,6 +487,42 @@ void ZFit_class::SetFitPar(RooFitResult *fitres_MC){
   return;
 }
 
+//get effective sigma
+double ZFit_class::GetEffectiveSigma(RooAbsData *dataset){
+
+  TH1* h = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+
+  double TotEvents = h->Integral(1, h->GetNbinsX()-1);
+  float LocEvents = 0.;
+  int binI = h->FindBin(h->GetMean());
+  int binF = h->GetNbinsX()-1;
+  bool keepGoing = false;
+  for(int jBin=binI; jBin>0; --jBin){
+    LocEvents = 0.;
+    keepGoing = false;
+    for(int iBin=jBin; iBin<binF; ++iBin){
+      LocEvents += h->GetBinContent(iBin);
+      if(LocEvents/TotEvents >= 0.68) {
+	if(iBin-jBin < binF-binI) {
+	  binF = iBin;
+	  binI = jBin;
+	  keepGoing = true;
+	}
+	break;
+      }
+      if(iBin == binF-1 && binF == h->GetNbinsX()-1){
+	keepGoing = true;
+	--binI;
+      }
+      if(iBin == binF-1 && binF != h->GetNbinsX()-1) break;
+    }
+    if(keepGoing == false) break;
+  }
+  float sigma = (h->GetBinCenter(binF) - h->GetBinCenter(binI))/2.;
+  std::cout << " >>> effective sigma: " << sigma << std::endl;
+  return sigma;
+}
+
 
 void ZFit_class::Fit(TH1F *hist, bool isMC){
   RooAbsData *data_red=NULL;
@@ -559,7 +595,11 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
   if(nEvents_region_data < 100) return NULL;
   int numcpu=4;
   if(_isDataUnbinned) numcpu=1;
-  
+
+  //EFFECTIVE SIGMA
+  double sigma = GetEffectiveSigma(data_red);
+  std::cout<<sigma<<std::endl;
+
   SetFitPar(fitres_MC);
   RooFitResult *fitres_data = model_pdf->fitTo(*data_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
 					       RooFit::NumCPU(numcpu),
@@ -594,6 +634,10 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
   if( nEvents_region_MC < 30) return NULL;
   int numcpu=4;
   if(!_isMCUnbinned) numcpu=2; // would prefer 1, but bug in RooFit: wrong error estimation for weighted datahist if 1 cpu
+
+  //EFFECTIVE SIGMA
+  double sigma = GetEffectiveSigma(signal_red);
+  std::cout<<sigma<<std::endl;
 
   SetFitPar();
   RooFitResult *fitres_MC = model_pdf->fitTo(*signal_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
