@@ -126,7 +126,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
  public: // interface  
   
-  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose_run2_25ns, medium_run2_25ns, tight_run2_25ns, loose_run2_50ns, medium_run2_50ns, tight_run2_50ns};
+  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2};
   
   //  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
@@ -212,12 +212,12 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       else if (versionStr.CompareTo("loose")==0) version=loose;
       else if (versionStr.CompareTo("medium")==0) version=medium;
       else if (versionStr.CompareTo("tight")==0) version=tight;
-      else if (versionStr.CompareTo("loose_run2_25ns")==0) version=loose_run2_25ns;
-      else if (versionStr.CompareTo("medium_run2_25ns")==0) version=medium_run2_25ns;
-      else if (versionStr.CompareTo("tight_run2_25ns")==0) version=tight_run2_25ns;
-      else if (versionStr.CompareTo("loose_run2_50ns")==0) version=loose_run2_50ns;
-      else if (versionStr.CompareTo("medium_run2_50ns")==0) version=medium_run2_50ns;
-      else if (versionStr.CompareTo("tight_run2_50ns")==0) version=tight_run2_50ns;
+      else if (versionStr.CompareTo("loose25nsRun2")==0) version=loose25nsRun2;
+      else if (versionStr.CompareTo("medium25nsRun2")==0) version=medium25nsRun2;
+      else if (versionStr.CompareTo("tight25nsRun2")==0) version=tight25nsRun2;
+      else if (versionStr.CompareTo("loose50nsRun2")==0) version=loose50nsRun2;
+      else if (versionStr.CompareTo("medium50nsRun2")==0) version=medium50nsRun2;
+      else if (versionStr.CompareTo("tight50nsRun2")==0) version=tight50nsRun2;
       else {
 	std::cerr << "[ERROR] version type not defined" << std::endl;
 	std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -386,7 +386,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == loose_run2_25ns) {
+    else if (version_ == loose25nsRun2) {
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -403,7 +403,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == medium_run2_25ns) {
+    else if (version_ == medium25nsRun2) {
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -420,7 +420,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == tight_run2_25ns) {
+    else if (version_ == tight25nsRun2) {
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -437,7 +437,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == loose_run2_50ns) {
+    else if (version_ == loose50nsRun2) {
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -454,7 +454,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == medium_run2_50ns) {
+    else if (version_ == medium50nsRun2) {
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -471,7 +471,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == tight_run2_50ns) {
+    else if (version_ == tight50nsRun2) {
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
