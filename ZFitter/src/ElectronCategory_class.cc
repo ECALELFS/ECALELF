@@ -700,12 +700,12 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       else if(string1=="tight") string1="14";
       else if(string1=="WP90PU") string1="16";
       else if(string1=="WP80PU") string1="48";
-      else if(string1=="loose_run2_25ns") string1="128";
-      else if(string1=="medium_run2_25ns") string1="384";
-      else if(string1=="tight_run2_25ns") string1="896";
-      else if(string1=="loose_run2_50ns") string1="1024";
-      else if(string1=="medium_run2_50ns") string1="3072";
-      else if(string1=="tight_run2_50ns") string1="7168";
+      else if(string1=="loose25nsRun2") string1="128";
+      else if(string1=="medium25nsRun2") string1="384";
+      else if(string1=="tight25nsRun2") string1="896";
+      else if(string1=="loose50nsRun2") string1="1024";
+      else if(string1=="medium50nsRun2") string1="3072";
+      else if(string1=="tight50nsRun2") string1="7168";
 
       TCut cutEle1("(eleID_ele1 & "+string1+")=="+string1);
       TCut cutEle2("(eleID_ele2 & "+string1+")=="+string1);
