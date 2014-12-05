@@ -90,6 +90,12 @@ private:
   SimpleCutBasedElectronIDSelectionFunctor loose_selector;
   SimpleCutBasedElectronIDSelectionFunctor medium_selector;
   SimpleCutBasedElectronIDSelectionFunctor tight_selector;
+  SimpleCutBasedElectronIDSelectionFunctor loose_run2_25ns_selector;
+  SimpleCutBasedElectronIDSelectionFunctor medium_run2_25ns_selector;
+  SimpleCutBasedElectronIDSelectionFunctor tight_run2_25ns_selector;
+  SimpleCutBasedElectronIDSelectionFunctor loose_run2_50ns_selector;
+  SimpleCutBasedElectronIDSelectionFunctor medium_run2_50ns_selector;
+  SimpleCutBasedElectronIDSelectionFunctor tight_run2_50ns_selector;
 
 };
 
@@ -117,6 +123,18 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   medium_selector("medium", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   tight_selector("tight", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  loose_run2_25ns_selector("loose_run2_25ns", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  medium_run2_25ns_selector("medium_run2_25ns", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  tight_run2_25ns_selector("tight_run2_25ns", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  loose_run2_50ns_selector("loose_run2_50ns", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  medium_run2_50ns_selector("medium_run2_50ns", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  tight_run2_50ns_selector("tight_run2_50ns", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
   //register your products
@@ -136,6 +154,12 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   produces< SelectionMap >("loose");
   produces< SelectionMap >("medium");
   produces< SelectionMap >("tight");
+  produces< SelectionMap >("loose_run2_25ns");
+  produces< SelectionMap >("medium_run2_25ns");
+  produces< SelectionMap >("tight_run2_25ns");
+  produces< SelectionMap >("loose_run2_50ns");
+  produces< SelectionMap >("medium_run2_50ns");
+  produces< SelectionMap >("tight_run2_50ns");
 
   //now do what ever other initialization is needed
   
@@ -174,6 +198,18 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   std::auto_ptr<SelectionMap> looseMap(new SelectionMap());
   std::auto_ptr<SelectionMap> mediumMap(new SelectionMap());
   std::auto_ptr<SelectionMap> tightMap(new SelectionMap());
+  std::vector<SelectionValue_t>  loose_run2_25ns_vec;
+  std::vector<SelectionValue_t>  medium_run2_25ns_vec;
+  std::vector<SelectionValue_t>  tight_run2_25ns_vec;
+  std::auto_ptr<SelectionMap> looseMap_run2_25ns(new SelectionMap());
+  std::auto_ptr<SelectionMap> mediumMap_run2_25ns(new SelectionMap());
+  std::auto_ptr<SelectionMap> tightMap_run2_25ns(new SelectionMap());
+  std::vector<SelectionValue_t>  loose_run2_50ns_vec;
+  std::vector<SelectionValue_t>  medium_run2_50ns_vec;
+  std::vector<SelectionValue_t>  tight_run2_50ns_vec;
+  std::auto_ptr<SelectionMap> looseMap_run2_50ns(new SelectionMap());
+  std::auto_ptr<SelectionMap> mediumMap_run2_50ns(new SelectionMap());
+  std::auto_ptr<SelectionMap> tightMap_run2_50ns(new SelectionMap());
 
 
   //------------------------------ ELECTRON
@@ -221,6 +257,12 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     pat::strbitset loose_ret;
     pat::strbitset medium_ret;
     pat::strbitset tight_ret;
+    pat::strbitset loose_run2_25ns_ret;
+    pat::strbitset medium_run2_25ns_ret;
+    pat::strbitset tight_run2_25ns_ret;
+    pat::strbitset loose_run2_50ns_ret;
+    pat::strbitset medium_run2_50ns_ret;
+    pat::strbitset tight_run2_50ns_ret;
 
 
     fiducial_selector(eleRef, fiducial_ret);
@@ -245,6 +287,20 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     tight_selector(eleRef, tight_ret);
     tight_vec.push_back(tight_selector.result());
 
+    loose_run2_25ns_selector(eleRef, loose_run2_25ns_ret);
+    loose_run2_25ns_vec.push_back(loose_run2_25ns_selector.result());
+    medium_run2_25ns_selector(eleRef, medium_run2_25ns_ret);
+    medium_run2_25ns_vec.push_back(medium_run2_25ns_selector.result());
+    tight_run2_25ns_selector(eleRef, tight_run2_25ns_ret);
+    tight_run2_25ns_vec.push_back(tight_run2_25ns_selector.result());
+
+    loose_run2_50ns_selector(eleRef, loose_run2_50ns_ret);
+    loose_run2_50ns_vec.push_back(loose_run2_50ns_selector.result());
+    medium_run2_50ns_selector(eleRef, medium_run2_50ns_ret);
+    medium_run2_50ns_vec.push_back(medium_run2_50ns_selector.result());
+    tight_run2_50ns_selector(eleRef, tight_run2_50ns_ret);
+    tight_run2_50ns_vec.push_back(tight_run2_50ns_selector.result());
+
     if(((bool)tight_selector.result())){
       if(!(bool) medium_selector.result() || !(bool) loose_selector.result()){
 	edm::LogError("Incoherent selection") << "passing tight but not medium or loose";
@@ -255,6 +311,34 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     if(((bool)medium_selector.result())){
       if( !(bool) loose_selector.result()){
 	edm::LogError("Incoherent selection") << "passing medium but not loose";
+	exit (1);
+      }
+    }
+
+    if(((bool)tight_run2_25ns_selector.result())){
+      if(!(bool) medium_run2_25ns_selector.result() || !(bool) loose_run2_25ns_selector.result()){
+	edm::LogError("Incoherent selection") << "passing tight but not medium or loose for run2: 25ns";
+	exit (1);
+      }
+    }
+
+    if(((bool)medium_run2_25ns_selector.result())){
+      if( !(bool) loose_run2_25ns_selector.result()){
+	edm::LogError("Incoherent selection") << "passing medium but not loose for run2: 25ns";
+	exit (1);
+      }
+    }
+
+    if(((bool)tight_run2_50ns_selector.result())){
+      if(!(bool) medium_run2_50ns_selector.result() || !(bool) loose_run2_50ns_selector.result()){
+	edm::LogError("Incoherent selection") << "passing tight but not medium or loose for run2: 50ns";
+	exit (1);
+      }
+    }
+
+    if(((bool)medium_run2_50ns_selector.result())){
+      if( !(bool) loose_run2_50ns_selector.result()){
+	edm::LogError("Incoherent selection") << "passing medium but not loose for run2: 50ns";
 	exit (1);
       }
     }
@@ -279,6 +363,12 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   SelectionMap::Filler loose_filler(*looseMap);
   SelectionMap::Filler medium_filler(*mediumMap);
   SelectionMap::Filler tight_filler(*tightMap);
+  SelectionMap::Filler loose_run2_25ns_filler(*looseMap_run2_25ns);
+  SelectionMap::Filler medium_run2_25ns_filler(*mediumMap_run2_25ns);
+  SelectionMap::Filler tight_run2_25ns_filler(*tightMap_run2_25ns);
+  SelectionMap::Filler loose_run2_50ns_filler(*looseMap_run2_50ns);
+  SelectionMap::Filler medium_run2_50ns_filler(*mediumMap_run2_50ns);
+  SelectionMap::Filler tight_run2_50ns_filler(*tightMap_run2_50ns);
 
   //fill and insert valuemap
   fiducial_filler.insert(electronsHandle,fiducial_vec.begin(),fiducial_vec.end());
@@ -288,6 +378,12 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   loose_filler.insert(electronsHandle,loose_vec.begin(),loose_vec.end());
   medium_filler.insert(electronsHandle,medium_vec.begin(),medium_vec.end());
   tight_filler.insert(electronsHandle,tight_vec.begin(),tight_vec.end());
+  loose_run2_25ns_filler.insert(electronsHandle,loose_run2_25ns_vec.begin(),loose_run2_25ns_vec.end());
+  medium_run2_25ns_filler.insert(electronsHandle,medium_run2_25ns_vec.begin(),medium_run2_25ns_vec.end());
+  tight_run2_25ns_filler.insert(electronsHandle,tight_run2_25ns_vec.begin(),tight_run2_25ns_vec.end());
+  loose_run2_50ns_filler.insert(electronsHandle,loose_run2_50ns_vec.begin(),loose_run2_50ns_vec.end());
+  medium_run2_50ns_filler.insert(electronsHandle,medium_run2_50ns_vec.begin(),medium_run2_50ns_vec.end());
+  tight_run2_50ns_filler.insert(electronsHandle,tight_run2_50ns_vec.begin(),tight_run2_50ns_vec.end());
 
   
   fiducial_filler.fill();
@@ -297,6 +393,12 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   loose_filler.fill();
   medium_filler.fill();
   tight_filler.fill();
+  loose_run2_25ns_filler.fill();
+  medium_run2_25ns_filler.fill();
+  tight_run2_25ns_filler.fill();
+  loose_run2_50ns_filler.fill();
+  medium_run2_50ns_filler.fill();
+  tight_run2_50ns_filler.fill();
     
 
   //------------------------------
@@ -308,6 +410,12 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.put(looseMap, "loose");
   iEvent.put(mediumMap, "medium");
   iEvent.put(tightMap, "tight");
+  iEvent.put(looseMap_run2_25ns, "loose_run2_25ns");
+  iEvent.put(mediumMap_run2_25ns, "medium_run2_25ns");
+  iEvent.put(tightMap_run2_25ns, "tight_run2_25ns");
+  iEvent.put(looseMap_run2_50ns, "loose_run2_50ns");
+  iEvent.put(mediumMap_run2_50ns, "medium_run2_50ns");
+  iEvent.put(tightMap_run2_50ns, "tight_run2_50ns");
  
 }
 
