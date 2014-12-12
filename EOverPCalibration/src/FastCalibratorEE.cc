@@ -4,7 +4,7 @@
 #include <TRandom3.h>
 #include <TString.h>
 #include "../interface/CalibrationUtils.h"
-#include "../../NtuplePackage/interface/readJSONFile.h"
+#include "../interface/readJSONFile.h"
 
 
 /// Default constructor 
