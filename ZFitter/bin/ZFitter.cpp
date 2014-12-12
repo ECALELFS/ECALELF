@@ -41,7 +41,7 @@ configuration files.
 
 #include "../interface/nllProfile.hh"
 
-#include "../../NtuplePackage/interface/ntpleUtils.h"
+#include "../../EOverPCalibration/interface/ntpleUtils.h"
 #include "../../EOverPCalibration/interface/CalibrationUtils.h"
 #include "../../EOverPCalibration/interface/FastCalibratorEB.h"
 #include "../../EOverPCalibration/interface/FastCalibratorEE.h"
