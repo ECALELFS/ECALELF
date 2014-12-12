@@ -15,8 +15,8 @@
 /* #include <TMath.h> */
 /* #include <TProfile.h> */
 /* #include <vector> */
-#include "../../NtuplePackage/interface/hChain.h"
-#include "../../NtuplePackage/interface/h2Chain.h"
+#include "../interface/hChain.h"
+#include "../interface/h2Chain.h"
 #include <TGraphErrors.h>
 
 /* #include <TLorentzVector.h> */
@@ -25,7 +25,7 @@
 /* /\* #include "Math/LorentzVector.h" *\/ */
 
 /* #include "../interface/CalibrationUtils.h" */
-/* #include "../../NtuplePackage/interface/readJSONFile.h" */
+/* #include "../interface/readJSONFile.h" */
 #include "../interface/TEndcapRings.h"
 
 class FastCalibratorEE{
