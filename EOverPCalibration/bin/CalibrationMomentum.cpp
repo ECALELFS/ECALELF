@@ -1,6 +1,6 @@
 #include "../interface/TEndcapRings.h"
-#include "../../NtuplePackage/interface/ntpleUtils.h"
-#include "../../NtuplePackage/interface/treeReader.h"
+#include "../interface/ntpleUtils.h"
+#include "../interface/treeReader.h"
 #include "../interface/CalibrationUtils.h"
 #include "../CommonTools/histoFunc.h"
 

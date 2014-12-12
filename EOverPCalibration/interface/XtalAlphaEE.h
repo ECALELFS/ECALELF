@@ -14,13 +14,13 @@
 #include <TH1F.h>
 #include <TProfile.h>
 #include <vector>
-#include "../../NtuplePackage/interface/hChain.h"
-#include "../../NtuplePackage/interface/h2Chain.h"
+#include "../interface/hChain.h"
+#include "../interface/h2Chain.h"
 #include <TGraphErrors.h>
 
 
 #include "../interface/CalibrationUtils.h"
-#include "../../NtuplePackage/interface/readJSONFile.h"
+#include "../interface/readJSONFile.h"
 #include "../interface/TEndcapRings.h"
 #include "../interface/TSicCrystals.h"
 

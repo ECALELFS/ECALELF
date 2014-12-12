@@ -3,7 +3,7 @@
 #include <fstream>
 #include <stdlib.h> 
 
-#include "../../NtuplePackage/interface/ntpleUtils.h"
+#include "../interface/ntpleUtils.h"
 #include "../interface/CalibrationUtils.h"
 
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"

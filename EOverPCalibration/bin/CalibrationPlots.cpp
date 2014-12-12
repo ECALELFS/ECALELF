@@ -23,7 +23,7 @@
 #include "TLatex.h"
 
 #include "../interface/TEndcapRings.h"
-#include "../../NtuplePackage/interface/ntpleUtils.h"
+#include "../interface/ntpleUtils.h"
 #include "../interface/CalibrationUtils.h"
 #include "../interface/DrawingUtils.h"
 #include "../../ZFitter/interface/setTDRStyle.h"

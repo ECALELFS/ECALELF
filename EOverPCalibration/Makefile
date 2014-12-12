@@ -28,9 +28,6 @@ SRCDIR=./src
 BUILDDIR=./bin
 OBJ_DIR=./lib
 
-INCLUDENPDIR=../NtuplePackage/interface
-SRCNPDIR=../NtuplePackage/src
-
 #################
 INCLUDE=-I$(INCLUDEDIR) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
 LIB=-L$(BOOST)/lib -L/usr/lib64 # -L/usr/lib 

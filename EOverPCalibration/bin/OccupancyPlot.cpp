@@ -15,7 +15,7 @@
 
 #include <vector>
 #include <map>
-#include "../../NtuplePackage/interface/treeReader.h"
+#include "../interface/treeReader.h"
 
 
 void SetWHLTPathNames(std::vector<std::pair<std::string,std::pair<int,int> > > & WHLTPathNames) ;

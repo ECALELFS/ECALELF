@@ -1,7 +1,6 @@
 <use name="root"/>
 <use name="rootcore"/>
 <use name="rootgraphics"/>
-<use name="Calibration/NtuplePackage"/>
 <use name="Calibration/EOverPCalibration"/>
 <use name="Calibration/ZFitter"/>
 <use name="FWCore/PythonParameterSet"/>
