@@ -16,7 +16,7 @@
 
 #include <vector>
 #include <map>
-#include "../../NtuplePackage/interface/treeReader.h"
+#include "../interface/treeReader.h"
 
 
 int main (int argc, char ** argv){

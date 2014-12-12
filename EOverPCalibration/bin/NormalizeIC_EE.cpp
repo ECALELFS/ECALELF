@@ -15,7 +15,7 @@
 #include "TROOT.h"
 #include "TStyle.h"
 #include <cmath>
-#include "../../NtuplePackage/interface/ntpleUtils.h"
+#include "../interface/ntpleUtils.h"
 #include "TApplication.h"
 
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"

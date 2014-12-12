@@ -12,7 +12,7 @@
 #include "TROOT.h"
 #include "TApplication.h"
 
-#include "../../NtuplePackage/interface/ntpleUtils.h"
+#include "../interface/ntpleUtils.h"
 
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"

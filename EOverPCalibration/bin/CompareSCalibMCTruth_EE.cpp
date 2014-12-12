@@ -13,7 +13,7 @@
 #include "TGraphErrors.h"
 #include "TF1.h"
 #include "TApplication.h"
-#include "../../NtuplePackage/interface/ntpleUtils.h"
+#include "../interface/ntpleUtils.h"
 #include "../interface/TEndcapRings.h"
 
 #include "FWCore/ParameterSet/interface/ProcessDesc.h"
