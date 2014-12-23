@@ -345,7 +345,8 @@ if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
     process.load('Calibration.ALCARAW_RECO.WZElectronSkims53X_cff')
 else:
     process.load('Calibration.ALCARAW_RECO.WZElectronSkims_cff')
-    process.load('DPGAnalysis.Skims.ZmmgSkim_cff')
+
+process.load('DPGAnalysis.Skims.ZmmgSkim_cff')
 
 process.MinMuonNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = cms.InputTag("muons"),
@@ -655,7 +656,7 @@ else:
                                                    process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq * 
                                                    ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter *
                                                    process.pfIsoEgamma *
-                                                   process.seqALCARECOEcalUncalPhoton ) #* process.hltReporter)
+                                                   process.seqALCARECOEcalUncalElectron ) #* process.hltReporter)
 
 
 # ALCARERECO
