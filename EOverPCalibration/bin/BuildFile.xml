@@ -21,4 +21,3 @@
 <bin file="NormalizeIC_EE.cpp" name="NormalizeIC_EE"> </bin>
 <bin file="PlotICMapsRatio.cpp" name="PlotICMapsRatio"> </bin>
 <bin file="PlotICMapsRatioEE.cpp" name="PlotICMapsRatioEE"> </bin>
-<Flags CppDefines="CMSSW_7_2_X"/>
