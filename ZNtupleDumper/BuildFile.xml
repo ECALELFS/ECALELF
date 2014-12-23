@@ -10,3 +10,4 @@
 <use name="RecoEgamma/EgammaTools"/>
 <flags EDM_PLUGIN="1"/>
 
+<Flags CppDefines="CMSSW_7_2_X"/>

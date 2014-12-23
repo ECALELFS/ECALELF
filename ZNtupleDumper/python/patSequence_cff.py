@@ -27,6 +27,8 @@ eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
 
 #------------------------------ electronID producer
 from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
+from Calibration.EleSelectionProducers.phoselectionproducers_cfi import *
+from Calibration.EleSelectionProducers.muonselectionproducers_cfi import *
 # process.EleSelectionProducers
 
 #============================== Adding new energies to patElectrons
