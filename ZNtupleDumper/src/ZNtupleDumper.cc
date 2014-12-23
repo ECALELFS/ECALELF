@@ -2571,9 +2571,9 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Photon& photon, int index){
   hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
 #endif
   
-  eleIDloose[index]  = photon.photonID("loose");
-  eleIDmedium[index] = photon.photonID("medium");
-  eleIDtight[index]  = photon.photonID("tight");
+  //  eleIDloose[index]  = photon.photonID("loose");
+  //  eleIDmedium[index] = photon.photonID("medium");
+  //  eleIDtight[index]  = photon.photonID("tight");
   return;
 }
 
