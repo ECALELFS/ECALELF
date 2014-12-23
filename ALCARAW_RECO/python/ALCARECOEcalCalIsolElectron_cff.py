@@ -23,6 +23,10 @@ seqALCARECOEcalCalElectron = cms.Sequence( ALCARECOEcalCalElectronPreSeq +
                                            seqALCARECOEcalCalElectronRECO
                                            )
 
+seqALCARECOEcalCalPhoton = cms.Sequence( alCaIsolatedElectrons +
+                                           kt6PFJetsForRhoCorrection +
+                                           pfisoALCARECO )
+
 
 ############################################### FINAL SEQUENCES
 #seqALCARECOEcalCalZElectron = cms.Sequence( ZSkimSeq * seqALCARECOEcalCalElectron)

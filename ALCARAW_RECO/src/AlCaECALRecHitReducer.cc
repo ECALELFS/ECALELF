@@ -1,6 +1,8 @@
 #include "Calibration/ALCARAW_RECO/interface/AlCaECALRecHitReducer.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/EgammaCandidates/interface/SiStripElectron.h"
 #include "DataFormats/EgammaCandidates/interface/Electron.h"
 #include "DataFormats/EgammaCandidates/interface/ElectronFwd.h"
@@ -30,6 +32,7 @@ AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig)
   eeRecHitsLabel_ = iConfig.getParameter< edm::InputTag > ("eeRecHitsLabel");
   //  esRecHitsLabel_ = iConfig.getParameter< edm::InputTag > ("esRecHitsLabel");
   electronLabel_ = iConfig.getParameter< edm::InputTag > ("electronLabel");
+  photonLabel_ = iConfig.getParameter< edm::InputTag > ("photonLabel");
   EESuperClusterCollection_ = iConfig.getParameter< edm::InputTag>("EESuperClusterCollection");
   minEta_highEtaSC_         = iConfig.getParameter< double >("minEta_highEtaSC");
 
@@ -85,6 +88,15 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
   //if (!pElectrons.isValid())  return ;
   
   const reco::GsfElectronCollection * electronCollection = pElectrons.product();
+
+  const reco::PhotonCollection *photonCollection = NULL; 
+  if (photonLabel_==edm::InputTag("gedPhotons")) {
+      // Get Photons
+      Handle<reco::PhotonCollection> pPhotons;
+      iEvent.getByLabel(photonLabel_, pPhotons);
+  
+      photonCollection = pPhotons.product();
+    }    
   
   // get RecHits
   Handle<EBRecHitCollection> barrelRecHitsHandle;
@@ -138,7 +150,30 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
   std::set<DetId> reducedRecHit_EEmap;
 
   std::auto_ptr< reco::CaloClusterCollection > reducedCaloClusterCollection (new reco::CaloClusterCollection);
-  
+
+  if (photonLabel_==edm::InputTag("gedPhotons")) {
+  //Photons:
+  for (reco::PhotonCollection::const_iterator phoIt=photonCollection->begin(); phoIt!=photonCollection->end(); phoIt++) {
+    // barrel
+    const reco::SuperCluster& sc = *(phoIt->superCluster()) ;
+
+    if (phoIt->isEB()) {
+      AddMiniRecHitCollection(sc, reducedRecHit_EBmap, caloTopology);
+    } else { // endcap
+      AddMiniRecHitCollection(sc, reducedRecHit_EEmap, caloTopology);
+    } // end of endcap
+
+    reco::CaloCluster_iterator it = sc.clustersBegin();
+    reco::CaloCluster_iterator itend = sc.clustersEnd();
+    for ( ; it !=itend; ++it) {
+      reco::CaloCluster caloClus(**it);
+      reducedCaloClusterCollection->push_back(caloClus);
+    }
+  }
+    }
+
+    else {
+  //Electrons:  
   for (reco::GsfElectronCollection::const_iterator eleIt=electronCollection->begin(); eleIt!=electronCollection->end(); eleIt++) {
     // barrel
     const reco::SuperCluster& sc = *(eleIt->superCluster()) ;
@@ -156,7 +191,7 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
       reducedCaloClusterCollection->push_back(caloClus);
     }
   }
-
+    }
 
   //saving recHits for highEta SCs for highEta studies
   for(reco::SuperClusterCollection::const_iterator SC_iter = EESCHandle->begin();

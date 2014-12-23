@@ -6,7 +6,7 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                CondDBSetup,
                                connect = cms.string('frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'),
                                #     globaltag = cms.string('UNSPECIFIED::All'),
-                               globaltag = cms.string('GR_P_V43B::All'),
+                               globaltag = cms.string('START72_V1::All'),
                                #toGet = cms.VPSet( ),   # hook to override or add single payloads
                                #    toGet = cms.VPSet(
                                # cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),

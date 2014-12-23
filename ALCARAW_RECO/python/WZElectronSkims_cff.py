@@ -69,6 +69,11 @@ selectedElectrons = cms.EDFilter("GsfElectronRefSelector",
     "(abs(superCluster.eta)<3) && (energy*sin(superClusterPosition.theta)> 15)")
                                          )
 
+selectedMuons = cms.EDFilter("MuonRefSelector",
+                                 src = cms.InputTag( 'muons' ),
+                                 cut = cms.string("")
+                                         )
+
 # This are the cuts at trigger level except ecalIso
 PassingVetoId = selectedElectrons.clone(
     cut = cms.string(
@@ -96,6 +101,15 @@ PassingVetoId = selectedElectrons.clone(
     )
     )
 
+
+# This are the cuts at trigger level except ecalIso
+PassingMuonVeryLooseId = selectedMuons.clone(
+    cut = cms.string(
+    selectedMuons.cut.value() +
+    "(isPFMuon) && (isGlobalMuon || isTrackerMuon)"
+    )
+    )
+
 #------------------------------ electronID producer
 from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
 # process.EleSelectionProducers
@@ -117,6 +131,10 @@ selectedCands = cms.EDFilter("AssociatedVariableMaxCutCandRefSelector",
                              )
 
 eleSelSeq = cms.Sequence( selectedElectrons + PassingVetoId +
+                          (SCselector*eleSC)
+                          )
+
+muSelSeq = cms.Sequence( selectedMuons + PassingMuonVeryLooseId +
                           (SCselector*eleSC)
                           )
 
@@ -188,4 +206,5 @@ WZFilter = cms.EDFilter("CandViewCountFilter",
 
 FilterSeq = cms.Sequence(eleSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
 ZSCSingleEleFilterSeq = cms.Sequence(~ZSCHltFilter * eleSelSeq * EleSCSelector * ZSCFilter)
+FilterMuSeq = cms.Sequence(muSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
 

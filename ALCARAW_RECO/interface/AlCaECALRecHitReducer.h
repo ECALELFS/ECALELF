@@ -84,6 +84,7 @@ class AlCaECALRecHitReducer : public edm::EDProducer {
   edm::InputTag eeRecHitsLabel_;
   edm::InputTag esRecHitsLabel_;
   edm::InputTag electronLabel_;
+  edm::InputTag photonLabel_;
   edm::InputTag EESuperClusterCollection_;
   std::string alcaBarrelHitsCollection_;
   std::string alcaEndcapHitsCollection_;
