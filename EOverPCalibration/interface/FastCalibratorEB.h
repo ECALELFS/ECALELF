@@ -76,21 +76,21 @@ class FastCalibratorEB {
     Int_t           isW;
     Int_t           isZ;
 
-    Int_t           chargeEle[2];
-    Float_t         etaEle[2];
-    Float_t         PtEle[2];
-    Float_t         phiEle[2];
-    Float_t         rawEnergySCEle[2];
-    Float_t         energySCEle[2];
-    Float_t         etaSCEle[2];
-    Float_t         esEnergySCEle[2];
-    Float_t         e3x3SCEle[2];
-    Float_t         pAtVtxGsfEle[2];
-    Float_t         fbremEle[2];
-    Int_t           isEBEle[2];
-    Float_t         energyMCEle[2];
-    Float_t         etaMCEle[2];
-    Float_t         phiMCEle[2];
+    Int_t           chargeEle[3];
+    Float_t         etaEle[3];
+    Float_t         PtEle[3];
+    Float_t         phiEle[3];
+    Float_t         rawEnergySCEle[3];
+    Float_t         energySCEle[3];
+    Float_t         etaSCEle[3];
+    Float_t         esEnergySCEle[3];
+    Float_t         e3x3SCEle[3];
+    Float_t         pAtVtxGsfEle[3];
+    Float_t         fbremEle[3];
+    Int_t           isEBEle[3];
+    Float_t         energyMCEle[3];
+    Float_t         etaMCEle[3];
+    Float_t         phiMCEle[3];
 
     
     ///! Ele 1 variables
