@@ -317,7 +317,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
   }
 
   ///=== Second medium electron from Z only Endcaps
-   if ( fabs(etaSCEle[1]) >= 1.479 && ( useZ== 1 && chargeEle[1]!=0 )) {
+   if ( fabs(etaSCEle[1]) >= 1.479 && ( useZ== 1 && chargeEle[1]!=-100 )) {
 
     FdiEta = energySCEle[1]/(rawEnergySCEle[1]+esEnergySCEle[1]);
 
@@ -514,7 +514,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 	
         /// Only tight electron from W and Z, only Endcap
         
-	if ( fabs(etaSCEle[0]) >= 1.479 && (( useW == 1 && chargeEle[1]==0 ) || ( useZ== 1 && chargeEle[1]!=0 ))) {
+	if ( fabs(etaSCEle[0]) >= 1.479 && (( useW == 1 && chargeEle[1]==-100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
 
           /// SCL energy containment correction
           FdiEta = energySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0]);
@@ -683,7 +683,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         
         
 	/// Medium ele from Z only Endcap
-	if ( fabs(etaSCEle[1]) >= 1.479 && ( useZ== 1 && chargeEle[1]!=0 )) {
+	if ( fabs(etaSCEle[1]) >= 1.479 && ( useZ== 1 && chargeEle[1]!=-100 )) {
           /// SCL energy containment correction
           FdiEta = energySCEle[1]/(rawEnergySCEle[1]+esEnergySCEle[1]);
          
