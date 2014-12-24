@@ -239,7 +239,7 @@ private:
   // selection
   Int_t eleID[3];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
-  Int_t  chargeEle[3]; ///< -100: SC, 0: no electron, -1 or +1: normal charge
+  Int_t  chargeEle[3]; ///< -100: no electron, 0: SC or photon, -1 or +1:electron, -2 or +2: muon
   Float_t etaSCEle[3], phiSCEle[3]; ///< phi of the SC
   Float_t   etaEle[3],   phiEle[3]; ///< phi of the electron (electron object)
 
@@ -1336,7 +1336,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   if(index<0){
     PtEle[-index] 	  = 0;  
-    chargeEle[-index] = 0;
+    chargeEle[-index] = -100;
     etaEle[-index]    = 0; 
     phiEle[-index]    = 0;
     return;
@@ -1531,7 +1531,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 
   if(index<0){
     PtEle[-index] 	  = 0;
-    chargeEle[-index] = 0;
+    chargeEle[-index] = -100;
     etaEle[-index]    = 0;
     phiEle[-index]    = 0;
     return;
@@ -1540,7 +1540,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   //checks
 
   PtEle[index]     = electron1.energy()/cosh(electron1.eta());
-  chargeEle[index] = -100; // dont know the charge for SC
+  chargeEle[index] = 0; // dont know the charge for SC
   etaEle[index]    = electron1.eta(); // eta = etaSC
   phiEle[index]    = electron1.phi();
 
@@ -1682,14 +1682,14 @@ void ZNtupleDumper::TreeSetSingleMuonVar(const pat::Muon& muon1, int index){
 
   if(index<0){
     PtEle[-index] 	  = 0;  
-    chargeEle[-index] = 0;
+    chargeEle[-index] = -100;
     etaEle[-index]    = 0; 
     phiEle[-index]    = 0;
     return;
   }   
 
   PtEle[index]     = muon1.et();  
-  chargeEle[index] = muon1.charge();
+  chargeEle[index] = muon1.charge()*2;
   etaEle[index]    = muon1.eta(); // degli elettroni
   phiEle[index]    = muon1.phi();
 
@@ -1722,7 +1722,7 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 
   if(index<0){
     PtEle[-index] 	  = 0;  
-    chargeEle[-index] = 0;
+    chargeEle[-index] = -100;
     etaEle[-index]    = 0; 
     phiEle[-index]    = 0;
     return;
