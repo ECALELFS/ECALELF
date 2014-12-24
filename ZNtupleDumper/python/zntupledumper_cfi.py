@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                jsonFileName = cms.string(""),
                                electronCollection = cms.InputTag('patElectrons'),
+                               muonCollection = cms.InputTag('patMuons'),
+                               photonCollection = cms.InputTag('patPhotons'),
                                #recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB"),
                                #recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE"),
                                recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits"),

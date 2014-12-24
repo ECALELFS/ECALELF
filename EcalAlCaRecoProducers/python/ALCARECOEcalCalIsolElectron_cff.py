@@ -1,8 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
-from Calibration.EcalAlCaRecoProducers.alCaIsolatedElectrons_cfi import *
-from Calibration.EcalAlCaRecoProducers.AlCaElectronTracksReducer_cfi import *
-from Calibration.EcalAlCaRecoProducers.eleIsoSequence_cff import *
+from Calibration.ALCARAW_RECO.alCaIsolatedElectrons_cfi import *
+from Calibration.ALCARAW_RECO.AlCaElectronTracksReducer_cfi import *
+from Calibration.ALCARAW_RECO.eleIsoSequence_cff import *
 
 from RecoJets.Configuration.RecoPFJets_cff import kt6PFJets
 kt6PFJetsForRhoCorrection = kt6PFJets.clone(doRhoFastjet = True)
@@ -22,6 +22,10 @@ ALCARECOEcalCalElectronPreSeq = cms.Sequence( kt6PFJetsForRhoCorrection +
 seqALCARECOEcalCalElectron = cms.Sequence( ALCARECOEcalCalElectronPreSeq +
                                            seqALCARECOEcalCalElectronRECO
                                            )
+
+seqALCARECOEcalCalPhoton = cms.Sequence( alCaIsolatedElectrons +
+                                           kt6PFJetsForRhoCorrection +
+                                           pfisoALCARECO )
 
 
 ############################################### FINAL SEQUENCES

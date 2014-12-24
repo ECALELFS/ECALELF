@@ -226,9 +226,9 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 
    float pIn, FdiEta;
 
-   ///! Tight electron from W or Z only barrel (if chargeEle[1]==0: event from W)
+   ///! Tight electron from W or Z only barrel (if chargeEle[1]==-100: event from W)
    
-   if ( fabs(etaSCEle[0]) < 1.479 && (( useW == 1 && chargeEle[1]==0 ) || ( useZ== 1 && chargeEle[1]!=0 ))) {
+   if ( fabs(etaSCEle[0]) < 1.479 && (( useW == 1 && chargeEle[1]==-100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
 
     FdiEta = energySCEle[0]/rawEnergySCEle[0]; /// FEta approximation
     
@@ -306,7 +306,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
   }
   ///=== Second medium electron from Z
   
-   if ( fabs(etaSCEle[1]) < 1.479 && ( useZ == 1 && chargeEle[1]!=0 ) ){
+   if ( fabs(etaSCEle[1]) < 1.479 && ( useZ == 1 && chargeEle[1]!=-100 ) ){
 
     FdiEta = energySCEle[1]/rawEnergySCEle[1]; /// FEta approximation
  
@@ -518,7 +518,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
        
 	/// Tight electron information from W and Z
 
-	if ( fabs(etaSCEle[0]) < 1.479 && (( useW == 1 && chargeEle[1]==0 ) || ( useZ == 1 && chargeEle[1]!=0 )) ) {
+	if ( fabs(etaSCEle[0]) < 1.479 && (( useW == 1 && chargeEle[1]==-100 ) || ( useZ == 1 && chargeEle[1]!=-100 )) ) {
                   
          /// SCL energy containment correction
           FdiEta = energySCEle[0]/rawEnergySCEle[0];
@@ -643,7 +643,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
         skipElectron = false;
       
         /// Ele2 medium from Z only Barrel
-	if ( fabs(etaSCEle[1]) < 1.479 && ( useZ == 1 && chargeEle[1]!=0 ) ) {
+	if ( fabs(etaSCEle[1]) < 1.479 && ( useZ == 1 && chargeEle[1]!=-100 ) ) {
   
           FdiEta = energySCEle[1]/rawEnergySCEle[1];
           // Electron energy
