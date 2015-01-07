@@ -221,13 +221,13 @@ void MuonSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& 
     highPT_vec.push_back(highPT_selector.result());
 
 
-    /*    if(((bool)tight_selector.result())){
+    if(((bool)tight_selector.result())){
       if(!(bool) loose_selector.result() || !(bool) loose_selector.result()){
 	edm::LogError("Incoherent selection") << "passing tight but not loose";
 	exit (1);
       }
     }
-    */
+   
     
   }
 

@@ -213,7 +213,7 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     tight_vec.push_back(tight_selector.result());
 
 
-    /*    if(((bool)tight_selector.result())){
+    if(((bool)tight_selector.result())){
       if(!(bool) medium_selector.result() || !(bool) loose_selector.result()){
 	edm::LogError("Incoherent selection") << "passing tight but not medium or loose";
 	exit (1);
@@ -226,7 +226,7 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	exit (1);
       }
     }
-    */
+    
     
   }
 

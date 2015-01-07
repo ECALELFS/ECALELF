@@ -161,7 +161,7 @@ class SimpleCutBasedPhotonIDSelectionFunctor : public Selector<reco::PhotonRef> 
       set("sihih_EB",      0.012);         set("sihih_EE",        0.034);
       set("pfChIso_EB", 2.6);    set("pfChIso_EE", 2.3);  
       set("pfNhIso_EB",  3.5);	   set("pfNhIso_EE",  2.9);
-      set("pfPhIso_EB",  1.3);	   set("pfPhIso_EE",  0.);
+      set("pfPhIso_EB",  1.3);	   set("pfPhIso_EE",  100.0, false);
     }
     else if (version_ == medium) {
       //set("fiducial");
