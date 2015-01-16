@@ -222,6 +222,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
   
    nb = fChain->GetEntry(jentry);   
    nbytes += nb;
+
    if (!(jentry%1000000))std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
 
    float pIn, FdiEta;
