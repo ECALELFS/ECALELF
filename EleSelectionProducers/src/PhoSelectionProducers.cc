@@ -304,9 +304,9 @@ PhoSelectionProducers::fillDescriptions(edm::ConfigurationDescriptions& descript
   //   desc.add<edm::InputTag>("vertexCollection","offlinePrimaryVertices");
   //   desc.add<edm::InputTag>("conversionCollection","allConversions");
   //   desc.add<edm::InputTag>("BeamSpotCollection","offlineBeamSpot");
-  //   desc.add<edm::InputTag>("chIsoVals","elPFIsoValueCharged03PFIdPFIso");
-  //   desc.add<edm::InputTag>("emIsoVals","elPFIsoValueGamma03PFIdPFIso");
-  //   desc.add<edm::InputTag>("nhIsoVals","elPFIsoValueNeutral03PFIdPFIso");
+  //   desc.add<edm::InputTag>("chIsoVals","phPFIsoValueCharged03PFIdPFIso");
+  //   desc.add<edm::InputTag>("emIsoVals","phPFIsoValueGamma03PFIdPFIso");
+  //   desc.add<edm::InputTag>("nhIsoVals","phPFIsoValueNeutral03PFIdPFIso");
   desc.setUnknown();
   descriptions.addDefault(desc);
 }
