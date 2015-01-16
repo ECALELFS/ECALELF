@@ -60,7 +60,9 @@ OutALCARECOEcalCalElectron_noDrop_ = cms.PSet(
     # pfisolation
     'keep *_elPFIsoValueCharged03PFId*_*_*',
     'keep *_elPFIsoValueGamma03PFId*_*_*',
-    'keep *_elPFIsoValueNeutral03PFId*_*_*'
+    'keep *_elPFIsoValueNeutral03PFId*_*_*',
+    'keep recoPhoton*_gedPhoton*_*_*',
+    'keep recoMuon*_muon*_*_*'
     )
 )
 
