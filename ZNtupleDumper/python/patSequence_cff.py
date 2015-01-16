@@ -4,6 +4,8 @@ from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 
 #------------------------------ pattuple
 from Calibration.ZNtupleDumper.elePat_cfi import *
+from Calibration.ZNtupleDumper.muonPat_cfi import *
+from Calibration.ZNtupleDumper.phoPat_cfi import *
 #process.patElectrons.electronSource = cms.InputTag("gedGsfElectrons")
 #process.patElectrons.addElectronID = cms.bool(False)
 #process.patElectrons.addGenMatch = cms.bool(True)
@@ -225,6 +227,20 @@ patElectrons.electronIDSources =  cms.PSet(
     )
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')
+
+#============================== Adding photon ID to patPhotons
+patPhotons.addPhotonID=cms.bool(False)
+patPhotons.photonIDSources =  cms.PSet(
+    # configure many IDs as InputTag <someName> = <someTag> you
+    # can comment out those you don't want to save some disk space
+    fiducial = cms.InputTag("phoSelectionProducers", "fiducial"),
+    loose       = cms.InputTag("phoSelectionProducers", "loose"),
+    medium      = cms.InputTag("phoSelectionProducers", "medium"),
+    tight      = cms.InputTag("phoSelectionProducers", "tight"),
+    )
+
+photonMatch.src=cms.InputTag('gedPhotons')
+muonMatch.src=cms.InputTag('muons')
 
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection
