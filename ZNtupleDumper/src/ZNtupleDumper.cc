@@ -239,7 +239,7 @@ private:
   // selection
   Int_t eleID[3];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
-  Int_t  chargeEle[3]; ///< -100: no electron, 0: SC or photon, -1 or +1:electron, -2 or +2: muon
+  Int_t  chargeEle[3]; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon
   Float_t etaSCEle[3], phiSCEle[3]; ///< phi of the SC
   Float_t   etaEle[3],   phiEle[3]; ///< phi of the electron (electron object)
 
@@ -331,6 +331,7 @@ private:
   Float_t invMass_SC_regrCorrSemiPar7TeVtrainV8_ele,invMass_SC_regrCorrSemiPar7TeVtrainV8_pho;
 
   Float_t invMass_MC;
+  Float_t invMass_mumu;
   Float_t   etaMCEle[3], phiMCEle[3];
 
 
@@ -539,6 +540,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 {
   //  using namespace edm;
   eventType= isPartGun ? PARTGUN : UNKNOWN;
+
+  chargeEle[0]=-100;
+  chargeEle[1]=-100;
+  chargeEle[2]=-100;
+  invMass_mumu=0;
 
   pEvent = &iEvent;
   pSetup = &iSetup;
@@ -823,8 +829,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	       phoIter1++){
 
 	    float mass=(muIter1->p4()+muIter2->p4()+phoIter1->p4()).mass();
+		    
 	    if((mass < 55 || mass > 125)) continue;
-	  
 	    doFill=true;
 
 	    TreeSetMuMuGammaVar(*phoIter1, *muIter1, *muIter2);
@@ -1210,6 +1216,7 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("invMass_SC_regrCorrSemiPar7TeVtrainV8_ele", &invMass_SC_regrCorrSemiPar7TeVtrainV8_ele, "invMass_SC_regrCorrSemiPar7TeVtrainV8_ele/F");
 
   tree->Branch("invMass_MC", &invMass_MC, "invMass_MC/F");
+  tree->Branch("invMass_mumu", &invMass_mumu, "invMass_mumu/F");
 
   tree->Branch("etaMCEle",      etaMCEle,       "etaMCEle[3]/F");	//[nEle]
   tree->Branch("phiMCEle",      phiMCEle,       "phiMCEle[3]/F");	//[nEle]
@@ -1434,6 +1441,48 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   energySCEle_corr[index] = electron1.ecalEnergy();
 #endif
 
+#ifdef CMSSW_7_2_X
+  energySCEle_regrCorr_pho[index] = -1;
+  energySCEle_regrCorr_ele[index] = -1;
+  energyEle_regrCorr_fra[index] = -1;
+  energyEle_regrCorr_egamma[index] = -1;
+  energySigmaSCEle_regrCorr_pho[index] = -1;
+  energySigmaSCEle_regrCorr_ele[index] = -1;
+  energySigmaEle_regrCorr_fra[index] = -1;
+  energySigmaEle_regrCorr_egamma[index] =  -1;
+  energySCEle_regrCorrSemiParV4_pho[index] =  -1;
+  energySCEle_regrCorrSemiParV4_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV4_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV4_ele[index] = -1;
+  energySCEle_regrCorrSemiParV5_pho[index] =  -1;
+  energySCEle_regrCorrSemiParV5_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV5_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV5_ele[index] = -1;
+  energySCEle_regrCorrSemiParV6_pho[index] = -1;
+  energySCEle_regrCorrSemiParV6_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV6_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV6_ele[index] = -1;
+  energySCEle_regrCorrSemiParV7_pho[index] = -1;
+  energySCEle_regrCorrSemiParV7_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV7_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV7_ele[index] = -1;
+  energySCEle_regrCorrSemiParV8_pho[index] = -1;
+  energySCEle_regrCorrSemiParV8_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV8_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiParV8_ele[index] = -1;
+  energySCEle_regrCorrSemiPar7TeVtrainV6_pho[index] = -1;
+  energySCEle_regrCorrSemiPar7TeVtrainV6_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiPar7TeVtrainV6_ele[index] = -1;
+  energySCEle_regrCorrSemiPar7TeVtrainV7_pho[index] = -1;
+  energySCEle_regrCorrSemiPar7TeVtrainV7_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiPar7TeVtrainV7_ele[index] = -1;
+  energySCEle_regrCorrSemiPar7TeVtrainV8_pho[index] = -1;
+  energySCEle_regrCorrSemiPar7TeVtrainV8_ele[index] = -1;
+  energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[index] = -1;
+  energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[index] = -1;
+#else
   energySCEle_regrCorr_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPho");
   energySCEle_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEle");
   energyEle_regrCorr_fra[index] = electron1.userFloat("eleNewEnergiesProducer:energyEleFra");
@@ -1484,6 +1533,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   energySCEle_regrCorrSemiPar7TeVtrainV8_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParam7TeVtrainV8ecorr");
   energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPhoSemiParam7TeVtrainV8sigmaEoverE");
   energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshEleSemiParam7TeVtrainV8sigmaEoverE");
+#endif
 
   // change in an electron properties please, EleNewEnergyProducer
   e3x3SCEle[index] = clustertools->e3x3(*electron1.superCluster()->seed());
@@ -1688,8 +1738,8 @@ void ZNtupleDumper::TreeSetSingleMuonVar(const pat::Muon& muon1, int index){
     return;
   }   
 
-  PtEle[index]     = muon1.et();  
-  chargeEle[index] = muon1.charge()*2;
+  PtEle[index]     = muon1.pt();  
+  chargeEle[index] = muon1.charge();
   etaEle[index]    = muon1.eta(); // degli elettroni
   phiEle[index]    = muon1.phi();
 
@@ -1728,11 +1778,10 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
     return;
   }   
 
-  PtEle[index]     = photon.et();  
+  PtEle[index]     = photon.energy()/cosh(photon.eta());
   chargeEle[index] = photon.charge();
-  etaEle[index]    = photon.eta(); // degli elettroni
+  etaEle[index]    = photon.eta(); 
   phiEle[index]    = photon.phi();
-
 
   etaSCEle[index] = photon.superCluster()->eta();
   phiSCEle[index] = photon.superCluster()->phi();
@@ -1873,13 +1922,10 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   //       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
   //   } 
 
-  // don't work for photons..
   //  eleID[index] = ((bool) photon.photonID("fiducial")) << 0;
   //  eleID[index] += ((bool) photon.photonID("loose")) << 1;
   //  eleID[index] += ((bool) photon.photonID("medium")) << 2;
   //  eleID[index] += ((bool) photon.photonID("tight")) << 3;
-
-  //  classificationEle[index] = photon.classification();
 
   return;
 }
@@ -2065,48 +2111,55 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
   TreeSetSingleMuonVar(muon1, 1);
   TreeSetSingleMuonVar(muon2, 2); 
 
-  invMass = (muon1.p4()+muon2.p4()+photon.p4()).mass();
+  TLorentzVector *Z = new TLorentzVector();
+  TLorentzVector *ph = new TLorentzVector();
+  TLorentzVector *m1 = new TLorentzVector();
+  TLorentzVector *m2 = new TLorentzVector();
 
-  //E LE ALTRE VARIABILI???
-  /*  double t1=TMath::Exp(-etaEle[0]);
-  double t2=TMath::Exp(-etaEle[1]);
+  ph->SetPtEtaPhiE(PtEle[0], etaEle[0], phiEle[0], photon.energy());
+  m1->SetPtEtaPhiE(PtEle[1], etaEle[1], phiEle[1], muon1.energy());
+  m2->SetPtEtaPhiE(PtEle[2], etaEle[2], phiEle[2], muon2.energy());
+
+  *Z = *ph + *m1 + *m2;
+  invMass = Z->M();
+
+  Z->SetE(photon.e5x5()+muon1.energy()+muon2.energy());
+  invMass_e5x5 = Z->M();
+
+  Z->SetE(energySCEle[0]+muon1.energy()+muon2.energy());
+  invMass_SC = Z->M();
+
+  Z->SetE(rawEnergySCEle[0]+muon1.energy()+muon2.energy());
+  invMass_rawSC = Z->M();
+
+  Z->SetE(rawEnergySCEle[0]+esEnergySCEle[0]+muon1.energy()+muon2.energy());
+  invMass_rawSC_esSC = Z->M();
+
+  Z->SetE(energySCEle_corr[0]+muon1.energy()+muon2.energy());
+  invMass_SC_corr = Z->M();
+
+  if(photon.genPhoton()!=0 && muon1.genLepton()!=0 && muon2.genLepton()!=0){
+    Z->SetE(photon.genPhoton()->energy()+muon1.genLepton()->energy()+muon2.genLepton()->energy());
+    invMass_MC = Z->M();
+  } else invMass_MC = 0;
+
+  double t1=TMath::Exp(-etaEle[1]);
+  double t2=TMath::Exp(-etaEle[2]);
   double t1q = t1*t1;
   double t2q = t2*t2;
   
   double angle=1-
-    ( (1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[0]-phiEle[1]))/(
+    ( (1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[1]-phiEle[2]))/(
 							 (1+t1q)*(1+t2q)
 							 );
   
-  
-  invMass = sqrt(2*electron1.energy()*electron2.energy() *angle);
-  invMass_e5x5   = sqrt(2*electron1.e5x5()*electron2.e5x5() *
-			angle);
-
-  invMass_SC = sqrt(2*energySCEle[0]*energySCEle[1] *
-		    angle);
-
-  invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
-		       angle);
-
-
-  invMass_rawSC_esSC = sqrt(2 * (rawEnergySCEle[0] + esEnergySCEle[0]) * 
-			    (rawEnergySCEle[1] + esEnergySCEle[1]) * 
-			    angle);
-
-  invMass_SC_corr = sqrt(2*energySCEle_corr[0]*energySCEle_corr[1] *
-			 angle);
-
-  if(electron1.genLepton()!=0 && electron2.genLepton()!=0){
-    invMass_MC     = sqrt(2*electron1.genLepton()->energy() *electron2.genLepton()->energy() *
+  invMass_mumu     = sqrt(2*muon1.energy() *muon2.energy() *
 			  angle);
-  } else invMass_MC = 0;
-  */  //  invMass_genMC     = (electron1.genLepton()->p4 + electron2.genLepton()->p4()).M();
-			    
-  //#ifdef shervin
-  //  r9weight[0]=r9Weight(etaEle[0], R9Ele[0]);
-  //  r9weight[1]=r9Weight(etaEle[1], R9Ele[1]);
-  //#endif
+
+  delete Z;
+  delete ph;
+  delete m1;
+  delete m2;
  
   return;
 }
