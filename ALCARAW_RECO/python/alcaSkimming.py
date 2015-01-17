@@ -440,7 +440,7 @@ if((not options.type=="ALCARERECO") ):
 
 if (options.skim=="ZmmgSkim"):
     process.patSequence=cms.Sequence( (process.muonSelectionProducers * process.phoSelectionProducers) * process.patMuons * process.patPhotons )
-    process.patSequenceMC=cms.Sequence( process.muonMatch * (process.muonSelectionProducers * process.phoSelectionProducers ) * process.patMuons * process.patPhotons )
+    process.patSequenceMC=cms.Sequence( process.muonMatch * process.photonMatch * (process.muonSelectionProducers * process.phoSelectionProducers ) * process.patMuons * process.patPhotons )
 if(MC):
     process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
 else:
