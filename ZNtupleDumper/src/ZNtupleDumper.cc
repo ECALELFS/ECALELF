@@ -775,8 +775,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  //if(! eleIter2->electronID("loose") ) continue;
 	  
 	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
-	  if((mass < 55 || mass > 125)) continue;
-	  
+
+	  if((mass < 55 || mass > 125)) continue;	  
 	  doFill=true;
 
 	  if(eventType==UNKNOWN) eventType=ZEE;
@@ -829,8 +829,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	       phoIter1++){
 
 	    float mass=(muIter1->p4()+muIter2->p4()+phoIter1->p4()).mass();
-		    
+
+	    if (phoIter1->pt()<10) continue;
 	    if((mass < 55 || mass > 125)) continue;
+	    std::cout<<mass<<" passata"<<std::endl;
+	    getchar();
 	    doFill=true;
 
 	    TreeSetMuMuGammaVar(*phoIter1, *muIter1, *muIter2);
@@ -845,7 +848,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	      TreeSetPdfSystVar(iEvent);
 	      //pdfSystTree->Fill();
 	    }
-	    
+
 	  }
 	  
 	}
@@ -1922,10 +1925,10 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   //       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
   //   } 
 
-  //  eleID[index] = ((bool) photon.photonID("fiducial")) << 0;
-  //  eleID[index] += ((bool) photon.photonID("loose")) << 1;
-  //  eleID[index] += ((bool) photon.photonID("medium")) << 2;
-  //  eleID[index] += ((bool) photon.photonID("tight")) << 3;
+  eleID[index] = ((bool) photon.photonID("fiducial")) << 0;
+  eleID[index] += ((bool) photon.photonID("loose")) << 1;
+  eleID[index] += ((bool) photon.photonID("medium")) << 2;
+  eleID[index] += ((bool) photon.photonID("tight")) << 3;
 
   return;
 }
@@ -2624,9 +2627,9 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Photon& photon, int index){
   hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
 #endif
   
-  //  eleIDloose[index]  = photon.photonID("loose");
-  //  eleIDmedium[index] = photon.photonID("medium");
-  //  eleIDtight[index]  = photon.photonID("tight");
+  eleIDloose[index]  = photon.photonID("loose");
+  eleIDmedium[index] = photon.photonID("medium");
+  eleIDtight[index]  = photon.photonID("tight");
   return;
 }
 
