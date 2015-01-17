@@ -77,7 +77,7 @@ selectedMuons = cms.EDFilter("MuonRefSelector",
 selectedPhotons = cms.EDFilter("PhotonRefSelector",
                                  src = cms.InputTag( 'gedPhotons' ),
                                  cut = cms.string(
-    "(abs(superCluster.eta)<3) && (et> 15)")
+    "(abs(superCluster.eta)<3) && (pt> 10)")
                                          )
 
 # This are the cuts at trigger level except ecalIso
