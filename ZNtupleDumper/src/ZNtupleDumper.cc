@@ -815,7 +815,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   else if (eventType==ZMMG){
     for( pat::MuonCollection::const_iterator muIter1 = muonsHandle->begin();
-	 muIter1 != muonsHandle->end();
+	 muIter1 != muonsHandle->end() && doFill==false;
 	 muIter1++){
 
 	for(pat::MuonCollection::const_iterator muIter2 = muIter1+1;
@@ -825,14 +825,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  // should exit when muIter1 == end-1
 	  //if(! muIter2->electronID("loose") ) continue;
 	  for( pat::PhotonCollection::const_iterator phoIter1 = photonsHandle->begin();
-	       phoIter1 != photonsHandle->end();
+	       phoIter1 != photonsHandle->end() && doFill==false;
 	       phoIter1++){
 
 	    float mass=(muIter1->p4()+muIter2->p4()+phoIter1->p4()).mass();
 
 	    if (phoIter1->pt()<10) continue;
 	    if((mass < 55 || mass > 125)) continue;
-	    doFill=true;
+	    doFill=true;	    
 
 	    TreeSetMuMuGammaVar(*phoIter1, *muIter1, *muIter2);
 
@@ -2107,7 +2107,7 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 
 
 void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::Muon& muon1, const pat::Muon& muon2){
-  
+
   TreeSetSinglePhotonVar(photon, 0);
   TreeSetSingleMuonVar(muon1, 1);
   TreeSetSingleMuonVar(muon2, 2); 
