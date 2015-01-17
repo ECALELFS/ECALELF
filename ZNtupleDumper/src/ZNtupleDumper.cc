@@ -832,8 +832,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 	    if (phoIter1->pt()<10) continue;
 	    if((mass < 55 || mass > 125)) continue;
-	    std::cout<<mass<<" passata"<<std::endl;
-	    getchar();
 	    doFill=true;
 
 	    TreeSetMuMuGammaVar(*phoIter1, *muIter1, *muIter2);
