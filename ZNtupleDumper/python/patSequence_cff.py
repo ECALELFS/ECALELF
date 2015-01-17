@@ -229,7 +229,7 @@ patElectrons.electronIDSources =  cms.PSet(
 electronMatch.src=cms.InputTag('gedGsfElectrons')
 
 #============================== Adding photon ID to patPhotons
-patPhotons.addPhotonID=cms.bool(False)
+patPhotons.addPhotonID=cms.bool(True)
 patPhotons.photonIDSources =  cms.PSet(
     # configure many IDs as InputTag <someName> = <someTag> you
     # can comment out those you don't want to save some disk space
