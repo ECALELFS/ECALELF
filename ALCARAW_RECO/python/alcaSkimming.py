@@ -350,7 +350,7 @@ process.load('DPGAnalysis.Skims.ZmmgSkim_cff')
 
 process.MinMuonNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = cms.InputTag("muons"),
-                                          minNumber = cms.uint32(1))
+                                          minNumber = cms.uint32(2))
 process.MinPhoNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = cms.InputTag("gedPhotons"),
                                           minNumber = cms.uint32(1))
