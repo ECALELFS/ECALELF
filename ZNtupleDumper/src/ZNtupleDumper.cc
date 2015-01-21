@@ -1927,6 +1927,9 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   eleID[index] += ((bool) photon.photonID("loose")) << 1;
   eleID[index] += ((bool) photon.photonID("medium")) << 2;
   eleID[index] += ((bool) photon.photonID("tight")) << 3;
+  eleID[index] += ((bool) photon.photonID("loose25nsRun2")) << 4;
+  eleID[index] += ((bool) photon.photonID("medium25nsRun2")) << 5;
+  eleID[index] += ((bool) photon.photonID("tight25nsRun2")) << 6;
 
   return;
 }
