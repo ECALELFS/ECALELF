@@ -119,9 +119,9 @@ PassingMuonVeryLooseId = selectedMuons.clone(
 PassingPhotonVeryLooseId = selectedPhotons.clone(
     cut = cms.string(
     selectedPhotons.cut.value() +
-    "&& ( (eta<1.479 && sigmaIetaIeta<0.015 && hadronicOverEm<0.04 )"
+    "&& ( (eta<1.479 && sigmaIetaIeta<0.02 && hadronicOverEm<0.06 )"
     "||"
-    "( eta>=1.479 && sigmaIetaIeta<0.035 && hadronicOverEm<0.03 ) )"
+    "( eta>=1.479 && sigmaIetaIeta<0.04 && hadronicOverEm<0.06 ) )"
     )
     )
 
