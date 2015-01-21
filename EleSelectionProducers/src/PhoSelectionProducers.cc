@@ -87,6 +87,9 @@ private:
   SimpleCutBasedPhotonIDSelectionFunctor loose_selector;
   SimpleCutBasedPhotonIDSelectionFunctor medium_selector;
   SimpleCutBasedPhotonIDSelectionFunctor tight_selector;
+  SimpleCutBasedPhotonIDSelectionFunctor loose25nsRun2_selector;
+  SimpleCutBasedPhotonIDSelectionFunctor medium25nsRun2_selector;
+  SimpleCutBasedPhotonIDSelectionFunctor tight25nsRun2_selector;
 
 };
 
@@ -108,6 +111,12 @@ PhoSelectionProducers::PhoSelectionProducers(const edm::ParameterSet& iConfig):
   medium_selector("medium", photonsHandle, conversionsHandle, bsHandle, vertexHandle,
 		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   tight_selector("tight", photonsHandle, conversionsHandle, bsHandle, vertexHandle,
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  loose25nsRun2_selector("loose25nsRun2", photonsHandle, conversionsHandle, bsHandle, vertexHandle,
+		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  medium25nsRun2_selector("medium25nsRun2", photonsHandle, conversionsHandle, bsHandle, vertexHandle,
+		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  tight25nsRun2_selector("tight25nsRun2", photonsHandle, conversionsHandle, bsHandle, vertexHandle,
 		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
   //register your products
@@ -124,6 +133,9 @@ PhoSelectionProducers::PhoSelectionProducers(const edm::ParameterSet& iConfig):
   produces< SelectionMap >("loose");
   produces< SelectionMap >("medium");
   produces< SelectionMap >("tight");
+  produces< SelectionMap >("loose25nsRun2");
+  produces< SelectionMap >("medium25nsRun2");
+  produces< SelectionMap >("tight25nsRun2");
 
   //now do what ever other initialization is needed
   
@@ -153,9 +165,15 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   std::vector<SelectionValue_t>  loose_vec;
   std::vector<SelectionValue_t>  medium_vec;
   std::vector<SelectionValue_t>  tight_vec;
+  std::vector<SelectionValue_t>  loose25nsRun2_vec;
+  std::vector<SelectionValue_t>  medium25nsRun2_vec;
+  std::vector<SelectionValue_t>  tight25nsRun2_vec;
   std::auto_ptr<SelectionMap> looseMap(new SelectionMap());
   std::auto_ptr<SelectionMap> mediumMap(new SelectionMap());
   std::auto_ptr<SelectionMap> tightMap(new SelectionMap());
+  std::auto_ptr<SelectionMap> loose25nsRun2Map(new SelectionMap());
+  std::auto_ptr<SelectionMap> medium25nsRun2Map(new SelectionMap());
+  std::auto_ptr<SelectionMap> tight25nsRun2Map(new SelectionMap());
 
   //------------------------------ PHOTON
   iEvent.getByLabel(photonsTAG, photonsHandle);
@@ -199,6 +217,9 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     pat::strbitset loose_ret;
     pat::strbitset medium_ret;
     pat::strbitset tight_ret;
+    pat::strbitset loose25nsRun2_ret;
+    pat::strbitset medium25nsRun2_ret;
+    pat::strbitset tight25nsRun2_ret;
 
 
     fiducial_selector(eleRef, fiducial_ret);
@@ -211,6 +232,12 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     medium_vec.push_back(medium_selector.result());
     tight_selector(eleRef, tight_ret);
     tight_vec.push_back(tight_selector.result());
+    loose25nsRun2_selector(eleRef, loose25nsRun2_ret);
+    loose25nsRun2_vec.push_back(loose25nsRun2_selector.result());
+    medium25nsRun2_selector(eleRef, medium25nsRun2_ret);
+    medium25nsRun2_vec.push_back(medium25nsRun2_selector.result());
+    tight25nsRun2_selector(eleRef, tight25nsRun2_ret);
+    tight25nsRun2_vec.push_back(tight25nsRun2_selector.result());
 
 
     if(((bool)tight_selector.result())){
@@ -236,18 +263,27 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   SelectionMap::Filler loose_filler(*looseMap);
   SelectionMap::Filler medium_filler(*mediumMap);
   SelectionMap::Filler tight_filler(*tightMap);
+  SelectionMap::Filler loose25nsRun2_filler(*loose25nsRun2Map);
+  SelectionMap::Filler medium25nsRun2_filler(*medium25nsRun2Map);
+  SelectionMap::Filler tight25nsRun2_filler(*tight25nsRun2Map);
 
   //fill and insert valuemap
   fiducial_filler.insert(photonsHandle,fiducial_vec.begin(),fiducial_vec.end());
   loose_filler.insert(photonsHandle,loose_vec.begin(),loose_vec.end());
   medium_filler.insert(photonsHandle,medium_vec.begin(),medium_vec.end());
   tight_filler.insert(photonsHandle,tight_vec.begin(),tight_vec.end());
+  loose25nsRun2_filler.insert(photonsHandle,loose25nsRun2_vec.begin(),loose25nsRun2_vec.end());
+  medium25nsRun2_filler.insert(photonsHandle,medium25nsRun2_vec.begin(),medium25nsRun2_vec.end());
+  tight25nsRun2_filler.insert(photonsHandle,tight25nsRun2_vec.begin(),tight25nsRun2_vec.end());
 
   
   fiducial_filler.fill();
   loose_filler.fill();
   medium_filler.fill();
   tight_filler.fill();
+  loose25nsRun2_filler.fill();
+  medium25nsRun2_filler.fill();
+  tight25nsRun2_filler.fill();
 
   //------------------------------
   // put the ValueMap in the event
@@ -255,6 +291,9 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.put(looseMap, "loose");
   iEvent.put(mediumMap, "medium");
   iEvent.put(tightMap, "tight");
+  iEvent.put(loose25nsRun2Map, "loose25nsRun2");
+  iEvent.put(medium25nsRun2Map, "medium25nsRun2");
+  iEvent.put(tight25nsRun2Map, "tight25nsRun2");
  
 }
 
