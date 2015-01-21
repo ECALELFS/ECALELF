@@ -386,58 +386,58 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == loose25nsRun2) {
+    else if (version_ == loose25nsRun2) {   //PHYS14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.141);         set("hoe_EE",          0.1115);
-      set("deta_EB",       0.0181);         set("deta_EE",         0.0124);
-      set("dphi_EB",       0.0936);         set("dphi_EE",         0.0642);
-      set("sihih_EB",      0.0123);         set("sihih_EE",        0.035);
-      set("ooemoop_EB",    0.1353,false);   set("ooemoop_EE",      0.1443,false);  
-      set("d0vtx_EB",      0.0166);         set("d0vtx_EE",        0.098);
-      set("dzvtx_EB",      0.54342);         set("dzvtx_EE",        0.9187);
-      set("pfIso_EB",      0.24);         set("pfIso_EE",        0.3529);         
-      set("pfIsoLowPt_EB", 0.24);         set("pfIsoLowPt_EE",   0.3529);         
+      set("hoe_EB",        0.121476);         set("hoe_EE",          0.131862);
+      set("deta_EB",       0.012442);         set("deta_EE",         0.010654);
+      set("dphi_EB",       0.072624);         set("dphi_EE",         0.145129);
+      set("sihih_EB",      0.010557);         set("sihih_EE",        0.032602);
+      set("ooemoop_EB",    0.221803,false);   set("ooemoop_EE",      0.142283,false);  
+      set("d0vtx_EB",      0.022664);         set("d0vtx_EE",        0.097358);
+      set("dzvtx_EB",      0.173670);         set("dzvtx_EE",        0.198444);
+      set("pfIso_EB",      0.120026);         set("pfIso_EE",        0.162914);         
+      set("pfIsoLowPt_EB", 0.120026);         set("pfIsoLowPt_EE",   0.162914);         
       set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == medium25nsRun2) {
+    else if (version_ == medium25nsRun2) {  //PHYS14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.067);         set("hoe_EE",          0.097);
-      set("deta_EB",       0.0106);         set("deta_EE",         0.0108);
-      set("dphi_EB",       0.0323);         set("dphi_EE",         0.0455);
-      set("sihih_EB",      0.0107);         set("sihih_EE",        0.0318);
-      set("ooemoop_EB",    0.1043,false);   set("ooemoop_EE",      0.1201,false);  
-      set("d0vtx_EB",      0.0131);         set("d0vtx_EE",        0.0845);
-      set("dzvtx_EB",      0.22310);         set("dzvtx_EE",        0.7523);
-      set("pfIso_EB",      0.2179);         set("pfIso_EE",        0.254);         
-      set("pfIsoLowPt_EB", 0.2179);         set("pfIsoLowPt_EE",   0.254);         
+      set("hoe_EB",        0.060662);         set("hoe_EE",          0.104263);
+      set("deta_EB",       0.007641);         set("deta_EE",         0.009285);
+      set("dphi_EB",       0.032643);         set("dphi_EE",         0.042447);
+      set("sihih_EB",      0.010399);         set("sihih_EE",        0.029524);
+      set("ooemoop_EB",    0.153897,false);   set("ooemoop_EE",      0.137468,false);  
+      set("d0vtx_EB",      0.011811 );         set("d0vtx_EE",        0.051682);
+      set("dzvtx_EB",      0.070775);         set("dzvtx_EE",        0.180720);
+      set("pfIso_EB",      0.097213);         set("pfIso_EE",        0.116708);         
+      set("pfIsoLowPt_EB", 0.097213);         set("pfIsoLowPt_EE",   0.116708);         
       set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == tight25nsRun2) {
+    else if (version_ == tight25nsRun2) {  //PHYS14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.0532);         set("hoe_EE",          0.0835);
-      set("deta_EB",       0.0091);         set("deta_EE",         0.0106);
-      set("dphi_EB",       0.031);         set("dphi_EE",         0.0359);
-      set("sihih_EB",      0.0106);         set("sihih_EE",        0.0305);
-      set("ooemoop_EB",    0.0609,false);   set("ooemoop_EE",      0.1126,false);  
-      set("d0vtx_EB",      0.0126);         set("d0vtx_EE",        0.0163);
-      set("dzvtx_EB",      0.0116);         set("dzvtx_EE",        0.5999);
-      set("pfIso_EB",      0.1649);         set("pfIso_EE",        0.2075);         
-      set("pfIsoLowPt_EB", 0.1649);         set("pfIsoLowPt_EE",   0.2075);         
+      set("hoe_EB",        0.037553);         set("hoe_EE",          0.081902);
+      set("deta_EB",       0.006574);         set("deta_EE",         0.005681);
+      set("dphi_EB",       0.022868);         set("dphi_EE",         0.032046);
+      set("sihih_EB",      0.010181);         set("sihih_EE",        0.028766 );
+      set("ooemoop_EB",    0.131191,false);   set("ooemoop_EE",      0.106055,false);  
+      set("d0vtx_EB",      0.009924 );         set("d0vtx_EE",        0.027261);
+      set("dzvtx_EB",      0.015310);         set("dzvtx_EE",        0.147154);
+      set("pfIso_EB",      0.074355);         set("pfIso_EE",        0.090185);         
+      set("pfIsoLowPt_EB", 0.074355);         set("pfIsoLowPt_EE",   0.090185);         
       set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == loose50nsRun2) {
+    else if (version_ == loose50nsRun2) { //CSA14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -454,7 +454,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == medium50nsRun2) {
+    else if (version_ == medium50nsRun2) { //CSA14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
@@ -471,7 +471,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == tight50nsRun2) {
+    else if (version_ == tight50nsRun2) { //CSA14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
