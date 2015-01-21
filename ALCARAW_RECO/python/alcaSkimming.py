@@ -652,7 +652,7 @@ else:
                                                    ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
                                                    (process.ALCARECOEcalCalElectronPreSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
-    process.pathALCARECOEcalCalZmmgPhoton = cms.Path( process.PUDumperSeq *
+    process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq *
                                                    process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq * 
                                                    ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter *
                                                    process.pfIsoEgamma *
@@ -685,6 +685,7 @@ process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq *
                                                    process.seqALCARECOEcalCalElectron ) #* process.hltReporter)
 process.pathALCARECOEcalCalZmmgPhoton = cms.Path( process.PUDumperSeq *
                                                    process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq * 
+                                                   ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter *
                                                    process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalPhoton ) #* process.hltReporter)
 
