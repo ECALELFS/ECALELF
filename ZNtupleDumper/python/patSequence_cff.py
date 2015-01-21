@@ -237,6 +237,9 @@ patPhotons.photonIDSources =  cms.PSet(
     loose       = cms.InputTag("phoSelectionProducers", "loose"),
     medium      = cms.InputTag("phoSelectionProducers", "medium"),
     tight      = cms.InputTag("phoSelectionProducers", "tight"),
+    loose25nsRun2       = cms.InputTag("phoSelectionProducers", "loose25nsRun2"),
+    medium25nsRun2      = cms.InputTag("phoSelectionProducers", "medium25nsRun2"),
+    tight25nsRun2      = cms.InputTag("phoSelectionProducers", "tight25nsRun2"),
     )
 
 photonMatch.src=cms.InputTag('gedPhotons')
