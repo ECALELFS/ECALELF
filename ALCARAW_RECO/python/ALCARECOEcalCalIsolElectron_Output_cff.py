@@ -23,7 +23,8 @@ OutALCARECOEcalCalElectron_specific_ = cms.untracked.vstring(
     'drop recoMuon*_muon*_*muonShowerInformation*_*',
     'drop recoMuon*_muon*_*combined*_*',
     'drop recoMuon*_muon*_*csc*_*',
-    'drop recoMuon*_muon*_*dt*_*'
+    'drop recoMuon*_muon*_*dt*_*',
+    'drop recoMuon*_muonsFromCosmics*_*_*'
 )
 
 OutALCARECOEcalCalElectron_noDrop_ = cms.PSet(
