@@ -167,6 +167,15 @@ PassingPhotonVeryLooseId = selectedPhotons.clone(
     "( eta>=1.479 && sigmaIetaIeta<0.04 && hadronicOverEm<0.06 ) )"
     )
     )
+    
+MuFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("PassingMuonVeryLooseId"),
+                         minNumber = cms.uint32(2)
+                         )
+PhoFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("PassingPhotonVeryLooseId"),
+                         minNumber = cms.uint32(1)
+                         ) 
 
 #------------------------------ electronID producer
 from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
@@ -192,7 +201,7 @@ eleSelSeq = cms.Sequence( selectedElectrons + PassingVeryLooseId + PassingTightI
                           (SCselector*eleSC)
                           )
 
-muSelSeq = cms.Sequence( selectedMuons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId +
+muSelSeq = cms.Sequence( selectedMuons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
                           (SCselector*eleSC)
                           )
 
