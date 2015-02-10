@@ -13,7 +13,26 @@
 </center>
 
 \section desc Description
-<!-- Short description of what this package is supposed to provide -->
+This module contains all the plugins and classes used to produce ECAL alcarecos.
+
+\section streamList AlCaRecoStream list
+ - AlCaCalElectron
+ - AlCaUncalElectron
+ - AlCaESAlign
+
+\subsection AlCaESAlign AlCaESAlign
+The aim of this alcareco is to have a reduced dataset with all the information used for ES Alignment.
+
+The event content is defined in ALCARECOEcalESAlign_Output_cff.py
+
+The generalTrack collection (and trackExtras) are reduced by the EcalESAlignTrackReducer plugin in order to save tracks in the ES acceptance
+
+In order to test this alcareco:
+\code 
+      cmsDriver.py testES -s ALCA:EcalESAlign --conditions=MCRUN2_74_V1 --filein=root://eoscms//eos/cms/store/relval/CMSSW_7_4_0_pre6/RelValZEE_13/GEN-SIM-RECO/PU25ns_MCRUN2_74_V1-v3/00000/04445CDB-7AAB-E411-8E6E-0025905A605E.root -n 100
+\endcode
+
+\subsection 
 
 (THE PACKAGE ADMINISTATOR SHOULD REPLACE THIS SENTENCE WITH HAND-WRITTEN DOCUMENTATION SAYING WHAT THE PACKAGE DOES.)
 
