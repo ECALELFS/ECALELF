@@ -86,18 +86,18 @@ PassingVetoId = selectedElectrons.clone(
     selectedElectrons.cut.value() +
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
     " && ((isEB"
-    " && ( (pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt<0.3313)"
-    " && (sigmaIetaIeta<0.0125)"
+    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.3313)"
+    " && (full5x5_sigmaIetaIeta<0.0125)"
     " && ( -0.2579<deltaPhiSuperClusterTrackAtVtx<0.2579 )"
     " && ( -0.021<deltaEtaSuperClusterTrackAtVtx<0.021 )"
-    " && (hadronicOverEm<0.2564)"
+    " && (hadronicOverEm<0.345843)"
 #    " && (-0.031<gsfTrack.d0vtx<0.031)"
 #    " && (-0.5863<gsfTrack.dzvtx<0.5863)"
     ")"
     " || (isEE"
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=3)"
-    " && ( (pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt<0.3816)"
-    " && (sigmaIetaIeta<0.0371)"
+    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.3816)"
+    " && (full5x5_sigmaIetaIeta<0.0371)"
     " && ( -0.2591<deltaPhiSuperClusterTrackAtVtx<0.2591 )"
     " && ( -0.028<deltaEtaSuperClusterTrackAtVtx<0.028 )"
     " && (hadronicOverEm<0.19) "
@@ -108,7 +108,6 @@ PassingVetoId = selectedElectrons.clone(
     )
 
 
-# This are the cuts at trigger level except ecalIso
 PassingMuonVeryLooseId = selectedMuons.clone(
     cut = cms.string(
     selectedMuons.cut.value() +
@@ -124,6 +123,16 @@ PassingPhotonVeryLooseId = selectedPhotons.clone(
     "( eta>=1.479 && sigmaIetaIeta<0.04 && hadronicOverEm<0.06 ) )"
     )
     )
+
+MuFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("PassingMuonVeryLooseId"),
+                         minNumber = cms.uint32(2)
+                         )
+PhoFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("PassingPhotonVeryLooseId"),
+                         minNumber = cms.uint32(1)
+                         )                         
+
 
 #------------------------------ electronID producer
 from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
@@ -149,7 +158,7 @@ eleSelSeq = cms.Sequence( selectedElectrons + PassingVetoId +
                           (SCselector*eleSC)
                           )
 
-muSelSeq = cms.Sequence( selectedMuons + selectedPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId +
+muSelSeq = cms.Sequence( selectedMuons + selectedPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
                           (SCselector*eleSC)
                           )
 
