@@ -98,18 +98,18 @@ WFilterMC = cms.EDFilter("CandViewCountFilter",
 ##   
 # Electron ID  ######
 
-selectedElectrons = cms.EDFilter("GsfElectronRefSelector",
+selectedECALElectrons = cms.EDFilter("GsfElectronRefSelector",
                                  src = myEleCollection,
                                  cut = cms.string(
     "(abs(superCluster.eta)<3) && (energy*sin(superClusterPosition.theta)> 15)")
                                          )
 
-selectedMuons = cms.EDFilter("MuonRefSelector",
+selectedECALMuons = cms.EDFilter("MuonRefSelector",
                                  src = cms.InputTag( 'muons' ),
                                  cut = cms.string("")
                                          )
 
-selectedPhotons = cms.EDFilter("PhotonRefSelector",
+selectedECALPhotons = cms.EDFilter("PhotonRefSelector",
                                  src = cms.InputTag( 'gedPhotons' ),
                                  cut = cms.string(
     "(abs(superCluster.eta)<3) && (pt > 10)")
@@ -117,9 +117,9 @@ selectedPhotons = cms.EDFilter("PhotonRefSelector",
 
 
 # This are the cuts at trigger level except ecalIso
-PassingVetoId = selectedElectrons.clone(
+PassingVetoId = selectedECALElectrons.clone(
     cut = cms.string(
-    selectedElectrons.cut.value() +
+    selectedECALElectrons.cut.value() +
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
     " && ((isEB"
     " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.164369)"
@@ -139,16 +139,16 @@ PassingVetoId = selectedElectrons.clone(
     )
     )
 
-PassingMuonVeryLooseId = selectedMuons.clone(
+PassingMuonVeryLooseId = selectedECALMuons.clone(
     cut = cms.string(
-    selectedMuons.cut.value() +
+    selectedECALMuons.cut.value() +
     "(isPFMuon) && (isGlobalMuon || isTrackerMuon)"
     )
     )
 
-PassingPhotonVeryLooseId = selectedPhotons.clone(
+PassingPhotonVeryLooseId = selectedECALPhotons.clone(
     cut = cms.string(
-    selectedPhotons.cut.value() +
+    selectedECALPhotons.cut.value() +
     "&& ( (eta<1.479 && sigmaIetaIeta<0.02 && hadronicOverEm<0.06 )"
     "||"
     "( eta>=1.479 && sigmaIetaIeta<0.04 && hadronicOverEm<0.06 ) )"
@@ -186,11 +186,11 @@ eleSC = cms.EDProducer('ConcreteEcalCandidateProducer',
 #                                      src = cms.VInputTag("PassingVetoId", "eleSC")
 #                                      )
 
-eleSelSeq = cms.Sequence( selectedElectrons + PassingVetoId +
+eleSelSeq = cms.Sequence( selectedECALElectrons + PassingVetoId +
                           (SCselector*eleSC)
                           )
 
-muSelSeq = cms.Sequence( selectedMuons + selectedPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
+muSelSeq = cms.Sequence( selectedECALMuons + selectedECALPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
                           (SCselector*eleSC)
                           )
 
