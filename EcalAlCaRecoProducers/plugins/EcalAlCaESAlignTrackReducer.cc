@@ -35,21 +35,12 @@ EcalAlCaESAlignTrackReducer::EcalAlCaESAlignTrackReducer (const edm::ParameterSe
      // input collections
      generalTracksToken_ = consumes < reco::TrackCollection > (iConfig.getParameter <edm::InputTag >("generalTracksLabel"));
      generalTracksExtraToken_ =	consumes < reco::TrackExtraCollection > (iConfig.getParameter <edm::InputTag >	 ("generalTracksExtraLabel"));
-     trackingRecHitToken_ = consumes < TrackingRecHitCollection > (iConfig.getParameter <					       edm::InputTag >					       ("trackingRecHitLabel"));
+     trackingRecHitToken_ = consumes < TrackingRecHitCollection > (iConfig.getParameter < edm::InputTag >		     ("trackingRecHitLabel"));
 
     // label of output collections
-     newGeneralTracksCollection_ =
-	iConfig.getParameter < std::string > ("newGeneralTracksCollection");
-    newGeneralTracksExtraCollection_ =
-	iConfig.getParameter < std::string >
-	("newGeneralTracksExtraCollection");
-    newTrackingRecHitCollection_ =
-	iConfig.getParameter < std::string > ("newTrackingRecHitCollection");
 
     produces < reco::TrackCollection > (newGeneralTracksCollection_);
-    produces < reco::TrackExtraCollection >
-	(newGeneralTracksExtraCollection_);
-    produces < reco::TrackExtraCollection > ();
+    produces < reco::TrackExtraCollection > 	(newGeneralTracksExtraCollection_);
     produces < TrackingRecHitCollection > (newTrackingRecHitCollection_);
 }
 
@@ -78,12 +69,9 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
     iEvent.getByToken (trackingRecHitToken_, TrackingRecHitHandle);
 
     // Create empty collections
-    std::auto_ptr < reco::TrackCollection >
-	newGeneralTracksCollection (new reco::TrackCollection);
-    std::auto_ptr < reco::TrackExtraCollection >
-	newGeneralTracksExtraCollection (new reco::TrackExtraCollection);
-    std::auto_ptr < TrackingRecHitCollection >
-	newTrackingRecHitCollection (new TrackingRecHitCollection);
+    std::auto_ptr < reco::TrackCollection >	 newGeneralTracksCollection (new reco::TrackCollection);
+    std::auto_ptr < reco::TrackExtraCollection > newGeneralTracksExtraCollection (new reco::TrackExtraCollection);
+    std::auto_ptr < TrackingRecHitCollection >   newTrackingRecHitCollection (new TrackingRecHitCollection);
 
     reco::TrackExtraRefProd trackExtraRefProd =	iEvent.getRefBeforePut < reco::TrackExtraCollection >	(newGeneralTracksExtraCollection_);
     edm::Ref < reco::TrackExtraCollection >::key_type iTrackExtraRefProd = 0;
@@ -104,7 +92,7 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
 	  newGeneralTracksExtraCollection->push_back (*newTrack.extra ());	// implicit copy constructor
 	  reco::TrackExtra & newTrackExtra =  newGeneralTracksExtraCollection->back ();
 
-	  //auto const firstHitIndex = newTrackingRecHitCollection->size ();	// new hits will be appended
+	  //  auto const firstHitIndex = newTrackingRecHitCollection->size ();	// new hits will be appended
 
 	  for (trackingRecHit_iterator itHit = itTrack->recHitsBegin ();
 	       itHit != itTrack->recHitsEnd (); ++itHit)
@@ -115,8 +103,7 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
 
 
 	  // setting track hits in trackExtra \todo fix error 
-	  // Inconsistency RefCore::pushBackItem: Ref or Ptr is inconsistent with RefVector (PtrVector)id = (3:1) should be (2:257)
-	  //newTrackExtra.setHits (trackingRecHitRefProd, 0, 1); //firstHitIndex,		 itTrack->recHitsSize ());
+	  //newTrackExtra.setHits (trackingRecHitRefProd, firstHitIndex,		 itTrack->recHitsSize ());
 	  
 	  // reference to the new trackExtra
 	  reco::TrackExtraRef newTrackExtraRef (trackExtraRefProd,iTrackExtraRefProd++);
