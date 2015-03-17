@@ -8,12 +8,11 @@ OutALCARECOEcalESAlign_noDrop = cms.PSet(
     ),
     outputCommands = cms.untracked.vstring(
         'keep *_ecalPreshowerRecHit_*_*',
- #       'keep *_generalTracks_*_*',
+        'keep *_generalTracks_*_*',
         'keep *_offlineBeamSpot_*_*',
         'keep *_siPixelClusters_*_*',
         'keep *_siStripClusters_*_*',
-        'keep *_siStripDigis_*_*',
-        'keep *_ecalAlCaESAlignTrackReducer_*_*',
+        'keep *_siStripDigis_*_*'
         )
 )
 

@@ -28,9 +28,6 @@ The event content is defined in ALCARECOEcalESAlign_Output_cff.py
 The generalTrack collection (and trackExtras) are reduced by the EcalESAlignTrackReducer plugin in order to save tracks in the ES acceptance
 
 In order to test this alcareco:
-\code
- reco -s ALCA:EcalESAlign -n 100 --data --conditions=auto:run2_data --nThreads=4 --filein=${SingleElectronRECOFile} --secondfilein=${SingleElectronRAWFile} --dirout=SingleElectron-Run2012D/ --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" 
-\endcode
 \code 
       cmsDriver.py testES -s ALCA:EcalESAlign --conditions=MCRUN2_74_V1 --filein=root://eoscms//eos/cms/store/relval/CMSSW_7_4_0_pre6/RelValZEE_13/GEN-SIM-RECO/PU25ns_MCRUN2_74_V1-v3/00000/04445CDB-7AAB-E411-8E6E-0025905A605E.root -n 100
 \endcode
