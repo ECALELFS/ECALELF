@@ -85,7 +85,9 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
     std::auto_ptr < TrackingRecHitCollection >
 	newTrackingRecHitCollection (new TrackingRecHitCollection);
 
-    reco::TrackExtraRefProd trackExtraRefProd =	iEvent.getRefBeforePut < reco::TrackExtraCollection >	(newGeneralTracksExtraCollection_);
+    reco::TrackExtraRefProd trackExtraRefProd =
+	iEvent.getRefBeforePut < reco::TrackExtraCollection >
+	(newGeneralTracksExtraCollection_);
     edm::Ref < reco::TrackExtraCollection >::key_type iTrackExtraRefProd = 0;
 
     TrackingRecHitRefProd trackingRecHitRefProd =iEvent.getRefBeforePut < TrackingRecHitCollection >(newTrackingRecHitCollection_);
@@ -104,7 +106,7 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
 	  newGeneralTracksExtraCollection->push_back (*newTrack.extra ());	// implicit copy constructor
 	  reco::TrackExtra & newTrackExtra =  newGeneralTracksExtraCollection->back ();
 
-	  //auto const firstHitIndex = newTrackingRecHitCollection->size ();	// new hits will be appended
+	  auto const firstHitIndex = newTrackingRecHitCollection->size ();	// new hits will be appended
 
 	  for (trackingRecHit_iterator itHit = itTrack->recHitsBegin ();
 	       itHit != itTrack->recHitsEnd (); ++itHit)
@@ -114,12 +116,15 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
 	    }
 
 
-	  // setting track hits in trackExtra \todo fix error 
-	  // Inconsistency RefCore::pushBackItem: Ref or Ptr is inconsistent with RefVector (PtrVector)id = (3:1) should be (2:257)
-	  //newTrackExtra.setHits (trackingRecHitRefProd, 0, 1); //firstHitIndex,		 itTrack->recHitsSize ());
+	  // setting track hits in trackExtra
+	  newTrackExtra.setHits (trackingRecHitRefProd, firstHitIndex, 1); //firstHitIndex,		 itTrack->recHitsSize ());
 	  
+	  continue;
+
+
 	  // reference to the new trackExtra
-	  reco::TrackExtraRef newTrackExtraRef (trackExtraRefProd,iTrackExtraRefProd++);
+	  reco::TrackExtraRef newTrackExtraRef (trackExtraRefProd,
+						iTrackExtraRefProd++);
 	  newTrack.setExtra (newTrackExtraRef);
       }
 
