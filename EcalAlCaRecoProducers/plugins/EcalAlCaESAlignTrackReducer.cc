@@ -51,11 +51,8 @@ EcalAlCaESAlignTrackReducer::~EcalAlCaESAlignTrackReducer ()
 // ------------ additional functions  ------------
 bool EcalAlCaESAlignTrackReducer::TrackSelection (reco::Track track)
 {
-     if(fabs(track.eta())<1.7) return false;
-     if(fabs(track.eta())>2.3) return false;
-     if(track.pt()<1) return false;
-     if(track.numberOfValidHits() < 10) return false;
-     if(!track.quality(reco::TrackBase::highPurity)) return false; // select high purity
+    if (fabs (track.eta ()) < 1.5)
+	return false;		// reject tracks in the barrel
     return true;
 }
 
@@ -112,7 +109,7 @@ EcalAlCaESAlignTrackReducer::produce (edm::Event & iEvent,
 	  reco::TrackExtraRef newTrackExtraRef (trackExtraRefProd,iTrackExtraRefProd++);
 	  newTrack.setExtra (newTrackExtraRef);
       }
-    
+
     // add the collections to the event
     iEvent.put( newGeneralTracksCollection,  newGeneralTracksCollection_ );
     iEvent.put( newGeneralTracksExtraCollection,newGeneralTracksExtraCollection_);
