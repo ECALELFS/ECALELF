@@ -1,0 +1,8 @@
+<use name="root"/>
+<use name="rootcore"/>
+<use name="rootgraphics"/>
+<flags CXXFLAGS="-g -Wall -fpermissive -std=c++0x -Wno-reorder"/>
+<export>
+<lib name="1"/>
+</export>
+<Flags CppDefines="CMSSW_7_2_X"/>

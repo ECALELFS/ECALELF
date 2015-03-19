@@ -1,0 +1,27 @@
+# this file contains the run ranges that should be subdivided
+# when splitting by run ranges, this file fixes the run range limits
+# for the splitting avoiding the possibility to have run ranges
+# including TS or other important boundaries
+# begin of RUN2012A
+190456
+# begin of recover period
+190782
+#190782-190949
+# begin of period after the recover part
+190950
+### don't know
+191043
+#begin of period after RUN2012A
+#193622
+#----- RUN begin RUN2012B
+193834
+196532
+198111
+198914
+198934
+# 202305
+#----- TS
+203003
+#----- RUN begin RUN2012D
+203756
+203853

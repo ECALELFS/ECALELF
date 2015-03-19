@@ -1,0 +1,100 @@
+/** 
+* \page page4 How to work with ECALELF ntuples
+
+Go to the Calibration/ZFitter directory and compile it: 
+\code make\endcode
+
+Calibration/ZFitter will be your working directory now on.
+
+Two methods are used in order to evaluate the energy scale and
+resolution:
+ - fitMethod: consists in fitting the Z lineshape with a parametric
+model
+   This method gives an estimate of the Z peak and width separately
+for data and MC. On the other hand the energy scale and energy
+resolution are estimated for electrons belonging to the same
+di-electron categories. With this method the energy scale and
+resolution are measured for di-electron categories.
+
+ - smearingMethod: consists in using the Z lineshape from MC after the
+scaling and smearing of the single electron energy.
+   The energy scale and smearing is applied to the single electron
+energy before calculating the invariant mass, so they are directly
+the single electron energy scale and smearings.
+
+The methods are implemented in separate classes, there is only one
+executable (./bin/ZFitter.exe) that with command line options can run the fitMethod or the
+smearingMethod.
+
+The inputs to the ZFitter program are given in the form of:
+ - configuration files (.dat)
+ - command line options
+
+The configuration files are described in: \ref ZFitterConfigFiles
+
+The ntuple structure and logic is explained in \ref NtupleStructure
+
+\ref plotNtuple
+
+\ref page7
+\verbatim
+
+#============================================================
+The files containing the histograms for the PU reweight are
+indicated with pileupHist as treeName and they are treated in a
+different way. There must be only one pileupHist for d and one for s,
+then the program calculates the weights for the MC, produces a
+temporary file with just one tree containing the weights (pileupTree)
+and it is added as friend to the chain of MC. You can also provide
+directly the "temporary" root file indicating
+s	pileupTree	file.root
+
+
+
+Package content:
+ - BW_CB_pdf_class
+	Class providing a RooPdf correspoding to the convolution of a
+	Breit-Wigner and Crystal Ball
+ - Cruijff_pdf_class
+	Class providing a RooPdf corresponding to a Cruijff function
+        (Gaussian with exponential tails)
+ - ElectronCategory_class
+	Parser class for electron categorization providing TCuts for
+	RooDataset 
+ - ZFit_class 
+	Class for fitting the Z lineshape from any RooAbsData 
+ - ZFitter
+	General program for Z fit (monitoring, calibration validation)
+
+Input:
+While the classes are almost generic and flexible, the ZFitter program
+is thought to be used starting from ECALELF ntuples (ZNtuples).
+
+ - data ntuples must contain:
+	- a tree "selected"
+ - mc ntuples must contain:
+	- a tree "selected"
+ - config file: see next section
+ - run range config file:
+	file containing a list of run ranges: every region will be
+	checked in every run range in this file
+ - category config file:
+	file containing a list of regions (categories) for electrons
+	it will be combined with the run range config file (if provided)
+ - option:
+	- global pt cut
+	- selection
+	- energy used for the invariant mass calculation (invMass_var)
+	- (not implemented) bin/unbin/mixed: performe binned/unbinned fit or a mix
+	  version (unbinned for < mixedSwitchValue events, binned otherwise) 
+	- (not implemented) mixed switch value: 200 by default 
+	- 
+
+If no external PU reweight is provided and no tree containing the PU
+reweight for the MC, the program reads the files, add all the data PU
+histograms, add all the MC PU histograms, calculates the PU
+reweight, produce a tree with the per event weight for the MC. 
+Then add the tree with the PU weights to the MC chain as a friend
+tree.
+\endverbatim
+*/

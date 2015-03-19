@@ -1,0 +1,6 @@
+# regions defined for condition validation
+absEta_0_1-gold
+absEta_1.566_2-bad
+absEta_1.566_2-gold
+absEta_2_2.5-bad
+absEta_2_2.5-gold

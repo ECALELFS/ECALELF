@@ -1,0 +1,86 @@
+############### This file is equivalent to Winter13-powheg.dat but with new trees with trigger and new selection
+########### standard MC
+##### Madgraph
+s1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim-runDependent/194533-194533/78TeVtrain/DYJets-Summer12-START53-ZSkim-runDependent-194533-194533.root
+s1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim-runDependent/200519-200519/78TeVtrain/DYJets-Summer12-START53-ZSkim-runDependent-200519-200519.root
+s1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim-runDependent/206859-206859/78TeVtrain/DYJets-Summer12-START53-ZSkim-runDependent-206859-206859.root
+##### Powheg
+s2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/194533-194533/78TeVtrain_bis/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-194533-194533.root
+s2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/200519-200519/78TeVtrain_bis/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-200519-200519.root
+s2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent/206859-206859/78TeVtrain_bis/DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-206859-206859.root
+##### Sherpa
+#s3	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets_sherpa-Summer12-START53-ZSkim-runDependent/194533-194533/78TeVtrain/DYJets_sherpa-Summer12-START53-ZSkim-runDependent-194533-194533.root
+#s3	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets_sherpa-Summer12-START53-ZSkim-runDependent/200519-200519/78TeVtrain/DYJets_sherpa-Summer12-START53-ZSkim-runDependent-200519-200519.root
+#s3	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets_sherpa-Summer12-START53-ZSkim-runDependent/206859-206859/78TeVtrain/DYJets_sherpa-Summer12-START53-ZSkim-runDependent-206859-206859.root
+########### Data
+d1	selected	root://eoscms//eos/cms/store/caf/user/shervin/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012D-22Jan-v1/203777-208686/190456-208686-22Jan_v1/78TeVtrain/DoubleElectron-ZSkim-RUN2012D-22Jan-v1-203777-208686.root
+d2	selected	root://eoscms//eos/cms/store/caf/user/shervin/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012C-22Jan-v1/198022-203742/190456-208686-22Jan_v1/78TeVtrain/DoubleElectron-ZSkim-RUN2012C-22Jan-v1-198022-203742.root
+d3	selected	root://eoscms//eos/cms/store/caf/user/shervin/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012B-22Jan-v1/193834-196531/190456-208686-22Jan_v1/78TeVtrain/DoubleElectron-ZSkim-RUN2012B-22Jan-v1-193834-196531.root
+d4	selected	root://eoscms//eos/cms/store/caf/user/shervin/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012A-22Jan-v1/190645-193621/190456-208686-22Jan_v1/78TeVtrain/DoubleElectron-ZSkim-RUN2012A-22Jan-v1-190645-193621.root
+########### Friend trees
+##### PU histograms
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-196531-22Jan_v1.69300.true.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/198022-203742-22Jan_v1.69300.true.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/203777-208686-22Jan_v1.69300.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/194533-194533-Summer12_DD3_runDep.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/200519-200519-Summer12_DD3_runDep.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/206859-206859-Summer12_DD3_runDep.true.root
+##### PU trees
+#s1	pileup	mcPUtree_s1-22Jan2012-runDepMC.dat
+#s2	pileup	mcPUtree_s2-22Jan2012-runDepMC.dat
+#s3	pileup	mcPUtree_s3-22Jan2012-runDepMC.dat
+s1	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree_s1-runDepMC.root
+s2	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree_s2-runDepMC.root
+#s3	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree_s3-runDepMC.root
+##### Scale correction trees
+#d	scaleEle_HggRunEtaR9	HggRunEtaR9-Winter13-RUNABC.root
+##### Smearer category trees
+#d	smearerCat_d	smearerCat_data-scaleStep2smearing_8.root
+#s	smearerCat_s	smearerCat_mc-scaleStep2smearing_8.root
+#d1	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_d1-22Jan2012-runDepMC.root
+#d2	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_d2-22Jan2012-runDepMC.root
+#d3	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_d3-22Jan2012-runDepMC.root
+#d4	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_d4-22Jan2012-runDepMC.root
+#s1	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_s1-22Jan2012-runDepMC.root
+#s2	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_s2-22Jan2012-runDepMC.root
+##s3	smearerCat_scaleStep2smearing_8	smearerCat_scaleStep2smearing_8_s3-22Jan2012-runDepMC.root
+#
+#d1	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_d1-22Jan2012-runDepMC.root
+#d2	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_d2-22Jan2012-runDepMC.root
+#d3	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_d3-22Jan2012-runDepMC.root
+#d4	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_d4-22Jan2012-runDepMC.root
+#s1	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_s1-22Jan2012-runDepMC.root
+#s2	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_s2-22Jan2012-runDepMC.root
+##s3	smearerCat_scaleStep2smearing_9	smearerCat_scaleStep2smearing_9_s3-22Jan2012-runDepMC.root
+#
+#d1	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d1-22Jan2012-runDepMC.root
+#d2	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d2-22Jan2012-runDepMC.root
+#d3	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d3-22Jan2012-runDepMC.root
+#d4	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d4-22Jan2012-runDepMC.root
+#s1	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_s1-22Jan2012-runDepMC.root
+#s2	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_s2-22Jan2012-runDepMC.root
+##s3	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_s3-22Jan2012-runDepMC.root
+##
+#d1	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_d1-22Jan2012-runDepMC.root
+#d2	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_d2-22Jan2012-runDepMC.root
+#d3	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_d3-22Jan2012-runDepMC.root
+#d4	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_d4-22Jan2012-runDepMC.root
+#s1	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_s1-22Jan2012-runDepMC.root
+#s2	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_s2-22Jan2012-runDepMC.root
+##s3	smearerCat_scaleStep2smearing_2	smearerCat_scaleStep2smearing_2_s3-22Jan2012-runDepMC.root
+#
+d1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d1-22Jan2012-runDepMC.root
+d2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d2-22Jan2012-runDepMC.root
+d3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d3-22Jan2012-runDepMC.root
+d4	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_d4-22Jan2012-runDepMC.root
+s1	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s1-22Jan2012-runDepMC.root
+s2	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s2-22Jan2012-runDepMC.root
+#s3	smearerCat_scaleStep4smearing_1	data/smearerCat/smearerCat_scaleStep4smearing_1_s3-22Jan2012-runDepMC.root
+#
+d1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d1-22Jan2012-runDepMC.root
+d2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d2-22Jan2012-runDepMC.root
+d3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d3-22Jan2012-runDepMC.root
+d4	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_d4-22Jan2012-runDepMC.root
+s1	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s1-22Jan2012-runDepMC.root
+s2	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s2-22Jan2012-runDepMC.root
+#s3	smearerCat_scaleStep4smearing_2	data/smearerCat/smearerCat_scaleStep4smearing_2_s3-22Jan2012-runDepMC.root

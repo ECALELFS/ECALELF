@@ -1,0 +1,16 @@
+# list of files to run on
+# type  treeName        fileName
+# files are added to the same chain if they have the same treeName and the same type
+# chain with the same type are added as friends
+# only three type are admitted: s (signal), b (bkg), d (data)
+# all treeName are admitted, but some are mandatory:
+# selected
+# some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
+s	selected	root://eoscms//eos/cms/store/caf/user/shervin/calibration/8TeV/ZNtuples/ALCARECOSIM/DYJets-Summer12-START53-ZSkim/allRange/DYJets-Summer12-START53-ZSkim-allRange.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/Cal_Dic2012_ICcombTCcomb_v5_offGT/DoubleElectron-ZSkim-RUN2012A-13Jul-v1/190456-193621/190456-208686-13Julv2_Prompt-Moriond2013/DoubleElectron-ZSkim-RUN2012A-13Jul-v1-190456-193621.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/Cal_Dic2012_ICcombTCcomb_v5_offGT/DoubleElectron-ZSkim-RUN2012B-13Jul-v1/193834-196531/190456-208686-13Julv2_Prompt-Moriond2013/DoubleElectron-ZSkim-RUN2012B-13Jul-v1-193834-196531.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/Cal_Dic2012_ICcombTCcomb_v5_offGT/DoubleElectron-ZSkim-RUN2012C-v2/198111-198913/190456-208686-13Julv2_Prompt-Moriond2013/DoubleElectron-ZSkim-RUN2012C-v2-198111-198913.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/Cal_Dic2012_ICcombTCcomb_v5_offGT/DoubleElectron-ZSkim-RUN2012C-v3/198934-203755/190456-208686-13Julv2_Prompt-Moriond2013/DoubleElectron-ZSkim-RUN2012C-v3-198934-203755.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/Cal_Feb2013_ICcomb_v7/DoubleElectron-ZSkim-RUN2012D-v1/203773-209465/190456-208686-13Julv2_Prompt-Moriond2013/DoubleElectron-ZSkim-RUN2012D-v1-203773-209465.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Summer12_DD3.observed.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-208686-13Julv2_Prompt_Moriond2013.69400.observed.root
