@@ -532,6 +532,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
           bool skipElectron = false;
          
           /// Cycle on the all the recHits of the Event: to get the old IC and the corrected SC energy
+          if (energyRecHitSCEle1->size()<1) continue;
           for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle1->size(); iRecHit++ ) {
             
             float thisIC = 1.;
@@ -654,6 +655,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
           float thisE3x3 = 0;
          
           /// Cycle on the all the recHits of the Event: to get the old IC and the corrected SC energy
+          if (energyRecHitSCEle2->size()<1) continue;
           for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle2->size(); iRecHit++ ) {
             
             float thisIC = 1.;
