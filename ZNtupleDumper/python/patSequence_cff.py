@@ -14,18 +14,18 @@ from Calibration.ZNtupleDumper.phoPat_cfi import *
     
 #------------------------------ new energies
 from Calibration.ZNtupleDumper.elenewenergiesproducer_cfi import *
-eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
-eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
+#eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
+#eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
 #eleNewEnergiesProducer.regrEleFile_fra='src/Calibration/EleNewEnergiesProducer/data/eleEnergyRegWeights_V1.root'
-eleNewEnergiesProducer.ptSplit=cms.bool(False)
+#eleNewEnergiesProducer.ptSplit=cms.bool(False)
 
-from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
-eleRegressionEnergy.inputElectronsTag = cms.InputTag('gedGsfElectrons')
-eleRegressionEnergy.inputCollectionType = cms.uint32(0)
-eleRegressionEnergy.useRecHitCollections = cms.bool(True)
-eleRegressionEnergy.produceValueMaps = cms.bool(True)
-eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rho")
-eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
+#from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
+#eleRegressionEnergy.inputElectronsTag = cms.InputTag('gedGsfElectrons')
+#eleRegressionEnergy.inputCollectionType = cms.uint32(0)
+#eleRegressionEnergy.useRecHitCollections = cms.bool(True)
+#eleRegressionEnergy.produceValueMaps = cms.bool(True)
+#eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rho")
+#eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
 
 #------------------------------ electronID producer
 from Calibration.ZNtupleDumper.eleselectionproducers_cfi import *
@@ -40,6 +40,7 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 # to access the float:
 # electron.userFloat("eleNewEnergiesProducer:energySCEleJoshEle")
 # electron.userFloat("eleNewEnergiesProducer:energySCEleJoshEle:MVAntuplizer")
+'''
 patElectrons.userData.userFloats.src = [
     cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEle"),
     cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleVar"),
@@ -204,7 +205,7 @@ patElectrons.userData.userFloats.src = [
     cms.InputTag("eleRegressionEnergy:eneRegForGsfEle"),
     cms.InputTag("eleRegressionEnergy", "eneErrorRegForGsfEle")
     ]
-
+'''
 
 #============================== Adding electron ID to patElectrons
 patElectrons.addElectronID=cms.bool(True)
@@ -253,8 +254,8 @@ muonMatch.src=cms.InputTag('muons')
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
 
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
-patSequence=cms.Sequence( (eleSelectionProducers + eleNewEnergiesProducer +eleRegressionEnergy ) * patElectrons )
-patSequenceMC=cms.Sequence( electronMatch * (eleSelectionProducers + eleNewEnergiesProducer + eleRegressionEnergy ) * patElectrons )
+patSequence=cms.Sequence( (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
+patSequenceMC=cms.Sequence( electronMatch * (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
 
 
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
@@ -262,8 +263,8 @@ eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons"
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
 eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
-eleRegressionEnergy.recHitCollectionEB = eleNewEnergiesProducer.recHitCollectionEB.value()
-eleRegressionEnergy.recHitCollectionEE = eleNewEnergiesProducer.recHitCollectionEE.value()
+#eleRegressionEnergy.recHitCollectionEB = eleNewEnergiesProducer.recHitCollectionEB.value()
+#eleRegressionEnergy.recHitCollectionEE = eleNewEnergiesProducer.recHitCollectionEE.value()
 patElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
 patElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()
 
