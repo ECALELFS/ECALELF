@@ -8,7 +8,7 @@ def EcalRecal(process):
     process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
     process.alCaIsolatedElectrons.EESuperClusterCollection = process.reducedEcalRecHitsES.EndcapSuperClusterCollection
 
-    process.selectedElectrons.src = cms.InputTag("electronRecalibSCAssociator")
+    process.selectedECALElectrons.src = cms.InputTag("electronRecalibSCAssociator")
     process.PassingVetoId.src = recalibElectronSrc
-#    process.myEleCollection = cms.InputTag('electronRecalibSCAssociator')
+#    process.myEleCollection = cms.InputTag('electronRecalibSCAssociator')                                                
     return process
