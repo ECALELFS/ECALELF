@@ -82,6 +82,21 @@ cmsDriver.py reco -s ALCA:EcalRecalElectron -n 100 --data --conditions=auto:run2
 
 \endverbatim
 
+\subsection ntuple production and calibration
+Zntuples:
+\verbatim
+cmsRun EcalAlCaRecoProducers/python/alcaSkimming.py isCrab=0 skim=ZSkim maxEvents=100 type=ALCARECO files=${DoubleElectronRECOFile} doTree=3 tagFile=EcalAlCaRecoProducers/config/reRecoTags/test75x.py
+\endverbatim
+Wntuples:
+\verbatim
+cmsRun EcalAlCaRecoProducers/python/alcaSkimming.py isCrab=0 skim=WSkim maxEvents=100 type=ALCARECO files=${SingleElectronRECOFile} doTree=3 tagFile=EcalAlCaRecoProducers/config/reRecoTags/test75x.py
+\endverbatim
+Calibration with E / p:
+\verbatim
+ZFitter.exe -f data/validation/EoverPcalibration.dat --EOverPCalib --outputPath output/ --doEB --splitStat 0 --nLoops 15
+ZFitter.exe -f data/validation/EoverPcalibration.dat --EOverPCalib --outputPath output/ --doEE --splitStat 0 --nLoops 15
+\endverbatim
+
 \subsection interface Public interface
 <!-- List the classes that are provided for use in other packages (if any) -->
 
