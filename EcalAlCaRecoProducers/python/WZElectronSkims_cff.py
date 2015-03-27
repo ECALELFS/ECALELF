@@ -123,21 +123,22 @@ PassingVetoId = selectedECALElectrons.clone(
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
     " && ((isEB"
     " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.164369)"
-    " && (full5x5_sigmaIetaIeta<0.011100)"
-    " && ( - 	0.252044<deltaPhiSuperClusterTrackAtVtx< 	0.252044 )"
+    " && (sigmaIetaIeta<0.011100)"
+#    " && (full5x5_sigmaIetaIeta<0.011100)" #why this one cuts all the events?
+    " && ( - 0.252044<deltaPhiSuperClusterTrackAtVtx< 0.252044 )"
     " && ( -0.016315<deltaEtaSuperClusterTrackAtVtx<0.016315 )"
     " && (hadronicOverEm<0.345843)"
     ")"
     " || (isEE"
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=3)"
     " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.212604 )"
-    " && (full5x5_sigmaIetaIeta<0.033987)"
+    " && (sigmaIetaIeta<0.033987)"
+#    " && (full5x5_sigmaIetaIeta<0.033987)" #why this one cuts all the events?
     " && ( -0.245263<deltaPhiSuperClusterTrackAtVtx<0.245263 )"
     " && ( -0.010671<deltaEtaSuperClusterTrackAtVtx<0.010671 )"
     " && (hadronicOverEm<0.134691) "
     "))"
-    )
-    )
+    ))
 
 PassingMuonVeryLooseId = selectedECALMuons.clone(
     cut = cms.string(
@@ -274,4 +275,4 @@ WenuSkimFilterSeq = cms.Sequence(preFilterSeq * selectorProducerSeq *
 checkMCZSeq = cms.Sequence(genEleFromZ * combZ * ZFilterMC) #sequence to check Zskim efficiency respect to the MC
 checkMCWSeq = cms.Sequence(genEleFromW * genNuFromW * combW * WFilterMC) #sequence to check Wskim efficiency respect to the MC
 
-#FilterMuSeq = cms.Sequence(muSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
+FilterMuSeq = cms.Sequence(muSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
