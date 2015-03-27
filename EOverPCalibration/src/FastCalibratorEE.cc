@@ -233,12 +233,13 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    if (ientry < 0) break;
    nb = fChain->GetEntry(jentry);   
    nbytes += nb;
-   //   std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
-      if (!(jentry%1000000))std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
+   //std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
+   if (!(jentry%1000000))std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
+
 
    float pIn, FdiEta;
    ///=== electron tight W or Z only Endcap
-   if ( isEBEle[0] == 0 && (( useW == 1 && chargeEle[1] == -100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
+   if ( fabs(etaSCEle[0]) > 1.479 && (( useW == 1 && chargeEle[1] == -100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
 
     FdiEta = energySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0]); /// Cluster containment approximation using ps infos
    
@@ -253,6 +254,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+	    //	    if (thisIndex<0) continue;
           
             if(energyRecHitSCEle1 -> at(iRecHit) > E_seed && recoFlagRecHitSCEle1 -> at(iRecHit) < 4 ){
               seed_hashedIndex=GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
@@ -263,9 +265,8 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
             
-            //if(recoFlagRecHitSCEle1 -> at(iRecHit) < 4)
-            thisE += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC; /// SC energy
-          
+            if(recoFlagRecHitSCEle1 -> at(iRecHit) < 4)
+	      thisE += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC; /// SC energy
     }
 
     for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle1->size(); iRecHit++ ) {
@@ -281,7 +282,6 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
               thisE3x3+=theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC;
     }
 
-          
     int ix_seed   = GetIxFromHashedIndex(seed_hashedIndex);
     int iy_seed   = GetIyFromHashedIndex(seed_hashedIndex);
     int iz_seed   = GetZsideFromHashedIndex(seed_hashedIndex);
@@ -346,6 +346,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             thisE += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC;
              
     }
+
     for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle2->size(); iRecHit++ ) {
             
             float thisIC = 1.;
@@ -376,6 +377,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
        ele2_DR     = TMath::Sqrt((etaMCEle[1]-etaEle[1])*(etaMCEle[1]-etaEle[1])+(phiMCEle[1]-phiEle[1])*(phiMCEle[1]-phiEle[1])) ;
        if(fabs(ele2_DR)>0.1) skipElectron = true; /// No macthing beetween gen ele and reco ele
     }
+
     /// R9 and fbrem selection
     if( fabs(thisE3x3/thisE) < 0.80 && isR9selection == true && fabs(etaSCEle[1]) <= 1.75 )                             skipElectron = true;
     if( fabs(thisE3x3/thisE) < 0.88 && isR9selection == true && fabs(etaSCEle[1]) >  1.75 && fabs(etaSCEle[1]) <= 2.00 ) skipElectron = true;
@@ -388,6 +390,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     if( PtEle[1] < PtMin && isPtCut == true ) skipElectron =true;
 
     if(!skipElectron) hC_EoP_ir_ele -> Fill(ir_seed,thisE/(pIn-esEnergySCEle[1]));
+
   }
 
   
@@ -482,9 +485,9 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
     
     Long64_t nbytes = 0, nb = 0;
     for (Long64_t jentry=0; jentry<nentries;jentry++){
-        if (!(jentry%100000))std::cerr<<jentry;
-        if (!(jentry%10000)) std::cerr<<".";
-      
+      if (!(jentry%100000))std::cerr<<jentry;
+      //	std::cerr<<jentry;
+      if (!(jentry%10000)) std::cerr<<".";
         Long64_t ientry = LoadTree(jentry);
         if (ientry < 0) break;
         nb = fChain->GetEntry(jentry);   
@@ -515,7 +518,6 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         /// Only tight electron from W and Z, only Endcap
         
 	if ( fabs(etaSCEle[0]) >= 1.479 && (( useW == 1 && chargeEle[1]==-100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
-
           /// SCL energy containment correction
           FdiEta = energySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0]);
          
@@ -526,6 +528,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
           float E_seed = 0;
 
           /// Cycle on the all the recHits of the Event: to get the old IC and the corrected SC energy
+	  if (energyRecHitSCEle1->size()<1) continue;
           for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle1->size(); iRecHit++ ) {
             
             float thisIC = 1.;
@@ -580,7 +583,6 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
            if(fabs(ele1_DR)>0.1) skipElectron = true; /// No macthing beetween gen ele and reco ele
          }
         
-      
        TH1F* EoPHisto = hC_EoP_ir_ele->GetHisto(ir_seed);
        
        if ( fabs(thisE/(pAtVtxGsfEle[0]-esEnergySCEle[0]) - 1) > 0.7 && isEPselection==true) skipElectron = true; /// Take the correct E/p pdf to weight events in the calib procedure
@@ -693,8 +695,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
           int seed_hashedIndex = 0;
           float E_seed = 0;
 
-         
           /// Cycle on the all the recHits of the Event: to get the old IC and the corrected SC energy
+	  if (energyRecHitSCEle2->size()<1) continue;
           for(unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle2->size(); iRecHit++ ){
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
