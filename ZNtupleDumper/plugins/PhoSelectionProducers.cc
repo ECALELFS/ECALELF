@@ -30,7 +30,7 @@
 #include "DataFormats/Common/interface/ValueMap.h"
 
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
-#include "Calibration/EleSelectionProducers/interface/SimpleCutBasedPhotonIDSelectionFunctor.h"
+#include "Calibration/ZNtupleDumper/interface/SimpleCutBasedPhotonIDSelectionFunctor.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
 
