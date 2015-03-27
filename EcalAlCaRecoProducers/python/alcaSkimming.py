@@ -141,20 +141,20 @@ process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cf
 process.load('Configuration.EventContent.EventContent_cff')
 
 # import of ALCARECO sequences
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_Output_cff')
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_Output_cff')
-from Calibration.ALCARAW_RECO.sandboxRerecoOutput_cff import *
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
+from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
 
 #process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
-process.load('Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
-process.load("Calibration.ALCARAW_RECO.PUDumper_cfi")
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
+process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 if (re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*",CMSSW_VERSION)):
-    process.load('Calibration.ALCARAW_RECO.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
-    from Calibration.ALCARAW_RECO.ALCARECOEcalCalIsolElectron_cff import *
+    process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
+    from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *
 
 # this module provides:
 #process.seqALCARECOEcalUncalElectron  = uncalibRecHitSeq
-process.load('Calibration.ALCARAW_RECO.sandboxRerecoSeq_cff')    # ALCARERECO
+process.load('Calibration.EcalAlCaRecoProducers.sandboxRerecoSeq_cff')    # ALCARERECO
 # this module provides:
 # process.electronRecoSeq
 # process.electronClusteringSeq # with ele-SC reassociation
@@ -175,7 +175,7 @@ from Calibration.ZNtupleDumper.phoPat_cfi import *
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
 # pdfSystematics
-process.load('Calibration.ALCARAW_RECO.pdfSystematics_cff')
+process.load('Calibration.EcalAlCaRecoProducers.pdfSystematics_cff')
 
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
@@ -332,7 +332,7 @@ elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='
 
 ################################# FILTERING EVENTS
 process.PUDumperSeq = cms.Sequence()
-#process.load('Calibration.ALCARAW_RECO.trackerDrivenFinder_cff')
+#process.load('Calibration.EcalAlCaRecoProducers.trackerDrivenFinder_cff')
 if(MC):
     # PUDumper
     process.TFileService = cms.Service(
@@ -427,11 +427,10 @@ else:
     print "** TrivialConditionRetriver defined"
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
-
 if(re.match("CMSSW_6_.*", CMSSW_VERSION) or re.match("CMSSW_7_.*", CMSSW_VERSION)):
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
 else:
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.seqALCARECOEcalCalElectronRECO + process.reducedEcalRecHitsES))
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
 
 
 process.rhoFastJetSeq = cms.Sequence()
@@ -483,7 +482,7 @@ process.outputALCARAW = cms.OutputModule("PoolOutputModule",
 process.outputALCARECO = cms.OutputModule("PoolOutputModule",
                                           # after 5 GB split the file
                                           maxSize = cms.untracked.int32(5120000),
-                                          outputCommands = process.OutALCARECOEcalCalElectron_.outputCommands,
+                                          outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
                                           fileName = cms.untracked.string('alcareco.root'),
                                           SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
                                           dataset = cms.untracked.PSet(
@@ -497,7 +496,7 @@ process.zNtupleDumper.SelectEvents = process.NtupleFilter.HLTPaths
 process.outputALCARERECO = cms.OutputModule("PoolOutputModule",
                                           # after 5 GB split the file
                                           maxSize = cms.untracked.int32(5120000),
-                                          outputCommands = process.OutALCARECOEcalCalElectron_.outputCommands,
+                                          outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
                                           fileName = cms.untracked.string('alcarereco.root'),
                                           SelectEvents = cms.untracked.PSet(
     SelectEvents = cms.vstring('pathALCARERECOEcalCalElectron')
@@ -556,19 +555,19 @@ process.GenZmmgSkimFilter =  cms.EDFilter("SkimCheck",
                                        )
 
 
-process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
+process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.preFilterSeq *
                                                process.GenSkimFilter *
                                                process.ZeeFilter
                                                )
-process.pathZSCElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq * process.MinZSCNumberFilter *
+process.pathZSCElectronSkimGen = cms.Path(process.filterSeq * process.preFilterSeq * process.ZSCFilter *
                                                  process.GenZSCSkimFilter *
                                                  ~process.ZeeFilter * process.ZSCFilter 
                                                  )
-process.pathWElectronSkimGen = cms.Path(process.filterSeq * process.FilterSeq *
+process.pathWElectronSkimGen = cms.Path(process.filterSeq * process.preFilterSeq *
                                                process.GenWSkimFilter *
                                                ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter
                                                )
-process.pathZElectronSkim = cms.Path(process.filterSeq * process.FilterSeq *
+process.pathZElectronSkim = cms.Path(process.filterSeq * process.preFilterSeq *
                                            process.ZeeFilter
 #                                           process.GenSkimFilter
                                            )
@@ -577,11 +576,11 @@ process.pathZmmgSkim = cms.Path(process.filterSeq * process.FilterMuSeq * proces
                                 ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter * process.ZmmgSkimSeq
                                     )
 
-process.pathZSCElectronSkim = cms.Path(process.filterSeq * process.FilterSeq * process.MinZSCNumberFilter *
+process.pathZSCElectronSkim = cms.Path(process.filterSeq * process.preFilterSeq * process.ZSCFilter *
                                              ~process.ZeeFilter * process.ZSCFilter
 #                                             process.GenZSCSkimFilter
                                              )
-process.pathWElectronSkim = cms.Path(process.filterSeq * process.FilterSeq *
+process.pathWElectronSkim = cms.Path(process.filterSeq * process.preFilterSeq *
                                            ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter
 #                                           process.GenWSkimFilter
                                            )
@@ -589,13 +588,13 @@ process.pathZmmgSkim = cms.Path(process.filterSeq * process.ZmmgSkimSeq *
                                 ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter * process.ZmmgSkimSeq
                                     )
 
-process.pathZElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
+process.pathZElectronGen = cms.Path(process.filterSeq * process.preFilterSeq *
                                     process.GenSkimFilter
                                     )
-process.pathZSCElectronGen = cms.Path(process.filterSeq * process.FilterSeq * process.MinZSCNumberFilter *
+process.pathZSCElectronGen = cms.Path(process.filterSeq * process.preFilterSeq * process.ZSCFilter *
                                       process.GenZSCSkimFilter
                                       )
-process.pathWElectronGen = cms.Path(process.filterSeq * process.FilterSeq *
+process.pathWElectronGen = cms.Path(process.filterSeq * process.preFilterSeq *
                                     process.GenWSkimFilter
                                     )
 process.pathZmmgGen = cms.Path(process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq *
@@ -610,47 +609,47 @@ if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
 
     process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                        process.pfIsoEgamma *
-                                                       (process.ALCARECOEcalCalElectronPreSeq +
+                                                       (process.ALCARECOEcalCalElectronNonECALSeq +
                                                         uncalibRecHitSeq ))
-    process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
                                                    process.pfIsoEgamma *
-                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                   (process.ALCARECOEcalCalElectronNonECALSeq +
                                                     uncalibRecHitSeq ))
-    process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
                                                      process.pfIsoEgamma *
                                                      ~process.ZeeFilter * process.ZSCFilter *
-                                                     (process.ALCARECOEcalCalElectronPreSeq +
+                                                     (process.ALCARECOEcalCalElectronNonECALSeq +
                                                       uncalibRecHitSeq ))
-    process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
                                                    process.pfIsoEgamma *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
-                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                   (process.ALCARECOEcalCalElectronNonECALSeq +
                                                     uncalibRecHitSeq ))
     process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq *
                                                    process.pfIsoEgamma *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter *
-                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                   (process.ALCARECOEcalCalElectronNonECALSeq +
                                                     uncalibRecHitSeq ))
 
 else:
 
     process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                        process.pfIsoEgamma *
-                                                       (process.ALCARECOEcalCalElectronPreSeq +
+                                                       (process.ALCARECOEcalCalElectronNonECALSeq +
                                                         process.seqALCARECOEcalUncalElectron ))
-    process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
                                                    process.pfIsoEgamma *
-                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                   (process.ALCARECOEcalCalElectronNonECALSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
-    process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
                                                     process.pfIsoEgamma *
                                                      ~process.ZeeFilter * process.ZSCFilter *
-                                                     (process.ALCARECOEcalCalElectronPreSeq +
+                                                     (process.ALCARECOEcalCalElectronNonECALSeq +
                                                       process.seqALCARECOEcalUncalElectron ))
-    process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
+    process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
                                                    process.pfIsoEgamma *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
-                                                   (process.ALCARECOEcalCalElectronPreSeq +
+                                                   (process.ALCARECOEcalCalElectronNonECALSeq +
                                                     process.seqALCARECOEcalUncalElectron ))
     process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq *
                                                    process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq * 
@@ -667,24 +666,24 @@ if(options.doTree>0):
 # ALCARECO
 process.pathALCARECOEcalCalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
                                                      process.pfIsoEgamma *
-                                                     process.seqALCARECOEcalCalElectron)
-process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.FilterSeq *
-                                                 process.ZeeFilter *
+                                                     process.ALCARECOEcalCalElectronSeq)
+process.pathALCARECOEcalCalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * 
+                                                 process.ZeeSkimFilterSeq *                                                 
                                                  process.pfIsoEgamma *
-                                                 process.seqALCARECOEcalCalElectron)
+                                                 process.ALCARECOEcalCalElectronSeq)
 process.pathALCARECOEcalCalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq *
-                                                 process.FilterSeq * 
-                                                 ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
+                                                 process.WenuSkimFilterSeq *
                                                  process.pfIsoEgamma *
-                                                 process.seqALCARECOEcalCalElectron)
+                                                 process.ALCARECOEcalCalElectronSeq)
 process.pathALCARECOEcalCalZSCElectron = cms.Path( process.PUDumperSeq *
-                                                   process.filterSeq * process.FilterSeq *
-                                                   ~process.ZeeFilter * process.ZSCFilter * 
+                                                   process.filterSeq *
+                                                   process.ZSCSkimFilterSeq *
 #                                                   process.ZSCHltFilter *
                                                    process.pfIsoEgamma *
-                                                   process.seqALCARECOEcalCalElectron ) #* process.hltReporter)
+                                                   process.ALCARECOEcalCalElectronSeq ) #* process.hltReporter)
 process.pathALCARECOEcalCalZmmgPhoton = cms.Path( process.PUDumperSeq *
-                                                   process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq * 
+                                                   process.filterSeq * process.FilterMuSeq *  
+                                                  process.ZmmgSkimSeq *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter *
                                                    process.pfIsoEgamma *
                                                    process.seqALCARECOEcalCalPhoton ) #* process.hltReporter)
@@ -692,12 +691,12 @@ process.pathALCARECOEcalCalZmmgPhoton = cms.Path( process.PUDumperSeq *
 if (options.skim=="ZmmgSkim"):
     process.NtuplePath = cms.Path(process.filterSeq * process.FilterMuSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
-                                  #                              * process.seqALCARECOEcalCalElectron 
+                                  #                              * process.ALCARECOEcalCalElectronSeq 
                               * process.pdfWeightsSeq * process.ntupleSeq)
 else:
-    process.NtuplePath = cms.Path(process.filterSeq * process.FilterSeq *  process.NtupleFilterSeq 
+    process.NtuplePath = cms.Path(process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
-                                  #                              * process.seqALCARECOEcalCalElectron 
+                                  #                              * process.ALCARECOEcalCalElectronSeq 
                               * process.pdfWeightsSeq * process.ntupleSeq)
 
 process.NtupleEndPath = cms.EndPath( process.zNtupleDumper)
@@ -798,7 +797,8 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         else:
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron, process.pathALCARECOEcalCalZmmgPhoton,
-                                            process.ALCARECOoutput_step,  process.NtuplePath, process.NtupleEndPath
+                                            #process.ALCARECOoutput_step,  
+                                            process.NtuplePath, process.NtupleEndPath
                                             ) # fix the output modules
         if(options.skim=="" or options.skim=="ZHLTSkim" or options.skim=="partGun"):
             process.schedule += cms.Schedule(process.pathALCARECOEcalCalSingleElectron)
@@ -818,9 +818,9 @@ else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
     print "[INFO] Running locally: pathPrefix="+pathPrefix
 
-process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
-process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
-process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
+#process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
+#process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
+#process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
 # Now files are on CERN EOS, files accessed via xrootd
 #process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile.value()
 #process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile.value()
@@ -840,6 +840,7 @@ process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergies
 #process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile.value()
 
 #    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
+'''
 process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)
 if(re.match("CMSSW_4_4_.*", CMSSW_VERSION)):
     process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
@@ -850,9 +851,9 @@ if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
     process.eleNewEnergiesProducer.regrEleFile=cms.string(pathPrefix+'data/gbrv2ele.root')
     process.eleNewEnergiesProducer.regrEleFile_fra=cms.string('nocorrections')
     #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
+'''
 
-
-process.load('Calibration.ValueMapTraslator.valuemaptraslator_cfi')
+process.load('Calibration.EcalAlCaRecoProducers.valuemaptraslator_cfi')
 process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
 process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
@@ -861,20 +862,20 @@ process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 ############################################################
 # Setting collection names
 ##############################
-process.selectedElectrons.src = myEleCollection
+process.selectedECALElectrons.src = myEleCollection
 if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
     process.PassingVeryLooseId.src = myEleCollection
     process.PassingMediumId.src = myEleCollection
     process.PassingTightId.src = myEleCollection
 else:
     process.PassingVetoId.src = myEleCollection
-process.PassingHLT.InputProducer = myEleCollection
+#process.PassingHLT.InputProducer = myEleCollection
 
-process.eleRegressionEnergy.inputElectronsTag = myEleCollection
+#process.eleRegressionEnergy.inputElectronsTag = myEleCollection
 process.patElectrons.electronSource = myEleCollection
 process.eleSelectionProducers.electronCollection = myEleCollection
 process.electronMatch.src = myEleCollection
-process.eleNewEnergiesProducer.electronCollection = myEleCollection
+#process.eleNewEnergiesProducer.electronCollection = myEleCollection
 process.alCaIsolatedElectrons.electronLabel = myEleCollection 
 if (options.skim=="ZmmgSkim"):
     process.alCaIsolatedElectrons.photonLabel = cms.InputTag("gedPhotons")
@@ -913,9 +914,9 @@ if(options.type=="ALCARERECO"):
     process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
     process.alCaIsolatedElectrons.EESuperClusterCollection = process.reducedEcalRecHitsES.EndcapSuperClusterCollection
 
-    process.eleRegressionEnergy.inputElectronsTag = recalibElectronSrc
+#    process.eleRegressionEnergy.inputElectronsTag = recalibElectronSrc
     process.eleSelectionProducers.electronCollection   = recalibElectronSrc
-    process.eleNewEnergiesProducer.electronCollection  = recalibElectronSrc
+#    process.eleNewEnergiesProducer.electronCollection  = recalibElectronSrc
     process.patElectrons.electronSource                = recalibElectronSrc
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
@@ -933,8 +934,8 @@ process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProdu
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
-process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
+#process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
+#process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
 
 
 
