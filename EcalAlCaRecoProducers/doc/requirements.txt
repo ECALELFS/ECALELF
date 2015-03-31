@@ -1,0 +1,13 @@
+/**
+ * \page preReq Requirements before start
+ - get a grid certificate:
+<A HREF="https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideLcgAccessLeftBar?redirectedfrom=CMS.SWGuideLcgAccess;topic=SWGuideLcgAccess"> GRID & CRAB setup </A>
+- have access to the eos ecal group space (asked to DPG convener to ask to ALCA convener)
+- have a git account
+- May be some instructions to test first every thing locally before using caf or
+lsf-mistakes are easy for bigginners...and then when you run a second time you get
+crash messages telling you there are existing files everywhere and no clue on how
+to get rid of :
+I found some in filelist directory and some lines in the *_datasets.dat files
+
+*/

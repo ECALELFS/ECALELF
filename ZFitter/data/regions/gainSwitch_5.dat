@@ -1,0 +1,13 @@
+# regions defined for condition validation
+gainEle_12-absEta_0_1-bad
+gainEle_12-absEta_0_1-gold
+gainEle_12-absEta_1_1.4442-bad
+gainEle_12-absEta_1_1.4442-gold
+gainEle_6-absEta_0_1-bad
+gainEle_6-absEta_0_1-gold
+gainEle_6-absEta_1_1.4442-bad
+gainEle_6-absEta_1_1.4442-gold
+gainEle_1-absEta_0_1-bad
+gainEle_1-absEta_0_1-gold
+gainEle_1-absEta_1_1.4442-bad
+gainEle_1-absEta_1_1.4442-gold

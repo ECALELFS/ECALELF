@@ -21,6 +21,7 @@
 <use   name="CalibCalorimetry/CaloMiscalibTools"/>
 <use   name="CondTools/Ecal"/>
 <use   name="SimDataFormats/GeneratorProducts"/>
+<use   name="Calibration/ZNtupleDumper"/>
 <export>
   <lib   name="1"/>
 </export>

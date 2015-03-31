@@ -1,0 +1,13 @@
+# list of files to run on
+# type  treeName        fileName
+# files are added to the same chain if they have the same treeName and the same type
+# chain with the same type are added as friends
+# only three type are admitted: s (signal), b (bkg), d (data)
+# all treeName are admitted, but some are mandatory:
+# selected
+# some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
+s       selected        root://eoscms//eos/cms/store/caf/user/shervin/calibration/8TeV/ZNtuples/ALCARECOSIM/DYJets-Fall11-START42_V14B-v1-ZSkim/allRange/DYJets-Fall11-START42_V14B-v1-ZSkim-allRange.root
+d       selected        root://eoscms//eos/cms/store/caf/user/shervin/calibration/8TeV/ZNtuples/alcareco/DoubleElectron-ZSkim-53X_GR_R_53_V9F-RUN2011B-v1/175832-180296/160404-180252-ReRecoNov08_Collisions11_JSON_v2/DoubleElectron-ZSkim-53X_GR_R_53_V9F-RUN2011B-v1-175832-180296.root
+d       pileupHist      /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2-2011B.root
+s       pileupHist      /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Fall11.observed.root
+#s      pileupTree      tmp/mcPUtree.root

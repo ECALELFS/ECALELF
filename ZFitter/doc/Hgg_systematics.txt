@@ -1,0 +1,39 @@
+/**
+* Make the sigmaCB vs sigmaM/M plot to check the smearings:
+\code ./script/GenRootChain.sh -f data/validation/22Jan2012-runDepMCAll_v2.dat --regionsFile=data/regions/validation.dat  --addBranch=invMassSigma_SC_regrCorrSemiParV5_pho
+\endcode
+
+*/
+
+List of effects to be studied:
+ - PU stability: 
+   - deltaM, deltaP plot vs nVtx
+   - PU vs runNumber	 -> it's correlated with time -> decouple the corrections
+   - PU vs eventNumber	 -> it varies during one run! -> need a specific correction for PU
+ - time stability
+   - Z peak vs runNumber vs eta -> demonstrate the correlation with eta -> need to categorize with eta
+   - residual uncertainty is (RMS)^2 - (meanError)^2 estimated with finer binning
+ - eta stability
+   - uncertainty in each category (correlated with R9)
+ - R9 stability
+   - uncertainty in each category (correlated with eta and PU)
+ - linearity
+   - scale in energy bins
+   - how to demonstrate it's uncorrelated with the rest?
+
+###########################################################################
+# produce the root files with the chains:
+./script/GenRootChain.sh -f data/validation/moriond2013.dat --outDirImg=test/dato/moriond2013/WP80_PU/img
+
+
+# run the standard plots:
+#  - kinematic variables
+#  - pu variables
+#  - clustering variables
+root -l -b -q tmp/s_chain.root tmp/d_chain.root macro/standardDataMC.C
+
+# fits for the systematics
+./script/monitoring_validation.sh -f data/validation/moriond2013.dat --invMass_var=invMass_SC_regrCorr_pho --systematics=y
+
+
+

@@ -1,0 +1,127 @@
+################### MC 53
+allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	DYJets-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_S10_START53_V7C-v2/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+#
+allRange	/WToENu_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	Wenu-Summer12-START53-ZSkim-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/WToENu_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v2/AODSIM	Wenu-Summer12-START53-ZSkim-v2	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/QCD_Pt-30to40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	QCD_Pt-30to40_doubleEM-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/QCD_Pt-40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	QCD_Pt-40_doubleEM-Summer12-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+##### Particle gun
+allRange	/SingleElectronFlatPt10To300_pythia6/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	SingleElectronGun_Pt10to300-Summer12-START53	caf	group/alca_ecalcalib/ecalelf/alcareco
+################## MC 53 RUN dependent
+194533-194533	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012AB,RUN2012ABCD	-
+200519-200519	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012C,RUN2012ABCD	-
+206859-206859	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012D,RUN2012ABCD	-
+#
+194533-194533	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012AB,RUN2012ABCD	-
+200519-200519	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012C,RUN2012ABCD	-
+206859-206859	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012D,RUN2012ABCD	-
+#
+194533-194533	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012AB,RUN2012ABCD	-
+200519-200519	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012C,RUN2012ABCD	-
+206859-206859	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012D,RUN2012ABCD	-
+###
+194533-194533	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012AB,RUN2012ABCD	-
+200519-200519	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABCD	-
+206859-206859	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD	-
+#
+194533-194533	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012AB,RUN2012ABCD	-
+200519-200519	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABCD	-
+206859-206859	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v3/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD	-
+#
+194533-194533	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012AB,RUN2012ABCD	-
+200519-200519	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABCD	-
+206859-206859	/DYJets_0p0_1p2_2p10_3p15_4p15_CT10_8TeV-sherpa/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	DYJets_sherpa-Summer12-START53-ZSkimPath-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD	-
+#
+allRange	/QCD_Pt-30to40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	QCD_Pt-30to40_doubleEM-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/QCD_Pt-40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM	QCD_Pt-40_doubleEM-Summer12-START53-ZSkim-runDependent	caf	group/alca_ecalcalib/ecalelf/alcareco
+################### MC 7TeV 53X
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYJets-Summer11-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+allRange	/DYToEE_M-20_CT10_TuneZ2_7TeV-powheg-pythia/Summer11dr53X-PU_S13_START53_LV3-v1/AODSIM	DYToEE_M20_powheg-Summer11-START53-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+################### MC geometries and material
+allRange	/DYEE_8TeV_53X_MatBudget/Summer12ExtendedGeo14DR-PU2012ABCD_START53_V29A-v3/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-runDependent-Ext14DR	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-ExtFlat10_PU_RD1_START53_V7N-v1/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-ExtFlat10	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-ExtFlat20_PU_RD1_START53_V7N-v1/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-ExtFlat20	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M-20_CT10_TuneZ2star_v2_8TeV-powheg-pythia6/Summer12_DR53X-ExtFlat30_PU_RD1_START53_V7N-v1/AODSIM	DYToEE_M20_powheg-Summer12-START53-ZSkim-runDependent-ExtFlat30	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-ExtFlat10S30_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-ExtFlat10S30	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-ExtFlat20S30_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-ExtFlat20S30	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-ExtFlat10_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-ExtFlat10	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-ExtFlat20_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-ExtFlat2	caf	group/alca_ecalcalib/alcareco
+allRange	/DYToEE_M_20_TuneZ2star_8TeV_pythia6/Summer12_DR53X-NominalGeo_PU_S10_START53_V15-v1/GEN-SIM-RECODEBUG	DYToEE-Summer12-START53-ZSkim-NominalGeo	caf	group/alca_ecalcalib/alcareco
+###### MC 52
+#allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM	DYJets-Summer12-START52_V9-v2-ZSkim	caf	group/alca_ecalcalib/alcareco
+#allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12-PU_S7_START52_V9-v2/AODSIM	DYJets-Summer12-START52_V9-v2-noSkim	caf	group/alca_ecalcalib/alcareco
+###### MC 42 (7TeV)
+allRange	/DYJetsToLL_TuneZ2_M-50_7TeV-madgraph-tauola/Fall11-PU_S6_START42_V14B-v1/AODSIM	DYJets-Fall11-START42_V14B-v1-ZSkim	caf	group/alca_ecalcalib/ecalelf/alcareco
+###### GEANT 4 modified produced by Shervin
+#allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7D-v2/GEN-SIM-RECO	DYJets-Summer12-START53-ZSkim-newGean4	caf	group/alca_ecalcalib/alcareco
+#allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-ExtendedX0Max_PU_S10_START53_V7D-v2/GEN-SIM-RECO	DYJets-Summer12-START53-ZSkim-ExtendedX0Max	caf	group/alca_ecalcalib/alcareco
+###### GEANT 4 modified produced by Riccardo
+#allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-PU_S10_START53_V7D-v2/GEN-SIM-RECO	DYJets-Summer12-START53-NewG4-ZSkim	caf	group/alca_ecalcalib/alcareco
+#allRange	/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/Summer12_DR53X-ExtendedX0Max_PU_S10_START53_V7D-v2/GEN-SIM-RECO	DYJets-Summer12-START53-NewG4-X0Max-ZSkim	caf	group/alca_ecalcalib/alcareco
+#################### 2012 recover
+#190782-190949	/DoubleElectron/Run2012A-recover-06Aug2012-v1/AOD	DoubleElectron-RUN2012A-v1-06Aug-recover	caf	group/alca_ecalcalib/alcareco
+#190782-190949	/SingleElectron/Run2012A-recover-06Aug2012-v1/AOD	SingleElectron-RUN2012A-v1-06Aug-recover	caf	group/alca_ecalcalib/alcareco
+#198022-198523	/DoubleElectron/Run2012C-24Aug2012-v1/AOD	DoubleElectron-ZSkim-RUN2012C-24Aug-v1	caf	group/alca_ecalcalib/sandbox	VALID	RUN2012ABCD,RUN2012C
+#################### 2011
+160431-173692	/DoubleElectron/Run2011A-16Jan2012-v1/AOD	DoubleElectron-RUN2011A-16JanReReco-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+175832-180252	/DoubleElectron/Run2011B-16Jan2012-v1/AOD	DoubleElectron-RUN2011B-16JanReReco-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+#160329-163869	/DoubleElectron/Run2011A-May10ReReco-v1/AOD	DoubleElectron-RUN2011A-May10ReReco-v1	caf	group/alca_ecalcalib/alcareco
+#165071-168437	/DoubleElectron/Run2011A-PromptReco-v4/AOD	DoubleElectron-RUN2011A-PromptReco-v4	caf	group/alca_ecalcalib/alcareco
+#170053-172619	/DoubleElectron/Run2011A-05Aug2011-v1/AOD	DoubleElectron-RUN2011A-05AugReReco-v1	caf	group/alca_ecalcalib/alcareco
+#172620-175770	/DoubleElectron/Run2011A-03Oct2011-v1/AOD	DoubleElectron-RUN2011A-03OctReReco-v1	caf	group/alca_ecalcalib/alcareco
+#### already present in sandbox_datasets.dat
+#175832-180296	/DoubleElectron/Run2011B-ZElectron-PromptSkim-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2011B-v1	caf	group/alca_ecalcalib/sandbox	VALID	RUN2011AB
+####################eleGun
+#EB-Pt_5_15/micheli/eleGunEB-Pt_5_15/eleGunEB-Pt_5_15/98f7849626820045f6391715ec8b7f97 none_8TeV eleGun53_2 caf group/alca_ecalcalib/alcareco 
+#allRange	/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	DYJets-lowMass-Summer12-START53-noSkim	caf	group/alca_ecalcalib/alcareco
+#allRange	/DYJetsToLL_M-10To50filter_8TeV-madgraph/Summer12_DR53X-PU_S10_START53_V7A-v1/AODSIM	DYJets-lowMass-Summer12-START53-noSkim-tracks	caf	group/alca_ecalcalib/alcareco
+#################### CMSSW_5_2_X (prompt ICHEP)
+#190450-193686	/DoubleElectron/Run2012A-PromptReco-v1/AOD	DoubleElectron-RUN2012A-v1	caf	group/alca_ecalcalib/alcareco
+#193752-197044	/DoubleElectron/Run2012B-PromptReco-v1/AOD	DoubleElectron-RUN2012B-v1	caf	group/alca_ecalcalib/alcareco
+#190782-190949	/DoubleElectron/Run2012A-23May2012-v2/AOD	DoubleElectron-RUN2012A-v2-23May-recover	caf	group/alca_ecalcalib/alcareco
+################### CMSSW_5_2_X (rereco29Jun ICHEP)
+#190450-193686	/DoubleElectron/Run2012A-29Jun2012-v2/AOD	DoubleElectron-RUN2012A-29Jun-v2	caf	group/alca_ecalcalib/alcareco
+#190782-190949	/DoubleElectron/Run2012A-recover_29Jun2012-v1/AOD	DoubleElectron-RUN2012A-recover_29Jun-v1	caf	group/alca_ecalcalib/alcareco
+#193752-197044	/DoubleElectron/Run2012B-29Jun2012-v1/AOD	DoubleElectron-RUN2012B-29Jun-v1	caf	group/alca_ecalcalib/alcareco
+#################### official ALCARECO Prompt 2012
+#203773-208686	/DoubleElectron/Run2012D-EcalCalElectron-v1/ALCARECO	DoubleElectron-ZAlcaSkim-RUN2012D-v1	caf	database	VALID	RUN2012D
+203773-209465	/SingleElectron/Run2012D-EcalCalElectron-v1/ALCARECO	SingleElectron-WAlcaSkim-RUN2012D-v1	caf	database	VALID	RUN2012D
+##################### official ALCARECO Winter13
+190456-193621	/DoubleElectron/Run2012A-EcalCalElectron-22Jan2013-v1/ALCARECO	DoubleElectron-ZAlcaSkim-RUN2012A-22Jan-v1	caf	database	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+193834-196531	/DoubleElectron/Run2012B-EcalCalElectron-22Jan2013-v1/ALCARECO	DoubleElectron-ZAlcaSkim-RUN2012B-22Jan-v1	caf	database	VALID	RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD
+198022-203742	/DoubleElectron/Run2012C-EcalCalElectron-22Jan2013-v1/ALCARECO	DoubleElectron-ZAlcaSkim-RUN2012C-22Jan-v1	caf	database	VALID	RUN2012C,RUN2012ABC,RUN2012ABCD
+203777-208686	/DoubleElectron/Run2012D-EcalCalElectron-22Jan2013-v1/ALCARECO	DoubleElectron-ZAlcaSkim-RUN2012D-22Jan-v1	caf	database	VALID	RUN2012D,RUN2012ABCD
+##################### private ALCARECO Winter13
+190645-193621	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012A-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+193834-196531	/DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012B-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD
+198022-203742	/DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012C-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012C,RUN2012ABC,RUN2012ABCD
+203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	INVALID	RUN2012D,RUN2012ABCD
+###
+###
+190645-193621	/DoubleElectron/Run2012A-22Jan2013-v1/AOD	DoubleElectron-ZSkimPath-RUN2012A-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+193834-196531	/DoubleElectron/Run2012B-22Jan2013-v1/AOD	DoubleElectron-ZSkimPath-RUN2012B-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD
+198022-203742	/DoubleElectron/Run2012C-22Jan2013-v1/AOD	DoubleElectron-ZSkimPath-RUN2012C-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABC,RUN2012ABCD
+203777-208686	/DoubleElectron/Run2012D-22Jan2013-v1/AOD	DoubleElectron-ZSkimPath-RUN2012D-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD
+#
+190645-193621	/SingleElectron/Run2012A-22Jan2013-v1/AOD	SingleElectron-WSkimPath-RUN2012A-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+193834-196531	/SingleElectron/Run2012B-22Jan2013-v1/AOD	SingleElectron-WSkimPath-RUN2012B-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD
+198022-203742	/SingleElectron/Run2012C-22Jan2013-v1/AOD	SingleElectron-WSkimPath-RUN2012C-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABC,RUN2012ABCD
+203777-208686	/SingleElectron/Run2012D-22Jan2013-v1/AOD	SingleElectron-WSkimPath-RUN2012D-22Jan-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD
+
+##################### full private rereco 2011 in 5_3_X
+160329-173692	/DoubleElectron/Run2011A-ZElectron-08Nov2011-v1_RAW-RECO	DoubleElectron-ZSkim-RUN2011A-29JunRUN2011-v1	caf	group/alca_ecalcalib/alcareco/7TeV/GR_R_53_V9F/DoubleElectron_Run2011A-ZElectron-08Nov2011-v1_RAW-RECO_FNAL	VALID	RUN2011A,RUN2011AB
+175832-180252	/DoubleElectron/Run2011B-ZElectron-19Nov2011-v1_RAW-RECO	DoubleElectron-ZSkim-RUN2011B-29JunRUN2011-v1	caf	group/alca_ecalcalib/alcareco/7TeV/GR_R_53_V9F/DoubleElectron_Run2011B-ZElectron-19Nov2011-v1_RAW-RECO_FNAL	VALID	RUN2011B, RUN2011AB
+##################### 2011 data 53X rereco
+160329-173692	/DoubleElectron/Run2011A-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011A-21Jun2013-v1	caf	group/alca_ecalcalib/ecalelf/alcareco/	VALID	RUN2011A,RUN2011AB
+175832-180252	/DoubleElectron/Run2011B-21Jun2013-v1/AOD	DoubleElectron-ZSkim-RUN2011B-21Jun2013-v1	caf	group/alca_ecalcalib/ecalelf/alcareco/	VALID	RUN2011B,RUN2011AB
+###########
+allRange	/RelValZEE_13/CMSSW_7_0_0_pre11-PU50ns_POSTLS162_V5_OldEG-v1/GEN-SIM-RECO	RelValZEE_13-CMSSW_700_pre11-POSTLS162_V5_OldEG-v1	caf	group/alca_ecalcalib/ecalelf/alcareco
+################ personal alcareco for sam harper's test sample of CMSSW70x Drell-Yan process
+allRange	/DYJetsToLL_M-50_13TeV-pythia6/sharper-EGM700_PU40bx25_POSTLS170_V4-v1-df875c51917b2b4016d74c118f018fcb/USER DYJetsToLL_M-50_13TeV-pythia6	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	None	phys03
+################ CMSSW_7_0_1 2012 data rereco
+190645-193621	/DoubleElectron/Run2012A-15Apr2014-v2/AOD	DoubleElectron-ZHLTSkimPath-RUN2012A-15Apr-v2	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD	-
+193834-196531	/DoubleElectron/Run2012B-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012B-15Apr-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012B,RUN2012AB,RUN2012ABC,RUN2012ABCD	-
+198022-203742	/DoubleElectron/Run2012C-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012C-15Apr-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012C,RUN2012ABC,RUN2012ABCD	-
+203777-208686	/DoubleElectron/Run2012D-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012D-15Apr-v1	caf	group/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD	-
