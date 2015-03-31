@@ -11,14 +11,16 @@
 
 #include <TString.h>
 #include <iostream>
-#include<fstream>
-#include<map>
-#include<math.h>
+#include <fstream>
+#include <map>
+#include <math.h>
 #include <TChain.h>
 #include <TRandom3.h>
 #include <string>
 #include <RooRealVar.h>
 #include <RooCBShape.h>
+
+using namespace std;
 
 class correctionValue_class{
  public:
