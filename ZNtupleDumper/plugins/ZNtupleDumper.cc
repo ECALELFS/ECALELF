@@ -664,7 +664,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       else if( eleIter1->electronID("loose") )  ++nWP90;
     }
   }  
-
   bool doFill=false;
   if(eventType==PARTGUN){
     pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
