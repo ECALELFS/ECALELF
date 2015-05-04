@@ -1,0 +1,5 @@
+s	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECOSIM/DYJets-Fall11-START42_V14B-v1-ZSkim/allRange/DYJets-Fall11-START42_V14B-v1-ZSkim-allRange.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECO/DoubleElectron-RUN2011A-16JanReReco-v1/160431-173692/160404-18025_08Nov_v2/DoubleElectron-RUN2011A-16JanReReco-v1-160431-173692.root
+d	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/7TeV/ALCARECO/DoubleElectron-RUN2011B-16JanReReco-v1/175832-180252/160404-18025_08Nov_v2/DoubleElectron-RUN2011B-16JanReReco-v1-175832-180252.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Fall11.observed.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/Cert_160404-180252_7TeV_ReRecoNov08_Collisions11_JSON_v2-2011_AB.root

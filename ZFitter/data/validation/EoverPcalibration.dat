@@ -1,0 +1,11 @@
+#################input list for the E/p calibration ############################
+#d    selected            /afs/cern.ch/user/l/lbrianza/work/public/ntuple_numEvent100.root
+#d    extraCalibTree      /afs/cern.ch/user/l/lbrianza/work/public/extraCalibTree.root
+#d    selected            /afs/cern.ch/user/l/lbrianza/work/public/RUND_DoubleElectron.root
+
+#d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_multifit50ns.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit50ns.root
+#d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_multifit25ns.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit25ns.root
+d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_oldweight.root
+d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_oldweight.root

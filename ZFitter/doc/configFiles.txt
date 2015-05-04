@@ -1,0 +1,154 @@
+/**
+* \page ZFitterConfigFiles Config files syntax and generation
+
+In order to work with ECALELF ntuples you should move to the Calibration/ZFitter directory.
+Now on the paths are relative to the Calibration/ZFitter directory.
+
+There are three important directories where the proper .dat files should be put:
+- data/validation/ <BR>
+   For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation:
+   ./data/validation/rereco/rerecoGroupName/
+   where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test
+   for example: you can use ./data/validation/rereco/Cal_Dic2013/
+                or ./data/validation/rereco/ungrouped/
+   this way the fit results will be put under the subdirectory
+   rerecoGroupName and you will be able to move or remove it when the
+   set of validations has finished. <BR>
+   The logic of the validation .dat files is reported below in a
+   dedicated section.
+
+
+  For standard validations you can use the data/regions/validation.dat
+  that is set in the scripts as the default one.
+
+- data/regions/
+  the fits are done in categories, the conditions that the electrons
+  have to fulfil are defined in .dat files in this directory.
+  In each .dat file, a set of categories are defined, one category for
+  each line: see ElectronCategory_class for more information about the syntax
+
+
+
+- data/runRanges/
+  contains files that define a set of run ranges in order to perform
+  the fits for the stability plots. The default one to be used is
+  data/runRanges/monitoring.dat
+
+  The syntax is the following:
+\verbatim
+  #runMin-runMax nEvents        timeStampMin-timeStampMax
+  190645-190781	28734   	1333819264-1333983242
+  190782-191042	24007		1334023525-1334188134
+\endverbatim
+  The second and third column are optional.
+  
+  For more information on how to produce automatically the runRanges .dat files see:  \ref runDivide
+
+
+\section validationConfig Validation config files
+This config file contains the list of files to run on, the files
+containing the PU histograms for the PU reweighting and all the other
+files needed.
+The main idea in the ECALELF framework is to have a minimum set of
+variables in very small trees (the tree name is "selected"), while
+additional branches can be produced and added if needed as tree
+friends. The advantage is the possibility to produce ntuples for a
+larger set of studies with small specific trees for each of them. 
+
+
+The file is structured in 3 columns: tag, treeName and filePath as in the follows:
+\verbatim
+# commented lines
+# tag	treeName	file
+s1	selected	root://eoscms//eos/..../file.root
+s2	selected	root://eoscms//eos/..../file.root
+d1	selected	root://eoscms//eos/..../file.root
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-204567-13Julv2_lastPrompt.69400.observed.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Summer12_DD3.observed.root
+
+\endverbatim
+
+The first column (\b tag) indicates if this file is signal MC (s), background MC (b), or data (d). 
+
+The single samples are indicated by a number (s1, s2, etc., d1, d2, etc.)
+
+The second column (\b treeName) is the name of the tree in the file
+
+The third column (\b filePath) is the full path of the file
+files with the same tag and the same treeName are put in the
+same chain files with the same tag but different treeName are added as friends 
+
+
+For each \b tag (e.g. s1) one can have multiple chains 
+with different \b treeName (e.g. selected, pileup, r9Weight, etc.), 
+a chain with treeName=="selected" is mandatory since it is the main tree,
+all the other chains are considered as friends of the "selected".
+
+
+\subsection pileupHist	How to get the pileup histogram
+When running the alcareco production for the MC, an additional file called PUDumper.root is produced for each job.
+It contains the 
+
+
+\subsection pileup	How to produce ntuples with pileup weights
+In the config file the pileupHist must be indicated. When running the ZFitter.exe it will automatically calculate the weights and create the additional ntuples in the \code tmp/ \endcode directory.
+To just produce the ntuples:
+\code ./bin/ZFitter.exe -f data/validation/22Jan2012-stdMCAll.dat --savePUTreeWeight \endcode
+
+It's sufficient to copy them from the tmp/ directory to another directory and to add them to the config file. 
+Usually the pileupHist and pileup tree are put in the following directory:
+\code /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ \endcode
+
+The tree name of the pileup weight files is \b pileup:
+\code 
+s1    pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root
+\endcode
+
+\subsection scaleSmearing Energy scale and smearing corrections 
+Energy scale and smearings can be applied to the already existing ntuples.
+One can have different sets of energy scales and smearings, depending
+on 
+ - the particular energy used for the invariant mass, 
+ - the particular algorithm
+ - the number of steps in iterative procedure 
+
+For more details see the section dedicated to the energy scale and
+smearing derivation.
+
+Each set of energy scale and smearing corrections is defined by a
+"type" name. You can add all the wanted set of scale and smearing
+correction files to the same validation config file, but only the one
+specified by the --corrEleType and --smearEleType options are used.
+The name of the trees of the corrections are defined as follows:
+ <basename>_<type>, where <basename> is scaleEle for energy scale
+ corrections and smearEle for energy smearings.
+This way you don't need to modify your validation config file each
+time you want to run with a different set of corrections, you just
+need to pass the appropriate type name at the command line.
+
+
+
+
+\section runDivide How to produce runRanges .dat files 
+
+The idea is to produce a file with the run ranges with 100k Zee events
+(to have enough statistics in the EE), but taking into account also
+that some run ranges should not be between to TSs or two era (RUN A
+and B).
+
+
+The run ranges:
+ - put in the data/runRanges/runRangeLimits.dat the runNumber that should start a new run range (TSs for example)
+ - run the command
+\code ./bin/ZFitter.exe -f file.dat --runDivide \endcode
+
+The ZFitter.exe options are:
+\code
+  --runDivide                                  execute the run division
+  --nEvents_runDivide arg (=100000)            Minimum number of events in a 
+                                               run range
+\endcode
+
+
+
+*/

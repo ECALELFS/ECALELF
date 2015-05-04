@@ -1,0 +1,27 @@
+#for Et>25, abseta [0-1#]
+#energySC_25_40-gold
+EB-energySC_35_45
+EB-energySC_45_48
+EB-energySC_48_51
+EB-energySC_51_56
+EB-energySC_56_65
+EB-energySC_65_75
+EB-energySC_75_90
+EB-energySC_90_100
+#
+#EB-energySC_35_45-gold
+#EB-energySC_45_48-gold
+#EB-energySC_48_51-gold
+#EB-energySC_51_60-gold
+#EB-energySC_60_100-gold
+#
+#energySC_25_40-bad
+#EB-energySC_35_45-bad
+#EB-energySC_45_48-bad
+#EB-energySC_48_51-bad
+#EB-energySC_51_60-bad
+#EB-energySC_60_70-bad
+#EB-energySC_70_100-bad
+
+
+

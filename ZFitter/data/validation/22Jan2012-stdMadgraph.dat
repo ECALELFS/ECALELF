@@ -1,0 +1,30 @@
+############### This file is equivalent to Winter13-powheg.dat but with new trees with trigger and new selection
+########### standard MC
+##### Madgraph
+s1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYJets-Summer12-START53-ZSkim/allRange/withTrgBit_nopresel/DYJets-Summer12-START53-ZSkim-allRange.root
+##### Powheg
+#s2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECOSIM/DYToEE_M20_powheg-Summer12-START53-ZSkim/allRange/withTrgBit_nopresel/DYToEE_M20_powheg-Summer12-START53-ZSkim-allRange.root
+########### Data
+d1	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012A-22Jan-v1/190645-193621/190456-208686_22Jan-v1/withTrgBit_nopresel/DoubleElectron-ZSkim-RUN2012A-22Jan-v1-190645-193621.root
+d2	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012B-22Jan-v1/193834-196531/190456-208686_22Jan-v1/withTrgBit_nopresel/DoubleElectron-ZSkim-RUN2012B-22Jan-v1-193834-196531.root
+d3	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012C-22Jan-v1/198022-203742/190456-208686_22Jan-v1/withTrgBit_nopresel/DoubleElectron-ZSkim-RUN2012C-22Jan-v1-198022-203742.root
+d4	selected	root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARECO/DoubleElectron-ZSkim-RUN2012D-22Jan-v1/203777-208686/190456-208686_22Jan-v1/withTrgBit_nopresel/DoubleElectron-ZSkim-RUN2012D-22Jan-v1-203777-208686.root
+########### Friend trees
+##### PU histograms
+d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-208686-22Jan_v1.69300.true.root
+s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/1-1-Summer12_DD3.true.root
+##### PU trees
+#s1	pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/mcPUtree-stdMadgraph-RUN2012ABCD.root
+s1	pileup	mcPUtree_s1-22Jan2012-stdMC.dat
+#s2	pileup	mcPUtree_s2-22Jan2012-stdMC.dat
+##### Scale correction trees
+#d	scaleEle_HggRunEtaR9	HggRunEtaR9-Winter13-RUNABC.root
+##### Smearer category trees
+#d	smearerCat_d	smearerCat_data-scaleStep2smearing_8.root
+#s	smearerCat_s	smearerCat_mc-scaleStep2smearing_8.root
+d1	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d1-22Jan2012-stdMC.root
+d2	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d2-22Jan2012-stdMC.root
+d3	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d3-22Jan2012-stdMC.root
+d4	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_d4-22Jan2012-stdMC.root
+s1	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_s1-22Jan2012-stdMC.root
+#s2	smearerCat_scaleStep2smearing_1	smearerCat_scaleStep2smearing_1_s2-22Jan2012-stdMC.root

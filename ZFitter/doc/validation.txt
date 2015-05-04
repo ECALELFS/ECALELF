@@ -1,0 +1,17 @@
+/**
+  \page ZFitter Fit to Z lineshape
+
+In this section the ZFitter.exe program is explained and the different fitting methods are detailed.
+
+\section ZFitter_options Config file parsing: ZFitter options
+The ZFitter program is the interface program to all operations to be done on the ECALELF ntuples.
+The aim is to provide a high level layer that permit to choose the appropriate fitting method.
+
+The only mandatory option is the name of the config file with the ntuples to be processed.
+
+The files are correctly added as chains and friends according to the syntax indicated in ...
+
+
+\section CBFit Fit to Z lineshape with BW + CB
+
+\section smearing

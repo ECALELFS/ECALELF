@@ -1,0 +1,94 @@
+#####################################
+-- Macros for EB Calibration --------
+#####################################
+
+1) macros/DrawPrecisionPlot.C  
+   
+   Input : -> 2 File for Even and Odd L3 output for a defined data sample
+           -> evalStat = 1 for statistical precision analysis
+           -> inputLoops = number of L3 loops
+
+   Run : root -l macros/DrawPrecisionPlot.C
+
+   Output: -> Plots = stat precision in eta ring no Folded, convergence Plots in 4 eta region 
+              evaluate through linear fit
+           -> StatPrec.root = has to be used in the comparision with miscalibrated MC in CompareCalibToMCTruth.C
+
+
+##########################################
+----- Macros for EE Calibration ----------
+########################################## 
+
+
+1) macros/Correction_TrackerEffect_EE_MC.cxx
+
+   input : -> Calibration Maps of (Normalized MC IC * IC_RECO)/(IC_Truth) used to extract empiric correction for data
+           -> macros/eerings.dat is used to built EE ring geometry 
+           -> List of phi structure coordinates (iphi calcolated from ix and iy) for EE+ and EE-
+   
+   Run : root -l macros/Correction_TrackerEffect_EE_MC.cxx+
+
+   Output : k(correction_factor) = <IC>(inside a given phi structure)/<IC>(outside, in the all endcap)  
+            The analysis is independent between EE+ and EE-.
+            -> Map IC are plotted before and after correction
+            -> Empiric coefficient are printed and used in Correction_TrackerEffect_EE_DATA_dinamic_alpha.cxx 
+   
+   Note : these coefficient are strictly dependent on the MC production used (WJetsToLnu and DYToLL Fall1 are considered)
+
+2) macros/Correction_TrackerEffect_EE_DATA.cxx
+
+   input : -> Ntupla of data on which apply correction
+           -> macros/eerings.dat is used to built EE ring geometry 
+           -> List of phi structure coordinates (iphi calcolated from ix and iy) for EE+ and EE- and 
+              empiric coefficient for correction that are different
+              between noEP and R9 selection applied in the calibration procedure.
+   
+   Run : root -l macros/Correction_TrackerEffect_EE_DATA.cxx+
+
+   Output : -> maps of IC corrected are added in the original input file under the name
+               h_scale_map_corrected_EEM and h_scale_map_corrected_EEP 
+
+3) macros/DrawCalibrationPlotsEE.C
+
+   input : -> Files for full, even and odd calibration analysis on data or MC
+           -> evalstat=1 in order to evaluate statistic spread IC
+           -> isMC = true stands for MC EE analysis
+           -> MCtruthIC_EE.root and MCRecoIC_EE.root are used for MC Analysis
+           -> existingEE.root -> contains problematic channel in the Endcap
+
+   Run : root -l macros/DrawCalibrationPlotsEE.C+
+
+   Output: -> Plot for spread, statistical precision and residual spred for EE+, EE- and folding EE+ over EE-
+           -> If isMC=true Plots of statistic precision for EE+, EE- and folded are saved in StatPrec_MC_EE.root
+              You have to run this code before run CompareCalibToMCTruth_EE.C 
+           -> if isMC=true comparison plot MC(Truth/RECO)/MC IC that are saved in IC_MC_4Correction.root 
+              This file is used as input in macros/Correction_TrackerEffect_EE_MC.cxx
+           -> ifMC=false Calibration_Coefficient_EE_dinamic_alpha.txt that is the txt file of EE IC
+           -> Map of warning channel after InterCalibration
+
+
+###############################
+-------- Other macros ---------
+###############################
+
+
+1) macros/DrawEPDistributions.cxx
+
+   input : -> file from FastCalibratorWeight or FastCalibratorEE with the EoP distributions for each eta ring at
+              different iteration step
+ 
+   Run : root -l macros/DrawEPDistributions.cxx+
+
+   Output : Plots in different eta ring
+
+
+2) macros/DrawMomentumCalibration.cxx
+
+   input : -> output from test/CalibrationMomentum.cpp
+ 
+   Run : root -l macros/DrawMomentumCalibration.cxx+
+
+   Output : Plots of the scale, correlation and ratios in different eta region for EB and EE
+
+
+ 

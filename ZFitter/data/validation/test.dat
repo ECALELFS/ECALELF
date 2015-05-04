@@ -1,0 +1,5 @@
+############### This file is equivalent to Winter13-powheg.dat but with new trees with trigger and new selection
+########### standard MC
+##### Madgraph
+#d1	scaleEle_HggRunEta	ciao.root
+#d1      smearerCat_validation data/smearerCat/smearerCat_scaleStep4smearing_2_d1-22Jan2012-runDepMC.root
