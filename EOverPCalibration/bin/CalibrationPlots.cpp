@@ -142,10 +142,10 @@ int main(int argc, char **argv)
   // endcap ring geometry
   
   TEndcapRings* eRings = new TEndcapRings();
-  TFile* exisistingEEFile = new TFile("CommonTools/existingEE.root","READ");
+  TFile* exisistingEEFile = new TFile("/afs/cern.ch/user/l/lbrianza/work/public/CommonTools/existingEE.root","READ");
   TH2F* existingEE = (TH2F*)( exisistingEEFile->Get("endcap") );  
   
-  TFile* MCSystematicFile = new TFile("CommonTools/ResidualForSystematic_EE_MC.root","READ");
+  TFile* MCSystematicFile = new TFile("/afs/cern.ch/user/l/lbrianza/work/public/CommonTools/ResidualForSystematic_EE_MC.root","READ");
   //TGraphErrors* MCSystematic_EEM = (TGraphErrors*)( MCSystematicFile->Get("residual_EEM") );
   TGraphErrors* MCSystematic_EE  = (TGraphErrors*)( MCSystematicFile->Get("residual_All") );
   //TGraphErrors* MCSystematic_EEP = (TGraphErrors*)( MCSystematicFile->Get("residual_EEP") );
