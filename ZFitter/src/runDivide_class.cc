@@ -19,7 +19,7 @@ void runDivide_class::ReadRunRangeLimits(TString fileName){
     return;
   }
 
-  ifstream file(fileName);
+  std::ifstream file(fileName);
   if(!file.good()){
     std::cerr << "[ERROR] File " << fileName << "to opened" << std::endl;
     return;

@@ -650,7 +650,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 #endif
 
 #ifdef CMSSW_7_2_X
-    Int_t innerHits = electron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::TRACK_HITS);
+    Int_t innerHits = electron.gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS);
 #else
     Int_t innerHits = electron.gsfTrack()->trackerExpectedHitsInner().numberOfHits();
 #endif
