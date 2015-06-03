@@ -11,14 +11,16 @@
 
 #include <TString.h>
 #include <iostream>
-#include<fstream>
-#include<map>
-#include<math.h>
+#include <fstream>
+#include <map>
+#include <math.h>
 #include <TChain.h>
 #include <TRandom3.h>
 #include <string>
 #include <RooRealVar.h>
 #include <RooCBShape.h>
+
+using namespace std;
 
 class correctionValue_class{
  public:
@@ -35,7 +37,7 @@ class correctionValue_class{
     Emean=0; Emean_err=0;
   };
     
-  friend ostream& operator << (ostream& os, const correctionValue_class a){
+  friend std::ostream& operator << (std::ostream& os, const correctionValue_class a){
     os <<  " " 
        << a.scale << " +/- " << a.scale_err //<< std::endl
        <<  " " 
@@ -78,7 +80,7 @@ class correctionCategory_class{
 
   bool operator<(const correctionCategory_class& b) const;
 
-  friend ostream& operator << (ostream& os, const correctionCategory_class a){
+  friend std::ostream& operator << (std::ostream& os, const correctionCategory_class a){
     os <<  a.runmin << " " << a.runmax 
        << "\t" << a.etamin << " "<<a.etamax 
        << "\t" << a.r9min << " "<<a.r9max 
