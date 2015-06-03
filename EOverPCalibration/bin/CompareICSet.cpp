@@ -35,6 +35,8 @@ std::cout<<" InputFile2 = "<<inputFile2<<std::endl;
 
 std::ifstream File1 (inputFile1.c_str());
 std::ifstream File2 (inputFile2.c_str());
+std::ifstream File3 (inputFile1.c_str());
+std::ifstream File4 (inputFile2.c_str());
 
 if(!File1.is_open()){
     std::cerr << "** ERROR: Can't open '" << inputFile1 << "' for input" << std::endl;
@@ -46,17 +48,21 @@ if(!File2.is_open()){
     return -1;
 }
 
+
+
 // Set style options
-gROOT->Reset();
+/*gROOT->Reset();
 gROOT->SetStyle("Plain");
+*/
 
 gStyle->SetPadTickX(1);
 gStyle->SetPadTickY(1);
 gStyle->SetOptTitle(1); 
-gStyle->SetOptStat(0); 
+gStyle->SetOptStat(1111111); 
 gStyle->SetFitFormat("6.3g"); 
 gStyle->SetPalette(1); 
 gStyle->SetOptTitle(0);
+
   
 gStyle->SetTextFont(42);
 gStyle->SetTextSize(0.05);
@@ -70,8 +76,14 @@ gROOT->ForceStyle();
 
 
 
+
 int iPhi, iEta, iz;
 double ic, eic;
+
+int iPhi1, iEta1, iz1;
+double ic1, eic1;
+int iPhi2, iEta2, iz2;
+double ic2, eic2;
 
 /// Histo for first ic set
 TString Name = Form("mapEB_%s",inputFile1.c_str());
@@ -107,7 +119,19 @@ if(iz==-1) map2_EEm->Fill(iEta,iPhi,ic);
 }
 std::cout<<" End second file "<<std::endl;
 
-TApplication* theApp = new TApplication("Application",&argc, argv);
+ int cont=0;
+ while (!File3.eof() || !File4.eof()){
+File3 >> iEta1 >> iPhi1 >> iz1 >> ic1 >> eic1 ;
+ File4 >> iEta2 >> iPhi2 >> iz2 >> ic2 >> eic2;
+ if (ic1!=ic2)
+   std::cout<<"iEta: "<<iEta1<<" iPhi: "<<iPhi1<<" diff IC: "<<ic1-ic2<<std::endl;
+ if (iz1==-1) cont++;
+}
+ std::cout<<"ciao "<<cont<<std::endl;
+ getchar();
+
+ TApplication* theApp = new TApplication("Application",&argc, argv);
+
 
 
 /// Set of two ic sets
@@ -161,6 +185,7 @@ TH2F * correlationEEm= new TH2F(Name,Name,100,0.2,2.,100,0.2,2.);
 
 
 
+
 for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
  for(int iEta=1; iEta<map1_EB->GetNbinsY()+1; iEta++){
 
@@ -176,6 +201,7 @@ for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
 
  }
 }
+
 
 for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
  for(int iy=1; iy<map1_EEp->GetNbinsY()+1; iy++){
@@ -193,6 +219,7 @@ for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
  }
 }
 
+
 for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
  for(int iy=1; iy<map1_EEm->GetNbinsY()+1; iy++){
 
@@ -208,6 +235,7 @@ for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
 
  }
 }
+
 
 
 
@@ -236,6 +264,7 @@ for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
    phiProjectionEB1->SetPointError(iPhi-1,0.,0.002);
   }
 
+
 for(int iPhi =1; iPhi<map2_EB->GetNbinsX()+1; iPhi++){
    double sumEta=0, nEta=0;
   
@@ -247,6 +276,7 @@ for(int iPhi =1; iPhi<map2_EB->GetNbinsX()+1; iPhi++){
    phiProjectionEB2->SetPoint(iPhi-1,iPhi-1,sumEta/nEta);
    phiProjectionEB2->SetPointError(iPhi-1,0.,0.002);
   }
+
 
 /// Profile along phi  for EE+:
 
@@ -270,12 +300,14 @@ phiProjectionEEp2->SetMarkerColor(kRed);
 
  for(int ix=1; ix<map1_EEp->GetNbinsX()+1;ix++){
    for(int iy=1; iy<map1_EEp->GetNbinsY()+1;iy++){
-    if(map1_EEp->GetBinContent(ix,iy)==-1. || map1_EEp->GetBinContent(ix,iy)==0. ) continue;
+    if(map1_EEp->GetBinContent(ix,iy)==-1. || map1_EEp->GetBinContent(ix,iy)==0. ) continue;    
       int iPhi = int(eRings->GetEndcapIphi(ix,iy,1));
+      if (iPhi==360) iPhi=0;
       vectSum.at(iPhi)=vectSum.at(iPhi)+map1_EEp->GetBinContent(ix,iy);
       vectCounter.at(iPhi)=vectCounter.at(iPhi)+1;
   }
  }
+
 
  int j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
@@ -289,14 +321,17 @@ phiProjectionEEp2->SetMarkerColor(kRed);
  }
 
 
+
  for(int ix=1; ix<map2_EEp->GetNbinsX()+1;ix++){
    for(int iy=1; iy<map2_EEp->GetNbinsY()+1;iy++){
     if(map2_EEp->GetBinContent(ix,iy)==-1. ||map2_EEp->GetBinContent(ix,iy)==0.) continue;
       int iPhi = int(eRings->GetEndcapIphi(ix,iy,1));
+      if (iPhi==360) iPhi=0;
        vectSum.at(iPhi)=vectSum.at(iPhi)+map2_EEp->GetBinContent(ix,iy);
       vectCounter.at(iPhi)=vectCounter.at(iPhi)+1;
   }
  }
+
 
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
@@ -308,6 +343,7 @@ phiProjectionEEp2->SetMarkerColor(kRed);
  for(unsigned int i=0; i<vectSum.size(); i++){
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
+
 
 /// Profile along phi  for EE-:
 
@@ -325,10 +361,12 @@ phiProjectionEEm2->SetMarkerColor(kRed);
    for(int iy=1; iy<map1_EEm->GetNbinsY()+1;iy++){
     if(map1_EEm->GetBinContent(ix,iy)==-1. || map1_EEm->GetBinContent(ix,iy)==0. ) continue;
       int iPhi = int(eRings->GetEndcapIphi(ix,iy,-1));
+      if (iPhi==360) iPhi=0;
       vectSum.at(iPhi)=vectSum.at(iPhi)+map1_EEm->GetBinContent(ix,iy);
       vectCounter.at(iPhi)=vectCounter.at(iPhi)+1;
   }
  }
+
 
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
@@ -340,14 +378,17 @@ phiProjectionEEm2->SetMarkerColor(kRed);
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
 
+
  for(int ix=1; ix<map2_EEm->GetNbinsX()+1;ix++){
    for(int iy=1; iy<map2_EEm->GetNbinsY()+1;iy++){
     if(map2_EEm->GetBinContent(ix,iy)==-1. ||  map2_EEm->GetBinContent(ix,iy)==0.) continue;
       int iPhi = int(eRings->GetEndcapIphi(ix,iy,-1));
+      if (iPhi==360) iPhi=0;
       vectSum.at(iPhi)=vectSum.at(iPhi)+map2_EEm->GetBinContent(ix,iy);
       vectCounter.at(iPhi)=vectCounter.at(iPhi)+1;
   }
  }
+
 
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
@@ -359,6 +400,7 @@ phiProjectionEEm2->SetMarkerColor(kRed);
  for(unsigned int i=0; i<vectSum.size(); i++){
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
+
 
 
 /// projection along eta for EB
@@ -386,6 +428,7 @@ for(int iEta =1; iEta<map1_EB->GetNbinsY()+1; iEta++){
    etaProjectionEB1->SetPointError(iEta-1,0.,0.002);
   }
 
+
 for(int iEta =1; iEta<map2_EB->GetNbinsY()+1; iEta++){
    double sumPhi=0, nPhi=0;
   
@@ -397,6 +440,7 @@ for(int iEta =1; iEta<map2_EB->GetNbinsY()+1; iEta++){
    etaProjectionEB2->SetPoint(iEta-1,iEta-1,sumPhi/nPhi);
    etaProjectionEB2->SetPointError(iEta-1,0.,0.002);
   }
+
 
  
 /// projection along eta for EE+:
@@ -425,6 +469,7 @@ vectSum.assign(360,0.);
       vectCounter.at(iEta)=vectCounter.at(iEta)+1;
   }
  }
+
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
   if(vectCounter.at(i)==0) continue;
@@ -432,9 +477,11 @@ vectSum.assign(360,0.);
   j++;
  }
 
+
  for(unsigned int i=0; i<vectSum.size(); i++){
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
+
 
  for(int ix=1; ix<map2_EEp->GetNbinsX()+1;ix++){
    for(int iy=1; iy<map2_EEp->GetNbinsY()+1;iy++){
@@ -446,6 +493,7 @@ vectSum.assign(360,0.);
   }
  }
 
+
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
   if(vectCounter.at(i)==0) continue;
@@ -453,9 +501,11 @@ vectSum.assign(360,0.);
   j++;
  }
 
+
  for(unsigned int i=0; i<vectSum.size(); i++){
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
+
 
 /// projection along eta for EE-:
 
@@ -479,6 +529,7 @@ etaProjectionEEm2->SetMarkerColor(kRed);
    }
  }
 
+
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
   if(vectCounter.at(i)==0)continue;
@@ -490,6 +541,7 @@ etaProjectionEEm2->SetMarkerColor(kRed);
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
 
+
  for(int ix=1; ix<map2_EEm->GetNbinsX()+1;ix++){
    for(int iy=1; iy<map2_EEm->GetNbinsY()+1;iy++){
     if(map2_EEm->GetBinContent(ix,iy)==-1. || map2_EEm->GetBinContent(ix,iy)==0.) continue;
@@ -499,6 +551,7 @@ etaProjectionEEm2->SetMarkerColor(kRed);
       vectCounter.at(iEta)=vectCounter.at(iEta)+1;
   }
  }
+
 
  j=0;
  for(unsigned int i=0; i<vectCounter.size();i++){
@@ -510,6 +563,7 @@ etaProjectionEEm2->SetMarkerColor(kRed);
  for(unsigned int i=0; i<vectSum.size(); i++){
   vectSum.at(i)=0; vectCounter.at(i)=0;
  }
+
 
 
  ///  phi Profile Histos EB
@@ -1078,7 +1132,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  leg12->AddEntry(phiProfileEEm2,"EE- Projection II set ", "LP");
  leg12->Draw("same");
 
-theApp->Run();
+ theApp->Run();
 
 return 0;
 
