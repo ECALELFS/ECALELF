@@ -1,23 +1,12 @@
 #include "Calibration/EcalAlCaRecoProducers/plugins/AlCaECALRecHitReducer.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
-#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+//#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
-#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
-#include "DataFormats/EgammaCandidates/interface/SiStripElectron.h"
-#include "DataFormats/EgammaCandidates/interface/Electron.h"
-#include "DataFormats/EgammaCandidates/interface/ElectronFwd.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
-#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
+
 #include "DataFormats/EgammaReco/interface/BasicCluster.h"
-#include "Geometry/CaloGeometry/interface/CaloSubdetectorGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloGeometry.h"
-#include "Geometry/CaloGeometry/interface/CaloCellGeometry.h"
-#include "Geometry/EcalAlgo/interface/EcalPreshowerGeometry.h"
-#include "Geometry/CaloTopology/interface/EcalPreshowerTopology.h"
-#include "Geometry/Records/interface/CaloGeometryRecord.h"
+#include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-//#include "Geometry/CaloTopology/interface/EcalBarrelTopology.h"
 
 //#define ALLrecHits
 //#define DEBUG
@@ -25,19 +14,33 @@
 //#define QUICK -> if commented loop over the recHits of the SC and add them to the list of recHits to be saved
 //                 comment it if you want a faster module but be sure the window is large enough
 
+/** This module reduces the recHitCollections and the caloCalusterCollections in input 
+ * keeping only those associated to the given electrons/photons 
+ */
+
+/// \todo make sure that the new caloClusterCollection has no duplicates
+
 AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig) 
 {
 
-  ebRecHitsLabel_ = iConfig.getParameter< edm::InputTag > ("ebRecHitsLabel");
-  eeRecHitsLabel_ = iConfig.getParameter< edm::InputTag > ("eeRecHitsLabel");
+  ebRecHitsToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter< edm::InputTag > ("ebRecHitsLabel"));
+  eeRecHitsToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter< edm::InputTag > ("eeRecHitsLabel"));
   //  esRecHitsLabel_ = iConfig.getParameter< edm::InputTag > ("esRecHitsLabel");
-  electronLabel_ = iConfig.getParameter< edm::InputTag > ("electronLabel");
-  photonLabel_ = iConfig.getParameter< edm::InputTag > ("photonLabel");
-  EESuperClusterCollection_ = iConfig.getParameter< edm::InputTag>("EESuperClusterCollection");
+ 
+  std::vector<edm::InputTag> srcLabels = iConfig.getParameter< std::vector<edm::InputTag> >("srcLabels");
+  for ( auto inputTag = srcLabels.begin(); inputTag != srcLabels.end(); ++inputTag){
+    eleViewTokens_.push_back(consumes<edm::View <reco::RecoCandidate> >(*inputTag));
+  }
+  
+  //eleViewToken_ = consumes<edm::View <reco::RecoCandidate> > (iConfig.getParameter< edm::InputTag > ("electronLabel"));
+  photonToken_ = consumes<reco::PhotonCollection>(iConfig.getParameter< edm::InputTag > ("photonLabel"));
+  EESuperClusterToken_ = consumes<reco::SuperClusterCollection>(iConfig.getParameter< edm::InputTag>("EESuperClusterCollection"));
+
   minEta_highEtaSC_         = iConfig.getParameter< double >("minEta_highEtaSC");
 
-  alcaBarrelHitsCollection_ = iConfig.getParameter<std::string>("alcaBarrelHitCollection");
-  alcaEndcapHitsCollection_ = iConfig.getParameter<std::string>("alcaEndcapHitCollection");
+  alcaBarrelHitsCollection_  = iConfig.getParameter<std::string>("alcaBarrelHitCollection");
+  alcaEndcapHitsCollection_  = iConfig.getParameter<std::string>("alcaEndcapHitCollection");
+  alcaCaloClusterCollection_ = iConfig.getParameter<std::string>("alcaCaloClusterCollection");
   
   //  alcaPreshowerHitsCollection_ = iConfig.getParameter<std::string>("alcaPreshowerHitCollection");
   
@@ -49,8 +52,6 @@ AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig)
  
   //  esNstrips_  = iConfig.getParameter<int> ("esNstrips");
   //  esNcolumns_ = iConfig.getParameter<int> ("esNcolumns");
-
-  alcaCaloClusterCollection_ = iConfig.getParameter<std::string>("alcaCaloClusterCollection");
   
   //register your products
   produces< EBRecHitCollection > (alcaBarrelHitsCollection_) ;
@@ -70,65 +71,32 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
                                 const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  using namespace std;
+  //using namespace std;
   
   EcalRecHitCollection::const_iterator recHit_itr;
-
-  // get the ECAL geometry:
-  ESHandle<CaloGeometry> geoHandle;
-  iSetup.get<CaloGeometryRecord>().get(geoHandle);
 
   edm::ESHandle<CaloTopology> theCaloTopology;
   iSetup.get<CaloTopologyRecord>().get(theCaloTopology);
   const CaloTopology *caloTopology = theCaloTopology.product();
-  
-  // Get GSFElectrons
-  Handle<reco::GsfElectronCollection> pElectrons;
-  iEvent.getByLabel(electronLabel_, pElectrons);
-  //if (!pElectrons.isValid())  return ;
-  
-  const reco::GsfElectronCollection * electronCollection = pElectrons.product();
 
-  const reco::PhotonCollection *photonCollection = NULL; 
-  if (photonLabel_==edm::InputTag("gedPhotons")) {
-      // Get Photons
-      Handle<reco::PhotonCollection> pPhotons;
-      iEvent.getByLabel(photonLabel_, pPhotons);
   
-      photonCollection = pPhotons.product();
-    }    
+  // Get Photons
+  Handle<reco::PhotonCollection> phoHandle;
+  iEvent.getByToken(photonToken_, phoHandle);
   
   // get RecHits
   Handle<EBRecHitCollection> barrelRecHitsHandle;
-  iEvent.getByLabel(ebRecHitsLabel_,barrelRecHitsHandle);
-//   if (!barrelRecHitsHandle.isValid()) {
-//     edm::LogError ("reading") << ebRecHitsLabel_ << " not found" ; 
-//     barrelIsFull = false ;
-//   }
-  
+  iEvent.getByToken(ebRecHitsToken_,barrelRecHitsHandle);
   const EBRecHitCollection *barrelHitsCollection = barrelRecHitsHandle.product () ;
   
   // get RecHits
   Handle<EERecHitCollection> endcapRecHitsHandle;    
-  iEvent.getByLabel(eeRecHitsLabel_,endcapRecHitsHandle);
-//   if (!endcapRecHitsHandle.isValid()) {
-//     edm::LogError ("reading") << eeRecHitsLabel_ << " not found" ; 
-//     endcapIsFull = false ;
-//   }
-  
+  iEvent.getByToken(eeRecHitsToken_,endcapRecHitsHandle);
   const EERecHitCollection *endcapHitsCollection = endcapRecHitsHandle.product () ;
-
-  //  const EERecHitCollection * endcapHitsCollection = endcapRecHitsHandle.product();
   
   //   // get ES RecHits
   //   Handle<ESRecHitCollection> preshowerRecHitsHandle;
-  //   bool preshowerIsFull = true ;
-  
-  //   iEvent.getByLabel(esRecHitsLabel_,preshowerRecHitsHandle);
-  //   if (!preshowerRecHitsHandle.isValid()) {
-  //     edm::LogError ("reading") << esRecHitsLabel_ << " not found" ; 
-  //     preshowerIsFull = false ;
-  //   }
+  //   iEvent.getByToken(esRecHitsToken_,preshowerRecHitsHandle);
   
   //   const ESRecHitCollection * preshowerHitsCollection = 0 ;
   //   if (preshowerIsFull)  
@@ -138,31 +106,34 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
   //   set<ESDetId> used_strips;
   //   used_strips.clear();
 
+  // for Z->ele+SC
   Handle<reco::SuperClusterCollection> EESCHandle;
-  iEvent.getByLabel(EESuperClusterCollection_, EESCHandle);
+  iEvent.getByToken(EESuperClusterToken_, EESCHandle);
  
   //Create empty output collections
   std::auto_ptr< EBRecHitCollection > miniEBRecHitCollection (new EBRecHitCollection) ;
   std::auto_ptr< EERecHitCollection > miniEERecHitCollection (new EERecHitCollection) ;  
   //  std::auto_ptr< ESRecHitCollection > miniESRecHitCollection (new ESRecHitCollection) ;  
-
+  
   std::set<DetId> reducedRecHit_EBmap;
   std::set<DetId> reducedRecHit_EEmap;
-
+  
+  //  std::set< edm::Ref<reco::CaloCluster> > reducedCaloClusters_map;
+  
   std::auto_ptr< reco::CaloClusterCollection > reducedCaloClusterCollection (new reco::CaloClusterCollection);
-
-  if (photonLabel_==edm::InputTag("gedPhotons")) {
+  
   //Photons:
-  for (reco::PhotonCollection::const_iterator phoIt=photonCollection->begin(); phoIt!=photonCollection->end(); phoIt++) {
-    // barrel
+#ifdef shervin
+  for (reco::PhotonCollection::const_iterator phoIt=phoHandle->begin(); phoIt!=phoHandle->end(); phoIt++) {
     const reco::SuperCluster& sc = *(phoIt->superCluster()) ;
-
+    
     if (phoIt->isEB()) {
       AddMiniRecHitCollection(sc, reducedRecHit_EBmap, caloTopology);
     } else { // endcap
       AddMiniRecHitCollection(sc, reducedRecHit_EEmap, caloTopology);
     } // end of endcap
-
+    
+    /// \todo check if this works when you ask sc->seed(), I suspect that the references have to be updated
     reco::CaloCluster_iterator it = sc.clustersBegin();
     reco::CaloCluster_iterator itend = sc.clustersEnd();
     for ( ; it !=itend; ++it) {
@@ -170,20 +141,22 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
       reducedCaloClusterCollection->push_back(caloClus);
     }
   }
-    }
+#endif
 
-    else {
+    Handle<edm::View < reco::RecoCandidate> > eleViewHandle;  
+  for(auto iToken=eleViewTokens_.begin(); iToken!=eleViewTokens_.end(); iToken++){
+    iEvent.getByToken(*iToken, eleViewHandle);
+
   //Electrons:  
-  for (reco::GsfElectronCollection::const_iterator eleIt=electronCollection->begin(); eleIt!=electronCollection->end(); eleIt++) {
-    // barrel
+  for (auto eleIt=eleViewHandle->begin(); eleIt!=eleViewHandle->end(); eleIt++) {
     const reco::SuperCluster& sc = *(eleIt->superCluster()) ;
-
-    if (eleIt->isEB()) {
+    
+    if (fabs(sc.eta())<1.479) {
       AddMiniRecHitCollection(sc, reducedRecHit_EBmap, caloTopology);
     } else { // endcap
       AddMiniRecHitCollection(sc, reducedRecHit_EEmap, caloTopology);
     } // end of endcap
-
+    
     reco::CaloCluster_iterator it = sc.clustersBegin();
     reco::CaloCluster_iterator itend = sc.clustersEnd();
     for ( ; it !=itend; ++it) {
@@ -191,7 +164,9 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
       reducedCaloClusterCollection->push_back(caloClus);
     }
   }
-    }
+  }
+  
+  
 
   //saving recHits for highEta SCs for highEta studies
   for(reco::SuperClusterCollection::const_iterator SC_iter = EESCHandle->begin();
@@ -208,6 +183,7 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
       reducedCaloClusterCollection->push_back(caloClus);
     }
   }
+
 
   //------------------------------ fill the alcareco reduced recHit collection
   for(std::set<DetId>::const_iterator itr = reducedRecHit_EBmap.begin();
@@ -259,4 +235,5 @@ void AlCaECALRecHitReducer::AddMiniRecHitCollection(const reco::SuperCluster& sc
 
 
 DEFINE_FWK_MODULE(AlCaECALRecHitReducer);
+
 

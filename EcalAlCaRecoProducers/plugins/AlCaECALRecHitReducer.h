@@ -38,54 +38,36 @@
 #include "DataFormats/DetId/interface/DetId.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 
-//PG #include "TH2.h"
-//PG #include "TFile.h"
-//PG #include "TCanvas.h"
-
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
+#include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
 //!
 //! class declaration
 //!
 
 class AlCaECALRecHitReducer : public edm::EDProducer {
-   public:
-      //! ctor
-      explicit AlCaECALRecHitReducer(const edm::ParameterSet&);
-      ~AlCaECALRecHitReducer();
-
- 
-//PG       void beginJob (const edm::EventSetup&)
-//PG         {
-//PG           std::cerr << "saveTest beginJob" << std::endl ;
-//PG           m_failMap = new TH2F ("failMap","failMap",100,0,100,100,0,100) ;
-//PG           std::cerr << "saveTest beginJob " << m_failMap->GetEntries () << std::endl ;
-//PG         }
-      //! producer
-      virtual void produce(edm::Event &, const edm::EventSetup&);
-//PG       void endJob () 
-//PG         {
-//PG           std::cerr << "saveTest endJob" << std::endl ;
-//PG           TCanvas c1 ;
-//PG           c1.cd () ;
-//PG           m_failMap->Draw ("BOX") ;
-//PG           c1.Print ("fail.eps","eps") ;
-//PG           TDirectory * curr = gDirectory ;
-//PG           TFile * saveTest = new TFile ("fail.root","recreate") ;
-//PG           saveTest->cd () ;
-//PG           m_failMap->Write () ;
-//PG           curr->cd () ;
-//PG           saveTest->Close () ;
-//PG         }
-
-   private:
-      // ----------member data ---------------------------
-
+ public:
+  //! ctor
+  explicit AlCaECALRecHitReducer(const edm::ParameterSet&);
+  ~AlCaECALRecHitReducer();
   
-  edm::InputTag ebRecHitsLabel_;
-  edm::InputTag eeRecHitsLabel_;
-  edm::InputTag esRecHitsLabel_;
-  edm::InputTag electronLabel_;
-  edm::InputTag photonLabel_;
-  edm::InputTag EESuperClusterCollection_;
+  
+  //! producer
+  virtual void produce(edm::Event &, const edm::EventSetup&);
+  
+ private:
+  // ----------member data ---------------------------
+  
+  
+  
+  edm::EDGetTokenT<EcalRecHitCollection> ebRecHitsToken_;
+  edm::EDGetTokenT<EcalRecHitCollection> eeRecHitsToken_;
+  edm::EDGetTokenT<EcalRecHitCollection> esRecHitsToken_;
+  edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
+  std::vector< edm::EDGetTokenT<edm::View < reco::RecoCandidate> > > eleViewTokens_;
+
+  edm::EDGetTokenT<reco::PhotonCollection> photonToken_;
+  edm::EDGetTokenT<reco::SuperClusterCollection> EESuperClusterToken_;
   std::string alcaBarrelHitsCollection_;
   std::string alcaEndcapHitsCollection_;
   std::string alcaPreshowerHitsCollection_;

@@ -9,12 +9,13 @@ import FWCore.ParameterSet.Config as cms
 # produced them in the ALCARECO step
 trackerDrivenOnlyElectrons = cms.EDFilter("GsfElectronRefSelector",
                                           src = cms.InputTag( 'gedGsfElectrons' ),
-                                          cut = cms.string( "(ecalDrivenSeed==0)" )
+                                          cut = cms.string( "(ecalDrivenSeed==1)" )
                                           )
 
 # these lines active a filter that counts if there are more than 0
 # trackerDrivenOnly electrons 
-trackerDrivenRemover = cms.EDFilter("PATCandViewCountFilter",
+#trackerDrivenRemover = cms.EDFilter("PATCandViewCountFilter",
+ecalDrivenOnlyElectrons = cms.EDFilter("PATCandViewCountFilter",
                                     minNumber = cms.uint32(0),
                                     maxNumber = cms.uint32(0),
                                     src = cms.InputTag("trackerDrivenOnlyElectrons")

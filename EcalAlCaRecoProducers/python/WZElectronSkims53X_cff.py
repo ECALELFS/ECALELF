@@ -74,6 +74,12 @@ selectedMuons = cms.EDFilter("MuonRefSelector",
                                  cut = cms.string("")
                                          )
 
+selectedPhotons = cms.EDFilter("PhotonRefSelector",
+                                 src = cms.InputTag( 'gedPhotons' ),
+                                 cut = cms.string(
+    "(abs(superCluster.eta)<3) && (pt> 10)")
+                                         )
+
 # This are the cuts at trigger level except ecalIso
 PassingVeryLooseId = selectedElectrons.clone(
     cut = cms.string(
@@ -153,6 +159,24 @@ PassingMuonVeryLooseId = selectedMuons.clone(
     )
     )
 
+PassingPhotonVeryLooseId = selectedPhotons.clone(
+    cut = cms.string(
+    selectedPhotons.cut.value() +
+    "&& ( (eta<1.479 && sigmaIetaIeta<0.02 && hadronicOverEm<0.06 )"
+    "||"
+    "( eta>=1.479 && sigmaIetaIeta<0.04 && hadronicOverEm<0.06 ) )"
+    )
+    )
+    
+MuFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("PassingMuonVeryLooseId"),
+                         minNumber = cms.uint32(2)
+                         )
+PhoFilter = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("PassingPhotonVeryLooseId"),
+                         minNumber = cms.uint32(1)
+                         ) 
+
 #------------------------------ electronID producer
 from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
 # process.EleSelectionProducers
@@ -177,7 +201,7 @@ eleSelSeq = cms.Sequence( selectedElectrons + PassingVeryLooseId + PassingTightI
                           (SCselector*eleSC)
                           )
 
-muSelSeq = cms.Sequence( selectedMuons + PassingMuonVeryLooseId +
+muSelSeq = cms.Sequence( selectedMuons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
                           (SCselector*eleSC)
                           )
 
