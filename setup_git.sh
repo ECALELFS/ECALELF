@@ -12,8 +12,8 @@ checkVERSION(){
 	CMSSW_5_3_21)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
-	CMSSW_7_2_*)
-	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
+	CMSSW_7_*_*)
+	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
 	    ;;
 	*)
 	    echo "[ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
@@ -47,7 +47,9 @@ cd $CMSSW_BASE/src
 #########################################################################################
 echo "[STATUS] Download of the skims"
 # last WSkim version
+git cms-init
 git-cms-addpkg DataFormats/EgammaCandidates  #>> setup.log || exit 1
+cmsenv
 
 #########################################################################################
 echo "[STATUS] Patch GsfElectrons for ECALELF rereco"
@@ -60,6 +62,12 @@ if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
 	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    ;;
+	lcorpe)
+	    git clone git@github.com:ldcorpe/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+			cd $myDir
+			git checkout testMergeCMSSW
+			cd -
 	    ;;
 	lbrianza)
 	    git clone git@github.com:lbrianza/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
@@ -172,9 +180,13 @@ case $CMSSW_VERSION in
 	scram b -j16
 
 	;;
-    CMSSW_7_*)
+ 
+  CMSSW_7_0_*)
 	git-cms-addpkg EgammaAnalysis/ElectronTools >> setup.log || exit 1
 	patch -p1 < $myDir/ALCARAW_RECO/test/electronRegression700.patch >> setup.log || exit 1
+	
+	echo "downloading changes to alcareco streams needed to use cmsDriver.py"
+  git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 
 	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
 	cat download.url | grep '.root' | xargs wget  >> setup.log || exit 1
@@ -213,7 +225,54 @@ case $CMSSW_VERSION in
     fi
 
     cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root $myDir/EleNewEnergiesProducer/data/ >> setup.log || exit 1
+;;
 
+    CMSSW_7_5_*)
+#	git-cms-addpkg EgammaAnalysis/ElectronTools >> setup.log || exit 1
+	
+	echo "downloading changes to alcareco streams needed to use cmsDriver.py"
+	git cms-addpkg Configuration/EventContent
+	git cms-addpkg Configuration/StandardSequences
+  git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
+
+#	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
+#	cat download.url | grep '.root' | xargs wget  >> setup.log || exit 1
+#	cd - >> setup.log || exit 1
+
+###### New Josh regression
+#	mkdir HiggsAnalysis/
+#	cd HiggsAnalysis/
+#	git clone -b legacyCompatibility https://github.com/bendavid/GBRLikelihood.git 
+#	git clone -b hggpaperV6 https://github.com/bendavid/GBRLikelihoodEGTools.git
+#	cd -
+#	mv GBRLikelihoodEGTools/data/*.root $myDir/EleNewEnergiesProducer/data/
+#
+#	sed -i 's|REGRESSION=3|REGRESSION=4|' Calibration/*/BuildFile.xml
+#	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EleSelectionProducers/BuildFile.xml
+#	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EOverPCalibration/BuildFile.xml
+#	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EOverPCalibration/bin/BuildFile.xml
+#	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/EleNewEnergiesProducer/BuildFile.xml
+#	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/ZFitter/BuildFile.xml
+#	echo "<Flags CppDefines=\"CMSSW_7_2_X\"/>" >> $myDir/ZNtupleDumper/BuildFile.xml
+#
+#
+#	echo "[STATUS] applying patch for CMSSW_5_X and following"
+#	sed 's|,eleIt->ecalEnergyError()\*(nearestSC.*);|);|' $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc_topatch > $myDir/ALCARAW_RECO/src/ElectronRecalibSuperClusterAssociatorSH.cc
+#
+#	echo "[STATUS] applying patch for CMSSW_7_2_0_pre7"
+#	patch -p1 < $myDir/ALCARAW_RECO/test/EGEnergyCorrectorSemiParm.h.patch >> setup.log || exit 1
+#	patch -p1 < $myDir/ALCARAW_RECO/test/EGEnergyCorrectorTraditional.h.patch >> setup.log || exit 1
+#	patch -p1 < $myDir/ALCARAW_RECO/test/EGEnergyAnalyzerSemiParm.cc.patch >> setup.log || exit 1
+#
+#    if [ ! -e "$CMSSW_BASE/src/RecoEcal/EgammaCoreTools" ];then
+#        git-cms-addpkg RecoEcal/EgammaCoreTools >> setup.log || exit 1
+#    fi
+#    if [ "`grep -c getEcalEBRecHitCollection $CMSSW_BASE/src/RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h`" == "0" ];then
+#	patch  -p0 < $myDir/ALCARAW_RECO/test/clusterLazyTools.patch >> setup.log || exit 1
+#    fi
+#
+#    cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root $myDir/EleNewEnergiesProducer/data/ >> setup.log || exit 1
+	;;
 
 
 esac
