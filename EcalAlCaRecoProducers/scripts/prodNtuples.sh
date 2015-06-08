@@ -18,6 +18,9 @@ PDFSYST=1
 SKIM=""
 OUTFILES="ntuple.root"
 crabFile=tmp/ntuple.cfg
+CRABVERSION=3
+FROMCRAB3=1
+JOBINDEX=""
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -222,6 +225,15 @@ if [ "${TYPE}" == "ALCARERECO" ];then
 fi
 fi
 
+
+JOBINDEX=`cat crab_projects/crab_${DATASETNAME}/crab.log | grep -oh -m1 '[0-9]\{6\}_[0-9]\{6\}'` 
+echo " JOB INDEX $JOBINDEX"
+
+echo "[INFO] Temporarily set Crab to CRAB2 to allow CAF submission"
+echo "[INFO] You can set yourself back to CRAB3 by running iniCmsEnv.sh again"
+source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
+
+
 setStoragePath $STORAGE_ELEMENT $SCHEDULER 
 ###
 ###
@@ -248,6 +260,8 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 
 	if [ ! -e "${FILELIST}" ];then
 	    #sample=tempFileList-${DATASETNAME}-${RUNRANGE}-${TAG}
+			echo $USER
+			echo "makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/ /${ORIGIN_REMOTE_DIR}"
 	    makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/${ORIGIN_REMOTE_DIR}  || exit 1
 	    #filelistDatasets.sh $options || exit 1
             # remove PUDumper files!

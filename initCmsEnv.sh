@@ -2,7 +2,8 @@
 
 source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh
 eval `scramv1 runtime -sh`
-source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
+#source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
+source /cvmfs/cms.cern.ch/crab3/crab.sh
 case $USER in
     hengne|heli)
 	voms-proxy-init -voms cms -hours 192 -valid 192:00
@@ -17,7 +18,7 @@ esac
 #PATH=`echo $PATH | sed 's|/afs/cern.ch/project/eos/installation/pro/bin/||'`
 
 PATH=$PATH:/afs/cern.ch/project/eos/installation/pro/bin/
-PATH=$PATH:$CMSSW_BASE/src/Calibration/ALCARAW_RECO/bin
+PATH=$PATH:$CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/bin
 
 export ECALELFINIT=y
 

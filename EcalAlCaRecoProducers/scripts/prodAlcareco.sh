@@ -23,9 +23,11 @@ NJOBS=100
 OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
-CRABVERSION=3
+#CRABVERSION=3
+CRABVERSION=2
 FROMRAW=no
 CMSSWCONFIG="reco_ALCA.py"
+SQRTS=13TeV
 usage(){
     echo "`basename $0` options"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -108,7 +110,8 @@ do
 	esac
 	shift
 done
-JOBNAME="${DATASETNAME}_${RUNRANGE}_${JOB}"
+JOBNAME="${DATASETNAME}" 
+# _${RUNRANGE}_${JOB}
 #------------------------------ checking
 echo "[INFO] using CRAB version ${CRABVERSION}"
 if [ -z "$DATASETPATH" ];then 
@@ -257,6 +260,10 @@ echo "[INFO]  cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --condit
 cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=auto:run2_data --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" --no_exec
 
 echo "[INFO] Generating CRAB3 configuration"
+TYPENAME=$TYPE
+if [ ${ISMC} = "yes" ];then
+TYPENAME="${TYPENAME}SIM"
+fi
 #==============================
 cat > ${crab2File} <<EOF
 [CRAB]
@@ -285,7 +292,7 @@ config.Data.splitting = 'LumiBased'
 config.Data.lumiMask = '${JSONFILE}'
 config.Data.unitsPerJob = 10
 config.Data.runRange = '${RUNRANGE}'
-config.Data.outLFNDirBase = '/store/group/dpg_ecal/alca_ecalcalib/${USER}/${JOBNAME}'
+config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
 config.Data.publication = ${PUBLISH}
 config.Data.publishDataName = '${JOBNAME}'
 #config.Site.storageSite = '$STORAGE_ELEMENT'
@@ -296,7 +303,7 @@ EOF
 echo "--> CMSSW config created: ${CMSSWCONFIG}"
 echo "--> CRAB3 config created: ${crab3File}"
 
-cat > ${crab2File} <<EOF
+cat >> ${crab2File} <<EOF
 [CMSSW]
 datasetpath=${DATASETPATH}
 use_dbs3  = 1

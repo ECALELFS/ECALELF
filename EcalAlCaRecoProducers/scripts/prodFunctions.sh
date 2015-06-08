@@ -142,10 +142,23 @@ setUserRemoteDirNtuple(){
 
 setUserRemoteDirAlcareco(){
     #$1=USER_REMOTE_DIR_BASE
+	if [ "$FROMCRAB3"==1 ];then
+		echo "DATASETPATH $DATASETPATH"
+	  DATASETPATHSHORT=`echo  $DATASETPATH | awk 'NR==1 {split($1, arr, "[/]"); print arr[2]}' `
+		echo "DATASETPATH SHORT $DATASETPATHSHORT"
+
+    if [ -z "${ENERGY}"  -o -z "${DATASETNAME}" -o -z "${RUNRANGE}" ];then
+	echo "[ERROR] `basename $0`: ENERGY or DATASETNAME or RUNRANGE not defined" >> /dev/stderr
+	echo "                       ${ENERGY} or ${DATASETNAME} or ${RUNRANGE}" >> /dev/stderr
+	exit 1
+    fi
+    USER_REMOTE_DIR=$1/$USER/$TYPE/${ENERGY}/${DATASETPATHSHORT}/${DATASETNAME}/${JOBINDEX}/"0000"/
+	else
     if [ -z "${ENERGY}"  -o -z "${DATASETNAME}" -o -z "${RUNRANGE}" ];then
 	echo "[ERROR] `basename $0`: ENERGY or DATASETNAME or RUNRANGE not defined" >> /dev/stderr
 	echo "                       ${ENERGY} or ${DATASETNAME} or ${RUNRANGE}" >> /dev/stderr
 	exit 1
     fi
     USER_REMOTE_DIR=$1/${ENERGY}/${DATASETNAME}/${RUNRANGE}
+	fi
 }
