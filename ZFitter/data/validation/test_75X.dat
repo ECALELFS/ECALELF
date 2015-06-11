@@ -1,0 +1,15 @@
+# list of files to run on
+# type	treeName	fileName
+# files are added to the same chain if they have the same treeName and the same type
+# chain with the same type are added as friends
+# only three type are admitted: s (signal), b (bkg), d (data)
+# all treeName are admitted, but some are mandatory:
+# selected
+# some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
+d1	selected	../ntuple_020615.root
+#d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-204567-13Julv2_lastPrompt.69400.observed.root
+d	pileupHist	pufile.root
+#s	pileupTree	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/tree-nPU-Summer12_DD3-190456-203002-13Jul_PromptTS.69400.observed.root
+#d	corr		DoubleElectron-ZSkim-RUN2012C-v3-201230-201678-JSON_201230-201678-Prompt.root
+#s	pileup	mcPUtree.root
+s1	selected	../simntuple_020615.root

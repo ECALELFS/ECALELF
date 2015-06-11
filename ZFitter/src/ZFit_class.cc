@@ -313,6 +313,8 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut){
   RooDataSet *data = new RooDataSet(chain->GetTitle(),"dataset",Vars);
 
   Long64_t entries = chain->GetEntryList()->GetN();
+	//std::cout << " LC DEBUG " << " chain " << chain << ", entries " <<std::endl; //<< chain->GetEntryList().Print() << std::endl;
+ // chain->GetEntryList()->Print("all"); 
   chain->LoadTree(chain->GetEntryNumber(0));
   Long64_t treenumber=-1;
   TTreeFormula *selector = new TTreeFormula("selector", cut, chain);
