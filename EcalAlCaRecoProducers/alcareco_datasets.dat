@@ -132,4 +132,6 @@ allRange	/DYJetsToLL_M-50_13TeV-pythia6/sharper-EGM700_PU40bx25_POSTLS170_V4-v1-
 203777-208686	/DoubleElectron/Run2012D-15Apr2014-v1/AOD	DoubleElectron-ZHLTSkimPath-RUN2012D-05May15-v1	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	VALID	RUN2012D,RUN2012ABCD	-
 ############### CMSSW PHYS14 AODSIM Alcareco production
 allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015-v1 caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
-allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015-v2 caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
+allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM DYToEE_M-50-pythia8-Phys14-ZSkim-09Jun2015-v2 caf group/dpg_ecal/alca_ecalcalib/ VALID - -
+################## Testing creating ntuples usingpublished data 
+1-1	/DYToEE_M-50_Tune4C_13TeV-pythia8/lcorpe-DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_v2-a98af318f27b1c189fe2b33712eaf929/USER DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_published_v2 caf	database	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
