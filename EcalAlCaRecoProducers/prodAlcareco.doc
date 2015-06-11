@@ -52,7 +52,7 @@ List of options:
 	Select it in the command using `parseDatasetFile.sh alcareco_datasets.dat | grep A`
 
 	Create jobs using:
-	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test -skim ZSkim -- type ALCARECO --createOnly
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test --skim ZSkim -- type ALCARECO --createOnly
 
 	testJSON.txt contains only one run number from runA: {"190645": [[1, 200]]}
 
@@ -60,12 +60,12 @@ List of options:
 	You can run a local test by specifiying a test sample in the reco_ALCA.py file and doing cmsRun reco_ALCA.py, which by default runs over 10 events.
 
 	Submit the jobs using:
-	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test -skim ZSkim -- type ALCARECO --submitOnly
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test --skim ZSkim -- type ALCARECO --submitOnly
 
 	CRAB3 should give information about submission success etc.
 
 	Subsequently, you can check the jobs using:
-	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test -skim ZSkim -- type ALCARECO --check
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test --skim ZSkim -- type ALCARECO --check
 
 	This will query the status of the jobs using the CRAB3 interface.
 
