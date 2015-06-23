@@ -1277,11 +1277,18 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   }
 
   EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-  //assert(seedRecHit!=recHits->end()); // DEBUG
+ // assert(seedRecHit!=recHits->end()); // DEBUG
+  if((seedRecHit==recHits->end())){ // FIXME
+    PtEle[index] 	  = 0;  //
+    chargeEle[index] = -100;//
+    etaEle[index]    = 0; //
+    phiEle[index]    = 0;//
+    return;//
+  }   //FIXME
+//	if (recHits->find(seedDetId) ) std::cout << " seedrechit found" << std::endl;
   seedEnergySCEle[index]=seedRecHit->energy();
   if(isMC) seedLCSCEle[index]=-10;
   else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-
   if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
   else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
   else gainEle[index]=0;
