@@ -9,7 +9,7 @@ STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOBS=2000
+LUMIS_PER_JOBS=12000
 DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
@@ -182,11 +182,11 @@ if [ -z "$TYPE" ];then
     exit 1
 fi
 
-if [ -z "$JSONFILE" -a "$TYPE" != "ALCARECOSIM" ];then 
-    echo "[ERROR] JSONFILE not defined" >> /dev/stderr
-    usage >> /dev/stderr
-    exit 1
-fi
+#if [ -z "$JSONFILE" -a "$TYPE" != "ALCARECOSIM" ];then 
+#    echo "[ERROR] JSONFILE not defined" >> /dev/stderr
+#    usage >> /dev/stderr
+#    exit 1
+#fi
 
 if [ -z "$JSONNAME" -a "$TYPE" != "ALCARECOSIM" ];then 
     echo "[ERROR] JSONNAME not defined" >> /dev/stderr
@@ -261,7 +261,7 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 	if [ ! -e "${FILELIST}" ];then
 	    #sample=tempFileList-${DATASETNAME}-${RUNRANGE}-${TAG}
 			echo $USER
-			echo "makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/ /${ORIGIN_REMOTE_DIR}"
+			echo "makefilelist.sh -f filelist/${TAG} `basename ${FILELIST} .list` $STORAGE_PATH/ /${ORIGIN_REMOTE_DIR}"
 	    makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/${ORIGIN_REMOTE_DIR}  || exit 1
 	    #filelistDatasets.sh $options || exit 1
             # remove PUDumper files!
@@ -349,7 +349,8 @@ EOF
         *)
         cat >> ${crabFile} <<EOF
 total_number_of_events=${NJOBS}
-number_of_jobs=${NJOBS}
+#number_of_jobs=${NJOBS}
+number_of_jobs=494
 datasetpath=None
 EOF
 	;;
@@ -424,6 +425,7 @@ OUTFILES=`echo ${OUTFILES} | sed 's|,| |'`
 
 if [ -n "${CHECK}" ];then
     resubmitCrab.sh -u ${UI_WORKING_DIR}
+		echo "${UI_WORKING_DIR}/res/finished" 
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"

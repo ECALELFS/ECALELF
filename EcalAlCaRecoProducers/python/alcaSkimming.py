@@ -216,7 +216,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
-                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles)
+                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
+														skipEvents=cms.untracked.uint32(0)
                             )
 
 # try to drop as much as possible to reduce the running time
@@ -385,8 +386,8 @@ process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCAR
                                   'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
                                   'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron',
                                  ]
-process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
-#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCA")
+#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
+process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCA")
 #
 
 process.NtupleFilterSeq = cms.Sequence()
@@ -937,7 +938,8 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
     process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
-    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
+    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCASKIM')
     process.zNtupleDumper.SelectEvents = []

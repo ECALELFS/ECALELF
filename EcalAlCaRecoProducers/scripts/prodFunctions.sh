@@ -68,6 +68,10 @@ checkRelease(){
 setEnergy(){
     #$1 = DATASETPATH
     case $1 in 
+	*RUN2012*)
+	    #echo "[INFO] Run on 2012 data: ENERGY=8TeV"
+	    ENERGY=8TeV
+	    ;;
 	*Run2012*)
 	    #echo "[INFO] Run on 2012 data: ENERGY=8TeV"
 	    ENERGY=8TeV

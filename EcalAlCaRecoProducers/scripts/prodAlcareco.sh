@@ -17,6 +17,7 @@ SUBMIT=yes
 OUTPUTFILE=alcareco
 crab2File=tmp/alcareco.cfg
 crab3File=tmp/alcareco_cfg.py
+CONDITIONS=auto:run2_data
 crabFile=${crab3File}
 DOTREE=0
 NJOBS=100
@@ -28,6 +29,7 @@ CRABVERSION=3
 FROMRAW=no
 CMSSWCONFIG="reco_ALCA.py"
 SQRTS=13TeV
+INPUTDBS=global
 usage(){
     echo "`basename $0` options"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -189,6 +191,9 @@ case $DATASETPATH in
     *SingleElectron*USER)
 	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
 	;;
+		*USER)
+	let INPUTDBS=phys03
+	;;
 esac
 
 if [ "$TYPE" == "EcalCal" ] || [ "$TYPE" == "ALCARECO" ]; then
@@ -216,18 +221,39 @@ case $SKIM in
 		;;
 esac
 fi
+
+if [ "$TYPE" == "EcalRecal" ] || [ "$TYPE" == "ALCARERECO" ]; then
+		ALCATYPE="ALCA:EcalRecalElectron"
+		CUSTOMISE="--process=RERECO --customise Calibration/EcalAlCaRecoProducers/customRereco.EcalRecal "
+fi
+
 if [ "$FROMRAW" == "yes" ]; then
 RECOPATH="RAW2DIGI,RECO,"
 CMSSWCONFIG="reco_RAW2DIGI_RECO_ALCA.py"
 fi
 
 
-if [ "$ISMC" == "no" ]; then
-DATA="--data"
-fi
 
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
+
+SQRTS=$ENERGY
+if [ "$ISMC" == "no" ]; then
+DATA="--data"
+echo "$ISMC, $SQRTS"
+	if [ "$SQRTS" == "8TeV" ]; then
+  CONDITIONS=auto:run1_data
+	echo "[INFO] $SQRTS, setting conditions to $CONDITIONS" 
+	fi
+fi
+if [ "$ISMC" == "yes" ]; then
+CONDITIONS=auto:run2_mc_50ns
+	if [ "$SQRTS" == "8TeV" ]; then
+  CONDITIONS=auto:run1_mc_50ns
+  CONDITIONS=auto:run1_data
+	echo "[INFO] $SQRTS, setting conditions to $CONDITIONS" 
+	fi
+fi
 
 setStoragePath $STORAGE_ELEMENT $SCHEDULER 
 
@@ -255,9 +281,9 @@ echo "[INFO Run Range ${RUNRANGE}"
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 echo "[INFO] Generating CMSSW configuration, using:"
-echo "[INFO]  cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=auto:run2_data --nThreads=4 --customise_commands=\"process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))\" --no_exec " 
+echo "[INFO]  cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=$CONDITIONS --nThreads=4 --customise_commands=\"process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))\" $CUSTOMISE--no_exec " 
 
-cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=auto:run2_data --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" --no_exec
+cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=$CONDITIONS --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec
 
 echo "[INFO] Generating CRAB3 configuration"
 TYPENAME=$TYPE
@@ -287,10 +313,10 @@ config.JobType.psetName = '${CMSSWCONFIG}'
 #config.JobType.pyCfgParams = ['output=${OUTPUTFILE}.root', 'skim=${SKIM}', 'type=$TYPE','doTree=${DOTREE}', 'jsonFile=${JSONFILE}', 'secondaryOutput=ntuple.root', 'isCrab=1']
 config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = '${DATASETPATH}'
-config.Data.inputDBS = 'global'
-config.Data.splitting = 'LumiBased'
+config.Data.inputDBS = '${INPUTDBS}'
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 3
 config.Data.lumiMask = '${JSONFILE}'
-config.Data.unitsPerJob = 10
 config.Data.runRange = '${RUNRANGE}'
 config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
 config.Data.publication = ${PUBLISH}
