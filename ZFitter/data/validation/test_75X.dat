@@ -6,10 +6,11 @@
 # all treeName are admitted, but some are mandatory:
 # selected
 # some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
-d1	selected	../ntuple_020615.root
+d1	selected	/afs/cern.ch/user/l/lcorpe/work/public/ECALELF/ntuple_160615.root
 #d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-204567-13Julv2_lastPrompt.69400.observed.root
-d	pileupHist	pufile.root
+d	pileupHist	pufile_startupAsympt50ns_v2.root
 #s	pileupTree	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/tree-nPU-Summer12_DD3-190456-203002-13Jul_PromptTS.69400.observed.root
 #d	corr		DoubleElectron-ZSkim-RUN2012C-v3-201230-201678-JSON_201230-201678-Prompt.root
 #s	pileup	mcPUtree.root
-s1	selected	../simntuple_020615.root
+#s1	selected	../simntuple_020615.root
+s1  selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3/allRange/v3/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3-allRange.root

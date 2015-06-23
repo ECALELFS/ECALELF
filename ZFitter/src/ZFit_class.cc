@@ -25,8 +25,8 @@ Description: class that provide flexible and simple way to fit the Zee invariant
 //#define BUG
 
 
-//#define DEBUG
-//#define FIT_DEBUG
+#define DEBUG
+#define FIT_DEBUG
 //#define NOIMPORT
 //#define NUM_EVENTS 100
 ZFit_class::~ZFit_class(void){
@@ -313,7 +313,6 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut){
   RooDataSet *data = new RooDataSet(chain->GetTitle(),"dataset",Vars);
 
   Long64_t entries = chain->GetEntryList()->GetN();
-	//std::cout << " LC DEBUG " << " chain " << chain << ", entries " <<std::endl; //<< chain->GetEntryList().Print() << std::endl;
  // chain->GetEntryList()->Print("all"); 
   chain->LoadTree(chain->GetEntryNumber(0));
   Long64_t treenumber=-1;
@@ -382,12 +381,15 @@ RooAbsData *ZFit_class::ReduceDataset(TChain *data, TString region, bool isMC, b
 	float weight_val=((const RooRealVar*) (data->find(weight.GetName())))->getVal();
 	histogram.Fill(invMass_val,weight_val); 
 #ifdef DEBUG
-	if(i<1) std::cout << "invMass_val= " << invMass_val << "\t" << "weight_val= "<< weight_val << "\t" << "sumW2="<<histogram.GetSumOfWeights()  << std::endl;
 #endif
+	if(i<1) std::cout << "invMass_val= " << invMass_val << "\t" << "weight_val= "<< weight_val << "\t" << "sumW2="<<histogram.GetSumOfWeights()  << std::endl;
       }
 #ifdef DEBUG
-    std::cout << "bin 20 content= " << histogram.GetBinContent(20) << "\t" << "error= "<< histogram.GetBinError(20) << std::endl;
 #endif
+    //std::cout << "bin 20 content= " << histogram.GetBinContent(20) << "\t" << "error= "<< histogram.GetBinError(20) << std::endl;
+		for (int i =0;i< histogram.GetNbinsX() ; i++){
+    std::cout << "bin "<< i  <<" content= " << histogram.GetBinContent(i) << "\t" << "error= "<< histogram.GetBinError(i) << std::endl;
+		}
 
     delete reduced; // unbinned reduced no more useful
     RooDataHist *dataset_hist = new RooDataHist("roodataset_hist","roodataset_hist", invMass, &histogram);
@@ -532,7 +534,6 @@ void ZFit_class::Fit(TH1F *hist, bool isMC){
   data_red=ImportHist(hist);
 
   //  SetFitPar();
-
   //RooFitResult *fitres = 
     model_pdf->fitTo(*data_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
 					  RooFit::NumCPU(1),
@@ -631,12 +632,15 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
 }
 
 RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
+	std::cout << " DEBUG LC 1 " << std::endl;
   RooAbsData *signal_red = ReduceDataset(signal, region, true, _isMCUnbinned);
   nEvents_region_MC = signal_red->sumEntries();
   if( nEvents_region_MC < 30) return NULL;
   int numcpu=4;
   if(!_isMCUnbinned) numcpu=2; // would prefer 1, but bug in RooFit: wrong error estimation for weighted datahist if 1 cpu
 
+	std::cout << " DEBUG LC 2 " << std::endl;
+	std::cout << " DEBUG LC 2 _isMCUnbinned "<< _isMCUnbinned << ", _isMCSumW2 " << _isMCSumW2 << ", ncpu " << numcpu << std::endl;
   //EFFECTIVE SIGMA
   double sigma = GetEffectiveSigma(signal_red);
   std::cout<<sigma<<std::endl;
@@ -649,6 +653,7 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
 					     RooFit::SumW2Error(_isMCSumW2)
 					     );
 
+	std::cout << " DEBUG LC 3 " << std::endl;
   fitres_MC->Print("V");
 
   // salvo in una mappa i valori del fit
@@ -660,13 +665,19 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
   SetFitPar(fitres_MC);
 
 
+	std::cout << " DEBUG LC 4 " << std::endl;
   if(doPlot){
     PlotFit(signal_red,true);
-    chi2_MC = plot_MC->chiSquare(invMass.getBins("plotRange")-fitres_MC->floatParsFinal().getSize());
+	plot_MC->Print();
+    //chi2_MC = plot_MC->chiSquare(invMass.getBins("plotRange")-fitres_MC->floatParsFinal().getSize()); //FIXME
+    chi2_MC = plot_MC->chiSquare(); //FIXME
+ // float   chi2_MC_v2 = plot_MC->chiSquare(); //FIXME
+	  //Chi2 seems to not be working. Maybe backend issue. Not needed now but can investigate later. 
   }
   
   delete signal_red; // delete the reduced dataset
 
+	std::cout << " DEBUG LC 5 " << std::endl;
   return fitres_MC;
 }
 
@@ -716,6 +727,7 @@ void ZFit_class::Fit(TString region, bool doPlot){
     fitres_MC = FitMC(regionMC, doPlot);
     if(fitres_MC !=NULL){
       fitres_MC->SetName("MC");
+			std::cout << "DEBUG DEBUG SAVE CHI2 MC " << chi2_MC << " << filename " << fitResMCFileName << std::endl;
       SaveFitRes(fitres_MC,fitResMCFileName, chi2_MC, nEvents_region_MC); //
       params->writeToFile(paramsMCFileName);		
       if(doPlot) SaveFitPlot(plotMCFileName,true);
@@ -885,8 +897,8 @@ void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, 
   fitResFile.Close();  
   fitres->floatParsFinal().printLatex(LatexFormat, RooFit::OutputFile(fileName.ReplaceAll(".root",".tex")));
   std::ofstream f(fileName,std::ios_base::app);
-  f << "% nEvents=" << nEvents << std::endl;
-  f << "% chi2=" << chi2 << std::endl;
+  f << "nEvents=" << nEvents << std::endl;
+  f << "chi2=" << chi2 << std::endl;
   f.close();
   return;
 }
@@ -948,7 +960,7 @@ void ZFit_class::PlotFit(RooAbsData *data_red, bool isMC){
     data_red->plotOn(plot_MC, 
 		     RooFit::DrawOption("B"), 
 		     RooFit::DataError(RooAbsData::SumW2), // RooFit::DataError(RooAbsData::None),
-		     RooFit::XErrorSize(0), //RooFit::YErrorSize(0)
+		    // RooFit::XErrorSize(0), //RooFit::YErrorSize(0)
 		     RooFit::FillColor(kGray),
 		     RooFit::Binning("plotRange"));
     model_pdf->plotOn(plot_MC,RooFit::LineColor(kRed));

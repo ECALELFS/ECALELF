@@ -3,6 +3,7 @@
 
 validationIntroSlide(){
     echo "[STATUS] Creating validation intro slide: ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex"
+		echo "$dataSample, $mcSample"
     
 cat > ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex <<EOF
 \begin{comment}
@@ -11,16 +12,16 @@ cat > ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex <<EOF
 
 \makeatletter
 \@ifundefined{dataSample}{
-  \newcommand{\dataSample}{dataSample}
-  \newcommand{\mcSample}{mcSample}
+  \newcommand{\dataSample}{$dataSample}
+  \newcommand{\mcSample}{$mcSample}
   \newcommand{\imgDir}{$dirData/$selection/$invMass_var/img}
   \newcommand{\PeriodDivisionTickzOld}{}
   \newcommand{\PeriodDivisionTickzNew}{}
   \newcommand{\PeriodDivisionTickz}{}
  \newcommand{\period}{$PERIOD}
 }{
-  %\renewcommand{\dataSample}{dataSample}
-  \renewcommand{\mcSample}{mcSample}
+  %\renewcommand{\dataSample}{$dataSample}
+  \renewcommand{\mcSample}{$mcSample}
   \renewcommand{\imgDir}{$dirData/$selection/$invMass_var/img}
   \renewcommand{\period}{$PERIOD}
 }
@@ -44,6 +45,17 @@ EOF
 
 }
 
+validationBackupSlides(){
+    echo "[STATUS] Creating validation table slides: ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex"
+    tmpFile=${dirSlides}/validation-${invMass_var}-${selection}-backup_slide.tex 
+    cat backup.tex > $tmpFile
+
+    grep -v "#" $dirData/${selection}/${invMass_var}/table/$PERIOD/monitoring_summary-${invMass_var}-${selection}.tex | cut -d '&' -f 1,2,11,13,14 | awk -F '[&]' -f awk/format.awk | sed -f sed/tex.sed | sed 's|\(.*eta.*R9\)|%\1|;/^EE[ ]*&/ i \\\hline' > tmp/file.tex
+    sed -i "/_TABLEBACKUP_/ r tmp/file.tex" $tmpFile
+    sed -i '/_TABLEBACKUP_/ d' $tmpFile
+
+    rm tmp/file.tex
+}
 
 validationTableSlides(){
     echo "[STATUS] Creating validation table slides: ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex"

@@ -1,0 +1,108 @@
+
+\def\fileversion{v0.1}
+\def\filedate{2009/12/17}
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{custombeamercommand}
+%\RequirePackage[table]{xcolor}
+
+%============================================================
+\newcommand{\bl}{\vspace{1 em}}
+
+\newcommand{\dualslide}[2]{
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      #1
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      #2
+      \end{column}
+  \end{columns}
+}
+
+\newcommand{\divideslide}[4]{
+  \begin{columns}
+    \begin{column}{#1\textwidth}
+      #3
+    \end{column}
+    \begin{column}{#2\textwidth}
+      #4
+    \end{column}
+  \end{columns}
+}
+
+\newcommand{\quadslide}[2]{
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      #1
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      #2
+      \end{column}
+  \end{columns}
+}
+
+\newcommand{\tripleslide}[3]{
+  \begin{columns}
+    \begin{column}{0.34\textwidth}
+      #1
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      #2
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      #3
+    \end{column}
+  \end{columns}
+}
+
+\newcommand{\historyColumns}[2]{
+  \begin{columns}
+    \begin{column}{0.7\textwidth}
+      #1
+      \end{column}
+    \begin{column}{0.3\textwidth}
+      #2
+    \end{column}
+    \end{columns}
+}
+
+\newcommand{\tikcircle}[1]{\tikz\draw[fill=#1] (0,0)circle(5pt);}
+
+%\usetikzlibrary{fit,shapes.geometric}
+
+\newcounter{nodemarkers}
+\newcommand\circletext[1]{%
+    \tikz[overlay,remember picture] 
+        \node (marker-\arabic{nodemarkers}-a) at (0,1.5ex) {};%
+    #1%
+    \tikz[overlay,remember picture]
+        \node (marker-\arabic{nodemarkers}-b) at (0,0){};%
+    \tikz[overlay,remember picture,inner sep=2pt]
+        \node[draw,ellipse,fit=(marker-\arabic{nodemarkers}-a.center) (marker-\arabic{nodemarkers}-b.center)] {};%
+    \stepcounter{nodemarkers}%
+}
+
+\newcommand{\ellipse}[2]{
+  \tikz[overlay, remember picture]{\draw[thick,color=red] #1 rectangle #2;}
+}
+\newcommand{\rectangle}[2]{
+  \tikz[overlay, remember picture]{\draw[thick,color=red] #1 rectangle #2;}
+}
+
+
+\newcommand{\hlcell}{\cellcolor{red!30!white}}
+\newcommand{\hlcellblue}{\cellcolor{blue!30!white}}
+
+\newcommand{\hlmatrix}[3]{%O{blue!40} m m}{%
+  \draw[color=#1,thick] (#2.north west)rectangle (#3.south east);
+}
+
+\newcommand{\fhlmatrix}[3]{%O{blue!40} m m}{%
+  %\draw[fill=#1] (#2.north west)rectangle (#3.south east);
+  #2/.style ={fill=white};
+}
+
+\newcommand{\ig}[2]{
+  \includegraphics[width=#1\textwidth]{#2}%
+}

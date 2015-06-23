@@ -99,7 +99,7 @@ for region in $regions
 done
 fi
 
-echo "#category & events & DeltaM_data & DeltaM_MC & DeltaP & width_data & width_MC & rescaledWidth_data & rescaledWidth_MC & additionalSmearing & chi2data & chi2mc & events/lumi"
+echo "#category & events & DeltaM_data & DeltaM_MC & DeltaP & width_data & width_MC & rescaledWidth_data & rescaledWidth_MC & additionalSmearing & chi2data & events/lumi & eventsMC & chi2mc "
 for category in $categories
   do
 #  echo $category
@@ -138,6 +138,7 @@ for category in $categories
   
   category=`echo $category | sed "s|-${commonCut}||"`
   events="`grep nEvents $fileData | cut -d '=' -f 2 | awk '{printf(\"%.0f\",$1)}'`"
+  eventsMC="`grep nEvents $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.0f\",$1)}'`"
   chi2_Data="`grep chi2 $fileData | cut -d '=' -f 2 | awk '{printf(\"%.2f\",$1)}'`"
   chi2_MC="`grep chi2 $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.2f\",$1)}'`"
   if [ -n "${runRanges}" ];then
@@ -189,7 +190,7 @@ for category in $categories
 ## rescaledWidth
   resolutionLine=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $width_Data $width_MC xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
 #  echo $resolutionLine
-  line="$category & $events & $deltaM_Data & $deltaM_MC & $deltaP & $width_Data & $width_MC $resolutionLine & \$ $chi2_Data \$ & \$ $chi2_MC \$ & \$ $selEff \$\\\\"
+  line="$category & $events & $deltaM_Data & $deltaM_MC & $deltaP & $width_Data & $width_MC $resolutionLine & \$ $chi2_Data \$ \$ & \$ $selEff  & \$ $eventsMC & \$ $chi2_MC \$\\\\"
   echo $line 
  
 # mettere la formattazione qui
