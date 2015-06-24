@@ -1,0 +1,51 @@
+/**
+* \page pudumper  Generating PUDumper.root files
+
+The PUDumper.root file is needed in order to generate a distribution of the number of vertices in MC. This is needed because the PU distribution in Data does nto match and so the MC needs to be corrected. So info from the PUDumper is fed to the ZFitter executable via the -f option config.
+
+The PUDumper.root file is automatically generated when producing ALCARECOSIM with the test/alcaSkimming CMSSW config.
+Unfortunately, at the moment, the cmsDriver setup does not allow for this.
+
+Instructions for producing the file in the format needed are as follows:
+
+First, pick one or two of your AODSIM files which you used to process the ALCARECO. 
+For example, for the AODSIM sample:
+\verbatim
+/DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM
+\endverbatim
+
+Search for the dataset on the DAS:
+https://cmsweb.cern.ch/das/request?input=dataset%3D%2FDYToEE_M-50_Tune4C_13TeV-pythia8%2FPhys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2%2FAODSIM&instance=prod%2Fphys03
+
+And then click on \verbatim py \endverbatim to get a list of files:
+https://cmsweb.cern.ch/das/makepy?dataset=/DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM&instance=prod/phys03
+
+Pick one or two of these, and define an environment variable in the command line:
+\verbatim
+
+file=/store/mc/Phys14DR/DYToEE_M-50_Tune4C_13TeV-pythia8/AODSIM/PU40bx25_tsg_castor_PHYS14_25_V1-v2/00000/02C3529A-BE99-E411-B110-0025B3E06516.root,/store/mc/Phys14DR/DYToEE_M-50_Tune4C_13TeV-pythia8/AODSIM/PU40bx25_tsg_castor_PHYS14_25_V1-v2/00000/0A1266B9-B799-E411-91A3-002590200A28.root
+
+\endverbatim
+
+
+And then run these files through ALCARECOSIM using  test/alcaSkimming.py :
+\verbatim
+
+cd Calibration
+cmsenv
+source initCmsEnv.sh
+cmsRun EcalAlCaRecoProducers/python/alcaSkimming.py isCrab=0 skim=ZSkim maxEvents=-1 type=ALCARECOSIM files=$file doTree=0 tagFile=EcalAlCaRecoProducers/config/reRecoTags/test75x.py
+
+\endverbatim
+
+This will produce a file PUDumper.root alongside the regular ALCARECO file.
+
+Finally, you need to turn the PUDumper.root file into something useable by ZFitter. 
+\verbatim
+./script/PUDumperToHist.sh -f PUDumper.root -o pufile.root
+\endverbatim
+
+You can then simply include this file in your ZFitter input config.
+
+And you are done!
+*/

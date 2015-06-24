@@ -49,7 +49,7 @@ EOF
 done
 cat >>tmp/PUDumperToHist.C <<EOF
   c.Draw("nPUtrue>>pileup(100,0,100)","BX==0");
-  TH1F *hist = gROOT->FindObject("pileup");
+  TH1F *hist = (TH1F*) gROOT->FindObject("pileup");
   hist->SaveAs("${OUTFILE}");
 }
 EOF
