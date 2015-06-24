@@ -217,7 +217,7 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
                             secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
-														skipEvents=cms.untracked.uint32(0)
+														skipEvents=cms.untracked.uint32(9300)
                             )
 
 # try to drop as much as possible to reduce the running time
@@ -938,11 +938,11 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
     process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
-    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
-    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
+    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCASKIM')
-    process.zNtupleDumper.SelectEvents = []
+    #process.zNtupleDumper.SelectEvents = []
     #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
 

@@ -1252,6 +1252,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   etaSCEle[index] = electron1.superCluster()->eta();
   phiSCEle[index] = electron1.superCluster()->phi();
+//	std::cout << "[DEBUG LC] eta phi " << etaSCEle[index] << "," << phiSCEle[index] << std::endl;
 
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
   //assert(recHits!=NULL);
@@ -1267,17 +1268,21 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
     seedYSCEle[index]=seedDetIdEcal.iphi();
+//		std::cout << "[DEBUG LC] is EB X,Y" <<  seedXSCEle[index]<< ", " << seedYSCEle[index] << std::endl;
   }else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap){
     EEDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ix();
     seedYSCEle[index]=seedDetIdEcal.iy();
+	//	std::cout << "[DEBUG LC] is EE X,Y" <<  seedXSCEle[index]<< ", " << seedYSCEle[index] << std::endl;
   }else{ ///< this case is strange but happens for trackerDriven electrons
     seedXSCEle[index]=0;
     seedYSCEle[index]=0;
+//		std::cout << "[DEBUG LC] is NOT EE OR EB, X,Y" <<  seedXSCEle[index]<< ", " << seedYSCEle[index] << std::endl;
   }
 
   EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
- // assert(seedRecHit!=recHits->end()); // DEBUG
+// std::cout << "[LC LC DEBUG] (seedRecHit==recHits->end()) " << (seedRecHit==recHits->end()) << ", electron1.ecalDrivenSeed" << electron1.ecalDrivenSeed() << " , electron1.trackerDriverSeed" << electron1.trackerDrivenSeed()<< ", rechits size "  << recHits->size() <<  std::endl; 
+  assert(seedRecHit!=recHits->end()); // DEBUG
   if((seedRecHit==recHits->end())){ // FIXME
     PtEle[index] 	  = 0;  //
     chargeEle[index] = -100;//
