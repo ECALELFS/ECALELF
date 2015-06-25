@@ -99,7 +99,7 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
       int iscRef=-1, iscRefendcap=-1;
       int iSC=0;
       
-      if(eleIt->trackerDrivenSeed()){
+      if(!eleIt->ecalDrivenSeed()){
 	edm::LogError("trackerDriven") << "skipping trackerDriven electrons";
 	continue;
       }

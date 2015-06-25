@@ -10,6 +10,7 @@ All commands should be executed from the Calibration/EcalAlCaRecoProducers direc
 alcareco_datasets.dat, alcarereco_datasets.dat provide the useful informations to build the list of files on EOS and process them.
 as for the alcareco and alcaraw productions, you have to provide such informations using the parseDatasetFile.sh script with the right book-keeping file.
 
+
 \subsection fromALCARECO From alcareco
 for data:
 \code
@@ -38,7 +39,20 @@ Better to use the quick script, but if you want to process only one specific dat
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {string to select your dataset}` --type=ALCARERECO 
 \endcode
 
+\subsection publishedData From Published Data
 
 
+NB: You can produce NTuples from a published dataset by listing the location of the ALCARECO as \verbatim database \endverbatim in the file \code alcareco_datasets.dat \endcode.
+
+For example
+
+\verbatim
+
+ allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/lcorpe-DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_v2-a98af318f27b1c189fe2b
+ 33712eaf929/USER DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_published_v2 caf database  VALID RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+
+ \endverbatim
+
+ And then following the regular workflow.
 
 */

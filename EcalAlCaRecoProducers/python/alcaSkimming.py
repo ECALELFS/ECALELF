@@ -216,7 +216,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
-                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles)
+                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
+														skipEvents=cms.untracked.uint32(9300)
                             )
 
 # try to drop as much as possible to reduce the running time
@@ -301,6 +302,14 @@ else:
             process.GlobalTag.globaltag = 'GR_R_62_V3::All'
             if(options.files==""):
                 process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
+    elif(re.match("CMSSW_7_5_.*",CMSSW_VERSION)):
+        if(MC):
+            print "[INFO] Using GT auto:run2_data"
+            process.GlobalTag.globaltag = 'auto:run2_data'
+        else:
+            process.GlobalTag.globaltag = 'auto:run2_data'
+            if(options.files==""):
+                process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
     else:
         print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
         sys.exit(1)
@@ -377,8 +386,8 @@ process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCAR
                                   'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
                                   'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron',
                                  ]
-process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
-#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCA")
+#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
+process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCA")
 #
 
 process.NtupleFilterSeq = cms.Sequence()
@@ -929,10 +938,11 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
     process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
+    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCASKIM')
-    process.zNtupleDumper.SelectEvents = []
+    #process.zNtupleDumper.SelectEvents = []
     #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
 

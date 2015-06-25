@@ -1,4 +1,4 @@
-CXXFLAGS=-Wall # -pedantic -ansi  #-std=c++0x
+CXXFLAGS=-Wall  -pedantic -std=c++11
 
 ROOT_LIB:=`root-config --libs --glibs`
 ROOT_FLAGS:=`root-config --cflags --ldflags`

@@ -34,6 +34,12 @@ The configuration files are described in: \ref ZFitterConfigFiles
 
 The ntuple structure and logic is explained in \ref NtupleStructure
 
+How to generate the PUDumper.root files and use them: \ref pudumper
+
+How to generate the PUDumper.root files and use them: \ref pudumper2
+
+How to generate the PUDumper.root files and use them: \ref NtupleStructure
+
 \ref plotNtuple
 
 \ref page7

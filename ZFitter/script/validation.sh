@@ -20,6 +20,7 @@ usage(){
     echo "----- optional paramters"
     echo " -f arg (=${configFile})"
 #    echo " --puName arg             "
+    echo " --dataName arg             "
     echo " --runRangesFile arg (=${runRangesFile})  run ranges for stability plots"
     echo " --selection arg (=${selection})     "
     echo " --invMass_var arg (=${invMass_var})"
@@ -41,13 +42,13 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,slides -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,dataName:,baseDir:,rereco:,validation,stability,slides -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
 fi
 
-
+echo "LC 1" 
 set -- $options
 
 while [ $# -gt 0 ]
@@ -57,6 +58,7 @@ do
         -f) configFile=$2; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--puName) puName=$2; shift;;
+	--dataName) dataName=$2; shift;;
 	--runRangesFile) runRangesFile=$2; echo "[OPTION] runRangesFile = ${runRangesFile}"; shift;;
 	--baseDir) baseDir=$2; echo "[OPTION] baseDir = $baseDir"; shift;;
 	--rereco) rereco=$2; echo "[OPTION] rereco = $rereco"; shift;;
@@ -70,6 +72,7 @@ do
     shift
 done
 
+echo "LC 2" 
 if [ -z "${VALIDATION}" -a -z "${STABILITY}" -a -z "${SLIDES}" ];then
     # if no option selected, run all the sequence
     VALIDATION=y
@@ -79,23 +82,27 @@ fi
 
 if [ ! -d "tmp" ];then mkdir tmp; fi
 
+echo "LC 3" 
 # file with ntuples
 if [ -z "${configFile}" ];then
     echo "[ERROR] configFile not specified" >> /dev/stderr
     exit 1
 fi
 
+echo "LC 4" 
 case ${selection} in
     WP80_PU)
         ;;
     WP90_PU)
 	;;
     *)
-        exit 1
+      echo "LC"
+			exit 1
         ;;
 esac
 
 
+echo "LC 5" 
 
 if [ ! -r "${configFile}" ];then
     echo "[ERROR] configFile ${configFile} not found or not readable" >> /dev/stderr
@@ -128,20 +135,23 @@ else
     fi
 fi
 
+echo "LC 6" 
 if [ -n "${rereco}" ];then
-    outDirData=$baseDir/data/rereco/${rereco}/`basename ${configFile} .dat`/${selection}/${invMass_var}
+    outDirData=$baseDir/dato/rereco/${rereco}/`basename ${configFile} .dat`/${selection}/${invMass_var}
 else
-    outDirData=$baseDir/data/`basename ${configFile} .dat`/${selection}/${invMass_var}
+    outDirData=$baseDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
 fi
 outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
 outDirTable=${outDirData}/table
 
 
+echo "LC 7" 
 if [ ! -e "${outDirTable}/${selection}/${invMass_var}" ];then 
     mkdir -p ${outDirTable}/${selection}/${invMass_var}; 
 fi
 
 
+echo "LC 8" 
 if [ ! -e "${outDirMC}/fitres" ];then mkdir ${outDirMC}/fitres -p; fi
 if [ ! -e "${outDirMC}/img" ];then mkdir ${outDirMC}/img -p; fi
 if [ ! -e "${outDirData}/table" ];then mkdir ${outDirData}/table -p; fi
@@ -152,31 +162,43 @@ if [ ! -e "${outDirData}/log" ];then mkdir ${outDirData}/log -p; fi
 # keep track of the MC used to take the tail parameter for data
 echo "$outDirMC" > $outDirData/whichMC.txt
 
+echo "LC 9" 
 if [ -n "$VALIDATION" ];then
-#    regionFile=data/regions/validation.dat
+mcSample=${mcName}
+dataSample=${dataName}
+echo "
+		
+    regionFile=data/regions/validation.dat
+    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
+	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img  --commonCut $commonCut > ${outDirData}/log/validation.log|| exit 1"
+    regionFile=data/regions/validation_LC.dat #LC FIXME
 #    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
 #	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-#	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/validation.log|| exit 1
+#	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img  --commonCut $commonCut > ${outDirData}/log/validation.log|| exit 1
 
+			echo "/script/makeTable.sh --regionsFile ${regionFile} --commonCut=${commonCut} --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres >  ${outDirTable}/monitoring_summary-${invMass_var}-${selection}.tex"
     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	>  ${outDirTable}/monitoring_summary-${invMass_var}-${selection}.tex || exit 1
 fi
 
+echo "LC 10" 
 ##################################################
 if [ -n "$STABILITY" ];then
 regionFile=data/regions/stability.dat
-#./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
-#    $updateOnly --invMass_var ${invMass_var} \
-#    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-#    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/stability.log || exit 1
+./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
+    $updateOnly --invMass_var ${invMass_var} \
+    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img --commonCut=${commonCut}> ${outDirData}/log/stability.log || exit 1
 
-#./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
-#    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-#    >  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}.tex || exit 1
+./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
+    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+    >  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}.tex || exit 1
 
 
 
+echo "LC 11" 
 ###################### Make stability plots
 if [ ! -d ${outDirData}/img/stability/$xVar ];then
     mkdir -p ${outDirData}/img/stability/$xVar
@@ -189,6 +211,7 @@ fi
 fi
 
 
+echo "LC 12" 
 
 if [ -n "$SLIDES" ];then
     echo "[STATUS] Making slides"
@@ -196,7 +219,20 @@ if [ -n "$SLIDES" ];then
     dirData=`dirname $dirData` # remove the selection subdir
     dirMC=`dirname $outDirMC` # remove the invariant mass subdir
     dirMC=`dirname $dirMC` # remove the selection subdir
+	if [ "$USER" == "lcorpe" ];then
+   	for file in ${dirData}/${selection}/${invMass_var}/img/*.eps;
+		do
+	#	ls ${file%????}.pdf
+		echo "${file%????}.pdf" #remove four last characters ".eps" by ".pdf"
+		if [ ! -e "${file%????}.pdf" ];then
+		echo "processing Data $file" && epstopdf $file
+		fi;
+		done
+	fi
     
+    echo "./script/makeValidationSlides.sh --dirData ${dirData} --selection ${selection} --invMass_var ${invMass_var} --dirMC ${dirMC} --commonCut $commonCut --type validation"
     ./script/makeValidationSlides.sh --dirData ${dirData} --selection ${selection} --invMass_var ${invMass_var} --dirMC ${dirMC} --commonCut $commonCut --type validation
+
+		pdflatex tmp/validation-${invMass_var}-slides.tex
 fi
 
