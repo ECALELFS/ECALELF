@@ -1,12 +1,13 @@
-CXXFLAGS=-Wall # -pedantic -ansi  #-std=c++0x
+CXXFLAGS=-Wall -pedantic -std=c++11
 
 ROOT_LIB:=`root-config --libs --glibs`
 ROOT_FLAGS:=`root-config --cflags --ldflags`
 ROOT_INCLUDE:=`root-config --incdir`
 
 # Boost
-BOOST = /afs/cern.ch/cms/slc5_amd64_gcc434/external/boost/1.47.0
+#BOOST = /afs/cern.ch/cms/slc5_amd64_gcc434/external/boost/1.47.0
 #BOOST=/afs/cern.ch/cms/slc5_amd64_gcc472/external/boost/1.50.0
+BOOST=/afs/cern.ch/cms/slc6_amd64_gcc491/external/boost/1.57.0
 SCRAMTOOL=$(shell which scram &>/dev/null || echo 1)
 
 ifeq ($(SCRAMTOOL),1)
@@ -29,7 +30,6 @@ BUILDDIR=./bin
 OBJ_DIR=./lib
 
 EoPDir:=../EOverPCalibration
-EoPNtupleDir:=../NtuplePackage
 
 #################
 INCLUDE=-I$(INCLUDEDIR) -I$(INCLUDEEPDIR) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
@@ -39,7 +39,6 @@ LIB=-L$(BOOST)/lib -L/usr/lib64 # -L/usr/lib
 #### Make the list of modules from the list of .cc files in the SRC directory
 MODULES=$(shell ls $(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
 MODULESEoP=$(shell ls $(EoPDir)/$(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
-MODULESEoPNtuples=$(shell ls $(EoPNtupleDir)/$(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
 #### Make the list of dependencies for a particular module
 
 default: $(MODULES)  ZFitter.exe
@@ -67,9 +66,8 @@ lib/%.o: $(SRCDIR)/%.cc
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 $(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp 
 	cd $(EoPDir) && make
-	cd $(EoPNtupleDir) && make
 	@echo "---> Making ZFitter $(COMPILE.exe)"
-	@g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULESEoP) $(MODULESEoPNtuples) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
+	@g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
 	-lboost_program_options -lTreePlayer 
 
 clean:
