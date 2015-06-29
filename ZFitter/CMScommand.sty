@@ -1,0 +1,144 @@
+
+\def\fileversion{v0.2f}
+\def\filedate{2010/4/14}
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{CMScommand}
+\usepackage{xspace}
+\usepackage{units}
+\usepackage{cancel}
+%============================================================
+\newcommand{\LHC}{\ac{LHC}\xspace}
+\newcommand{\CMS}{\ac{CMS}\xspace} 
+
+\newcommand{\HLT}{\tiny \ac{HLT}\xspace}
+\newcommand{\ECAL}{\ac{ECAL}} %\ensuremath{\mbox{ECAL}}}
+\newcommand{\HCAL}{\ac{HCAL}} %\ensuremath{\mbox{HCAL}}}
+\newcommand{\SC}{{\tiny \ac{SC}}}   % per le formule matematiche
+%\newcommand{\MC}{\scriptscriptstyle \ac{MC}}   % per le formule matematiche
+\newcommand{\MC}{\ensuremath{\tiny \ac{MC}}}   % per le formule matematiche
+
+\newcommand{\Ell}{\ensuremath{\mathcal{L}}}  % L della lagrangiana o luminosita' integrata
+
+
+\newcommand{\met}{\ensuremath{\mathrm{\cancel{E}_T}}\xspace}
+\newcommand{\MET}{\met}
+\newcommand{\fbinv}{\ensuremath{\unit{fb}^{-1}}}
+\newcommand{\invfb}{\fbinv}
+\newcommand{\pbinv}{\ensuremath{\unit{pb}^{-1}}}
+\newcommand{\nbinv}{\xspace\ensuremath{ \unit{nb}^{-1}}}
+
+\newcommand{\pt}{\ensuremath{p_T}\xspace}
+\newcommand{\mt}{\ensuremath{m^T}\xspace}
+\newcommand{\keV}{~\unit{keV}\xspace}
+\newcommand{\MeV}{~\unit{MeV}\xspace}
+\newcommand{\GeV}{~\unit{GeV}\xspace}
+\newcommand{\TeV}{~\unit{TeV}\xspace}
+\newcommand{\pb}{~\unit{pb}\xspace}
+\newcommand{\ee}{\ensuremath{e^+e^-}\xspace}
+\newcommand{\Etmiss}{\ensuremath{E^T_{miss}}\xspace}
+\newcommand{\JPsi}{\ensuremath{J/\Psi}\xspace}
+\newcommand{\Zee}{\ensuremath{Z \rightarrow e^+ e^-}\xspace}
+\newcommand{\Wenu}{\ensuremath{W \rightarrow e \nu}\xspace}
+\newcommand{\Zmumugamma}{\ensuremath{Z \rightarrow \mu \mu \gamma}\xspace}
+\newcommand{\piZero}{\ensuremath{\pi^0}\xspace}
+\newcommand{\phiSymmetry}{\ensuremath{\phi\text{-symmetry}}\xspace}
+
+\newcommand{\Wr}{\ensuremath{W_{R}}\xspace}
+\newcommand{\WR}{\ensuremath{W_{R}}\xspace}
+\newcommand{\nuR}{\ensuremath{\nu_{R}}\xspace}
+\newcommand{\ttbar}{\ensuremath{t \bar t}\xspace}
+
+\newcommand{\ten}[1]{\ensuremath{\times 10^{#1}}\xspace}
+%xb\newcommand{\eta}{\ensuremath{\eta}\xspace}
+
+\newcommand{\Et}{\ensuremath{E_T}\xspace}
+\newcommand{\then}{\ensuremath{\rightarrow}\xspace}
+\newcommand{\BR}{BR\xspace}
+\newcommand{\RNINE}{\ensuremath{R_\mathrm{9}}\xspace}
+
+\newcommand{\Hgg}{\ensuremath{H \then \gamma\gamma}\xspace}
+\newcommand{\Hllll}{\ensuremath{H \then ZZ^{*}\then4\ell}\xspace}
+
+\newcommand{\ECALres}{\ensuremath{
+%    \left(\frac{\Delta E}{E}\right)^2 = 
+    \left(\frac{\sigma_E}{E}\right)^2 = 
+    \left(\frac{S}{\sqrt{E}}\right)^2 + \left(\frac{N}{E}\right)^2 + C^2 
+  }
+}
+
+\newcommand{\resol}{\ensuremath{\frac{\sigma_{CB}}{peak_{CB}}}\xspace}
+    
+
+
+
+\newcommand{\EcalEBmodOne}{
+  \ifthenelse{\isundefined{\blocksize}}{
+    \newlength{\blocksize}
+    \setlength{\blocksize}{0.1cm} 
+  }{}
+  \ifthenelse{\isundefined{\gridSize}}{
+    \newcommand{\gridSize}{20}
+  }{
+    \renewcommand{\gridSize}{25}
+  }
+
+     \tikzset{
+       seed/.style={minimum size=\blocksize, rectangle, fill=red, inner sep=0pt, outer sep=0pt, anchor=south west},
+       cluster/.style={minimum size=\blocksize, rectangle, fill=red!30!white!, inner sep=0pt, outer sep=0pt, anchor=south west},
+       extend/.style={minimum size=\blocksize, rectangle, fill=gray!80!white, inner sep=0pt, outer sep=0pt, anchor=south west}
+     }
+     
+     %\node at (0.5*\gridSize*\blocksize,\blocksize+\gridSize*\blocksize) {\large Module 1 of ECAL};
+     \coordinate (center_point) at (0.5*\gridSize*\blocksize,0.5*\gridSize*\blocksize);
+      
+      \draw [fill=red] (0,0) rectangle (\gridSize*\blocksize,5*\blocksize);
+      \draw [fill=red] (0,0) rectangle (5*\blocksize,\gridSize*\blocksize);
+      \draw [fill=red] (0,\gridSize*\blocksize-5*\blocksize) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+      \draw [fill=red] (\gridSize*\blocksize-5*\blocksize,0) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+
+      \draw [fill=gray] (0,0) rectangle (\gridSize*\blocksize,\blocksize);
+      \draw [fill=gray] (0,0) rectangle (\blocksize,\gridSize*\blocksize);
+      \draw [fill=gray] (0,\gridSize*\blocksize-\blocksize) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+      \draw [fill=gray] (\gridSize*\blocksize-\blocksize,0) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+
+      \draw [fill=blue] (5*\blocksize,5*\blocksize) rectangle (\gridSize*\blocksize-5*\blocksize,\gridSize*\blocksize-5*\blocksize);
+      \draw [step=\blocksize] (0,0) grid (\gridSize*\blocksize,\gridSize*\blocksize);
+
+}
+
+\newcommand{\EcalEBmod}{
+  \ifthenelse{\isundefined{\blocksize}}{
+    \newlength{\blocksize}
+    \setlength{\blocksize}{0.1cm} 
+  }{}
+  \ifthenelse{\isundefined{\gridSize}}{
+    \newcommand{\gridSize}{20}
+  }{
+    \renewcommand{\gridSize}{20}
+  }
+
+     \tikzset{
+       seed/.style={minimum size=\blocksize, rectangle, fill=red, inner sep=0pt, outer sep=0pt, anchor=south west},
+       cluster/.style={minimum size=\blocksize, rectangle, fill=red!30!white!, inner sep=0pt, outer sep=0pt, anchor=south west},
+       extend/.style={minimum size=\blocksize, rectangle, fill=gray!80!white, inner sep=0pt, outer sep=0pt, anchor=south west}
+     }
+     
+     %\node at (0.5*\gridSize*\blocksize,\blocksize+\gridSize*\blocksize) {\large Module 1 of ECAL};
+     \coordinate (center_point) at (0.5*\gridSize*\blocksize,0.5*\gridSize*\blocksize);
+      
+      \draw [fill=yellow] (0,0) rectangle (\gridSize*\blocksize,5*\blocksize);
+      \draw [fill=yellow] (0,0) rectangle (5*\blocksize,\gridSize*\blocksize);
+      \draw [fill=yellow] (0,\gridSize*\blocksize-5*\blocksize) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+      \draw [fill=yellow] (\gridSize*\blocksize-5*\blocksize,0) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+
+      \draw [fill=red] (0,0) rectangle (\gridSize*\blocksize,\blocksize);
+      \draw [fill=red] (0,0) rectangle (\blocksize,\gridSize*\blocksize);
+      \draw [fill=red] (0,\gridSize*\blocksize-\blocksize) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+      \draw [fill=red] (\gridSize*\blocksize-\blocksize,0) rectangle (\gridSize*\blocksize,\gridSize*\blocksize);
+
+      \draw [fill=blue] (5*\blocksize,5*\blocksize) rectangle (\gridSize*\blocksize-5*\blocksize,\gridSize*\blocksize-5*\blocksize);
+
+      \draw [step=\blocksize] (0,0) grid (\gridSize*\blocksize,\gridSize*\blocksize);
+
+}
