@@ -937,11 +937,11 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
     process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
-    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
-    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
+    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCASKIM')
-    process.zNtupleDumper.SelectEvents = []
+    #process.zNtupleDumper.SelectEvents = []
     #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
 
