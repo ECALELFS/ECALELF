@@ -20,6 +20,7 @@ usage(){
     echo "----- optional paramters"
     echo " -f arg (=${configFile})"
 #    echo " --puName arg             "
+    echo " --dataName arg             "
     echo " --runRangesFile arg (=${runRangesFile})  run ranges for stability plots"
     echo " --selection arg (=${selection})     "
     echo " --invMass_var arg (=${invMass_var})"
@@ -41,7 +42,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,slides -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,dataName:,baseDir:,rereco:,validation,stability,slides -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -57,6 +58,7 @@ do
         -f) configFile=$2; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--puName) puName=$2; shift;;
+	--dataName) dataName=$2; shift;;
 	--runRangesFile) runRangesFile=$2; echo "[OPTION] runRangesFile = ${runRangesFile}"; shift;;
 	--baseDir) baseDir=$2; echo "[OPTION] baseDir = $baseDir"; shift;;
 	--rereco) rereco=$2; echo "[OPTION] rereco = $rereco"; shift;;
