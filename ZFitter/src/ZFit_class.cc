@@ -660,7 +660,7 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
 
   if(doPlot){
     PlotFit(signal_red,true);
-    chi2_MC = plot_MC->chiSquare(invMass.getBins("plotRange")-fitres_MC->floatParsFinal().getSize());
+    chi2_MC = plot_MC->chiSquare(); //FIXME
   }
   
   delete signal_red; // delete the reduced dataset
@@ -883,8 +883,8 @@ void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, 
   fitResFile.Close();  
   fitres->floatParsFinal().printLatex(LatexFormat, RooFit::OutputFile(fileName.ReplaceAll(".root",".tex")));
   std::ofstream f(fileName,std::ios_base::app);
-  f << "% nEvents=" << nEvents << std::endl;
-  f << "% chi2=" << chi2 << std::endl;
+  f << "nEvents=" << nEvents << std::endl;
+  f << "chi2=" << chi2 << std::endl;
   f.close();
   return;
 }
@@ -946,7 +946,7 @@ void ZFit_class::PlotFit(RooAbsData *data_red, bool isMC){
     data_red->plotOn(plot_MC, 
 		     RooFit::DrawOption("B"), 
 		     RooFit::DataError(RooAbsData::SumW2), // RooFit::DataError(RooAbsData::None),
-		     RooFit::XErrorSize(0), //RooFit::YErrorSize(0)
+		    // RooFit::XErrorSize(0), //RooFit::YErrorSize(0)
 		     RooFit::FillColor(kGray),
 		     RooFit::Binning("plotRange"));
     model_pdf->plotOn(plot_MC,RooFit::LineColor(kRed));
