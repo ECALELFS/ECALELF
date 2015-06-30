@@ -23,7 +23,8 @@ JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
 CRABVERSION=3
 CMSSWCONFIG="reco_ALCA.py"
-INPUTDBS=global
+#INPUTDBS=global
+DATA="--data"
 usage(){
     echo "`basename $0` options"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -34,7 +35,7 @@ usage(){
     echo "    --remote_dir dir"
     echo "    --dbs_url url: for not global dbs (user production)"
     echo "---------- provided by command-line (mandatory)"
-    echo "    -t global tag"
+    echo "    -t, --tag global tag"
     echo "---------- optional"
     echo "    --isMC: specify is the dataset is MC"
     echo "    -s or --skim: ZSkim, WSkim, EleSkim"
@@ -50,6 +51,7 @@ usage(){
     echo "    --njobs nJobs : number of jobs, an integer (only crab2)"
     echo "    --publish : Publish output dataset on DAS"
     echo "----------"
+    echo "    --tagFile extract GlobalTag from tagFile"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
     echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
     echo "----------"
@@ -60,7 +62,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,type:,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,jobname:,doTree,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,njobs:,publish,fromRAW,tutorial,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r:t: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,type:,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,jobname:,doTree,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,njobs:,publish,fromRAW,tutorial,tag:,tagFile:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -80,12 +82,13 @@ do
 	--store) STORAGE_ELEMENT=$2; shift;;
 	--remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
 	--dbs_url)    DBS_URL=$2; shift;;
+	--tagFile)    DBS_URL=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
-	--isMC) echo "[OPTION] data is MC" ; ISMC="yes" ;;
+	--isMC) echo "[OPTION] Input dataset is MC" ; ISMC="yes" ;;
 	--type) TYPE=$2 ; shift;;
 	--white_list) WHITELIST=$2; shift;;
 	--black_list) BLACKLIST=$2; shift;;
-	--createOnly) unset SUBMIT; unset CHECK;;
+	--createOnly) unset SUBMIT ; unset CHECK;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
  	--json) JSONFILE=$2;  shift;;
@@ -112,10 +115,27 @@ JOBNAME="${DATASETNAME}"
 #------------------------------ checking
 echo "[INFO] using CRAB version ${CRABVERSION}"
 
-if [ ! -z "$TAGFILE" ];then
+if [ -z "$TAGFILE" ];then
     echo "[ERROR] GLOBALTAG not provided" >> /dev/stderr
     exit 1
 fi
+
+if [ ! -z "$TAGFILE" ];then
+ 
+ case ${TAGFILE} in 
+ 	*py)
+	echo "[INFO] Extracting GT from file $TAGFILE"
+	TAG=`cat $TAGFILE |grep globaltag | grep -v '#' | sed 's|::All|:All|' | sed 's|:All||' | sed 's|.*(.\([0-Z_]*\).*|\1|'`
+	echo "[INFO] Extracted GT :  $TAG"
+	;;
+
+	*)
+	TAG=$TAGFILE
+	;;
+ esac
+
+fi
+
 
 if [ -z "$DATASETPATH" ];then 
     echo "[ERROR] DATASETPATH not defined" >> /dev/stderr
@@ -184,9 +204,8 @@ if [ -z "${SKIM}" ];then
 	    ;;
     esac
 fi
-
 case $DATASETPATH in
-    *RAW)
+    */RAW)
 	RECOPATH="RAW2DIGI,RECO,"
 	#CMSSWCONFIG="reco_RAW2DIGI_RECO_ALCA.py"
 	;;
@@ -194,7 +213,9 @@ case $DATASETPATH in
 	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
 	;;
     *USER)
-	let INPUTDBS=phys03
+	if [ -z ${DBS_URL} ];then
+	let DBS_URL=phys03
+	fi
 	;;
 esac
 
@@ -222,14 +243,13 @@ case $TYPE in
 		;;
 	    none) EVENTS_PER_JOB=20000;;
 	esac
-	fi
 	;;
     EcalRecal | ALCARERECO)
 	ALCATYPE="ALCA:EcalRecalElectron"
 	CUSTOMISE="--process=RERECO --customise Calibration/EcalAlCaRecoProducers/customRereco.EcalRecal "
 	;;
     *)
-	echo "[ERROR] No TYPE defined" >> /dev/stderr
+	echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr
 	exit 1
 	;;
 esac
@@ -249,6 +269,10 @@ UI_WORKING_DIR=prod_alcareco/${DATASETNAME}/${RUNRANGE}
 if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`" == "0" ];then
     unset RUNRANGE
 fi
+if [ "${ISMC}" = "yes" ];then
+unset DATA;
+fi
+
 
 # make argument.xml file if do MC
 #if [ "$TYPE" == "ALCARECOSIM" ] && [ -n "${CREATE}" ];then
@@ -264,12 +288,14 @@ echo "[INFO Run Range ${RUNRANGE}"
 
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
-echo "[INFO] Generating CMSSW configuration, using:"
-cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAGFILE} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}
+echo "[INFO] Generating CMSSW configuration"
+#cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands=\"process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))\" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}"
+
+cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}
 
 echo "[INFO] Generating CRAB3 configuration"
 TYPENAME=$TYPE
-if [ ${ISMC} = "yes" ];then
+if [ "${ISMC}" = "yes" ];then
 TYPENAME="${TYPENAME}SIM"
 fi
 #==============================
@@ -295,7 +321,7 @@ config.JobType.psetName = '${CMSSWCONFIG}'
 #config.JobType.pyCfgParams = ['output=${OUTPUTFILE}.root', 'skim=${SKIM}', 'type=$TYPE','doTree=${DOTREE}', 'jsonFile=${JSONFILE}', 'secondaryOutput=ntuple.root', 'isCrab=1']
 config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = '${DATASETPATH}'
-config.Data.inputDBS = '${INPUTDBS}'
+config.Data.inputDBS = '${DBS_URL}'
 config.Data.splitting = 'FileBased'
 config.Data.unitsPerJob = 3
 config.Data.lumiMask = '${JSONFILE}'
@@ -429,7 +455,6 @@ fi
 # else
 # mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
 fi
-
 if [ -n "$SUBMIT" ]; then
     case ${CRABVERSION} in
 	2)     crab -c ${UI_WORKING_DIR} -submit all;;
