@@ -258,12 +258,9 @@ private:
 
   Float_t avgLCSCEle[3];
 
-
-
-
-
   Float_t energyMCEle[3];    ///< Electron MC true energy
-  Float_t energySCEle[3];    ///< corrected SuperCluster energy
+  Float_t energySCEle[3];    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
+  Float_t energySCEle_must[3];    ///< corrected SuperCluster energy with mustache
   Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
   Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
 
@@ -281,7 +278,8 @@ private:
   Float_t R9Ele[3];      ///< e3x3/rawEnergySCEle
 
   Float_t invMass;
-  Float_t invMass_SC;
+  Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too! 
+  Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
   //   Float_t invMass_e3x3;
   Float_t invMass_e5x5;
   Float_t invMass_rawSC;
@@ -504,6 +502,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   chargeEle[2]=-100;
   invMass_mumu=0;
 
+
+  energySCEle[0]=-99;
+  energySCEle[1]=-99;
+  energySCEle_must[0]=-99;
+  energySCEle_must[1]=-99;
+  invMass_SC=-99;
+  invMass_SC_must=-99;
+  
   pEvent = &iEvent;
   pSetup = &iSetup;
   
@@ -702,6 +708,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 	 eleIter1 != electronsHandle->end();
 	 eleIter1++){
+
+      //      if(!eleIter1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
+      //        continue;
+      //      }
+
       if(eventType==WENU){
   	if(! eleIter1->electronID("tight") ) continue;
   	if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
@@ -729,11 +740,31 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1+1;
 	    eleIter2 != electronsHandle->end() && doFill==false;
 	    eleIter2++){
+
+	  //	  if(!eleIter2->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
+	  //	    continue;
+	  //	  }
+
 	  // should exit when eleIter1 == end-1
 	  //if(! eleIter2->electronID("loose") ) continue;
 	  
-	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
+	  //	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
 
+	  //calculate the invariant mass
+	  double t1=TMath::Exp(-eleIter1->eta());
+	  double t1q = t1*t1;
+	  double t2=TMath::Exp(-eleIter2->eta());
+	  double t2q = t2*t2;
+
+	  double angle=1-
+	    ( (1-t1q)*(1-t2q)+4*t1*t2*cos(eleIter1->phi()-eleIter2->phi()))/(
+									(1+t1q)*(1+t2q)
+									);
+	  float mass = sqrt(2*eleIter1->parentSuperCluster()->energy()*eleIter2->parentSuperCluster()->energy() *angle); //use mustache SC, in order to have the same number of events between alcareco and alcarereco ntuples
+
+	  //	  std::cout<<" ele1 SC: "<<eleIter1->superCluster()->energy()<<" ele1 SC must: "<<eleIter1->parentSuperCluster()->energy()<<" eta1: "<<eleIter1->eta()<<" phi1: "<<eleIter1->phi()<<std::endl
+	  //		   <<" ele2 SC: "<<eleIter2->superCluster()->energy()<<" ele2 SC must: "<<eleIter2->parentSuperCluster()->energy()<<" eta2: "<<eleIter2->eta()<<" phi2: "<<eleIter2->phi()<<"mass: "<<mass<<std::endl;
+	  
 	  if((mass < 55 || mass > 125)) continue;	  
 	  doFill=true;
 
@@ -835,6 +866,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }else if(nMedium>0){ // if there are only medium electrons, consider only those
 	if(!PatEle1->electronID("medium") ) continue; 
       }
+
+      //      if(!PatEle1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
+      //        continue;
+      //      }
 
       // you have the first electrons candidate satifying the electrons criteria
       // now look for a SC matching the Z invariant mass. If not SC is found, let's look to another electrons candidate
@@ -1078,6 +1113,7 @@ void ZNtupleDumper::InitNewTree(){
 
   tree->Branch("energyMCEle", energyMCEle, "energyMCEle[3]/F");
   tree->Branch("energySCEle", energySCEle, "energySCEle[3]/F");
+  tree->Branch("energySCEle_must", energySCEle_must, "energySCEle_must[3]/F");
   tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
   tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
 
@@ -1095,6 +1131,7 @@ void ZNtupleDumper::InitNewTree(){
 
   tree->Branch("invMass",    &invMass,      "invMass/F");  
   tree->Branch("invMass_SC", &invMass_SC,   "invMass_SC/F");
+  tree->Branch("invMass_SC_must", &invMass_SC_must,   "invMass_SC_must/F");
   //   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
   tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
   tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
@@ -1320,6 +1357,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   }
 
   energySCEle[index]  = electron1.superCluster()->energy();
+  energySCEle_must[index]  = electron1.parentSuperCluster()->energy();
   rawEnergySCEle[index]  = electron1.superCluster()->rawEnergy();
   esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();
 #ifndef CMSSW42X
@@ -1445,6 +1483,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   phiMCEle[index]=-100;
 
   energySCEle[index]  = electron1.energy();
+  energySCEle_must[index]  = electron1.energy();
   rawEnergySCEle[index]  = electron1.rawEnergy();
   esEnergySCEle[index] = electron1.preshowerEnergy();
   energySCEle_corr[index] = electron1.energy();
@@ -1606,6 +1645,7 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   }
 
   energySCEle[index]  = photon.superCluster()->energy();
+  energySCEle_must[index]  = photon.parentSuperCluster()->energy();
   rawEnergySCEle[index]  = photon.superCluster()->rawEnergy();
   esEnergySCEle[index] = photon.superCluster()->preshowerEnergy();
   //  energySCEle_corr[index] = photon.scEcalEnergy(); //but, I don't think this is the correct energy..
@@ -1659,6 +1699,9 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
   invMass_SC = sqrt(2*energySCEle[0]*energySCEle[1] *
 		    angle);
 
+  invMass_SC_must = sqrt(2*energySCEle_must[0]*energySCEle_must[1] *
+		    angle);
+
 
   invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
 		       angle);
@@ -1708,6 +1751,8 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 
   invMass_SC = sqrt(2*energySCEle[0]*energySCEle[1] *  angle);
 
+  invMass_SC_must = sqrt(2*energySCEle_must[0]*energySCEle_must[1] *  angle);
+
 
   invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] * angle);
 
@@ -1749,6 +1794,9 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 
   Z->SetE(energySCEle[0]+muon1.energy()+muon2.energy());
   invMass_SC = Z->M();
+
+  Z->SetE(energySCEle_must[0]+muon1.energy()+muon2.energy());
+  invMass_SC_must = Z->M();
 
   Z->SetE(rawEnergySCEle[0]+muon1.energy()+muon2.energy());
   invMass_rawSC = Z->M();
