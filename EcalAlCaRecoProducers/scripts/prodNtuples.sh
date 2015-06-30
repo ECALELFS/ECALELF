@@ -8,16 +8,19 @@ SCHEDULER=caf
 STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
-USER_REMOTE_DIR_BASE=group/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOBS=2000
+USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
+LUMIS_PER_JOBS=12000
 DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
 DOTREE=1
-PDFSYST=1
+PDFSYST=0
 SKIM=""
 OUTFILES="ntuple.root"
 crabFile=tmp/ntuple.cfg
+CRABVERSION=3
+FROMCRAB3=1
+JOBINDEX=""
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -196,10 +199,10 @@ fi
 setEnergy $DATASETPATH
 
 
-case ${isMC} in 
-    1) PDFSYST=1;;
-    0) PDFSYST=0;;
-esac
+#case ${isMC} in #FIXME
+#    1) PDFSYST=1;;
+#    0) PDFSYST=0;;
+#esac #FIXME
 
 if [ "${TYPE}" != "ALCARERECO" -a "${TYPE}" != "ALCARAW" ];then
     ORIGIN_REMOTE_DIR_BASE=`echo ${ORIGIN_REMOTE_DIR_BASE} | sed 's|alcaraw|alcareco|g'`
@@ -221,6 +224,15 @@ if [ "${TYPE}" == "ALCARERECO" ];then
 #    fi
 fi
 fi
+
+
+JOBINDEX=`cat crab_projects/crab_${DATASETNAME}/crab.log | grep -oh -m1 '[0-9]\{6\}_[0-9]\{6\}'` 
+echo " JOB INDEX $JOBINDEX"
+
+echo "[INFO] Temporarily set Crab to CRAB2 to allow CAF submission"
+echo "[INFO] You can set yourself back to CRAB3 by running iniCmsEnv.sh again"
+source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
+
 
 setStoragePath $STORAGE_ELEMENT $SCHEDULER 
 ###
@@ -248,6 +260,8 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 
 	if [ ! -e "${FILELIST}" ];then
 	    #sample=tempFileList-${DATASETNAME}-${RUNRANGE}-${TAG}
+			echo $USER
+			echo "makefilelist.sh -f filelist/${TAG} `basename ${FILELIST} .list` $STORAGE_PATH/ /${ORIGIN_REMOTE_DIR}"
 	    makefilelist.sh -f "filelist/${TAG}" `basename ${FILELIST} .list` $STORAGE_PATH/${ORIGIN_REMOTE_DIR}  || exit 1
 	    #filelistDatasets.sh $options || exit 1
             # remove PUDumper files!
@@ -329,6 +343,7 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 datasetpath=${DATASETPATH}
+dbs_url = phys03
 EOF
         ;;
         *)
@@ -351,7 +366,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py
 get_edm_output=1
 output_file=${OUTFILES}
 
@@ -391,7 +406,7 @@ EOF
 if [ -n "${CREATE}" ];then
     crab -cfg ${crabFile} -create || exit 1
     if [ -n "$FILELIST" ];then
-	makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
+	  makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
     fi
     splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
 fi
