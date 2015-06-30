@@ -5,7 +5,9 @@ import copy
 OutALCARECOEcalRecalElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
 OutALCARECOEcalRecalElectron_noDrop.outputCommands+=cms.untracked.vstring(
     'keep *_electronRecalibSCAssociator_*_*',
+    'keep *_TriggerResults_*_*',
 #		'keep *_endcapRecalibSC_*_*',
+
     )
 
 OutALCARECOEcalRecalElectron=copy.deepcopy(OutALCARECOEcalRecalElectron_noDrop)
