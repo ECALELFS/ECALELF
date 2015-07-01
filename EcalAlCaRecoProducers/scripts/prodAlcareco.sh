@@ -23,7 +23,6 @@ JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
 CRABVERSION=3
 CMSSWCONFIG="reco_ALCA.py"
-#INPUTDBS=global
 DATA="--data"
 usage(){
     echo "`basename $0` options"
@@ -111,7 +110,7 @@ do
     shift
 done
 JOBNAME="${DATASETNAME}" 
-# _${RUNRANGE}_${JOB}
+
 #------------------------------ checking
 echo "[INFO] using CRAB version ${CRABVERSION}"
 
@@ -207,7 +206,6 @@ fi
 case $DATASETPATH in
     */RAW)
 	RECOPATH="RAW2DIGI,RECO,"
-	#CMSSWCONFIG="reco_RAW2DIGI_RECO_ALCA.py"
 	;;
     *SingleElectron*USER)
 	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
@@ -289,8 +287,6 @@ echo "[INFO Run Range ${RUNRANGE}"
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 echo "[INFO] Generating CMSSW configuration"
-#cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands=\"process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))\" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}"
-
 cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}
 
 echo "[INFO] Generating CRAB3 configuration"
