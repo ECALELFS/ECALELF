@@ -139,6 +139,31 @@ PassingVetoId = selectedECALElectrons.clone(
     )
     )
 
+
+# This are the cuts at trigger level except ecalIso
+PassingVetoIdElectronStream = selectedECALElectrons.clone(
+    cut = cms.string(
+    selectedECALElectrons.cut.value() +
+    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
+    " && ((isEB"
+    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.164369)"
+    " && (sigmaIetaIeta<0.011100)"
+#    " && (full5x5_sigmaIetaIeta<0.011100)" #why this one cuts all the events?
+    " && ( - 0.252044<deltaPhiSuperClusterTrackAtVtx< 0.252044 )"
+    " && ( -0.016315<deltaEtaSuperClusterTrackAtVtx<0.016315 )"
+    " && (hadronicOverEm<0.345843)"
+    ")"
+    " || (isEE"
+    " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=3)"
+    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.212604 )"
+    " && (sigmaIetaIeta<0.033987)"
+#    " && (full5x5_sigmaIetaIeta<0.033987)" #why this one cuts all the events?
+    " && ( -0.245263<deltaPhiSuperClusterTrackAtVtx<0.245263 )"
+    " && ( -0.010671<deltaEtaSuperClusterTrackAtVtx<0.010671 )"
+    " && (hadronicOverEm<0.134691) "
+    "))"
+    ))
+
 PassingMuonVeryLooseId = selectedECALMuons.clone(
     cut = cms.string(
     selectedECALMuons.cut.value() +
@@ -190,6 +215,10 @@ eleSelSeq = cms.Sequence( selectedECALElectrons + PassingVetoId +
                           (SCselector*eleSC)
                           )
 
+eleSelSeqElectronStream = cms.Sequence( selectedECALElectrons + PassingVetoIdElectronStream +
+                          (SCselector*eleSC)
+                          )
+
 muSelSeq = cms.Sequence( selectedECALMuons + selectedECALPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
                           (SCselector*eleSC)
                           )
@@ -200,6 +229,12 @@ muSelSeq = cms.Sequence( selectedECALMuons + selectedECALPhotons + PassingMuonVe
 ##############################
 ZeeSelector =  cms.EDProducer("CandViewShallowCloneCombiner",
                               decay = cms.string("PassingVetoId PassingVetoId"),
+                              checkCharge = cms.bool(False),
+                              cut   = cms.string("40 < mass < 140")
+                              )
+
+ZeeSelectorElectronStream =  cms.EDProducer("CandViewShallowCloneCombiner",
+                              decay = cms.string("PassingVetoIdElectronStream PassingVetoIdElectronStream"),
                               checkCharge = cms.bool(False),
                               cut   = cms.string("40 < mass < 140")
                               )
@@ -217,6 +252,13 @@ WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
     cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
 )
 
+WenuSelectorElectronStream = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("pfMet PassingVetoIdElectronStream"), # charge coniugate states are implied
+    checkCharge = cms.bool(False),                           
+#    cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
+    cut   = cms.string(("daughter(1).pt > %f") % (W_ELECTRON_ET_CUT_MIN))
+)
+
 
 EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
                                decay = cms.string("PassingVetoId eleSC"),
@@ -224,9 +266,19 @@ EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
                                cut = cms.string("40 < mass < 140")
                                )
 
+EleSCSelectorElectronStream = cms.EDProducer("CandViewShallowCloneCombiner",
+                               decay = cms.string("PassingVetoIdElectronStream eleSC"),
+                               checkCharge = cms.bool(False), 
+                               cut = cms.string("40 < mass < 140")
+                               )
+
 # for filtering events passing at least one of the filters
 WZSelector = cms.EDProducer("CandViewMerger",
                             src = cms.VInputTag("WenuSelector", "ZeeSelector", "EleSCSelector")
+                            )
+
+WZSelectorElectronStream = cms.EDProducer("CandViewMerger",
+                            src = cms.VInputTag("WenuSelectorElectronStream", "ZeeSelectorElectronStream", "EleSCSelectorElectronStream")
                             )
 
 ############################################################
@@ -246,6 +298,22 @@ ZSCFilter = cms.EDFilter("CandViewCountFilter",
                          src = cms.InputTag("EleSCSelector"),
                          minNumber = cms.uint32(1)
                          )
+
+WenuFilterElectronStream = cms.EDFilter("CandViewCountFilter",
+                          src = cms.InputTag("WenuSelectorElectronStream"),
+                          minNumber = cms.uint32(1)
+                          )
+
+ZeeFilterElectronStream = cms.EDFilter("CandViewCountFilter",
+                          src = cms.InputTag("ZeeSelectorElectronStream"),
+                          minNumber = cms.uint32(1)
+                          )
+
+ZSCFilterElectronStream = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("EleSCSelectorElectronStream"),
+                         minNumber = cms.uint32(1)
+                         )
+
 
 # filter for events passing at least one of the other filters
 WZFilter = cms.EDFilter("CandViewCountFilter",
@@ -270,8 +338,20 @@ ZSCSkimFilterSeq = cms.Sequence(preFilterSeq * selectorProducerSeq *
 WenuSkimFilterSeq = cms.Sequence(preFilterSeq * selectorProducerSeq * 
                                  ~ZeeFilter * ~ZSCFilter * WenuFilter)
 
+### sequences for the electron stream
+selectorProducerSeqWElectronStream = cms.Sequence(eleSelSeqElectronStream * (ZeeSelectorElectronStream + WenuSelectorElectronStream + EleSCSelectorElectronStream) * WZSelectorElectronStream)
+
+selectorProducerSeqZElectronStream = cms.Sequence(eleSelSeqElectronStream * (ZeeSelectorElectronStream))
+
+WenuSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqWElectronStream * ~ZeeFilterElectronStream * ~ZSCFilterElectronStream *
+                                 WenuFilterElectronStream)
+
+ZeeSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqZElectronStream * 
+                                 ZeeFilterElectronStream)
+
 
 checkMCZSeq = cms.Sequence(genEleFromZ * combZ * ZFilterMC) #sequence to check Zskim efficiency respect to the MC
 checkMCWSeq = cms.Sequence(genEleFromW * genNuFromW * combW * WFilterMC) #sequence to check Wskim efficiency respect to the MC
 
 FilterMuSeq = cms.Sequence(muSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
+
