@@ -439,6 +439,8 @@ private:
 		ZSC,
 		ZMMG,
 		PARTGUN,
+		WSTREAM,
+		ZSTREAM,
 		UNKNOWN,
 		SINGLEELE, //no skim, no preselection and no selection are applied
 		DEBUG_T
