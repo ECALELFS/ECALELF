@@ -19,3 +19,5 @@ seqALCARECOEcalUncalZElectron   = cms.Sequence(ZeeSkimFilterSeq  * ALCARECOEcalC
 seqALCARECOEcalUncalZSCElectron = cms.Sequence(ZSCSkimFilterSeq  * ALCARECOEcalCalElectronNonECALSeq * ALCARECOEcalUncalElectronECALSeq)
 seqALCARECOEcalUncalWElectron   = cms.Sequence(WenuSkimFilterSeq * ALCARECOEcalCalElectronNonECALSeq * ALCARECOEcalUncalElectronECALSeq)
 seqALCARECOEcalUncalElectron   = cms.Sequence( ALCARECOEcalCalElectronNonECALSeq * ALCARECOEcalUncalElectronECALSeq)
+seqALCARECOEcalUncalWElectronStream   = cms.Sequence(WenuSkimFilterSeqElectronStream * ALCARECOEcalCalElectronNonECALSeq * ALCARECOEcalUncalElectronECALSeq)
+seqALCARECOEcalUncalZElectronStream   = cms.Sequence(ZeeSkimFilterSeqElectronStream * ALCARECOEcalCalElectronNonECALSeq * ALCARECOEcalUncalElectronECALSeq)
