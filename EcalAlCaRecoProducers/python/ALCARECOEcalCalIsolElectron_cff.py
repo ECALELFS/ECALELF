@@ -62,6 +62,8 @@ ALCARECOEcalCalElectronSeq = cms.Sequence( ALCARECOEcalCalElectronNonECALSeq+
 seqALCARECOEcalCalZElectron   = cms.Sequence(ZeeSkimFilterSeq  * ALCARECOEcalCalElectronSeq)
 seqALCARECOEcalCalZSCElectron = cms.Sequence(ZSCSkimFilterSeq  * ALCARECOEcalCalElectronSeq)
 seqALCARECOEcalCalWElectron   = cms.Sequence(WenuSkimFilterSeq * ALCARECOEcalCalElectronSeq)
+seqALCARECOEcalCalZElectronStream   = cms.Sequence(ZeeSkimFilterSeqElectronStream * ALCARECOEcalCalElectronSeq)
+seqALCARECOEcalCalWElectronStream   = cms.Sequence(WenuSkimFilterSeqElectronStream * ALCARECOEcalCalElectronSeq)
 
 
 seqALCARECOEcalCalPhoton = cms.Sequence( alCaIsolatedElectrons +
