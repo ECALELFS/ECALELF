@@ -120,6 +120,8 @@
 
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/METReco/interface/PFMETFwd.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/METReco/interface/CaloMETFwd.h"
 
 // HLT trigger
 #include "FWCore/Framework/interface/TriggerNamesService.h"
@@ -148,7 +150,6 @@ public:
 	~ZNtupleDumper();
 
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
 
 private:
 	virtual void beginJob() ;
@@ -184,6 +185,7 @@ private:
 	edm::Handle< GenEventInfoProduct >  GenEventInfoHandle;
 	edm::Handle<reco::ConversionCollection> conversionsHandle;
 	edm::Handle< reco::PFMETCollection > metHandle;
+        edm::Handle< reco::CaloMETCollection > caloMetHandle;
 	edm::Handle<edm::TriggerResults> triggerResultsHandle;
 	edm::Handle<edm::TriggerResults> WZSkimResultsHandle;
 	edm::Handle<EcalRecHitCollection> ESRechitsHandle;
@@ -214,6 +216,7 @@ private:
 	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > pileupInfoToken_;
 	edm::EDGetTokenT<reco::ConversionCollection> conversionsProducerToken_;
 	edm::EDGetTokenT<reco::PFMETCollection> metToken_;
+        edm::InputTag caloMetTAG;
 	edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
 	edm::EDGetTokenT<edm::TriggerResults> WZSkimResultsToken_;
 	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
@@ -494,6 +497,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	metToken_(consumes<reco::PFMETCollection>(iConfig.getParameter<edm::InputTag>("metCollection"))),
 	triggerResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResultsCollection"))),
 	WZSkimResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection"))),
+        caloMetTAG(iConfig.getParameter<edm::InputTag>("caloMetCollection")),
 	triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
 	WZSkimResultsTAG(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection")),
 	hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
@@ -621,7 +625,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				if(WZSkimResultsHandle->accept(*alcaSkimPath_itr)) {
 					skipEvent = false;
 					std::string hltName_str(alcaSkimPathNames.triggerName(*alcaSkimPath_itr));
-					if(hltName_str.find("WElectron") != std::string::npos)
+					if(hltName_str.find("WElectronStream")!=std::string::npos)
+					        eventType=WENU;
+					else if(hltName_str.find("ZElectronStream")!=std::string::npos)
+					        eventType=ZEE;
+					else if(hltName_str.find("WElectron") != std::string::npos)
 						eventType = WENU;
 					else if(hltName_str.find("ZSCElectron") != std::string::npos)
 						eventType = ZSC;
@@ -683,7 +691,12 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.getByToken(recHitCollectionESToken_, ESRechitsHandle);
 	//if(metHandle.isValid()==false) iEvent.getByType(metHandle);
 	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
+	reco::CaloMET caloMet;
 
+	if (caloMetHandle.isValid()==true) {
+	  iEvent.getByLabel(caloMetTAG, caloMetHandle); 
+	  caloMet = ((*caloMetHandle))[0]; //get hlt met
+	}
 
 	//Here the HLTBits are filled. TriggerResults
 	TreeSetEventSummaryVar(iEvent);
@@ -774,7 +787,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		if(doEleIDTree) {
 			TreeSetEleIDVar(*eleIter1, *eleIter2);
 		}
-	} else if(eventType == ZEE || eventType == WENU || eventType == UNKNOWN) {
+        } else if(eventType==ZEE || eventType==WENU || eventType==UNKNOWN || eventType==WSTREAM || eventType==ZSTREAM){
 #ifdef DEBUG
 		std::cout << "[DEBUG] Electrons in the event: " << electronsHandle->size() << std::endl;
 #endif
@@ -801,6 +814,31 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 				if(doExtraCalibTree) {
 					TreeSetExtraCalibVar(*eleIter1, 0);
+					TreeSetExtraCalibVar(*eleIter1, -1);
+				}
+				if(doEleIDTree) {
+					TreeSetEleIDVar(*eleIter1, 0);
+					TreeSetEleIDVar(*eleIter1, -1);
+				}
+			} else if(eventType==WSTREAM) {
+			        if(! eleIter1->electronID("tightElectronStream") ) continue;
+				if (nEle!=1) continue;
+				//if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
+			  
+				iEvent.getByLabel(caloMetTAG, caloMetHandle); 
+				if (caloMetHandle.isValid()==false) continue;
+			  
+				// MET/MT selection
+				if( caloMetHandle->at(0).pt() < 25. ) continue;
+				if( sqrt( 2.*eleIter1->et()*caloMetHandle->at(0).pt()*(1 -cos(eleIter1->phi()-caloMetHandle->at(0).phi()))) < 50. ) continue;
+				if( eleIter1->et()<30) continue;
+				doFill = true;
+				if(eventType == UNKNOWN) eventType = WENU;
+				TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
+				TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
+
+				if(doExtraCalibTree) {
+				        TreeSetExtraCalibVar(*eleIter1, 0);
 					TreeSetExtraCalibVar(*eleIter1, -1);
 				}
 				if(doEleIDTree) {
