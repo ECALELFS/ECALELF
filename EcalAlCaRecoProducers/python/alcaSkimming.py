@@ -780,6 +780,7 @@ if(options.type=="ALCARERECO"):
 if (options.electronStream==1):
     process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMet')
     process.zNtupleDumper.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
+    process.eleSelectionProducers.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
 
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
