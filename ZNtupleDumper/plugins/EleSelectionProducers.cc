@@ -96,6 +96,7 @@ private:
   SimpleCutBasedElectronIDSelectionFunctor loose50nsRun2_selector;
   SimpleCutBasedElectronIDSelectionFunctor medium50nsRun2_selector;
   SimpleCutBasedElectronIDSelectionFunctor tight50nsRun2_selector;
+  SimpleCutBasedElectronIDSelectionFunctor tightElectronStream_selector;
 
 };
 
@@ -135,6 +136,8 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   medium50nsRun2_selector("medium50nsRun2", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   tight50nsRun2_selector("tight50nsRun2", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+			 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  tightElectronStream_selector("tightElectronStream", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
   //register your products
@@ -160,6 +163,7 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   produces< SelectionMap >("loose50nsRun2");
   produces< SelectionMap >("medium50nsRun2");
   produces< SelectionMap >("tight50nsRun2");
+  produces< SelectionMap >("tightElectronStream");
 
   //now do what ever other initialization is needed
   
@@ -210,6 +214,8 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   std::auto_ptr<SelectionMap> looseMap50nsRun2(new SelectionMap());
   std::auto_ptr<SelectionMap> mediumMap50nsRun2(new SelectionMap());
   std::auto_ptr<SelectionMap> tightMap50nsRun2(new SelectionMap());
+  std::vector<SelectionValue_t>  tightElectronStream_vec;
+  std::auto_ptr<SelectionMap> tightElectronStreamMap(new SelectionMap());
 
 
   //------------------------------ ELECTRON
@@ -263,6 +269,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     pat::strbitset loose50nsRun2_ret;
     pat::strbitset medium50nsRun2_ret;
     pat::strbitset tight50nsRun2_ret;
+    pat::strbitset tightElectronStream_ret;
 
 
     fiducial_selector(eleRef, fiducial_ret);
@@ -300,6 +307,9 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     medium50nsRun2_vec.push_back(medium50nsRun2_selector.result());
     tight50nsRun2_selector(eleRef, tight50nsRun2_ret);
     tight50nsRun2_vec.push_back(tight50nsRun2_selector.result());
+
+    tightElectronStream_selector(eleRef, tightElectronStream_ret);
+    tightElectronStream_vec.push_back(tightElectronStream_selector.result());
 
     if(((bool)tight_selector.result())){
       if(!(bool) medium_selector.result() || !(bool) loose_selector.result()){
@@ -369,6 +379,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   SelectionMap::Filler loose50nsRun2_filler(*looseMap50nsRun2);
   SelectionMap::Filler medium50nsRun2_filler(*mediumMap50nsRun2);
   SelectionMap::Filler tight50nsRun2_filler(*tightMap50nsRun2);
+  SelectionMap::Filler tightElectronStream_filler(*tightElectronStreamMap);
 
   //fill and insert valuemap
   fiducial_filler.insert(electronsHandle,fiducial_vec.begin(),fiducial_vec.end());
@@ -384,6 +395,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   loose50nsRun2_filler.insert(electronsHandle,loose50nsRun2_vec.begin(),loose50nsRun2_vec.end());
   medium50nsRun2_filler.insert(electronsHandle,medium50nsRun2_vec.begin(),medium50nsRun2_vec.end());
   tight50nsRun2_filler.insert(electronsHandle,tight50nsRun2_vec.begin(),tight50nsRun2_vec.end());
+  tightElectronStream_filler.insert(electronsHandle,tightElectronStream_vec.begin(),tightElectronStream_vec.end());
 
   
   fiducial_filler.fill();
@@ -399,6 +411,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   loose50nsRun2_filler.fill();
   medium50nsRun2_filler.fill();
   tight50nsRun2_filler.fill();
+  tightElectronStream_filler.fill();
     
 
   //------------------------------
@@ -416,6 +429,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.put(looseMap50nsRun2, "loose50nsRun2");
   iEvent.put(mediumMap50nsRun2, "medium50nsRun2");
   iEvent.put(tightMap50nsRun2, "tight50nsRun2");
+  iEvent.put(tightElectronStreamMap, "tightElectronStream");
  
 }
 
