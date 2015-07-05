@@ -163,6 +163,8 @@ handleRecHitsEE_ALCASKIM = Handle('edm::SortedCollection<EcalRecHit,edm::StrictW
 handleRecHitsEB_ALCARECO = Handle('edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> >')
 handleRecHitsEE_ALCARECO = Handle('edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> >')
 
+handleMET = Handle('std::vector<reco::CaloMET>')
+
 if (file_format == 'ALCARECO'):
     processName="ALCASKIM"
     electronTAG = 'electronRecalibSCAssociator'
@@ -193,7 +195,7 @@ elif(file_format == "alcarereco"):
     electronTAG = 'electronRecalibSCAssociator'
     
 
-
+metTAG = 'hltMet'
 
 EErecHitmap_ele1 = TH2F("EErecHitmap_ele1", "EErecHitmap_ele1",
                    100,0,100,
@@ -229,6 +231,9 @@ for event in events:
     event.getByLabel(electronTAG, handleElectrons)
     #    print file_format, file, electronTAG        
     electrons = handleElectrons.product()
+
+    event.getByLabel(metTAG, handleMET)
+    met = handleMET.product()
 
     #    event.getByLabel("reducedEcalRecHitsEB", "", processName, handleRecHitsEB)
     #    event.getByLabel("reducedEcalRecHitsEE", "", processName, handleRecHitsEE)
