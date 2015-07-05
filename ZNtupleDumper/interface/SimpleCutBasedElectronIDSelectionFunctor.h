@@ -584,6 +584,12 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
 #ifdef CMSSW_7_2_X
     Double_t eleET = electron.et();
+    Double_t etaSC = electron.superCluster()->eta();
+    // effective area for isolation
+
+    float AEff = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, 
+    								 etaSC, ElectronEffectiveArea::kEleEAData2012);  
+
 #else
     //    Double_t eleET = electron.p4().Pt();
     Double_t eleET = electron.et();
