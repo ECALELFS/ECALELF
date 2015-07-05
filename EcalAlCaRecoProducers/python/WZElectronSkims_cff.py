@@ -320,12 +320,14 @@ WenuSkimFilterSeq = cms.Sequence(preFilterSeq * selectorProducerSeq *
                                  ~ZeeFilter * ~ZSCFilter * WenuFilter)
 
 ### sequences for the electron stream
-selectorProducerSeqElectronStream = cms.Sequence(eleSelSeq * (WenuSelectorElectronStream))
+selectorProducerSeqWElectronStream = cms.Sequence(eleSelSeq * (WenuSelectorElectronStream))
 
-WenuSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqElectronStream * 
+selectorProducerSeqZElectronStream = cms.Sequence(eleSelSeq * (ZeeSelectorElectronStream))
+
+WenuSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqWElectronStream * 
                                  WenuFilterElectronStream)
 
-ZeeSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqElectronStream * 
+ZeeSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqZElectronStream * 
                                  ZeeFilterElectronStream)
 
 
