@@ -106,6 +106,7 @@ private:
 	SimpleCutBasedElectronIDSelectionFunctor medium50nsRun2_selector;
 	SimpleCutBasedElectronIDSelectionFunctor tight50nsRun2_selector;
 	SimpleCutBasedElectronIDSelectionFunctor medium25nsRun2Boff_selector;
+        SimpleCutBasedElectronIDSelectionFunctor tightElectronStream_selector;
 
 };
 
@@ -147,7 +148,10 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
 	tight50nsRun2_selector("tight50nsRun2", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 	                       chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
 	medium25nsRun2Boff_selector("medium25nsRun2Boff", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-	                            chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
+	                            chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+        tightElectronStream_selector("tightElectronStream", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+				     chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
+
 {
 	//register your products
 	/* Examples
@@ -173,6 +177,7 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
 	produces< SelectionMap >("medium50nsRun2");
 	produces< SelectionMap >("tight50nsRun2");
 	produces< SelectionMap >("medium25nsRun2Boff");
+        produces< SelectionMap >("tightElectronStream");
 	//now do what ever other initialization is needed
 
 }
@@ -226,6 +231,8 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	std::vector<SelectionValue_t>  medium25nsRun2Boff_vec;
 	std::auto_ptr<SelectionMap> mediumMap25nsRun2Boff(new SelectionMap());
 
+        std::vector<SelectionValue_t>  tightElectronStream_vec;
+        std::auto_ptr<SelectionMap> tightElectronStreamMap(new SelectionMap());
 
 	//------------------------------ ELECTRON
 	iEvent.getByToken(electronsToken_, electronsHandle);
@@ -279,6 +286,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 		pat::strbitset medium50nsRun2_ret;
 		pat::strbitset tight50nsRun2_ret;
 		pat::strbitset medium25nsRun2Boff_ret;
+                pat::strbitset tightElectronStream_ret;
 
 
 		fiducial_selector(eleRef, fiducial_ret);
@@ -319,6 +327,9 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 
 		medium25nsRun2Boff_selector(eleRef, medium25nsRun2Boff_ret);
 		medium25nsRun2Boff_vec.push_back(medium25nsRun2Boff_selector.result());
+
+		tightElectronStream_selector(eleRef, tightElectronStream_ret);
+		tightElectronStream_vec.push_back(tightElectronStream_selector.result());
 
 		if(((bool)tight_selector.result())) {
 			if(!(bool) medium_selector.result() || !(bool) loose_selector.result()) {
@@ -365,6 +376,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 
 		//     WP80_PU_vec.push_back((SelectionValue_t)WP80_PU_selector.bitMask());
 		//     WP90_PU_vec.push_back((SelectionValue_t)WP90_PU_selector.bitMask());
+
 #ifdef DEBUG
 		std::cout << "[DEBUG] WP80 ret=" << WP80_PU_selector.bitMask() << std::endl;
 		std::cout << "[DEBUG] WP80 ret= (float)" << (SelectionValue_t) WP80_PU_selector.bitMask() << std::endl;
@@ -390,6 +402,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	SelectionMap::Filler medium50nsRun2_filler(*mediumMap50nsRun2);
 	SelectionMap::Filler tight50nsRun2_filler(*tightMap50nsRun2);
 	SelectionMap::Filler medium25nsRun2Boff_filler(*mediumMap25nsRun2Boff);
+	SelectionMap::Filler tightElectronStream_filler(*tightElectronStreamMap);
 
 	//fill and insert valuemap
 	fiducial_filler.insert(electronsHandle, fiducial_vec.begin(), fiducial_vec.end());
@@ -406,6 +419,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	medium50nsRun2_filler.insert(electronsHandle, medium50nsRun2_vec.begin(), medium50nsRun2_vec.end());
 	tight50nsRun2_filler.insert(electronsHandle, tight50nsRun2_vec.begin(), tight50nsRun2_vec.end());
 	medium25nsRun2Boff_filler.insert(electronsHandle, medium25nsRun2Boff_vec.begin(), medium25nsRun2Boff_vec.end());
+	tightElectronStream_filler.insert(electronsHandle,tightElectronStream_vec.begin(),tightElectronStream_vec.end());
 
 
 	fiducial_filler.fill();
@@ -422,6 +436,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	medium50nsRun2_filler.fill();
 	tight50nsRun2_filler.fill();
 	medium25nsRun2Boff_filler.fill();
+	tightElectronStream_filler.fill();
 
 
 	//------------------------------
@@ -440,6 +455,8 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	iEvent.put(mediumMap50nsRun2, "medium50nsRun2");
 	iEvent.put(tightMap50nsRun2, "tight50nsRun2");
 	iEvent.put(mediumMap25nsRun2Boff, "medium25nsRun2Boff");
+	iEvent.put(tightElectronStreamMap, "tightElectronStream");
+ 
 }
 
 // ------------ method called once each job just before starting event loop  ------------

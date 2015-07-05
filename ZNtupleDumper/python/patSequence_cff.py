@@ -53,6 +53,7 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 #     loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
 #     medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
 #     tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
+#     tightElectronStream      = cms.InputTag("eleSelectionProducers", "tightElectronStream")
 #     )
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')
