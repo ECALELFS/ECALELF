@@ -122,7 +122,7 @@
 #include "DataFormats/METReco/interface/PFMETFwd.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CaloMETFwd.h"
-
+#include "DataFormats/METReco/interface/CaloMETCollection.h"
 // HLT trigger
 #include "FWCore/Framework/interface/TriggerNamesService.h"
 #include <FWCore/Common/interface/TriggerNames.h>
