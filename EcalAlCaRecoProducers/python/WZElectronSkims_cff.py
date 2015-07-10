@@ -215,6 +215,9 @@ eleSelSeq = cms.Sequence( selectedECALElectrons + PassingVetoId +
                           (SCselector*eleSC)
                           )
 
+eleSelSeqElectronStream = cms.Sequence( selectedECALElectrons + PassingVetoIdElectronStream
+                          )
+
 muSelSeq = cms.Sequence( selectedECALMuons + selectedECALPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
                           (SCselector*eleSC)
                           )
@@ -320,9 +323,9 @@ WenuSkimFilterSeq = cms.Sequence(preFilterSeq * selectorProducerSeq *
                                  ~ZeeFilter * ~ZSCFilter * WenuFilter)
 
 ### sequences for the electron stream
-selectorProducerSeqWElectronStream = cms.Sequence(eleSelSeq * (WenuSelectorElectronStream))
+selectorProducerSeqWElectronStream = cms.Sequence(eleSelSeqElectronStream * (WenuSelectorElectronStream))
 
-selectorProducerSeqZElectronStream = cms.Sequence(eleSelSeq * (ZeeSelectorElectronStream))
+selectorProducerSeqZElectronStream = cms.Sequence(eleSelSeqElectronStream * (ZeeSelectorElectronStream))
 
 WenuSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqWElectronStream * 
                                  WenuFilterElectronStream)
