@@ -23,7 +23,12 @@ options.register ('type',
                   "ALCARAW",
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.string,
-                  "type of operations: ALCARAW, ALCARERECO, ALCARECO, ALCARECOSIM, AOD, RECO, SKIMEFFTEST")
+                  "type of operations: ALCARAW, ALCARERECO, ALCARECO, ALCARECOSIM, SKIMEFFTEST")
+options.register ('isPrivate',
+                  0, #default value = false
+                  VarParsing.VarParsing.multiplicity.singletop,
+                  VarParsing.multiplicity.varType.int,
+                  "tells if this is privately produced")
 options.register ('tagFile',
                   "",
                   VarParsing.VarParsing.multiplicity.singleton,
@@ -142,34 +147,22 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 # import of ALCARECO sequences
-process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
-process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
-from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
-
-process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
-process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
-if (re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*",CMSSW_VERSION)):
-    process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # ALCARAW
-    from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # reduction of recHits
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
 
+#process.load('Calibration.EcalAlCaRecoProducers.sandboxRerecoSeq_cff')    # ALCARERECO
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
+process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_Output_cff')
 # this module provides:
-#process.seqALCARECOEcalUncalElectron  = uncalibRecHitSeq
-process.load('Calibration.EcalAlCaRecoProducers.sandboxRerecoSeq_cff')    # ALCARERECO
-# this module provides:
-# process.electronRecoSeq
-# process.electronClusteringSeq # with ele-SC reassociation
-# process.sandboxRerecoSeq = (electronRecoSeq * electronClusteringSeq)
+# process.seqALCARECOEcalRecalElectron 
+
+process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 
 # Tree production
-process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
-process.load('Calibration.ZNtupleDumper.elePat_cfi')
-process.load('Calibration.ZNtupleDumper.muonPat_cfi')
-process.load('Calibration.ZNtupleDumper.phoPat_cfi')
-from Calibration.ZNtupleDumper.elePat_cfi import *
-from Calibration.ZNtupleDumper.muonPat_cfi import *
-from Calibration.ZNtupleDumper.phoPat_cfi import *
-#from Calibration.ZNtupleDumper.patSequence_cff import *
+process.load('Calibration.ZNtupleDumper.patSequence_cff')
 
 # ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
@@ -325,12 +318,13 @@ else:
 # particle flow isolation
 #
 process.pfIsoEgamma = cms.Sequence()
-if((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='ALCARAW') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
-    from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
-    process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
-    process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
-elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='ALCARAW') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
-    process.pfisoALCARECO = cms.Sequence() # remove any modules
+if(not re.match("CMSSW_7_.*_.*",CMSSW_VERSION))):
+    if((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='ALCARAW') and not re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+        from CommonTools.ParticleFlow.Tools.pfIsolation import setupPFElectronIso, setupPFMuonIso
+        process.eleIsoSequence = setupPFElectronIso(process, 'gsfElectrons', 'PFIso')
+        process.pfIsoEgamma *= (process.pfParticleSelectionSequence + process.eleIsoSequence)
+    elif((options.type=='ALCARECO' or options.type=='ALCARECOSIM' or options.type=='ALCARAW') and re.match("CMSSW_7_.*_.*",CMSSW_VERSION)):
+        process.pfisoALCARECO = cms.Sequence() # remove any modules
 
 ###############################/
 # Event filter sequence: process.filterSeq
@@ -385,18 +379,18 @@ process.NtupleFilter.throw = cms.bool(False)
 process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
                                   'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
                                   'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
-                                  'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron',
+                                  'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron', ## in case of no skim
                                  ]
-#process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
-process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCA")
-#
+
+if(options.isPrivate == 0):
+    process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","RECO")
+else:
+    process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
+
 
 process.NtupleFilterSeq = cms.Sequence()
-#process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
 if(ZSkim):
-    #process.NtupleFilterSeq = cms.Sequence(process.SCselector+process.eleSC+process.PassingVetoId+process.ZeeSelector+process.EleSCSelector+process.WenuSelector+process.WZSelector+process.WZFilter)
     process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
-    #process.NtupleFilterSeq = cms.Sequence(process.ZeeFilter)
   # process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
                                       'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
@@ -440,19 +434,21 @@ else:
     print "** TrivialConditionRetriver defined"
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
-if(re.match("CMSSW_6_.*", CMSSW_VERSION) or re.match("CMSSW_7_.*", CMSSW_VERSION)):
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxPFRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
+if(re.match("CMSSW_7_.*", CMSSW_VERSION)):
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron)
 else:
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
 
 
+
 process.rhoFastJetSeq = cms.Sequence()
-if((not options.type=="ALCARERECO") ):
+if((not options.type=="ALCARERECO") and re.match("CMSSW_5_.*", CMSSW_VERSION)):
     process.rhoFastJetSeq = cms.Sequence(process.kt6PFJetsForRhoCorrection) 
 
 if (options.skim=="ZmmgSkim"):
     process.patSequence=cms.Sequence( (process.muonSelectionProducers * process.phoSelectionProducers) * process.patMuons * process.patPhotons )
     process.patSequenceMC=cms.Sequence( process.muonMatch * process.photonMatch * (process.muonSelectionProducers * process.phoSelectionProducers ) * process.patMuons * process.patPhotons )
+
 if(MC):
     process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
 else:
@@ -487,10 +483,10 @@ process.outputALCARAW = cms.OutputModule("PoolOutputModule",
                                          fileName = cms.untracked.string('alcaraw.root'),
                                          SelectEvents = process.OutALCARECOEcalUncalElectron.SelectEvents,
                                          dataset = cms.untracked.PSet(
-    filterName = cms.untracked.string(''),
-    dataTier = cms.untracked.string('ALCARECO')
-    )
+                                             filterName = cms.untracked.string(''),
+                                             dataTier = cms.untracked.string('ALCARECO')
                                          )
+                                     )
 
 process.outputALCARECO = cms.OutputModule("PoolOutputModule",
                                           # after 5 GB split the file
@@ -499,27 +495,27 @@ process.outputALCARECO = cms.OutputModule("PoolOutputModule",
                                           fileName = cms.untracked.string('alcareco.root'),
                                           SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
                                           dataset = cms.untracked.PSet(
-    filterName = cms.untracked.string(''),
-    dataTier = cms.untracked.string('ALCARECO')
-    )
+                                              filterName = cms.untracked.string(''),
+                                              dataTier = cms.untracked.string('ALCARECO')
                                           )
+                                      )
 
 process.zNtupleDumper.SelectEvents = process.NtupleFilter.HLTPaths
 
 process.outputALCARERECO = cms.OutputModule("PoolOutputModule",
-                                          # after 5 GB split the file
-                                          maxSize = cms.untracked.int32(5120000),
-                                          outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
-                                          fileName = cms.untracked.string('EcalRecalElectron.root'),
-                                          SelectEvents = cms.untracked.PSet(
-    SelectEvents = cms.vstring('pathALCARECOEcalRecalElectron')
-    ),
-                                          dataset = cms.untracked.PSet(
-    filterName = cms.untracked.string(''),
-    dataTier = cms.untracked.string('ALCARECO')
-    )
-                                          )
-                                          
+                                            # after 5 GB split the file
+                                            maxSize = cms.untracked.int32(5120000),
+                                            outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
+                                            fileName = cms.untracked.string('EcalRecalElectron.root'),
+                                            SelectEvents = cms.untracked.PSet(
+                                                SelectEvents = cms.vstring('pathALCARECOEcalRecalElectron')
+                                            ),
+                                            dataset = cms.untracked.PSet(
+                                                filterName = cms.untracked.string(''),
+                                                dataTier = cms.untracked.string('ALCARECO')
+                                            )
+                                        )
+
 process.outputRECO = cms.OutputModule("PoolOutputModule",
                                       # after 5 GB split the file
                                       maxSize = cms.untracked.int32(5120000),
@@ -527,10 +523,10 @@ process.outputRECO = cms.OutputModule("PoolOutputModule",
                                       fileName = cms.untracked.string('RECO.root'),
                                       SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
                                       dataset = cms.untracked.PSet(
-    filterName = cms.untracked.string(''),
-    dataTier = cms.untracked.string('RECO')
-    )
+                                          filterName = cms.untracked.string(''),
+                                          dataTier = cms.untracked.string('RECO')
                                       )
+                                  )
 
 #print "OUTPUTCOMMANDS"
 #print process.outputALCARECO.outputCommands
@@ -617,7 +613,7 @@ process.pathZmmgGen = cms.Path(process.filterSeq * process.FilterMuSeq * process
 
 
 # ALCARAW
-if (re.match("CMSSW_7_.*",CMSSW_VERSION)):
+if (not re.match("CMSSW_7_.*",CMSSW_VERSION)):
     uncalibRecHitSeq = cms.Sequence( (ecalDigis + ecalPreshowerDigis) * ecalUncalibRecHitSequence)  #containing the new local reco for 72X
 
     process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
@@ -789,7 +785,8 @@ if(options.type=='ALCARAW'):
         process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
         process.pathALCARECOEcalCalZSCElectron,
         process.pathALCARECOEcalCalZmmgPhoton,
-        process.ALCARECOoutput_step, process.NtuplePath) # fix the output modules
+        process.ALCARECOoutput_step, process.NtuplePath
+    ) # fix the output modules
     
 
 elif(options.type=='ALCARERECO'):
@@ -799,8 +796,6 @@ elif(options.type=='ALCARERECO'):
     else:
         process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step)
-        #process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
-        #process.schedule = cms.Schedule(process.pathALCARECOEcalRecalElectron, process.NtuplePath, process.ALCARERECOoutput_step,process.NtupleEndPath)
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
@@ -857,23 +852,12 @@ else:
 #process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile.value()
 
 #    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
-'''
-process.eleRegressionEnergy.energyRegressionType=cms.uint32(2)
-if(re.match("CMSSW_4_4_.*", CMSSW_VERSION)):
-    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2011Weights_V1.root")
-if(re.match("CMSSW_4_2_.*", CMSSW_VERSION)):
-    pathPrefix=CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
-    print '[INFO] Using v2 regression for CMSSW_4_2_X' 
-    process.eleNewEnergiesProducer.regrPhoFile=cms.string(pathPrefix+'data/gbrv2ph.root')
-    process.eleNewEnergiesProducer.regrEleFile=cms.string(pathPrefix+'data/gbrv2ele.root')
-    process.eleNewEnergiesProducer.regrEleFile_fra=cms.string('nocorrections')
-    #process.eleNewEnergiesProducer.regrEleFile_fra=cms.string(pathPrefix+'data/eleEnergyRegWeights_V1.root')
-'''
 
-process.load('Calibration.EcalAlCaRecoProducers.valuemaptraslator_cfi')
-process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
-process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
-process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
+if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
+    process.load('Calibration.EcalAlCaRecoProducers.valuemaptraslator_cfi')
+    process.sandboxRerecoSeq*=process.elPFIsoValueCharged03PFIdRecalib
+    process.sandboxRerecoSeq*=process.elPFIsoValueGamma03PFIdRecalib
+    process.sandboxRerecoSeq*=process.elPFIsoValueNeutral03PFIdRecalib
 
 
 ############################################################
@@ -884,6 +868,14 @@ if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
     process.PassingVeryLooseId.src = myEleCollection
     process.PassingMediumId.src = myEleCollection
     process.PassingTightId.src = myEleCollection
+
+    process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
+    process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
+    process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
+    process.elPFIsoDepositChargedGsf.src = myEleCollection
+    process.elPFIsoDepositGammaGsf.src = myEleCollection
+    process.elPFIsoDepositChargedGsf.src = myEleCollection
+
 else:
     process.PassingVetoId.src = myEleCollection
 #process.PassingHLT.InputProducer = myEleCollection
@@ -893,17 +885,10 @@ process.patElectrons.electronSource = myEleCollection
 process.eleSelectionProducers.electronCollection = myEleCollection
 process.electronMatch.src = myEleCollection
 #process.eleNewEnergiesProducer.electronCollection = myEleCollection
-process.alCaIsolatedElectrons.electronLabel = myEleCollection 
 if (options.skim=="ZmmgSkim"):
     process.alCaIsolatedElectrons.photonLabel = cms.InputTag("gedPhotons")
+
 process.alcaElectronTracksReducer.electronLabel = myEleCollection
-process.elPFIsoDepositChargedGsf.src = myEleCollection
-process.elPFIsoDepositGammaGsf.src = myEleCollection
-process.elPFIsoDepositChargedGsf.src = myEleCollection
-process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
-process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
-process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
-#process.electronRecalibSCAssociator.electronSrc = myEleCollection
 
 #process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
 #process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
@@ -911,26 +896,21 @@ process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedEl
 process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
 if(options.type=="ALCARERECO"):        
-    if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
-        process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEB")
-        process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE")
-    else:
-        process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
-        process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
+    # if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
+    #     process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEB")
+    #     process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE")
+    # else:
+    #     process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
+    #     process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
 
-    process.correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
-    process.correctedMulti5x5SuperClustersWithPreshower.corectedSuperClusterCollection = 'endcapRecalibSC'
-    if(re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*", CMSSW_VERSION) or re.match("CMSSW_7_.*", CMSSW_VERSION)):
-        process.multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
+
+#    process.correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
+#    process.correctedMulti5x5SuperClustersWithPreshower.corectedSuperClusterCollection = 'endcapRecalibSC'
+#    process.multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
 
     # in sandboxRereco
-    process.reducedEcalRecHitsES.EndcapSuperClusterCollection= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC',processName)
+#    process.reducedEcalRecHitsES.EndcapSuperClusterCollection= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC',processName)
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
-    #process.alCaIsolatedElectrons.srcLabels = cms.VInputTag( "electronRecalibSCAssociator") #now done by EcalRecal(process)
-    #process.alCaIsolatedElectrons.electronLabel = "electronRecalibSCAssociator" #now done by EcalRecal(process)
-    #process.alCaIsolatedElectrons.ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")#now done by EcalRecal(process)
-    #process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")#now done by EcalRecal(process)
-   # process.alCaIsolatedElectrons.EESuperClusterCollection = process.reducedEcalRecHitsES.EndcapSuperClusterCollection#now done by EcalRecal(process)
 
     #process.selectedECALElectrons.src = cms.InputTag("electronRecalibSCAssociator")#now done by EcalRecal(process)
     #process.PassingVetoId.src = recalibElectronSrc#now done by EcalRecal(process)
@@ -949,13 +929,9 @@ if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
     
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
-    process.outputALCARECO.fileName=cms.untracked.string('ntuple.root')
-    #process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
+    process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
-   # process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARERECO')
-    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
-    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA')
-    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCASKIM')
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
     #process.zNtupleDumper.SelectEvents = []
     process.SCselector.src= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
