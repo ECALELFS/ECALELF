@@ -508,7 +508,7 @@ process.outputALCARERECO = cms.OutputModule("PoolOutputModule",
                                             outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
                                             fileName = cms.untracked.string('EcalRecalElectron.root'),
                                             SelectEvents = cms.untracked.PSet(
-                                                SelectEvents = cms.vstring('pathALCARECOEcalRecalElectron')
+                                                SelectEvents = cms.vstring('pathALCARERECOEcalCalElectron')
                                             ),
                                             dataset = cms.untracked.PSet(
                                                 filterName = cms.untracked.string(''),
