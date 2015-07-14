@@ -17,7 +17,8 @@ from  RecoEcal.Configuration.RecoEcal_cff import *
 #        multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
 
 #    process.load("Calibration.EcalCalibAlgos.electronRecalibSCAssociator_cfi")
-from Calibration.EcalAlCaRecoProducers.electronRecalibSCAssociatorSH_cfi import *
+#from Calibration.EcalAlCaRecoProducers.electronRecalibSCAssociatorSH_cfi import *
+from Calibration.EcalCalibAlgos.electronRecalibSCAssociator_cfi import *
 #electronRecalibSCAssociator.scIslandCollection = cms.string('endcapRecalibSC')
 #electronRecalibSCAssociator.scIslandProducer = cms.string('correctedMulti5x5SuperClustersWithPreshower')
 #electronRecalibSCAssociator.scProducer = cms.string('correctedHybridSuperClusters')
