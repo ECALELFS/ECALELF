@@ -7,6 +7,7 @@ import copy
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 from Configuration.StandardSequences.RawToDigi_Data_cff import *
 from RecoLocalCalo.Configuration.RecoLocalCalo_cff import *
+from Calibration.EcalAlCaRecoProducers.customRereco import EcalRecal 
 
 #sys.path(".")
 
@@ -139,13 +140,14 @@ process.load('Configuration.StandardSequences.GeometryDB_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration.EventContent.EventContent_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 # import of ALCARECO sequences
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
 from Calibration.EcalAlCaRecoProducers.sandboxRerecoOutput_cff import *
 
-#process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
+process.load('Configuration.StandardSequences.AlCaRecoStreams_cff') # this is for official ALCARAW ALCARECO production
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
 process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 if (re.match("CMSSW_5_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*",CMSSW_VERSION)):
@@ -216,7 +218,8 @@ process.maxEvents = cms.untracked.PSet(
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
-                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles)
+                            secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
+														skipEvents=cms.untracked.uint32(0)
                             )
 
 # try to drop as much as possible to reduce the running time
@@ -508,9 +511,9 @@ process.outputALCARERECO = cms.OutputModule("PoolOutputModule",
                                           # after 5 GB split the file
                                           maxSize = cms.untracked.int32(5120000),
                                           outputCommands = process.OutALCARECOEcalCalElectron.outputCommands,
-                                          fileName = cms.untracked.string('alcarereco.root'),
+                                          fileName = cms.untracked.string('EcalRecalElectron.root'),
                                           SelectEvents = cms.untracked.PSet(
-    SelectEvents = cms.vstring('pathALCARERECOEcalCalElectron')
+    SelectEvents = cms.vstring('pathALCARECOEcalRecalElectron')
     ),
                                           dataset = cms.untracked.PSet(
     filterName = cms.untracked.string(''),
@@ -671,6 +674,8 @@ else:
 
 # ALCARERECO
 process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
+#process.ALCARECOStreamEcalRecalElectronOutPath = cms.EndPath(process.ALCARECOStreamEcalRecalElectron)
+
 if(options.doTree>0):
     process.pathALCARERECOEcalCalElectron+=cms.Sequence( process.pdfWeightsSeq * process.ntupleSeq)
 
@@ -717,6 +722,8 @@ if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
     if(options.type=="ALCARERECO"):
         process.ALCARERECOoutput_step = cms.EndPath(process.outputALCARERECO)
+        #process.ALCARERECOoutput_step = cms.EndPath(process.ALCARECOStreamEcalRecalElectron)
+
     if(options.type=="ALCARAW"):
         process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
             
@@ -727,18 +734,18 @@ if((options.doTree>0 and options.doTreeOnly==0)):
     # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
     process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
 else:
-    if(len(options.jsonFile)>0):
-        if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION)):
-            # from CMSSW 5.0.0
-            import FWCore.PythonUtilities.LumiList as LumiList
-            process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
-        else:
-            # from CMSSW 3.8.0
-            #import FWCore.ParameterSet.Config as cms
-            import PhysicsTools.PythonAnalysis.LumiList as LumiList
-            myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
-            process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
-            process.source.lumisToProcess.extend(myLumis)
+ if(len(options.jsonFile)>0):
+     if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION) or re.match("CMSSW_7_.*_.*",CMSSW_VERSION) ):
+         # from CMSSW 5.0.0
+         import FWCore.PythonUtilities.LumiList as LumiList
+         process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
+     else:
+         # from CMSSW 3.8.0
+         #import FWCore.ParameterSet.Config as cms
+         import PhysicsTools.PythonAnalysis.LumiList as LumiList
+         myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
+         process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
+         process.source.lumisToProcess.extend(myLumis)
 
 
 ############################################################
@@ -794,8 +801,8 @@ elif(options.type=='ALCARERECO'):
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
         process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
-        process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step,
-                                        )
+        process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
+        process.schedule = cms.Schedule(process.pathALCARECOEcalRecalElectron, process.NtuplePath, process.ALCARERECOoutput_step,process.NtupleEndPath)
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
         process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
@@ -898,7 +905,7 @@ process.elPFIsoDepositChargedGsf.src = myEleCollection
 process.elPFIsoValueCharged03PFIdRecalib.oldreferenceCollection = myEleCollection
 process.elPFIsoValueGamma03PFIdRecalib.oldreferenceCollection = myEleCollection
 process.elPFIsoValueNeutral03PFIdRecalib.oldreferenceCollection = myEleCollection
-process.electronRecalibSCAssociator.electronSrc = myEleCollection
+#process.electronRecalibSCAssociator.electronSrc = myEleCollection
 
 #process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
 #process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
@@ -921,10 +928,18 @@ if(options.type=="ALCARERECO"):
     # in sandboxRereco
     process.reducedEcalRecHitsES.EndcapSuperClusterCollection= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC',processName)
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator")
-    process.alCaIsolatedElectrons.electronLabel = recalibElectronSrc
+    process.alCaIsolatedElectrons.srcLabels = cms.VInputTag( "electronRecalibSCAssociator")
+    process.alCaIsolatedElectrons.electronLabel = "electronRecalibSCAssociator"
     process.alCaIsolatedElectrons.ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")
     process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
     process.alCaIsolatedElectrons.EESuperClusterCollection = process.reducedEcalRecHitsES.EndcapSuperClusterCollection
+
+    process.selectedECALElectrons.src = cms.InputTag("electronRecalibSCAssociator")
+    process.PassingVetoId.src = recalibElectronSrc
+   # process.alCaIsolatedElectrons.electronLabel = recalibElectronSrc
+   # process.alCaIsolatedElectrons.ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")
+   # process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
+   # process.alCaIsolatedElectrons.EESuperClusterCollection = process.reducedEcalRecHitsES.EndcapSuperClusterCollection
 
 #    process.eleRegressionEnergy.inputElectronsTag = recalibElectronSrc
     process.eleSelectionProducers.electronCollection   = recalibElectronSrc
@@ -935,15 +950,18 @@ if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
     
     process.outputALCARECO.outputCommands += sandboxRerecoOutputCommands 
-    process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
+    process.outputALCARECO.fileName=cms.untracked.string('ntuple.root')
+    #process.outputALCARECO.fileName=cms.untracked.string('alcarereco.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
-    #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RERECO')
+   # process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARERECO')
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA')
     #process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCASKIM')
     #process.zNtupleDumper.SelectEvents = []
-    #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
-    process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
+    process.SCselector.src= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
+    process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
+    #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
+    #process = EcalRecal(process)
 
     
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
