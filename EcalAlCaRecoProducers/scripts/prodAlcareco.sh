@@ -1,4 +1,5 @@
 #!/bin/bash
+resource=type==SLC6_64
 source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.sh
 ############################### OPTIONS
 #------------------------------ default
@@ -21,7 +22,7 @@ NJOBS=100
 OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
-CRABVERSION=3
+CRABVERSION=2
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
 usage(){
@@ -234,10 +235,12 @@ case $TYPE in
 	case $SKIM in
 	    ZSkim)
 		ALCATYPE="ALCA:EcalUncalZElectron"
+		USEPARENT=1
 		;;
 	    WSkim)
 		ALCATYPE="ALCA:EcalUncalWElectron"
 		EVENTS_PER_JOB=20000
+		USEPARENT=1
 		;;
 	    none) EVENTS_PER_JOB=20000;;
 	esac
@@ -304,7 +307,7 @@ queue = 1nd
 #resource = type==SLC5_64
 [CAF]
 queue = cmscaf1nd
-resource = type==SLC5_64
+#resource = type==SLC5_64
 EOF
 
 cat > ${crab3File} <<EOF
@@ -319,7 +322,7 @@ config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = '${DATASETPATH}'
 config.Data.inputDBS = '${DBS_URL}'
 config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 3
+config.Data.unitsPerJob = 10
 config.Data.lumiMask = '${JSONFILE}'
 config.Data.runRange = '${RUNRANGE}'
 config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
@@ -338,13 +341,14 @@ cat >> ${crab2File} <<EOF
 datasetpath=${DATASETPATH}
 use_dbs3  = 1
 EOF
-if [ -n "${DBS_URL}" ];then
-    echo "dbs_url=${DBS_URL}" >> ${crab2File}
-fi
+#if [ -n "${DBS_URL}" ];then
+   # echo "dbs_url=${DBS_URL}" >> ${crab2File}
+#fi
 
 cat >> ${crab2File} <<EOF
-pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
+pset=${CMSSWCONFIG}
+#pset=python/alcaSkimming.py
+#pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
 
 runselection=${RUNRANGE}
 split_by_run=0
@@ -370,16 +374,14 @@ total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 EOF
 
-if [ -n "${CREATE}" ] && [ -z "${SUBMIT}" ];then
-echo "[INFO] to submit please use option --submitOnly"
-exit 1
 fi
+
 
 if [ -n "${DEVEL_RELEASE}" ]; then
 cat >> ${crab2File} <<EOF
 allow_NonProductionCMSSW = 1
 EOF
-
+fi
 
 ###
 cat >> ${crab2File} <<EOF
@@ -423,17 +425,22 @@ se_black_list=$BLACKLIST
 EOF
 
 fi
-fi
 
 
 if [ -n "${CREATE}" ];then
     case ${CRABVERSION} in
 	2)
+			echo " [INFO] Creating Crab2 job "
 	    crab -cfg ${crab2File} -create || exit 1
 	    ;;
 	3)
 	    ;;
     esac
+fi
+
+if [ -n "${CREATE}" ] && [ -z "${SUBMIT}" ];then
+echo "[INFO] to submit please use option --submitOnly"
+exit 1
 fi
 
  #if [ "$TYPE" == "ALCARECOSIM" ];then
@@ -450,7 +457,7 @@ fi
 # echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 # else
 # mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
-fi
+
 if [ -n "$SUBMIT" ]; then
     case ${CRABVERSION} in
 	2)     crab -c ${UI_WORKING_DIR} -submit all;;

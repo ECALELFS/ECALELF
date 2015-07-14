@@ -72,6 +72,10 @@ setEnergy(){
 	    #echo "[INFO] Run on 2012 data: ENERGY=8TeV"
 	    ENERGY=8TeV
 	    ;;
+	*Run2015*)
+	    #echo "[INFO] Run on 2011 data: ENERGY=7TeV"
+	    ENERGY=13TeV
+	    ;;
 	*Run2011*)
 	    #echo "[INFO] Run on 2011 data: ENERGY=7TeV"
 	    ENERGY=7TeV
