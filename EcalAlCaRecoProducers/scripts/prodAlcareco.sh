@@ -196,8 +196,7 @@ case $DATASETPATH in
 	USEPARENT=1
 	;;
     */AOD)
-	echo "[ERROR] cannot produce ALCARAW from AOD!!!" >> /dev/stderr
-	exit 1
+	USEPARENT=1
 	;;
     */RAW-RECO)
 	USEPARENT=0
@@ -312,7 +311,7 @@ echo "[INFO Run Range ${RUNRANGE}"
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 echo "[INFO] Generating CMSSW configuration"
-cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}
+cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
 
 echo "[INFO] Generating CRAB3 configuration"
 TYPENAME=$TYPE
