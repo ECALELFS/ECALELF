@@ -31,6 +31,7 @@
 #include <iostream>
 #include <string.h>
 #include <regex>
+#include <map>
 
 // root include files
 #include <TTree.h>
@@ -126,6 +127,8 @@
 
 // alcaSkimPaths
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
+
+#include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
 
 //#define DEBUG
 
@@ -237,7 +240,7 @@ private:
   Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
 
   // selection
-  Int_t eleID[3];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+  UInt_t eleID[3];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
   Int_t  chargeEle[3]; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon
   Float_t etaSCEle[3], phiSCEle[3]; ///< phi of the SC
@@ -512,6 +515,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   pEvent = &iEvent;
   pSetup = &iSetup;
+
   
   // filling infos runNumber, eventNumber, lumi
   if( !iEvent.isRealData() ){
@@ -665,9 +669,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 	 eleIter1 != electronsHandle->end();
 	 eleIter1++){
-      if( eleIter1->electronID("tight") )       ++nWP70;
-      else if( eleIter1->electronID("medium") ) ++nMedium;
-      else if( eleIter1->electronID("loose") )  ++nWP90;
+      if( eleIter1->electronID("tight50nsRun2") )       ++nWP70;
+      else if( eleIter1->electronID("medium50nsRun2") ) ++nMedium;
+      else if( eleIter1->electronID("loose50nsRun2") )  ++nWP90;
     }
   }  
   bool doFill=false;
@@ -712,9 +716,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       //      if(!eleIter1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
       //        continue;
       //      }
+      if(! (eleIter1->electronID("loose50nsRun2")) ) continue;
 
       if(eventType==WENU){
-  	if(! eleIter1->electronID("tight") ) continue;
+  	if(! (eleIter1->electronID("tight50nsRun2")) ) continue;
   	if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 	
 	// MET/MT selection
@@ -746,7 +751,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  //	  }
 
 	  // should exit when eleIter1 == end-1
-	  //if(! eleIter2->electronID("loose") ) continue;
+	  if(! (eleIter2->electronID("loose50nsRun2")) ) continue;
 	  
 	  //	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
 
@@ -863,14 +868,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
          PatEle1++){
 
       // consider electrons passing at least the loose identification
-      if(!PatEle1->electronID("loose") ) continue; 
+      if(!PatEle1->electronID("loose50nsRun2") ) continue; 
 
       // take the highest pt tight electrons if it exists (the collection is ordered in pt)
       // consider only the electrons passing the tightest electron identification
       if(nWP70>0){ // if there are tight electrons, consider only those
-	if(!PatEle1->electronID("tight") ) continue; 
+	if(!PatEle1->electronID("tight50nsRun2") ) continue; 
       }else if(nMedium>0){ // if there are only medium electrons, consider only those
-	if(!PatEle1->electronID("medium") ) continue; 
+	if(!PatEle1->electronID("medium50nsRun2") ) continue; 
       }
 
       //      if(!PatEle1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
@@ -1092,7 +1097,7 @@ void ZNtupleDumper::InitNewTree(){
 
   tree->Branch("nPV", &nPV, "nPV/I");
 
-  tree->Branch("eleID",eleID, "eleID[3]/I");
+  tree->Branch("eleID",eleID, "eleID[3]/i");
   //  tree->Branch("nBCSCEle", nBCSCEle, "nBCSCEle[3]/I");
 
   tree->Branch("chargeEle",   chargeEle,    "chargeEle[3]/I");	//[nEle]
@@ -1392,21 +1397,13 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   //       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
   //   } 
 
-  // make it a function
-  eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
-  eleID[index] += ((bool) electron1.electronID("loose")) << 1;
-  eleID[index] += ((bool) electron1.electronID("medium")) << 2;
-  eleID[index] += ((bool) electron1.electronID("tight")) << 3;
-  eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
-  eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
-  eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
-  //LUCA: need to decide if to put the run2 selection here (bits 7-12) or not. Also, need to modify the ElectronCategory_class according to this..
-  eleID[index] += ((bool) electron1.electronID("loose25nsRun2")) << 7;  
-  eleID[index] += ((bool) electron1.electronID("medium25nsRun2")) << 8;
-  eleID[index] += ((bool) electron1.electronID("tight25nsRun2")) << 9;
-  eleID[index] += ((bool) electron1.electronID("loose50nsRun2")) << 10;
-  eleID[index] += ((bool) electron1.electronID("medium50nsRun2")) << 11;
-  eleID[index] += ((bool) electron1.electronID("tight50nsRun2")) << 12;
+  eleIDMap eleID_map;
+
+  eleID[index]=0;
+  for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
+    if ((bool) electron1.electronID(it->first))
+      eleID[index] |= it->second;
+  }
 
   classificationEle[index] = electron1.classification();
 
@@ -2271,9 +2268,9 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
   //     dzvtx[index] = electron1.gsfTrack()->dz();
   //   }
   
-  eleIDloose[index]  = electron1.electronID("loose");
-  eleIDmedium[index] = electron1.electronID("medium");
-  eleIDtight[index]  = electron1.electronID("tight");
+  eleIDloose[index]  = electron1.electronID("loose50nsRun2");
+  eleIDmedium[index] = electron1.electronID("medium50nsRun2");
+  eleIDtight[index]  = electron1.electronID("tight50nsRun2");
   return;
 }
 
