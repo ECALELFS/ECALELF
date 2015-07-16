@@ -318,7 +318,7 @@ private:
   std::vector<float> energyRecHitSCEle[3];
   std::vector<float>     LCRecHitSCEle[3];
   std::vector<float>     ICRecHitSCEle[3];
-  std::vector<float>  AlphaRecHitSCEle[3];
+  float  seedLaserAlphaSCEle[3];
   //==============================
 
   //============================== check ele-id and iso
@@ -404,6 +404,7 @@ private:
   EcalClusterLazyTools *clustertools;
   //  EcalClusterLocal _ecalLocal;
 
+  const EcalLaserAlphaMap* theEcalLaserAlphaMap; 
 
   std::set<unsigned int> alcaSkimPathIndexes;
   edm::ParameterSetID alcaSkimPathID;
@@ -598,6 +599,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //------------------------------
   clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG, 
 					   recHitCollectionEETAG);  
+
+  edm::ESHandle<EcalLaserAlphas> theEcalLaserAlphas;
+  iSetup.get<EcalLaserAlphasRcd>().get(theEcalLaserAlphas);
+  theEcalLaserAlphaMap = theEcalLaserAlphas.product();
+
 
   //------------------------------ electrons
   if (eventType==ZMMG) {
@@ -1870,8 +1876,10 @@ void ZNtupleDumper::InitExtraCalibTree(){
   extraCalibTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
   extraCalibTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
   extraCalibTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
-  extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
-  extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
+  //  extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
+  //extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
+  extraCalibTree->Branch("seedLaserAlphaSCEle1", &(seedLaserAlphaSCEle[0]));
+  extraCalibTree->Branch("seedLaserAlphaSCEle2", &(seedLaserAlphaSCEle[1]));
 
   return;
 }
@@ -1901,7 +1909,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
     energyRecHitSCEle[-index].clear();
     LCRecHitSCEle[-index].clear();
     ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
+    seedLaserAlphaSCEle[-index] =-99.;
     return;
   }
 
@@ -1913,7 +1921,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+  seedLaserAlphaSCEle[index] = -99.;
 
   //  EcalIntercalibConstantMap icMap = icHandle->get()
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
@@ -1969,6 +1977,15 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
       ICRecHitSCEle[index].push_back(icalconst);
     }
 
+  DetId seedDetId = electron1.seed()->seed();
+  if(seedDetId.null()){
+    seedDetId = findSCseed(*(electron1.superCluster()));
+  }
+
+  EcalLaserAlphaMap::const_iterator italpha = theEcalLaserAlphaMap->find(seedDetId);
+  if( italpha != theEcalLaserAlphaMap->end() )
+    seedLaserAlphaSCEle[index] = (*italpha);
+
   return;
 }
 
@@ -1983,7 +2000,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
     energyRecHitSCEle[-index].clear();
     LCRecHitSCEle[-index].clear();
     ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
+    seedLaserAlphaSCEle[-index] =-99.;
     return;
   }
 
@@ -1995,7 +2012,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+  seedLaserAlphaSCEle[index] =-99.;
 
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
   nHitsSCEle[index] = hitsAndFractions_ele1.size();
@@ -2075,6 +2092,15 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
     ICRecHitSCEle[index].push_back(icalconst);
  
   }
+
+  DetId seedDetId = electron1.seed()->seed();
+  if(seedDetId.null()){
+    seedDetId = findSCseed(electron1);
+  }
+
+  EcalLaserAlphaMap::const_iterator italpha = theEcalLaserAlphaMap->find(seedDetId);
+  if( italpha != theEcalLaserAlphaMap->end() )
+    seedLaserAlphaSCEle[index] = (*italpha);
   
   return;
 }
@@ -2100,7 +2126,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index){
     energyRecHitSCEle[-index].clear();
     LCRecHitSCEle[-index].clear();
     ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
+    seedLaserAlphaSCEle[-index] =-99.;
     return;
   }
 
@@ -2112,7 +2138,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index){
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+  seedLaserAlphaSCEle[index] =-99.;
 
   //  EcalIntercalibConstantMap icMap = icHandle->get()
   std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = photon.superCluster()->hitsAndFractions();
@@ -2168,6 +2194,15 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index){
       ICRecHitSCEle[index].push_back(icalconst);
     }
 
+  DetId seedDetId = photon.seed()->seed();
+  if(seedDetId.null()){
+    seedDetId = findSCseed(*(photon.superCluster()));
+  }
+
+  EcalLaserAlphaMap::const_iterator italpha = theEcalLaserAlphaMap->find(seedDetId);
+  if( italpha != theEcalLaserAlphaMap->end() )
+    seedLaserAlphaSCEle[index] = (*italpha);
+
   return;
 }
 
@@ -2182,7 +2217,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Muon& muon1, int index){
     energyRecHitSCEle[-index].clear();
     LCRecHitSCEle[-index].clear();
     ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
+    seedLaserAlphaSCEle[-index] =-99.;
     return;
   }
 
@@ -2194,7 +2229,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Muon& muon1, int index){
   energyRecHitSCEle[index].clear();
   LCRecHitSCEle[index].clear();
   ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+  seedLaserAlphaSCEle[index] =-99.;
 
   return;
 }
