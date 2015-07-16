@@ -1,5 +1,4 @@
 #!/bin/bash
-################
 # Semplified script for rereco and ntuple of 2011 and 2012 data
 ##############
 NTUPLE_REMOTE_DIR=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
@@ -36,12 +35,14 @@ usage(){
     echo "    --crabVersion (=2)"
     echo "--------------- ECALELF Tutorial"
     echo "    --tutorial"
+    echo "--------------- Expert Option"
+    echo "    --ntupleCheck: In the case that only ntuple are being run because alrerereco was done previously"
 }
 
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,alcarerecoOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree -- "$@")
+if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -75,6 +76,7 @@ do
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
 	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check";;
+	--ntupleCheck)      echo "[OPTION] checking nutple jobs"; NUTPLECHECK=y; EXTRAOPTION="--ntupleCheck";;
 	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; unset NTUPLE; EXTRAEXTRAOPTION="--alcarerecoOnly";;
 	#--ntupleOnly) echo "[OPTION] ntupleOnly"; unset RERECO; EXTRAEXTRAOPTION="--ntupleOnly";;
  	--crabVersion) crabVersion=$2;  shift;;
@@ -90,7 +92,6 @@ do
     esac
     shift
 done
-
 #------------------------------ checking
 
 if [ ! -r "$TAGFILE" ];then
@@ -150,10 +151,9 @@ for dataset in $datasets
   #  DATASETNAME=`echo $dataset | cut -d ' ' -f 6`
   echo " [INFO] Dataset $dataset"
   #--ui_working_dir ${UI_WORKING_DIR} \
-
   echo "============================================================"
   ./scripts/prodAlcarereco.sh -t ${TAGFILE} \
-      --scheduler $SCHEDULER --crabVersion=${crabVersion} --json_name=${JSONFILE} --json_name=${JSONNAME} \
+      --scheduler=$SCHEDULER --crabVersion=${crabVersion} --json=${JSONFILE} --json_name=${JSONNAME} \
       ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} ${TUTORIAL} $dataset 
 
 done

@@ -146,7 +146,7 @@ setUserRemoteDirNtuple(){
 
 setUserRemoteDirAlcareco(){
     #$1=USER_REMOTE_DIR_BASE
-	if [ "$FROMCRAB3"==1 ];then
+	if [ "$FROMCRAB3" == 1 ];then
 		echo "DATASETPATH $DATASETPATH"
 	  DATASETPATHSHORT=`echo  $DATASETPATH | awk 'NR==1 {split($1, arr, "[/]"); print arr[2]}' `
 		echo "DATASETPATH SHORT $DATASETPATHSHORT"
@@ -174,4 +174,5 @@ setGT(){
     energy=$2
     type=$3
     SQRTS=$ENERGY
+		}
 

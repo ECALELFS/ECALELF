@@ -64,7 +64,7 @@ expertUsage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:u: -l help,expertHelp,file_per_job:,nJobs:,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,rereco_remote_dir:,ui_working_dir:,scheduler:,createOnly,submitOnly,check,crabVersion:,json:,json_name:,doExtraCalibTree,doEleIDTree,noStandardTree,alcarerecoOnly,tutorial -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:u: -l help,expertHelp,file_per_job:,nJobs:,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,rereco_remote_dir:,ui_working_dir:,scheduler:,createOnly,submitOnly,check,ntupleCheck,crabVersion:,json:,json_name:,doExtraCalibTree,doEleIDTree,noStandardTree,alcarerecoOnly,tutorial -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -90,9 +90,10 @@ do
 	--doExtraCalibTree) DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doExtraCalibTree";;
 	--doEleIDTree)      DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doEleIDTree";;
 	--noStandardTree)   DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --noStandardTree";;
-	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
-	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
+	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
+	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
+	--ntupleCheck)      echo "[OPTION] checking ntuple jobs"; unset CREATE; unset SUBMIT; NTUPLECHECK=y; EXTRAOPTION="--check";;
 	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; DOTREE=0;;
 	--rereco_remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
@@ -235,10 +236,11 @@ if [ -z "${TUTORIAL}" ];then
 	echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 	if [ "${DOTREE}" == "1" ]; then
 	    echo "          Doing only ntuples"
-	    if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
+	    if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
 		echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 		exit 0
 	    fi
+				echo "[INFO] using prodNtuples "
 	    ./scripts/prodNtuples.sh -r ${RUNRANGE} -d ${DATASETPATH} -n ${DATASETNAME} --store ${STORAGE_ELEMENT} --remote_dir ${USER_REMOTE_DIR_BASE} --type=ALCARERECO --json=${JSONFILE} --json_name=${JSONNAME} -t ${TAGFILE} ${DOEXTRACALIBTREE} ${EXTRAOPTION}
 	    exit 0
 	fi
@@ -395,7 +397,26 @@ fi
 
 if [ -n "${SUBMIT}" ]; then
 	case ${CRABVERSION} in
-   2)  crab -c ${UI_WORKING_DIR} -submit all;;
+   2)  crab -c ${UI_WORKING_DIR} -submit all;
+	 
+#    if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
+#	echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+#	if [ "${DOTREE}" == "1" ]; then
+#	    echo "          Doing only ntuples"
+#	    if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
+#		echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+#		exit 0
+#	    fi
+#				echo "[INFO] using prodNtuples "
+#	    ./scripts/prodNtuples.sh -r ${RUNRANGE} -d ${DATASETPATH} -n ${DATASETNAME} --store ${STORAGE_ELEMENT} --remote_dir ${USER_REMOTE_DIR_BASE} --type=ALCARERECO --json=${JSONFILE} --json_name=${JSONNAME} -t ${TAGFILE} ${DOEXTRACALIBTREE} ${EXTRAOPTION}
+#	    exit 0
+#	fi
+#	exit 0
+#    fi
+	 
+	 
+	 
+	 ;;
 	 3)
 			echo "[INFO] submitting to CRAB3"
 			crab submit -c $crab3File
@@ -414,9 +435,27 @@ elif [ -n "${CREATE}" ];then
     echo "crab -c ${UI_WORKING_DIR} -submit all"
 fi
 
+if [ -n "${NTUPLECHECK}" ];then
+#   if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
+#	echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+#	if [ "${DOTREE}" == "1" ]; then
+#	    echo "          Doing only ntuples"
+#	    if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
+#		echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+#		exit 0
+#    fi
+				echo "[INFO] using prodNtuples "
+	    ./scripts/prodNtuples.sh -r ${RUNRANGE} -d ${DATASETPATH} -n ${DATASETNAME} --store ${STORAGE_ELEMENT} --remote_dir ${USER_REMOTE_DIR_BASE} --type=ALCARERECO --json=${JSONFILE} --json_name=${JSONNAME} -t ${TAGFILE} ${DOEXTRACALIBTREE} ${EXTRAOPTION}
+    exit 0
+#	fi
+#	exit 0
+#    fi
+fi
+
 if [ -n "${CHECK}" ];then
 	case ${CRABVERSION} in
 		2)
+		echo"[INFO] UI_WORKING_DIR  ${UI_WORKING_DIR} "
     resubmitCrab.sh -u ${UI_WORKING_DIR}
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
 	#echo $dir >> tmp/$TAG.log 
