@@ -829,7 +829,7 @@ int main(int argc, char **argv) {
 
   //  if(vm.count("dataPU")==0 && (tagChainMap["s"]).count("pileupHist")==0 && (tagChainMap["s"]).count("pileup")==0){
 
-  if(vm.count("noPU")==0 && !vm.count("runToy") && !vm.count("laserMonitoringEP")){
+  if(vm.count("noPU")==0 && !vm.count("runToy") && !vm.count("laserMonitoringEP") && !vm.count("EOverPCalib")){
     if(dataPUFileNameVec.empty() && (tagChainMap.count("s")!=0) && (tagChainMap["s"]).count("pileup")==0){
       std::cerr << "[ERROR] Nor pileup mc tree configured in chain list file either dataPU histograms are not provided" << std::endl;
       return 1;
