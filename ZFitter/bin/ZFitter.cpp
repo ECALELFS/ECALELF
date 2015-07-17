@@ -2286,8 +2286,8 @@ int main(int argc, char **argv) {
   s_EoC_spread -> SetStatFormat("1.4g");
   s_EoC_spread->SetX1NDC(0.06); //new x start position
   s_EoC_spread->SetX2NDC(0.71); //new x end position
-  s_EoC_spread->SetY1NDC(0.93); //new x start position
-  s_EoC_spread->SetY2NDC(0.84); //new x end position
+  s_EoC_spread->SetY1NDC(0.43); //new x start position
+  s_EoC_spread->SetY2NDC(0.34); //new x end position
   s_EoC_spread -> SetOptStat(1100);
   s_EoC_spread ->SetTextColor(kGreen+2);
   s_EoC_spread ->SetTextSize(0.08);
@@ -2302,8 +2302,8 @@ int main(int argc, char **argv) {
   s_EoP_spread -> SetStatFormat("1.4g");
   s_EoP_spread->SetX1NDC(0.06); //new x start position
   s_EoP_spread->SetX2NDC(0.71); //new x end position
-  s_EoP_spread->SetY1NDC(0.83); //new x start position
-  s_EoP_spread->SetY2NDC(0.74); //new x end position
+  s_EoP_spread->SetY1NDC(0.33); //new x start position
+  s_EoP_spread->SetY2NDC(0.24); //new x end position
   s_EoP_spread ->SetOptStat(1100);
   s_EoP_spread ->SetTextColor(kRed+2);
   s_EoP_spread ->SetTextSize(0.08);
