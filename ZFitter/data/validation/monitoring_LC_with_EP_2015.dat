@@ -1,0 +1,7 @@
+#s       selected    	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3/allRange/v3/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3-allRange.root
+#d 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple_DoubleElectron-ZSkim-RUN2015D-13Jul15-v1.root
+#s 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple_DoubleElectron-ZSkim-RUN2015D-13Jul15-v1.root
+d 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple.root
+d 	extraCalibTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/extraCalibTree.root
+s 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple.root
+s 	extraCalibTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/extraCalibTree.root
