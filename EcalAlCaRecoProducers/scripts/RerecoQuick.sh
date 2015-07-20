@@ -11,6 +11,7 @@ SUBMIT=y  #not used
 #RERECO=y  #not used
 fileList=alcaraw_datasets.dat
 crabVersion=2
+DOEXTRACALIBTREE=" "
 
 
 usage(){
@@ -94,6 +95,8 @@ do
 done
 #------------------------------ checking
 
+echo "DEBUG QUIRRERECO DOEXTRACALIBTREE ++$DOEXTRACALIBTREE++"
+
 if [ ! -r "$TAGFILE" ];then
     echo "[ERROR] TAGFILE not found or not readable" >> /dev/stderr
     exit 1
@@ -151,10 +154,17 @@ for dataset in $datasets
   #  DATASETNAME=`echo $dataset | cut -d ' ' -f 6`
   echo " [INFO] Dataset $dataset"
   #--ui_working_dir ${UI_WORKING_DIR} \
+echo "DEBUG 
+  ./scripts/prodAlcarereco.sh -t ${TAGFILE} \
+      --scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--json=${JSONFILE} --json_name=${JSONNAME} --crabVersion=${crabVersion}\
+      ${TUTORIAL} $dataset
+			"
   echo "============================================================"
   ./scripts/prodAlcarereco.sh -t ${TAGFILE} \
-      --scheduler=$SCHEDULER --crabVersion=${crabVersion} --json=${JSONFILE} --json_name=${JSONNAME} \
-      ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} ${TUTORIAL} $dataset 
+      --scheduler=$SCHEDULER${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--json=${JSONFILE} --json_name=${JSONNAME} --crabVersion=${crabVersion}\
+      ${TUTORIAL} $dataset 
 
 done
 

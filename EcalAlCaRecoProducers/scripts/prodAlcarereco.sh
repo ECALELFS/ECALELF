@@ -17,6 +17,7 @@ CREATE=y
 SUBMIT=y
 DOTREE=1
 TYPE=ALCARERECO
+OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
 CRABVERSION=3
 crab3File=tmp/alcarereco_cfg.py
@@ -87,9 +88,9 @@ do
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doExtraCalibTree";;
-	--doEleIDTree)      DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doEleIDTree";;
-	--noStandardTree)   DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --noStandardTree";;
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2;echo "DEBUG LC "; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doEleIDTree) let DOTREE=${DOTREE}+4;;
+	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
@@ -109,6 +110,8 @@ do
     shift
 done
 
+echo "DEBUG ALCARERECO DOEXTRACALIBTREE $DOEXTRACALIBTREE"
+echo "DEBUG DOTREEE $DOTREE"
 
 #------------------------------ checking
 if [ -z "$DATASETPATH" ];then 
@@ -308,7 +311,7 @@ pycfg_params= type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 j
 runselection=${RUNRANGE}
 split_by_run=0
 
-output_file=ntuple.root
+output_file=${OUTFILES}
 get_edm_output=1
 check_user_remote_dir=1
 use_parent=${USEPARENT}
@@ -452,6 +455,8 @@ if [ -n "${NTUPLECHECK}" ];then
 #    fi
 fi
 
+OUTFILES=`echo ${OUTFILES} | sed 's|,| |'`
+
 if [ -n "${CHECK}" ];then
 	case ${CRABVERSION} in
 		2)
@@ -461,7 +466,12 @@ if [ -n "${CHECK}" ];then
 	#echo $dir >> tmp/$TAG.log 
 	echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
     else
-	mergeOutput.sh -u ${UI_WORKING_DIR} -g ntuple --merged_remote_dir=${NTUPLE_REMOTE_DIR}
+	for file in $OUTFILES
+	  do
+	  file=`basename $file .root`
+		echo "[INF0] Merging $file files"
+	mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --merged_remote_dir=${NTUPLE_REMOTE_DIR}
+	done
     fi
 		;;
 		3)
