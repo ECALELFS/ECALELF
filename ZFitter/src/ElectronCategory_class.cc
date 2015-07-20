@@ -1,7 +1,5 @@
 //#define DEBUG
 #include "../interface/ElectronCategory_class.hh"
-#include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
-
 #define OldDefinitions
 #define GAP
 #include <TPRegexp.h>
@@ -92,8 +90,6 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 std::set<TString> ElectronCategory_class::GetCutSet(TString region){
   TCut cut_string;
   cut_string.Clear();
-
-  eleIDMap eleID_map;
 
   std::set<TString> cutSet;
   // events %2 == 0 are dropped
@@ -699,8 +695,6 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       TObjString *Objstring1 = (TObjString *) splitted->At(1);
             
       TString string1 = Objstring1->GetString();
-      string1.Form("%d",eleID_map.eleIDmap[string1.Data()]);
-      /*
       if(string1=="loose") string1="2";
       else if(string1=="medium") string1="6";
       else if(string1=="tight") string1="14";
@@ -712,10 +706,9 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       else if(string1=="loose50nsRun2") string1="1024";
       else if(string1=="medium50nsRun2") string1="3072";
       else if(string1=="tight50nsRun2") string1="7168";
-      */
 
-      TCut cutEle1("(eleID[0] & "+string1+")=="+string1);
-      TCut cutEle2("(eleID[1] & "+string1+")=="+string1);
+      TCut cutEle1("(eleID_ele1 & "+string1+")=="+string1);
+      TCut cutEle2("(eleID_ele2 & "+string1+")=="+string1);
 
       cut_string+=cutEle1 && cutEle2;
       cutSet.insert(TString(cutEle1 && cutEle2));
