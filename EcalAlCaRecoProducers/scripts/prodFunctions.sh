@@ -72,6 +72,10 @@ setEnergy(){
 	    #echo "[INFO] Run on 2012 data: ENERGY=8TeV"
 	    ENERGY=8TeV
 	    ;;
+	*Run2015*)
+	    #echo "[INFO] Run on 2011 data: ENERGY=7TeV"
+	    ENERGY=13TeV
+	    ;;
 	*Run2011*)
 	    #echo "[INFO] Run on 2011 data: ENERGY=7TeV"
 	    ENERGY=7TeV
@@ -142,7 +146,7 @@ setUserRemoteDirNtuple(){
 
 setUserRemoteDirAlcareco(){
     #$1=USER_REMOTE_DIR_BASE
-	if [ "$FROMCRAB3"==1 ];then
+	if [ "$FROMCRAB3" == 1 ];then
 		echo "DATASETPATH $DATASETPATH"
 	  DATASETPATHSHORT=`echo  $DATASETPATH | awk 'NR==1 {split($1, arr, "[/]"); print arr[2]}' `
 		echo "DATASETPATH SHORT $DATASETPATHSHORT"
@@ -170,4 +174,5 @@ setGT(){
     energy=$2
     type=$3
     SQRTS=$ENERGY
+		}
 

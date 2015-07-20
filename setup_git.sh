@@ -48,12 +48,6 @@ cd $CMSSW_BASE/src
 echo "[STATUS] Download of the skims"
 # last WSkim version
 git cms-init
-git-cms-addpkg DataFormats/EgammaCandidates  #>> setup.log || exit 1
-cmsenv
-
-#########################################################################################
-echo "[STATUS] Patch GsfElectrons for ECALELF rereco"
-sed -i 's|[/]*assert|////assert|' DataFormats/EgammaCandidates/src/GsfElectron.cc 
 
 #########################################################################################
 echo "[STATUS] Download ECALELF directory"
@@ -62,12 +56,9 @@ if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
 	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-	    ;;
-	lcorpe)
-	    git clone git@github.com:ldcorpe/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-			cd $myDir
-			git checkout testMergeCMSSW
-			cd -
+		cd $myDir
+		git checkout newMaster
+		cd -
 	    ;;
 	lbrianza)
 	    git clone git@github.com:lbrianza/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
@@ -87,8 +78,8 @@ if [ ! -d "$myDir" ];then
 	    ;;
 	*)
             ### if you are not Shervin download this to have some useful scripts
-	    git clone https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
-	    cd $myDir/ALCARAW_RECO/
+	    git clone -b topic-quickrereco_sh-fix-v2 https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    cd $myDir/EcalAlCaRecoProducers/
 	    git clone https://github.com/ECALELFS/Utilities.git bin
 	    ;;
     esac
@@ -100,6 +91,12 @@ cd $CMSSW_BASE/src
 # - Last stable pattuple code:
 case $CMSSW_VERSION in
     CMSSW_5_*)
+		git-cms-addpkg DataFormats/EgammaCandidates  #>> setup.log || exit 1
+
+		echo "[STATUS] Patch GsfElectrons for ECALELF rereco"
+		sed -i 's|[/]*assert|////assert|' DataFormats/EgammaCandidates/src/GsfElectron.cc 
+
+
 	git clone https://github.com/cms-cvs-history/DPGAnalysis-Skims DPGAnalysis/Skims  >> setup.log || exit 1
 	cd DPGAnalysis/Skims/
 	git checkout DPGAnalysis-Skims-V01-00-07  >> setup.log || exit 1
@@ -225,15 +222,19 @@ case $CMSSW_VERSION in
     fi
 
     cp /afs/cern.ch/user/b/bendavid/cmspublic/regweights52xV3/*.root $myDir/EleNewEnergiesProducer/data/ >> setup.log || exit 1
-;;
-
+	;;
+	
+	CMSSW_7_4_*)
+		git cms-addpkg  Configuration/DataProcessing/
+		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch
+		;;
     CMSSW_7_5_*)
 #	git-cms-addpkg EgammaAnalysis/ElectronTools >> setup.log || exit 1
 	
 	echo "downloading changes to alcareco streams needed to use cmsDriver.py"
 	git cms-addpkg Configuration/EventContent
 	git cms-addpkg Configuration/StandardSequences
-  git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
+	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 
 #	cd EgammaAnalysis/ElectronTools/data/ >> setup.log || exit 1
 #	cat download.url | grep '.root' | xargs wget  >> setup.log || exit 1

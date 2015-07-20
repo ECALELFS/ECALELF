@@ -1,4 +1,5 @@
 #!/bin/bash
+resource=type==SLC6_64
 source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.sh
 ############################### OPTIONS
 #------------------------------ default
@@ -21,7 +22,7 @@ NJOBS=100
 OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
-CRABVERSION=3
+CRABVERSION=2
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
 usage(){
@@ -61,7 +62,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hd:n:s:r:t: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,type:,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,jobname:,doTree,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,njobs:,publish,fromRAW,tutorial,tag:,tagFile:,develRelease -- "$@")
+if ! options=$(getopt -u -o hd:n:s:r:t: -l help,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,dbs_url:,scheduler:,isMC,type:,submit,white_list:,black_list:,createOnly,submitOnly,check,json:,jobname:,doTree,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,njobs:,publish,fromRAW,tutorial,tag:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -81,7 +82,6 @@ do
 	--store) STORAGE_ELEMENT=$2; shift;;
 	--remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
 	--dbs_url)    DBS_URL=$2; shift;;
-	--tagFile)    DBS_URL=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
 	--isMC) echo "[OPTION] Input dataset is MC" ; ISMC="yes" ;;
 	--type) TYPE=$2 ; shift;;
@@ -190,6 +190,30 @@ if [ -n "${TUTORIAL}" ];then
 fi
 ###############################
 #------------------------------
+case $DATASETPATH in
+    */RECO)
+	echo "[INFO] Dataset is RECO, using parent for RAW"
+	USEPARENT=1
+	;;
+    */AOD)
+	USEPARENT=1
+	;;
+    */RAW-RECO)
+	USEPARENT=0
+	;;
+    */USER)
+	USEPARENT=0
+	;;
+    */RAW)
+	USEPARENT=0
+	;;
+    *)
+	echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
+	exit 1
+	;;
+esac
+
+
 if [ -z "${SKIM}" ];then
     case $DATASETPATH in
 	*DoubleElectron* | *ZElectron* )
@@ -287,7 +311,7 @@ echo "[INFO Run Range ${RUNRANGE}"
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 echo "[INFO] Generating CMSSW configuration"
-cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG}
+cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
 
 echo "[INFO] Generating CRAB3 configuration"
 TYPENAME=$TYPE
@@ -304,7 +328,7 @@ queue = 1nd
 #resource = type==SLC5_64
 [CAF]
 queue = cmscaf1nd
-resource = type==SLC5_64
+#resource = type==SLC5_64
 EOF
 
 cat > ${crab3File} <<EOF
@@ -319,7 +343,7 @@ config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = '${DATASETPATH}'
 config.Data.inputDBS = '${DBS_URL}'
 config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 3
+config.Data.unitsPerJob = 10
 config.Data.lumiMask = '${JSONFILE}'
 config.Data.runRange = '${RUNRANGE}'
 config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
@@ -343,8 +367,9 @@ if [ -n "${DBS_URL}" ];then
 fi
 
 cat >> ${crab2File} <<EOF
-pset=python/alcaSkimming.py
-pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
+pset=${CMSSWCONFIG}
+#pset=python/alcaSkimming.py
+#pycfg_params=output=${OUTPUTFILE}.root skim=${SKIM} type=$TYPE doTree=${DOTREE} jsonFile=${JSONFILE} secondaryOutput=ntuple.root isCrab=1 
 
 runselection=${RUNRANGE}
 split_by_run=0
@@ -370,16 +395,14 @@ total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 EOF
 
-if [ -n "${CREATE}" ] && [ -z "${SUBMIT}" ];then
-echo "[INFO] to submit please use option --submitOnly"
-exit 1
 fi
+
 
 if [ -n "${DEVEL_RELEASE}" ]; then
 cat >> ${crab2File} <<EOF
 allow_NonProductionCMSSW = 1
 EOF
-
+fi
 
 ###
 cat >> ${crab2File} <<EOF
@@ -423,17 +446,22 @@ se_black_list=$BLACKLIST
 EOF
 
 fi
-fi
 
 
 if [ -n "${CREATE}" ];then
     case ${CRABVERSION} in
 	2)
+			echo " [INFO] Creating Crab2 job "
 	    crab -cfg ${crab2File} -create || exit 1
 	    ;;
 	3)
 	    ;;
     esac
+fi
+
+if [ -n "${CREATE}" ] && [ -z "${SUBMIT}" ];then
+echo "[INFO] to submit please use option --submitOnly"
+exit 1
 fi
 
  #if [ "$TYPE" == "ALCARECOSIM" ];then
@@ -450,7 +478,7 @@ fi
 # echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 # else
 # mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}
-fi
+
 if [ -n "$SUBMIT" ]; then
     case ${CRABVERSION} in
 	2)     crab -c ${UI_WORKING_DIR} -submit all;;
