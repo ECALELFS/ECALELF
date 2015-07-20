@@ -1,29 +1,31 @@
 {
+  int i=0;
+
+  TCanvas *c[200];
+
+  TString dataLabel="data";
+
   std::vector<TString> mcLabel_vec;
-  mcLabel_vec.push_back("Madgraph");
-  mcLabel_vec.push_back("Powheg");
-  mcLabel_vec.push_back("Sherpa");
+  mcLabel_vec.push_back("MC");
+  //  mcLabel_vec.push_back("Powheg");
+  //  mcLabel_vec.push_back("Sherpa");
 
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "invMass_SC", "(30,60,120)", "EB", "", dataLabel,mcLabel_vec, "invMass_SC", "",outputPath,"invMass_SC",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "esEnergySCEle/(rawEnergySCEle+esEnergySCEle)", "(100,0,0.2)", "EB", "", dataLabel,mcLabel_vec, "ES energy fraction: ES/(rawSC+ES)", "",outputPath,"esEnergyFraction",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "energySCEle/(rawEnergySCEle+esEnergySCEle)", "(100,0.99,1.15)", "EB-eleID_7-Et_25", "", dataLabel,mcLabel_vec, "Energy corrections F: E_{SC}/(E_{rawSC}+E_{ES})", "",outputPath,"energyCorrections_EB",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "energySCEle/(rawEnergySCEle+esEnergySCEle)", "(100,0.99,1.15)", "EE-eleID_7-Et_25", "", dataLabel,mcLabel_vec, "Energy corrections F: E_{SC}/(E_{rawSC}+E_{ES}) ", "",outputPath,"energyCorrections_EE",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "nPV", "(30,0,30)", "eleID_7-Et_25", "", dataLabel,mcLabel_vec, "nVtx ", "",outputPath,"nPV",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "rho", "(60,-1,29)", "eleID_7-Et_25", "", dataLabel,mcLabel_vec, "#rho ", "",outputPath,"rho",false,false)); i++;
+  // kinematic variables
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "energySCEle", "(100,0,200)", "eleID_7", "", dataLabel,mcLabel_vec, "energy SC [GeV] ", "",outputPath,"energySCEle",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "etaEle", "(100,-2.5,2.5)", "eleID_7-Et_25", "", dataLabel,mcLabel_vec, "#eta ", "",outputPath,"etaEle",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "phiEle", "(100,-3.14,3.14)", "eleID_7-Et_25", "", dataLabel,mcLabel_vec, "#phi ", "",outputPath,"phiEle",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "R9Ele", "(100,0.3,1.4)", "EB-eleID_7-Et_25", "", dataLabel,mcLabel_vec, "R_{9} ", "",outputPath,"R9Ele_EB",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "R9Ele", "(100,0.3,1.4)", "EB-eleID_7-Et_25", "", dataLabel,mcLabel_vec, "R_{9} ", "",outputPath,"R9Ele_EB-log",true,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "R9Ele", "(100,0.3,1.4)", "EE-eleID_7-Et_25", "", dataLabel,mcLabel_vec, "R_{9} ", "",outputPath,"R9Ele_EE",false,false)); i++;
+  c[i] = new TCanvas (PlotDataMCs(data,MakeChainVector(signalA), "R9Ele", "(100,0.3,1.4)", "EE-eleID_7-Et_25", "", dataLabel,mcLabel_vec, "R_{9} ", "",outputPath,"R9Ele_EE-log",true,false)); i++;
 
-  // pileup
-  c = PlotDataMC(data, signal, "nPV", "(30,0,30)", ""+commonCut, "", dataLabel+*l_itr, mcLabel, "nVtx", ""); 
-  c->SaveAs(outputPath+"nPV.eps");
-  delete c;
-
-//   c = PlotDataMCs(data, MakeChainVector(signalA,signalB,signalC), "etaEle", "(100,-2.5,2.5)", "eleID_loose-trigger-noPF-Et_25", "", "", mcLabel_vec, "#eta", "", false, true, true,false,false,false); 
-//    c->SaveAs(outputPath+"etaEle-Et_25.eps");
-//    //c->SaveAs(outputPath+"etaEle-Et_25.png");
-//    c->SaveAs(outputPath+"etaEle-Et_25.C");
-//   delete c;
-
-
-}
-
-
-
-
-
-
+/*
 
   TString dataLabel="22Jan ", mcLabel="Simulation";
   std::vector<TString> runPeriods, labels;
@@ -41,12 +43,13 @@
       p_itr != runPeriods.end();
       p_itr++,l_itr++){
     int index=p_itr-runPeriods.begin();
+    }
 
   TString commonCut="eleID_WP80PU-Et_25-noPF-trigger"+*p_itr;
   //TString outputPath="tmp/"; //test/dato/rereco/rereco29Jun-RUN2011/rereco29Jun-RUN2011/WP80_PU/img/";
   //TString outputPath="test/dato/moriond2013/WP80_PU/img/";
   outputPath=outPath+"/"+commonCut+"/";
-  
+
   system(("mkdir -p "+outputPath).Data());
   
   c = PlotDataMC(data, signal, "nHitsSCEle", "(100,0,100)", "EB-"+commonCut,"", dataLabel+*l_itr, mcLabel, "nHits SC", ""); 
@@ -142,26 +145,6 @@
   c->SaveAs(outputPath+"R9Ele_EE-log.eps");
 
   // Checking fit selection
-}
-}
 
-  c = PlotDataMC2D(data, signal, "seedYSCEle:seedXSCEle", "(100,0,100,100,0,100)", "EERefReg-gold-"+commonCut,"", dataLabel+*l_itr, mcLabel, "Reference Region map", "",1);
-  c->SaveAs(outputPath+"EERefRegMap.eps");
-  delete c;
-
-}
-
-  c = PlotDataMC2D(data, signal, "seedYSCEle:seedXSCEle", "(171,-85,86,361,0,361)", "EBRefReg-gold-"+commonCut,"", dataLabel+*l_itr, mcLabel, "Reference Region map", "",1);
-  c->SaveAs(outputPath+"EBRefRegMap.eps");
-  delete c;
-  
-  c = PlotDataMC2D(data, signal, "seedYSCEle:seedXSCEle", "(100,0,100,100,0,100)", "EERefReg-gold-"+commonCut,"", dataLabel+*l_itr, mcLabel, "Reference Region map", "",1);
-  c->SaveAs(outputPath+"EERefRegMap.eps");
-  delete c;
-
-  //PlotDataMC(data, signal, "energySCEle", "(100,0,200)", "", dataLabel+*l_itr, "DY Summer 12", "energy SC [GeV]", ""); 
-  //PlotDataMC(data, signal, "R9Ele", "(100,0,1.1)", "abs(etaEle)<1.5", dataLabel+*l_itr, "DY Summer 12", "R9", ""); 
-  //PlotDataMC(data, signal, "R9Ele", "(100,0,1.1)", "abs(etaEle)>1.5", dataLabel+*l_itr, "DY Summer 12", "R9", ""); 
-// PlotDataMC(data, signal, "R9Ele:etaEle", "(100,-3,3,100,0,1.1)", "", dataLabel+*l_itr, "DY Summer 12", "#eta", "R9"); 
-}
+*/
 }
