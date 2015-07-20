@@ -51,7 +51,6 @@ usage(){
     echo "    --njobs nJobs : number of jobs, an integer (only crab2)"
     echo "    --publish : Publish output dataset on DAS"
     echo "----------"
-    echo "    --tagFile extract GlobalTag from tagFile"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
     echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
     echo "----------"
@@ -190,29 +189,6 @@ if [ -n "${TUTORIAL}" ];then
 fi
 ###############################
 #------------------------------
-case $DATASETPATH in
-    */RECO)
-	echo "[INFO] Dataset is RECO, using parent for RAW"
-	USEPARENT=1
-	;;
-    */AOD)
-	USEPARENT=1
-	;;
-    */RAW-RECO)
-	USEPARENT=0
-	;;
-    */USER)
-	USEPARENT=0
-	;;
-    */RAW)
-	USEPARENT=0
-	;;
-    *)
-	echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
-	exit 1
-	;;
-esac
-
 
 if [ -z "${SKIM}" ];then
     case $DATASETPATH in
@@ -243,18 +219,36 @@ esac
 
 case $TYPE in 
     EcalCal | ALCARECO)
-	case $SKIM in
-	    ZSkim)
-		ALCATYPE="ALCA:EcalCalZElectron"
-		;;
-	    WSkim)
-		ALCATYPE="ALCA:EcalCalWElectron"
-		EVENTS_PER_JOB=20000
-		;;
-	    none) EVENTS_PER_JOB=20000;;
-	esac
-	;;
+ case $SKIM in
+     ZSkim)
+  ALCATYPE="ALCA:EcalCalZElectron"
+  ;;
+     WSkim)
+  ALCATYPE="ALCA:EcalCalWElectron"
+  EVENTS_PER_JOB=20000
+  ;;
+     none) EVENTS_PER_JOB=20000;;
+ esac
+ ;;
     EcalUncal | ALCARAW )
+   case $DATASETPATH in
+       */RECO)
+        echo "[INFO] Dataset is RECO, using parent for RAW"
+        USEPARENT=1
+        ;;
+       */AOD)
+        USEPARENT=1
+        echo "[INFO] Dataset is AOD, using parent for RAW"
+        ;;
+       */RAW-RECO) USEPARENT=0 ;;
+       */USER) USEPARENT=0 ;;
+       */RAW) USEPARENT=0 ;;
+       *)
+        echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
+        exit 1
+        ;;
+   esac
+
 	case $SKIM in
 	    ZSkim)
 		ALCATYPE="ALCA:EcalUncalZElectron"

@@ -19,7 +19,7 @@ DOTREE=1
 TYPE=ALCARERECO
 OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
-CRABVERSION=3
+CRABVERSION=2
 crab3File=tmp/alcarereco_cfg.py
 PUBLISH=False
 DBS_URL=phys03
@@ -88,8 +88,8 @@ do
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) let DOTREE=${DOTREE}+2;echo "DEBUG LC "; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4;;
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
@@ -235,7 +235,7 @@ if [ -n "${CREATE}" ];then
 checkRelease ${DATASETPATH}
 
 if [ -z "${TUTORIAL}" ];then
-    if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
+    if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME}| grep ${JSONNAME} | grep -c $RUNRANGE`" != "0" ];then
 	echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 	if [ "${DOTREE}" == "1" ]; then
 	    echo "          Doing only ntuples"

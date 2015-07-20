@@ -5,11 +5,8 @@ import subprocess
 import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
-from Configuration.StandardSequences.RawToDigi_Data_cff import *
-from RecoLocalCalo.Configuration.RecoLocalCalo_cff import *
 from Calibration.EcalAlCaRecoProducers.customRereco import EcalRecal 
 
-#sys.path(".")
 
 ############################################################
 ### SETUP OPTIONS
@@ -148,12 +145,10 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 
 # import of ALCARECO sequences
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
-process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # reduction of recHits
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
 
-#process.load('Calibration.EcalAlCaRecoProducers.sandboxRerecoSeq_cff')    # ALCARERECO
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_Output_cff')
 # this module provides:
@@ -214,15 +209,6 @@ process.source = cms.Source("PoolSource",
                             skipEvents=cms.untracked.uint32(0)
                             )
 
-# try to drop as much as possible to reduce the running time
-# process.source.inputCommands = cms.untracked.vstring("keep *",
-#                                                      "drop recoPFTaus*_*_*_*", 
-#                                                      "drop recoPFTauDiscriminator*_*_*_*",
-#                                                      "drop *_tevMuons*_*_*",
-# #                                                     "drop *muon*_*_*_*",
-# #                                                     "keep *Electron*_*_*_",
-# #                                                     "keep *electron*_*_*_*"
-#                                                      )
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True)
@@ -829,28 +815,6 @@ else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
     print "[INFO] Running locally: pathPrefix="+pathPrefix
 
-#process.eleNewEnergiesProducer.regrPhoFile=pathPrefix+process.eleNewEnergiesProducer.regrPhoFile.value()
-#process.eleNewEnergiesProducer.regrEleFile=pathPrefix+process.eleNewEnergiesProducer.regrEleFile.value()
-#process.eleNewEnergiesProducer.regrEleFile_fra=pathPrefix+process.eleNewEnergiesProducer.regrEleFile_fra.value()
-# Now files are on CERN EOS, files accessed via xrootd
-#process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV4_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV5_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV4_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV4_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV5_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV5_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV6_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV6_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV7_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV7_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV8_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParamFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParamFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV6_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV6_SemiParam7TeVtrainFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV6_SemiParam7TeVtrainFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV7_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV7_SemiParam7TeVtrainFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV7_SemiParam7TeVtrainFile.value()
-#process.eleNewEnergiesProducer.regrEleJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrEleJoshV8_SemiParam7TeVtrainFile.value()
-#process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile = pathPrefix+process.eleNewEnergiesProducer.regrPhoJoshV8_SemiParam7TeVtrainFile.value()
-
-#    process.eleRegressionEnergy.regressionInputFile = cms.string("EgammaAnalysis/ElectronTools/data/eleEnergyReg2012Weights_V1.root") #eleEnergyRegWeights_WithSubClusters_VApr15.root")
 
 if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
     process.load('Calibration.EcalAlCaRecoProducers.valuemaptraslator_cfi')
@@ -877,13 +841,11 @@ if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
 
 else:
     process.PassingVetoId.src = myEleCollection
-#process.PassingHLT.InputProducer = myEleCollection
 
-#process.eleRegressionEnergy.inputElectronsTag = myEleCollection
+
 process.patElectrons.electronSource = myEleCollection
 process.eleSelectionProducers.electronCollection = myEleCollection
 process.electronMatch.src = myEleCollection
-#process.eleNewEnergiesProducer.electronCollection = myEleCollection
 if (options.skim=="ZmmgSkim"):
     process.alCaIsolatedElectrons.photonLabel = cms.InputTag("gedPhotons")
 
@@ -895,33 +857,9 @@ process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedEl
 process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
 if(options.type=="ALCARERECO"):        
-    # if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
-    #     process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEB")
-    #     process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE")
-    # else:
-    #     process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
-    #     process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
-
-
-#    process.correctedHybridSuperClusters.corectedSuperClusterCollection = 'recalibSC'
-#    process.correctedMulti5x5SuperClustersWithPreshower.corectedSuperClusterCollection = 'endcapRecalibSC'
-#    process.multi5x5PreshowerClusterShape.endcapSClusterProducer = "correctedMulti5x5SuperClustersWithPreshower:endcapRecalibSC"
-
-    # in sandboxRereco
-#    process.reducedEcalRecHitsES.EndcapSuperClusterCollection= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC',processName)
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
-
-    #process.selectedECALElectrons.src = cms.InputTag("electronRecalibSCAssociator")#now done by EcalRecal(process)
-    #process.PassingVetoId.src = recalibElectronSrc#now done by EcalRecal(process)
-   # process.alCaIsolatedElectrons.electronLabel = recalibElectronSrc#now done by EcalRecal(process)
-   # process.alCaIsolatedElectrons.ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")
-   # process.alCaIsolatedElectrons.eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
-   # process.alCaIsolatedElectrons.EESuperClusterCollection = process.reducedEcalRecHitsES.EndcapSuperClusterCollection
     process = EcalRecal(process)
-
-#    process.eleRegressionEnergy.inputElectronsTag = recalibElectronSrc
     process.eleSelectionProducers.electronCollection   = recalibElectronSrc
-#    process.eleNewEnergiesProducer.electronCollection  = recalibElectronSrc
     process.patElectrons.electronSource                = recalibElectronSrc
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
@@ -931,19 +869,12 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
-    #process.zNtupleDumper.SelectEvents = []
-    #process.SCselector.src= cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
-    #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower','endcapRecalibSC', 'ALCARERECO')
-    #process.zNtupleDumper.EESuperClusterCollection = cms.InputTag('correctedMulti5x5SuperClustersWithPreshower')
 
     
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-#process.eleRegressionEnergy.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB.value()
-#process.eleRegressionEnergy.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE.value()
-
 
 
 ############################
