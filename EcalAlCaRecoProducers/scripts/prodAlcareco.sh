@@ -25,6 +25,7 @@ PUBLISH="False"
 CRABVERSION=2
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
+SPLITBYFILE=1
 usage(){
     echo "`basename $0` options"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -289,6 +290,9 @@ if [ "${ISMC}" = "yes" ];then
 unset DATA;
 fi
 
+if [ "$SPLITBYFILE" == 1 ];then
+LUMIS_PER_JOBS=1;
+fi
 
 # make argument.xml file if do MC
 #if [ "$TYPE" == "ALCARECOSIM" ] && [ -n "${CREATE}" ];then
