@@ -716,6 +716,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       //      if(!eleIter1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
       //        continue;
       //      }
+      if(!eleIter1->parentSuperCluster().isNonnull()) continue;
       if(! (eleIter1->electronID("loose50nsRun2")) ) continue;
 
       if(eventType==WENU){
@@ -761,7 +762,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  double t2=TMath::Exp(-eleIter2->eta());
 	  double t2q = t2*t2;
 
-	  if(eleIter1->parentSuperCluster().isNonnull() && eleIter2->parentSuperCluster().isNonnull()) continue;
+	  if(!eleIter2->parentSuperCluster().isNonnull()) continue;
 	  double angle=1-
 	    ( (1-t1q)*(1-t2q)+4*t1*t2*cos(eleIter1->phi()-eleIter2->phi()))/(
 									(1+t1q)*(1+t2q)
