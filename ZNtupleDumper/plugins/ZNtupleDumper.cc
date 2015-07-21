@@ -1647,7 +1647,7 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   energySCEle[index]  = photon.superCluster()->energy();
   if(photon.parentSuperCluster().isNonnull())
     energySCEle_must[index] = photon.parentSuperCluster()->energy();
-  else energySCEle_must[index = -99.;
+  else energySCEle_must[index] = -99.;
 
   rawEnergySCEle[index]  = photon.superCluster()->rawEnergy();
   esEnergySCEle[index] = photon.superCluster()->preshowerEnergy();
