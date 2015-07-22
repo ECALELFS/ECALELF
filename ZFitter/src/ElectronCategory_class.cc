@@ -1,6 +1,6 @@
 //#define DEBUG
 #include "../interface/ElectronCategory_class.hh"
-#include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
+#include "../../ZNtupleDumper/interface/eleIDMap.h"
 
 #define OldDefinitions
 #define GAP

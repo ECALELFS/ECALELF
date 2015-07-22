@@ -42,20 +42,26 @@ fi
 ### sanity checks
 
 case $COLUMN in
-    10)
-	columnName="add. smear."
+    3|4)
+	columnName="$\Delta m$"
 	;;
     5)
 	columnName="$\Delta P"
 	;;
-    3|4)
-	columnName="$\Delta m$"
+    6)
+	columnName="$\sigma_{CB}$"
 	;;
     8|9)
 	columnName="$\resol$"
 	;;
-    6)
-	columnName="$\sigma_{CB}$"
+    10)
+	columnName="add. smear."
+	;;
+    11)
+	columnName="$ \chi^2.$"
+	;;
+    15)
+	columnName="$\sigma_{eff}$"
 	;;
     *)
 	exit 1

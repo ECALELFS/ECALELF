@@ -1,3 +1,46 @@
+
+\begin{frame}
+\frametitle{Introduction - Fit Details}
+\framesubtitle{\invMassVarName}
+
+\vspace{10mm}
+
+
+\begin{itemize}
+\item \textbf{Dataset}: 2015B dataset, 0intLumi, run range: 0runRange
+\item \textbf{Global Tag}: 0globalTag
+\item \textbf{Rereco Tag}: 0rerecoTag
+\item \textbf{Software version}: Git Tag 0gitTag, 0cmssw
+\item \textbf{JSON}: 0json
+\item \textbf{Data Ntuples}: \\
+\begin{ lstlisting}  
+{\tiny 0dataNtuples }
+\end{ lstlisting}
+\item \textbf{MC Ntuples}: \\
+\begin{ lstlisting} 
+{\tiny 0MCNtuples }
+\end{ lstlisting}
+\item \textbf{Fits}: 0floatingTail
+\item \textbf{PU reweighting}: 0puReweight
+
+%\item \textbf{MC:} {\tt /DYJetsToLL\_M-50\_TuneCUETP8M1\_13TeV-amcatnloFXFX-pythia8/ \\ RunIISpring15DR74-Asympt50ns\_MCRUN2\_74\_V9A-v2/AODSIM }
+%\vspace{2mm}
+%merged ntuples can be found here { \tt /store/group/dpg\_ecal/alca\_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/ \\ DYJetsToLL\_M-50\_13TeV-Asympt50ns-pythia8\_16Jun15\_v3/allRange/v3/ \\ DYJetsToLL\_M-50\_13TeV-Asympt50ns-pythia8\_16Jun15\_v3-allRange.root }
+
+\end{itemize}
+
+\end{frame}
+
+
+\usebackgroundtemplate{
+	\includegraphics[width=\paperwidth,height=\paperheight]{logos/Blasenkammer_by_HenryGale_white}%
+}
+
+
+
+
+
+
 %% ------------------------------------------------------------
 %% ------------------------------------------------------------
 \subsection{Table}
@@ -10,7 +53,7 @@
 \begin{frame}
  % \frametitle{\dataSample}
   \frametitle{ECAL scale}
-  \framesubtitle{ }
+  \framesubtitle{\invMassVarName }
   %RERECOTAG
   %PERIOD
 \\
@@ -49,8 +92,8 @@
 %% ------------------------------------------------------------
 \color{titlecolor}
 \begin{frame}
-  %\frametitle{\dataSample}
-  \framesubtitle{Fit Method: Old Additional smearing}
+  \frametitle{Fit Method: Old Additional smearing}
+  \framesubtitle{\invMassVarName}
 \\
   Fit with convoluted Breit-Wigner (BW) and Crystal Ball (CB).
 
@@ -90,7 +133,7 @@
 \begin{frame}
  % \frametitle{\dataSample}
   \frametitle{Fit Method: New Additional smearing}
-  \framesubtitle{ }
+  \framesubtitle{\invMassVarName}
  \\
   Fit with convoluted Breit-Wigner (BW) and Crystal Ball (CB).
 
