@@ -597,8 +597,7 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
   if(_isDataUnbinned) numcpu=1;
 
   //EFFECTIVE SIGMA
-  double sigma = GetEffectiveSigma(data_red);
-  std::cout<<sigma<<std::endl;
+  sigmaeff_data = GetEffectiveSigma(data_red);
 
   SetFitPar(fitres_MC);
   RooFitResult *fitres_data = model_pdf->fitTo(*data_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
@@ -636,8 +635,8 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
   if(!_isMCUnbinned) numcpu=2; // would prefer 1, but bug in RooFit: wrong error estimation for weighted datahist if 1 cpu
 
   //EFFECTIVE SIGMA
-  double sigma = GetEffectiveSigma(signal_red);
-  std::cout<<sigma<<std::endl;
+  sigmaeff_MC = GetEffectiveSigma(signal_red);
+  //std::cout<<sigmaeff<<std::endl;
 
   SetFitPar();
   RooFitResult *fitres_MC = model_pdf->fitTo(*signal_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
@@ -714,7 +713,7 @@ void ZFit_class::Fit(TString region, bool doPlot){
     fitres_MC = FitMC(regionMC, doPlot);
     if(fitres_MC !=NULL){
       fitres_MC->SetName("MC");
-      SaveFitRes(fitres_MC,fitResMCFileName, chi2_MC, nEvents_region_MC); //
+      SaveFitRes(fitres_MC,fitResMCFileName, chi2_MC, nEvents_region_MC, sigmaeff_MC); //
       params->writeToFile(paramsMCFileName);		
       if(doPlot) SaveFitPlot(plotMCFileName,true);
     }else{
@@ -739,7 +738,7 @@ void ZFit_class::Fit(TString region, bool doPlot){
     if(fitres_data!=NULL){
       fitres_data->SetName("data");
       params->writeToFile(paramsDataFileName);		
-      SaveFitRes(fitres_data,fitResDataFileName, chi2_data, nEvents_region_data); // isMC=false
+      SaveFitRes(fitres_data,fitResDataFileName, chi2_data, nEvents_region_data, sigmaeff_data); // isMC=false
       if(doPlot) SaveFitPlot(plotDataFileName,false);
       delete fitres_data;
     }else {
@@ -873,7 +872,7 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
   return;
 }
 
-void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents ){
+void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, double sigmaeff ){
   RooCmdArg LatexFormat(RooFit::Format("NEU",RooFit::AutoPrecision(2),RooFit::VerbatimName(kFALSE)));
 
   TFile fitResFile(fileName,"RECREATE");
@@ -885,8 +884,9 @@ void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, 
   std::ofstream f(fileName,std::ios_base::app);
   f << "nEvents=" << nEvents << std::endl;
   f << "chi2=" << chi2 << std::endl;
+  f << "sigeff=" << sigmaeff << std::endl;
   f.close();
-  return;
+	return;
 }
 
 void ZFit_class::PrintScale(std::ostream outScale){

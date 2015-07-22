@@ -336,12 +336,13 @@ config.General.requestName = '${JOBNAME}'
 config.General.workArea = 'crab_projects'
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = '${CMSSWCONFIG}'
-#config.JobType.pyCfgParams = ['output=${OUTPUTFILE}.root', 'skim=${SKIM}', 'type=$TYPE','doTree=${DOTREE}', 'jsonFile=${JSONFILE}', 'secondaryOutput=ntuple.root', 'isCrab=1']
+#config.JobType.pyCfgParams = ['output=${OUTPUTFILE}.root', 'skim=${SKIM}', 'type=$TYPE','doTree=${DOTREE}', 'jsonFile=${JSONFILE}', 'secondaryOutput=ntuple.root', 'isCrab=1']#
+
 config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = '${DATASETPATH}'
 config.Data.inputDBS = '${DBS_URL}'
 config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 10
+config.Data.unitsPerJob = 7
 config.Data.lumiMask = '${JSONFILE}'
 config.Data.runRange = '${RUNRANGE}'
 config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'

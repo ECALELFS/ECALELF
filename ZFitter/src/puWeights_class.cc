@@ -101,6 +101,7 @@ void puWeights_class::ReadFromFile(std::string filename){
 }
 
 void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile, int runMin){
+runMin=1; //FIXME
   PUWeightsRunDepMap_t::iterator weights_itr = PUWeightsRunDepMap.find(runMin);
   if(weights_itr==PUWeightsRunDepMap.end()){
     PUweights_t PUWeights;
