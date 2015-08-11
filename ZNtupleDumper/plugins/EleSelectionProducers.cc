@@ -338,7 +338,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	exit (1);
       }
     }
-
+    /*
     if(((bool)tight50nsRun2_selector.result())){
       if(!(bool) medium50nsRun2_selector.result() || !(bool) loose50nsRun2_selector.result()){
 	edm::LogError("Incoherent selection") << "passing tight but not medium or loose for run2: 50ns";
@@ -352,7 +352,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	exit (1);
       }
     }
-    
+    */    
     //     WP80_PU_vec.push_back((SelectionValue_t)WP80_PU_selector.bitMask());
     //     WP90_PU_vec.push_back((SelectionValue_t)WP90_PU_selector.bitMask());
 #ifdef DEBUG
