@@ -506,20 +506,21 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == tightElectronStream) {
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 0);
+      set("maxNumberOfExpectedMissingHits", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
-      set("deta_EB",       0.004);         set("deta_EE",         0.005);
-      set("dphi_EB",       0.030);         set("dphi_EE",         0.020);
-      set("sihih_EB",      0.010);         set("sihih_EE",        0.030);
-      set("ooemoop_EB",    0.050,false);   set("ooemoop_EE",      0.050,false);  
-      set("d0vtx_EB",      0.020);         set("d0vtx_EE",        0.020);
-      set("dzvtx_EB",      0.100);         set("dzvtx_EE",        0.100);
-      set("pfIso_EB",      100.,false);         set("pfIso_EE",        100.,false);         
-      set("pfIsoLowPt_EB", 100.,false);         set("pfIsoLowPt_EE",   100.,false);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.074);         set("hoe_EE",          0.080); 
+      //      set("hoe_EB",        0.015);         set("hoe_EE",          0.025);
+      set("deta_EB",       0.012);         set("deta_EE",         0.019);
+      set("dphi_EB",       0.024);         set("dphi_EE",         0.043);
+      set("sihih_EB",      0.010);         set("sihih_EE",        0.029);
+      set("ooemoop_EB",    100.,false);   set("ooemoop_EE",      100.,false);
+      set("d0vtx_EB",      100.);         set("d0vtx_EE",        100.);
+      set("dzvtx_EB",      100.);         set("dzvtx_EE",        100.);
+      set("pfIso_EB",      100.);         set("pfIso_EE",        100.);
+      set("pfIsoLowPt_EB", 100.);         set("pfIsoLowPt_EE",   100.);
+      set("relTrackIso_EB", 0.1);    set("relTrackIso_EE", 0.1);
+      set("relEcalIso_EB",  0.1);          set("relEcalIso_EE",  0.1);
+      set("relHcalIso_EB",  0.1);          set("relHcalIso_EE",  0.1);
     }
 
   }
