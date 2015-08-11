@@ -215,7 +215,8 @@ eleSelSeq = cms.Sequence( selectedECALElectrons + PassingVetoId +
                           (SCselector*eleSC)
                           )
 
-eleSelSeqElectronStream = cms.Sequence( selectedECALElectrons + PassingVetoIdElectronStream
+eleSelSeqElectronStream = cms.Sequence( selectedECALElectrons + PassingVetoIdElectronStream +
+                          (SCselector*eleSC)
                           )
 
 muSelSeq = cms.Sequence( selectedECALMuons + selectedECALPhotons + PassingMuonVeryLooseId + PassingPhotonVeryLooseId + MuFilter + PhoFilter +
@@ -241,14 +242,15 @@ ZeeSelectorElectronStream =  cms.EDProducer("CandViewShallowCloneCombiner",
 
 #met, mt cuts for W selection
 MT="sqrt(2*daughter(0).pt*daughter(1).pt*(1 - cos(daughter(0).phi - daughter(1).phi)))"
-MET_CUT_MIN = 25.
+MET_CUT_MIN = 0.
 W_ELECTRON_ET_CUT_MIN = 30.0
-MT_CUT_MIN = 50.
+MT_CUT_MIN = 0.
 
 WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("pfMet PassingVetoId"), # charge coniugate states are implied
     checkCharge = cms.bool(False),                           
-    cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
+#    cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
+    cut   = cms.string(("daughter(1).pt > %f") % (W_ELECTRON_ET_CUT_MIN))
 )
 
 WenuSelectorElectronStream = cms.EDProducer("CandViewShallowCloneCombiner",
@@ -265,9 +267,19 @@ EleSCSelector = cms.EDProducer("CandViewShallowCloneCombiner",
                                cut = cms.string("40 < mass < 140")
                                )
 
+EleSCSelectorElectronStream = cms.EDProducer("CandViewShallowCloneCombiner",
+                               decay = cms.string("PassingVetoIdElectronStream eleSC"),
+                               checkCharge = cms.bool(False), 
+                               cut = cms.string("40 < mass < 140")
+                               )
+
 # for filtering events passing at least one of the filters
 WZSelector = cms.EDProducer("CandViewMerger",
                             src = cms.VInputTag("WenuSelector", "ZeeSelector", "EleSCSelector")
+                            )
+
+WZSelectorElectronStream = cms.EDProducer("CandViewMerger",
+                            src = cms.VInputTag("WenuSelectorElectronStream", "ZeeSelectorElectronStream", "EleSCSelectorElectronStream")
                             )
 
 ############################################################
@@ -298,6 +310,11 @@ ZeeFilterElectronStream = cms.EDFilter("CandViewCountFilter",
                           minNumber = cms.uint32(1)
                           )
 
+ZSCFilterElectronStream = cms.EDFilter("CandViewCountFilter",
+                         src = cms.InputTag("EleSCSelectorElectronStream"),
+                         minNumber = cms.uint32(1)
+                         )
+
 
 # filter for events passing at least one of the other filters
 WZFilter = cms.EDFilter("CandViewCountFilter",
@@ -323,11 +340,11 @@ WenuSkimFilterSeq = cms.Sequence(preFilterSeq * selectorProducerSeq *
                                  ~ZeeFilter * ~ZSCFilter * WenuFilter)
 
 ### sequences for the electron stream
-selectorProducerSeqWElectronStream = cms.Sequence(eleSelSeqElectronStream * (WenuSelectorElectronStream))
+selectorProducerSeqWElectronStream = cms.Sequence(eleSelSeqElectronStream * (ZeeSelectorElectronStream + WenuSelectorElectronStream + EleSCSelectorElectronStream) * WZSelectorElectronStream)
 
 selectorProducerSeqZElectronStream = cms.Sequence(eleSelSeqElectronStream * (ZeeSelectorElectronStream))
 
-WenuSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqWElectronStream * 
+WenuSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqWElectronStream * ~ZeeFilterElectronStream * ~ZSCFilterElectronStream *
                                  WenuFilterElectronStream)
 
 ZeeSkimFilterSeqElectronStream = cms.Sequence(preFilterSeq * selectorProducerSeqZElectronStream * 
