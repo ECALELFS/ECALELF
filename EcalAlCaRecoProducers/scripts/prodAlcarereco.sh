@@ -22,7 +22,8 @@ JOBNAME="-SAMPLE-RUNRANGE-JSON"
 CRABVERSION=2
 crab3File=tmp/alcarereco_cfg.py
 PUBLISH=False
-DBS_URL=phys03
+#DBS_URL=phys03
+DBS_URL=global
 usage(){
     echo "`basename $0` {parseDatasetFile options} -t tagFile [options]"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -88,8 +89,8 @@ do
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES}','extraCalibTree.root";;
+	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES}','eleIDTree.root";;
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
@@ -324,7 +325,7 @@ total_number_of_lumis = -1
 datasetpath=${DATASETPATH}
 lumis_per_job=12000
 #number_of_jobs=494
-dbs_url = phys03
+dbs_url = ${DBS_URL}
 EOF
         ;;
         *)
@@ -365,17 +366,17 @@ config = config()
 config.General.requestName = '${JOBNAME}'
 config.General.workArea = 'crab_projects'
 config.JobType.pluginName = 'Analysis'
-config.JobType.outputFiles= ['ntuple.root']
+config.JobType.outputFiles= ['${OUTFILES}']
 config.JobType.psetName = 'python/alcaSkimming.py'
 config.JobType.pyCfgParams = ['tagFile=${TAGFILE}', 'skim=${SKIM}', 'type=$TYPE','doTree=${DOTREE}', 'jsonFile=${JSONFILE}', 'isCrab=1']
 config.JobType.allowUndistributedCMSSW = True
 config.Data.inputDataset = '${DATASETPATH}'
 config.Data.inputDBS = '${DBS_URL}'
 config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 20
+config.Data.unitsPerJob = 1
 config.Data.lumiMask = '${JSONFILE}'
 config.Data.runRange = '${RUNRANGE}'
-config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
+config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR}'
 config.Data.publication = ${PUBLISH}
 config.Data.publishDataName = '${JOBNAME}'
 #config.Site.storageSite = '$STORAGE_ELEMENT'

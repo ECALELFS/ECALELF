@@ -45,3 +45,6 @@
 193834-196531	/DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012B-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
 198022-203742	/DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012C-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
 203777-208686	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO	DoubleElectron-ZSkim-RUN2012D-22Jan-v1	caf.cern.ch	group/alca_ecalcalib/ecalelf/alcarereco	Test_July2014_ICEtaHengne_v1
+253659-254914	/SingleElectron/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO	SingleElectron-ZSkim-Run2015C-01Sep15-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	74X_dataRun2_Prompt_v1
+253659-254914	/SingleElectron/Run2015C-EcalUncalWElectron-PromptReco-v1/ALCARECO	SingleElectron-WSkim-Run2015C-01Sep15-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	74X_dataRun2_Prompt_v1
+253659-255031	/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2015C-01Sep15-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	74X_dataRun2_Prompt_v1

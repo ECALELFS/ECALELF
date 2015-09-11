@@ -72,3 +72,7 @@
 251022-251883 /DoubleEG/Run2015B-PromptReco-v1/AOD DoubleEG-ZSkim-RUN2015B-ALCARAW-21Jul15-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-ZSkim-RUN2015B-ALCARAW-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
+################2015 RUN C DATA -- runs-> 253659-255031
+253659-254914 /SingleElectron/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO SingleElectron-ZSkim-Run2015C-01Sep15-v1 caf database VALID RUN2015C
+253659-254914 /SingleElectron/Run2015C-EcalUncalWElectron-PromptReco-v1/ALCARECO SingleElectron-WSkim-Run2015C-01Sep15-v1 caf database VALID RUN2015C
+253659-255031 /DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO DoubleEG-ZSkim-Run2015C-01Sep15-v1 caf database VALID RUN2015C
