@@ -5,7 +5,7 @@
   gROOT->ProcessLine(".L src/setTDRStyle.C");
   //gROOT->ProcessLine(".L src/ElectronCategory_class.cc+");
   //ElectronCategory_class cutter;
-  setTDRStyle1();
+  setTDRStyle();
   //  TGaxis::SetMaxDigits(3);
 
   //  TChain *signal = (TChain *) _file0->Get("selected");

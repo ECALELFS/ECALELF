@@ -16,6 +16,7 @@ prod_alcarereco
 *.slo
 *.lo
 *.o
+*.d
 
 # Compiled Dynamic libraries
 *.so

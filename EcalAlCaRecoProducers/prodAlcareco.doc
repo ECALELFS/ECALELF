@@ -1,0 +1,90 @@
+This is initial documentation on how to automatically generate and submit ALCARECO and ALCARAW jobs on the grid using CRAB3.
+A special bash script has been adapted to do this: scripts/prodAlcareco.sh
+
+Before you begin, you must do:
+
+source initCmsEnv.sh
+
+This will set up the CRAB3 environment and generate a grid proxy.
+
+Then, you can actually use the script.
+
+Usage is as follows:
+
+./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep "query"` --option1 --option2 ...
+
+alcareco_datasets.dat contains information about the datasets which are available to run on. Select the required dataset using grep.
+parseDarasetFile.sh extracts the required information from the alcareco_datasets.dat entry.
+
+List of options:
+	--help or -h : print list of options.
+---------- provided by parseDatasetFile (all mandatory)
+	-r runRange
+	-d, --datasetpath path
+	-n, --datasetname name
+	--store dir
+	--remote_dir dir
+--dbs_url url: for not global dbs (user production)
+	---------- optional
+	--isMC: specify is the dataset is MC
+	-s or --skim: ZSkim, WSkim, EleSkim
+	--type: ALCARECO (or EcalCal), ALCARAW (OrEcalUncal). Determines if you produce ALCARECO (EcalCal*.root) or ALCARAW (EcalUncal*.root) files.
+--scheduler caf,lsf,remoteGlidein (=caf)  (only for crab2)
+	--createOnly. Only create the CMSSW and CRAB configuration files, do not submit
+	--submitOnly. Only submit the already created configuration files.
+	--check. Check on the status of already submited CRAB jobs
+	--jobname name. Name of your job for crab.
+	--json_name jsonName. Additional name in the folder structure to keep track of the used json
+	--json jsonFile.root:. Specifiy a run/lumi range. Better to not use a json file for the alcareco production
+	--doTree (NOT CURRENTLY SUPPORTED)
+--njobs nJobs : number of jobs, an integer (only crab2)
+	--publish : Publish output dataset on DAS
+--fromRAW : Use this option is you are running on RAW, so that RECO,RAW2DIGI steps are run first. (Expert Only)
+	----------
+	--tutorial: tutorial mode, produces only one sample in you user area
+--develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)
+	----------
+	An example, for a subsection of runA DoubleElectron, to be processed with ALCA:EcalCalZElectron, ie ALCARECO:
+	The alcareco_datasets.dat file has a line like this:
+
+	190645-193621 /DoubleElectron/Run2012A-15Apr2014-v2/AOD DoubleElectron-ZHLTSkimPath-RUN2012A-15Apr-v2 caf group/alca_ecalcalib/ecalelf/alcareco VALID RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD 
+
+	Select it in the command using `parseDatasetFile.sh alcareco_datasets.dat | grep A`
+
+	Create jobs using:
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test --skim ZSkim -- type ALCARECO --createOnly
+
+	testJSON.txt contains only one run number from runA: {"190645": [[1, 200]]}
+
+	And inspect the CMSSWConfig reco_ALCA.py and CRAB3 config tmp/alcareco_cfg.py to make sure everything seems sensible.
+	You can run a local test by specifiying a test sample in the reco_ALCA.py file and doing cmsRun reco_ALCA.py, which by default runs over 10 events.
+
+	Submit the jobs using:
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test --skim ZSkim -- type ALCARECO --submitOnly
+
+	CRAB3 should give information about submission success etc.
+
+	Subsequently, you can check the jobs using:
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep A` --json testJSON.txt --jobname Test --skim ZSkim -- type ALCARECO --check
+
+	This will query the status of the jobs using the CRAB3 interface.
+
+
+	Other examples:
+	Produce EcalCalZElectron.root (ALCARECO) from AODSIM (Monte Carlo) files.
+	Make sure you have a line like this in alcareco_datasets.dat:
+	allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015 caf group/alca_ecalcalib/ecalelf/alcareco VALID - -
+	Then run:
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep 19May` --skim ZSkim --type ALCARECO --isMC --jobname name
+
+	Produce EcalUncalZElectron.root (ALCARAW) from Double Electron AOD (with appropriate line in alcareco_datasets.dat).
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep xxx` --skim ZSkim --type ALCARAW  --jobname name
+
+	Produce EcalUncalWElectron.root (ALCARAW) from Single Electron AOD (with appropriate line in alcareco_datasets.dat).
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep xxx` --skim WSkim --type ALCARAW  --jobname name
+
+	Produce EcalCalZElectron.root (ALCARECO) from Single Electron RAW (with appropriate line in alcareco_datasets.dat).
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep xxx` --skim ZSkim --type ALCARECO --fromRAW --jobname name
+
+	Produce EcalUncalZElectron.root (ALCARAW) from Single Electron RAW (with appropriate line in alcareco_datasets.dat).
+	./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat | grep xxx` --skim ZSkim --type ALCARAW --fromRAW --jobname name

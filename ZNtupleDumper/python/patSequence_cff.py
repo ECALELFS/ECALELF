@@ -4,6 +4,8 @@ from TrackingTools.TransientTrack.TransientTrackBuilder_cfi import *
 
 #------------------------------ pattuple
 from Calibration.ZNtupleDumper.elePat_cfi import *
+from Calibration.ZNtupleDumper.muonPat_cfi import *
+from Calibration.ZNtupleDumper.phoPat_cfi import *
 #process.patElectrons.electronSource = cms.InputTag("gedGsfElectrons")
 #process.patElectrons.addElectronID = cms.bool(False)
 #process.patElectrons.addGenMatch = cms.bool(True)
@@ -11,22 +13,24 @@ from Calibration.ZNtupleDumper.elePat_cfi import *
 #print process.patElectrons.reducedBarrelRecHitCollection
     
 #------------------------------ new energies
-from Calibration.EleNewEnergiesProducer.elenewenergiesproducer_cfi import *
-eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
-eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
+from Calibration.ZNtupleDumper.elenewenergiesproducer_cfi import *
+#eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
+#eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
 #eleNewEnergiesProducer.regrEleFile_fra='src/Calibration/EleNewEnergiesProducer/data/eleEnergyRegWeights_V1.root'
-eleNewEnergiesProducer.ptSplit=cms.bool(False)
+#eleNewEnergiesProducer.ptSplit=cms.bool(False)
 
-from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
-eleRegressionEnergy.inputElectronsTag = cms.InputTag('gedGsfElectrons')
-eleRegressionEnergy.inputCollectionType = cms.uint32(0)
-eleRegressionEnergy.useRecHitCollections = cms.bool(True)
-eleRegressionEnergy.produceValueMaps = cms.bool(True)
-eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rho")
-eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
+#from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
+#eleRegressionEnergy.inputElectronsTag = cms.InputTag('gedGsfElectrons')
+#eleRegressionEnergy.inputCollectionType = cms.uint32(0)
+#eleRegressionEnergy.useRecHitCollections = cms.bool(True)
+#eleRegressionEnergy.produceValueMaps = cms.bool(True)
+#eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rho")
+#eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
 
 #------------------------------ electronID producer
-from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
+from Calibration.ZNtupleDumper.eleselectionproducers_cfi import *
+from Calibration.ZNtupleDumper.phoselectionproducers_cfi import *
+from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 # process.EleSelectionProducers
 
 #============================== Adding new energies to patElectrons
@@ -36,6 +40,7 @@ from Calibration.EleSelectionProducers.eleselectionproducers_cfi import *
 # to access the float:
 # electron.userFloat("eleNewEnergiesProducer:energySCEleJoshEle")
 # electron.userFloat("eleNewEnergiesProducer:energySCEleJoshEle:MVAntuplizer")
+'''
 patElectrons.userData.userFloats.src = [
     cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEle"),
     cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleVar"),
@@ -200,7 +205,7 @@ patElectrons.userData.userFloats.src = [
     cms.InputTag("eleRegressionEnergy:eneRegForGsfEle"),
     cms.InputTag("eleRegressionEnergy", "eneErrorRegForGsfEle")
     ]
-
+'''
 
 #============================== Adding electron ID to patElectrons
 patElectrons.addElectronID=cms.bool(True)
@@ -213,10 +218,33 @@ patElectrons.electronIDSources =  cms.PSet(
     WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
     loose       = cms.InputTag("eleSelectionProducers", "loose"),
     medium      = cms.InputTag("eleSelectionProducers", "medium"),
-    tight      = cms.InputTag("eleSelectionProducers", "tight")
+    tight      = cms.InputTag("eleSelectionProducers", "tight"),
+    loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
+    medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+    tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
+    loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
+    medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+    tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
     )
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')
+
+#============================== Adding photon ID to patPhotons
+patPhotons.addPhotonID=cms.bool(True)
+patPhotons.photonIDSources =  cms.PSet(
+    # configure many IDs as InputTag <someName> = <someTag> you
+    # can comment out those you don't want to save some disk space
+    fiducial = cms.InputTag("phoSelectionProducers", "fiducial"),
+    loose       = cms.InputTag("phoSelectionProducers", "loose"),
+    medium      = cms.InputTag("phoSelectionProducers", "medium"),
+    tight      = cms.InputTag("phoSelectionProducers", "tight"),
+    loose25nsRun2       = cms.InputTag("phoSelectionProducers", "loose25nsRun2"),
+    medium25nsRun2      = cms.InputTag("phoSelectionProducers", "medium25nsRun2"),
+    tight25nsRun2      = cms.InputTag("phoSelectionProducers", "tight25nsRun2"),
+    )
+
+photonMatch.src=cms.InputTag('gedPhotons')
+muonMatch.src=cms.InputTag('muons')
 
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection
@@ -226,8 +254,8 @@ electronMatch.src=cms.InputTag('gedGsfElectrons')
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
 
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
-patSequence=cms.Sequence( (eleSelectionProducers + eleNewEnergiesProducer +eleRegressionEnergy ) * patElectrons )
-patSequenceMC=cms.Sequence( electronMatch * (eleSelectionProducers + eleNewEnergiesProducer + eleRegressionEnergy ) * patElectrons )
+patSequence=cms.Sequence( (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
+patSequenceMC=cms.Sequence( electronMatch * (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
 
 
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
@@ -235,8 +263,8 @@ eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons"
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
 eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
-eleRegressionEnergy.recHitCollectionEB = eleNewEnergiesProducer.recHitCollectionEB.value()
-eleRegressionEnergy.recHitCollectionEE = eleNewEnergiesProducer.recHitCollectionEE.value()
+#eleRegressionEnergy.recHitCollectionEB = eleNewEnergiesProducer.recHitCollectionEB.value()
+#eleRegressionEnergy.recHitCollectionEE = eleNewEnergiesProducer.recHitCollectionEE.value()
 patElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
 patElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()
 

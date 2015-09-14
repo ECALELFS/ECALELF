@@ -1,4 +1,4 @@
-#include "../interface/EnergyScaleCorrection_class.h"
+#include "../interface/EnergyScaleCorrection_class.hh"
 #include <RooDataSet.h>
 #include <RooArgSet.h>
 
@@ -116,7 +116,7 @@ void EnergyScaleCorrection_class::Add(TString category_, int runMin_, int runMax
    */
 void EnergyScaleCorrection_class::ReadFromFile(TString filename){
   std::cout << "[STATUS] Reading recalibration values from file: " << filename << std::endl;
-  ifstream f_in(filename);
+  std::ifstream f_in(filename);
   if(!f_in.good()){
     std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
     exit(1);
@@ -265,7 +265,7 @@ EEhighEtaGold8TeV  0 2.0 3.0 0.94  999. -999999 999999 0.   0. 1.86e-2 7.81e-4 0
 
 void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
   std::cout << "[STATUS] Reading smearing values from file: " << filename << std::endl;
-  ifstream f_in(filename);
+  std::ifstream f_in(filename);
   if(!f_in.good()){
     std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
     exit(1);
@@ -559,7 +559,7 @@ bool correctionCategory_class::operator<(const correctionCategory_class& b) cons
     if(etmax  > b.etmax && etmin > b.etmin) return  false;
     return false;
 
-  };    
+}    
 
 correctionCategory_class::correctionCategory_class(TString category_){
     std::string category(category_.Data());
@@ -614,4 +614,4 @@ correctionCategory_class::correctionCategory_class(TString category_){
     if(category.find("gold")!=std::string::npos || category.find("Gold")!=std::string::npos){ r9min=0.94; r9max=10;}
     else if(category.find("bad")!=std::string::npos || category.find("Bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
     
-};
+}

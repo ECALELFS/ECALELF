@@ -1,0 +1,29 @@
+---------------------------------------------------------
+Summary of all the classes in FastCalibratot/src package:
+----------------------------------------------------------
+
+1) interface/GetHashedIndexEB.h   src/GetHashedIndexEB.cc
+
+   Functions to convert the hashed index of a xtal in EB in iEta and iPhi coordinates and
+   to get the hashed index from iPhi, iEta and zside
+
+2) interface/GetHashedIndexEE.h  src/GetHashedIndexEE.cc
+
+   Function to convert the hashed idexn xtal in EE in ix,iy and iz coordinates and to get
+   the hashed index from ix,iy and zside.
+
+3) interface/EERings.h  src/EERings.cc
+
+   Function that gives the EE ring from ix,iy and zside informations (EE is subdiveded in 40 rings from the external part to the inner one)
+
+4) interface/FastCalibratorWeight.h   src/FastCalibratorWeight.cc
+
+   Class used to calculate IC coefficient through L3 "weighted" method for EB 
+
+5) interface/FastCalibratorEE.h   src/FastCalibratorEE.cc
+
+   Class used to calculate IC coefficient through L3 "weighted" method for EE+ and EE-
+
+##### Note #### 
+
+In order to Run this package you have to use the NtuplePackage version in UserCode/RGerosa/NtuplePackage 

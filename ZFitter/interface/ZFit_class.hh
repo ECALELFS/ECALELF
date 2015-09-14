@@ -35,7 +35,7 @@
 #include "BW_CB_pdf_class.hh"
 #include "Cruijff_pdf_class.hh"
 
-#include "setTDRStyle.hh"
+#include "setTDRStyle.h"
 //#include <functions.h>
 
 
@@ -108,6 +108,8 @@ public:
 
   void Import(TString commonCut, TString eleID_, std::set<TString>& branchList);
 
+  double GetEffectiveSigma(RooAbsData *dataset);
+
   // this method makes the fit on data and MC
   void Fit(TString region="", bool doPlot=true);
   void Fit(TH1F *hist, bool isMC=true);
@@ -172,6 +174,7 @@ public:
   RooPlot *plot_data;
   RooPlot *plot_MC;
   float chi2_data, chi2_MC;
+  float sigmaeff_data, sigmaeff_MC;
  private:
   //-------------------- Pointers to the objects 
   //--------------- Z parameters to be declared depending on the signal pdf
@@ -217,7 +220,7 @@ public:
   void PlotFit(RooAbsData *signal_red, RooAbsData *data_red);
   void PlotFit(RooAbsData *data_red, bool isMC=true);
 
-  void SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents);
+  void SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, double sigmaeff);
 
   //  std::map<TString, TH1F *> MakeHistMap(const chain_map_t& map, TString region);
 

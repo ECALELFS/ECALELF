@@ -157,17 +157,31 @@ case ${TYPE} in
 	    echo 
 	    exit 1
 	fi
-
+	$dataSample=2012D_75x_rereco
+	$mcName=DYJetsToLL_M-50_3TeV_amcatnloFXFXpythia8_Asympt50ns
 	validationIntroSlide
 	validationTableSlides
 	validationFitSlides
-	validationStabilitySlides
-	cat ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
+	validationBackupSlides
+#	validationStabilitySlides
+	if [ "$USER" == "lcorpe" -o "$USER" ==  "lbrianza" ];then
+	cat tex/template.tex \
+			${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex \
-	    ${dirSlides}/validation-${invMass_var}-${selection}-stability_slide.tex \
-	    > ${dirSlides}/validation-${invMass_var}-slides.tex
+	    ${dirSlides}/validation-${invMass_var}-${selection}-backup_slide.tex \
+		 	tex/template_end.tex > ${dirSlides}/validation-${invMass_var}-slides.tex
 
+		else
+
+	cat ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
+	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
+	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex > ${dirSlides}/validation-${invMass_var}-slides.tex
+
+
+	fi
+
+#	    ${dirSlides}/validation-${invMass_var}-${selection}-stability_slide.tex \ 
 	;;
     rereco)
 	rereco=$TAG
