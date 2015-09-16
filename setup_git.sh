@@ -56,13 +56,10 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
-	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-		cd $myDir
-		git checkout newMaster
-		cd -
+	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	lbrianza|lcorpe)
-	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	*)
             ### if you are not Shervin download this to have some useful scripts
@@ -172,8 +169,6 @@ case $CMSSW_VERSION in
 		;;
 
     CMSSW_7_5_*)
-#	git-cms-addpkg EgammaAnalysis/ElectronTools >> setup.log || exit 1
-	
 	echo "downloading changes to alcareco streams needed to use cmsDriver.py"
 	git cms-addpkg Configuration/EventContent
 	git cms-addpkg Configuration/StandardSequences

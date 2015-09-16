@@ -13,13 +13,13 @@ Be sure to have a GitHub account and have followed the instructions here:
 ======
 Download instructions.
 
-`wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/master/setup_git.sh`
+`wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh`
 
 `chmod +x setup_git.sh`
 
-`./setup_git.sh CMSSW_5_3_14_patch2`
+`./setup_git.sh CMSSW_7_4_12`
 
-`cd CMSSW_5_3_14_patch2/src/`
+`cd CMSSW_7_4_12/src/`
 
 `cmsenv`
 
