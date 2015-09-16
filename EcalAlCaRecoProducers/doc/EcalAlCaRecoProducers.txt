@@ -1,22 +1,14 @@
 /**
 \page EcalAlcarecoProducers Package Calibration/EcalAlCaRecoProducers
 
-<center>
-<small>
-
-<!-- @CVS_TAG@ will be substituted at build time, no need to touch -->
-<a href=http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/Calibration/EcalAlCaRecoProducers/?cvsroot=CMSSW&only_with_tag=@CVS_TAG@>Source code (CVS tag: @CVS_TAG@)</a> - 
-<a href=http://cmssw.cvs.cern.ch/cgi-bin/cmssw.cgi/CMSSW/Calibration/EcalAlCaRecoProducers/.admin/developers?rev=HEAD&cvsroot=CMSSW&content-type=text/vnd.viewcvs-markup>Administrative privileges</a>
-</small>
-</center>
 
 \section desc Description
 This module contains all the plugins and classes used to produce ECAL alcarecos.
 
 \section streamList AlCaRecoStream list
- - AlCaCalElectron
- - AlCaUncalElectron
- - AlCaESAlign
+ - EcalCalElectron
+ - EcalUncalElectron
+ - EcalESAlign
 
 \subsection AlCaESAlign AlCaESAlign
 The aim of this alcareco is to have a reduced dataset with all the information used for ES Alignment.

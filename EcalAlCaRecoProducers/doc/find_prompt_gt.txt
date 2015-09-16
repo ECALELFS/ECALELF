@@ -1,0 +1,13 @@
+/**
+\page pFindPromptGT How to find the Prompt GT
+
+Prompt GT is not any more in the file metadata. You need to access the DB to verify the GT used in Prompt recoing the dataset using DAS.
+
+You can do it from the command line using the following command:
+\code 
+das_client.py --query="config dataset=/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO | grep config.global_tag" | tail -1
+\endcode
+
+
+*/
+

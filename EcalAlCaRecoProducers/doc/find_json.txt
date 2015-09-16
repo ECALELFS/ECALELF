@@ -1,0 +1,9 @@
+\**
+\page pFindJson Where to find the golden json
+
+The Golden Json is published by the certification group. Find the relative HN and subscribe if you are a regular user of ECALELF.
+
+The official json files are put in 
+\verbatim 
+/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/
+\endverbatim
