@@ -12,52 +12,53 @@ runDivide_class::~runDivide_class(void){
 
 
 void runDivide_class::ReadRunRangeLimits(TString fileName){
-  
-  //no file provided for limits: no limits
-  if(fileName.IsNull()){
-    std::cout << "[WARNING] No run range limits file provided" << std::endl;
-    return;
-  }
-
-  std::ifstream file(fileName);
-  if(!file.good()){
-    std::cerr << "[ERROR] File " << fileName << "to opened" << std::endl;
-    return;
-  }
-
-  //filling the limits
-  unsigned int limit_value;
-  while(file.peek()!=EOF && file.good()){
-    if(file.peek()==10){ 
-      file.get(); 
-      continue;
-    }
-
-    if(file.peek() == 35){
-      file.ignore(1000,10);
-      continue;
-    }
-
-    file>>limit_value;
+	
+	//no file provided for limits: no limits
+	if(fileName.IsNull()){
+		std::cout << "[WARNING] No run range limits file provided" << std::endl;
+		return;
+	}
+	
+	std::ifstream file(fileName);
+	if(!file.good()){
+		std::cerr << "[ERROR] File " << fileName << "to opened" << std::endl;
+		return;
+	}
+	
+	//filling the limits
+	unsigned int limit_value;
+	while(file.peek()!=EOF && file.good()){
+		if(file.peek()==10){ 
+			file.get(); 
+			continue;
+		}
+		
+		if(file.peek() == 35){
+			file.ignore(1000,10);
+			continue;
+		}
+		
+		file>>limit_value;
 #ifdef DEBUG
-    std::cout << "[DEBUG] " << limit_value << std::endl;
+		std::cout << "[DEBUG] " << limit_value << std::endl;
 #endif
-
-    limits.insert(limit_value);
-  }
+		
+		limits.insert(limit_value);
+	}
 #ifdef DEBUG
-  std::cout << "Run range limits:" << std::endl;
-  for(std::set<unsigned int>::const_iterator limits_itr=limits.begin();
-      limits_itr!=limits.end();
-      limits_itr++){
-    std::cout << *limits_itr << std::endl;
-  }
+	std::cout << "Run range limits:" << std::endl;
+	for(std::set<unsigned int>::const_iterator limits_itr=limits.begin();
+		limits_itr!=limits.end();
+		limits_itr++){
+		std::cout << *limits_itr << std::endl;
+	}
 #endif
- 
-  return;
+	
+	return;
 }
 
 
+/** this method reads the ntuple and saves the number of events per run in a map */
 void runDivide_class::LoadRunEventNumbers(TTree *tree, TString runNumber_branchName, TString runTime_branchName){
   //void runDivide_class::LoadRunEventNumbers(TTree *tree, TString runNumber_branchName){
   Int_t runNumber;
@@ -81,7 +82,7 @@ void runDivide_class::LoadRunEventNumbers(TTree *tree, TString runNumber_branchN
       std::cout << runNumber << "\t" << runTime << "\t" << runMinTimeRunMap[runNumber] << "\t" << runMaxTimeRunMap[runNumber] << std::endl;
     }
 
-    if(eventsRunMap.count(runNumber)==0) eventsRunMap[runNumber]=1;
+    if(eventsRunMap.count(runNumber)==0) eventsRunMap[runNumber]=1; // insert the new entry for a run that is not in the map
     else eventsRunMap[runNumber]+=1;
     if(runMinTimeRunMap.count(runNumber)==0) runMinTimeRunMap[runNumber]=runTime;
     else runMinTimeRunMap[runNumber] = std::min(runMinTimeRunMap[runNumber],runTime);
@@ -133,27 +134,27 @@ void runDivide_class::FillRunLimits(unsigned int nEvents_min){
 
 
     if(limit_itr != limits.end() && run_itr->first >= *limit_itr){ // reset the event counter to start a new run range
-      //      std::cout << run_itr->first << " >= " << *limit_itr << "\t" << *(runLimits.rbegin()) << std::endl;
-      // if you have few events you can merge this range with the previous,
-      // but you should not pass one of the range limits: you can merge
-      // run ranges within the same limits
-      if(limit_itr!=limits.begin()) limitOld_itr=limit_itr; limitOld_itr--;
-      if(countEvents<nEvents_min/2 && (*(runLimits.rbegin()) >*limitOld_itr && runLimits.size()!=1)){
-	//	std::cout << *(--(runLimits.end())) << std::endl;
+		//      std::cout << run_itr->first << " >= " << *limit_itr << "\t" << *(runLimits.rbegin()) << std::endl;
+		// if you have few events you can merge this range with the previous,
+		// but you should not pass one of the range limits: you can merge
+		// run ranges within the same limits
+		if(limit_itr!=limits.begin()) limitOld_itr=limit_itr; limitOld_itr--;
+		if(countEvents<nEvents_min/2 && (*(runLimits.rbegin()) >*limitOld_itr && runLimits.size()!=1)){
+			//	std::cout << *(--(runLimits.end())) << std::endl;
 #ifdef DEBUG
-	std::cout << "Remove the last and aggregate: " << *(runLimits.rbegin()) << "\t" << *limitOld_itr << std::endl;
+			std::cout << "Remove the last and aggregate: " << *(runLimits.rbegin()) << "\t" << *limitOld_itr << std::endl;
 #endif
-	runLimits.erase(--(runLimits.end())); // remove the last and aggregate
-	
-      } //else std::cout << "[DEBUG] Runs from " << *(runLimits.rbegin()) << " have events: " << countEvents << " but reached run limit " << *limit_itr << std::endl;
-      countEvents=0; //reset the counter
-      runLimits.insert(run_itr->first);
-
-      while(limit_itr != limits.end() && *limit_itr <= run_itr->first) limit_itr++; // update  the limit
-
+			runLimits.erase(--(runLimits.end())); // remove the last and aggregate
+			
+		} //else std::cout << "[DEBUG] Runs from " << *(runLimits.rbegin()) << " have events: " << countEvents << " but reached run limit " << *limit_itr << std::endl;
+		countEvents=0; //reset the counter
+		runLimits.insert(run_itr->first);
+		
+		while(limit_itr != limits.end() && *limit_itr <= run_itr->first) limit_itr++; // update  the limit
+		
     } else if (countEvents>nEvents_min){
-      countEvents=0; //reset the counter
-      runLimits.insert(run_itr->first);
+		countEvents=0; //reset the counter
+		runLimits.insert(run_itr->first);
     }
     countEvents+=run_itr->second; // add the events of this run
   }
@@ -165,7 +166,7 @@ void runDivide_class::FillRunLimits(unsigned int nEvents_min){
   //	std::cout << "Remove the last and aggregate: " << *(runLimits.rbegin()) << "\t" << *limitOld_itr << std::endl;
   //#endif
 
-  if(countEvents<nEvents_min/2 && (*(runLimits.rbegin()) >*limitOld_itr )){
+  if(countEvents<nEvents_min/2 && (*(runLimits.rbegin()) >*limitOld_itr ) && runLimits.size()>1){
     //    std::cout << *(--(runLimits.end())) << std::endl;
     runLimits.erase(--(runLimits.end())); // remove the last and aggregate
   }
@@ -313,7 +314,7 @@ void runDivide_class::PrintRunRangeEvents(void){
   return;
 }
 
-
+/** \todo fix bug for first run that has timeStamp 0 if there is only one interval */
 TString runDivide_class::GetRunRangeTime(TString runRange){
   TString runMin_ = runRange; runMin_.Remove(runRange.First('-'));
   TString runMax_ = runRange; runMax_.Remove(0,runRange.First('-')+1);
