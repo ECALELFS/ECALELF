@@ -148,7 +148,7 @@ IFS=$'\n'
 for dataset in $datasets
   do
   if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
-  
+    echo "============================================================"
   #  RUNRANGE=`echo $dataset | cut -d ' ' -f 2`
   #  DATASETNAME=`echo $dataset | cut -d ' ' -f 6`
   echo " [INFO] Dataset $dataset"
@@ -156,7 +156,7 @@ for dataset in $datasets
   echo "============================================================"
   ./scripts/prodAlcarereco.sh -t ${TAGFILE} \
       --scheduler=$SCHEDULER${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
-			--json=${JSONFILE} --json_name=${JSONNAME} --crabVersion=${crabVersion}\
+  			--json=${JSONFILE} --json_name=${JSONNAME} --crabVersion=${crabVersion}\
       ${TUTORIAL} $dataset 
 
 done

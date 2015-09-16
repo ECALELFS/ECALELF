@@ -3,6 +3,9 @@ checkInitECALELF(){
 	echo "[ERROR] ECALELF not initialized: execute the following command" >> /dev/stderr
 	case $SHELL in
 	    *bash)
+			echo "For CAF and crab2 (re-recoes):" >> /dev/stderr
+		echo "source $CMSSW_BASE/src/Calibration/initCmsEnv.sh">> /dev/stderr
+		echo "For GRID (crab3)" >> /dev/stderr
 		echo "source $CMSSW_BASE/src/Calibration/initCmsEnv.sh">> /dev/stderr
 		;;
 	    *csh)
