@@ -31,6 +31,7 @@ ls
 git remote -v 
 git branch 
 git pull
+git add -A
 git add *.html
 git add *.css *.js
 git add *.gif 
@@ -39,6 +40,7 @@ git add *.map
 git add *.md5
 git add *.dot
 git add search
+git add */*/*.png
 git commit -m "updated documentation" -a
 git commit -m "updated documentation" -a
 git push origin gh-pages:gh-pages
