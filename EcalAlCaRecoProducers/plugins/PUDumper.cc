@@ -1,12 +1,12 @@
 #include "Calibration/EcalAlCaRecoProducers/plugins/PUDumper.h"
 
 
-
 //! ctor
 PUDumper::PUDumper(const edm::ParameterSet& iConfig)
 {
   //  MCPileupTag_ = iConfig.getParameter<edm::InputTag>("MCPileupTag");
-  
+	pileupSummaryToken_ = consumes<std::vector<PileupSummaryInfo> >(iConfig.getParameter<edm::InputTag>("pileupSummary"));
+
   // create TTree
   edm::Service<TFileService> fs;
   PUTree_ = fs -> make<TTree>("pileup","pileup");
@@ -39,7 +39,7 @@ void PUDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   // get the PU collection
   edm::Handle<std::vector<PileupSummaryInfo> > PupInfo;
   if( !iEvent.isRealData() ){
-    iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo); ///\todo put it in the cfi!
+    iEvent.getByToken(pileupSummaryToken_, PupInfo);
   } else return;
   
   
