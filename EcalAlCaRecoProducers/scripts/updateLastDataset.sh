@@ -16,14 +16,16 @@ echo "DATASETPATH=$DATASETPATH"
 DAS.py --query="run dataset=$DATASETPATH | min(run.run_number)" 
 DAS.py --query="run dataset=$DATASETPATH | max(run.run_number)" 
 DAS.py --query="site dataset=$DATASETPATH" 
-DAS.py --query="run dataset=$DATASETPATH | grep  run.modification_time, run.run_number" --limit=1000 | sed '/Showing/ d' | sort | awk '(NF!=0){printf("%d\t",$3); system("date -u -d "$1" +%s")}' > das.time
+DAS.py --query="run dataset=$DATASETPATH | grep  run.modification_time, run.run_number" --limit=1000 | sed '/Showing/ d' | sort | awk '(NF!=0){print $2}' > das.time
+#| awk '(NF!=0){printf("%d\t",$2); system("date -u -d "$1" +%s")}' > das.time
 #DAS.py --query="run dataset=$DATASETPATH |sort run.modification_time" --format=json --limit=1000 | sed 's|"run":|"\nrun":|g' | grep modification_time >  das.json
 #cat das.json | cut -d ' ' -f 3,4 |sed 's|,||;s|\"||g'
-
+#exit 0
 let timeNow="`date +%s`-3600*24*4"
 
 echo -n "lastWeekRun="
-awk "(\$2<$timeNow){print \$0 }" das.time | sort | tail -1
+#awk "(\$2<$timeNow){print \$0 }" das.time | sort | tail -1
+cat das.time | sort | tail -1
 rm das.time
 
 #`echo $line2 | cut -d ' ' -f 1`"
@@ -33,4 +35,12 @@ rm das.time
 #DAS.py --query="run dataset=$DATASETPATH run.modification_time=
 
 echo "Last Prompt JSON: "
-ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Prompt/*8TeV_PromptReco_Collisions12_JSON.txt | tail -1
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep -v ZeroTesla| grep 50ns | grep -v LOWPU | tail -1
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep -v ZeroTesla| grep 50ns | grep LOWPU | tail -1
+
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep -v ZeroTesla| grep 25ns | grep -v LOWPU | tail -1
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep -v ZeroTesla| grep 25ns | grep LOWPU | tail -1
+
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep  ZeroTesla| grep 50ns | grep -v LOWPU| tail -1
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep  ZeroTesla| grep 50ns | grep LOWPU |  tail -1
+ls -tr /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/*13TeV_PromptReco_Collisions15*_JSON.txt | grep  ZeroTesla| grep 25ns |  tail -1
