@@ -50,7 +50,16 @@ ALCARECO production</h1>
 <li>Fill the alcareco_datasets.dat with the information of the desired run range It is convenient to add the new line at the bottom of the file. Please refere to the <a class="el" href="../../d2/dea/DATAFORMATS.html">Dataformats</a> file for information about how the alcareco_datasets.dat file is structured. For this step, in case of update of a growing dataset, please have a look to the "Production update" section below</li>
 <li><div class="fragment"><div class="line">./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat |grep 22Jan | grep Run2012A` --tutorial</div>
 </div><!-- fragment --> <div class="fragment"><div class="line">./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat |grep RelVal22Jan | grep Run2012A` --tutorial</div>
-</div><!-- fragment --> use the &ndash;tutorial if you are testing the machinery: it will save the files in a separate directory on EOS (not the central one) use grep commands to select the proper line from alcareco_datasets.dat the script will create the crab task and submit it use &ndash;createOnly or &ndash;submitOnly if needed use &ndash;check to launch the check of the job results use the &ndash;isMC is the dataset is MC use the -s skim: ZSkim, WSkim, EleSkim for the preselection (ZSkim usually) use &ndash;scheduler=remoteGlidein if the dataset is not at T2_CH_CERN and you want to use the grid see ./scripts/prodAlcareco.sh &ndash;help for more informations</li>
+</div><!-- fragment --><ul>
+<li>use the &ndash;tutorial if you are testing the machinery: it will save the files in a separate directory on EOS (not the central one)</li>
+<li>use grep commands to select the proper line from alcareco_datasets.dat the script will create the crab task and submit it</li>
+<li>use &ndash;createOnly or &ndash;submitOnly if needed</li>
+<li>use &ndash;check to launch the check of the job results</li>
+<li>use the <b>&ndash;isMC</b> if the dataset is <b>MC</b> </li>
+<li>use the -s skim: ZSkim, WSkim, EleSkim for the preselection (ZSkim usually)</li>
+<li>use &ndash;scheduler=remoteGlidein if the dataset is not at T2_CH_CERN and you want to use the grid see ./scripts/prodAlcareco.sh &ndash;help for more informations</li>
+</ul>
+</li>
 <li>./scripts/prodAlcaraw.sh <code>parseDatasetFile.sh alcaraw_datasets.dat |grep 22Jan | grep Run2012A</code> &ndash;tutorial &ndash;check check the job status and output</li>
 <li>Commit the changes to alcaraw_datasets.dat! <div class="fragment"><div class="line">git add alcareco_datasets.dat</div>
 <div class="line">git commit -m <span class="stringliteral">&quot;message&quot;</span> </div>
