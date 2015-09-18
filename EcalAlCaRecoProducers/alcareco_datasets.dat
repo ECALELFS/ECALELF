@@ -136,11 +136,11 @@ allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_2
 ################## Testing creating ntuples using published data 
 1-1	/DYToEE_M-50_Tune4C_13TeV-pythia8/lcorpe-DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_v2-a98af318f27b1c189fe2b33712eaf929/USER DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_published_v2 caf	database	VALID	RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
 ################ CMSSW 75x AODSIM Alcareco production (jun 2015) 
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-AsymptFlat10to50bx25Raw_MCRUN2_74_V9-v1/AODSIM  DYJetsToLL_M-50_13TeV-AsymptFlat10to50-pythia8_11Jun15_v1 caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/AODSIM DYJetsToLL_M-50_13TeV-StartupFlat10to50-pythia8_11Jun15_v1 caf group/dpg_ecal/alca_ecalcalib/ VALID - -
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3 caf group/dpg_ecal/alca_ecalcalib/ VALID - -
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_21Jul15_v4 caf group/dpg_ecal/alca_ecalcalib/ VALID - -
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_21Jul15_v5 caf group/dpg_ecal/alca_ecalcalib/ VALID - -
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-AsymptFlat10to50bx25Raw_MCRUN2_74_V9-v1/AODSIM  DYJetsToLL_M-50_13TeV-AsymptFlat10to50-pythia8_11Jun15_v1 caf group/dpg_ecal/alca_ecalcalib/ INVALID - - 
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-StartupFlat10to50bx50Raw_MCRUN2_74_V8-v1/AODSIM DYJetsToLL_M-50_13TeV-StartupFlat10to50-pythia8_11Jun15_v1 caf group/dpg_ecal/alca_ecalcalib/ INVALID - -
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3 caf group/dpg_ecal/alca_ecalcalib/ INVALID - -
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_21Jul15_v4 caf group/dpg_ecal/alca_ecalcalib/ INVALID - -
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_21Jul15_v5 caf group/dpg_ecal/alca_ecalcalib/ INVALID - -
 #################2015 RUN B DATA -- runs-> 251022-251883  #FINAL B-ON DATASET
 251022-251883 /DoubleEG/Run2015B-PromptReco-v1/AOD DoubleEG-ZSkim-RUN2015B-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-ZSkim-RUN2015B-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
@@ -148,3 +148,9 @@ allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15D
 251022-251883 /DoubleEG/Run2015B-PromptReco-v1/AOD DoubleEG-ZSkim-RUN2015B-ALCARAW-21Jul15-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-ZSkim-RUN2015B-ALCARAW-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
+############### MC DY 50ns Asymptotic conditions
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM  DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v2 caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM	DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v1 caf group/dpg_ecal/alca_ecalcalib/ INVALID - - 
+############### MC DY 25ns Asymptotic conditions
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM   DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ VALID - -   
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM    DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
