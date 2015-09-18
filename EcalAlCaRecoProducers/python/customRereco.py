@@ -10,5 +10,5 @@ def EcalRecal(process):
 
     process.selectedECALElectrons.src = cms.InputTag("electronRecalibSCAssociator")
     process.PassingVetoId.src = recalibElectronSrc
-#    process.myEleCollection = cms.InputTag('electronRecalibSCAssociator')                                                
+#    process.myEleCollection = cms.InputTag('electronRecalibSCAssociator')
     return process

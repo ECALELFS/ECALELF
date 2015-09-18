@@ -220,55 +220,55 @@ esac
 
 case $TYPE in 
     EcalCal | ALCARECO)
- case $SKIM in
-     ZSkim)
-  ALCATYPE="ALCA:EcalCalZElectron"
-  ;;
-     WSkim)
-  ALCATYPE="ALCA:EcalCalWElectron"
-  EVENTS_PER_JOB=20000
-  ;;
-     none) EVENTS_PER_JOB=20000;;
- esac
- ;;
+		case $SKIM in
+			ZSkim)
+				ALCATYPE="ALCA:EcalCalZElectron"
+				;;
+			WSkim)
+				ALCATYPE="ALCA:EcalCalWElectron"
+				EVENTS_PER_JOB=20000
+				;;
+			none) EVENTS_PER_JOB=20000;;
+		esac
+		;;
     EcalUncal | ALCARAW )
-   case $DATASETPATH in
-       */RECO)
-        echo "[INFO] Dataset is RECO, using parent for RAW"
-        USEPARENT=1
-        ;;
-       */AOD)
-        USEPARENT=1
-        echo "[INFO] Dataset is AOD, using parent for RAW"
-        ;;
-       */RAW-RECO) USEPARENT=0 ;;
-       */USER) USEPARENT=0 ;;
-       */RAW) USEPARENT=0 ;;
-       *)
-        echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
-        exit 1
-        ;;
-   esac
-
-	case $SKIM in
-	    ZSkim)
-		ALCATYPE="ALCA:EcalUncalZElectron"
+		case $DATASETPATH in
+			*/RECO)
+				echo "[INFO] Dataset is RECO, using parent for RAW"
+				USEPARENT=1
+				;;
+			*/AOD)
+				USEPARENT=1
+				echo "[INFO] Dataset is AOD, using parent for RAW"
+				;;
+			*/RAW-RECO) USEPARENT=0 ;;
+			*/USER) USEPARENT=0 ;;
+			*/RAW) USEPARENT=0 ;;
+			*)
+				echo "[ERROR] Dataset format not recognized: ${DATASETPATH}"
+				exit 1
+				;;
+		esac
+		
+		case $SKIM in
+			ZSkim)
+				ALCATYPE="ALCA:EcalUncalZElectron"
+				;;
+			WSkim)
+				ALCATYPE="ALCA:EcalUncalWElectron"
+				EVENTS_PER_JOB=20000
+				;;
+			none) EVENTS_PER_JOB=20000;;
+		esac
 		;;
-	    WSkim)
-		ALCATYPE="ALCA:EcalUncalWElectron"
-		EVENTS_PER_JOB=20000
-		;;
-	    none) EVENTS_PER_JOB=20000;;
-	esac
-	;;
     EcalRecal | ALCARERECO)
-	ALCATYPE="ALCA:EcalRecalElectron"
-	CUSTOMISE="--process=RERECO --customise Calibration/EcalAlCaRecoProducers/customRereco.EcalRecal "
-	;;
+		ALCATYPE="ALCA:EcalRecalElectron"
+		CUSTOMISE="--process=RERECO --customise Calibration/EcalAlCaRecoProducers/customRereco.EcalRecal "
+		;;
     *)
-	echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr
-	exit 1
-	;;
+		echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr
+		exit 1
+		;;
 esac
 
 
@@ -287,7 +287,8 @@ if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`"
     unset RUNRANGE
 fi
 if [ "${ISMC}" = "yes" ];then
-unset DATA;
+	unset DATA;
+	CUSTOMISE="$CUSTOMISE --customise Calibration/EcalAlCaRecoProducers/customPUDumper.MCPuDumper"
 fi
 
 if [ "$SPLITBYFILE" == 1 ];then
@@ -380,7 +381,7 @@ output_file=${OUTFILES}
 EOF
 fi 
 
-if [ "$TYPE" == "ALCARECOSIM" ];then
+if [ "$TYPENAME" == "ALCARECOSIM" ];then
     cat >> ${crab2File} <<EOF
 total_number_of_events = -1
 events_per_job=${EVENTS_PER_JOB}
