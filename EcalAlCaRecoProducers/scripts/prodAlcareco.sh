@@ -230,6 +230,7 @@ case $TYPE in
 				;;
 			none) EVENTS_PER_JOB=20000;;
 		esac
+		TYPE=ALCARECO
 		;;
     EcalUncal | ALCARAW )
 		case $DATASETPATH in
@@ -260,10 +261,12 @@ case $TYPE in
 				;;
 			none) EVENTS_PER_JOB=20000;;
 		esac
+		TYPE=ALCARAW
 		;;
     EcalRecal | ALCARERECO)
 		ALCATYPE="ALCA:EcalRecalElectron"
 		CUSTOMISE="--process=RERECO --customise Calibration/EcalAlCaRecoProducers/customRereco.EcalRecal "
+		TYPE=ALCARECO
 		;;
     *)
 		echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr

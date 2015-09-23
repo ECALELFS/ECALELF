@@ -17,6 +17,7 @@ usage(){
     echo "    -t tagFile"
 #    echo "    -p period"
     echo "    -l: list available rerecoes on EOS"
+	echo "    --dry-run"
 }
 
 

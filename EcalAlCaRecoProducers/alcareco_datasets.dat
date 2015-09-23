@@ -149,8 +149,8 @@ allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15D
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-ZSkim-RUN2015B-ALCARAW-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015B
 ############### MC DY 50ns Asymptotic conditions
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM  DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v2 caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM	DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v1 caf group/dpg_ecal/alca_ecalcalib/ INVALID - - 
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM  DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v1/AODSIM	DYJets_madgraph-RunIISpring15DR74-Asym50ns-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ INVALID - - 
 ############### MC DY 25ns Asymptotic conditions
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM   DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ VALID - -   
-allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM    DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ VALID - - 
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM   DYJets_amctnlo-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - -   
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM    DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
