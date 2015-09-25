@@ -1,7 +1,5 @@
 /** 
 * \page plotNtuple How to make plots using ECALELF ntuples
-#======================================== Working with ntuples: how to
-#                                         play by hand with ntuples
 
 If you are interested only in using the fit for validations you can
 skip this paragraphs and go directly to "RERECO VALIDATION instructions"
@@ -11,28 +9,35 @@ It's then important to have a simple way to merge the trees in order to be able 
 The ZFitter/script/GenRootChain.sh has been designed for this.
 
 running the command:
+\verbatim
 ./script/GenRootChain.sh -f data/validation/myConfigFile.dat 
+\endverbatim
 in the tmp/ the s_chain.root, d_chain.root load.C are created for MC and data respectively.
 The .root files have the TChains already defined, merging the files with the same treeName in the config file and adding the friends properly. 
 Due to a bug in ROOT in order to properly load the files the load.C script is created.
 
 To work with ntuples you can do (see pratical example below):
+\verbatim
 root -l tmp/d_chain.root tmp/s_chain.root tmp/load.C
 data    -> Draw("*");
 signalA -> Draw("*");
+\endverbatim
 
 NB: Please check in the load.C file the correct assignment of the tree pointer to the correct file.
 
-#============================== Data/MC plots
+# Data/MC plots
 A standard function for data/MC plots have been prepared and is available in macro/PlotDataMC.C
 
 In the following you can find an example of production of data/MC plots with a config file with 
 22Jan rereco data, run dependent MC (three samples with different generators: s1, s2, s3)
+\verbatim
 ./script/GenRootChain.sh -f data/validation/22Jan2012-runDepMCAll_v2.dat
 root -l -b -q tmp/d_chain.root tmp/s1_chain.root tmp/s2_chain.root tmp/load.C macro/standardDataMC.C
+\endverbatim
 
-*****************
+
 The load.C script is commented below:
+\verbatim
 {
   gROOT->ProcessLine(".L macro/PlotDataMC.C+"); // -> functions for data/MC plots
   gROOT->ProcessLine(".L src/setTDRStyle.C");
@@ -57,7 +62,9 @@ The load.C script is commented below:
 
 // look at standardDataMC.C for some examples  
 }
-*****************
+\endverbatim
+
+\verbatim
 The standardDataMC.C example:
 {
   std::vector<TString> mcLabel_vec;  // create a vector of labels for the MC samples
@@ -85,6 +92,7 @@ The standardDataMC.C example:
   delete c;
 }
 
+\endverbatim
 
 
 
