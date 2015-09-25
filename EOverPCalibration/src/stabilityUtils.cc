@@ -1,14 +1,56 @@
 #include "../interface/stabilityUtils.h"
 
-
+using namespace std;
 
 int dateToInt(const std::string& date)
 {
-  int day,month,year;
+  int day;
+  int month;
+  int year;
+  int tempo;
   
-  std::stringstream ss(date);
-  ss >> day >> month >> year;
+  TString date2 = date;
   
+  TObjArray *splitted = date2.Tokenize("-");
+  
+  TObjString *Objstring1 = (TObjString *) splitted->At(0);
+  TObjString *Objstring2 = (TObjString *) splitted->At(1);
+  TObjString *Objstring3 = (TObjString *) splitted->At(2);
+
+  
+  TString string1 = Objstring1->GetString();
+  TString string2 = Objstring2->GetString();
+  TString string3 = Objstring3->GetString();
+
+
+  std::cout<< "day: " << string1 << std::endl;
+  std::cout<< "month: " << string2 << std::endl;
+  std::cout<< "year: " << string3 << std::endl;
+
+
+  std::string stringday = string1.Data();
+  std::string stringmonth = string2.Data();
+  std::string stringyear = string3.Data();
+
+  day = atoi(stringday.c_str());
+  month = atoi(stringmonth.c_str());
+  year = atoi(stringyear.c_str());
+  /*  
+  istringstream buffer1(stringday); 
+  buffer1 >> day;
+  istringstream buffer2(stringmonth); 
+  buffer2 >> month;
+  istringstream buffer3(stringyear); 
+  buffer3 >> year;
+  */
+  
+  
+  std::cout<< "day: " <<day << std::endl;
+  std::cout<< "month: " << month << std::endl;
+  std::cout<< "year: " << year << std::endl;
+  delete splitted;
+
+ 
   tm time;
   time.tm_sec = 0;
   time.tm_min = 0;
@@ -16,10 +58,16 @@ int dateToInt(const std::string& date)
   time.tm_mday = day;
   time.tm_mon = month-1;
   time.tm_year = year-1900;
-  return timegm(&time);
-}
+  
+  
+ tempo = timegm(&time);
 
+ std::cout << "tempo: " << tempo << std::endl;
+ 
 
+ return mktime(&time);
+
+  }
 
 
 
