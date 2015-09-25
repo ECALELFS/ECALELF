@@ -1,0 +1,24 @@
+/**
+\page pFindInfos How to find infos
+
+\section pFindPromptGT How to find the Prompt GT
+
+Prompt GT is not any more in the file metadata. You need to access the DB to verify the GT used in Prompt recoing the dataset using DAS.
+
+You can do it from the command line using the following command:
+\code 
+das_client.py --query="config dataset=/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO | grep config.global_tag" | tail -1
+\endcode
+
+
+\section  pFindJson Where to find the golden json
+
+The Golden Json is published by the certification group. Find the relative HN and subscribe if you are a regular user of ECALELF.
+
+The official json files are put in 
+\verbatim 
+/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/
+\endverbatim
+
+*/
+

@@ -18,6 +18,7 @@ OutALCARECOEcalUncalElectron.outputCommands += cms.untracked.vstring(
     'drop recoSuperClusters_*_*_*',
     'drop recoPreshowerCluster*_*_*_*',
     'drop *EcalRecHit*_reducedEcalRecHitsES*_*_*',
+    'drop *EcalRecHit*_*_*_*',
     'keep reco*Clusters_pfElectronTranslator_*_*'
     )
 
@@ -25,3 +26,20 @@ OutALCARECOEcalUncalElectron.SelectEvents = cms.untracked.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalUncalWElectron')
     )
 
+
+OutALCARECOEcalUncalWElectron=copy.deepcopy(OutALCARECOEcalUncalElectron)
+OutALCARECOEcalUncalWElectron_noDrop=copy.deepcopy(OutALCARECOEcalUncalElectron_noDrop)
+
+OutALCARECOEcalUncalWElectron.SelectEvents =  cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron') )
+OutALCARECOEcalUncalWElectron_noDrop.SelectEvents =  cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron') )
+
+
+OutALCARECOEcalUncalZElectron=copy.deepcopy(OutALCARECOEcalUncalElectron)
+OutALCARECOEcalUncalZElectron_noDrop=copy.deepcopy(OutALCARECOEcalUncalElectron_noDrop)
+
+OutALCARECOEcalUncalZElectron.SelectEvents =  cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')    )
+OutALCARECOEcalUncalZElectron_noDrop.SelectEvents =  cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')    )

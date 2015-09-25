@@ -11,7 +11,7 @@ from the directory EcalAlCaRecoProducers
       is the file where the GT and the list of tags 
       to be used for the rereco and the ntuple production 
       have to be specified.
-      "tag_name" is the name that will be automatically 
+      \b "tag_name" is the name that will be automatically 
       assigned to all the directories created for the rereco 
       and the ntuples (the crab directory in 
       EcalAlCaRecoProducers/prod_alcarereco 
@@ -57,7 +57,7 @@ git commit -m "...." config/reRecoTags/tag_name.py
 \endcode
    where:
     - config/reRecoTags/tag_name.py is the configuration file defined in step1
-    - jsonFile.txt is the version of the json file to be used
+    - jsonFile.txt is the version of the json file to be used (\ref pFindJson)
     - json_name is the name that ECALELF gives to the json file used for the ntuple production. 
 
 - if you run this the system with ask you your PEM passphrase, which corresponds to
@@ -104,7 +104,7 @@ git commit -m "rereco tag_name done" alcarereco_datasets.dat ntuple_datasets.dat
 \section TAGFILES TAG FILES
 To run the Rereco with a new set of conditions it is necessary to have a configuration file with the tags.
 
-An example of a configuration file can be found in Calibration/EcalAlCaRecoProducers/config/reRecoTags/test.py
+An example of a configuration file can be found in Calibration/EcalAlCaRecoProducers/config/reRecoTags/test75x.py
 
 Here an example:
 \code

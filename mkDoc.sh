@@ -1,20 +1,48 @@
 #!/bin/bash
-if [ ! -d "doc/doxygen/fulldoc/" ];then
-    mkdir -p doc/doxygen/fulldoc/
-fi
-if [ ! -d "doc/doxygen/fulldoc/html" ];then
-    cd doc/doxygen/fulldoc/
-    git clone -b gh-pages git@github.com:ECALELFS/ECALELF.git html
-    cd -
+DOCCONF=fulldoc
+mainDir=$PWD
+docDir=doc/doxygen/${DOCCONF}/
+remote="git@github.com:ECALELFS/ECALELF.git"
+
+if [ ! -d "${docDir}" ];then
+    mkdir -p ${docDir}
 fi
 
-doxygen fulldoc
+if [ ! -d "${docDir}/html" ];then
+    cd ${docDir}
+    git clone -b gh-pages  $remote html
+    cd ${mainDir}
+else
+    cd ${docDir}/html
+    if [ "`git branch | grep -c gh-pages`" == "0" ];then
+	cd ${mainDir}
+	rm ${docDir}/html/ -Rf
+	cd ${docDir}/
+	git clone -b gh-pages  $remote html
+	cd ${mainDir}
+    fi
+fi
 
-cd doc/doxygen/fulldoc/
+cd ${mainDir}
+doxygen ${DOCCONF}
+
+cd ${docDir}/html/
+ls
+git remote -v 
+git branch 
 git pull
-git add *
+git add -A
+git add *.html
+git add *.css *.js
+git add *.gif 
+git add *.png
+git add *.map
+git add *.md5
+git add *.dot
+git add search
+git add */*/*.png
 git commit -m "updated documentation" -a
 git commit -m "updated documentation" -a
-git push
+git push origin gh-pages:gh-pages
 cd -
 

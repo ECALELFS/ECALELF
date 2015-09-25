@@ -38,7 +38,7 @@ MODULES=$(shell ls $(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
 
 #### Make the list of dependencies for a particular module
 
-default: $(MODULES)
+default: directories $(MODULES)
 
 MAKEDEPEND = -MMD  -MT '$@ lib/$*.d'
 
@@ -58,5 +58,11 @@ clean:
 	rm -f $(OBJ_DIR)/*.o
 	rm -f $(OBJ_DIR)/*.d
 	rm -f $(BUILDDIR)/*.exe
+
+
+directories: lib
+
+lib:
+	mkdir -p lib/
 
 

@@ -18,9 +18,10 @@ PDFSYST=0
 SKIM=""
 OUTFILES="ntuple.root"
 crabFile=tmp/ntuple.cfg
-CRABVERSION=3
-FROMCRAB3=1
+CRABVERSION=2
+FROMCRAB3=0
 JOBINDEX=""
+ISPRIVATE=0
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -50,6 +51,7 @@ usage(){
     echo "    --createOnly"
     echo "    --submitOnly"
     echo "    --check"
+    echo "    --isPrivate: it is a privately produced dataset (not central or prompt)"
 
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
@@ -75,7 +77,7 @@ expertUsage(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,file_per_job:,develRelease -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -152,6 +154,7 @@ do
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
 	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
+	--isPrivate)      echo "[OPTION] private dataset"; ISPRIVATE=1;;
 
  	--file_per_job) FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
@@ -366,7 +369,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
 get_edm_output=1
 output_file=${OUTFILES}
 

@@ -164,17 +164,16 @@ case ${TYPE} in
 	validationFitSlides
 	validationBackupSlides
 #	validationStabilitySlides
-	if [ "$USER" == "lcorpe" ];then
-echo  " LC DEBUG ${dirSlides}/validation-${invMass_var}-slides.tex"
-	cat template.tex \
+	if [ "$USER" == "lcorpe" -o "$USER" ==  "lbrianza" ];then
+	cat tex/template.tex \
 			${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-backup_slide.tex \
-		 	template_end.tex > ${dirSlides}/validation-${invMass_var}-slides.tex
+		 	tex/template_end.tex > ${dirSlides}/validation-${invMass_var}-slides.tex
+
 		else
 
-echo  " LC DEBUG ${dirSlides}/validation-${invMass_var}-slides.tex"
 	cat ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex > ${dirSlides}/validation-${invMass_var}-slides.tex

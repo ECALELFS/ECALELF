@@ -4,9 +4,9 @@ from CondCore.DBCommon.CondDBSetup_cfi import *
 
 RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                CondDBSetup,
-                               connect = cms.string('frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'),
+                               connect = cms.string('frontier://FrontierProd/CMS_CONDITIONS'),
                                #     globaltag = cms.string('UNSPECIFIED::All'),
-                               globaltag = cms.string('GR_R_74_V8A::All'),
+                               globaltag = cms.string('74X_dataRun2_Prompt_v0'),
 #                               globaltag = cms.string('START72_V1::All'),
                                #toGet = cms.VPSet( ),   # hook to override or add single payloads
                                #    toGet = cms.VPSet(
@@ -31,5 +31,5 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                #     connect = cms.untracked.string('frontier://FrontierProd/CMS_COND_31X_ECAL')
                                #    )
                                #  ),
-                               BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService')
+                               #BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService')
                                )

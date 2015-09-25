@@ -1,0 +1,10 @@
+/**
+ \page pAlcarecoProduction AlCaReco Production from AlCaRaw
+
+AlCaReco centrally produced have a bug, you need to run a reReco of the AlCaRaw with the Prompt GT: \ref pFindPromptGT
+
+Then follow the instructions for a rereco using as \b tag_name the name of the GT: \ref page5
+
+
+*/
+

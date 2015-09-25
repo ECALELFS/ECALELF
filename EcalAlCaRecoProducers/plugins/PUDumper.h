@@ -1,19 +1,20 @@
 #ifndef PUDumper_h
 #define PUDumper_h
 
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-#include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/MakerMacros.h"
-#include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Framework/interface/EDAnalyzer.h"
 
+#include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/ParameterSet/interface/ParameterSet.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
 #include "TTree.h"
-
 
 
 class PUDumper : public edm::EDAnalyzer
@@ -36,7 +37,9 @@ class PUDumper : public edm::EDAnalyzer
   
   
  private:
-  
+
+  edm::EDGetTokenT< std::vector<PileupSummaryInfo> > pileupSummaryToken_;
+
   //edm::InputTag MCPileupTag_;
   
   TTree* PUTree_;

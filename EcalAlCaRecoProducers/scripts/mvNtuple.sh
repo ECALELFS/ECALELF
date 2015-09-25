@@ -1,8 +1,38 @@
 #!/bin/bash
 # copy from the first directory to the second
 
+usage(){
+    echo "`basename $0` -u crab_workind_dir"
+    echo " -u | --ui_working_dir crab_working_dir"
+}
 
-UI_WORKING_DIR=$1
+if ! options=$(getopt -u -o hu: -l help,ui_working_dir: -- "$@")
+then
+    # something went wrong, getopt will put out an error message for us
+    exit 1
+fi
+
+set -- $options
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+	-h|--help) usage; exit 0;;
+	-u | --ui_working_dir) UI_WORKING_DIR=$2; shift;;
+    (--) shift; break;;
+    (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
+    (*) break;;
+    esac
+    shift
+done
+
+if [ -z "${UI_WORKING_DIR}" ]; then
+    echo "[ERROR] crab working directory not specified" >> /dev/stderr
+    usage >> /dev/stderr
+    exit 1
+fi
+
+
 USER_REMOTE_DIR=`grep '^user_remote_dir=' ${UI_WORKING_DIR}/share/crab.cfg |cut -d '=' -f 2` 
 STORAGE_PATH=`grep 'storage_path=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
 
