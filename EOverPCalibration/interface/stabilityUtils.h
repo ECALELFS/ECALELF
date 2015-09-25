@@ -2,6 +2,9 @@
 #define stabilityUtils_h
 
 #include "histoFunc.h"
+#include <TString.h>
+#include <TObjArray.h>
+#include <TObjString.h>
 
 #include <sstream>
 #include <ctime>
@@ -9,7 +12,8 @@
 #include "TH1F.h"
 #include "TF1.h"
 
-
+#include <iostream>
+#include <string>
 
 int dateToInt(const std::string& date);
 

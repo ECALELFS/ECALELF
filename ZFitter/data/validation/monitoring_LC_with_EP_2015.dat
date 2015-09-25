@@ -1,7 +1,24 @@
 #s       selected    	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3/allRange/v3/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3-allRange.root
 #d 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple_DoubleElectron-ZSkim-RUN2015D-13Jul15-v1.root
 #s 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple_DoubleElectron-ZSkim-RUN2015D-13Jul15-v1.root
-d 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple.root
-d 	extraCalibTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/extraCalibTree.root
-s 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/ntuple.root
-s 	extraCalibTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/Run2015B_TEMP/extraCalibTree.root
+
+
+d 	selected	 root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015_noExtraC/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2/251022-251883/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2-251022-251883.root
+
+d	extraCalibTree	 root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015_noExtraC/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2/251022-251883/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2-251022-251883_extraCalibTree.root
+
+
+
+d	selected	 root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015-25ns_noExtraC/SingleElectron-WSkim-Run2015C-Prompt-v1/253620-254914/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2/SingleElectron-WSkim-Run2015C-Prompt-v1-253620-254914.root
+
+d	extraCalibTree	 root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015-25ns_noExtraC/SingleElectron-WSkim-Run2015C-Prompt-v1/253620-254914/Cert_246908-255031_13TeV_PromptReco_Collisions15_25ns_JSON_v2/SingleElectron-WSkim-Run2015C-Prompt-v1-253620-254914_extraCalibTree.root
+
+
+
+d	selected	 root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015_run254833_noExtraC/SingleElectron-WSkim-Run2015C-Prompt-v1/253620-254914/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2/SingleElectron-WSkim-Run2015C-Prompt-v1-253620-254914.root
+d	extraCalibTree	  root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015_run254833_noExtraC/SingleElectron-WSkim-Run2015C-Prompt-v1/253620-254914/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2/SingleElectron-WSkim-Run2015C-Prompt-v1-253620-254914_extraCalibTree.root
+
+
+
+s 	selected	 root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015_noExtraC/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2/251022-251883/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2-251022-251883.root
+s	extraCalibTree  root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICprompt2015_noExtraC/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2/251022-251883/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON/SingleElectron-WSkim-RUN2015B-ALCARAW-21Jul15-v2-251022-251883_extraCalibTree.root	

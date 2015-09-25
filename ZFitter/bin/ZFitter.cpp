@@ -277,7 +277,6 @@ TString energyBranchNameFromInvMassName(TString invMass_var){
   return TString( (energyBranchNameFromInvMassName(std::string(invMass_var))).c_str());
 }
 
-
 int main(int argc, char **argv) {
   TStopwatch myClock;
   TStopwatch globalClock;
@@ -323,6 +322,10 @@ int main(int argc, char **argv) {
   std::string minimType;
   std::vector<std::string> branchList;
 
+
+
+
+
 //options for E/p
   std::string jsonFileName;
   std::string miscalibMap;
@@ -352,7 +355,8 @@ int main(int argc, char **argv) {
   std::string EBEE;
   int evtsPerPoint;
   int useRegression;
-
+  std::string dayMin;
+  std::string dayMax;
   //------------------------------ setting option categories
   po::options_description desc("Main options");
   po::options_description outputOption("Output options");
@@ -472,6 +476,8 @@ int main(int argc, char **argv) {
     ("EBEE", po::value<string>(&EBEE)->default_value("EB"),"barrel or endcap")
     ("evtsPerPoint", po::value<int>(&evtsPerPoint)->default_value(1000),"events per point")
     ("useRegression", po::value<int>(&useRegression)->default_value(0),"use regression")
+    ("dayMin", po::value<string>(&dayMin)->default_value("1-6-2015"),"day min")
+    ("dayMax", po::value<string>(&dayMax)->default_value("1-10-2015"),"day max")
     ;
   EoverPOption.add_options()
     ("EOverPCalib",  "call the E/p calibration")
@@ -669,6 +675,7 @@ int main(int argc, char **argv) {
 #endif
 
   }
+
   
   //init chains and print 
   for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
@@ -824,7 +831,7 @@ int main(int argc, char **argv) {
     } // end of data samples loop
   } // end of r9Weight 
 
-
+    
   //==============================
 
   //  if(vm.count("dataPU")==0 && (tagChainMap["s"]).count("pileupHist")==0 && (tagChainMap["s"]).count("pileup")==0){
@@ -1032,6 +1039,8 @@ int main(int argc, char **argv) {
     } //end of sample loop
   } //end of branches loop
 
+ 
+
   //(tagChainMap["s"])["selected"]->GetEntries();
   UpdateFriends(tagChainMap, regionsFileNameTag);
 
@@ -1207,7 +1216,9 @@ int main(int argc, char **argv) {
     data= (tagChainMap["d"])["selected"];
     mc  = (tagChainMap["s"])["selected"];
   }
-  
+
+
+    
 //------------------------------ LASER MONITORING WITH E/P  ------------------------------------------------------
  
   if(vm.count("laserMonitoringEP")) {	  
@@ -1215,11 +1226,11 @@ int main(int argc, char **argv) {
     float timeLapse = 24.; // in hours
     //    int t1 = 1267401600;   //  1 Mar 2010
     //int t2 = 1325289600;   // 31 Dec 2011 
-    int t1 = 1400000000;
-    int t2 = 1600000000;
+    //int  t1 = 1400000000;
+    //int  t2 = 1600000000;
 
-    float yMIN = 0.700;
-    float yMAX = 1.100;
+    float yMIN = 0.75;
+    float yMAX = 1.10;
 
 
   // Set style options
@@ -1237,11 +1248,12 @@ int main(int argc, char **argv) {
   
   //-----------------
   // Input parameters
+ 
   
   std::cout << "\n***************************************************************************************************************************" << std::endl;
-
-  std::string dayMin = "";
-  std::string dayMax = "";
+ 
+  //  std::string dayMin = "";
+  //std::string dayMax = "";
   std::string dayMinLabel = "";
   std::string dayMaxLabel = "";
   float absEtaMin = -1.;
@@ -1251,6 +1263,13 @@ int main(int argc, char **argv) {
   int IphiMin = -1;
   int IphiMax = -1;
 
+  
+
+
+  int t1 = dateToInt(dayMin);
+  int t2 = dateToInt(dayMax);
+  
+  
   /*
   if(argc >= 5)
   {
@@ -1259,8 +1278,6 @@ int main(int argc, char **argv) {
     dayMinLabel = std::string(argv[4])+"_"+std::string(argv[5])+"_"+std::string(argv[6]);
     dayMaxLabel = std::string(argv[7])+"_"+std::string(argv[8])+"_"+std::string(argv[9]);
     
-    t1 = dateToInt(dayMin);
-    t2 = dateToInt(dayMax);
   }
   if(argc >= 11)
   {
@@ -1294,9 +1311,13 @@ int main(int argc, char **argv) {
   std::cout << "IetaMax: "       << IetaMax       << std::endl;
   std::cout << "IphiMin: "       << IphiMin       << std::endl;
   std::cout << "IphiMax: "       << IphiMax       << std::endl;
+  std::cout << "t1: "            << t1            << std::endl;
+  std::cout << "t2: "            << t2            << std::endl;
   
   
-  
+   
+  std::string dayMin = "";
+  std::string dayMax = "";
   
    
   //-------------------
@@ -1491,8 +1512,8 @@ int main(int argc, char **argv) {
     mc->GetEntry(ientry);
     
     // selections
-    if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.45) )                    continue; // barrel
-    if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.47 || fabs(etaSCEle[0])>2.7) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
+    if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
 
     if( (absEtaMin != -1.) && (absEtaMax != -1.) )
     {
@@ -1538,8 +1559,8 @@ int main(int argc, char **argv) {
     isSavedEntries.at(ientry) = false;
     
     // selections
-    if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.45) )                    continue; // barrel
-    if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.47 || fabs(etaSCEle[0])>2.7) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
+    if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
     
     if( (absEtaMin != -1.) && (absEtaMax != -1.) )
     {
@@ -1651,7 +1672,7 @@ int main(int argc, char **argv) {
   SetHistoStyle(h_scOccupancy_eta);
   SetHistoStyle(h_scOccupancy_phi);
   
-  TH2F* h_seedOccupancy_EB  = new TH2F("h_seedOccupancy_EB","",  171, -85., 86., 361,   0.,361.);
+  TH2F* h_seedOccupancy_EB  = new TH2F("h_seedOccupancy_EB","",  171, -86., 85., 361,   0.,361.);
   TH2F* h_seedOccupancy_EEp = new TH2F("h_seedOccupancy_EEp","", 101,   0.,101., 100,   0.,101.);
   TH2F* h_seedOccupancy_EEm = new TH2F("h_seedOccupancy_EEm","", 101,   0.,101., 100,   0.,101.);
   SetHistoStyle(h_seedOccupancy_EB);
@@ -1695,12 +1716,13 @@ int main(int argc, char **argv) {
     
     sprintf(histoName, "Tsp_%d", i);
     h_Tsp[i] = new TH1F(histoName, histoName, 500, 0.5, 1.5);
+   
   }
   
   
   // function definition
-  TF1** f_EoP = new TF1*[nBins];
-  TF1** f_EoC = new TF1*[nBins];
+    TF1** f_EoP = new TF1*[nBins];
+    TF1** f_EoC = new TF1*[nBins];
   
   
   // graphs definition
@@ -1878,11 +1900,11 @@ int main(int argc, char **argv) {
     int fStatus = 0;
     int nTrials = 0;
     TFitResultPtr rp;
-    
-    rp = h_EoP[i] -> Fit(funcName, "QERLS+");
+   
+    rp = h_EoP[i] -> Fit(funcName, "ERLS+");
     while( (fStatus != 0) && (nTrials < 10) )
     {
-      rp = h_EoP[i] -> Fit(funcName, "QERLS+");
+      rp = h_EoP[i] -> Fit(funcName, "ERLS+");
       fStatus = rp;
       if(fStatus == 0) break;
       ++nTrials;
@@ -1945,12 +1967,12 @@ int main(int argc, char **argv) {
     f_EoC[i] -> SetLineColor(kGreen+2); 
     
     
-    rp = h_EoC[i] -> Fit(funcName, "QERLS+");
+    rp = h_EoC[i] -> Fit(funcName, "ERLS+");
     fStatus = rp;
     nTrials = 0;
     while( (fStatus != 0) && (nTrials < 10) )
     {
-      rp = h_EoC[i] -> Fit(funcName, "QERLS+");
+      rp = h_EoC[i] -> Fit(funcName, "ERLS+");
       fStatus = rp;
       if(fStatus == 0) break;
       ++nTrials;
@@ -2151,12 +2173,46 @@ int main(int argc, char **argv) {
   gPad -> Update();
   
   
-  
-  
-  
-  
+  //ciao
   //-------------------
-  // Final plot vs date
+  // histos 
+  //-------------------
+  
+  
+  
+  for ( int i = 0; i < nBins; ++i)
+  {
+    
+    TCanvas* histoEoP = new TCanvas("histo","histo",0,0,500,500);
+    histoEoP -> cd();
+    
+    h_EoP[i] -> Draw();
+    f_EoP[i] -> SetLineWidth(2);
+    f_EoP[i] -> SetLineColor(4);
+    f_EoP[i] -> Draw("same");	
+    // histoEoP -> Update();
+    
+    histoEoP -> Print((folderName+"/"+folderName+"_histoEoP"+std::to_string(i)+".png").c_str(),"png");
+    histoEoP -> Print((folderName+"/"+folderName+"_histoEoP"+std::to_string(i)+".pdf").c_str(),"pdf");
+    
+    
+    TCanvas* histoEoC = new TCanvas("histo","histo",0,0,500,500);
+    histoEoC -> cd();
+    
+    h_EoC[i] -> Draw();
+    f_EoC[i] -> SetLineWidth(2);
+    f_EoC[i] -> SetLineColor(4);
+    f_EoC[i] -> Draw("same");
+    //histoEoC -> Update();
+   
+    histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".png").c_str(),"png");    
+    histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".pdf").c_str(),"pdf");    
+    
+  }
+ 
+
+  //-------------------
+  // Final Plot vs date
   //-------------------
   
   TCanvas* cplot = new TCanvas("cplot", "history plot vs date",100,100,1000,500);
@@ -2182,6 +2238,8 @@ int main(int argc, char **argv) {
   cLeft->SetGridy();
   
   TH1F *hPad = (TH1F*)gPad->DrawFrame(t1,0.9,t2,1.05);
+    
+  
   hPad->GetXaxis()->SetTimeFormat("%d/%m%F1970-01-01 00:00:00");
   hPad->GetXaxis()->SetTimeDisplay(1);
   hPad->GetXaxis() -> SetRangeUser(MinTime[0]-43200,MaxTime[nBins-1]+43200);
@@ -2416,8 +2474,11 @@ int main(int argc, char **argv) {
   s_EoP_spread -> Draw("sames");
   
   
+
   
+ 
   
+    
   
   
   c_chi2 -> Print((folderName+"/"+folderName+"_fitChi2.png").c_str(),"png");
@@ -2425,7 +2486,7 @@ int main(int argc, char **argv) {
   c_seedOccupancy -> Print((folderName+"/"+folderName+"_seedOccupancy.png").c_str(),"png");
   cplot -> Print((folderName+"/"+folderName+"_history_vsTime.png").c_str(),"png");
   cplot_run -> Print((folderName+"/"+folderName+"_history_vsRun.png").c_str(),"png");
-  
+    
   c_chi2 -> Print((folderName+"/"+folderName+"_fitChi2.pdf").c_str(),"pdf");
   c_scOccupancy -> Print((folderName+"/"+folderName+"_scOccupancy.pdf").c_str(),"pdf");
   c_seedOccupancy -> Print((folderName+"/"+folderName+"_seedOccupancy.pdf").c_str(),"pdf");
@@ -2434,11 +2495,11 @@ int main(int argc, char **argv) {
   
   cplot -> SaveAs((folderName+"/"+folderName+"_history_vsTime.C").c_str());
   cplot_run -> SaveAs((folderName+"/"+folderName+"_history_vsRun.C").c_str());
-  
+
   
   
    o -> cd();
-  
+        
    h_template -> Write();
 
    h_scOccupancy_eta   -> Write();
@@ -2456,26 +2517,28 @@ int main(int argc, char **argv) {
    
    h_EoP_chi2 -> Write();
    h_EoC_chi2 -> Write();
-  
-   //for(int i = 0; i < nBins; ++i)
-   //{
-   //  h_EoP[i] -> GetXaxis() -> SetTitle("E/p");
-   //  h_EoP[i] -> Write();
-   //
-   //  h_EoC[i] -> GetXaxis() -> SetTitle("E/p");
-   //  h_EoC[i] -> Write();
-   //
-   //  h_Tsp[i] -> Write();
-   //
-   //  h_Cvl[i] -> Write();
-   //}
-
-  o -> Close();
-
+   
+   //ciao
+   
+   for(int i = 0; i < nBins; ++i)
+     {
+       gStyle->SetOptFit(1111);
+       
+       h_EoP[i] -> Write();
+       h_EoC[i] -> Write();
+       f_EoP[i] -> Write();
+       f_EoC[i] -> Write();
+       //  h_Tsp[i] -> Write();
+       //
+       //  h_Cvl[i] -> Write();
+     }
+   
+   o -> Close();
+   
   return 0;
-    }
-
-///////////--------------------------- E/P calibration ----------------------------------------------------------------------
+  }
+  
+  ///////////--------------------------- E/P calibration ----------------------------------------------------------------------
 
   if(vm.count("EOverPCalib") && vm.count("doEB")) {	
 
