@@ -89,8 +89,8 @@ do
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES}','extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES}','eleIDTree.root";;
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
