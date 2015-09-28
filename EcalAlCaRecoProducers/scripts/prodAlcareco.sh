@@ -460,6 +460,9 @@ if [ -n "${CREATE}" ];then
 	3)
 	    ;;
     esac
+
+./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
+#
 fi
 
 if [ -n "${CREATE}" ] && [ -z "${SUBMIT}" ];then
@@ -470,9 +473,7 @@ fi
  #if [ "$TYPE" == "ALCARECOSIM" ];then
  #  mv _tmp_argument.xml ${UI_WORKING_DIR}/share/arguments.xml 
  #fi 
- 
-./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
-#crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
+ crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
 
  #clean up extral lines
  #awk ' /file_list=\"\"/ &&c++>0 {next} 1 ' ${UI_WORKING_DIR}/job/CMSSW.sh > _tmp_CMSSW.sh
