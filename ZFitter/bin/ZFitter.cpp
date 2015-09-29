@@ -1908,14 +1908,22 @@ int main(int argc, char **argv) {
       fStatus = rp;
       if(fStatus == 0) break;
       ++nTrials;
-    }
+      }
     
     // fill the graph
     double eee = f_EoP[i]->GetParError(1);
     //float k    = f_EoP[i]->GetParameter(1);
     float k    = f_EoP[i]->GetParameter(1) / h_Tsp[i]->GetMean(); //needed when using mellin's convolution 
     
-    if( (h_EoP[i]->GetEntries() > 3) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
+    /*
+    std::cout << i <<"--nocorr---- "<< 1./k << std::endl;
+    std::cout <<" condizione 1: " << h_EoP[i]->GetEntries() << "  fStatus: " << fStatus << " eee: " << eee << "con eee che ci piace essere maggiore di : " <<  0.05*h_template->GetRMS()/sqrt(evtsPerPoint) << std::endl ;
+    getchar();
+    */
+    
+    
+    //    if( (h_EoP[i]->GetEntries() > 3) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
+    if( (h_EoP[i]->GetEntries() > 3) && (fStatus == 0) )
     {
       float date = (float)AveTime[i];
       float dLow = (float)(AveTime[i]-MinTime[i]); 
@@ -1930,6 +1938,9 @@ int main(int argc, char **argv) {
       g_fit_run -> SetPoint(i,  run , 1./k);
       g_fit_run -> SetPointError(i, rLow , rHig, eee/k/k, eee/k/k);
       
+      std::cout <<"************-------------------*****************" <<std::endl;
+      
+
       h_EoP_chi2 -> Fill(f_EoP[i]->GetChisquare()/f_EoP[i]->GetNDF());
       
       EoP_scale += 1./k;
@@ -1971,19 +1982,27 @@ int main(int argc, char **argv) {
     fStatus = rp;
     nTrials = 0;
     while( (fStatus != 0) && (nTrials < 10) )
-    {
-      rp = h_EoC[i] -> Fit(funcName, "ERLS+");
-      fStatus = rp;
-      if(fStatus == 0) break;
-      ++nTrials;
-    }
+      {
+	rp = h_EoC[i] -> Fit(funcName, "ERLS+");
+	fStatus = rp;
+	if(fStatus == 0) break;
+	++nTrials;
+      }
+
     
     // fill the graph
     k   = f_EoC[i]->GetParameter(1);
     eee = f_EoC[i]->GetParError(1); 
     
-    if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
-    {
+    /* std::cout << i <<"--corr---- "<< 1./k << std::endl;
+    std::cout <<" condizione 1: " << h_EoP[i]->GetEntries() << "  fStatus: " << fStatus << " eee: " << eee << "con eee che ci piace essere maggiore di : " <<  0.05*h_template->GetRMS()/sqrt(evtsPerPoint) << std::endl ;
+    getchar();
+    */  
+
+
+    if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) )
+    //  if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
+      {
       float date = (float)AveTime[i]; 
       float dLow = (float)(AveTime[i]-MinTime[i]); 
       float dHig = (float)(MaxTime[i]-AveTime[i]);
@@ -1996,7 +2015,9 @@ int main(int argc, char **argv) {
       
       g_c_fit_run -> SetPoint(i,  run , 1./k);
       g_c_fit_run -> SetPointError(i, rLow , rHig, eee/k/k, eee/k/k);
-      
+      std::cout <<"************-------------------*****************" <<std::endl;
+            
+
       h_EoC_chi2 -> Fill(f_EoC[i]->GetChisquare()/f_EoP[i]->GetNDF());
       
       EoC_scale += 1./k;
