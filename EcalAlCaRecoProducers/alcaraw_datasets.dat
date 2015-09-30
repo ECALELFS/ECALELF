@@ -81,3 +81,7 @@
 253620-254914 /SingleElectron/Run2015C-EcalUncalWElectron-PromptReco-v1/ALCARECO SingleElectron-WSkim-Run2015C-Prompt-v1 caf database VALID RUN2015C,RUN2015BC,RUN2015ABC
 253620-255031 /DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO DoubleEG-ZSkim-Run2015C-Prompt-v1 caf database VALID RUN2015C,RUN2015BC,RUN2015ABC
 ### Why the run numbers are different for SingleEle and DoubleEG?
+################ RUN2015D DATA 
+256584-257611 /SingleElectron/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO SingleElectron-ZSkim-Run2015D-Prompt-v3 caf database VALID RUN2015D,RUN20125CD,RUN2015BCD,RUN2015ABCD
+256584-257611 /SingleElectron/Run2015D-EcalUncalWElectron-PromptReco-v3/ALCARECO SingleElectron-WSkim-Run2015D-Prompt-v3 caf database VALID RUN2015D,RUN20125CD,RUN2015BCD,RUN2015ABCD
+256584-257611 /DoubleEG/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO DoubleEG-ZSkim-Run2015D-Prompt-v3 caf database VALID RUN2015D,RUN20125CD,RUN2015BCD,RUN2015ABCD
