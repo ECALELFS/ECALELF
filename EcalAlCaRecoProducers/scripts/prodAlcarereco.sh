@@ -12,7 +12,7 @@ STORAGE_ELEMENT=caf
 #UI_WORKING_DIR=prod_alcarereco
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco
 NTUPLE_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOB=300
+LUMIS_PER_JOB=30
 CREATE=y
 SUBMIT=y
 DOTREE=1
@@ -89,14 +89,14 @@ do
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES}','extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES}','eleIDTree.root";;
+	--doExtraCalibTree) let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
 	--ntupleCheck)      echo "[OPTION] checking ntuple jobs"; unset CREATE; unset SUBMIT; NTUPLECHECK=y; EXTRAOPTION="--check";;
-	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; DOTREE=0;;
+	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; OUTFILES=""; DOTREE=0;;
 	--rereco_remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
 	-f|--filelist) FILELIST="$FILELIST $2"; echo ${FILELIST}; shift ;;

@@ -779,7 +779,8 @@ elif(options.type=='ALCARERECO'):
         process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
-        process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
+        if(options.doTree>0):
+            process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step)
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):

@@ -138,7 +138,7 @@ hadd -f /tmp/$USER/${MERGEDFILE} `cat filelist/unmerged.list` || exit 1
 
 # copy the merged file to the repository
 # dirname is needed to remove "unmerged" subdir from the path
-xrdcp -v /tmp/$USER/${MERGEDFILE} ${eosFile} || exit 1
+xrdcp -Nv /tmp/$USER/${MERGEDFILE} ${eosFile} || exit 1
 
 # let's remove the files
 if [ -z "${NOREMOVE}" ];then
