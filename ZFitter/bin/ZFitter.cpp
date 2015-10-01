@@ -2287,7 +2287,7 @@ int main(int argc, char **argv) {
   g_c_fit -> SetMarkerColor(kGreen+2);
   g_c_fit -> SetLineColor(kGreen+2);
   g_c_fit -> SetMarkerSize(0.7);
-  g_c_fit -> Draw("P,same");
+  g_c_fit -> Draw("EP,same");
   g_las -> SetLineColor(kAzure-2);
   g_las -> SetLineWidth(2);
   g_las -> Draw("L,same");
