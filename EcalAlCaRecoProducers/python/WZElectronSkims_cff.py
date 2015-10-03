@@ -146,7 +146,7 @@ PassingVetoIdElectronStream = selectedECALElectrons.clone(
     selectedECALElectrons.cut.value() +
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=2)"
     " && ((isEB"
-#    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.164369)"
+    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.164369)"
     " && (sigmaIetaIeta<0.011100)"
 #    " && (full5x5_sigmaIetaIeta<0.011100)" #why this one cuts all the events?
     " && ( - 0.252044<deltaPhiSuperClusterTrackAtVtx< 0.252044 )"
@@ -155,7 +155,7 @@ PassingVetoIdElectronStream = selectedECALElectrons.clone(
     ")"
     " || (isEE"
     " && (gsfTrack.hitPattern().numberOfHits(\'MISSING_INNER_HITS\')<=3)"
-#    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.212604 )"
+    " && ( ((pfIsolationVariables().sumChargedHadronPt + max(0.0,pfIsolationVariables().sumNeutralHadronEt + pfIsolationVariables().sumPhotonEt - 0.5 * pfIsolationVariables().sumPUPt))/p4.pt)<0.212604 )"
     " && (sigmaIetaIeta<0.033987)"
 #    " && (full5x5_sigmaIetaIeta<0.033987)" #why this one cuts all the events?
     " && ( -0.245263<deltaPhiSuperClusterTrackAtVtx<0.245263 )"
@@ -355,3 +355,4 @@ checkMCZSeq = cms.Sequence(genEleFromZ * combZ * ZFilterMC) #sequence to check Z
 checkMCWSeq = cms.Sequence(genEleFromW * genNuFromW * combW * WFilterMC) #sequence to check Wskim efficiency respect to the MC
 
 FilterMuSeq = cms.Sequence(muSelSeq * (ZeeSelector + WenuSelector + EleSCSelector) * WZSelector)
+
