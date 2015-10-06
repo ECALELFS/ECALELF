@@ -67,5 +67,11 @@ sed -i -f tmp/sed.sed ${UI_WORKING_DIR}/job/CMSSW.sh
 
 #grep -v -A6 'if \[ -e .*root'  ${UI_WORKING_DIR}/job/CMSSW.sh > tmp/CMSSW.sh
 
-sed -i '/^eval/{ a scramv1 setup lhapdffull\ntouch \$CMSSW_BASE/src/ElectroWeakAnalysis/Utilities/BuildFile.xml\nscramv1 b\neval \`scram runtime -sh | grep -v SCRAMRT_LSB_JOBNAME\`\n
-}' ${UI_WORKING_DIR}/job/CMSSW.sh
+cat > tmp/sedbis.sed <<EOF
+/^eval/{ a scramv1 setup lhapdffull\ntouch \$CMSSW_BASE/src/ElectroWeakAnalysis/Utilities/BuildFile.xml\nscramv1 b\neval \`scram runtime -sh | grep -v SCRAMRT_LSB_JOBNAME\`\n
+}
+EOF
+#sed -i '0,/^eval/{ a scramv1 setup lhapdffull\ntouch \$CMSSW_BASE/src/ElectroWeakAnalysis/Utilities/BuildFile.xml\nscramv1 b\neval \`scram runtime -sh | grep -v SCRAMRT_LSB_JOBNAME\`\n
+#}' ${UI_WORKING_DIR}/job/CMSSW.sh
+
+sed -i -f tmp/sedbis.sed ${UI_WORKING_DIR}/job/CMSSW.sh

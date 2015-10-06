@@ -69,7 +69,7 @@ eventNumber=694966852
 lumi=466
 eventNumber=685233340
 
-eventNumber=381093446
+eventNumber=-1
 eventMin=-1
 lumi=-1
 
@@ -80,7 +80,7 @@ event_counter=0
 for arg in sys.argv:
     if (arg=='alcareco'):
         print "alcareco"
-        file="/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CMSSW_7_5_0_pre3/src/Calibration/DoubleElectron-Run2012D/EcalCalZElectron.root"
+        file="EcalCalZElectron.root"
         file_format = "alcareco"
         break
     elif(arg=='alcarereco'):
@@ -241,8 +241,8 @@ for event in events:
 #        event.getByLabel("alCaIsolatedElectrons","alcaBarrelHits", "ALCARERECO", handleRecHitsEB_ALCARECO)
 #        event.getByLabel("alCaIsolatedElectrons","alcaEndcapHits", "ALCARERECO", handleRecHitsEE_ALCARECO)
         if (arg=='alcareco'):
-            event.getByLabel("alCaIsolatedElectrons","alcaBarrelHits", "ALCA", handleRecHitsEB_ALCARECO)
-            event.getByLabel("alCaIsolatedElectrons","alcaEndcapHits", "ALCA", handleRecHitsEE_ALCARECO)
+            event.getByLabel("alCaIsolatedElectrons","alcaBarrelHits", "", handleRecHitsEB_ALCARECO)
+            event.getByLabel("alCaIsolatedElectrons","alcaEndcapHits", "", handleRecHitsEE_ALCARECO)
         elif (arg=='alcarereco'):
             event.getByLabel("alCaIsolatedElectrons","alcaBarrelHits", "RERECO", handleRecHitsEB_ALCARECO)
             event.getByLabel("alCaIsolatedElectrons","alcaEndcapHits", "RERECO", handleRecHitsEE_ALCARECO)
@@ -279,7 +279,10 @@ for event in events:
        print "Electron:   eta    phi    SC energy    SC number of recHit    parent SC energy    parent SC number of RH"
 
        for electron in electrons:
-           print electron.eta()," ",electron.phi()," ",electron.superCluster().energy()," ",electron.superCluster().hitsAndFractions().size()," ",electron.parentSuperCluster().energy()," ",electron.parentSuperCluster().hitsAndFractions().size()
+           if(electron.ecalDrivenSeed()):
+               print electron.eta()," ",electron.phi()," ",electron.superCluster().energy()," ",electron.superCluster().hitsAndFractions().size()," ",electron.parentSuperCluster().energy()," ",electron.parentSuperCluster().hitsAndFractions().size(), electron.superCluster().seed().energy(), electron.superCluster().seed().seed().rawId()
+#           else:
+#               print "TK SEED: ", electron.eta()," ",electron.phi()," ",electron.superCluster().energy()," ",electron.superCluster().hitsAndFractions().size()," ", electron.superCluster().seed().energy(), electron.superCluster().seed().seed().rawId()
 
        print "#############################"    
        print "RECHIT:  rawId    energy"
@@ -291,13 +294,13 @@ for event in events:
            
        nRecHits_ALCARECO=0
 
-       for recHit in recHits_ALCARECO:
-           nRecHits_ALCARECO=nRecHits_ALCARECO+1
-               #               if(recHit.checkFlag(EcalRecHit.kTowerRecovered)):
-#           print recHit.id().rawId(), recHit.checkFlag(EcalRecHit.kTowerRecovered)
-           print recHit.id().rawId(), recHit.energy()
+#        for recHit in recHits_ALCARECO:
+#            nRecHits_ALCARECO=nRecHits_ALCARECO+1
+#                #               if(recHit.checkFlag(EcalRecHit.kTowerRecovered)):
+# #           print recHit.id().rawId(), recHit.checkFlag(EcalRecHit.kTowerRecovered)
+#            print recHit.id().rawId(), recHit.energy()
 
-               
+
 print event_counter
 
 

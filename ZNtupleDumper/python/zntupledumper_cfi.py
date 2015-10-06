@@ -16,9 +16,6 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                conversionCollection = cms.InputTag('allConversions'),
                                metCollection = cms.InputTag('pfMet'),
                                triggerResultsCollection = cms.InputTag('TriggerResults::HLT'),
-                               #WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO'),
-                               #WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA'),
-                               WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO'),
                                foutName = cms.string("ZShervinNtuple.root"),
                                doStandardTree = cms.bool(True),
                                doExtraCalibTree = cms.bool(False),
@@ -29,16 +26,21 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                weakWeightCollection = cms.InputTag("weakWeight"),
                                doHighEta_LowerEtaCut = cms.double(2.4),
                                isPartGun = cms.bool(False),
-#                               hltPaths = cms.vstring()
-                               hltPaths = cms.vstring('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15',
-                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16',
-                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17',
-                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18',
-                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v19'
-                                                      ),
-                               SelectEvents = cms.vstring('')
+                               hltPaths = cms.vstring(),
+#                               hltPaths = cms.vstring('HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v15',
+#                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v16',
+#                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v17',
+#                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v18',
+#                                                      'HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v19'
+#                                                      ),
+                               #SelectEvents contains the list of ALCARECO paths you want to keep in your ntuple
+                               # the path you want to keep has to be in the TriggerResults indicated by WZSkimResultsCollection
+                               SelectEvents = cms.vstring(''),
+                               ### This is the collection with the ALCARECO paths, identifying the skim selection
+                               #WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO'),
+                               #WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCA'),
+                               WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO'),
                                #isMC = cms.bool(False),
-                               
                                #                      jsonFile = cms.string(options.json),
                                #puWeightFile = cms.string('')
                                #                      R9WeightFile = cms.string(options.R9WeightFile),

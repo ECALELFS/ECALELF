@@ -140,7 +140,7 @@ do
 
 	-f|--filelist) FILELIST="$FILELIST $2"; echo ${FILELIST}; shift ;;
 	-s|--skim) SKIM=$2 ; shift;;
- 	-t | --tag) TAGFILE=$2; echo "[OPTION] TAGFILE:$TAGFILE"; TAG=`basename $TAGFILE .py`; shift;;
+	-t | --tag) TAGFILE=$2; echo "[OPTION] GLOBALTAG:$TAGFILE"; TAG=`basename ${TAGFILE} .py`; shift;;
 	--ntuple_store) STORAGE_ELEMENT=$2; shift;;
 	--ui_working_dir) UI_WORKING_DIR=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
@@ -242,14 +242,18 @@ setStoragePath $STORAGE_ELEMENT $SCHEDULER
 ###
 # make the filelist before parsing the options and arguments
 options="-d ${DATASETPATH} -n ${DATASETNAME} -r ${RUNRANGE} --remote_dir ${ORIGIN_REMOTE_DIR_BASE}"
-if [ -n "${TAGFILE}" ];then 
-    options="$options -t ${TAGFILE}"; 
-    setUserRemoteDirAlcarereco $ORIGIN_REMOTE_DIR_BASE
-    ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
-else
-    setUserRemoteDirAlcareco $ORIGIN_REMOTE_DIR_BASE
-    ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
-fi
+case $TYPE in 
+	ALCARERECO)
+		options="$options -t ${TAGFILE}"; 
+		setUserRemoteDirAlcarereco $ORIGIN_REMOTE_DIR_BASE
+		ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+		;;
+	*)
+		TAG=""
+		setUserRemoteDirAlcareco $ORIGIN_REMOTE_DIR_BASE
+		ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+		;;
+esac
 
 case ${ORIGIN_REMOTE_DIR_BASE} in
     database)
