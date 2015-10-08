@@ -5,13 +5,13 @@ The aim of the program is to provide a common interface to all the Z
 fitting algorithms reading and combining in the proper way the
 configuration files.
 
-   \todo
+\todo
    - remove commonCut from category name and add it in the ZFit_class in order to not repeate the cut
    - make alpha fitting more generic (look for alphaName)
    - Implement the iterative Et dependent scale corrections
 
 */
-
+ #include <TGaxis.h>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -360,6 +360,7 @@ int main(int argc, char **argv) {
   std::string dayMin;
   std::string dayMax;
   std::string dayZOOM;
+  std::string LUMI;
   //------------------------------ setting option categories
   po::options_description desc("Main options");
   po::options_description outputOption("Output options");
@@ -482,18 +483,19 @@ int main(int argc, char **argv) {
     ("EBEE", po::value<string>(&EBEE)->default_value("EB"),"barrel or endcap")
     ("evtsPerPoint", po::value<int>(&evtsPerPoint)->default_value(1000),"events per point")
     ("useRegression", po::value<int>(&useRegression)->default_value(0),"use regression")
-    ("dayMin", po::value<string>(&dayMin)->default_value("1-6-2015"),"day min")
-    ("dayMax", po::value<string>(&dayMax)->default_value("1-10-2015"),"day max")
+    ("dayMin", po::value<string>(&dayMin)->default_value("1-7-2015"),"day min")
+    ("dayMax", po::value<string>(&dayMax)->default_value("20-10-2015"),"day max")
     ("dayZOOM", po::value<string>(&dayZOOM)->default_value("10-8-2015"),"day ZOOM")
+    ("LUMI", po::value<string>(&LUMI)->default_value("209.22"),"LUMI")
     ;
    laserMonitoringEPvsPUOption.add_options()
     ("laserMonitoringEPvsPU", "call the laser monitoring with E/p")
-    ("EBEEpu", po::value<string>(&EBEE)->default_value("EB"),"barrel or endcap")
-    ("evtsPerPointpu", po::value<int>(&evtsPerPoint)->default_value(1000),"events per point")
-    ("useRegression", po::value<int>(&useRegression)->default_value(0),"use regression")
-    ("dayMin", po::value<string>(&dayMin)->default_value("1-6-2015"),"day min")
-    ("dayMax", po::value<string>(&dayMax)->default_value("1-10-2015"),"day max")
-    ("dayZOOM", po::value<string>(&dayZOOM)->default_value("10-8-2015"),"day ZOOM")
+     //    ("EBEEpu", po::value<string>(&EBEEpu)->default_value("EB"),"barrel or endcap")
+     //("evtsPerPointpu", po::value<int>(&evtsPerPoint)->default_value(1000),"events per point")
+     //    ("useRegression", po::value<int>(&useRegression)->default_value(0),"use regression")
+     //    ("dayMin", po::value<string>(&dayMin)->default_value("1-6-2015"),"day min")
+     //    ("dayMax", po::value<string>(&dayMax)->default_value("1-10-2015"),"day max")
+     //    ("dayZOOM", po::value<string>(&dayZOOM)->default_value("10-8-2015"),"day ZOOM")
     ;
   EoverPOption.add_options()
     ("EOverPCalib",  "call the E/p calibration")
@@ -1249,7 +1251,7 @@ int main(int argc, char **argv) {
     //int  t1 = 1400000000;
     //int  t2 = 1600000000;
 
-    float yMIN = 0.75;
+    float yMIN = 0.90;
     float yMAX = 1.10;
 
 
@@ -2022,7 +2024,7 @@ int main(int argc, char **argv) {
     */  
 
 
-    if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) )
+    if( (h_EoC[i]->GetEntries() > 500) && (fStatus == 0) )
     //  if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
       {
       float date = (float)AveTime[i]; 
@@ -2073,7 +2075,7 @@ int main(int argc, char **argv) {
   for(unsigned int itr = 0; itr < validBins.size(); ++itr)
   {  
     int i = validBins.at(itr);
-    g_las -> SetPoint(itr, (float)AveTime[i], ((h_Tsp[i]->GetMean())*0.915/0.90)*(0.905/0.915));
+    g_las -> SetPoint(itr, (float)AveTime[i], h_Tsp[i]->GetMean());
     g_LT  -> SetPoint(itr, (float)AveTime[i], AveLT[i] );
     g_LT  -> SetPointError(itr, 0., sqrt(AveLT2[i]-AveLT[i]*AveLT[i]) / sqrt(Entries[i]) );
         
@@ -2115,7 +2117,6 @@ int main(int argc, char **argv) {
     g_las -> GetPoint(itr,x,y);
     g_las -> SetPoint(itr,x,y*yscale*EoP_scale/LCInv_scale);
   }
-  //ciao quassopra
   TF1 EoC_pol0("EoC_pol0","pol0",t1,t2);
   EoC_pol0.SetLineColor(kGreen+2);
   EoC_pol0.SetLineWidth(2);
@@ -2215,44 +2216,83 @@ int main(int argc, char **argv) {
   s_EoP -> Draw("sames");
   gPad -> Update();
   
+  //ciao
+  //-------------------
+  // RMS vs Num evts -BARREL
+  //-------------------
+  double x[13]={2.,4.,6.,8.,10.,12.,14.,16.,18.,20.,22.,24.,30.};
+  double y[13]={0.001049,0.001114,0.0009367,0.0008480,0.0007669,0.0007892,0.0006699,0.0006473,0.0006235,0.0005903,0.0005815,0.0005459,0.0005506};
+  
+  TCanvas* RMSeb = new TCanvas("plot", "plot",0,0,500,500);
+  TGraph* gRMSeb = new TGraph(13,x,y);
+  
+  gRMSeb->Draw("APC");
+  gRMSeb -> SetMarkerColor(38);
+  gRMSeb -> SetLineColor(38);
+  gRMSeb->GetXaxis()->SetTitle("Number of Events - Barrel"); 
+  gRMSeb->GetYaxis()->SetTitle("RMS"); 
+  
+  RMSeb -> Print((folderName+"/"+folderName+"_RMSeb"+".png").c_str(),"png");
+  RMSeb -> Print((folderName+"/"+folderName+"_RMSeb"+".pdf").c_str(),"pdf");
+  
+  //-------------------
+  // RMS vs Num evts -ENDCAP
+  //-------------------
+  
+  double xx[11]={2.,4.,6.,8.,10.,12.,14.,16.,18.,20.,22.};
+  double yy[11]={0.007234,0.005759,0.004174,0.004255,0.003833,0.004037,0.003912,0.004251,0.003598,0.004067,0.004138};
+  
+  TCanvas* RMSee = new TCanvas("plot", "plot",0,0,500,500);
+  TGraph* gRMSee = new TGraph(11,xx,yy);
+  
+  gRMSee->Draw("APC");
+  gRMSee -> SetMarkerColor(38);
+  gRMSee -> SetLineColor(38);
+  gRMSee->GetXaxis()->SetTitle("Number of Events - Endcap"); 
+  gRMSee->GetYaxis()->SetTitle("RMS"); 
+    
+  
+  RMSee -> Print((folderName+"/"+folderName+"_RMSee"+".png").c_str(),"png");
+  RMSee -> Print((folderName+"/"+folderName+"_RMSee"+".pdf").c_str(),"pdf");
+  
   
   //ciao
   //-------------------
   // histos 
   //-------------------
-  
-  
-  
-  for ( int i = 0; i < nBins; ++i)
-  {
-    
-    TCanvas* histoEoP = new TCanvas("histo","histo",0,0,500,500);
-    histoEoP -> cd();
-    
-    h_EoP[i] -> Draw();
-    f_EoP[i] -> SetLineWidth(2);
-    f_EoP[i] -> SetLineColor(4);
-    f_EoP[i] -> Draw("same");	
-    // histoEoP -> Update();
-    
-    histoEoP -> Print((folderName+"/"+folderName+"_histoEoP"+std::to_string(i)+".png").c_str(),"png");
-    histoEoP -> Print((folderName+"/"+folderName+"_histoEoP"+std::to_string(i)+".pdf").c_str(),"pdf");
-    
-    
-    TCanvas* histoEoC = new TCanvas("histo","histo",0,0,500,500);
-    histoEoC -> cd();
-    
-    h_EoC[i] -> Draw();
-    f_EoC[i] -> SetLineWidth(2);
-    f_EoC[i] -> SetLineColor(4);
-    f_EoC[i] -> Draw("same");
-    //histoEoC -> Update();
-   
-    histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".png").c_str(),"png");    
-    histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".pdf").c_str(),"pdf");    
-    
-  }
  
+  
+      
+  for ( int i = 0; i < nBins; ++i)
+    {
+      
+      TCanvas* histoEoP = new TCanvas("histo","histo",0,0,500,500);
+      histoEoP -> cd();
+      
+      h_EoP[i] -> Draw();
+      f_EoP[i] -> SetLineWidth(2);
+      f_EoP[i] -> SetLineColor(4);
+      f_EoP[i] -> Draw("same");	
+      // histoEoP -> Update();
+      
+      histoEoP -> Print((folderName+"/"+folderName+"_histoEoP"+std::to_string(i)+".png").c_str(),"png");
+      histoEoP -> Print((folderName+"/"+folderName+"_histoEoP"+std::to_string(i)+".pdf").c_str(),"pdf");
+      
+      
+      TCanvas* histoEoC = new TCanvas("histo","histo",0,0,500,500);
+      histoEoC -> cd();
+      
+      h_EoC[i] -> Draw();
+      f_EoC[i] -> SetLineWidth(2);
+      f_EoC[i] -> SetLineColor(4);
+      f_EoC[i] -> Draw("same");
+      //histoEoC -> Update();
+      
+      histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".png").c_str(),"png");    
+      histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".pdf").c_str(),"pdf");    
+      
+    }
+  
 
   //-------------------
   // Final Plot vs date
@@ -2288,14 +2328,14 @@ int main(int argc, char **argv) {
   hPad->GetXaxis() -> SetRangeUser(MinTime[0]-43200,MaxTime[nBins-1]+43200);
   hPad->GetXaxis()->SetTitle("date (day/month)");
   //ciao
-  
+  //hPad->GetXaxis()->SetLabelSize(0.025);
   
   if( strcmp(EBEE.c_str(),"EB") == 0 )
     hPad->GetYaxis()->SetTitle("Relative E/p scale"); 
   else
     hPad->GetYaxis()->SetTitle("Relative E/p scale"); 
   hPad->GetYaxis()->SetTitleOffset(tYoffset);
-  hPad->GetXaxis()->SetLabelSize(labSize);
+  hPad->GetXaxis()->SetLabelSize(0.03);
   hPad->GetXaxis()->SetTitleSize(labSize2);
   hPad->GetYaxis()->SetLabelSize(labSize);
   hPad->GetYaxis()->SetTitleSize(labSize2);
@@ -2339,7 +2379,9 @@ int main(int argc, char **argv) {
   latex -> Draw("same");
   
   //sprintf(latexBuffer,"#sqrt{s} = 8 TeV   L = 3.95 fb^{-1}");
-  sprintf(latexBuffer,"#sqrt{s} = 13 TeV");
+  sprintf(latexBuffer,"#sqrt{s} = 13 TeV, L =%s pb^{-1} ", LUMI.c_str());
+
+  // sprintf(latexBuffer, LUMI.c_str());
   TLatex* latex2 = new TLatex(0.18,0.84,latexBuffer);  
   latex2 -> SetNDC();
   latex2 -> SetTextFont(42);
@@ -2588,8 +2630,8 @@ int main(int argc, char **argv) {
   if(vm.count("laserMonitoringEPvsPU")) {	  
 
 
-    float yMIN = 0.90;
-    float yMAX = 1.10;
+    float yMIN = 0.95;
+    float yMAX = 1.05;
 
 
   // Set style options
@@ -2627,7 +2669,7 @@ int main(int argc, char **argv) {
   int t1 = 0;
   int t2 = 60;
   
-  std::cout << "EBEE: "          << EBEE          << std::endl;
+  std::cout << "EBEE: "        << EBEE          << std::endl;
   std::cout << "evtsPerPoint: "  << evtsPerPoint  << std::endl;
   std::cout << "useRegression: " << useRegression << std::endl;
   std::cout << "dayMin: "        << dayMin        << std::endl;
@@ -3239,15 +3281,16 @@ int main(int argc, char **argv) {
     double eee = f_EoP[i]->GetParError(1);
     //float k    = f_EoP[i]->GetParameter(1);
     float k    = f_EoP[i]->GetParameter(1) / h_Tsp[i]->GetMean(); //needed when using mellin's convolution 
-    
+    //    std::cout << "noCORR" <<  std::endl;
+    //    std::cout << "eee: " << f_EoP[i]->GetParError(1) << "k: " << f_EoP[i]->GetParameter(1) / h_Tsp[i]->GetMean() << std::endl;
+
     /*
     std::cout << i <<"--nocorr---- "<< 1./k << std::endl;
     std::cout <<" condizione 1: " << h_EoP[i]->GetEntries() << "  fStatus: " << fStatus << " eee: " << eee << "con eee che ci piace essere maggiore di : " <<  0.05*h_template->GetRMS()/sqrt(evtsPerPoint) << std::endl ;
     getchar();
     */
-    
-    
     //    if( (h_EoP[i]->GetEntries() > 3) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
+
     if( (h_EoP[i]->GetEntries() > 500) && (fStatus == 0) )
     {
       float date = (float)AveTime[i];
@@ -3257,7 +3300,6 @@ int main(int argc, char **argv) {
       float rLow = (float)(AveRun[i]-MinRun[i]); 
       float rHig = (float)(MaxRun[i]-AveRun[i]);
       g_fit -> SetPoint(i,  date , 1./k);
-      
       g_fit -> SetPointError(i, dLow , dHig, eee/k/k, eee/k/k);
       g_fit_run -> SetPoint(i,  run , 1./k);
       g_fit_run -> SetPointError(i, rLow , rHig, eee/k/k, eee/k/k);
@@ -3317,14 +3359,16 @@ int main(int argc, char **argv) {
     // fill the graph
     k   = f_EoC[i]->GetParameter(1);
     eee = f_EoC[i]->GetParError(1); 
-    
+    //std::cout << "CORR" <<  std::endl;
+    //std::cout << "eee: " << f_EoP[i]->GetParError(1) << "k: " << f_EoP[i]->GetParameter(1) / h_Tsp[i]->GetMean() << std::endl;    
+    //getchar();
     /* std::cout << i <<"--corr---- "<< 1./k << std::endl;
     std::cout <<" condizione 1: " << h_EoP[i]->GetEntries() << "  fStatus: " << fStatus << " eee: " << eee << "con eee che ci piace essere maggiore di : " <<  0.05*h_template->GetRMS()/sqrt(evtsPerPoint) << std::endl ;
     getchar();
     */  
 
 
-    if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) )
+    if( (h_EoC[i]->GetEntries() > 500) && (fStatus == 0) )
     //  if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
       {
       float date = (float)AveTime[i]; 
@@ -3333,7 +3377,7 @@ int main(int argc, char **argv) {
       float run = (float)AveRun[i];
       float rLow = (float)(AveRun[i]-MinRun[i]); 
       float rHig = (float)(MaxRun[i]-AveRun[i]);
-      
+            
       g_c_fit -> SetPoint(i,  date , 1./k);
       g_c_fit -> SetPointError(i, dLow , dHig , eee/k/k, eee/k/k);
       
@@ -3347,12 +3391,12 @@ int main(int argc, char **argv) {
       EoC_scale += 1./k;
       EoC_err += eee/k/k;
       ++EoC_nActiveBins;
-    }
+      }
     else
-    {
-      std::cout << "Fitting corrected time bin: " << i << "   Fail status: " << fStatus << "   sigma: " << eee << std::endl;
-      isValid = false;
-    }
+      {
+	std::cout << "Fitting corrected time bin: " << i << "   Fail status: " << fStatus << "   sigma: " << eee << std::endl;
+	isValid = false;
+      }
     
     if( isValid == true ) validBins.push_back(i);
   }
@@ -3371,11 +3415,13 @@ int main(int argc, char **argv) {
   //----------------------------------------
   // Fill the graph for avg laser correction
   
-  //fede
+  
   for(unsigned int itr = 0; itr < validBins.size(); ++itr)
   {  
+    //float k0   = f_EoP[0]->GetParameter(1) / h_Tsp[0]->GetMean(); 
     int i = validBins.at(itr);
-    g_las -> SetPoint(itr, (float)AveTime[i], h_Tsp[i]->GetMean());
+    //    g_las -> SetPoint(itr, (float)AveTime[i], (h_Tsp[i]->GetMean())+((1/k0)-(h_Tsp[0]->GetMean())) );
+    g_las -> SetPoint(itr, (float)AveTime[i], h_Tsp[i]->GetMean() );
 
 
       //g_las -> SetPointffa(itr, (float)AveTime[i], h_Tsp[i]->GetMean());
@@ -3420,7 +3466,7 @@ int main(int argc, char **argv) {
     g_las -> GetPoint(itr,x,y);
     g_las -> SetPoint(itr,x,y*yscale*EoP_scale/LCInv_scale);
   }
-  //ciao quassopra
+  //ciao
   TF1 EoC_pol0("EoC_pol0","pol0",t1,t2);
   EoC_pol0.SetLineColor(kGreen+2);
   EoC_pol0.SetLineWidth(2);
@@ -3511,7 +3557,6 @@ int main(int argc, char **argv) {
   g_c_fit -> SetLineColor(kGreen+2);
   g_c_fit -> SetMarkerSize(0.7);
   g_c_fit -> Draw("EP");
-  //g_c_fit -> Draw("EP,same");
   g_las -> SetLineColor(kAzure-2);
   g_las -> SetLineWidth(2);
   //g_las -> Draw("L,same");
@@ -3524,8 +3569,8 @@ int main(int argc, char **argv) {
   legend -> SetTextFont(42);
   legend -> SetTextSize(0.04);
   legend -> AddEntry(g_c_fit,"with LM correction","PL");
-  legend -> AddEntry(g_fit,  "without LM correction","PL");
-  legend -> AddEntry(g_las,  "1 / LM correction","L");
+  //legend -> AddEntry(g_fit,  "without LM correction","PL");
+  //legend -> AddEntry(g_las,  "1 / LM correction","L");
   legend -> Draw("same");
   
   char latexBuffer[250];
@@ -3643,11 +3688,11 @@ int main(int argc, char **argv) {
    h_seedOccupancy_EEp -> Write();
    h_seedOccupancy_EEm -> Write();
 
-   //g_fit   -> Write("g_fit");
+   g_fit   -> Write("g_fit");
    g_c_fit -> Write("g_c_fit");
    g_fit_run   -> Write("g_fit_run");
    g_c_fit_run -> Write("g_c_fit_run");
-   //g_las -> Write("g_las");
+   g_las -> Write("g_las");
    g_LT -> Write("g_LT");
    
    h_EoP_chi2 -> Write();
