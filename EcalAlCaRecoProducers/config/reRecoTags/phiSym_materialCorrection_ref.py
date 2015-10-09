@@ -15,5 +15,17 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                           tag = cms.string("EcalPulseShapes_v01_offline"),
                                           connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
                                           ),
+                                 cms.PSet(record = cms.string("EBAlignmentRcd"),
+                                          tag = cms.string("EBAlignment_measured_v10_offline"),
+                                          connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                                          ),
+                                 cms.PSet(record = cms.string("EEAlignmentRcd"),
+                                          tag = cms.string("EEAlignment_measured_v10_offline"),
+                                          connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                                          ),
+                                 cms.PSet(record = cms.string("ESAlignmentRcd"), # only Bon!
+                                          tag = cms.string("ESAlignment_measured_v08_offline"),
+                                          connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                                          ),
                                )
 )
