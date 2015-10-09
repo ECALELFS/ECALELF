@@ -3,8 +3,8 @@ resource=type==SLC6_64
 source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.sh
 ############################### OPTIONS
 #------------------------------ default
-SKIM=none
-ALCATYPE="ALCA:EcalCalZElectron"
+#SKIM=none
+ALCATYPE=""
 USEPARENT=0
 SCHEDULER=caf
 TYPE=ALCARECO
@@ -25,7 +25,7 @@ PUBLISH="False"
 CRABVERSION=2
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
-SPLITBYFILE=1
+SPLITBYFILE=0
 usage(){
     echo "`basename $0` options"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -135,7 +135,6 @@ if [ ! -z "$TAGFILE" ];then
 
 fi
 
-
 if [ -z "$DATASETPATH" ];then 
     echo "[ERROR] DATASETPATH not defined" >> /dev/stderr
     usage >> /dev/stderr
@@ -193,44 +192,45 @@ fi
 
 if [ -z "${SKIM}" ];then
     case $DATASETPATH in
-	*DoubleElectron* | *ZElectron* )
-	    SKIM=ZSkim
-	    ;;
-	*SingleElectron*USER)
-	    SKIM=fromWSkim
-	    ;;
-	*SingleElectron* | *WElectron*)
-	    SKIM=WSkim
-	    ;;
+		*DoubleElectron* | *ZElectron* ) SKIM=ZSkim; echo "[INFO] Auto selection of skim based on datasetpath: skim=$SKIM" ;;
+		*Double* | *ZElectron* ) SKIM=ZSkim ; echo "[INFO] Auto selection of skim based on datasetpath: skim=$SKIM" ;;
+		*SingleElectron*USER) SKIM=fromWSkim ;;
+		*SingleElectron* | *WElectron*) SKIM=WSkim ;;
+		*) 
+			echo "[ERROR] options -s skim not used and unable do define the proper skim by the dataset name" >> /dev/stderr
+			exit 1
+			;;
     esac
 fi
+
 case $DATASETPATH in
     */RAW)
-	RECOPATH="RAW2DIGI,RECO,"
-	;;
+		ALCATYPE="RAW2DIGI,RECO,"
+		;;
     *SingleElectron*USER)
-	let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
-	;;
+		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
+		;;
     *USER)
-	if [ -z ${DBS_URL} ];then
-	let DBS_URL=phys03
-	fi
-	;;
+		if [ -z ${DBS_URL} ];then
+			let DBS_URL=phys03
+		fi
+		;;
 esac
 
 case $TYPE in 
     EcalCal | ALCARECO)
 		case $SKIM in
 			ZSkim)
-				ALCATYPE="ALCA:EcalCalZElectron"
+				ALCATYPE="${ALCATYPE}ALCA:EcalCalZElectron"
 				;;
 			WSkim)
-				ALCATYPE="ALCA:EcalCalWElectron"
+				ALCATYPE="${ALCATYPE}ALCA:EcalCalWElectron"
 				EVENTS_PER_JOB=20000
 				;;
-			none) EVENTS_PER_JOB=20000;;
+			none) EVENTS_PER_JOB=20000; LUMIS_PER_JOBS=100;;
 		esac
 		TYPE=ALCARECO
+		subdir=prod_alcareco
 		;;
     EcalUncal | ALCARAW )
 		case $DATASETPATH in
@@ -253,20 +253,22 @@ case $TYPE in
 		
 		case $SKIM in
 			ZSkim)
-				ALCATYPE="ALCA:EcalUncalZElectron"
+				ALCATYPE="${ALCATYPE}ALCA:EcalUncalZElectron"
 				;;
 			WSkim)
-				ALCATYPE="ALCA:EcalUncalWElectron"
+				ALCATYPE="${ALCATYPE}ALCA:EcalUncalWElectron"
 				EVENTS_PER_JOB=20000
 				;;
 			none) EVENTS_PER_JOB=20000;;
 		esac
 		TYPE=ALCARAW
+		subdir=prod_alcaraw
 		;;
     EcalRecal | ALCARERECO)
-		ALCATYPE="ALCA:EcalRecalElectron"
+		ALCATYPE="${ALCATYPE}ALCA:EcalRecalElectron"
 		CUSTOMISE="--process=RERECO --customise Calibration/EcalAlCaRecoProducers/customRereco.EcalRecal "
 		TYPE=ALCARECO
+		subdir=prod_alcareco
 		;;
     *)
 		echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr
@@ -284,7 +286,7 @@ setStoragePath $STORAGE_ELEMENT $SCHEDULER
 if [ -z "${CHECK}" ];then checkRelease ${DATASETPATH}; fi
 
 USER_REMOTE_DIR=$USER_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE:-allRange}
-UI_WORKING_DIR=prod_alcareco/${DATASETNAME}/${RUNRANGE}
+UI_WORKING_DIR=${subdir}/${DATASETNAME}/${RUNRANGE}
 
 if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`" == "0" ];then
     unset RUNRANGE
@@ -295,7 +297,7 @@ if [ "${ISMC}" = "yes" ];then
 fi
 
 if [ "$SPLITBYFILE" == 1 ];then
-LUMIS_PER_JOBS=1;
+	LUMIS_PER_JOBS=1;
 fi
 
 # make argument.xml file if do MC
@@ -306,16 +308,16 @@ fi
 #fi
 
 if [ -z "${CHECK}" ] || [ -n "${CREATE}" ];then
-echo "[INFO] Preparing job: ${JOBNAME}"
-echo "[INFO] Storage Element $STORAGE_ELEMENT"
-echo "[INFO Run Range ${RUNRANGE}"
-
+	echo "[INFO] Preparing job: ${JOBNAME}"
+	echo "[INFO] Storage Element $STORAGE_ELEMENT"
+	echo "[INFO Run Range ${RUNRANGE}"
+	
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
 echo "[INFO] Generating CMSSW configuration"
-cmsDriver.py reco -s ${RECOPATH}${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
+cmsDriver.py reco -s ${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
 
-echo "[INFO] Generating CRAB3 configuration"
+#echo "[INFO] Generating CRAB3 configuration"
 TYPENAME=$TYPE
 if [ "${ISMC}" = "yes" ];then
 TYPENAME="${TYPENAME}SIM"

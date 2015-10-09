@@ -137,8 +137,8 @@ case $DATASETPATH in
 	USEPARENT=1
 	;;
     */AOD)
-	echo "[ERROR] cannot produce ALCARAW from AOD!!!" >> /dev/stderr
-	exit 1
+		echo "[ERROR] cannot produce ALCARAW from AOD!!!" >> /dev/stderr
+		exit 1
 	;;
     */RAW-RECO)
 	USEPARENT=0

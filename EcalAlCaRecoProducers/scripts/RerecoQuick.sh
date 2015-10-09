@@ -7,8 +7,8 @@ ALCARERECO_REMOTE_DIR=group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco
 SCHEDULER=caf
 CREATE=y  #not used
 SUBMIT=y  #not used
-#NTUPLE=y  #not used
-#RERECO=y  #not used
+NTUPLE=y  #not used
+RERECO=y  #not used
 fileList=alcaraw_datasets.dat
 crabVersion=2
 DOEXTRACALIBTREE=" "
@@ -29,7 +29,7 @@ usage(){
     echo "    --noStandardTree"
     echo "--------------- Expert"
     echo "    --alcarerecoOnly"
- #   echo "    --ntupleOnly"
+    echo "    --ntupleOnly"
     echo "    --submitOnly"
     echo "    --createOnly"
     echo "    --check"
@@ -43,7 +43,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree -- "$@")
+if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,ntupleOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -73,13 +73,13 @@ do
 		    ;;
 	    esac
 	    shift;;
-	--singleEle) SINGLEELE=y;;
+	--singleEle) echo "[OPTION] singleEle"; SINGLEELE=y;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
 	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check";;
 	--ntupleCheck)      echo "[OPTION] checking nutple jobs"; NUTPLECHECK=y; EXTRAOPTION="--ntupleCheck";;
 	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; unset NTUPLE; EXTRAEXTRAOPTION="--alcarerecoOnly";;
-	#--ntupleOnly) echo "[OPTION] ntupleOnly"; unset RERECO; EXTRAEXTRAOPTION="--ntupleOnly";;
+	--ntupleOnly) echo "[OPTION] ntupleOnly"; unset RERECO; fileList=alcarereco_datasets.dat;; #EXTRAEXTRAOPTION="--ntupleOnly";;
  	--crabVersion) crabVersion=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
@@ -139,7 +139,11 @@ if [ -n "${TUTORIAL}" ];then
     fi
 fi
 
-datasets=`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`
+if [ -n "${RERECO}" ];then
+	datasets=`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`
+else
+	datasets=`./scripts/parseDatasetFile.sh $fileList | grep ${TAG}`
+fi
 # set IFS to newline in order to divide using new line the datasets
 IFS=$'\n'
 
@@ -147,18 +151,24 @@ IFS=$'\n'
 
 for dataset in $datasets
   do
-  if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
-    echo "============================================================"
-  #  RUNRANGE=`echo $dataset | cut -d ' ' -f 2`
-  #  DATASETNAME=`echo $dataset | cut -d ' ' -f 6`
-  echo " [INFO] Dataset $dataset"
-  #--ui_working_dir ${UI_WORKING_DIR} \
-  echo "============================================================"
-  ./scripts/prodAlcarereco.sh -t ${TAGFILE} \
-      --scheduler=$SCHEDULER${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+	
+	if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
+	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
+    echo "=========================================================================================="
+	echo " [INFO] Dataset $dataset"
+	echo "============================================================"
+	if [ -n "${RERECO}" ];then
+		./scripts/prodAlcarereco.sh -t ${TAGFILE} \
+			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   			--json=${JSONFILE} --json_name=${JSONNAME} --crabVersion=${crabVersion}\
       ${TUTORIAL} $dataset 
-
+	else
+		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
+			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+  			--json=${JSONFILE} --json_name=${JSONNAME} \
+			${TUTORIAL} $dataset 
+	fi
+	
 done
 
 
