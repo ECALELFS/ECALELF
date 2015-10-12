@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 from CondCore.DBCommon.CondDBSetup_cfi import *
 
-# rereco with tag of prompt + ratio of IC derived with phiSym on 2012C data with material corrections on top of EcalIntercalibConstants_2012ABCD_offline and 2015A data with material corrections
+# rereco with tag of prompt + ratio of IC derived with phiSym on 2012C data with material corrections on top of EcalIntercalibConstants_2012ABCD_offline and 2015A data with material corrections -> WRONG! it is IC2015A/IC2012C 
 # it should give a resolution better then prompt, no etaScale applied yet
 
 RerecoGlobalTag = cms.ESSource("PoolDBESSource",
