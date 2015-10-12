@@ -97,3 +97,7 @@
 253620-255031	/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2015C-Prompt-v1-50nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	preshowerClustering_v1
 253620-255031	/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2015C-Prompt-v1-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	preshowerClustering_v1
 256584-257611	/DoubleEG/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	preshowerClustering_v1
+253620-255031	/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2015C-Prompt-v1-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	phiSym_materialCorrection_v4
+256584-257611	/DoubleEG/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	phiSym_materialCorrection_v4
+257612-258158	/DoubleEG/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	phiSym_materialCorrection_ref
+257612-258158	/DoubleEG/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	phiSym_materialCorrection_v4
