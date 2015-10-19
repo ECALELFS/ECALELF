@@ -28,7 +28,7 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                           connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
                                           ),
                                  cms.PSet(record = cms.string("ESAlignmentRcd"), # only Bon!
-                                          tag = cms.string("ESAlignment_IOV184519")
+                                          tag = cms.string("ESAlignment_IOV184519"),
                                           connect = cms.untracked.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALtagValidation/ESAlignment_IOV184519.db"),
                                           ),
                                )
