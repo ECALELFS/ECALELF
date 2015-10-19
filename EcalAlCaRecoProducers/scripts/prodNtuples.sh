@@ -169,7 +169,9 @@ do
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
-	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
+	--check)      
+			#echo "[OPTION] checking jobs"; 
+			CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
 	--isPrivate)      echo "[OPTION] private dataset"; ISPRIVATE=1;;
 
  	--file_per_job) FILE_PER_JOB=$2; shift ;;
@@ -311,6 +313,7 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 #${DATASETNAME}/tmp-${DATASETNAME}-${RUNRANGE}
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 
+if [ -n "${CREATE}" ];then
 
 case ${ORIGIN_REMOTE_DIR_BASE} in
     database)
@@ -434,7 +437,6 @@ proxy_server = myproxy.cern.ch
 EOF
 
 
-if [ -n "${CREATE}" ];then
     crab -cfg ${crabFile} -create || exit 1
     if [ -n "$FILELIST" ];then
 	  makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1

@@ -155,8 +155,8 @@ for dataset in $datasets
 	if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
 	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
     echo "=========================================================================================="
-	echo " [INFO] Dataset $dataset"
-	echo "============================================================"
+#	echo " [INFO] Dataset $dataset"
+#	echo "============================================================"
 	if [ -n "${RERECO}" ];then
 		./scripts/prodAlcarereco.sh -t ${TAGFILE} \
 			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \

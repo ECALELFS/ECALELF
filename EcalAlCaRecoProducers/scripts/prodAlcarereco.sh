@@ -249,7 +249,12 @@ echo "[INFO] UI_WORKING_DIR=${UI_WORKING_DIR:=prod_alcarereco/${TAG}/${DATASETNA
 
 checkIfRerecoed(){
 	STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
-	if [ "`grep -c "\`echo -e $STRING\`" alcarereco_datasets.dat`" == "0" ]; then return 1; else return 0; fi
+	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG} | wc -l`" == "0" ]; then 
+		echo "NotRERECOED"
+		return 1; 
+	else 
+		return 0; 
+	fi
 	#return is true if not-rerecoed
 }
 
@@ -452,10 +457,10 @@ if [ -n "${SUBMIT}" ]; then
 			;;
 	esac
 	
-    STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
-    echo -e $STRING >> alcarereco_datasets.dat
-    STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${NTUPLE_REMOTE_DIR_BASE}\t${TYPE}\t${TAG}\t${JSONNAME}"
-    echo -e $STRING >> ntuple_datasets.dat 
+#    STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
+#    echo -e $STRING >> alcarereco_datasets.dat
+#    STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${NTUPLE_REMOTE_DIR_BASE}\t${TYPE}\t${TAG}\t${JSONNAME}"
+#    echo -e $STRING >> ntuple_datasets.dat 
 	
 
 elif [ -n "${CREATE}" ];then
@@ -482,6 +487,9 @@ if [ -n "${CHECK}" ];then
 				if [ -z "${NTUPLEONLY}" ];then
 					echo "FINISHED"
 					if checkIfRerecoed; then 
+						echo 
+					else
+						echo -e $STRING
 						echo -e $STRING >> alcarereco_datasets.dat
 					fi
 

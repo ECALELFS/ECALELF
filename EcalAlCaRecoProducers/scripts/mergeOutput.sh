@@ -54,8 +54,9 @@ fi
 USER_REMOTE_DIR=`grep '^user_remote_dir=' ${UI_WORKING_DIR}/share/crab.cfg |cut -d '=' -f 2` 
 STORAGE_PATH=`grep 'storage_path=' ${UI_WORKING_DIR}/share/crab.cfg  | sed 's|/srm/v2/server?SFN=|root://eoscms/|' | cut -d '=' -f 2 `
 NJOBS=`grep 'number_of_jobs='  ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
-echo $STORAGE_PATH $USER_REMOTE_DIR
+#echo $STORAGE_PATH $USER_REMOTE_DIR
 #echo "RUNRANGE=${RUNRANGE:=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`}"
+#RUNRANGE=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
 if [ -z "$RUNRANGE" ];then 
     echo "RUNRANGE=${RUNRANGE:=allRange}"
 fi
@@ -107,7 +108,7 @@ esac
 
 if [ -e "${UI_WORKING_DIR}/res/merged_${FILENAME_BASE}" ];then
     echo "[REPORT] Ntuples ${FILENAME_BASE} already merged"
-	echo ${MERGED_REMOTE_DIR}/${MERGEDFILE}
+	echo ${STORAGE_PATH}/${MERGED_REMOTE_DIR}/${MERGEDFILE}
     exit 0
 fi
 
