@@ -715,22 +715,25 @@ if(not doTreeOnly):
 
 
 ############### JSON Filter
-if((options.doTree>0 and options.doTreeOnly==0)):
-    # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
-    process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
-else:
-    if(len(options.jsonFile)>0):
-        if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION) or re.match("CMSSW_7_.*_.*",CMSSW_VERSION) ):
-            # from CMSSW 5.0.0
-            import FWCore.PythonUtilities.LumiList as LumiList
-            process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
-        else:
-            # from CMSSW 3.8.0
+if(options.doTree>0):
+    if((options.doTree>0 and options.doTreeOnly==0)):
+        # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
+        print "[INFO] Using json file"
+        process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
+    else:
+        if(len(options.jsonFile)>0):
+            print "[INFO] Using json file"
+            if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION) or re.match("CMSSW_7_.*_.*",CMSSW_VERSION) ):
+                # from CMSSW 5.0.0
+                import FWCore.PythonUtilities.LumiList as LumiList
+                process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
+            else:
+                # from CMSSW 3.8.0
             #import FWCore.ParameterSet.Config as cms
-            import PhysicsTools.PythonAnalysis.LumiList as LumiList
-            myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
-            process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
-            process.source.lumisToProcess.extend(myLumis)
+                import PhysicsTools.PythonAnalysis.LumiList as LumiList
+                myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
+                process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
+                process.source.lumisToProcess.extend(myLumis)
 
 
 ############################################################
