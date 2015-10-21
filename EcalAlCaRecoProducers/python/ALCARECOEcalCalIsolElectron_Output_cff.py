@@ -26,6 +26,7 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalCalZSCElectron')
     ),
     outputCommands = cms.untracked.vstring( 
+        'keep uint_bunchSpacingProducer_*_*',
     'keep *_pfMet_*_*', # met for Wenu selection
     'keep *_kt6PFJetsForRhoCorrection_rho_*', #rho for effective area subtraction
     'keep *_kt6PFJets_rho_*', #rho for effective area subtraction

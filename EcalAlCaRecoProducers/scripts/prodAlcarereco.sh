@@ -220,6 +220,7 @@ case $SCHEDULER in
 		;;
 esac
 
+BUNCHSPACING=0
 #case $DATASETNAME in
 	#*-50nsReco) BUNCHSPACING=50;;
 	#*-25nsReco) BUNCHSPACING=25;;
