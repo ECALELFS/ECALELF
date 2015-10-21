@@ -57,10 +57,10 @@ options.register('pdfSyst',
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: pdfSyst=1 true, pdfSyst=0 false")
 options.register('bunchSpacing',
-                 25,
+                 0,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
-                 "50=50ns, 25=25ns,0=weights")
+                 "50=50ns, 25=25ns,0=multifit auto,-1=weights")
 
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
@@ -891,6 +891,9 @@ if(options.type=="ALCARERECO"):
         #        configureEcalLocal50ns(process)
         process.ecalMultiFitUncalibRecHit.algoPSet.activeBXs = cms.vint32(-4,-2,0,2,4)
         process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(False)
+    elif(options.bunchSpacing==0):
+        # auto defined by the bunchSpacingProducer
+        process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(True)
     else:
         print "[ERROR] only bunchSpacing of 50 and 25 are implemented"
         exit(1)

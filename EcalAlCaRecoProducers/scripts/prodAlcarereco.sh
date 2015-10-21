@@ -220,14 +220,14 @@ case $SCHEDULER in
 		;;
 esac
 
-case $DATASETNAME in
-	*-50nsReco) BUNCHSPACING=50;;
-	*-25nsReco) BUNCHSPACING=25;;
-	*)
-		echo "Other bunch spacing not implemented yet in alcaSkimming" >> /dev/stderr
-		exit 1
-		;;
-esac
+#case $DATASETNAME in
+	#*-50nsReco) BUNCHSPACING=50;;
+	#*-25nsReco) BUNCHSPACING=25;;
+#	*)
+#		echo "Other bunch spacing not implemented yet in alcaSkimming" >> /dev/stderr
+#		exit 1
+#		;;
+#esac
 
 
 ALCARAW_REMOTE_DIR=$ALCARAW_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE}
