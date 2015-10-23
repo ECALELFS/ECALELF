@@ -357,6 +357,8 @@ int main(int argc, char **argv) {
   int evtsPerPoint;
   
   int useRegression;
+  float yMIN;
+  float yMAX;
   std::string dayMin;
   std::string dayMax;
   std::string dayZOOM;
@@ -480,6 +482,8 @@ int main(int argc, char **argv) {
     ;
   laserMonitoringEPOption.add_options()
     ("laserMonitoringEP", "call the laser monitoring with E/p")
+    ("yMIN", po::value<float>(&yMIN)->default_value(0.65),"y min")
+    ("yMAX", po::value<float>(&yMAX)->default_value(1.05),"y max")
     ("EBEE", po::value<string>(&EBEE)->default_value("EB"),"barrel or endcap")
     ("evtsPerPoint", po::value<int>(&evtsPerPoint)->default_value(1000),"events per point")
     ("useRegression", po::value<int>(&useRegression)->default_value(0),"use regression")
@@ -1251,8 +1255,8 @@ int main(int argc, char **argv) {
     //int  t1 = 1400000000;
     //int  t2 = 1600000000;
 
-    float yMIN = 0.90;
-    float yMAX = 1.10;
+	// float yMIN = 0.65;
+	//float yMAX = 1.10;
 
 
   // Set style options
@@ -2469,7 +2473,7 @@ int main(int argc, char **argv) {
   //------------------
   // Final plot vs run
   //------------------
-  
+    
   TCanvas* cplot_run = new TCanvas("cplot_run", "history plot vs run",100,100,1000,500);
   cplot_run->cd();
   
@@ -2562,11 +2566,6 @@ int main(int argc, char **argv) {
   s_EoP_spread -> Draw("sames");
   
   
-
-  
- 
-  
-    
   
   
   c_chi2 -> Print((folderName+"/"+folderName+"_fitChi2.png").c_str(),"png");
@@ -2630,8 +2629,8 @@ int main(int argc, char **argv) {
   if(vm.count("laserMonitoringEPvsPU")) {	  
 
 
-    float yMIN = 0.95;
-    float yMAX = 1.05;
+    //float yMIN = 0.95;
+    //float yMAX = 1.05;
 
 
   // Set style options
