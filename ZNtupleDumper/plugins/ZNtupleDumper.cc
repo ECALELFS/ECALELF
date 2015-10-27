@@ -267,7 +267,8 @@ private:
   Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
   Float_t rawEnergySCEle_must[3]; ///< SC mustach energy without cluster corrections
   Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
-
+	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
+	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
 
   Float_t energySCEle_corr[3];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 
@@ -1379,6 +1380,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   rawEnergySCEle[index]  = electron1.superCluster()->rawEnergy();
   esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();
+  esEnergyPlane1SCEle[index] electron1.superCluster()-> preshowerEnergyPlane1();
+  esEnergyPlane2SCEle[index] electron1.superCluster()-> preshowerEnergyPlane2();
 #ifndef CMSSW42X
   energySCEle_corr[index] = electron1.correctedEcalEnergy();
 #else
@@ -1498,6 +1501,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   rawEnergySCEle[index]  = electron1.rawEnergy();
   rawEnergySCEle_must[index]  = electron1.rawEnergy();
   esEnergySCEle[index] = electron1.preshowerEnergy();
+  esEnergyPlane1SCEle[index] electron1.preshowerEnergyPlane1();
+  esEnergyPlane2SCEle[index] electron1.preshowerEnergyPlane2();
+
   energySCEle_corr[index] = electron1.energy();
 
 
@@ -1668,6 +1674,9 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 
   rawEnergySCEle[index]  = photon.superCluster()->rawEnergy();
   esEnergySCEle[index] = photon.superCluster()->preshowerEnergy();
+  esEnergyPlane1SCEle[index] photon.superCluster()-> preshowerEnergyPlane1();
+  esEnergyPlane2SCEle[index] photon.superCluster()-> preshowerEnergyPlane2();
+
   //  energySCEle_corr[index] = photon.scEcalEnergy(); //but, I don't think this is the correct energy..
 
   // change in an electron properties please, EleNewEnergyProducer
