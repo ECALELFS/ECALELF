@@ -82,6 +82,7 @@ for jobID in `seq 1 $nJobs`
       8028) intervals="$intervals $jobID";;
       8021) intervals="$intervals $jobID";;
       50664) intervals="$intervals $jobID";;
+	  50669) intervals="$intervals $jobID";;
       50700) intervals="$intervals $jobID";;
       50800) intervals="$intervals $jobID";;
       60307) intervals="$intervals $jobID";;
