@@ -20,7 +20,7 @@ options.register ('type',
                   "ALCARAW",
                   VarParsing.VarParsing.multiplicity.singleton,
                   VarParsing.VarParsing.varType.string,
-                  "type of operations: ALCARAW, ALCARERECO, ALCARECO, ALCARECOSIM, SKIMEFFTEST")
+                  "type of operations: ALCARAW, ALCARERECO, ALCARECO, ALCARECOSIM, MINIAODNTUPLE, SKIMEFFTEST")
 options.register ('isPrivate',
                   0, #default value = false
                   VarParsing.VarParsing.multiplicity.singleton,
@@ -109,6 +109,8 @@ elif(options.type == "ALCARECO"):
 elif(options.type == 'SKIMEFFTEST'):
     processName = 'SKIMEFFTEST'
     MC = True
+elif(options.type == "MINIAODNTUPLE" ):
+    processName = "MINIAODNTUPLE"
 else:
     print "[ERROR] wrong type defined"
     sys.exit(-1)
@@ -305,6 +307,8 @@ if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
     myEleCollection =  cms.InputTag("gedGsfElectrons")
 else:
     myEleCollection =  cms.InputTag("gsfElectrons")
+if(options.type=="MINIAODNTUPLE" ):
+    myEleCollection= cms.InputTag("slimmedElectrons")
 
 #Define the sequences
 #
@@ -442,11 +446,14 @@ if (options.skim=="ZmmgSkim"):
     process.patSequence=cms.Sequence( (process.muonSelectionProducers * process.phoSelectionProducers) * process.patMuons * process.patPhotons )
     process.patSequenceMC=cms.Sequence( process.muonMatch * process.photonMatch * (process.muonSelectionProducers * process.phoSelectionProducers ) * process.patMuons * process.patPhotons )
 
-if(MC):
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
+if(options.type!="MINIAODNTUPLE"):
+    if(MC):
+        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
+    else:
+        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
-    
+    process.ntupleSeq = cms.Sequence(process.jsonFilter)
+
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
 if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree==7 or options.doTree==10 or options.doTree==11 or options.doTree==14 or options.doTree==15): # it's a bit mask
@@ -542,67 +549,6 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 # Skim check paths to measure efficiency and purity of the skims
 # reco efficiencies are not taken into account
 # eff = N_skim/N_gen | after reco requirements and gen filter
-# purity = N_gen/N_skim | after reco requirements and skim filter
-process.GenSkimFilter = cms.EDFilter("SkimCheck",
-                                     type=cms.int32(0)
-                                     )
-process.GenZSCSkimFilter = cms.EDFilter("SkimCheck",
-                                        type= cms.int32(2)
-                                        )
-process.GenWSkimFilter =  cms.EDFilter("SkimCheck",
-                                       type= cms.int32(1)
-                                       )
-process.GenZmmgSkimFilter =  cms.EDFilter("SkimCheck",
-                                       type= cms.int32(1)
-                                       )
-
-
-process.pathZElectronSkimGen = cms.Path(process.filterSeq * process.preFilterSeq *
-                                               process.GenSkimFilter *
-                                               process.ZeeFilter
-                                               )
-process.pathZSCElectronSkimGen = cms.Path(process.filterSeq * process.preFilterSeq * process.ZSCFilter *
-                                                 process.GenZSCSkimFilter *
-                                                 ~process.ZeeFilter * process.ZSCFilter 
-                                                 )
-process.pathWElectronSkimGen = cms.Path(process.filterSeq * process.preFilterSeq *
-                                               process.GenWSkimFilter *
-                                               ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter
-                                               )
-process.pathZElectronSkim = cms.Path(process.filterSeq * process.preFilterSeq *
-                                           process.ZeeFilter
-#                                           process.GenSkimFilter
-                                           )
-process.pathZmmgSkim = cms.Path(process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq *
-                                    process.GenZmmgSkimFilter *
-                                ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter * process.ZmmgSkimSeq
-                                    )
-
-process.pathZSCElectronSkim = cms.Path(process.filterSeq * process.preFilterSeq * process.ZSCFilter *
-                                             ~process.ZeeFilter * process.ZSCFilter
-#                                             process.GenZSCSkimFilter
-                                             )
-process.pathWElectronSkim = cms.Path(process.filterSeq * process.preFilterSeq *
-                                           ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter
-#                                           process.GenWSkimFilter
-                                           )
-process.pathZmmgSkim = cms.Path(process.filterSeq * process.ZmmgSkimSeq *
-                                ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter * process.ZmmgSkimSeq
-                                    )
-
-process.pathZElectronGen = cms.Path(process.filterSeq * process.preFilterSeq *
-                                    process.GenSkimFilter
-                                    )
-process.pathZSCElectronGen = cms.Path(process.filterSeq * process.preFilterSeq * process.ZSCFilter *
-                                      process.GenZSCSkimFilter
-                                      )
-process.pathWElectronGen = cms.Path(process.filterSeq * process.preFilterSeq *
-                                    process.GenWSkimFilter
-                                    )
-process.pathZmmgGen = cms.Path(process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq *
-                                    process.GenZmmgSkimFilter
-                                    )
-
 
 
 # ALCARAW
@@ -816,6 +762,8 @@ elif(options.type=='SKIMEFFTEST'):
                                     process.pathWElectronSkim, process.pathZSCElectronSkim, process.pathZElectronSkim,
                                     process.pathWElectronGen, process.pathZSCElectronGen, process.pathZElectronGen,
                                     )
+elif(options.type=='MINIAODNTUPLE'):
+    process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
 
 process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
@@ -865,8 +813,15 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 
 #process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
 #process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
-process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
-process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+if(options.type!="MINIAODNTUPLE"):
+    process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
+    process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+else:
+    process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
+    process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
+
+
+
 
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
