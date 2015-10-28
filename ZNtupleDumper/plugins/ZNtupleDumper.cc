@@ -1127,6 +1127,8 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
   tree->Branch("rawEnergySCEle_must", rawEnergySCEle_must, "rawEnergySCEle_must[3]/F");
   tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
+  tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
+  tree->Branch("esEnergyPlane1SCEle", esEnergyPlane1SCEle, "esEnergyPlane1SCEle[3]/F");
 
   tree->Branch("energySCEle_corr", energySCEle_corr, "energySCEle_corr[3]/F");
 
