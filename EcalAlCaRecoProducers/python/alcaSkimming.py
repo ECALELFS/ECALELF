@@ -156,12 +156,11 @@ process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Outp
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # reduction of recHits
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
 
+# this module provides:
+# process.seqALCARECOEcalRecalElectron 
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_Output_cff')
 from RecoLocalCalo.EcalRecProducers.ecalLocalCustom import *
-
-# this module provides:
-# process.seqALCARECOEcalRecalElectron 
 
 process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 
@@ -402,6 +401,7 @@ elif(ZmmgSkim):
 
 elif(options.skim=="no" or options.skim=="NO" or options.skim=="none" or options.skim=="NONE"):
     process.NtupleFilterSeq = cms.Sequence()
+    process.NtupleFilter.HLTPaths = []
 
 
 if(options.skim=="partGun"):
@@ -452,7 +452,8 @@ if(options.type!="MINIAODNTUPLE"):
     else:
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
-    process.ntupleSeq = cms.Sequence(process.jsonFilter)
+    process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.prePatSequence *  process.EIsequence)
 
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -764,7 +765,7 @@ elif(options.type=='SKIMEFFTEST'):
                                     )
 elif(options.type=='MINIAODNTUPLE'):
     process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
-
+    
 process.zNtupleDumper.foutName=options.secondaryOutput
 # this includes the sequence: patSequence
 # patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
@@ -857,7 +858,7 @@ process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProdu
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-
+#process.zNtupleDumper.recHitCollectionES = cms.InputTag(
 
 ############################
 ## Dump the output Python ##

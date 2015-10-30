@@ -564,31 +564,29 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     eventType=DEBUG;
     bool skipEvent=true;
     for(std::set<unsigned int>::const_iterator alcaSkimPath_itr = alcaSkimPathIndexes.begin(); 
-	alcaSkimPath_itr != alcaSkimPathIndexes.end() && skipEvent==true; 
-	alcaSkimPath_itr++){
-      //std::cout << *alcaSkimPath_itr << std::endl;
-      if(WZSkimResultsHandle->accept(*alcaSkimPath_itr)){
-	skipEvent=false;
-	std::string hltName_str(alcaSkimPathNames.triggerName(*alcaSkimPath_itr));
-	if(hltName_str.find("WElectron")!=std::string::npos)
-	  eventType=WENU;
-	else if(hltName_str.find("ZSCElectron")!=std::string::npos)
-	  eventType=ZSC;
-	else if(hltName_str.find("ZElectron")!=std::string::npos)
-	  eventType=ZEE;
-	else if(hltName_str.find("SingleElectron")!=std::string::npos)
-	  eventType=SINGLEELE;
-	else if(hltName_str.find("Zmmg")!=std::string::npos) 
-	  eventType=ZMMG;
-	else
-	  eventType=UNKNOWN;
-	// this paths are exclusive, then we can skip the check of the others
-	//
-	//	std::cout << alcaSkimPathNames.triggerName(*alcaSkimPath_itr) << "\t" << eventType << std::endl;
-	break;
-      }
-
-
+		alcaSkimPath_itr != alcaSkimPathIndexes.end() && skipEvent==true; 
+		alcaSkimPath_itr++){
+		//std::cout << *alcaSkimPath_itr << std::endl;
+		if(WZSkimResultsHandle->accept(*alcaSkimPath_itr)){
+			skipEvent=false;
+			std::string hltName_str(alcaSkimPathNames.triggerName(*alcaSkimPath_itr));
+			if(hltName_str.find("WElectron")!=std::string::npos)
+				eventType=WENU;
+			else if(hltName_str.find("ZSCElectron")!=std::string::npos)
+				eventType=ZSC;
+			else if(hltName_str.find("ZElectron")!=std::string::npos)
+				eventType=ZEE;
+			else if(hltName_str.find("SingleElectron")!=std::string::npos)
+				eventType=SINGLEELE;
+			else if(hltName_str.find("Zmmg")!=std::string::npos) 
+				eventType=ZMMG;
+			else
+				eventType=UNKNOWN;
+			// this paths are exclusive, then we can skip the check of the others
+			//
+			//	std::cout << alcaSkimPathNames.triggerName(*alcaSkimPath_itr) << "\t" << eventType << std::endl;
+			break;
+		}
     }
     //std::cout << "skip event: " << skipEvent << "\t" << eventType << std::endl;
     //assert(!skipEvent);
