@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-from RecoLuminosity.LumiProducer.bunchSpacingProducer_cfi import *
 
 from Configuration.StandardSequences.Reconstruction_Data_cff import ecalLocalRecoSequence, pfClusteringPS, pfClusteringECAL, ecalClusters
 from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *

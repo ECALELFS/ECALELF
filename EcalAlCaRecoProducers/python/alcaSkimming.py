@@ -902,8 +902,9 @@ process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProdu
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-
-
+if(options.type=="ALCARECOSIM"):
+    process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
+process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 ############################
 ## Dump the output Python ##
 ############################

@@ -6,7 +6,7 @@ OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
     'drop reco*Clusters_pfPhotonTranslator_*_*',
     'drop *EcalRecHit*_ecalRecHit_*_*',
 #    'drop *EcalrecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
-    'drop *EcalRecHit*_reducedEcalRecHitsE*_*_*',
+#    'drop *EcalRecHit*_reducedEcalRecHitsE*_*_*',
     'drop *_*Cleaned_*_*',
     'drop *_*cleaned*_*_*',
     'drop *_*Unclean*_*_*',
@@ -62,8 +62,8 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep *_hltTriggerSummaryAOD_*_HLT',
     # pfisolation CMSSW_5_3_X
     'keep *EcalRecHit*_alCaIsolatedElectrons_*_*',
-#    'keep *EcalRecHit*_reducedEcalRecHitsES_alCaRecHitsES_*',
-    'keep *EcalRecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
+    'keep EcalRecHitsSorted_reducedEcalRecHitsES_*_*',
+#    'keep *EcalRecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
 
     )
 )
