@@ -172,7 +172,7 @@ private:
 	edm::Handle<std::vector<pat::Electron> > electronsHandle;
 	edm::Handle<std::vector<pat::Muon> > muonsHandle;
 	edm::Handle<std::vector<pat::Photon> > photonsHandle;
-	edm::Handle<std::vector<reco::SuperCluster>> EESuperClustersHandle; //used only for high-eta 
+	edm::Handle<std::vector<reco::SuperCluster> > EESuperClustersHandle; //used only for high-eta 
 	edm::Handle<reco::BeamSpot> bsHandle;
 	edm::Handle<reco::VertexCollection> primaryVertexHandle;
 	edm::ESHandle<CaloTopology> topologyHandle;
