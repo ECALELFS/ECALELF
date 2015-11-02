@@ -17,9 +17,9 @@ Download instructions.
 
 `chmod +x setup_git.sh`
 
-`./setup_git.sh CMSSW_7_4_12`
+`./setup_git.sh CMSSW_7_4_15`
 
-`cd CMSSW_7_4_12/src/`
+`cd CMSSW_7_4_15/src/`
 
 `cmsenv`
 
