@@ -63,7 +63,7 @@ private:
 
   // ----------member data ---------------------------
 private:
-	edm::Handle<edm::View<std::vector<reco::GsfElectron> > > electronsHandle;
+  edm::Handle<std::vector<reco::GsfElectron> > electronsHandle;
   edm::Handle<reco::ConversionCollection> conversionsHandle;
   edm::Handle<reco::BeamSpot> bsHandle;
   edm::Handle<reco::VertexCollection> vertexHandle;

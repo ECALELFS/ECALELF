@@ -453,7 +453,7 @@ if(options.type!="MINIAODNTUPLE"):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
     process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.prePatSequence *  process.EIsequence)
+    process.ntupleSeq = cms.Sequence(process.jsonFilter *   process.EIsequence)
 
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -820,8 +820,15 @@ if(options.type!="MINIAODNTUPLE"):
 else:
     process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
-
-
+    process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
+    process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
+    process.zNtupleDumper.electronCollection = cms.InputTag('slimmedElectrons')
+    process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('')
+    process.zNtupleDumper.SelectEvents = cms.vstring('')
+    process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
+    process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
+    process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
 
 
 if(options.type=="ALCARERECO"):

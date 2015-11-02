@@ -50,4 +50,7 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                     #                      correctionFileName = cms.string(options.correctionFileName),
                                     #                      correctionType = cms.string(options.correctionType),
                                     #                      oddEventFilter = cms.bool(oddEventFilter)
+                               eleID_loose = cms.string("loose25nsRun2"),
+                               eleID_medium= cms.string("medium25nsRun2"),
+                               eleID_tight = cms.string("tight25nsRun2"),
                                )
