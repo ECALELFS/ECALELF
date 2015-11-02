@@ -1312,7 +1312,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	etaEle[index]    = electron1.eta(); // degli elettroni
 	phiEle[index]    = electron1.phi();
 
-
 	if(electron1.ecalDrivenSeed()){
 		if(electron1.trackerDrivenSeed()) recoFlagsEle[index]=3;
 		else recoFlagsEle[index] = 2;
@@ -1341,15 +1340,17 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		esEnergyPlane1SCEle[index]		= -99;
 		esEnergyPlane2SCEle[index]		= -99;
 	}	
-	
-	if(electron1.parentSuperCluster().isNonnull()) {
+
+	if(electron1.parentSuperCluster().isAvailable()) {
 		energySCEle_must[index] = electron1.parentSuperCluster()->energy();
 		rawEnergySCEle_must[index]  = electron1.parentSuperCluster()->rawEnergy();
-	}
-	else  {
+	} else  {
 		energySCEle_must[index]=-99;
 		rawEnergySCEle_must[index]=-99;
 	}
+
+	return;
+
 
 #ifndef CMSSW42X
 	energySCEle_corr[index] = electron1.correctedEcalEnergy();
@@ -1382,7 +1383,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	//     else 
 	//       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
 	//   } 
-
 
 	const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
 	//assert(recHits!=NULL);
