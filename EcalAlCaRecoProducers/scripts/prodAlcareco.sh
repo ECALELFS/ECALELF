@@ -239,6 +239,10 @@ case $TYPE in
 				USEPARENT=1
 				echo "[INFO] Dataset is AOD, using parent for RAW"
 				;;
+			*/MINIAOD)
+				USEPARENT=1
+				echo "[INFO] Dataset is MINIAOD, using parent for RAW"
+				;;
 			*/RAW-RECO) USEPARENT=0 ;;
 			*/USER) USEPARENT=0 ;;
 			*/RAW) USEPARENT=0 ;;
