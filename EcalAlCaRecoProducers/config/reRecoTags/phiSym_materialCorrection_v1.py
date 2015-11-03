@@ -5,7 +5,7 @@ from CondCore.DBCommon.CondDBSetup_cfi import *
 # rereco with tag of prompt + IC derived on 2012C data with material corrections on top of EcalIntercalibConstants_2012ABCD_offline
 # it should give a resolution worse than the prompt tag because the etaScale is not updated and any systematic from the phiSym is in (not ratios of phiSym IOVs)
 
-execfile("config/reRecoTags/phiSym_materialCorrection_ref.py")
+from Calibration.EcalAlCaRecoProducers.config.reRecoTags.phiSym_materialCorrection_ref import *
 
 RerecoGlobalTag.toGet.append(
     cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
