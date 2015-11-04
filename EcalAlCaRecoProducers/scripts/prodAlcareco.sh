@@ -22,7 +22,7 @@ NJOBS=100
 OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
-CRABVERSION=2
+CRABVERSION=3
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
 SPLITBYFILE=0
@@ -318,7 +318,7 @@ OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 echo "[INFO] Generating CMSSW configuration"
 cmsDriver.py reco -s ${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
 
-#echo "[INFO] Generating CRAB3 configuration"
+echo "[INFO] Generating CRAB3 configuration"
 TYPENAME=$TYPE
 if [ "${ISMC}" = "yes" ];then
 TYPENAME="${TYPENAME}SIM"
@@ -464,6 +464,8 @@ if [ -n "${CREATE}" ];then
 	    ;;
     esac
 
+echo ${UI_WORKING_DIR}
+echo "./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}"
 ./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
 #
 fi
