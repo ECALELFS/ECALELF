@@ -7,5 +7,37 @@
 #d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit50ns.root
 #d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_multifit25ns.root
 #d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit25ns.root
-d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_oldweight.root
-d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_oldweight.root
+#d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_oldweight.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_oldweight.root
+
+
+d    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_256584-257611_extraCalibTree.root
+d    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_256584-257611.root
+d    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_257612-258158_extraCalibTree.root
+d    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_257612-258158.root
+d    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v4-25nsReco_258159-258959_extraCalibTree.root
+d    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v4-25nsReco_258159-258959.root
+
+d    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_256584-257611_extraCalibTree.root
+d    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_256584-257611.root
+d    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_257612-258158_extraCalibTree.root
+d    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_257612-258158.root
+d    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco_258159-258959_extraCalibTree.root
+d    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco_258159-258959.root
+
+
+s    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_256584-257611_extraCalibTree.root
+s    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_256584-257611.root
+s    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_257612-258158_extraCalibTree.root
+s    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v3-25nsReco_257612-258158.root
+s    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v4-25nsReco_258159-258959_extraCalibTree.root
+s    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/SingleElectron-WSkim-Run2015D-Prompt-v4-25nsReco_258159-258959.root
+
+s    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_256584-257611_extraCalibTree.root
+s    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_256584-257611.root
+s    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_257612-258158_extraCalibTree.root
+s    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco_257612-258158.root
+s    extraCalibTree    /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco_258159-258959_extraCalibTree.root
+s    selected          /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco_258159-258959.root
+
+
