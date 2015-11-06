@@ -45,6 +45,11 @@ configuration files.
 #include "../../EOverPCalibration/interface/CalibrationUtils.h"
 #include "../../EOverPCalibration/interface/FastCalibratorEB.h"
 #include "../../EOverPCalibration/interface/FastCalibratorEE.h"
+
+#include "../../EOverPCalibration/interface/TEndcapRings.h"
+#include "../../EOverPCalibration/CommonTools/histoFunc.h"
+//#include "treeReader.h"
+
 /// \endcode
 /// @endcond
 
@@ -311,6 +316,8 @@ int main(int argc, char **argv) {
   float fbremMax;
   bool isR9selection;
   float R9Min;
+  float EPMin;
+  int smoothCut;
   int miscalibMethod;
   std::string inputMomentumScale;
   std::string typeEB;
@@ -319,7 +326,7 @@ int main(int argc, char **argv) {
   std::string outputFile;
   int numberOfEvents;
   int useZ, useW;
-  int isBarrel;
+  //  int isBarrel;
   int splitStat;
   int nLoops;
   bool isDeadTriggerTower;
@@ -333,6 +340,7 @@ int main(int argc, char **argv) {
   po::options_description smearerOption("Z smearer options");
   po::options_description toyOption("toyMC options");
   po::options_description EoverPOption("EoverP options");
+  po::options_description momentumCorrection("run the momentum calibration");
 
   //po::options_description cmd_line_options;
   //cmd_line_options.add(desc).add(fitOption).add(smearOption);
@@ -438,12 +446,15 @@ int main(int argc, char **argv) {
     ("constTermToy", po::value<float>(&constTermToy)->default_value(0.01),"")
     ("eventsPerToy", po::value<unsigned long long int>(&nEventsPerToy)->default_value(0),"=0: all events")
     ;
+  momentumCorrection.add_options()
+    ("momentumCorrection",  "run the momentum calibration")
+    ;
   EoverPOption.add_options()
     ("EOverPCalib",  "call the E/p calibration")
-    ("isBarrel", po::value<int>(&isBarrel)->default_value(1),"1=barrel, 0=endcap")
+    //  ("isBarrel", po::value<int>(&isBarrel)->default_value(1),"1=barrel, 0=endcap")
     ("doEB", "do EoP IC calibration for EB")
     ("doEE", "do EoP IC calibration for EE")
-    ("jsonFileName", po::value<string>(&jsonFileName)->default_value("../EOverPCalibration/json/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt"), "jsonFileName")
+    ("jsonFileName", po::value<string>(&jsonFileName)->default_value("/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt"), "jsonFileName")
     ("isMiscalib", po::value<bool>(&isMiscalib)->default_value(false),"apply the initial miscalibration")
     ("miscalibMethod", po::value<int>(&miscalibMethod)->default_value(1),"miscalibration method")  
     ("miscalibMap", po::value<string>(&miscalibMap)->default_value("/gwteray/users/brianza/scalibMap2.txt"), "map for the miscalibration")
@@ -456,11 +467,11 @@ int main(int argc, char **argv) {
     ("fbremMax", po::value<float>(&fbremMax)->default_value(100.),"fbrem treshold")  
     ("isR9selection", po::value<bool>(&isR9selection)->default_value(false),"apply R9 selection")  
     ("R9Min", po::value<float>(&R9Min)->default_value(-1.),"R9 treshold")  
-    ("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/EOverPCalibration/MomentumCalibration2012"),"input momentum scale")  
+    ("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("MomentumCalibration2015.root"),"input momentum scale")  
     ("typeEB", po::value<string>(&typeEB)->default_value("eta1"),"")  
     ("typeEE", po::value<string>(&typeEE)->default_value("eta1"),"")  
     ("outputPath", po::value<string>(&outputPath)->default_value("output/output_runD/"),"output dir for E/P calibration")  
-    ("outputFile", po::value<string>(&outputFile)->default_value("FastCalibrator_Oct22_Run2012ABC_Cal_Dic2012"),"output file for E/P calibration")         
+    ("outputFile", po::value<string>(&outputFile)->default_value("FastCalibrator_Oct2015_runD"),"output file for E/P calibration")         
     ("numberOfEvents", po::value<int>(&numberOfEvents)->default_value(-1),"number of events (-1=all)") 
     ("useZ", po::value<int>(&useZ)->default_value(1),"use Z events") 
     ("useW", po::value<int>(&useW)->default_value(1),"use W events") 
@@ -468,6 +479,8 @@ int main(int argc, char **argv) {
     ("nLoops", po::value<int>(&nLoops)->default_value(20),"number of iteration of the L3 algorithm") 
     ("isDeadTriggerTower", po::value<bool>(&isDeadTriggerTower)->default_value(false),"") 
     ("inputFileDeadXtal", po::value<string>(&inputFileDeadXtal)->default_value("NULL"),"") 
+    ("EPMin", po::value<float>(&EPMin)->default_value(100.),"E/p window")  
+    ("smoothCut", po::value<int>(&smoothCut)->default_value(0),"apply smooth cut on the E/p window")  
     ;
     
   desc.add(inputOption);
@@ -475,6 +488,7 @@ int main(int argc, char **argv) {
   desc.add(fitterOption);
   desc.add(smearerOption);
   desc.add(toyOption);
+  desc.add(momentumCorrection);
   desc.add(EoverPOption);
 
   po::variables_map vm;
@@ -510,7 +524,7 @@ int main(int argc, char **argv) {
 
   if(!vm.count("regionsFile") && 
      !vm.count("runDivide") && !vm.count("savePUTreeWeight") && 
-     !vm.count("saveR9TreeWeight") && !vm.count("saveCorrEleTree") && !vm.count("EOverPCalib") 
+     !vm.count("saveR9TreeWeight") && !vm.count("saveCorrEleTree") && !vm.count("EOverPCalib") && !vm.count("momentumCorrection") 
      //&& !vm.count("saveRootMacro")
      ){
     std::cerr << "[ERROR] Missing mandatory option \"regionsFile\"" << std::endl;
@@ -540,19 +554,19 @@ int main(int argc, char **argv) {
   //============================== Check output folders
   bool checkDirectories=true;
   checkDirectories=checkDirectories && !system("[ -d "+TString(outDirFitResMC)+" ]");
-  if(!checkDirectories && !vm.count("EOverPCalib")){
+  if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("momentumCorrection")){
     std::cerr << "[ERROR] Directory " << outDirFitResMC << " not found" << std::endl;
   }
   checkDirectories=checkDirectories && !system("[ -d "+TString(outDirFitResData)+" ]");
-  if(!checkDirectories && !vm.count("EOverPCalib")){
+  if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("momentumCorrection")){
     std::cerr << "[ERROR] Directory " << outDirFitResData << " not found" << std::endl;
   }
   checkDirectories=checkDirectories &&   !system("[ -d "+TString(outDirImgMC)+" ]");
-  if(!checkDirectories && !vm.count("EOverPCalib")){
+  if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("momentumCorrection")){
      std::cerr << "[ERROR] Directory " << outDirImgMC << " not found" << std::endl;
   }
   checkDirectories=checkDirectories && !system("[ -d "+TString(outDirImgData)+" ]");
-  if(!checkDirectories && !vm.count("EOverPCalib")){
+  if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("momentumCorrection")){
     std::cerr << "[ERROR] Directory " << outDirImgData << " not found" << std::endl;
   }
   //   checkDirectories=checkDirectories && !system("[ -d "+TString(outDirTable)+" ]");
@@ -566,6 +580,7 @@ int main(int argc, char **argv) {
      && !vm.count("saveR9TreeWeight") 
      && !vm.count("saveRootMacro") 
      && !vm.count("EOverPCalib") 
+     && !vm.count("momentumCorrection") 
      ) return 1;
 
   if(!dataPUFileName.empty()) dataPUFileNameVec.push_back(dataPUFileName.c_str());
@@ -795,7 +810,7 @@ int main(int argc, char **argv) {
 
   //  if(vm.count("dataPU")==0 && (tagChainMap["s"]).count("pileupHist")==0 && (tagChainMap["s"]).count("pileup")==0){
 
-  if(vm.count("noPU")==0 && !vm.count("runToy")){
+  if(vm.count("noPU")==0 && !vm.count("runToy") && !vm.count("correctionMomentum")){
     if(dataPUFileNameVec.empty() && (tagChainMap.count("s")!=0) && (tagChainMap["s"]).count("pileup")==0){
       std::cerr << "[ERROR] Nor pileup mc tree configured in chain list file either dataPU histograms are not provided" << std::endl;
       return 1;
@@ -1174,6 +1189,725 @@ int main(int argc, char **argv) {
     mc  = (tagChainMap["s"])["selected"];
   }
 
+
+//////////////////////////////////LUCA
+  if(vm.count("momentumCorrection")) {	
+///////// produce P corrections
+  
+  std::string typeEE = "eta1";
+  int  nRegionsEE = 2;
+  int  nPhiBinsEE = 360;
+  int  nPhiBinsTempEE = 1;
+  int  nEtaBinsEE = 1;
+  int  nEtaBinsTempEE = 1;
+  int  rebinEE = 20;
+  std::string outputFile = "momentumCalibration2015.root";
+  int nEntriesMC = -1;
+  int nEntriesData = -1;
+  
+  //  int nRegionsEE = GetNRegionsEE(typeEE);
+
+  std::cout<<"REGIONI: "<<nRegionsEE<<std::endl;
+
+  cout <<" Basic Configuration " <<endl;
+  cout <<" nRegionsEE = "<<nRegionsEE<<endl;
+  cout <<" nPhiBinsEE = "<<nPhiBinsEE<<endl;
+  cout <<" nPhiBinsTempEE = "<<nPhiBinsTempEE<<endl;
+  cout <<" nEtaBinsEE = "<<nEtaBinsEE<<endl;
+  cout <<" nEtaBinsTempEE = "<<nEtaBinsTempEE<<endl;
+  cout <<" rebinEE = "<<rebinEE<<endl;
+  
+  cout << "Momentum correction "<< endl;
+  
+    
+  //---- variables for selection
+  float etaMax  = 2.5;
+  float etaMin = 1.479;
+
+  //  nEtaBinsEE=5;
+
+  //histos to get the bin in phi given the electron phi
+  TH1F* hPhiBinEE = new TH1F("hphiEE","hphiEE",nPhiBinsEE, -1.*TMath::Pi(),1.*TMath::Pi());
+  TH1F* hEtaBinEE = new TH1F("hetaEE","hetaEE",nEtaBinsEE, 1.4,2.5);
+  
+  //----- NTUPLES--------------------
+  /*
+  TChain *ntu_DA = new TChain(TreeName.c_str());  
+  if(!FillChain(*ntu_DA, infileDATA.c_str())) return 1;
+
+  TChain *ntu_MC = new TChain(TreeName.c_str());  
+  if(!FillChain(*ntu_MC, infileMC.c_str())) return 1;
+  */
+  
+  std::cout << "     DATA: " << data->GetEntries() << " entries in Data sample" << std::endl;
+
+  // Set branch addresses
+  float etaSCEle[3], phiSCEle[3], etaEle[3], phiEle[3], esEnergySCEle[3], pAtVtxGsfEle[3], energySCEle[3], R9Ele[3];
+  int seedXSCEle[3], seedYSCEle[3], chargeEle[3];//, seedZside;
+
+  int debug=0;
+
+  std::cout<<"debug: "<<debug<<std::endl; debug++;
+  
+  data->SetBranchStatus("*",0);
+  data->SetBranchStatus("etaSCEle",1);
+  data->SetBranchStatus("phiSCEle",1);
+  data->SetBranchStatus("etaEle",1);
+  data->SetBranchStatus("phiEle",1);
+  data->SetBranchStatus("rawEnergySCEle",1);
+  data->SetBranchStatus("esEnergySCEle",1);
+  data->SetBranchStatus("pAtVtxGsfEle",1);
+  data->SetBranchStatus("seedXSCEle",1);
+  data->SetBranchStatus("seedYSCEle",1);
+  data->SetBranchStatus("chargeEle",1);
+  data->SetBranchStatus("R9Ele",1);
+    
+  data->SetBranchAddress("etaSCEle", &etaSCEle);
+  data->SetBranchAddress("phiSCEle", &phiSCEle);
+  data->SetBranchAddress("etaEle", &etaEle);
+  data->SetBranchAddress("phiEle", &phiEle);
+  data->SetBranchAddress("rawEnergySCEle", &energySCEle);
+  data->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
+  data->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
+  //data->SetBranchAddress("energySCEle", &pAtVtxGsfEle);
+  data->SetBranchAddress("seedXSCEle", &seedXSCEle);
+  data->SetBranchAddress("seedYSCEle", &seedYSCEle);
+  data->SetBranchAddress("chargeEle", &chargeEle);
+  data->SetBranchAddress("R9Ele", &R9Ele);
+
+  std::cout<<"debug: "<<debug<<std::endl; debug++;
+
+
+  mc->SetBranchStatus("*",0);
+  mc->SetBranchStatus("etaSCEle",1);
+  mc->SetBranchStatus("phiSCEle",1);
+  mc->SetBranchStatus("etaEle",1);
+  mc->SetBranchStatus("phiEle",1);
+  mc->SetBranchStatus("rawEnergySCEle",1);
+  mc->SetBranchStatus("esEnergySCEle",1);
+  mc->SetBranchStatus("pAtVtxGsfEle",1);
+  mc->SetBranchStatus("seedXSCEle",1);
+  mc->SetBranchStatus("seedYSCEle",1);
+  mc->SetBranchStatus("chargeEle",1);
+  mc->SetBranchStatus("R9Ele",1);
+    
+  mc->SetBranchAddress("etaSCEle", &etaSCEle);
+  mc->SetBranchAddress("phiSCEle", &phiSCEle);
+  mc->SetBranchAddress("etaEle", &etaEle);
+  mc->SetBranchAddress("phiEle", &phiEle);
+  mc->SetBranchAddress("rawEnergySCEle", &energySCEle);
+  mc->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
+  mc->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
+  //mc->SetBranchAddress("energySCEle", &pAtVtxGsfEle);
+  mc->SetBranchAddress("seedXSCEle", &seedXSCEle);
+  mc->SetBranchAddress("seedYSCEle", &seedYSCEle);
+  mc->SetBranchAddress("chargeEle", &chargeEle);
+  mc->SetBranchAddress("R9Ele", &R9Ele);
+
+  std::cout<<"debug: "<<debug<<std::endl; debug++;
+
+  // histogram definition in EE and fit functions                                                                      
+  //  std::vector<std::vector<TH1F*> > h_Phi_EE(nPhiBinsEE); // used to map iEta (as defined for Barrel and Endcap geom) into eta          
+  //  std::vector<std::vector<TH1F*> > h_Eta_EE(nEtaBinsEE); // used to map iEta (as defined for Barrel and Endcap geom) into eta          
+  TH1F* h_pData_EE[nPhiBinsEE][nEtaBinsEE][nRegionsEE];
+  //  std::vector<std::vector<std::vector<TH1F*> > > h_pData_EE(nPhiBinsEE);
+  TF1* f_pData_EE[nPhiBinsEE][nEtaBinsEE][nRegionsEE];
+  
+  TH1F* histoPull_EE[nEtaBinsEE][nRegionsEE];
+  std::cout<<"debug: "<<debug<<std::endl; debug++;
+
+  float maximum=500.;
+  int targetType=1; //1=pTk, 2=energy, 3=E/p
+  if(targetType==3) maximum=5.;
+  int chargeType=1; //1=electrons, -1=positrons
+
+  float targetVariable=0.;
+
+  //  float R9cut=0.94;
+  float R9cut=0.;
+
+  //  nRegionsEE=2; //EE- and EE+
+  //  std::vector<TH1F* > vect1(nEtaBinsEE);
+
+  // Initializate histos in EE
+  std::cout << ">>> Initialize EE histos" << std::endl;
+    //    std::vector<std::vector<TH1F*> >tempVect(nEtaBinsEE);
+  for (int k=0; k<nEtaBinsEE; ++k)
+    {
+      TString histoName;
+      TH1F* temp;
+      //      std::cout<<i<<" "<<k<<" "<<j<<std::endl;
+      for(int j = 0; j < nRegionsEE; ++j)
+	{
+	  
+	  for(int i = 0; i < nPhiBinsEE; ++i)
+	    {
+	      
+	      histoName= Form("EE_pData_%d_%d_%d", i,k,j);
+	      temp = new TH1F (histoName, histoName, 50, 0., maximum);
+	      temp->Sumw2();
+	      temp->SetFillColor(kGreen+2);
+	      temp->SetLineColor(kGreen+2);
+	      temp->SetFillStyle(3004);
+	      h_pData_EE[i][k][j] = temp;
+	      //      (tempVect.at(k)).push_back(temp);
+	      
+	      //      histoName=Form("EE_Phi_%d_%d_%d", i,k,j);
+	      //      temp = new TH1F(histoName, histoName, 360, 0., 360.); 
+	      //      (h_Phi_EE.at(i)).push_back(temp); 
+	    }
+	  
+	  //    std::cout<<"qui?"<<std::endl;
+	  histoName=Form("histoPull_%d_%d", k,j);
+	  temp = new TH1F(histoName, histoName, 100, -10, 10); 
+	  histoPull_EE[k][j]=temp;
+	  //      (h_Eta_EE.at(k)).push_back(temp); 
+	  //    std::cout<<"qui2?"<<std::endl;
+	}
+      //    (h_pData_EE).push_back(tempVect);
+      
+    }
+
+
+ // Template in EE
+  //  std::vector<std::vector<TH1F*> > h_template_EE(nPhiBinsTempEE);
+  TH1F* h_template_EE[nPhiBinsTempEE][nEtaBinsTempEE][nRegionsEE];
+    
+  std::cout << ">>> Initialize EE template" << std::endl;
+  for(int mod = 0; mod < nPhiBinsTempEE; ++mod)
+  {
+  for(int k = 0; k < nEtaBinsEE; ++k)
+  {
+    for(int j = 0; j < nRegionsEE; ++j)
+    {
+      TString histoName;
+      histoName=Form("EE_template_%d_%d_%d",mod,k,j);
+      TH1F* temp;
+	temp = new TH1F(histoName,"",50,0.,maximum);
+      h_template_EE[mod][k][j] = temp;
+      //      std::cout<<"mah: "<<mod<<" "<<j<<std::endl;
+    }
+  }  
+  }  
+ 
+  TH1F** h_phi_data_EE = new TH1F*[nRegionsEE];
+  TH1F** h_eta_data_EE = new TH1F*[nRegionsEE];
+  TH1F** h_phi_mc_EE = new TH1F*[nRegionsEE];
+
+  for(int index = 0; index < nRegionsEE; ++index)
+  {
+    TString name;
+    name=Form("EE_h_phi_data_%d",index);
+    h_phi_data_EE[index] = new TH1F(name,"h_phi_data",100,-TMath::Pi(),TMath::Pi());
+    name=Form("EE_h_phi_mc_%d",index);
+    h_phi_mc_EE[index] =  new TH1F(name,"h_phi_mc",100,-TMath::Pi(),TMath::Pi());
+    name=Form("EE_h_eta_data_%d",index);
+    h_eta_data_EE[index] = new TH1F(name,"h_eta_data",100,1.479,2.5);
+  }
+  
+  
+  // Initialize endcap geometry
+  TEndcapRings *eRings = new TEndcapRings(); 
+  
+  // Map for conversion (ix,iy) into Eta for EE
+  TH2F * mapConversionEEp = new TH2F ("mapConversionEEp","mapConversionEEp",101,1,101,101,1,101);
+  TH2F * mapConversionEEm = new TH2F ("mapConversionEEm","mapConversionEEm",101,1,101,101,1,101);
+  
+  for(int ix =0; ix<mapConversionEEp->GetNbinsX(); ix++)
+    for(int iy =0; iy<mapConversionEEp->GetNbinsY(); iy++)
+    {
+      mapConversionEEp->SetBinContent(ix+1,iy+1,0);
+      mapConversionEEm->SetBinContent(ix+1,iy+1,0);
+    }
+  
+  
+  // fill MC templates
+  
+  std::vector<int> refIdEE;
+  refIdEE.assign(nPhiBinsEE,0);
+  
+  for(int iphi = 0; iphi < nPhiBinsEE; ++iphi)
+  {
+    float phi = hPhiBinEE->GetBinCenter(iphi+1);
+    
+    phi = 2.*TMath::Pi() + phi + TMath::Pi()*10./180.;
+    phi -= int(phi/2./TMath::Pi()) * 2.*TMath::Pi();
+    
+    int modPhi = int(phi/(2.*TMath::Pi()/nPhiBinsTempEE));
+    if( modPhi == nPhiBinsTempEE ) modPhi = 0;
+    refIdEE.at(iphi) = modPhi;
+    //    std::cout<<iphi<<" "<<modPhi<<std::endl;
+  }
+    
+ //**************************** loop on MC
+  
+  std::cout << "first loop: fill template histo" << endl; 
+  
+  //  for(int entry = 0; entry < mc->GetEntries(); ++entry)
+  if (nEntriesMC<0) nEntriesMC = mc->GetEntries();
+  for(int entry = 0; entry < nEntriesMC; ++entry)
+  {
+    if( entry%10000 == 0 ) 
+      std::cout << "reading saved entry " << entry << "\r" << std::flush;
+    
+    mc->GetEntry(entry);
+    //    std::cout<<fabs(scEta)<<" "<<fabs(scEta2)<<" "<<scEt<<" "<<scEt2<<std::endl;
+    
+    //    if( isW == 1 )               continue;
+    for (int iEle=0; iEle<2; iEle++) {
+
+      if( fabs(etaEle[iEle]) > etaMax )  continue;
+      if( fabs(etaEle[iEle]) < etaMin) continue;
+      if( fabs(chargeEle[iEle]) !=chargeType) continue;
+      if( R9Ele[iEle] < R9cut) continue;
+    
+      float ww = 1.;
+      int index=0;
+
+      int iz=0;
+      //   std::cout<<ele1_iz<<std::endl;
+      // MC - ENDCAP - ele1
+      if (fabs(etaEle[iEle])>etaMin && fabs(etaEle[iEle])<etaMax)
+	{
+	  if( etaEle[iEle]>0 ) { mapConversionEEp -> SetBinContent(seedXSCEle[iEle],seedYSCEle[iEle],etaEle[iEle]); iz=1; index=0; }
+	  if( etaEle[iEle]<0 ) {mapConversionEEm -> SetBinContent(seedXSCEle[iEle],seedYSCEle[iEle],etaEle[iEle]); iz=-1; index=1; }
+	  
+	  int iphi = eRings->GetEndcapIphi(seedXSCEle[iEle],seedYSCEle[iEle],iz);
+	  
+	  // fill MC templates
+	  int modPhi = int (iphi/(360./nPhiBinsTempEE));
+	  if( modPhi == nPhiBinsTempEE ) modPhi = 0;
+	  
+	  int EtabinEE = hEtaBinEE->FindBin(fabs(etaEle[iEle])) - 1;
+	  if( EtabinEE == nEtaBinsEE ) EtabinEE = 0;
+	  
+	  //      int regionId =  templIndexEE(typeEE,etaEle[iEle]1,charge2,R92);
+	  //      if(regionId == -1) continue;
+	  
+	  if (targetType==1)
+	    targetVariable=pAtVtxGsfEle[iEle];
+	  else if (targetType==2)
+	    targetVariable=energySCEle[iEle];
+	  else
+	    targetVariable=energySCEle[iEle]/(pAtVtxGsfEle[iEle]-esEnergySCEle[iEle]);
+
+	  if (index==1)	    h_template_EE[modPhi][EtabinEE][0] ->  Fill((targetVariable),ww); //if you want to sum EE+ and EE-
+	  //	  if (modPhi>=180) h_pData_EE[modPhi-180][EtabinEE][0] -> Fill((targetVariable),ww);  // if you want to sum the two dees
+	  h_template_EE[modPhi][EtabinEE][index] ->  Fill((targetVariable),ww);
+	  
+	  // fill MC histos in eta bins
+	  int PhibinEE = hPhiBinEE->FindBin(phiEle[iEle]) - 1;
+	  if(PhibinEE==nPhiBinsEE) PhibinEE = 0;
+	  
+	  //      std::cout<<"MC: fill with "<<energySCEle[iEle]/(pAtVtxGsfEle[iEle]-esEnergySCEle[iEle])<<" "<<ww<<std::endl;
+	  //      (h_pMC_EE.at(PhibinEE)).at(index) -> Fill(pAtVtxGsfEle[iEle],ww);  // This is MC
+	  h_phi_mc_EE[index]->Fill(phiEle[iEle],ww);
+	}
+    }
+
+  }
+  
+
+
+  
+  //**************************** loop on DATA
+  
+  std::cout << "Loop in Data events " << endl; 
+
+  /*  for (int i=0; i<nPhiBinsEE; ++i) {
+    for (int k=0; k<nEtaBinsEE; ++k) {
+      for (int j=0; j<nRegionsEE; ++j) {
+	std::cout<<i<<" "<<j<<" "<<k<<std::endl;
+	((h_pData_EE.at(i)).at(k)).at(j) -> Fill(0);  // This is DATA
+      }
+    }
+  }
+  */
+  //  for(int entry = 0; entry < data->GetEntries(); ++entry)
+  if (nEntriesData<0) nEntriesData = data->GetEntries();
+  for(int entry = 0; entry < nEntriesData; ++entry)
+  {
+    if( entry%10000 == 0 ) 
+      std::cout << "reading saved entry " << entry << "\r" << std::flush;
+      
+    data->GetEntry(entry);
+
+    for (int iEle=0; iEle<2; iEle++) {
+    //    if( isW == 1 )               continue;
+      if( fabs(etaEle[iEle]) > etaMax )  continue;
+      if( fabs(etaEle[iEle]) < etaMin) continue;
+      if( fabs(chargeEle[iEle]) != chargeType) continue;
+      if( R9Ele[iEle] < R9cut) continue;
+
+      float ww = 1.;
+      int index=0;
+
+      //    int iz=0;
+      // DATA - ENDCAP - ele1
+      if (fabs(etaEle[iEle])>etaMin && fabs(etaEle[iEle])<etaMax)
+	{
+	  if( etaEle[iEle]>0 ) { mapConversionEEp -> SetBinContent(seedXSCEle[iEle],seedYSCEle[iEle],etaEle[iEle]); index=0; }
+	  if( etaEle[iEle]<0 ) { mapConversionEEm -> SetBinContent(seedXSCEle[iEle],seedYSCEle[iEle],etaEle[iEle]); index=1; }
+	  
+	  int PhibinEE = hPhiBinEE->FindBin(phiEle[iEle]) - 1;
+	  if( PhibinEE == nPhiBinsEE ) PhibinEE = 0;
+	  
+	  int EtabinEE = hEtaBinEE->FindBin(fabs(etaEle[iEle])) - 1;
+	  if( EtabinEE == nEtaBinsEE ) EtabinEE = 0;
+	  
+	  //      int regionId = templIndexEE(typeEE,etaEle[iEle],charge,R9);
+	  //      if( regionId == -1 ) continue;
+	  if (targetType==1)
+	    targetVariable=pAtVtxGsfEle[iEle];
+	  else if (targetType==2)
+	    targetVariable=energySCEle[iEle];
+	  else
+	    targetVariable=energySCEle[iEle]/(pAtVtxGsfEle[iEle]-esEnergySCEle[iEle]);				      
+	  
+	  if (index==1)	    h_pData_EE[PhibinEE][EtabinEE][0] -> Fill((targetVariable),ww);  // if you want to sum EE+ and EE-
+	  //	  if (PhibinEE>=180) h_pData_EE[PhibinEE-180][EtabinEE][0] -> Fill((targetVariable),ww);  // if you want to sum the two dees
+	  h_pData_EE[PhibinEE][EtabinEE][index] -> Fill((targetVariable),ww);  // This is DATA
+	  //      (h_Phi_EE.at(PhibinEE)).at(index) -> Fill(phiEle[iEle]); 
+
+	  h_phi_data_EE[index] -> Fill(phiEle[iEle]);
+	  h_eta_data_EE[index] -> Fill(fabs(etaEle[iEle]));
+
+	}
+    }				          
+  }
+  
+  std::cout << "End loop: Analyze events " << endl; 
+  
+  
+  
+  
+  
+  
+  //----------------
+  // Initializations
+  
+  // initialize TGraphs
+  TFile* o = new TFile((outputFile+"_"+typeEE+".root").c_str(),"RECREATE");
+    
+  TGraphErrors* g_pData_EE[nEtaBinsEE][nRegionsEE];// = new TGraphErrors**[nEtaBinsEE][nRegionsEE];
+  TGraphErrors* g_pAbs_EE[nEtaBinsEE][nRegionsEE];// = new TGraphErrors**[nEtaBinsEE][nRegionsEE];
+
+  for (int a=0; a<nEtaBinsEE; ++a)
+    {
+  for(int j = 0; j < nRegionsEE; ++j)
+  {
+    g_pData_EE[a][j]= new TGraphErrors();
+    g_pAbs_EE[a][j]= new TGraphErrors();
+  }
+    } 
+  
+  // initialize template functions  
+  //  std::vector<std::vector<histoFunc*> > templateHistoFuncEE(nPhiBinsTempEE);
+  histoFunc* templateHistoFuncEE[nPhiBinsTempEE][nEtaBinsEE][nRegionsEE];
+
+  for(int mod = 0; mod < nPhiBinsTempEE; ++mod)
+  {
+  for(int k = 0; k < nEtaBinsEE; ++k)
+  {
+    for(int j = 0; j < nRegionsEE; ++j)
+    {
+      //      h_template_EE[mod][k][j] -> Rebin(rebinEE);
+      templateHistoFuncEE[mod][k][j] = new histoFunc(h_template_EE[mod][k][j]);
+    }
+  }
+  }
+
+  //-------------------
+  // Template Fit in EE
+  
+  if( typeEE != "none" )
+  {
+    float pVector[nPhiBinsEE][nEtaBinsEE][2];
+    float pVectorErr[nPhiBinsEE][nEtaBinsEE][2];
+
+    for(int i = 0; i < nPhiBinsEE; ++i)
+    {
+    for(int k = 0; k < nEtaBinsEE; ++k)
+    {
+      for(int j = 0; j < nRegionsEE; ++j)
+      {
+	float flPhi = hPhiBinEE->GetXaxis()->GetBinCenter(i);
+        
+	//        (h_pMC_EE.at(i)).at(j) -> Rebin(rebinEE);
+	//        h_pData_EE[i][k][j] -> Rebin(rebinEE);    
+        
+        
+        // define the fitting function
+        // N.B. [0] * ( [1] * f( [1]*(x-[2]) ) )
+        
+        char funcName[50];        
+        
+        sprintf(funcName,"f_pData_%d_%d_%d_Ref_%d_%d_%d_EE",i,k,j,refIdEE.at(i),k,j);
+	TF1* temp;
+	temp = new TF1(funcName, templateHistoFuncEE[refIdEE.at(i)][k][j], 0., maximum, 3, "histoFunc");
+        f_pData_EE[i][k][j] =  temp;
+        
+        f_pData_EE[i][k][j] -> SetParName(0,"Norm"); 
+        f_pData_EE[i][k][j] -> SetParName(1,"Scale factor"); 
+        
+        f_pData_EE[i][k][j] -> SetLineWidth(1); 
+        f_pData_EE[i][k][j] -> SetLineColor(kGreen+2); 
+        f_pData_EE[i][k][j] -> SetNpx(10000);
+        
+	//	f_pData_EE[i][k][j] -> SetParameter(0, xNorm);
+	f_pData_EE[i][k][j] -> SetParameter(0, 1.);
+	f_pData_EE[i][k][j] -> SetParameter(1, 1);
+
+	float shift=0.5;
+	if (targetType!=3)
+	  shift=3.;
+	f_pData_EE[i][k][j] -> SetParameter(2, shift);
+                               
+        std::cout << "***** Fitting DATA EE " << flPhi << " (" << i << "," << j << "):   ";
+
+	TFitResultPtr rp;
+	int fStatus; 
+
+        for(int trial = 0; trial < 300; ++trial)
+        {
+          rp = h_pData_EE[i][k][j] -> Fit(funcName, "QR+");
+          fStatus = rp;
+
+	  //          if( fStatus !=4 && f_pData_EE[i][k][j]->GetParError(1) != 0. && f_pData_EE[i][k][j] -> GetMaximumX(0.,500.)>30. )
+          if( fStatus !=4 && f_pData_EE[i][k][j]->GetParError(1) != 0. && f_pData_EE[i][k][j] -> GetMaximumX(0.,maximum)>0. )
+          {
+            std::cout << "fit OK    ";
+            
+            double coeff = f_pData_EE[i][k][j]->GetParameter(1);
+	    //            double eee = f_pData_EE[i][k][j]->GetParError(1);
+	    pVector[i][k][j] = coeff;
+
+            break;
+          }
+          else if( trial %5 == 0 )
+          {
+	    pVector[i][k][j]=-1;
+	    //	    std::cout<<" BAD FIT. Make another attempt with different parameters.. "<<std::endl;
+	    if (targetType!=3)
+	      //	      shift-=5;
+	      shift-=2.5;
+	    else
+	      shift-=0.05;
+	    f_pData_EE[i][k][j] -> SetParameter(2, shift);
+	    if (shift==-25)  shift+=50.;
+	    if (shift==-0.6) shift+=1.07;
+	    //	    trial = 0;
+	    //	    getchar();
+          }
+        }
+
+	//	std::cout<<"media del bin "<<i<<" : "<<f_pData_EE[i][k][j] -> GetMaximumX(0.,maximum)<<std::endl;
+	//(f_pData_EE.at(0)).at(0)->GetParameter(2)*(f_pData_EE.at(0)).at(0)->GetParameter(1)+(h_template_EE.at(0)).at(j)->GetMean()<<std::endl;
+
+	//	if( fStatus !=4 && f_pData_EE[i][k][j]->GetParError(1) != 0. && f_pData_EE[i][k][j] -> GetMaximumX(0.,500.)>30. ) {
+	if( fStatus !=4 && f_pData_EE[i][k][j]->GetParError(1) != 0. && f_pData_EE[i][k][j] -> GetMaximumX(0.,maximum)>0. ) {
+	  pVector[i][k][j] = f_pData_EE[i][k][j] -> GetMaximumX(0.,maximum);
+	  pVectorErr[i][k][j] = (h_pData_EE[i][k][j] -> GetRMS())/sqrt(h_pData_EE[i][k][j] -> GetEntries());
+	}
+	else {
+	  std::cout<<"BAD FIT!!!"<<std::endl;
+	  pVector[i][k][j] = -1;  //if fit fails
+	  pVectorErr[i][k][j] = 0;
+	}
+      }
+    
+  }
+      
+      std::cout << std::endl;
+    }
+
+	///////
+    float pMean[nEtaBinsEE][nRegionsEE];
+    float pMeanErr2[nEtaBinsEE][nRegionsEE];
+
+    for(int jc = 0; jc < nRegionsEE; ++jc)
+      {	
+	float sum=0.;
+	float sumErr2=0.;
+	int n=0;
+	for (int a=0; a<nEtaBinsEE; a++)
+	  {
+	sum=0.;
+	sumErr2=0.;
+	n=0;
+
+	for (int c=0; c<nPhiBinsEE; c++)
+	  {
+	    if (pVector[c][a][jc]==-1) continue;
+	    sum+=pVector[c][a][jc];
+	    sumErr2+=(1/(pVectorErr[c][a][jc]*pVectorErr[c][a][jc]));
+	    n++;  
+	  }
+	pMean[a][jc] = sum/(float)n;
+	pMeanErr2[a][jc] = sqrt(1/sumErr2);
+	std::cout<<"pMEan: "<<pMean[a][jc]<<std::endl;
+	std::cout<<"pMeanErr2: "<<pMeanErr2[a][jc]<<std::endl;
+
+	  }
+      }
+
+
+    for(int jc = 0; jc < nRegionsEE; ++jc)
+      {	
+	for (int a=0; a<nEtaBinsEE; a++)
+	  {
+	for (int c=0; c<nPhiBinsEE; c++)
+	  {
+	    float flPhi = hPhiBinEE->GetXaxis()->GetBinCenter(c);
+	    int xVar=c*(int(360/nPhiBinsEE));
+
+	    if (pVector[c][a][jc]==-1) {
+	      //	      pVector[c][a][jc]=pMean[a][jc]; //if fit has failed, fill with the mean
+	      pVector[c][a][jc]=pVector[c+1][a][jc]; //if fit has failed, fill with the mean
+	      std::cout<<"be careful!! ("<<c<<","<<a<<","<<jc<<") has a bad value! Fill with the value from the previous point"<<std::endl;
+	    }
+
+	    if ( (pVector[c][a][jc]/pMean[a][jc])>1.15) {
+	      if ( (pVector[c-1][a][jc]/pMean[a][jc])>1.15 ) {
+		g_pData_EE[a][jc] -> SetPoint(c,flPhi,pVector[c+1][a][jc]/pMean[a][jc]);
+		std::cout<<"caso A -iphi: "<<xVar<<" phi: "<<flPhi<<" side: "<<jc<<" value: "<<pVector[c][a][jc]/pMean[a][jc]<<" abs: "<<pVector[c][a][jc]<<" corr: "<<pVector[c+1][a][jc]/pMean[a][jc]<<std::endl;
+	      }
+	      else {
+		g_pData_EE[a][jc] -> SetPoint(c,flPhi,pVector[c-1][a][jc]/pMean[a][jc]);
+		std::cout<<"caso B -iphi: "<<xVar<<" phi: "<<flPhi<<" side: "<<jc<<" value: "<<pVector[c][a][jc]/pMean[a][jc]<<" abs: "<<pVector[c][a][jc]<<" corr: "<<pVector[c-1][a][jc]/pMean[a][jc]<<std::endl;
+	      }
+	    }
+	    else if ( (pVector[c][a][jc]/pMean[a][jc])<0.85 ) {
+	      if ( (pVector[c-1][a][jc]/pMean[a][jc])<0.85 ) {
+		g_pData_EE[a][jc] -> SetPoint(c,flPhi,pVector[c+1][a][jc]/pMean[a][jc]);
+		std::cout<<"caso C-iphi: "<<xVar<<" phi: "<<flPhi<<" side: "<<jc<<" value: "<<pVector[c][a][jc]/pMean[a][jc]<<" abs: "<<pVector[c][a][jc]<<" corr: "<<pVector[c+3][a][jc]/pMean[a][jc]<<std::endl;
+		std::cout<<"dentro"<<std::endl;
+	      }
+	      else {
+		g_pData_EE[a][jc] -> SetPoint(c,flPhi,pVector[c-1][a][jc]/pMean[a][jc]);
+		std::cout<<"caso D-iphi: "<<xVar<<" phi: "<<flPhi<<" side: "<<jc<<" value: "<<pVector[c][a][jc]/pMean[a][jc]<<" abs: "<<pVector[c][a][jc]<<" corr: "<<pVector[c-1][a][jc]/pMean[a][jc]<<std::endl;
+		std::cout<<"dentro"<<std::endl;
+	      }
+	    }
+	    else	   {
+	      g_pData_EE[a][jc] -> SetPoint(c,flPhi,pVector[c][a][jc]/pMean[a][jc]);
+	      std::cout<<"caso E-iphi: "<<xVar<<" phi: "<<flPhi<<" side: "<<jc<<" value: "<<pVector[c][a][jc]/pMean[a][jc]<<" abs: "<<pVector[c][a][jc]<<std::endl;
+	    }
+	    
+	    //	    int xVar=c*(int(360/nPhiBinsEE))-90;
+	    //if (xVar<0)	      xVar+=180;
+	    //else if (xVar>180) xVar-=180; 
+	    //	    if (xVar>=90) continue;
+	    //if (xVar<0)  xVar+=180;
+	    
+	    //	    g_pData_EE[a][jc] -> SetPoint(c,xVar,pVector[c][a][jc]/pMean[a][jc]);
+	    //	    g_pData_EE[a][jc] -> SetPoint(c,flPhi,pVector[c][a][jc]/pMean[a][jc]);	    
+	    g_pAbs_EE[a][jc] -> SetPoint(c,xVar,pVector[c][a][jc]);
+	    //g_pAbs_EE[a][jc] -> SetPoint(c,c*(int(360/nPhiBinsEE)),pVector[c][a][jc]);
+	    histoPull_EE[a][jc] -> Fill((pVector[c][a][jc]-pMean[a][jc])/pVectorErr[c][a][jc]);
+            
+	    //	    float err=(pVectorErr[c][a][jc]/pMean[a][jc])*(pVectorErr[c][a][jc]/pMean[a][jc])+(pVector[c][a][jc]/(pMean[a][jc]*pMean[a][jc])*(pMeanErr2[a][jc]*pMeanErr2[a][jc]))*(pVector[c][a][jc]/(pMean[a][jc]*pMean[a][jc])*(pMeanErr2[a][jc]*pMeanErr2[a][jc]));
+	    //	    float err=(pVectorErr[c][a][jc]/pMean[a][jc]);
+	    //	    float err=0.;
+
+	    //	    g_pData_EE[a][jc] -> SetPointError(c,0,err);
+	    g_pData_EE[a][jc] -> SetPointError(c,0,0);
+	    g_pAbs_EE[a][jc] -> SetPointError(c,0,pVectorErr[c][a][jc]);
+	    //	    g_pAbs_EE[a][jc] -> SetPointError(c,0,0.);
+	    //	    std::cout<<flPhi<<" "<<pVector[c][a][jc]/pMean[a][jc]<<" "<<err<<std::endl;
+	  }
+	  }
+      }  
+  ////////        
+
+
+  }
+  else
+  {
+    for(int i = 0; i < nPhiBinsEE; ++i)
+    {  
+      for (int a=0; a<nEtaBinsEE; ++a)
+	{
+      for(int j = 0; j < nRegionsEE; ++j)
+      {
+        float flPhi = hPhiBinEE->GetXaxis()->GetBinCenter(i+1);
+        g_pData_EE[a][j] -> SetPoint(i, flPhi, 1.);
+      }
+	}
+    }
+  }
+  
+  
+  
+  
+  
+  
+  //-------
+  // Output
+   
+  o -> cd();
+  
+  for (int a=0; a<nEtaBinsEE; ++a)
+    {  
+  for(int j = 0; j < nRegionsEE; ++j)
+  {
+    TString Name;
+    //Name = Form("g_pMC_EE_%d",j);
+    //if(g_pMC_EE[j]->GetN()!=0) g_pMC_EE[j] -> Write(Name);
+    Name = Form("g_pData_EE_%d_%d",a,j);
+    if(g_pData_EE[a][j]->GetN()!=0) g_pData_EE[a][j] -> Write(Name);
+    Name = Form("g_pAbs_EE_%d_%d",a,j);
+    if(g_pAbs_EE[a][j]->GetN()!=0) g_pAbs_EE[a][j] -> Write(Name);
+    //Name = Form("g_Rat_EE_%d",j);
+    //if(g_Rat_EE[j]->GetN()!=0) g_Rat_EE[j] -> Write(Name);
+  }
+    }
+    
+  for(int j =0; j< nRegionsEE; ++j)
+  {
+    if( h_phi_data_EE[j] -> GetEntries() !=0 ) h_phi_data_EE[j] -> Write();
+  }
+  
+  mapConversionEEp -> Write();
+  mapConversionEEm -> Write();
+
+  h_template_EE[0][0][0] -> Write();
+  h_template_EE[0][0][1] -> Write();
+  //  h_template_EE[0][1][0] -> Write();
+  //  h_template_EE[0][1][1] -> Write();
+  //  h_template_EE[0][2][0] -> Write();
+  //  h_template_EE[0][2][1] -> Write();
+  //  h_template_EE[0][4][0] -> Write();
+  //  h_template_EE[0][4][1] -> Write();
+
+  for (int k=0; k<nEtaBinsEE; ++k)
+    {
+      for(int j = 0; j < nRegionsEE; ++j)
+	{
+	  for(int i = 0; i < nPhiBinsEE; ++i)
+	    {  
+	      h_pData_EE[i][k][j] -> Write();
+	    }	  
+	}
+    }
+
+  for (int k=0; k<nEtaBinsEE; ++k)
+    {
+      for(int j = 0; j < nRegionsEE; ++j)
+	{
+	  histoPull_EE[k][j]->Write();
+	}
+    }
+
+  o -> Close();
+  
+  
+  
+  return 0;
+}
+
+///////////////////////LUCA
+
   if(vm.count("EOverPCalib") && vm.count("doEB")) {	
 ///////// E/P calibration
 
@@ -1264,14 +1998,14 @@ int main(int argc, char **argv) {
       FastCalibratorEB analyzer(data, g_EoC_EB, typeEB, outEPDistribution);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(outputName);
     }
     else{
       FastCalibratorEB analyzer(data, g_EoC_EB, typeEB);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(outputName);
     }
     
@@ -1389,14 +2123,14 @@ int main(int argc, char **argv) {
     FastCalibratorEB analyzer_even(data, g_EoC_EB, typeEB);
     analyzer_even.bookHistos(nLoops);
     analyzer_even.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_even.saveHistos(outputName1);
   
     /// Run on even
     FastCalibratorEB analyzer_odd(data, g_EoC_EB, typeEB);
     analyzer_odd.bookHistos(nLoops);
     analyzer_odd.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_odd.saveHistos(outputName2);
     
    }	
@@ -1427,7 +2161,7 @@ int main(int argc, char **argv) {
   std::vector<TGraphErrors*> g_EoC_EE;
 
   for(int i = 0; i < nRegionsEE; ++i){
-    TString Name = Form("g_EoC_EE_%d",i);
+    TString Name = Form("g_pData_EE_0_%d",i);
     g_EoC_EE.push_back( (TGraphErrors*)(f4->Get(Name)) );
   }
   
@@ -1500,14 +2234,14 @@ int main(int argc, char **argv) {
       FastCalibratorEE analyzer(data, g_EoC_EE, typeEE, outEPDistribution);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(f1);
     }
     else{
       FastCalibratorEE analyzer(data, g_EoC_EE, typeEE);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);  
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(f1);
     }
    
@@ -1623,14 +2357,14 @@ int main(int argc, char **argv) {
     FastCalibratorEE analyzer_even(data, g_EoC_EE, typeEE);
     analyzer_even.bookHistos(nLoops);
     analyzer_even.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_even.saveHistos(outputName1);
   
     /// Run on even
     FastCalibratorEE analyzer_odd(data, g_EoC_EE, typeEE);
     analyzer_odd.bookHistos(nLoops);
     analyzer_odd.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_odd.saveHistos(outputName2);
     
   }
@@ -1961,3 +2695,5 @@ int main(int argc, char **argv) {
   return 0;
 }
 
+
+//  LocalWords:  etaSCEle
