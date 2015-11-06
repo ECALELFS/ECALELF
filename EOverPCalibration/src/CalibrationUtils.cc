@@ -803,10 +803,12 @@ void InitializeDeadTT_EB(std::vector<std::pair<int,int> >& TT_centre)
   TT_centre.push_back(std::pair<int,int> (-8,53));
   TT_centre.push_back(std::pair<int,int> (-3,63));
   TT_centre.push_back(std::pair<int,int> (-53,128));
+  TT_centre.push_back(std::pair<int,int> (-28,168));
   TT_centre.push_back(std::pair<int,int> (-53,183));
   TT_centre.push_back(std::pair<int,int> (-83,193));
   TT_centre.push_back(std::pair<int,int> (-74,218));
   TT_centre.push_back(std::pair<int,int> (-8,223));
+  TT_centre.push_back(std::pair<int,int> (-48,273));
   TT_centre.push_back(std::pair<int,int> (-68,303));
   TT_centre.push_back(std::pair<int,int> (-43,328));
 }
@@ -838,14 +840,20 @@ void InitializeDeadTT_EB2012(std::vector<std::pair<int,int> >& TT_centre)
 
 void InitializeDeadTTEEP(std::vector<std::pair<int,int> >& TT_centre)
 {
+  //  TT_centre.push_back(std::pair<int,int> (78,78));
+  //  TT_centre.push_back(std::pair<int,int> (83,28));
+  //  TT_centre.push_back(std::pair<int,int> (83,23));
   TT_centre.push_back(std::pair<int,int> (78,78));
   TT_centre.push_back(std::pair<int,int> (83,28));
-  TT_centre.push_back(std::pair<int,int> (83,23));
+  TT_centre.push_back(std::pair<int,int> (33,18));
 }
 
 void InitializeDeadTTEEM(std::vector<std::pair<int,int> >& TT_centre)
 {
-  TT_centre.push_back(std::pair<int,int> (53,28)); 
+  //  TT_centre.push_back(std::pair<int,int> (53,28)); 
+  TT_centre.push_back(std::pair<int,int> (53,28));
+  TT_centre.push_back(std::pair<int,int> (28,33));
+  TT_centre.push_back(std::pair<int,int> (89,80));
 }
 
 void InitializeDeadTTEEP2012(std::vector<std::pair<int,int> >& TT_centre)

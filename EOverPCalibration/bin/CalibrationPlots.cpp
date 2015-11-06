@@ -154,6 +154,8 @@ int main(int argc, char **argv)
   
   //-----------------------
   // map for dead TT centre
+
+  std::cout<<"debug"<<std::endl;
   
   std::map<int, std::vector< std::pair<int,int> > > TT_centre;
   if( isEB == true )
@@ -181,6 +183,7 @@ int main(int argc, char **argv)
   }
   
   
+  std::cout<<"debug"<<std::endl;
   
   //---------------
   // define outfile
@@ -193,6 +196,7 @@ int main(int argc, char **argv)
   
   
   
+  std::cout<<"debug"<<std::endl;
   
   
   //--------------------------------------------------------------
@@ -211,6 +215,7 @@ int main(int argc, char **argv)
     inFileOdd  = new TFile(inFileNameOdd.c_str(),"READ");
   }
   
+  std::cout<<"debug"<<std::endl;
   
   
   // get the IC maps as they come from the algorithm
@@ -267,8 +272,10 @@ int main(int argc, char **argv)
   }
   else
   {
+  std::cout<<"debug"<<std::endl;
     h2_IC_raw[-1] = (TH2F*)( inFile->Get("h_scale_EEM") );
     h2_IC_raw[1]  = (TH2F*)( inFile->Get("h_scale_EEP") );  
+  std::cout<<"debug"<<std::endl;
     
     h2_IC_raw_phiNorm[-1] = (TH2F*)( h2_IC_raw[-1]->Clone("h2_IC_raw_phiNorm_EEM") );
     h2_IC_raw_phiNorm[1]  = (TH2F*)( h2_IC_raw[1] ->Clone("h2_IC_raw_phiNorm_EEP") );
@@ -277,12 +284,15 @@ int main(int argc, char **argv)
     h2_IC_raw_phiNorm[-1] -> ResetStats();
     h2_IC_raw_phiNorm[1]  -> ResetStats();
     
+  std::cout<<"debug"<<std::endl;
     if( evalStat )
     {
+  std::cout<<"debug"<<std::endl;
       h2_ICEven_raw[-1] = (TH2F*)( inFileEven->Get("h_scale_EEM") );
       h2_ICEven_raw[1]  = (TH2F*)( inFileEven->Get("h_scale_EEP") );  
       h2_ICOdd_raw[-1 ] = (TH2F*)( inFileOdd ->Get("h_scale_EEM") );
       h2_ICOdd_raw[1]   = (TH2F*)( inFileOdd ->Get("h_scale_EEP") );
+  std::cout<<"debug"<<std::endl;
       
       h2_IC_raw_phiNorm_even[-1] = (TH2F*)( h2_ICEven_raw[-1]->Clone("h2_IC_raw_phiNorm_even_EEM") );
       h2_IC_raw_phiNorm_even[1]  = (TH2F*)( h2_ICEven_raw[1] ->Clone("h2_IC_raw_phiNorm_even_EEP") );
@@ -290,6 +300,7 @@ int main(int argc, char **argv)
       h2_IC_raw_phiNorm_even[1]  -> Reset("ICEMS");
       h2_IC_raw_phiNorm_even[-1] -> ResetStats();
       h2_IC_raw_phiNorm_even[1]  -> ResetStats();
+  std::cout<<"debug"<<std::endl;
       
       h2_IC_raw_phiNorm_odd[-1] = (TH2F*)( h2_ICOdd_raw[-1]->Clone("h2_IC_raw_phiNorm_odd_EEM") );
       h2_IC_raw_phiNorm_odd[1]  = (TH2F*)( h2_ICOdd_raw[1] ->Clone("h2_IC_raw_phiNorm_odd_EEP") );
@@ -301,6 +312,7 @@ int main(int argc, char **argv)
   }
   
   
+  std::cout<<"debug"<<std::endl;
   
   // normalize each ring to the average IC of that eta ring
   if( isEB == true )

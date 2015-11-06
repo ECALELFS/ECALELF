@@ -49,7 +49,7 @@ class FastCalibratorEB {
 
     virtual void     FillScalibMap (TString miscalibMap);
     
-    virtual void     Loop(int, int, int, int, int,bool,bool,bool,bool,float,bool,float,bool,float,bool,std::map<int, std::vector<std::pair<int, int> > >, float, TString);
+    virtual void     Loop(int, int, int, int, int,bool,bool,bool,bool,float,float,int,bool,float,bool,float,bool,std::map<int, std::vector<std::pair<int, int> > >, float, TString);
         
     virtual void     BuildEoPeta_ele(int,int,int,int,std::vector<float>,bool,bool,float,bool,float,bool,float,bool);
 

@@ -281,8 +281,8 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     ///! different E/p if I am using MCThruth informations or not
     if(!isMCTruth)  {
        pIn = pAtVtxGsfEle[0];
-       int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
-       pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
+       //       int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
+       //       pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
     }
     else{
            pIn = energyMCEle[0];
@@ -360,8 +360,8 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     /// MCTruth analysis option
     if(!isMCTruth)  {
          pIn = pAtVtxGsfEle[1];
-	 int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
-         pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+	 //	 int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
+	 //         pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
        }
     else{
        pIn = energyMCEle[1];
@@ -398,7 +398,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 
 /// Calibration Loop over the ntu events
 void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, int nLoops, bool isMiscalib,bool isSaveEPDistribution,
-                             bool isEPselection,bool isR9selection, float R9Min, bool isfbrem, float fbremMax, bool isPtCut, float PtMin,
+                             bool isEPselection,bool isR9selection, float R9Min, float EPMin, int smoothCut, bool isfbrem, float fbremMax, bool isPtCut, float PtMin,
                              bool isMCTruth, std::map<int, std::vector<std::pair<int, int> > > jsonMap, float miscalibMethod, TString miscalibMap){
    if (fChain == 0) return;
    
@@ -412,7 +412,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 
    /// Define the number of crystal you want to calibrate
    int m_regions = 0;
- 
+
+   //   float EPMin=0.15;
 
    /// Define useful numbers
    static const int MIN_IETA = 1;
@@ -571,8 +572,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 	  ///! if MCTruth Analysis
           if(!isMCTruth)  {
             pIn = pAtVtxGsfEle[0];
-	    int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
-            pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
+	    //	    int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
+	    //            pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
           }
           else{
            pIn = energyMCEle[0];
@@ -614,6 +615,9 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               if ( splitStat == 0 ) {
                 
                 int EoPbin = EoPHisto->FindBin(thisE/pIn); /// factor use to reweight the evemts
+		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
+		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
+		else EoPbin=EoPHisto->FindBin(0);
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPHisto->GetBinContent(EoPbin);
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
                 
@@ -621,12 +625,18 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               /// Use Half Statistic only even   
               else if ( splitStat == 1 && jentry%2 == 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
+		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
+		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
+		else EoPbin=EoPHisto->FindBin(0);
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPHisto->GetBinContent(EoPbin);
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }  
               /// use odd event
               else if ( splitStat == -1 && jentry%2 != 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
+		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
+		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
+		else EoPbin=EoPHisto->FindBin(0);
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPHisto->GetBinContent(EoPbin);
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }
@@ -696,8 +706,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
           ///! Option for MCTruth analysis 
           if(!isMCTruth){
             pIn = pAtVtxGsfEle[1];
-	    int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
-            pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+	    //	    int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
+	    //            pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
           }
           else{
            pIn = energyMCEle[1];
@@ -737,18 +747,27 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               if ( splitStat == 0 ) {
                 
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
+		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
+		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
+		else EoPbin=EoPHisto->FindBin(0);
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPHisto->GetBinContent(EoPbin);
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }
               /// use evens    
               else if ( splitStat == 1 && jentry%2 == 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
+		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
+		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
+		else EoPbin=EoPHisto->FindBin(0);
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPHisto->GetBinContent(EoPbin);
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }  
              /// use odds
               else if ( splitStat == -1 && jentry%2 != 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
+		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
+		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
+		else EoPbin=EoPHisto->FindBin(0);
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*(thisIC/thisE)*pIn/thisE*EoPHisto->GetBinContent(EoPbin);
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }
