@@ -18,6 +18,7 @@ ls ntuple_numEvent1000.root
 * 3) non riesce a copiare l'output su eos. Sono riuscito a farlo scrivere su una mia cartella su /afs
 * 4) il config file di crab scritto da scripts/prodNtuples appare cosi': 
 
+https://github.com/GiuseppeFasanella/ECALELF/blob/miniAOD/EcalAlCaRecoProducers/tmp/ntuple_data.cfg
 ```
 ##DATI
 cd /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/EcalAlCaRecoProducers
