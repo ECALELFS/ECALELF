@@ -8,8 +8,10 @@ SCHEDULER=caf
 STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
-USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOBS=12000
+#USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
+USER_REMOTE_DIR_BASE=ntuples
+#LUMIS_PER_JOBS=12000 #5000 is also too much -> cpu limit usage
+LUMIS_PER_JOBS=100
 DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
@@ -32,10 +34,11 @@ usage(){
     echo "    --store dir"
     echo "    --remote_dir dir: origin files remote dir"
     echo "---------- provided by command-line (mandatory)"
-    echo "    --type alcareco|alcarecosim|ALCARERECO:"
+    echo "    --type alcareco|alcarecosim|ALCARERECO|miniAOD|MINIAOD:"
     echo "           alcareco: produced on data"
     echo "           ALCARECOSIM|alcarecosim: alcareco produced on MC"
     echo "           ALCARERECO: alcareco format after rereco on ALCARAW"
+    echo "           miniAOD|MINIAOD: ntuple production from miniAOD"
     echo " *** for MC ***"
     echo "    --isMC"
     echo "    --isParticleGun: redundant, --skim=partGun is the same"
@@ -120,6 +123,12 @@ do
 		ALCARECOSIM)
 		    isMC=1
 		    ;;
+		MINIAOD| miniAOD)
+		    TYPE=MINIAODNTUPLE
+		    ;;
+		ALCARECOSIM)
+		    isMC=1
+		    ;;
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
 		    if [ "${isMC}" == "1" ]; then
@@ -134,7 +143,7 @@ do
 		    ;;
 	    esac
 	    ;;
-	--isMC) isMC=1; TYPE=ALCARECOSIM;;
+	--isMC) isMC=1;;# TYPE=ALCARECOSIM;;
 	--isParticleGun) isPARTICLEGUN="y"; SKIM=partGun;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
@@ -148,7 +157,7 @@ do
 					exit 1
 				fi
 			else
-				TAGFILE=$2; 
+				TAGFILE=$2;
 				case $TAGFILE in
 					config/reRecoTags/*) TAG=`basename ${TAGFILE} .py` ;;
 					*) TAG=$TAGFILE; TAGFILE=config/reRecoTags/$TAG.py;;
@@ -204,17 +213,17 @@ if [ -z "$TYPE" ];then
     exit 1
 fi
 
-if [ -z "$JSONFILE" -a "$TYPE" != "ALCARECOSIM" ];then 
-    echo "[ERROR] JSONFILE not defined" >> /dev/stderr
-    usage >> /dev/stderr
-    exit 1
-fi
-
-if [ -z "$JSONNAME" -a "$TYPE" != "ALCARECOSIM" ];then 
-    echo "[ERROR] JSONNAME not defined" >> /dev/stderr
-    usage >> /dev/stderr
-    exit 1
-fi
+#if [ -z "$JSONFILE" -a "$TYPE" != "ALCARECOSIM" ];then 
+#    echo "[ERROR] JSONFILE not defined" >> /dev/stderr
+#    usage >> /dev/stderr
+#    exit 1
+#fi
+#
+#if [ -z "$JSONNAME" -a "$TYPE" != "ALCARECOSIM" ];then 
+#    echo "[ERROR] JSONNAME not defined" >> /dev/stderr
+#    usage >> /dev/stderr
+#    exit 1
+#fi
 
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
@@ -377,7 +386,8 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 datasetpath=${DATASETPATH}
-dbs_url = phys03
+#dbs_url = phys03
+use_dbs3 = 1
 EOF
         ;;
         *)
@@ -395,12 +405,14 @@ allow_NonProductionCMSSW = 1
 EOF
 fi
 
+echo "Crab config file is ${crabFile}"
 cat >> ${crabFile} <<EOF
 runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
+#pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
 get_edm_output=1
 output_file=${OUTFILES}
 
@@ -423,8 +435,8 @@ copy_data = 1
 
 storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
-storage_path=$STORAGE_PATH
-
+#storage_path=$STORAGE_PATH
+storage_path=/afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/EcalAlCaRecoProducers
 thresholdLevel=50
 eMail = shervin@cern.ch
 

@@ -22,8 +22,8 @@ allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15D
 allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_21Jul15_v4 caf group/dpg_ecal/alca_ecalcalib/ INVALID - -
 allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt50ns_MCRUN2_74_V9A-v2/AODSIM DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_21Jul15_v5 caf group/dpg_ecal/alca_ecalcalib/ INVALID - -
 #################2015 RUN B DATA -- runs-> 251022-251883  #FINAL B-ON DATASET
-251022-251883 /DoubleEG/Run2015B-PromptReco-v1/AOD DoubleEG-ZSkim-test_giuseppe caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
-251022-251883 /DoubleEG/Run2015B-PromptReco-v1/MINIAOD DoubleEG-ZSkim-Run2015B-PromptReco-v1-miniAOD caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
+1-1      /ZToEE_NNPDF30_13TeV-powheg_M_120_200/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM miniAODSIM_test caf database VALID - -
+251022-251883 /DoubleEG/Run2015B-PromptReco-v1/MINIAOD DoubleEG-ZSkim-Run2015B-PromptReco-v1-miniAOD_test caf database VALID RUN2015B
 251022-251883 /DoubleEG/Run2015B-PromptReco-v1/AOD DoubleEG-ZSkim-RUN2015B-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-ZSkim-RUN2015B-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
 251022-251883 /SingleElectron/Run2015B-PromptReco-v1/AOD SingleElectron-WSkim-RUN2015B-21Jul15-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015B
