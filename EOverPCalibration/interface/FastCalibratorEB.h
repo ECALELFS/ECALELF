@@ -33,7 +33,7 @@ class FastCalibratorEB {
 
    ///! List of class methods
    
-    FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, const std::string& typeEB, TString outEPDistribution="NULL");
+    FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEB, TString outEPDistribution="NULL");
    
     virtual ~FastCalibratorEB();
     
@@ -49,9 +49,9 @@ class FastCalibratorEB {
 
     virtual void     FillScalibMap (TString miscalibMap);
     
-    virtual void     Loop(int, int, int, int, int,bool,bool,bool,bool,float,float,int,bool,float,bool,float,bool,std::map<int, std::vector<std::pair<int, int> > >, float, TString);
+    virtual void     Loop(int, int, int, int, int,bool,bool,int,bool,bool,bool,bool,float,float,int,bool,float,bool,float,bool,std::map<int, std::vector<std::pair<int, int> > >, float, TString);
         
-    virtual void     BuildEoPeta_ele(int,int,int,int,std::vector<float>,bool,bool,float,bool,float,bool,float,bool);
+    virtual void     BuildEoPeta_ele(int,int,int,int,bool,bool,int,std::vector<float>,bool,bool,float,bool,float,bool,float,bool);
 
     virtual void     saveEoPeta(TFile * f2);
     
@@ -63,6 +63,7 @@ class FastCalibratorEB {
     // Public Variables
 
     std::vector<TGraphErrors*> myMomentumScale;
+    std::vector<TGraphErrors*> myEnergyScale;
     std::string myTypeEB;
     
     TTree          *fChain;   //!pointer to the analyzed TTree or TChain

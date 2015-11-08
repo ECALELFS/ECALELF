@@ -8,7 +8,7 @@
 
 
 /// Default constructor 
-FastCalibratorEE::FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, const std::string& typeEE, TString outEPDistribution):
+FastCalibratorEE::FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEE, TString outEPDistribution):
 outEPDistribution_p(outEPDistribution){
 
 // if parameter tree is not specified (or zero), connect the file
@@ -35,6 +35,7 @@ outEPDistribution_p(outEPDistribution){
 
   // Set my momentum scale using the input graphs
   myMomentumScale = inputMomentumScale;
+  myEnergyScale = inputEnergyScale;
   myTypeEE = typeEE;
 }
 
@@ -213,7 +214,7 @@ void FastCalibratorEE::bookHistos(int nLoops){
 
 ///===== Build E/p for electron 1 and 2
 
-void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int useZ, std::vector<float> theScalibration, bool isSaveEPDistribution, bool isR9selection, float R9Min, bool isfbrem, float fbremMax, bool isPtCut, float PtMin, bool isMCTruth){
+void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int useZ, bool applyMomentumCorrection, bool applyEnergyCorrection, int useRawEnergy, std::vector<float> theScalibration, bool isSaveEPDistribution, bool isR9selection, float R9Min, bool isfbrem, float fbremMax, bool isPtCut, float PtMin, bool isMCTruth){
 
   if(iLoop ==0){
    TString name = Form ("hC_EoP_eta_%d",iLoop);
@@ -242,6 +243,12 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    if ( fabs(etaSCEle[0]) > 1.479 && (( useW == 1 && chargeEle[1] == -100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
 
     FdiEta = energySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0]); /// Cluster containment approximation using ps infos
+    if (useRawEnergy==1)
+      FdiEta = 1.;
+    if (applyEnergyCorrection) {
+      int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],1.);
+      FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[0] );
+    }
    
     float thisE = 0;
     int   iseed = 0 ;
@@ -292,8 +299,10 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     /// Option for MCTruth analysis
     if(!isMCTruth){ 
        pIn = pAtVtxGsfEle[0];
-       int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
-       pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
+       if (applyMomentumCorrection) {
+	 int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
+	 pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
+       }
     }
     else{ 
        pIn = energyMCEle[0];
@@ -320,6 +329,12 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    if ( fabs(etaSCEle[1]) >= 1.479 && ( useZ== 1 && chargeEle[1]!=-100 )) {
 
     FdiEta = energySCEle[1]/(rawEnergySCEle[1]+esEnergySCEle[1]);
+    if (useRawEnergy==1)
+      FdiEta = 1.;
+    if (applyEnergyCorrection) {
+      int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],1.);
+      FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[1] );    
+    }
 
     float thisE = 0;
     int   iseed = 0 ;
@@ -369,8 +384,10 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     /// Option for MCTruth Analysis
     if(!isMCTruth){
        pIn = pAtVtxGsfEle[1];
-       int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
-       pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+       if (applyMomentumCorrection) {
+	 int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
+	 pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+       }
     }
     else{ 
        pIn = energyMCEle[1];
@@ -409,7 +426,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 
 
 /// L3 Loop method ----> Calibration Loop function
-void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, int nLoops, bool isMiscalib,bool isSaveEPDistribution,
+void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, int nLoops, bool applyMomentumCorrection, bool applyEnergyCorrection, int useRawEnergy, bool isMiscalib,bool isSaveEPDistribution,
 			     bool isEPselection, bool isR9selection, float R9Min, float EPMin, int smoothCut, bool isfbrem, float fbremMax, bool isPtCut, float PtMin,
                              bool isMCTruth, std::map<int, std::vector<std::pair<int, int> > > jsonMap, float miscalibMethod, TString miscalibMap){
 
@@ -477,7 +494,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
     std::vector<float> theDenominator_EEM(m_regions+1, 0.);
     
     ///==== build E/p distribution ele 1 and 2
-    BuildEoPeta_ele(iLoop,nentries,useW,useZ,theScalibration,isSaveEPDistribution,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth);
+    BuildEoPeta_ele(iLoop,nentries,useW,useZ,applyMomentumCorrection,applyEnergyCorrection,useRawEnergy,theScalibration,isSaveEPDistribution,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth);
     
     // define map with events
     std::map<std::pair<int,std::pair<int,int> >,int> eventsMap;
@@ -498,17 +515,17 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         
         //*********************************
 	// JSON FILE AND DUPLIACTES IN DATA
-        
+	       
         bool skipEvent = false;
-	if( isMCTruth == 0 ){
+	/*	if( isMCTruth == 0 ){
 
-          if(AcceptEventByRunAndLumiSection(runNumber,lumiBlock,jsonMap) == false) skipEvent = true;
+	  //          if(AcceptEventByRunAndLumiSection(runNumber,lumiBlock,jsonMap) == false) skipEvent = true;
           
           std::pair<int,Long64_t> eventLSandID(lumiBlock,eventNumber);
           std::pair<int,std::pair<int,Long64_t> > eventRUNandLSandID(runNumber,eventLSandID);
           if( eventsMap[eventRUNandLSandID] == 1 ) skipEvent = true;
           else eventsMap[eventRUNandLSandID] = 1;
-        }
+	  } */
         
         if( skipEvent == true ) continue;
                         
@@ -522,6 +539,12 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 	if ( fabs(etaSCEle[0]) >= 1.479 && (( useW == 1 && chargeEle[1]==-100 ) || ( useZ== 1 && chargeEle[1]!=-100 ))) {
           /// SCL energy containment correction
           FdiEta = energySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0]);
+	  if (useRawEnergy==1)
+	    FdiEta = 1.;
+	  if (applyEnergyCorrection) {
+	    int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],1.);
+	    FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[0] );
+	  }
          
 	  float thisE = 0;
           float thisE3x3 =0 ;
@@ -708,7 +731,13 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 	if ( fabs(etaSCEle[1]) >= 1.479 && ( useZ== 1 && chargeEle[1]!=-100 )) {
           /// SCL energy containment correction
           FdiEta = energySCEle[1]/(rawEnergySCEle[1]+esEnergySCEle[1]);
-         
+	  if (useRawEnergy==1)
+	    FdiEta = 1.;
+	  if (applyEnergyCorrection) {
+	    int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],1.);
+	    FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[1] );
+	  }
+	  
 	  float thisE = 0;
           float thisE3x3 =0 ;
           int iseed = 0 ;

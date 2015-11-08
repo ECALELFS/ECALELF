@@ -847,7 +847,7 @@ int main(int argc, char **argv)
                    << std::fixed << std::setprecision(0) << std::setw(10) << h2_final[iz]->GetYaxis()->GetBinLowEdge(iy)
                    << std::fixed << std::setprecision(0) << std::setw(10) << iz
                    << std::fixed << std::setprecision(6) << std::setw(15) << IC
-		   << std::fixed << std::setprecision(6) << std::setw(15) << sqrt( statPrec*statPrec + sysPrec*sysPrec ) 
+		   << std::fixed << std::setprecision(6) << std::setw(15) << sqrt( statPrec*statPrec )//+ sysPrec*sysPrec ) 
                    << std::endl;
 	  }
           else

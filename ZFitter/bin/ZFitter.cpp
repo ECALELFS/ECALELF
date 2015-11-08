@@ -307,6 +307,8 @@ int main(int argc, char **argv) {
   std::string jsonFileName;
   std::string miscalibMap;
   bool isMiscalib;
+  bool applyPcorr;
+  bool applyEcorr;
   bool isSaveEPDistribution;
   bool isMCTruth;
   bool isEPselection;
@@ -320,12 +322,14 @@ int main(int argc, char **argv) {
   int smoothCut;
   int miscalibMethod;
   std::string inputMomentumScale;
+  std::string inputEnergyScale;
   std::string typeEB;
   std::string typeEE;
   std::string outputPath;
   std::string outputFile;
   int numberOfEvents;
   int useZ, useW;
+  int useRawEnergy;
   //  int isBarrel;
   int splitStat;
   int nLoops;
@@ -481,12 +485,16 @@ int main(int argc, char **argv) {
     ("fbremMax", po::value<float>(&fbremMax)->default_value(100.),"fbrem treshold")  
     ("isR9selection", po::value<bool>(&isR9selection)->default_value(false),"apply R9 selection")  
     ("R9Min", po::value<float>(&R9Min)->default_value(-1.),"R9 treshold")  
-    ("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("MomentumCalibration2015.root"),"input momentum scale")  
+    ("applyPcorr", po::value<bool>(&applyPcorr)->default_value(true),"apply momentum correction")
+    ("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("momentumCalibration2015_EB_pTk.root"),"input momentum scale")  
+    ("applyEcorr", po::value<bool>(&applyEcorr)->default_value(false),"apply energy correction")
+    ("inputEnergyScale", po::value<string>(&inputEnergyScale)->default_value("momentumCalibration2015_EB_rawE.root"),"input energy scale")  
     ("typeEB", po::value<string>(&typeEB)->default_value("eta1"),"")  
     ("typeEE", po::value<string>(&typeEE)->default_value("eta1"),"")  
     ("outputPath", po::value<string>(&outputPath)->default_value("output/output_runD/"),"output dir for E/P calibration")  
     ("outputFile", po::value<string>(&outputFile)->default_value("FastCalibrator_Oct2015_runD"),"output file for E/P calibration")         
     ("numberOfEvents", po::value<int>(&numberOfEvents)->default_value(-1),"number of events (-1=all)") 
+    ("useRawEnergy", po::value<int>(&useRawEnergy)->default_value(0),"use raw energy") 
     ("useZ", po::value<int>(&useZ)->default_value(1),"use Z events") 
     ("useW", po::value<int>(&useW)->default_value(1),"use W events") 
     ("splitStat", po::value<int>(&splitStat)->default_value(1),"split statistic")             
@@ -2642,23 +2650,38 @@ int main(int argc, char **argv) {
  
    std::map<int, std::vector<std::pair<int, int> > > jsonMap;
    jsonMap = readJSONFile(jsonFileName); 
-   std::cout<<"JSON file: "<<jsonFileName<<std::endl;
+   //   std::cout<<"JSON file: "<<jsonFileName<<std::endl;
 
    std::cout<<"Output Directory: "<<outputPath<<std::endl;
    system(("mkdir -p "+outputPath).c_str());
   
    /// open calibration momentum graph
-   TFile* momentumscale = new TFile((inputMomentumScale+"_"+typeEB+"_"+typeEE+".root").c_str());
+   TFile* momentumscale = new TFile((inputMomentumScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
    std::vector<TGraphErrors*> g_EoC_EB;
   
    for(int i = 0; i < nRegionsEB; ++i){
-    TString Name = Form("g_EoC_EB_%d",i);
+    TString Name = Form("g_pData_EB_0_%d",i);
     g_EoC_EB.push_back( (TGraphErrors*)(momentumscale->Get(Name)) );
    }
 
+   std::cout<<"momentum calibration file correctly opened"<<std::endl;
+
+   /// open calibration energy graph
+   TFile* energyscale = new TFile((inputEnergyScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
+   std::vector<TGraphErrors*> g_EoE_EB;
+  
+   for(int i = 0; i < nRegionsEB; ++i){
+    TString Name = Form("g_pData_EB_0_%d",i);
+    g_EoE_EB.push_back( (TGraphErrors*)(energyscale->Get(Name)) );
+   }
+
+   std::cout<<"energy calibration file correctly opened"<<std::endl;
+
   ///Use the whole sample statistics if numberOfEvents < 0
    if ( numberOfEvents < 0 ) numberOfEvents = data->GetEntries(); 
-  
+
+   std::cout<<"number of events: "<<numberOfEvents<<std::endl;
+
   /// run in normal mode: full statistics
    if ( splitStat == 0 ) {
    
@@ -2717,18 +2740,24 @@ int main(int argc, char **argv) {
     
     TString DeadXtal = Form("%s",inputFileDeadXtal.c_str());    
 
+    std::cout<<"start calibration. "<<std::endl;
+
     if(isSaveEPDistribution == true){
-      FastCalibratorEB analyzer(data, g_EoC_EB, typeEB, outEPDistribution);
+      FastCalibratorEB analyzer(data, g_EoC_EB, g_EoE_EB, typeEB, outEPDistribution);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(outputName);
     }
     else{
-      FastCalibratorEB analyzer(data, g_EoC_EB, typeEB);
+      std::cout<<"create FastCalibratorEB object "<<std::endl;
+      FastCalibratorEB analyzer(data, g_EoC_EB, g_EoE_EB, typeEB);
+      std::cout<<"book histos "<<std::endl;
       analyzer.bookHistos(nLoops);
+      std::cout<<"acquire dead xtal "<<std::endl;
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      std::cout<<"start loop "<<std::endl;
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(outputName);
     }
     
@@ -2843,17 +2872,17 @@ int main(int argc, char **argv) {
     TString DeadXtal = Form("%s",inputFileDeadXtal.c_str());
 
     /// Run on odd
-    FastCalibratorEB analyzer_even(data, g_EoC_EB, typeEB);
+    FastCalibratorEB analyzer_even(data, g_EoC_EB, g_EoE_EB, typeEB);
     analyzer_even.bookHistos(nLoops);
     analyzer_even.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,applyPcorr, applyEcorr, useRawEnergy, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_even.saveHistos(outputName1);
   
     /// Run on even
-    FastCalibratorEB analyzer_odd(data, g_EoC_EB, typeEB);
+    FastCalibratorEB analyzer_odd(data, g_EoC_EB, g_EoE_EB, typeEB);
     analyzer_odd.bookHistos(nLoops);
     analyzer_odd.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,applyPcorr, applyEcorr, useRawEnergy, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_odd.saveHistos(outputName2);
     
    }	
@@ -2880,13 +2909,22 @@ int main(int argc, char **argv) {
    system(("mkdir -p "+outputPath).c_str());
 
   /// open calibration momentum graph
-  TFile* f4 = new TFile((inputMomentumScale+"_"+typeEB+"_"+typeEE+".root").c_str());
+   TFile* f4 = new TFile((inputMomentumScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
   std::vector<TGraphErrors*> g_EoC_EE;
 
   for(int i = 0; i < nRegionsEE; ++i){
     TString Name = Form("g_pData_EE_0_%d",i);
     g_EoC_EE.push_back( (TGraphErrors*)(f4->Get(Name)) );
   }
+
+   /// open calibration energy graph
+   TFile* f5 = new TFile((inputEnergyScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
+   std::vector<TGraphErrors*> g_EoE_EE;
+  
+   for(int i = 0; i < nRegionsEE; ++i){
+    TString Name = Form("g_pData_EE_0_%d",i);
+    g_EoE_EE.push_back( (TGraphErrors*)(f5->Get(Name)) );
+   }
   
   ///Use the whole sample statistics if numberOfEvents < 0
   if ( numberOfEvents < 0 ) numberOfEvents = data->GetEntries(); 
@@ -2954,17 +2992,17 @@ int main(int argc, char **argv) {
 
     
     if(isSaveEPDistribution == true){
-      FastCalibratorEE analyzer(data, g_EoC_EE, typeEE, outEPDistribution);
+      FastCalibratorEE analyzer(data, g_EoC_EE, g_EoE_EE, typeEE, outEPDistribution);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(f1);
     }
     else{
-      FastCalibratorEE analyzer(data, g_EoC_EE, typeEE);
+      FastCalibratorEE analyzer(data, g_EoC_EE, g_EoE_EE, typeEE);
       analyzer.bookHistos(nLoops);
       analyzer.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);  
-      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+      analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
       analyzer.saveHistos(f1);
     }
    
@@ -3077,17 +3115,17 @@ int main(int argc, char **argv) {
     TString DeadXtal = Form("%s",inputFileDeadXtal.c_str());
      
     /// Run on odd
-    FastCalibratorEE analyzer_even(data, g_EoC_EE, typeEE);
+    FastCalibratorEE analyzer_even(data, g_EoC_EE, g_EoE_EE, typeEE);
     analyzer_even.bookHistos(nLoops);
     analyzer_even.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops,applyPcorr, applyEcorr,  useRawEnergy,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_even.saveHistos(outputName1);
   
     /// Run on even
-    FastCalibratorEE analyzer_odd(data, g_EoC_EE, typeEE);
+    FastCalibratorEE analyzer_odd(data, g_EoC_EE, g_EoE_EE, typeEE);
     analyzer_odd.bookHistos(nLoops);
     analyzer_odd.AcquireDeadXtal(DeadXtal,isDeadTriggerTower);
-    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
+    analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat*(-1), nLoops,applyPcorr, applyEcorr,  useRawEnergy,isMiscalib,isSaveEPDistribution,isEPselection,isR9selection,R9Min,EPMin,smoothCut,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth,jsonMap, miscalibMethod, miscalibMap);
     analyzer_odd.saveHistos(outputName2);
     
   }
