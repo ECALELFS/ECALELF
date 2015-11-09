@@ -63,7 +63,7 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     # pfisolation CMSSW_5_3_X
     'keep *EcalRecHit*_alCaIsolatedElectrons_*_*',
     'keep EcalRecHitsSorted_reducedEcalRecHitsES_*_*',
-#    'keep *EcalRecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
+    'keep *EcalRecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
 
     )
 )

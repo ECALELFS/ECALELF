@@ -633,7 +633,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(rhoTAG,rhoHandle);
   
   iEvent.getByLabel(metTAG, metHandle);
-	iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
+  iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
   //if(metHandle.isValid()==false) iEvent.getByType(metHandle);
   reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
 
@@ -1895,9 +1895,10 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 // method to get the raw energy of one plane of ES summing the energy of only recHits associated to the electron SC
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
 float ZNtupleDumper::GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex){
-
+	
 		float RawenergyPlane =0;
 		float pfRawenergyPlane=0;
+		if(ESRechitsHandle.isValid()){
 		for(auto iES = electron.superCluster()->preshowerClustersBegin(); iES != electron.superCluster()->preshowerClustersEnd(); ++iES){
 			const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
 			for(std::vector<std::pair<DetId,float> >::const_iterator rh = hits.begin(); rh!=hits.end(); ++rh){
@@ -1915,6 +1916,7 @@ float ZNtupleDumper::GetESPlaneRawEnergy(const pat::Electron& electron, unsigned
 					}
 				}
 			}
+		}
 		}
 			if (pfRawenergyPlane) ; // avoid compilation error for unused var
 		//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl; 

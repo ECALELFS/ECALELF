@@ -408,11 +408,11 @@ if(options.skim=="partGun"):
 ###############################
 #============================== TO BE CHECKED FOR PRESHOWER
 process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
-process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
+#process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
 
-process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
-process.reducedEcalRecHitsES.noFlag = cms.bool(True)
-process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
+#process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
+#process.reducedEcalRecHitsES.noFlag = cms.bool(True)
+#process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 
 #==============================
 
@@ -428,7 +428,7 @@ else:
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
 if(re.match("CMSSW_7_.*", CMSSW_VERSION)):
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron)
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron * process.reducedEcalRecHitsES)
 else:
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
 
@@ -904,7 +904,7 @@ process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHit
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
-process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
+#process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 ############################
 ## Dump the output Python ##
 ############################
