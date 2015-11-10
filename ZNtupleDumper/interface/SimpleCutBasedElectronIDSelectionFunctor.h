@@ -592,7 +592,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     Double_t trackIso = electron.dr03TkSumPt()/eleET;
     Double_t ecalIso  = electron.dr03EcalRecHitSumEt()/eleET;
     Double_t hcalIso  = electron.dr03HcalTowerSumEt()/eleET;
-    Double_t sihih    = electron.sigmaIetaIeta(); //why the hell the full5x5_sigmaIetaIeta does not work properly? (it cuts the all events)
+    Double_t sihih    = electron.full5x5_sigmaIetaIeta(); //need to check if this one works
     Double_t Dphi     = electron.deltaPhiSuperClusterTrackAtVtx();
     Double_t Deta     = electron.deltaEtaSuperClusterTrackAtVtx();
     Double_t HoE      = electron.hadronicOverEm();
