@@ -151,7 +151,8 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 		  parameters.getParameter<Double_t>("deta_EE"), 
 		  parameters.getParameter<Double_t>("hoe_EE"), 
 		  parameters.getParameter<Int_t>("conversionRejection"), 
-		  parameters.getParameter<Int_t>("maxNumberOfExpectedMissingHits"));
+		  parameters.getParameter<Int_t>("maxNumberOfExpectedMissingHits_EB"));
+		  parameters.getParameter<Int_t>("maxNumberOfExpectedMissingHits_EE"));
       retInternal_ = getBitTemplate();
     }
 
@@ -237,7 +238,8 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     push_back("fiducial");
 
     // conversion rejection
-    push_back("maxNumberOfExpectedMissingHits" );
+    push_back("maxNumberOfExpectedMissingHits_EB" );
+    push_back("maxNumberOfExpectedMissingHits_EE" );
     push_back("hasMatchedConversion");
 
     //eleID EB
@@ -276,7 +278,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     } else if (version_ == WP80PU) {
       //      std::cout << "[DEBUG] Iniziatializing WP80PU" << std::endl;
       
-      set("maxNumberOfExpectedMissingHits", 0);
+      set("maxNumberOfExpectedMissingHits_EB", 0);  set("maxNumberOfExpectedMissingHits_EE", 0);
       set("hasMatchedConversion");
       
       set("hoe_EB",      0.04);
@@ -300,7 +302,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     // set the cut values and active cuts for WP80 selection PU corrected with rho
     else if (version_ == WP90PU) {
       //      set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 0);
+      set("maxNumberOfExpectedMissingHits_EB", 0);  set("maxNumberOfExpectedMissingHits_EE", 0);
       set("hasMatchedConversion");
       
       set("hoe_EB",      0.12);
@@ -323,7 +325,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == WP70PU) {
       //      set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 0);
+      set("maxNumberOfExpectedMissingHits_EB", 0);  set("maxNumberOfExpectedMissingHits_EE", 0);
       set("hasMatchedConversion");
       
       set("hoe_EB",      0.12);         set("hoe_EE",      1.5e-01);
@@ -337,7 +339,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == loose) {
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 1);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
       set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
       set("deta_EB",       0.007);         set("deta_EE",         0.009);
@@ -354,7 +356,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == medium) {
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 1);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
       set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
       set("deta_EB",       0.004);         set("deta_EE",         0.007);
@@ -371,7 +373,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == tight) {
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 0);
+      set("maxNumberOfExpectedMissingHits_EB", 0);  set("maxNumberOfExpectedMissingHits_EE", 0);
       set("hasMatchedConversion");
       set("hoe_EB",        0.120);         set("hoe_EE",          0.100);
       set("deta_EB",       0.004);         set("deta_EE",         0.005);
@@ -386,107 +388,113 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
       set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
     }
-    else if (version_ == loose25nsRun2) {   //PHYS14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == loose25nsRun2) {   //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.121476);         set("hoe_EE",          0.131862);
-      set("deta_EB",       0.012442);         set("deta_EE",         0.010654);
-      set("dphi_EB",       0.072624);         set("dphi_EE",         0.145129);
-      set("sihih_EB",      0.010557);         set("sihih_EE",        0.032602);
-      set("ooemoop_EB",    0.221803,false);   set("ooemoop_EE",      0.142283,false);  
-      set("d0vtx_EB",      0.022664);         set("d0vtx_EE",        0.097358);
-      set("dzvtx_EB",      0.173670);         set("dzvtx_EE",        0.198444);
-      set("pfIso_EB",      0.120026);         set("pfIso_EE",        0.162914);         
-      set("pfIsoLowPt_EB", 0.120026);         set("pfIsoLowPt_EE",   0.162914);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.104);         set("hoe_EE",          0.0897);
+      set("deta_EB",       0.0105);        set("deta_EE",         0.00814);
+      set("dphi_EB",       0.115);         set("dphi_EE",         0.182);
+      set("sihih_EB",      0.0103);        set("sihih_EE",        0.0301);
+      //      set("ooemoop_EB",    0.102,false);   set("ooemoop_EE",      0.0897,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      set("d0vtx_EB",      0.0261);        set("d0vtx_EE",        0.118);
+      set("dzvtx_EB",      0.41);          set("dzvtx_EE",        0.822);
+      set("pfIso_EB",      0.0893);        set("pfIso_EE",        0.121);         
+      set("pfIsoLowPt_EB", 0.0893);        set("pfIsoLowPt_EE",   0.121);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-    else if (version_ == medium25nsRun2) {  //PHYS14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == medium25nsRun2) {  //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.060662);         set("hoe_EE",          0.104263);
-      set("deta_EB",       0.007641);         set("deta_EE",         0.009285);
-      set("dphi_EB",       0.032643);         set("dphi_EE",         0.042447);
-      set("sihih_EB",      0.010399);         set("sihih_EE",        0.029524);
-      set("ooemoop_EB",    0.153897,false);   set("ooemoop_EE",      0.137468,false);  
-      set("d0vtx_EB",      0.011811 );         set("d0vtx_EE",        0.051682);
-      set("dzvtx_EB",      0.070775);         set("dzvtx_EE",        0.180720);
-      set("pfIso_EB",      0.097213);         set("pfIso_EE",        0.116708);         
-      set("pfIsoLowPt_EB", 0.097213);         set("pfIsoLowPt_EE",   0.116708);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.0876);        set("hoe_EE",          0.0678);
+      set("deta_EB",       0.0103);        set("deta_EE",         0.00733);
+      set("dphi_EB",       0.0336);        set("dphi_EE",         0.114);
+      set("sihih_EB",      0.0101);        set("sihih_EE",        0.0283);
+      //      set("ooemoop_EB",    0.0174,false);  set("ooemoop_EE",      0.0898,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      set("d0vtx_EB",      0.0118 );       set("d0vtx_EE",        0.0739);
+      set("dzvtx_EB",      0.373);         set("dzvtx_EE",        0.602);
+      set("pfIso_EB",      0.0766);        set("pfIso_EE",        0.0678);         
+      set("pfIsoLowPt_EB", 0.0766);        set("pfIsoLowPt_EE",   0.0678);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-    else if (version_ == tight25nsRun2) {  //PHYS14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == tight25nsRun2) {  //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.037553);         set("hoe_EE",          0.081902);
-      set("deta_EB",       0.006574);         set("deta_EE",         0.005681);
-      set("dphi_EB",       0.022868);         set("dphi_EE",         0.032046);
-      set("sihih_EB",      0.010181);         set("sihih_EE",        0.028766 );
-      set("ooemoop_EB",    0.131191,false);   set("ooemoop_EE",      0.106055,false);  
-      set("d0vtx_EB",      0.009924 );         set("d0vtx_EE",        0.027261);
-      set("dzvtx_EB",      0.015310);         set("dzvtx_EE",        0.147154);
-      set("pfIso_EB",      0.074355);         set("pfIso_EE",        0.090185);         
-      set("pfIsoLowPt_EB", 0.074355);         set("pfIsoLowPt_EE",   0.090185);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.0597);        set("hoe_EE",          0.0615);
+      set("deta_EB",       0.00926);       set("deta_EE",         0.00724);
+      set("dphi_EB",       0.0336);        set("dphi_EE",         0.0918);
+      set("sihih_EB",      0.0101);        set("sihih_EE",        0.0279 );
+      //      set("ooemoop_EB",    0.012,false);   set("ooemoop_EE",      0.00999,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      set("d0vtx_EB",      0.0111 );       set("d0vtx_EE",        0.0351);
+      set("dzvtx_EB",      0.0466);        set("dzvtx_EE",        0.417);
+      set("pfIso_EB",      0.0354);        set("pfIso_EE",        0.0646);         
+      set("pfIsoLowPt_EB", 0.0354);        set("pfIsoLowPt_EE",   0.0646);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-    else if (version_ == loose50nsRun2) { //CSA14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == loose50nsRun2) { //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.150);         set("hoe_EE",          0.120);
-      set("deta_EB",       0.016);         set("deta_EE",         0.025);
-      set("dphi_EB",       0.080);         set("dphi_EE",         0.097);
-      set("sihih_EB",      0.012);         set("sihih_EE",        0.032);
-      set("ooemoop_EB",    0.110,false);   set("ooemoop_EE",      0.110,false);  
-      set("d0vtx_EB",      0.019);         set("d0vtx_EE",        0.099);
-      set("dzvtx_EB",      0.036);         set("dzvtx_EE",        0.880);
-      set("pfIso_EB",      0.180);         set("pfIso_EE",        0.210);         
-      set("pfIsoLowPt_EB", 0.180);         set("pfIsoLowPt_EE",   0.210);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.0765);        set("hoe_EE",          0.0824);
+      set("deta_EB",       0.00976);       set("deta_EE",         0.00952);
+      set("dphi_EB",       0.0929);        set("dphi_EE",         0.181);
+      set("sihih_EB",      0.0105);        set("sihih_EE",        0.0318);
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      //      set("ooemoop_EB",    0.184,false);   set("ooemoop_EE",      0.125,false);  
+      set("d0vtx_EB",      0.0227);        set("d0vtx_EE",        0.242);
+      set("dzvtx_EB",      0.379);         set("dzvtx_EE",        0.921);
+      set("pfIso_EB",      0.118);         set("pfIso_EE",        0.118);         
+      set("pfIsoLowPt_EB", 0.118);         set("pfIsoLowPt_EE",   0.118);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-    else if (version_ == medium50nsRun2) { //CSA14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == medium50nsRun2) { //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.100);         set("hoe_EE",          0.099);
-      set("deta_EB",       0.015);         set("deta_EE",         0.023);
-      set("dphi_EB",       0.051);         set("dphi_EE",         0.056);
-      set("sihih_EB",      0.010);         set("sihih_EE",        0.030);
-      set("ooemoop_EB",    0.053,false);   set("ooemoop_EE",      0.110,false);  
-      set("d0vtx_EB",      0.012);         set("d0vtx_EE",        0.068);
-      set("dzvtx_EB",      0.030);         set("dzvtx_EE",        0.780);
-      set("pfIso_EB",      0.140);         set("pfIso_EE",        0.150);         
-      set("pfIsoLowPt_EB", 0.140);         set("pfIsoLowPt_EE",   0.150);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.0372);        set("hoe_EE",          0.0546);
+      set("deta_EB",       0.0094);        set("deta_EE",         0.00773);
+      set("dphi_EB",       0.0296);        set("dphi_EE",         0.148);
+      set("sihih_EB",      0.0101);        set("sihih_EE",        0.0287);
+      //      set("ooemoop_EB",    0.118,false);   set("ooemoop_EE",      0.104,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      set("d0vtx_EB",      0.0151);        set("d0vtx_EE",        0.0535);
+      set("dzvtx_EB",      0.238);         set("dzvtx_EE",        0.572);
+      set("pfIso_EB",      0.0987);        set("pfIso_EE",        0.0902);         
+      set("pfIsoLowPt_EB", 0.0987);        set("pfIsoLowPt_EE",   0.0902);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-    else if (version_ == tight50nsRun2) { //CSA14. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == tight50nsRun2) { //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.074);         set("hoe_EE",          0.080);
-      set("deta_EB",       0.012);         set("deta_EE",         0.019);
-      set("dphi_EB",       0.024);         set("dphi_EE",         0.043);
-      set("sihih_EB",      0.010);         set("sihih_EE",        0.029);
-      set("ooemoop_EB",    0.026,false);   set("ooemoop_EE",      0.076,false);  
-      set("d0vtx_EB",      0.0091);         set("d0vtx_EE",        0.037);
-      set("dzvtx_EB",      0.017);         set("dzvtx_EE",        0.065);
-      set("pfIso_EB",      0.100);         set("pfIso_EE",        0.140);         
-      set("pfIsoLowPt_EB", 0.100);         set("pfIsoLowPt_EE",   0.140);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
+      set("hoe_EB",        0.0342);        set("hoe_EE",          0.0544);
+      set("deta_EB",       0.00864);       set("deta_EE",         0.00762);
+      set("dphi_EB",       0.0286);        set("dphi_EE",         0.0439);
+      set("sihih_EB",      0.0101);        set("sihih_EE",        0.0287);
+      //      set("ooemoop_EB",    0.0116,false);  set("ooemoop_EE",      0.0544,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      set("d0vtx_EB",      0.0103);        set("d0vtx_EE",        0.0377);
+      set("dzvtx_EB",      0.170);         set("dzvtx_EE",        0.571);
+      set("pfIso_EB",      0.0591);        set("pfIso_EE",        0.0759);         
+      set("pfIsoLowPt_EB", 0.0591);        set("pfIsoLowPt_EE",   0.0759);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
 
   }
@@ -500,7 +508,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 		  Double_t trackIso_EE, Double_t ecalIso_EE, Double_t hcalIso_EE,
 		  Double_t sihih_EE, Double_t  dphi_EE, Double_t deta_EE, Double_t hoe_EE,
 		  Double_t cIso_EE, Int_t conversionRejection, 
-		  Int_t maxNumberOfExpectedMissingHits)
+		  Int_t maxNumberOfExpectedMissingHits_EB, Int_t maxNumberOfExpectedMissingHits_EE)
   {
     version_ = NONE;
     push_back("trackIso_EB");  push_back("trackIso_EE");
@@ -512,7 +520,8 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     push_back("hoe_EB"     );  push_back("hoe_EE"     );
     
     push_back("conversionRejection"            );
-    push_back("maxNumberOfExpectedMissingHits" );
+    push_back("maxNumberOfExpectedMissingHits_EB" );
+    push_back("maxNumberOfExpectedMissingHits_EE" );
     
    
     set("trackIso_EB", trackIso_EB);    set("trackIso_EE", trackIso_EE);  
@@ -525,7 +534,8 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     set("cIso_EB",     cIso_EB);        set("cIso_EE",     cIso_EE);      
         
     set("conversionRejection",            conversionRejection);
-    set("maxNumberOfExpectedMissingHits", maxNumberOfExpectedMissingHits);
+    set("maxNumberOfExpectedMissingHits_EB", maxNumberOfExpectedMissingHits_EB);
+    set("maxNumberOfExpectedMissingHits_EE", maxNumberOfExpectedMissingHits_EE);
     
   }
 #endif
@@ -582,7 +592,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     Double_t trackIso = electron.dr03TkSumPt()/eleET;
     Double_t ecalIso  = electron.dr03EcalRecHitSumEt()/eleET;
     Double_t hcalIso  = electron.dr03HcalTowerSumEt()/eleET;
-    Double_t sihih    = electron.sigmaIetaIeta();
+    Double_t sihih    = electron.full5x5_sigmaIetaIeta(); //need to check if this one works
     Double_t Dphi     = electron.deltaPhiSuperClusterTrackAtVtx();
     Double_t Deta     = electron.deltaEtaSuperClusterTrackAtVtx();
     Double_t HoE      = electron.hadronicOverEm();
@@ -609,13 +619,27 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
 
 #ifdef CMSSW_7_2_X
+    Double_t etaSC = electron.superCluster()->eta();
+    float AEff;
+
+//25ns effective areas. see https://indico.cern.ch/event/369239/contribution/4/attachments/1134761/1623262/talk_effective_areas_25ns.pdf
+    if      (fabs(etaSC)<1.0)                          AEff = 0.1752; 
+    else if (fabs(etaSC)>=1.0   && fabs(etaSC)<1.479)  AEff = 0.1862;
+    else if (fabs(etaSC)>=1.479 && fabs(etaSC)<2.0  )  AEff = 0.1411;
+    else if (fabs(etaSC)>=2.0   && fabs(etaSC)<2.2  )  AEff = 0.1534;
+    else if (fabs(etaSC)>=2.2   && fabs(etaSC)<2.3  )  AEff = 0.1903;
+    else if (fabs(etaSC)>=2.3   && fabs(etaSC)<2.4  )  AEff = 0.2243;
+    else                                               AEff = 0.2687;
+
     double iso_ch = electron.pfIsolationVariables().sumChargedHadronPt;
     double iso_em = electron.pfIsolationVariables().sumPhotonEt;
     double iso_nh = electron.pfIsolationVariables().sumNeutralHadronEt;
-    double PU_ch  = electron.pfIsolationVariables().sumPUPt;
+    //    double PU_ch  = electron.pfIsolationVariables().sumPUPt;
 
     // apply to neutrals
-    double iso_n = std::max(iso_nh + iso_em - PU_ch * 0.5, 0.0); //relIsoWithDBeta_:look inside EgammaAnalysis/ElectronTools/test/ElectronIDValidationAnalyzer.cc
+    double rhoPrime = std::max(*rhoHandle_, 0.0);
+    //    double iso_n = std::max(iso_nh + iso_em - PU_ch * 0.5, 0.0); //relIsoWithDBeta_:look inside EgammaAnalysis/ElectronTools/test/ElectronIDValidationAnalyzer.cc
+    double iso_n = std::max(iso_nh + iso_em - rhoPrime * AEff, 0.0); //relIsoWithEA
     // compute final isolation
     double iso = (iso_n + iso_ch) / pt;
 #else
@@ -668,14 +692,14 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     if ( (absEtaSC < 1.4442 || (absEtaSC > 1.566 && absEtaSC < 2.5) ) || ignoreCut("fiducial")) passCut(retInternal_, "fiducial");
 
     //------------------------------ conversion rejection cut
-    if ( innerHits  <= cut("maxNumberOfExpectedMissingHits", int()) || ignoreCut("maxNumberOfExpectedMissingHits")) 
-      passCut(retInternal_, "maxNumberOfExpectedMissingHits");    
     if ( (!hasMatchedConversion) || ignoreCut("hasMatchedConversion")) passCut(retInternal_, "hasMatchedConversion");
 
     if (electron.isEB()) { // BARREL case
       //#ifdef DEBUG
       //std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EB", double()) << "\t" << ignoreCut("deta_EB") << std::endl;
       //#endif
+      if ( innerHits  <= cut("maxNumberOfExpectedMissingHits_EB", int()) || ignoreCut("maxNumberOfExpectedMissingHits_EB")) 
+	passCut(retInternal_, "maxNumberOfExpectedMissingHits_EB");    
       if ( fabs(Deta)  <  cut("deta_EB",     double()) || ignoreCut("deta_EB")    ) passCut(retInternal_, "deta_EB");
       if ( fabs(Dphi)  <  cut("dphi_EB",     double()) || ignoreCut("dphi_EB")    ) passCut(retInternal_, "dphi_EB");
       if ( sihih       <  cut("sihih_EB",    double()) || ignoreCut("sihih_EB")   ) passCut(retInternal_, "sihih_EB");
@@ -716,8 +740,11 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       passCut(retInternal_, "relHcalIso_EE");	
       passCut(retInternal_, "pfIso_EE");
       passCut(retInternal_, "pfIsoLowPt_EE");
+      passCut(retInternal_, "maxNumberOfExpectedMissingHits_EE");
     } else {  // ENDCAPS case
       //      std::cout << version_ << "\t" << fabs(Deta) << "\t" << cut("deta_EE", double()) << "\t" << ignoreCut("deta_EE") << std::endl;
+      if ( innerHits  <= cut("maxNumberOfExpectedMissingHits_EE", int()) || ignoreCut("maxNumberOfExpectedMissingHits_EE")) 
+	passCut(retInternal_, "maxNumberOfExpectedMissingHits_EE");    
       if ( fabs(Deta)  <  cut("deta_EE",     double()) || ignoreCut("deta_EE")    ) passCut(retInternal_, "deta_EE");
       if ( fabs(Dphi)  <  cut("dphi_EE",     double()) || ignoreCut("dphi_EE")    ) passCut(retInternal_, "dphi_EE");
       if ( sihih       <  cut("sihih_EE",    double()) || ignoreCut("sihih_EE")   ) passCut(retInternal_, "sihih_EE");
@@ -758,6 +785,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       passCut(retInternal_, "relHcalIso_EB");	
       passCut(retInternal_, "pfIso_EB");
       passCut(retInternal_, "pfIsoLowPt_EB");
+      passCut(retInternal_, "maxNumberOfExpectedMissingHits_EB");
 
     }
     setIgnored(retInternal_);   
