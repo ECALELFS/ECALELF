@@ -76,7 +76,11 @@ if [ -z "${RUNRANGE}" ];then
 	    exit 1
 	    ;;
     esac
-    datasets=`parseDatasetFile.sh ${fileList} | grep -e "$TAG"`
+	if [ -n "${JSONNAME}" ];then
+		datasets=`parseDatasetFile.sh ${fileList} | grep -e "$TAG" | grep ${JSONNAME}`
+	else
+		datasets=`parseDatasetFile.sh ${fileList} | grep -e "$TAG"`
+	fi
 else 
     datasets=1
 fi
@@ -133,6 +137,8 @@ for dataset in $datasets
   if [ -z "${DRYRUN}" ];then
     eos.select rm -r ${USER_REMOTE_DIR}  || exit 1
     sed  -i "\%$RUNRANGE.*$DATASETPATH.*$DATASETNAME.*$TAG.*$JSONNAME% d" $fileList
+  else
+	  echo "[DRYRUN] $USER_REMOTE_DIR"
   fi
 done
 

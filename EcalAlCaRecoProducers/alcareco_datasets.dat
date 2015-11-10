@@ -155,3 +155,16 @@ allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR
 allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM   DYJets_amctnlo-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - -   
 allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM    DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
 allRange /DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM						DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
+#allRange DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM                          DYToEE_amctnlo-RunIISpring15DR74-Asym25ns-v1     caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
+############### MC For E/p
+#allRange /WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM         WJets_madgraph_13TeV-RunIISpring15DR74-Asym25ns-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
+#/QCD_Pt-15to20_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
+#/QCD_Pt-20to30_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
+#/QCD_Pt-30to50_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
+#/QCD_Pt-50to80_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
+#/QCD_Pt-80to120_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/AODSIM
+#/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
+#/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
+#/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM
+############### Ru2015C 25ns rereco
+254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/RECO		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-25nsReco		caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015C,RUN2015CD

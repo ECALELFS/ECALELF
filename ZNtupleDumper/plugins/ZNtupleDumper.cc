@@ -73,6 +73,7 @@
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DataFormats/EcalDetId/interface/ESDetId.h"
 #include "DataFormats/CaloRecHit/interface/CaloID.h"
 
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -183,6 +184,8 @@ private:
   edm::Handle< reco::PFMETCollection > metHandle;
   edm::Handle<edm::TriggerResults> triggerResultsHandle;
   edm::Handle<edm::TriggerResults> WZSkimResultsHandle;
+  edm::Handle<EcalRecHitCollection> ESRechitsHandle;
+
 
   //------------------------------ Input Tags
   // input tag for primary vertex
@@ -201,6 +204,7 @@ private:
   edm::InputTag recHitCollectionEETAG;
 #endif
 
+  edm::InputTag recHitCollectionESTAG;
   edm::InputTag EESuperClustersTAG;
   // input rho
   edm::InputTag rhoTAG;
@@ -267,6 +271,10 @@ private:
   Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
   Float_t rawEnergySCEle_must[3]; ///< SC mustach energy without cluster corrections
   Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
+	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
+	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
+	Float_t rawESEnergyPlane1SCEle[3];  ///< pre-shower rechit energy sum of Plane 1 associated to the electron 
+	Float_t rawESEnergyPlane2SCEle[3];  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
 
 
   Float_t energySCEle_corr[3];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
@@ -392,6 +400,7 @@ private:
   //  void Tree_output(TString filename);
   void TreeSetEventSummaryVar(const edm::Event& iEvent);
   void TreeSetPileupVar(void);
+	float GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex);
 
   //puWeights_class puWeights;
 
@@ -450,6 +459,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
 #endif
 
+  recHitCollectionESTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionES")),
   EESuperClustersTAG(iConfig.getParameter<edm::InputTag>("EESuperClusterCollection")),
   rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
   conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
@@ -622,7 +632,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(BeamSpotTAG, bsHandle);
   iEvent.getByLabel(rhoTAG,rhoHandle);
   
-  iEvent.getByLabel(metTAG, metHandle); 
+  iEvent.getByLabel(metTAG, metHandle);
+  iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
   //if(metHandle.isValid()==false) iEvent.getByType(metHandle);
   reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
 
@@ -1127,6 +1138,11 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
   tree->Branch("rawEnergySCEle_must", rawEnergySCEle_must, "rawEnergySCEle_must[3]/F");
   tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
+  tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
+  tree->Branch("esEnergyPlane1SCEle", esEnergyPlane1SCEle, "esEnergyPlane1SCEle[3]/F");
+  tree->Branch("rawESEnergyPlane2SCEle", rawESEnergyPlane2SCEle, "rawESEnergyPlane2SCEle[3]/F");
+  tree->Branch("rawESEnergyPlane1SCEle", rawESEnergyPlane1SCEle, "rawESEnergyPlane1SCEle[3]/F");
+
 
   tree->Branch("energySCEle_corr", energySCEle_corr, "energySCEle_corr[3]/F");
 
@@ -1380,6 +1396,11 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   rawEnergySCEle[index]  = electron1.superCluster()->rawEnergy();
   esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();
+  esEnergyPlane1SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane1();
+  esEnergyPlane2SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane2();
+	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(electron1,1);
+	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(electron1,2);
+
 #ifndef CMSSW42X
   energySCEle_corr[index] = electron1.correctedEcalEnergy();
 #else
@@ -1499,6 +1520,11 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   rawEnergySCEle[index]  = electron1.rawEnergy();
   rawEnergySCEle_must[index]  = electron1.rawEnergy();
   esEnergySCEle[index] = electron1.preshowerEnergy();
+  esEnergyPlane1SCEle[index] = electron1.preshowerEnergyPlane1();
+  esEnergyPlane2SCEle[index] = electron1.preshowerEnergyPlane2();
+	rawESEnergyPlane2SCEle[index] = -1;
+	rawESEnergyPlane1SCEle[index] = -1;
+
   energySCEle_corr[index] = electron1.energy();
 
 
@@ -1669,6 +1695,9 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 
   rawEnergySCEle[index]  = photon.superCluster()->rawEnergy();
   esEnergySCEle[index] = photon.superCluster()->preshowerEnergy();
+  esEnergyPlane1SCEle[index] = photon.superCluster()-> preshowerEnergyPlane1();
+  esEnergyPlane2SCEle[index] = photon.superCluster()-> preshowerEnergyPlane2();
+
   //  energySCEle_corr[index] = photon.scEcalEnergy(); //but, I don't think this is the correct energy..
 
   // change in an electron properties please, EleNewEnergyProducer
@@ -1862,544 +1891,577 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
   return;
 }
 
+
+
+// method to get the raw energy of one plane of ES summing the energy of only recHits associated to the electron SC
+///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
+float ZNtupleDumper::GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex){
+	
+		float RawenergyPlane =0;
+		float pfRawenergyPlane=0;
+		if(ESRechitsHandle.isValid()){
+		for(auto iES = electron.superCluster()->preshowerClustersBegin(); iES != electron.superCluster()->preshowerClustersEnd(); ++iES){
+			const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
+			for(std::vector<std::pair<DetId,float> >::const_iterator rh = hits.begin(); rh!=hits.end(); ++rh){
+				//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
+				//      ++iCount;
+				for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr){
+					ESDetId rhid = ESDetId(esItr->id());
+					if(rhid == (*rh).first){
+						// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
+						if((int) rhid.plane() == (int) planeIndex){
+							RawenergyPlane += esItr->energy();
+							pfRawenergyPlane += rh->second;
+						}
+						break;
+					}
+				}
+			}
+		}
+		}
+			if (pfRawenergyPlane) ; // avoid compilation error for unused var
+		//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl; 
+		return RawenergyPlane;
+}
+
 //////////////
 
 
 //#============================== extra calib tree
 void ZNtupleDumper::InitExtraCalibTree(){
-  
-  //  tree = new TTree("selected",fChain->GetTitle());
-  std::cout << "[STATUS] InitExtraCalibTree" << std::endl;
-  if(extraCalibTree==NULL) return;
-  
-  extraCalibTree->Branch("runNumber",     &runNumber,     "runNumber/I");
-  extraCalibTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-  extraCalibTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-  extraCalibTree->Branch("runTime",       &runTime, "        runTime/i");
- 
-  extraCalibTree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[3]/I");
 
-  extraCalibTree->Branch("recoFlagRecHitSCEle1", &(recoFlagRecHitSCEle[0]));
-  extraCalibTree->Branch("recoFlagRecHitSCEle2", &(recoFlagRecHitSCEle[1]));
-  extraCalibTree->Branch("rawIdRecHitSCEle1", &(rawIdRecHitSCEle[0]));
-  extraCalibTree->Branch("rawIdRecHitSCEle2", &(rawIdRecHitSCEle[1]));
-  extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
-  extraCalibTree->Branch("XRecHitSCEle2", &(XRecHitSCEle[1]));
-  extraCalibTree->Branch("YRecHitSCEle1", &(YRecHitSCEle[0]));
-  extraCalibTree->Branch("YRecHitSCEle2", &(YRecHitSCEle[1]));
-  extraCalibTree->Branch("ZRecHitSCEle1", &(ZRecHitSCEle[0]));
-  extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
-  extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
-  extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
-  extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
-  extraCalibTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
-  extraCalibTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
-  extraCalibTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
-  extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
-  extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
+	//  tree = new TTree("selected",fChain->GetTitle());
+	std::cout << "[STATUS] InitExtraCalibTree" << std::endl;
+	if(extraCalibTree==NULL) return;
 
-  return;
+	extraCalibTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	extraCalibTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+	extraCalibTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+	extraCalibTree->Branch("runTime",       &runTime, "        runTime/i");
+
+	extraCalibTree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[3]/I");
+
+	extraCalibTree->Branch("recoFlagRecHitSCEle1", &(recoFlagRecHitSCEle[0]));
+	extraCalibTree->Branch("recoFlagRecHitSCEle2", &(recoFlagRecHitSCEle[1]));
+	extraCalibTree->Branch("rawIdRecHitSCEle1", &(rawIdRecHitSCEle[0]));
+	extraCalibTree->Branch("rawIdRecHitSCEle2", &(rawIdRecHitSCEle[1]));
+	extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
+	extraCalibTree->Branch("XRecHitSCEle2", &(XRecHitSCEle[1]));
+	extraCalibTree->Branch("YRecHitSCEle1", &(YRecHitSCEle[0]));
+	extraCalibTree->Branch("YRecHitSCEle2", &(YRecHitSCEle[1]));
+	extraCalibTree->Branch("ZRecHitSCEle1", &(ZRecHitSCEle[0]));
+	extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
+	extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
+	extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
+	extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
+	extraCalibTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
+	extraCalibTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
+	extraCalibTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
+	extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
+	extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
+
+	return;
 }
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, const pat::Electron& electron2){
 
-  TreeSetExtraCalibVar(electron1, 0);
-  TreeSetExtraCalibVar(electron2, 1);
-  return;
+	TreeSetExtraCalibVar(electron1, 0);
+	TreeSetExtraCalibVar(electron2, 1);
+	return;
 }
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, const reco::SuperCluster& electron2){
 
-  TreeSetExtraCalibVar(electron1, 0);
-  TreeSetExtraCalibVar(electron2, 1);
-  return;
+	TreeSetExtraCalibVar(electron1, 0);
+	TreeSetExtraCalibVar(electron2, 1);
+	return;
 }
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int index){
 
-  if(index<0){
-    recoFlagRecHitSCEle[-index].clear();
-    rawIdRecHitSCEle[-index].clear();
-    XRecHitSCEle[-index].clear();
-    YRecHitSCEle[-index].clear();
-    ZRecHitSCEle[-index].clear();
-    energyRecHitSCEle[-index].clear();
-    LCRecHitSCEle[-index].clear();
-    ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
-    return;
-  }
+	if(index<0){
+		recoFlagRecHitSCEle[-index].clear();
+		rawIdRecHitSCEle[-index].clear();
+		XRecHitSCEle[-index].clear();
+		YRecHitSCEle[-index].clear();
+		ZRecHitSCEle[-index].clear();
+		energyRecHitSCEle[-index].clear();
+		LCRecHitSCEle[-index].clear();
+		ICRecHitSCEle[-index].clear();
+		AlphaRecHitSCEle[-index].clear();
+		return;
+	}
 
-  recoFlagRecHitSCEle[index].clear();
-  rawIdRecHitSCEle[index].clear();
-  XRecHitSCEle[index].clear();
-  YRecHitSCEle[index].clear();
-  ZRecHitSCEle[index].clear();
-  energyRecHitSCEle[index].clear();
-  LCRecHitSCEle[index].clear();
-  ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+	recoFlagRecHitSCEle[index].clear();
+	rawIdRecHitSCEle[index].clear();
+	XRecHitSCEle[index].clear();
+	YRecHitSCEle[index].clear();
+	ZRecHitSCEle[index].clear();
+	energyRecHitSCEle[index].clear();
+	LCRecHitSCEle[index].clear();
+	ICRecHitSCEle[index].clear();
+	AlphaRecHitSCEle[index].clear();
 
-  //  EcalIntercalibConstantMap icMap = icHandle->get()
-  std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
-  nHitsSCEle[index] = hitsAndFractions_ele1.size();
-    
-  const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-  const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
-  const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-  for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin(); 
-       detitr != hitsAndFractions_ele1.end(); detitr++ )
-    {
-      //      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
-      EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-      if(oneHit==recHits->end()){
-	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() 
-				       << " in subdetector " << (detitr->first).subdetId() << " bailing out";
-	//assert(0);
-        continue;
-      }
-      recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-      rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
-      if(electron1.isEB()){
-        EBDetId recHitId(detitr->first);
-	XRecHitSCEle[index].push_back(recHitId.ieta());
-	YRecHitSCEle[index].push_back(recHitId.iphi());
-	ZRecHitSCEle[index].push_back(recHitId.zside());
-      }
-      else{
-        EEDetId recHitId(detitr->first);
-	XRecHitSCEle[index].push_back(recHitId.ix());
-	YRecHitSCEle[index].push_back(recHitId.iy());
-	ZRecHitSCEle[index].push_back(recHitId.zside());
-      }
-      energyRecHitSCEle[index].push_back(oneHit->energy());
-      // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-      // 1) get laser correction coefficient
-      LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
-      //laserHandle->
-      // 2) get intercalibration
-      EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first); 
-      EcalIntercalibConstant icalconst = 1.;
-      if( icalit!=icalMap.end() ) {
-	icalconst = (*icalit);
-	// std::cout << "icalconst set to: " << icalconst << std::endl;
-      } else {
-	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
-	//assert(0);
-        continue;
-      }
-      // 3) get adc2GeV
-      //float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ? 
-      // float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-      ICRecHitSCEle[index].push_back(icalconst);
-    }
+	//  EcalIntercalibConstantMap icMap = icHandle->get()
+	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
+	nHitsSCEle[index] = hitsAndFractions_ele1.size();
 
-  return;
+	const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
+	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
+	for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin(); 
+			detitr != hitsAndFractions_ele1.end(); detitr++ )
+	{
+		//      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
+		EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
+		if(oneHit==recHits->end()){
+			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() 
+				<< " in subdetector " << (detitr->first).subdetId() << " bailing out";
+			//assert(0);
+			continue;
+		}
+		recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
+		rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
+		if(electron1.isEB()){
+			EBDetId recHitId(detitr->first);
+			XRecHitSCEle[index].push_back(recHitId.ieta());
+			YRecHitSCEle[index].push_back(recHitId.iphi());
+			ZRecHitSCEle[index].push_back(recHitId.zside());
+		}
+		else{
+			EEDetId recHitId(detitr->first);
+			XRecHitSCEle[index].push_back(recHitId.ix());
+			YRecHitSCEle[index].push_back(recHitId.iy());
+			ZRecHitSCEle[index].push_back(recHitId.zside());
+		}
+		energyRecHitSCEle[index].push_back(oneHit->energy());
+		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
+		// 1) get laser correction coefficient
+		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
+		//laserHandle->
+		// 2) get intercalibration
+		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first); 
+		EcalIntercalibConstant icalconst = 1.;
+		if( icalit!=icalMap.end() ) {
+			icalconst = (*icalit);
+			// std::cout << "icalconst set to: " << icalconst << std::endl;
+		} else {
+			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
+			//assert(0);
+			continue;
+		}
+		// 3) get adc2GeV
+		//float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ? 
+		// float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
+		ICRecHitSCEle[index].push_back(icalconst);
+	}
+
+	return;
 }
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, int index){
 
-  if(index<0){
-    recoFlagRecHitSCEle[-index].clear();
-    rawIdRecHitSCEle[-index].clear();
-    XRecHitSCEle[-index].clear();
-    YRecHitSCEle[-index].clear();
-    ZRecHitSCEle[-index].clear();
-    energyRecHitSCEle[-index].clear();
-    LCRecHitSCEle[-index].clear();
-    ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
-    return;
-  }
+	if(index<0){
+		recoFlagRecHitSCEle[-index].clear();
+		rawIdRecHitSCEle[-index].clear();
+		XRecHitSCEle[-index].clear();
+		YRecHitSCEle[-index].clear();
+		ZRecHitSCEle[-index].clear();
+		energyRecHitSCEle[-index].clear();
+		LCRecHitSCEle[-index].clear();
+		ICRecHitSCEle[-index].clear();
+		AlphaRecHitSCEle[-index].clear();
+		return;
+	}
 
-  recoFlagRecHitSCEle[index].clear();
-  rawIdRecHitSCEle[index].clear();
-  XRecHitSCEle[index].clear();
-  YRecHitSCEle[index].clear();
-  ZRecHitSCEle[index].clear();
-  energyRecHitSCEle[index].clear();
-  LCRecHitSCEle[index].clear();
-  ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+	recoFlagRecHitSCEle[index].clear();
+	rawIdRecHitSCEle[index].clear();
+	XRecHitSCEle[index].clear();
+	YRecHitSCEle[index].clear();
+	ZRecHitSCEle[index].clear();
+	energyRecHitSCEle[index].clear();
+	LCRecHitSCEle[index].clear();
+	ICRecHitSCEle[index].clear();
+	AlphaRecHitSCEle[index].clear();
 
-  std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
-  nHitsSCEle[index] = hitsAndFractions_ele1.size();
+	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
+	nHitsSCEle[index] = hitsAndFractions_ele1.size();
 
-  const EcalRecHitCollection *recHitsEB = clustertools->getEcalEBRecHitCollection();
-  const EcalRecHitCollection *recHitsEE = clustertools->getEcalEERecHitCollection();
+	const EcalRecHitCollection *recHitsEB = clustertools->getEcalEBRecHitCollection();
+	const EcalRecHitCollection *recHitsEE = clustertools->getEcalEERecHitCollection();
 
-  const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
-  const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
+	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
+	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
-  for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-     detitr != hitsAndFractions_ele1.end(); detitr++ )
-  {
-    // get out the DetId of the hit
-    DetId hitId = (detitr -> first);
-    // define a iterator of the EcalRecoHit
-    EcalRecHitCollection::const_iterator oneHit(NULL);
+	for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
+			detitr != hitsAndFractions_ele1.end(); detitr++ )
+	{
+		// get out the DetId of the hit
+		DetId hitId = (detitr -> first);
+		// define a iterator of the EcalRecoHit
+		EcalRecHitCollection::const_iterator oneHit(NULL);
 
-    // treat it seperately for EB and EE
-    if ( hitId.subdetId() == EcalBarrel)
-    {
-      oneHit = recHitsEB->find( hitId );
-      // protection of the missing hit
-      if(oneHit==recHitsEB->end()){
-        edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
-        assert(0);
-      }
-      // redifine EBDetId and get EB hit position
-      EBDetId recHitId(hitId);
-      XRecHitSCEle[index].push_back(recHitId.ieta());
-      YRecHitSCEle[index].push_back(recHitId.iphi());
-      ZRecHitSCEle[index].push_back(recHitId.zside());
-    }
-    else if ( hitId.subdetId() == EcalEndcap )
-    {
-      oneHit = recHitsEE->find( hitId );
-      // protection of the missing hit
-      if(oneHit==recHitsEE->end()){
-        edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
-        assert(0);
-      }
-      // redifine EEDetId and get EE hit position
-      EEDetId recHitId(hitId);
-      XRecHitSCEle[index].push_back(recHitId.ix());
-      YRecHitSCEle[index].push_back(recHitId.iy());
-      ZRecHitSCEle[index].push_back(recHitId.zside());
-    }
-    else
-    {
-        // error if not able to find the hit in EE and EB
-	edm::LogError("ZNtupleDumper") << "SC hit cannot be found in EB and EE. " ;
-	assert(0);
-    }
-   
-    // other information
-    recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-    rawIdRecHitSCEle[index].push_back(hitId.rawId());
+		// treat it seperately for EB and EE
+		if ( hitId.subdetId() == EcalBarrel)
+		{
+			oneHit = recHitsEB->find( hitId );
+			// protection of the missing hit
+			if(oneHit==recHitsEB->end()){
+				edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
+				assert(0);
+			}
+			// redifine EBDetId and get EB hit position
+			EBDetId recHitId(hitId);
+			XRecHitSCEle[index].push_back(recHitId.ieta());
+			YRecHitSCEle[index].push_back(recHitId.iphi());
+			ZRecHitSCEle[index].push_back(recHitId.zside());
+		}
+		else if ( hitId.subdetId() == EcalEndcap )
+		{
+			oneHit = recHitsEE->find( hitId );
+			// protection of the missing hit
+			if(oneHit==recHitsEE->end()){
+				edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
+				assert(0);
+			}
+			// redifine EEDetId and get EE hit position
+			EEDetId recHitId(hitId);
+			XRecHitSCEle[index].push_back(recHitId.ix());
+			YRecHitSCEle[index].push_back(recHitId.iy());
+			ZRecHitSCEle[index].push_back(recHitId.zside());
+		}
+		else
+		{
+			// error if not able to find the hit in EE and EB
+			edm::LogError("ZNtupleDumper") << "SC hit cannot be found in EB and EE. " ;
+			assert(0);
+		}
 
-    energyRecHitSCEle[index].push_back(oneHit->energy());
+		// other information
+		recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
+		rawIdRecHitSCEle[index].push_back(hitId.rawId());
 
-    // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-    // 1) get laser correction coefficient
-    LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(hitId, runTime_));
-    // 2) get intercalibration
-    EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(hitId);
-    EcalIntercalibConstant icalconst = 1.;
-    if( icalit!=icalMap.end() ) {
-      icalconst = (*icalit);
-      // std::cout << "icalconst set to: " << icalconst << std::endl;
-    } else {
-      edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (hitId).rawId() << "bailing out";
-      assert(0);
-    }
-    // 3) get adc2GeV
-    //float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ); 
-    // float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-    ICRecHitSCEle[index].push_back(icalconst);
- 
-  }
-  
-  return;
+		energyRecHitSCEle[index].push_back(oneHit->energy());
+
+		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
+		// 1) get laser correction coefficient
+		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(hitId, runTime_));
+		// 2) get intercalibration
+		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(hitId);
+		EcalIntercalibConstant icalconst = 1.;
+		if( icalit!=icalMap.end() ) {
+			icalconst = (*icalit);
+			// std::cout << "icalconst set to: " << icalconst << std::endl;
+		} else {
+			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (hitId).rawId() << "bailing out";
+			assert(0);
+		}
+		// 3) get adc2GeV
+		//float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ); 
+		// float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
+		ICRecHitSCEle[index].push_back(icalconst);
+
+	}
+
+	return;
 }
 
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, const pat::Muon& muon1, const pat::Muon& muon2){
 
-  TreeSetExtraCalibVar(photon, 0);
-  TreeSetExtraCalibVar(muon1, -1);
-  TreeSetExtraCalibVar(muon2, -2);
-  return;
+	TreeSetExtraCalibVar(photon, 0);
+	TreeSetExtraCalibVar(muon1, -1);
+	TreeSetExtraCalibVar(muon2, -2);
+	return;
 }
 
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index){
 
-  if(index<0){
-    recoFlagRecHitSCEle[-index].clear();
-    rawIdRecHitSCEle[-index].clear();
-    XRecHitSCEle[-index].clear();
-    YRecHitSCEle[-index].clear();
-    ZRecHitSCEle[-index].clear();
-    energyRecHitSCEle[-index].clear();
-    LCRecHitSCEle[-index].clear();
-    ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
-    return;
-  }
+	if(index<0){
+		recoFlagRecHitSCEle[-index].clear();
+		rawIdRecHitSCEle[-index].clear();
+		XRecHitSCEle[-index].clear();
+		YRecHitSCEle[-index].clear();
+		ZRecHitSCEle[-index].clear();
+		energyRecHitSCEle[-index].clear();
+		LCRecHitSCEle[-index].clear();
+		ICRecHitSCEle[-index].clear();
+		AlphaRecHitSCEle[-index].clear();
+		return;
+	}
 
-  recoFlagRecHitSCEle[index].clear();
-  rawIdRecHitSCEle[index].clear();
-  XRecHitSCEle[index].clear();
-  YRecHitSCEle[index].clear();
-  ZRecHitSCEle[index].clear();
-  energyRecHitSCEle[index].clear();
-  LCRecHitSCEle[index].clear();
-  ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+	recoFlagRecHitSCEle[index].clear();
+	rawIdRecHitSCEle[index].clear();
+	XRecHitSCEle[index].clear();
+	YRecHitSCEle[index].clear();
+	ZRecHitSCEle[index].clear();
+	energyRecHitSCEle[index].clear();
+	LCRecHitSCEle[index].clear();
+	ICRecHitSCEle[index].clear();
+	AlphaRecHitSCEle[index].clear();
 
-  //  EcalIntercalibConstantMap icMap = icHandle->get()
-  std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = photon.superCluster()->hitsAndFractions();
-  nHitsSCEle[index] = hitsAndFractions_ele1.size();
-  
-  const EcalRecHitCollection *recHits = (photon.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-  const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
-  const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-  for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin(); 
-       detitr != hitsAndFractions_ele1.end(); detitr++ )
-    {
-      //      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
-      EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-      if(oneHit==recHits->end()){
-	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() 
-				       << " in subdetector " << (detitr->first).subdetId() << " bailing out";
-	//assert(0);
-        continue;
-      }
-      recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-      rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
-      if(photon.isEB()){
-        EBDetId recHitId(detitr->first);
-	XRecHitSCEle[index].push_back(recHitId.ieta());
-	YRecHitSCEle[index].push_back(recHitId.iphi());
-	ZRecHitSCEle[index].push_back(recHitId.zside());
-      }
-      else{
-        EEDetId recHitId(detitr->first);
-	XRecHitSCEle[index].push_back(recHitId.ix());
-	YRecHitSCEle[index].push_back(recHitId.iy());
-	ZRecHitSCEle[index].push_back(recHitId.zside());
-      }
-      energyRecHitSCEle[index].push_back(oneHit->energy());
-      // in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-      // 1) get laser correction coefficient
-      LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
-      //laserHandle->
-      // 2) get intercalibration
-      EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first); 
-      EcalIntercalibConstant icalconst = 1.;
-      if( icalit!=icalMap.end() ) {
-	icalconst = (*icalit);
-	// std::cout << "icalconst set to: " << icalconst << std::endl;
-      } else {
-	edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
-	//assert(0);
-        continue;
-      }
-      // 3) get adc2GeV
-      //float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ? 
-      // float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-      ICRecHitSCEle[index].push_back(icalconst);
-    }
+	//  EcalIntercalibConstantMap icMap = icHandle->get()
+	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = photon.superCluster()->hitsAndFractions();
+	nHitsSCEle[index] = hitsAndFractions_ele1.size();
 
-  return;
+	const EcalRecHitCollection *recHits = (photon.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
+	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
+	for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin(); 
+			detitr != hitsAndFractions_ele1.end(); detitr++ )
+	{
+		//      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
+		EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
+		if(oneHit==recHits->end()){
+			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() 
+				<< " in subdetector " << (detitr->first).subdetId() << " bailing out";
+			//assert(0);
+			continue;
+		}
+		recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
+		rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
+		if(photon.isEB()){
+			EBDetId recHitId(detitr->first);
+			XRecHitSCEle[index].push_back(recHitId.ieta());
+			YRecHitSCEle[index].push_back(recHitId.iphi());
+			ZRecHitSCEle[index].push_back(recHitId.zside());
+		}
+		else{
+			EEDetId recHitId(detitr->first);
+			XRecHitSCEle[index].push_back(recHitId.ix());
+			YRecHitSCEle[index].push_back(recHitId.iy());
+			ZRecHitSCEle[index].push_back(recHitId.zside());
+		}
+		energyRecHitSCEle[index].push_back(oneHit->energy());
+		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
+		// 1) get laser correction coefficient
+		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
+		//laserHandle->
+		// 2) get intercalibration
+		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first); 
+		EcalIntercalibConstant icalconst = 1.;
+		if( icalit!=icalMap.end() ) {
+			icalconst = (*icalit);
+			// std::cout << "icalconst set to: " << icalconst << std::endl;
+		} else {
+			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
+			//assert(0);
+			continue;
+		}
+		// 3) get adc2GeV
+		//float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ? 
+		// float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
+		ICRecHitSCEle[index].push_back(icalconst);
+	}
+
+	return;
 }
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Muon& muon1, int index){
 
-  if(index<0){
-    recoFlagRecHitSCEle[-index].clear();
-    rawIdRecHitSCEle[-index].clear();
-    XRecHitSCEle[-index].clear();
-    YRecHitSCEle[-index].clear();
-    ZRecHitSCEle[-index].clear();
-    energyRecHitSCEle[-index].clear();
-    LCRecHitSCEle[-index].clear();
-    ICRecHitSCEle[-index].clear();
-    AlphaRecHitSCEle[-index].clear();
-    return;
-  }
+	if(index<0){
+		recoFlagRecHitSCEle[-index].clear();
+		rawIdRecHitSCEle[-index].clear();
+		XRecHitSCEle[-index].clear();
+		YRecHitSCEle[-index].clear();
+		ZRecHitSCEle[-index].clear();
+		energyRecHitSCEle[-index].clear();
+		LCRecHitSCEle[-index].clear();
+		ICRecHitSCEle[-index].clear();
+		AlphaRecHitSCEle[-index].clear();
+		return;
+	}
 
-  recoFlagRecHitSCEle[index].clear();
-  rawIdRecHitSCEle[index].clear();
-  XRecHitSCEle[index].clear();
-  YRecHitSCEle[index].clear();
-  ZRecHitSCEle[index].clear();
-  energyRecHitSCEle[index].clear();
-  LCRecHitSCEle[index].clear();
-  ICRecHitSCEle[index].clear();
-  AlphaRecHitSCEle[index].clear();
+	recoFlagRecHitSCEle[index].clear();
+	rawIdRecHitSCEle[index].clear();
+	XRecHitSCEle[index].clear();
+	YRecHitSCEle[index].clear();
+	ZRecHitSCEle[index].clear();
+	energyRecHitSCEle[index].clear();
+	LCRecHitSCEle[index].clear();
+	ICRecHitSCEle[index].clear();
+	AlphaRecHitSCEle[index].clear();
 
-  return;
+	return;
 }
 
 //#============================== Ele ID tree
 void ZNtupleDumper::InitEleIDTree(){
-  
-  //  tree = new TTree("selected",fChain->GetTitle());
-  std::cout << "[STATUS] InitEleIDTree" << std::endl;
-  if(eleIDTree==NULL) {return;}
-  
-  eleIDTree->Branch("runNumber",     &runNumber,     "runNumber/I");
-  eleIDTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-  eleIDTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-  eleIDTree->Branch("runTime",       &runTime,         "runTime/i");
- 
-  eleIDTree->Branch("dr03TkSumPt", dr03TkSumPt, "dr03TkSumPt[3]/F");
-  eleIDTree->Branch("dr03EcalRecHitSumEt", dr03EcalRecHitSumEt, "dr03EcalRecHitSumEt[3]/F");
-  eleIDTree->Branch("dr03HcalTowerSumEt", dr03HcalTowerSumEt, "dr03HcalTowerSumEt[3]/F");
-  eleIDTree->Branch("sigmaIEtaIEtaSCEle", sigmaIEtaIEtaSCEle, "sigmaIEtaIEtaSCEle[3]/F");
-  //  eleIDTree->Branch("sigmaIPhiIPhiSCEle", sigmaIPhiIPhiSCEle, "sigmaIPhiIPhiSCEle[3]/F");
-  eleIDTree->Branch("deltaEtaSuperClusterTrackAtVtx", deltaEtaSuperClusterTrackAtVtx, "deltaEtaSuperClusterTrackAtVtx[3]/F");
-  eleIDTree->Branch("deltaPhiSuperClusterTrackAtVtx", deltaPhiSuperClusterTrackAtVtx, "deltaPhiSuperClusterTrackAtVtx[3]/F");
-  eleIDTree->Branch("hOverE", hOverE, "hOverE[3]/F");
-  eleIDTree->Branch("pfMVA", pfMVA, "pfMVA[3]/F");
-  eleIDTree->Branch("hasMatchedConversion", hasMatchedConversion, "hasMatchedConversion[3]/b");
-  eleIDTree->Branch("maxNumberOfExpectedMissingHits", maxNumberOfExpectedMissingHits, "maxNumberOfExpectedMissingHits[3]/I");
-  return;
+
+	//  tree = new TTree("selected",fChain->GetTitle());
+	std::cout << "[STATUS] InitEleIDTree" << std::endl;
+	if(eleIDTree==NULL) {return;}
+
+	eleIDTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	eleIDTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+	eleIDTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+	eleIDTree->Branch("runTime",       &runTime,         "runTime/i");
+
+	eleIDTree->Branch("dr03TkSumPt", dr03TkSumPt, "dr03TkSumPt[3]/F");
+	eleIDTree->Branch("dr03EcalRecHitSumEt", dr03EcalRecHitSumEt, "dr03EcalRecHitSumEt[3]/F");
+	eleIDTree->Branch("dr03HcalTowerSumEt", dr03HcalTowerSumEt, "dr03HcalTowerSumEt[3]/F");
+	eleIDTree->Branch("sigmaIEtaIEtaSCEle", sigmaIEtaIEtaSCEle, "sigmaIEtaIEtaSCEle[3]/F");
+	//  eleIDTree->Branch("sigmaIPhiIPhiSCEle", sigmaIPhiIPhiSCEle, "sigmaIPhiIPhiSCEle[3]/F");
+	eleIDTree->Branch("deltaEtaSuperClusterTrackAtVtx", deltaEtaSuperClusterTrackAtVtx, "deltaEtaSuperClusterTrackAtVtx[3]/F");
+	eleIDTree->Branch("deltaPhiSuperClusterTrackAtVtx", deltaPhiSuperClusterTrackAtVtx, "deltaPhiSuperClusterTrackAtVtx[3]/F");
+	eleIDTree->Branch("hOverE", hOverE, "hOverE[3]/F");
+	eleIDTree->Branch("pfMVA", pfMVA, "pfMVA[3]/F");
+	eleIDTree->Branch("hasMatchedConversion", hasMatchedConversion, "hasMatchedConversion[3]/b");
+	eleIDTree->Branch("maxNumberOfExpectedMissingHits", maxNumberOfExpectedMissingHits, "maxNumberOfExpectedMissingHits[3]/I");
+	return;
 }
 
 
 void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, const pat::Electron& electron2){
 
-  TreeSetEleIDVar(electron1, 0);
-  TreeSetEleIDVar(electron2, 1);
-  return;
+	TreeSetEleIDVar(electron1, 0);
+	TreeSetEleIDVar(electron2, 1);
+	return;
 }
 
 void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
-  if(index<0){
-    hOverE[-index]=-1;
-    return;
-  }
-  
-  dr03TkSumPt[index]         = electron1.dr03TkSumPt();
-  dr03EcalRecHitSumEt[index] = electron1.dr03EcalRecHitSumEt();
-  dr03HcalTowerSumEt[index]  = electron1.dr03HcalTowerSumEt();
-  sigmaIEtaIEtaSCEle[index]  = electron1.sigmaIetaIeta(); // alcarereco
-  sigmaIPhiIPhiSCEle[index]  = electron1.sigmaIphiIphi(); // alcarereco
-  deltaPhiSuperClusterTrackAtVtx[index]  = electron1.deltaPhiSuperClusterTrackAtVtx();
-  deltaEtaSuperClusterTrackAtVtx[index]  = electron1.deltaEtaSuperClusterTrackAtVtx();
-  hOverE[index] = electron1.hadronicOverEm();
+	if(index<0){
+		hOverE[-index]=-1;
+		return;
+	}
+
+	dr03TkSumPt[index]         = electron1.dr03TkSumPt();
+	dr03EcalRecHitSumEt[index] = electron1.dr03EcalRecHitSumEt();
+	dr03HcalTowerSumEt[index]  = electron1.dr03HcalTowerSumEt();
+	sigmaIEtaIEtaSCEle[index]  = electron1.sigmaIetaIeta(); // alcarereco
+	sigmaIPhiIPhiSCEle[index]  = electron1.sigmaIphiIphi(); // alcarereco
+	deltaPhiSuperClusterTrackAtVtx[index]  = electron1.deltaPhiSuperClusterTrackAtVtx();
+	deltaEtaSuperClusterTrackAtVtx[index]  = electron1.deltaEtaSuperClusterTrackAtVtx();
+	hOverE[index] = electron1.hadronicOverEm();
 
 #ifdef CMSSW_7_2_X
-  pfMVA[index]   = electron1.mva_e_pi();
-  hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
-  maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
+	pfMVA[index]   = electron1.mva_e_pi();
+	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
+	maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
 #else
-  pfMVA[index]   = electron1.mva();
-  hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
-  maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();
+	pfMVA[index]   = electron1.mva();
+	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
+	maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->trackerExpectedHitsInner().numberOfLostHits();
 #endif
 
 
-  //   if (primaryVertexHandle->size() > 0) {
-  //     reco::VertexRef vtx(primaryVertexHandle, 0);    
-  //     d0vtx[index] = electron1.gsfTrack()->dxy(vtx->position());
-  //     dzvtx[index] = electron1.gsfTrack()->dz(vtx->position());
-  //   } else {
-  //     d0vtx[index] = electron1.gsfTrack()->dxy();
-  //     dzvtx[index] = electron1.gsfTrack()->dz();
-  //   }
-  
-  eleIDloose[index]  = electron1.electronID("loose50nsRun2");
-  eleIDmedium[index] = electron1.electronID("medium50nsRun2");
-  eleIDtight[index]  = electron1.electronID("tight50nsRun2");
-  return;
+	//   if (primaryVertexHandle->size() > 0) {
+	//     reco::VertexRef vtx(primaryVertexHandle, 0);    
+	//     d0vtx[index] = electron1.gsfTrack()->dxy(vtx->position());
+	//     dzvtx[index] = electron1.gsfTrack()->dz(vtx->position());
+	//   } else {
+	//     d0vtx[index] = electron1.gsfTrack()->dxy();
+	//     dzvtx[index] = electron1.gsfTrack()->dz();
+	//   }
+
+	eleIDloose[index]  = electron1.electronID("loose50nsRun2");
+	eleIDmedium[index] = electron1.electronID("medium50nsRun2");
+	eleIDtight[index]  = electron1.electronID("tight50nsRun2");
+	return;
 }
 
 void ZNtupleDumper::TreeSetEleIDVar(const pat::Photon& photon, const pat::Muon& muon1, const pat::Muon& muon2){
 
-  TreeSetEleIDVar(photon, 0);
-  TreeSetEleIDVar(muon1, -1);
-  TreeSetEleIDVar(muon2, -2);
-  return;
+	TreeSetEleIDVar(photon, 0);
+	TreeSetEleIDVar(muon1, -1);
+	TreeSetEleIDVar(muon2, -2);
+	return;
 }
 
 void ZNtupleDumper::TreeSetEleIDVar(const pat::Photon& photon, int index){
-  if(index<0){
-    return;
-  }
-  
-  sigmaIEtaIEtaSCEle[index]  = photon.sigmaIetaIeta(); // alcarereco
-  hOverE[index] = photon.hadronicOverEm();
+	if(index<0){
+		return;
+	}
 
-  const reco::SuperCluster photonSC = *(photon.superCluster());
+	sigmaIEtaIEtaSCEle[index]  = photon.sigmaIetaIeta(); // alcarereco
+	hOverE[index] = photon.hadronicOverEm();
+
+	const reco::SuperCluster photonSC = *(photon.superCluster());
 #ifdef CMSSW_7_2_X
-  hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
+	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
 #else
-  hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
+	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
 #endif
-  
-  eleIDloose[index]  = photon.photonID("loose");
-  eleIDmedium[index] = photon.photonID("medium");
-  eleIDtight[index]  = photon.photonID("tight");
-  return;
+
+	eleIDloose[index]  = photon.photonID("loose");
+	eleIDmedium[index] = photon.photonID("medium");
+	eleIDtight[index]  = photon.photonID("tight");
+	return;
 }
 
 
 void ZNtupleDumper::TreeSetEleIDVar(const pat::Muon& muon1, int index){
-  if(index<0){
-    return;
-  }
-  
-  //  eleIDloose[index]  = muon1.muonID("loose");
-  //  eleIDmedium[index] = muon1.muonID("medium");
-  //  eleIDtight[index]  = muon1.muonID("tight");
-  return;
+	if(index<0){
+		return;
+	}
+
+	//  eleIDloose[index]  = muon1.muonID("loose");
+	//  eleIDmedium[index] = muon1.muonID("medium");
+	//  eleIDtight[index]  = muon1.muonID("tight");
+	return;
 }
 
 
 //#============================== Ele ID tree
 void ZNtupleDumper::InitPdfSystTree(void){
-  
-  //  tree = new TTree("selected",fChain->GetTitle());
-  std::cout << "[STATUS] InitPdfSystTree" << std::endl;
-  if(pdfSystTree==NULL){
-    std::cerr << "[ERROR] pdfSystTree==NULL" << std::endl;
-    exit(1);
-    return;
-  }
-  //   pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
-  //   pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-  //   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-  //   pdfSystTree->Branch("runTime",       &runTime,         "runTime/i");
-  
 
-  for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
-      pdfWeightTAGS_itr != pdfWeightTAGS.end();
-      pdfWeightTAGS_itr++){
-    int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
-    std::string tagName = pdfWeightTAGS_itr->instance();
-    //tagName.replace(0,pdfWeightTAGS_itr->label().size());
-    //std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
-    //pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
-    pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
-  }
+	//  tree = new TTree("selected",fChain->GetTitle());
+	std::cout << "[STATUS] InitPdfSystTree" << std::endl;
+	if(pdfSystTree==NULL){
+		std::cerr << "[ERROR] pdfSystTree==NULL" << std::endl;
+		exit(1);
+		return;
+	}
+	//   pdfSystTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	//   pdfSystTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+	//   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+	//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/i");
 
-  pdfSystTree->Branch("fsrWeight", &fsrWeight, "fsrWeight/F");
-  pdfSystTree->Branch("weakWeight", &weakWeight, "weakWeight/F");
-  return;
+
+	for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
+			pdfWeightTAGS_itr != pdfWeightTAGS.end();
+			pdfWeightTAGS_itr++){
+		int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
+		std::string tagName = pdfWeightTAGS_itr->instance();
+		//tagName.replace(0,pdfWeightTAGS_itr->label().size());
+		//std::cout << i << "\t" << tagName << "\t" << pdfWeightTAGS_itr->label() << "\t" << pdfWeightTAGS_itr->encode() << std::endl;
+		//pdfSystTree->Branch(pdfWeightTAGS_itr->encode().c_str(), &(pdfSystWeightNum[i]), "pdfSystWeightNum/I");
+		pdfSystTree->Branch((pdfWeightTAGS_itr->label()+"_"+pdfWeightTAGS_itr->instance()).c_str(), &(pdfSystWeight[i]));
+	}
+
+	pdfSystTree->Branch("fsrWeight", &fsrWeight, "fsrWeight/F");
+	pdfSystTree->Branch("weakWeight", &weakWeight, "weakWeight/F");
+	return;
 }
 
 void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent){
 
-  for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
-      pdfWeightTAGS_itr != pdfWeightTAGS.end();
-      pdfWeightTAGS_itr++){
-    int i = pdfWeightTAGS_itr-pdfWeightTAGS.begin();
-    iEvent.getByLabel(*pdfWeightTAGS_itr, pdfWeightHandle);
-    
-    //pdfSystWeight[i] = 
-    std::vector<Double_t> weights = std::vector<Double_t>(*pdfWeightHandle);
-    pdfSystWeight[i]=weights;
-    //std::cout << "Event weight for central PDF " << pdfWeightTAGS_itr->encode() << ": " << pdfSystWeight[i][0] << std::endl;
-    //unsigned int nmembers = weights.size();
-    //pdfSystWeightNum[i]=pdfSystWeight.size();
-    //    for (unsigned int j=1; j<nmembers; j+=2) {
-    //      std::cout << "Event weight for PDF variation +" << (j+1)/2 << ": " << pdfSystWeight[i][j] << std::endl;
-    //      std::cout << "Event weight for PDF variation -" << (j+1)/2 << ": " << pdfSystWeight[i][j+1] << std::endl;
-    //    }
-  }  
-  
-  iEvent.getByLabel(fsrWeightTAG, fsrWeightHandle);
-  iEvent.getByLabel(weakWeightTAG, weakWeightHandle);
+	for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
+			pdfWeightTAGS_itr != pdfWeightTAGS.end();
+			pdfWeightTAGS_itr++){
+		int i = pdfWeightTAGS_itr-pdfWeightTAGS.begin();
+		iEvent.getByLabel(*pdfWeightTAGS_itr, pdfWeightHandle);
 
-  fsrWeight = (Float_t) *fsrWeightHandle;
-  weakWeight = (Float_t) *weakWeightHandle;
+		//pdfSystWeight[i] = 
+		std::vector<Double_t> weights = std::vector<Double_t>(*pdfWeightHandle);
+		pdfSystWeight[i]=weights;
+		//std::cout << "Event weight for central PDF " << pdfWeightTAGS_itr->encode() << ": " << pdfSystWeight[i][0] << std::endl;
+		//unsigned int nmembers = weights.size();
+		//pdfSystWeightNum[i]=pdfSystWeight.size();
+		//    for (unsigned int j=1; j<nmembers; j+=2) {
+		//      std::cout << "Event weight for PDF variation +" << (j+1)/2 << ": " << pdfSystWeight[i][j] << std::endl;
+		//      std::cout << "Event weight for PDF variation -" << (j+1)/2 << ": " << pdfSystWeight[i][j+1] << std::endl;
+		//    }
+	}  
 
-  return ;
+	iEvent.getByLabel(fsrWeightTAG, fsrWeightHandle);
+	iEvent.getByLabel(weakWeightTAG, weakWeightHandle);
+
+	fsrWeight = (Float_t) *fsrWeightHandle;
+	weakWeight = (Float_t) *weakWeightHandle;
+
+	return ;
 }
 
 //define this as a plug-in

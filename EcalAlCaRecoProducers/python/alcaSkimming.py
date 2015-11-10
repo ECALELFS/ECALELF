@@ -56,7 +56,12 @@ options.register('pdfSyst',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: pdfSyst=1 true, pdfSyst=0 false")
-                 
+options.register('bunchSpacing',
+                 0,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.int,
+                 "50=50ns, 25=25ns,0=multifit auto,-1=weights")
+
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
 options.secondaryOutput="ntuple.root"
@@ -151,6 +156,8 @@ process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Ou
 
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_Output_cff')
+from RecoLocalCalo.EcalRecProducers.ecalLocalCustom import *
+
 # this module provides:
 # process.seqALCARECOEcalRecalElectron 
 
@@ -401,11 +408,11 @@ if(options.skim=="partGun"):
 ###############################
 #============================== TO BE CHECKED FOR PRESHOWER
 process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
-process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
+#process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
 
-process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
-process.reducedEcalRecHitsES.noFlag = cms.bool(True)
-process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
+#process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
+#process.reducedEcalRecHitsES.noFlag = cms.bool(True)
+#process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 
 #==============================
 
@@ -421,7 +428,7 @@ else:
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
 if(re.match("CMSSW_7_.*", CMSSW_VERSION)):
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron)
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron * process.reducedEcalRecHitsES)
 else:
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
 
@@ -708,22 +715,25 @@ if(not doTreeOnly):
 
 
 ############### JSON Filter
-if((options.doTree>0 and options.doTreeOnly==0)):
-    # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
-    process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
-else:
-    if(len(options.jsonFile)>0):
-        if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION) or re.match("CMSSW_7_.*_.*",CMSSW_VERSION) ):
-            # from CMSSW 5.0.0
-            import FWCore.PythonUtilities.LumiList as LumiList
-            process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
-        else:
-            # from CMSSW 3.8.0
+if(options.doTree>0):
+    if((options.doTree>0 and options.doTreeOnly==0)):
+        # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
+        print "[INFO] Using json file"
+        process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
+    else:
+        if(len(options.jsonFile)>0):
+            print "[INFO] Using json file"
+            if(re.match("CMSSW_5_.*_.*",CMSSW_VERSION) or re.match("CMSSW_6_.*_.*",CMSSW_VERSION) or re.match("CMSSW_7_.*_.*",CMSSW_VERSION) ):
+                # from CMSSW 5.0.0
+                import FWCore.PythonUtilities.LumiList as LumiList
+                process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
+            else:
+                # from CMSSW 3.8.0
             #import FWCore.ParameterSet.Config as cms
-            import PhysicsTools.PythonAnalysis.LumiList as LumiList
-            myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
-            process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
-            process.source.lumisToProcess.extend(myLumis)
+                import PhysicsTools.PythonAnalysis.LumiList as LumiList
+                myLumis = LumiList.LumiList(filename = options.jsonFile).getCMSSWString().split(',')
+                process.source.lumisToProcess = cms.untracked.VLuminosityBlockRange()
+                process.source.lumisToProcess.extend(myLumis)
 
 
 ############################################################
@@ -779,7 +789,8 @@ elif(options.type=='ALCARERECO'):
         process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
-        process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
+        if(options.doTree>0):
+            process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step)
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
@@ -857,7 +868,7 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
 process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
-if(options.type=="ALCARERECO"):        
+if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
     process = EcalRecal(process)
     process.eleSelectionProducers.electronCollection   = recalibElectronSrc
@@ -871,13 +882,29 @@ if(options.type=="ALCARERECO"):
     process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
 
-    
+    if(options.bunchSpacing==25):
+        print "bunchSpacing", options.bunchSpacing
+        #        configureEcalLocal25ns(process)
+        process.ecalMultiFitUncalibRecHit.algoPSet.activeBXs = cms.vint32(-5,-4,-3,-2,-1,0,1,2,3,4)
+        process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(False)
+    elif(options.bunchSpacing==50):
+        #        configureEcalLocal50ns(process)
+        process.ecalMultiFitUncalibRecHit.algoPSet.activeBXs = cms.vint32(-4,-2,0,2,4)
+        process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(False)
+    elif(options.bunchSpacing==0):
+        # auto defined by the bunchSpacingProducer
+        process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(True)
+    else:
+        print "[ERROR] only bunchSpacing of 50 and 25 are implemented"
+        exit(1)
+        
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-
-
+if(options.type=="ALCARECOSIM"):
+    process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
+#process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 ############################
 ## Dump the output Python ##
 ############################

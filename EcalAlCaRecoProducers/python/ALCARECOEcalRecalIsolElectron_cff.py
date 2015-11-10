@@ -23,6 +23,6 @@ rerecoECALSeq = cms.Sequence(recoECALSeq * rerecoPFClusteringSeq * ecalClusterin
 ############################################### FINAL SEQUENCES
 # sequences used in AlCaRecoStreams_cff.py
 #redo the preselection of electrons with selectorProducerSeq for recHit reducers: they use the selected objects as input
-seqALCARECOEcalRecalElectron = cms.Sequence( rerecoECALSeq * selectorProducerSeq * ALCARECOEcalCalElectronECALSeq)
+seqALCARECOEcalRecalElectron = cms.Sequence(bunchSpacingProducer* rerecoECALSeq * selectorProducerSeq * ALCARECOEcalCalElectronECALSeq)
 
 

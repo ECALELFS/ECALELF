@@ -5,8 +5,8 @@ OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
     'drop reco*Clusters_hfEMClusters_*_*',
     'drop reco*Clusters_pfPhotonTranslator_*_*',
     'drop *EcalRecHit*_ecalRecHit_*_*',
-    'drop *EcalrecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
-    'drop *EcalRecHit*_reducedEcalRecHitsE*_*_*',
+#    'drop *EcalrecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
+#    'drop *EcalRecHit*_reducedEcalRecHitsE*_*_*',
     'drop *_*Cleaned_*_*',
     'drop *_*cleaned*_*_*',
     'drop *_*Unclean*_*_*',
@@ -26,6 +26,7 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalCalZSCElectron')
     ),
     outputCommands = cms.untracked.vstring( 
+        'keep uint_bunchSpacingProducer_*_*',
     'keep *_pfMet_*_*', # met for Wenu selection
     'keep *_kt6PFJetsForRhoCorrection_rho_*', #rho for effective area subtraction
     'keep *_kt6PFJets_rho_*', #rho for effective area subtraction
@@ -61,7 +62,9 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep *_hltTriggerSummaryAOD_*_HLT',
     # pfisolation CMSSW_5_3_X
     'keep *EcalRecHit*_alCaIsolatedElectrons_*_*',
-    'keep *EcalRecHit*_reducedEcalRecHitsES_alCaRecHitsES_*',
+    'keep EcalRecHitsSorted_reducedEcalRecHitsES_*_*',
+    'keep *EcalRecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
+
     )
 )
 
