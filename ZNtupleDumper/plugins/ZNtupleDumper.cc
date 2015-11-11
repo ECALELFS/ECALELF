@@ -781,10 +781,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	    ( (1-t1q)*(1-t2q)+4*t1*t2*cos(eleIter1->phi()-eleIter2->phi()))/(
 									(1+t1q)*(1+t2q)
 									);
-	  double mass = sqrt(2*eleIter1->parentSuperCluster()->energy()*eleIter2->parentSuperCluster()->energy() *angle); //use mustache SC, in order to have the same number of events between alcareco and alcarereco ntuples
-
-	  //	  std::cout<<" ele1 SC: "<<eleIter1->superCluster()->energy()<<" ele1 SC must: "<<eleIter1->parentSuperCluster()->energy()<<" eta1: "<<eleIter1->eta()<<" phi1: "<<eleIter1->phi()<<std::endl
-	  //		   <<" ele2 SC: "<<eleIter2->superCluster()->energy()<<" ele2 SC must: "<<eleIter2->parentSuperCluster()->energy()<<" eta2: "<<eleIter2->eta()<<" phi2: "<<eleIter2->phi()<<"mass: "<<mass<<std::endl;	  
+	  double mass = sqrt(2*eleIter1->energy()*eleIter2->energy() *angle); //use default electron energy, in order to have the same number of events between alcareco and alcarereco ntuples
+		  //sqrt(2*eleIter1->parentSuperCluster()->energy()*eleIter2->parentSuperCluster()->energy() *angle); //use mustache SC, in order to have the same number of events between alcareco and alcarereco ntuples
 	  
 	  if((mass < 55 || mass > 125)) continue;	  
 	  doFill=true;
