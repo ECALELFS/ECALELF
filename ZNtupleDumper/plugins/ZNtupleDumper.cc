@@ -784,7 +784,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	  double mass = sqrt(2*eleIter1->energy()*eleIter2->energy() *angle); //use default electron energy, in order to have the same number of events between alcareco and alcarereco ntuples
 		  //sqrt(2*eleIter1->parentSuperCluster()->energy()*eleIter2->parentSuperCluster()->energy() *angle); //use mustache SC, in order to have the same number of events between alcareco and alcarereco ntuples
 	  
-	  if((mass < 55 || mass > 125)) continue;	  
+	  if(mass < 55 ) continue;	  
 	  doFill=true;
 
 	  if(eventType==UNKNOWN) eventType=ZEE;
