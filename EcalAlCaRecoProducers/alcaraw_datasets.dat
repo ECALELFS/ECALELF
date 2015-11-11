@@ -106,4 +106,4 @@
 258159-258959 /DoubleEG/Run2015D-EcalUncalZElectron-PromptReco-v4/ALCARECO       DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco       caf database VALID RUN2015D,RUN2015CD,RUN2015BCD,RUN2015ABCD
 #
 ############### Ru2015C 25ns rereco
-254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/RECO		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-25nsReco		caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw VALID RUN2015C,RUN2015CD
+254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/RECO		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-25nsReco		caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcaraw INVALID RUN2015C,RUN2015CD
