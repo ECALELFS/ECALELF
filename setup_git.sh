@@ -166,6 +166,8 @@ case $CMSSW_VERSION in
 	CMSSW_7_4_*)
 		git cms-addpkg  Configuration/DataProcessing/
 		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch
+		git cms-addpkg DataFormats/EgammaCandidates/
+		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch
 		;;
 
     CMSSW_7_5_*)
