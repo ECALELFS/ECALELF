@@ -15,7 +15,7 @@ applyEcorr = ["False","True"];
 split = ["0","1"];
 cut = ["100.","0.05","0.15","0.30","0.50"];
 smoothCut = ["0","1"];
-energyType = ["0"]; #0=regression, 1=raw energy
+energyType = ["0","1"]; #0=regression, 1=raw energy
 
 TOP="$PWD"
 #cmscaf1nd
@@ -148,73 +148,72 @@ for b in range(len(split)):
 createAndPlotIC = "createAndPlotIC.sh"
 out2 = open(createAndPlotIC,"w")
                             
-for b in range(len(split)):
-    for c in range(len(cut)):
-        for d in range(len(smoothCut)):
-            for e in range(len(applyPcorr)):
-                for f in range(len(applyEcorr)):
-                    for g in range(len(energyType)):
-                        name = "EB"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
-                        fn = "cfg/calibrationPlots_"+name+".py";
-                        folder =  "output_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
-                        outScript = open(fn,"w");
-                        outScript.write("import FWCore.ParameterSet.Config as cms");
-                        outScript.write("\nprocess = cms.Process(\"calibrationPlotsEBparameters\")")
-                        outScript.write("\nprocess.Options = cms.PSet(")
-                        outScript.write("\n\tinFileName     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EB.root\"),")
-                        outScript.write("\n\tinFileNameEven     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EB_even.root\"),")
-                        outScript.write("\n\tinFileNameOdd     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EB_odd.root\"),")
-                        outScript.write("\n\tnEtaBinsEB     = cms.int32(1),")
-                        outScript.write("\n\tnEtaBinsEE     = cms.int32(1),")
-                        outScript.write("\n\tis2012Calib    = cms.bool(False),")
-                        outScript.write("\n\tisEB           = cms.bool(True),")
-                        outScript.write("\n\tevalStat       = cms.int32(1),")
-                        outScript.write("\n\toutputFolder   = cms.string(\""+folder+"\"),")
-                        outScript.write("\n\toutFileName    = cms.string(\""+name+".root\"),")
-                        outScript.write("\n\toutputTxt      = cms.string(\"IC_"+name+"\"),")
-                        outScript.write("\n\tfileType       = cms.string(\"cxx\")")
-                        outScript.write("\n)")
-                        out2.write("\nCalibrationPlots "+fn)
+#for b in range(len(split)):
+for c in range(len(cut)):
+    for d in range(len(smoothCut)):
+        for e in range(len(applyPcorr)):
+            for f in range(len(applyEcorr)):
+                for g in range(len(energyType)):
+                    name = "EB"+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
+                    fn = "cfg/calibrationPlots_"+name+".py";
+                    folder =  "output_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
+                    outScript = open(fn,"w");
+                    outScript.write("import FWCore.ParameterSet.Config as cms");
+                    outScript.write("\nprocess = cms.Process(\"calibrationPlotsEBparameters\")")
+                    outScript.write("\nprocess.Options = cms.PSet(")
+                    outScript.write("\n\tinFileName     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EB.root\"),")
+                    outScript.write("\n\tinFileNameEven     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EB_even.root\"),")
+                    outScript.write("\n\tinFileNameOdd     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EB_odd.root\"),")
+                    outScript.write("\n\tnEtaBinsEB     = cms.int32(1),")
+                    outScript.write("\n\tnEtaBinsEE     = cms.int32(1),")
+                    outScript.write("\n\tis2012Calib    = cms.bool(False),")
+                    outScript.write("\n\tisEB           = cms.bool(True),")
+                    outScript.write("\n\tevalStat       = cms.int32(1),")
+                    outScript.write("\n\toutputFolder   = cms.string(\""+folder+"\"),")
+                    outScript.write("\n\toutFileName    = cms.string(\""+name+".root\"),")
+                    outScript.write("\n\toutputTxt      = cms.string(\"IC_"+name+"\"),")
+                    outScript.write("\n\tfileType       = cms.string(\"cxx\")")
+                    outScript.write("\n)")
+                    out2.write("\nCalibrationPlots "+fn)
 
 
-for b in range(len(split)):
-    for c in range(len(cut)):
-        for d in range(len(smoothCut)):
-            for e in range(len(applyPcorr)):
-                for f in range(len(applyEcorr)):
-                    for g in range(len(energyType)):
-                        name = "EE"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
-                        fn = "cfg/calibrationPlots_"+name+".py";
-                        folder =  "output_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
-                        outScript = open(fn,"w");
-                        outScript.write("import FWCore.ParameterSet.Config as cms");
-                        outScript.write("\nprocess = cms.Process(\"calibrationPlotsEEparameters\")")
-                        outScript.write("\nprocess.Options = cms.PSet(")
-                        outScript.write("\n\tinFileName     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EE.root\"),")
-                        outScript.write("\n\tinFileNameEven     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EE_even.root\"),")
-                        outScript.write("\n\tinFileNameOdd     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EE_odd.root\"),")
-                        outScript.write("\n\tnEtaBinsEB     = cms.int32(1),")
-                        outScript.write("\n\tnEtaBinsEE     = cms.int32(1),")
-                        outScript.write("\n\tis2012Calib    = cms.bool(False),")
-                        outScript.write("\n\tisEB           = cms.bool(False),")
-                        outScript.write("\n\tevalStat       = cms.int32(1),")
-                        outScript.write("\n\toutputFolder   = cms.string(\""+folder+"\"),")
-                        outScript.write("\n\toutFileName    = cms.string(\""+name+".root\"),")
-                        outScript.write("\n\toutputTxt      = cms.string(\"IC_"+name+"\"),")
-                        outScript.write("\n\tfileType       = cms.string(\"cxx\")")
-                        outScript.write("\n)")
-                        out2.write("\nCalibrationPlots "+fn)
+#for b in range(len(split)):
+for c in range(len(cut)):
+    for d in range(len(smoothCut)):
+        for e in range(len(applyPcorr)):
+            for f in range(len(applyEcorr)):
+                for g in range(len(energyType)):
+                    name = "EE"+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
+                    fn = "cfg/calibrationPlots_"+name+".py";
+                    folder =  "output_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
+                    outScript = open(fn,"w");
+                    outScript.write("import FWCore.ParameterSet.Config as cms");
+                    outScript.write("\nprocess = cms.Process(\"calibrationPlotsEEparameters\")")
+                    outScript.write("\nprocess.Options = cms.PSet(")
+                    outScript.write("\n\tinFileName     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EE.root\"),")
+                    outScript.write("\n\tinFileNameEven     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EE_even.root\"),")
+                    outScript.write("\n\tinFileNameOdd     = cms.string(\"/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/ZFitter/"+folder+"FastCalibrator_Oct2015_runD_WZ_noEP_EE_odd.root\"),")
+                    outScript.write("\n\tnEtaBinsEB     = cms.int32(1),")
+                    outScript.write("\n\tnEtaBinsEE     = cms.int32(1),")
+                    outScript.write("\n\tis2012Calib    = cms.bool(False),")
+                    outScript.write("\n\tisEB           = cms.bool(False),")
+                    outScript.write("\n\tevalStat       = cms.int32(1),")
+                    outScript.write("\n\toutputFolder   = cms.string(\""+folder+"\"),")
+                    outScript.write("\n\toutFileName    = cms.string(\""+name+".root\"),")
+                    outScript.write("\n\toutputTxt      = cms.string(\"IC_"+name+"\"),")
+                    outScript.write("\n\tfileType       = cms.string(\"cxx\")")
+                    outScript.write("\n)")
+                    out2.write("\nCalibrationPlots "+fn)
 
 
 newFolder = "ICset"
 
-for b in range(len(split)):
-    for c in range(len(cut)):
-        for d in range(len(smoothCut)):
-            for e in range(len(applyPcorr)):
-                for f in range(len(applyEcorr)):
-                    for g in range(len(energyType)):
-                        name = "IC_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
-                        folder =  "output_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
-                        out2.write("\ncat "+folder+"IC_EB*txt "+folder+"IC_EE*txt > "+newFolder+"/"+name+".txt")
-
+for c in range(len(cut)):
+    for d in range(len(smoothCut)):
+        for e in range(len(applyPcorr)):
+            for f in range(len(applyEcorr)):
+                for g in range(len(energyType)):
+                    name = "IC_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
+                    folder =  "output_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
+                    out2.write("\ncat "+folder+"IC_EB*txt "+folder+"IC_EE*txt > "+newFolder+"/"+name+".txt")
+                    
