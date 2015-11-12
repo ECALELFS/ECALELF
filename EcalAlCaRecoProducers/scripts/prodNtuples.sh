@@ -174,7 +174,7 @@ do
 			CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
 	--isPrivate)      echo "[OPTION] private dataset"; ISPRIVATE=1;;
 
- 	--file_per_job) FILE_PER_JOB=$2; shift ;;
+ 	--file_per_job) echo "[OPTION] file per job: $2"; FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 
 	(--) shift; break;;
@@ -353,12 +353,12 @@ if [ -n "$FILELIST" ]; then
 		fi
     elif [ -n "$FILE_PER_JOB" ];then
 		let NJOBS=$nFiles/$FILE_PER_JOB
-		if [ "`echo \"$nFiles%$FILE_PER_NJOB\" | bc`" != "0" ];then
+		if [ "`echo \"${nFiles}%${FILE_PER_JOB}\" | bc -l`" != "0" ];then
 			let NJOBS=$NJOBS+1
 		fi
     else
-	NJOBS=$nFiles
-	FILE_PER_JOB=1
+		NJOBS=$nFiles
+		FILE_PER_JOB=1
     fi
 fi
 

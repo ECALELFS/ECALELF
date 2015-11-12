@@ -34,6 +34,7 @@ usage(){
     echo "    --createOnly"
     echo "    --check"
     echo "    --crabVersion (=2)"
+    echo "    --file_per_job arg: number of files to process in 1 job (=1)"
     echo "--------------- ECALELF Tutorial"
     echo "    --tutorial"
     echo "--------------- Expert Option"
@@ -43,7 +44,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,ntupleOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree -- "$@")
+if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,ntupleOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree,file_per_job: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -86,6 +87,7 @@ do
 	--doExtraCalibTree) DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doExtraCalibTree";;
 	--doEleIDTree)      DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doEleIDTree";;
 	--noStandardTree)   DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --noStandardTree";;
+ 	--file_per_job)     DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --file_per_job=$2"; shift ;;
 
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
@@ -164,7 +166,7 @@ for dataset in $datasets
       ${TUTORIAL} $dataset 
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
-			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --file_per_job=3 ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   			--json=${JSONFILE} --json_name=${JSONNAME} \
 			${TUTORIAL} $dataset 
 	fi
