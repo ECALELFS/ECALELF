@@ -865,8 +865,7 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 
 #process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
 #process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
-process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
-process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+process.eleNewEnergiesProducer.electronCollection = myEleCollection
 
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
@@ -876,6 +875,7 @@ if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
+    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
     
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
@@ -894,6 +894,10 @@ if(options.type=="ALCARERECO"):
     elif(options.bunchSpacing==0):
         # auto defined by the bunchSpacingProducer
         process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(True)
+    elif(options.bunchSpacing==-1):
+        process.ecalLocalRecoSequence.replace(process.ecalMultiFitUncalibRecHit, process.ecalGlobalUncalibRecHit)
+        process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
+        process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
     else:
         print "[ERROR] only bunchSpacing of 50 and 25 are implemented"
         exit(1)

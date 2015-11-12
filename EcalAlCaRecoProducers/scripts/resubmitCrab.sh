@@ -50,7 +50,6 @@ nJobs=`grep JobID $ui_working_dir/share/arguments.xml | wc -l`
 crab -c $ui_working_dir/ -status > ${ui_working_dir}/res/status.log
 if [ "`cat ${ui_working_dir}/res/status.log | grep -c PEND`" != "0" ] ;then exit 0; fi
 if [ "`cat ${ui_working_dir}/res/status.log | grep -c Terminated`" != "0" ] ;then 
-    echo ciao
     crab -c $ui_working_dir/ -getoutput 
     crab -c $ui_working_dir/ -status > ${ui_working_dir}/res/status.log
 fi
@@ -198,12 +197,13 @@ for jobID in `seq 1 $nJobs`
 done
 
 
-echo $intervals
-echo $okJobList | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/awk/compact.awk | sed 's|,$||'
+
 if [ -n "$intervals" ];then
+	#echo "Intervals $intervals"
     crab -c $ui_working_dir/ -resubmit `echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/awk/compact.awk | sed 's|,$||'`
 #echo $intervals | sed 's| |\n|g' | awk -f $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/awk/compact.awk | sed 's|,$||'
 else
+	#echo "okJobList $okJobList: `echo $okJobList | wc -w` $nJobs"
     if [ "`echo $okJobList |wc -w`" == "$nJobs" ];then
 	echo "[STATUS] All jobs are finished SUCCESSFULLY!"
 	touch $ui_working_dir/res/finished

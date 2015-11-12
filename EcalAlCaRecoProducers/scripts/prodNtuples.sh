@@ -184,7 +184,7 @@ do
     shift
 done
 
-echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
+#echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
 
 if [ -z "$DATASETNAME" ];then 
     echo "[ERROR] DATASETNAME not defined" >> /dev/stderr
@@ -278,7 +278,7 @@ if [ -n "${EXTRANAME}" ];then USER_REMOTE_DIR=$USER_REMOTE_DIR/${EXTRANAME}; fi
 
 if [ -z "${CHECK}" ];then
 	if [ "${TYPE}" == "ALCARERECO" ];then
-		if [ "`cat ntuple_datasets.dat | grep ${DATASETNAME}  | grep ${JSONNAME} | grep $TAG | grep -c $RUNRANGE`" != "0" ];then
+		if [ "`cat ntuple_datasets.dat | grep ${DATASETNAME}  | grep ${JSONNAME} | grep $TAG$ | grep -c $RUNRANGE`" != "0" ];then
 			echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 
 			for file in `eos.select ls -l $STORAGE_PATH/$USER_REMOTE_DIR/  | sed '/^d/ d' | awk '{print $9}'`
@@ -352,7 +352,7 @@ if [ -n "$FILELIST" ]; then
 			let FILE_PER_JOB=$FILE_PER_JOB+1
 		fi
     elif [ -n "$FILE_PER_JOB" ];then
-		let NJOBS=$nFiles/$FILE_PER_JOB
+		NJOBS=`perl -w -e "use POSIX; print ceil($nFiles/${FILE_PER_JOB}), qq{\n}"`
 		if [ "`echo \"${nFiles}%${FILE_PER_JOB}\" | bc -l`" != "0" ];then
 			let NJOBS=$NJOBS+1
 		fi
