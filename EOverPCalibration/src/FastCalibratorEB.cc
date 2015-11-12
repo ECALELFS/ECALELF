@@ -639,7 +639,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
                 
               }
               /// Use Half Statistic only even   
-              else if ( splitStat == 1 && jentry%2 == 0 ) {
+              else if ( splitStat == 1 && eventNumber%2 == 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
 		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
 		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
@@ -648,7 +648,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }  
               /// use odd event
-              else if ( splitStat == -1 && jentry%2 != 0 ) {
+              else if ( splitStat == -1 && eventNumber%2 != 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
 		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
 		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
@@ -775,7 +775,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }
               /// use evens    
-              else if ( splitStat == 1 && jentry%2 == 0 ) {
+              else if ( splitStat == 1 && eventNumber%2 == 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
 		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
 		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);
@@ -784,7 +784,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPHisto->GetBinContent(EoPbin);
               }  
              /// use odds
-              else if ( splitStat == -1 && jentry%2 != 0 ) {
+              else if ( splitStat == -1 && eventNumber%2 != 0 ) {
                 int EoPbin = EoPHisto->FindBin(thisE/pIn);
 		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/pIn);
 		else if (fabs(thisE/pIn-1)<EPMin) EoPbin=EoPHisto->FindBin(1);

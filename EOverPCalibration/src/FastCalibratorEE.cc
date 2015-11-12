@@ -669,7 +669,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              
              
              /// use evens    
-             if( splitStat == 1 && jentry%2 == 0 ){
+             if( splitStat == 1 && eventNumber%2 == 0 ){
                if( thisCaliBlock == 0 ){
                  int EoPbin = EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0]));
                  if (fabs(thisE/(pIn-esEnergySCEle[0])-0.96)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0]));
@@ -694,7 +694,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              }
              
              /// use odd    
-             if( splitStat == -1 && jentry%2 != 0 ){
+             if( splitStat == -1 && eventNumber%2 != 0 ){
                if(thisCaliBlock == 0){
                  int EoPbin = EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0]));
                  if (fabs(thisE/(pIn-esEnergySCEle[0])-0.96)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0]));
@@ -860,7 +860,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
               
               
               /// use evens    
-              if( splitStat == 1 && jentry%2 == 0 ){
+              if( splitStat == 1 && eventNumber%2 == 0 ){
                 if( thisCaliBlock == 0 ){
                   int EoPbin = EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1]));
 		  if (fabs(thisE/(pIn-esEnergySCEle[1])-0.96)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1]));
@@ -885,7 +885,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              }
              
              /// use odd    
-             if( splitStat == -1 && jentry%2 != 0 ){
+             if( splitStat == -1 && eventNumber%2 != 0 ){
                if(thisCaliBlock == 0){
                  int EoPbin = EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1]));
 		  if (fabs(thisE/(pIn-esEnergySCEle[1])-0.96)<EPMin && smoothCut==1) EoPbin=EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1]));
