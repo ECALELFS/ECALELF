@@ -197,8 +197,25 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
    for(reco::GsfElectronCollection::const_iterator ele_itr = (electronsHandle)->begin(); 
 	   ele_itr != (electronsHandle)->end(); ele_itr++){
+
+	   if(!ele_itr->ecalDriven()) continue;
+	   const reco::SuperCluster& sc = * ele_itr->parentSuperCluster();
 	   std::cout << ele_itr->energy() << "\t" << ele_itr->superCluster()->energy() << "\t" << ele_itr->parentSuperCluster()->energy() << std::endl;
 	   assert(ele_itr->parentSuperCluster()->seed().isNonnull());
+
+	   continue;
+
+
+  const reco::CaloCluster &seedCluster = *(sc.seed());
+  if(seedCluster.hitsAndFractions()[0].first.subdetId() == EcalBarrel)  continue;
+
+  
+  sc.rawEnergy(); 
+  sc.clusters().size();
+  
+  
+
+	   continue;
 	   mustache_regr_.GetCorrections(*(ele_itr->parentSuperCluster()));
 	   std::pair<double,double> corEle = std::make_pair<double,double>(-1,-1); //(ele_itr->parentSuperCluster().isNull()) ? std::make_pair<double,double>(-1,-1) : 
 	   
