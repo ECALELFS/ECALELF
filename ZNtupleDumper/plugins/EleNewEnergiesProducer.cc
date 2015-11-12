@@ -22,6 +22,8 @@
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 #include "Geometry/CaloEventSetup/interface/CaloTopologyRecord.h"
 
+#include "RecoEgamma/EgammaTools/interface/SCEnergyCorrectorSemiParm.h"
+
 class EleNewEnergiesProducer : public edm::EDProducer {
 
 public:
@@ -55,6 +57,8 @@ private:
 
   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > recHitCollectionEBHandle;
   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > recHitCollectionEEHandle;
+
+	SCEnergyCorrectorSemiParm mustache_regr_; 
 };
 
 EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig):
@@ -66,6 +70,7 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
     recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE"))
 #endif
   {
+	  mustache_regr_.setTokens(edm::ConsumesCollector &&cc);
   }
 
 
@@ -75,19 +80,19 @@ EleNewEnergiesProducer::~EleNewEnergiesProducer()
     // (e.g. close files, deallocate resources etc.)
   }
 
-void
-EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
-  {
+void EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+{
     using namespace edm;
-
+	
     //------------------------------ RECHIT
     // iEvent.getByLabel(recHitCollectionEBTAG, recHitCollectionEBHandle);
     // iEvent.getByLabel(recHitCollectionEETAG, recHitCollectionEEHandle);
-
+	
     EcalClusterLazyTools lazyTools(iEvent, iSetup,
-				   recHitCollectionEBTAG,
-				   recHitCollectionEETAG); 
-  }
+								   recHitCollectionEBTAG,
+								   recHitCollectionEETAG); 
+	mustache_regr_.setEvent(iEvent);
+}
 
     // ------------ method called once each job just before starting event loop ------------
 void
@@ -113,8 +118,9 @@ void
 }
 // ------------ method called when starting to processes a luminosity block ------------
 void
-  EleNewEnergiesProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+  EleNewEnergiesProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const& iSetup)
 {
+	mustache_regr_.setEventSetup(iSetup);
 }
 // ------------ method called when ending the processing of a luminosity block ------------
 void
