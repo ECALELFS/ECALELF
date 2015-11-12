@@ -490,36 +490,53 @@ void ZFit_class::SetFitPar(RooFitResult *fitres_MC){
 //get effective sigma
 double ZFit_class::GetEffectiveSigma(RooAbsData *dataset){
 
-  TH1* h = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+  //  TH1* h = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange")*25); //200*25=5000 bins = 0.01 GeV/bin
+  TH1* h = dataset->createHistogram(invMass.GetName(),5000); //200*25=5000 bins = 0.01 GeV/bin
 
   double TotEvents = h->Integral(1, h->GetNbinsX()-1);
-  float LocEvents = 0.;
+  double LocEvents = 0.;
   int binI = h->FindBin(h->GetMean());
   int binF = h->GetNbinsX()-1;
-  bool keepGoing = false;
+#ifdef DEBUG
+  double frac = 0.;
+#endif
+  //bool keepGoing = false; //debug
   for(int jBin=binI; jBin>0; --jBin){
     LocEvents = 0.;
-    keepGoing = false;
+    // keepGoing = false;
+#ifdef DEBUG
+    std::cout<<"j: "<<h->GetBinCenter(jBin)<<" I: "<<h->GetBinCenter(binI)<<" F: "<<h->GetBinCenter(binF)<<" frac: "<<frac<<std::endl;
+#endif
     for(int iBin=jBin; iBin<binF; ++iBin){
       LocEvents += h->GetBinContent(iBin);
       if(LocEvents/TotEvents >= 0.68) {
 	if(iBin-jBin < binF-binI) {
 	  binF = iBin;
 	  binI = jBin;
-	  keepGoing = true;
+	  //keepGoing = true;
+#ifdef DEBUG
+	  frac = LocEvents/TotEvents;
+	  std::cout<<"trovato nuovo intervallo piu piccolo di prima"<<std::endl;
+#endif
 	}
 	break;
       }
       if(iBin == binF-1 && binF == h->GetNbinsX()-1){
-	keepGoing = true;
+	//	keepGoing = true;
 	--binI;
       }
-      if(iBin == binF-1 && binF != h->GetNbinsX()-1) break;
+      if(iBin == binF-1 && binF != h->GetNbinsX()-1) {
+#ifdef DEBUG
+	std::cout<<"qui: esci" <<std::endl; 
+#endif
+	//	keepGoing=true; 
+	break; 
+      }
     }
-    if(keepGoing == false) break;
+    //    if(keepGoing == false) break;
   }
-  float sigma = (h->GetBinCenter(binF) - h->GetBinCenter(binI))/2.;
-  std::cout << " >>> effective sigma: " << sigma << std::endl;
+  double sigma = (h->GetBinCenter(binF) - h->GetBinCenter(binI))/2.;
+  std::cout << ">>> - effective sigma: " << sigma << " interval start from: "<<h->GetBinCenter(binI)<<" finish to: "<<h->GetBinCenter(binF)<<std::endl;
   return sigma;
 }
 
@@ -589,15 +606,20 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
   RooAbsData *data_red   = ReduceDataset(data, region, false, _isDataUnbinned);
   nEvents_region_data=data_red->sumEntries();
   if(nEvents_region_data < 100){
-    data_red   = ReduceDataset(data, region, false, _isDataUnbinned);
-    nEvents_region_data=data_red->sumEntries();
+    data_red   = ReduceDataset(data, region, false, true);
+    //    nEvents_region_data=data_red->sumEntries();
   }
-  if(nEvents_region_data < 100) return NULL;
+  //  if(nEvents_region_data < 100) return NULL;
   int numcpu=4;
-  if(_isDataUnbinned) numcpu=1;
+  if(_isDataUnbinned) numcpu=1; //this is because in previous versions of ROOT, the unbinned fit did not support nCPU>1 (to be checked in newer versions)
 
   //EFFECTIVE SIGMA
-  sigmaeff_data = GetEffectiveSigma(data_red);
+  if (_isDataUnbinned)
+    sigmaeff_data = GetEffectiveSigma(data_red);
+  else { //if data_red is binned, need to re-do it unbinned, in order to get an accurate effective sigma
+    RooAbsData *data_red_unbinned   = ReduceDataset(data, region, false, true);
+    sigmaeff_data = GetEffectiveSigma(data_red_unbinned);
+  }
 
   SetFitPar(fitres_MC);
   RooFitResult *fitres_data = model_pdf->fitTo(*data_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
