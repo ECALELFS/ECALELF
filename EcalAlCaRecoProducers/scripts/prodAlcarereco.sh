@@ -250,10 +250,11 @@ echo "[INFO] UI_WORKING_DIR=${UI_WORKING_DIR:=prod_alcarereco/${TAG}/${DATASETNA
 
 checkIfRerecoed(){
 	STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
-	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ | wc -l`" == "0" ]; then 
+	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} |grep ${DATASETNAME} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ | wc -l`" == "0" ]; then 
 		echo "NotRERECOED"
 		return 1; 
 	else 
+		grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETNAME} | grep ${DATASETPATH} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ 
 		return 0; 
 	fi
 	#return is true if not-rerecoed
@@ -265,7 +266,7 @@ if [ -n "${CREATE}" ];then
 	#check if the rereco has already been done
 #	if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME}| grep -c $RUNRANGE`" != "0" ];then
 	if checkIfRerecoed ; then
-		echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+		echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME} ${TAG}"
 		if [ "${DOTREE}" != "0" ]; then
 			echo "          Doing only ntuples"
 			if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
@@ -330,6 +331,7 @@ scheduler = $SCHEDULER
 queue = 1nd
 [CAF]
 queue = cmscaf1nd
+resource = type==SLC6_64 r&& usage[mem=1024,swap=2500]
 
 
 [CMSSW]
