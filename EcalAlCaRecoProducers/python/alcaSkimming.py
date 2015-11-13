@@ -881,6 +881,7 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
+    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
 
     if(options.bunchSpacing==25):
         print "bunchSpacing", options.bunchSpacing
