@@ -130,7 +130,7 @@ File3 >> iEta1 >> iPhi1 >> iz1 >> ic1 >> eic1 ;
  std::cout<<"ciao "<<cont<<std::endl;
  getchar();
 
- TApplication* theApp = new TApplication("Application",&argc, argv);
+ // TApplication* theApp = new TApplication("Application",&argc, argv);
 
 
 
@@ -1132,7 +1132,18 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  leg12->AddEntry(phiProfileEEm2,"EE- Projection II set ", "LP");
  leg12->Draw("same");
 
- theApp->Run();
+
+ TFile f("compareIC.root","recreate");
+ f.cd();
+
+ for (int i=0; i<24; i++) {
+   c[i]->Write();
+ }
+
+ f.Write();
+ // f.close();
+
+ // theApp->Run();
 
 return 0;
 
