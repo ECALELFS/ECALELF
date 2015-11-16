@@ -11,7 +11,7 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                globaltag = cms.string('74X_dataRun2_Prompt_v2'),
                                toGet = cms.VPSet(
                                  cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
-                                          tag = cms.string("EcalIntercalibConstants_Cal_Nov2015_EoP_v1"),
+                                          tag = cms.string("EcalIntercalibConstants_Cal_Nov2015_EoP_v8"),
                                           connect = cms.untracked.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/RunII-IC/Cal_Nov2015/eop/EcalIntercalibConstants_Cal_Nov2015_EoP_v8.db"),
                                           ),
                                  cms.PSet(record = cms.string("EcalPulseShapesRcd"),
