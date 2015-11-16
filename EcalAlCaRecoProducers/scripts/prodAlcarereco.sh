@@ -331,7 +331,8 @@ scheduler = $SCHEDULER
 queue = 1nd
 [CAF]
 queue = cmscaf1nd
-resource = type==SLC6_64 r&& usage[mem=1024,swap=2500]
+#resource = type==SLC6_64 r&& usage[mem=1024,swap=2500]
+resource = type==SLC6_64 
 
 
 [CMSSW]
