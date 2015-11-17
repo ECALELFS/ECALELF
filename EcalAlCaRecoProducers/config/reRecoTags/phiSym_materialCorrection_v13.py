@@ -9,7 +9,7 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                toGet = cms.VPSet(
                                  cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
                                           tag = cms.string("EcalIntercalibConstants_2012trans_Bon_EBEE_v2"),
-                                          connect = cms.untracked.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/RunII-IC/phiSym_materialCorrection/materialCorrection/EcalIntercalibConstants_2015B_EBEE_v2.db"),
+                                          connect = cms.untracked.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/RunII-IC/phiSym_materialCorrection/EcalIntercalibConstants_2012trans_Bon_EBEE_v2.db"),
                                           ),
                                  cms.PSet(record = cms.string("EcalPulseShapesRcd"),
                                           tag = cms.string("EcalPulseShapes_v01_offline"),

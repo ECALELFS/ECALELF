@@ -79,6 +79,7 @@ for jobID in `seq 1 $nJobs`
 
   case ${ExitStatusJOB[${jID}]} in
       8028) intervals="$intervals $jobID";;
+      24) intervals="$intervals $jobID";;
       8021) intervals="$intervals $jobID";;
       50664) intervals="$intervals $jobID";;
 	  50669) intervals="$intervals $jobID";;
@@ -87,6 +88,7 @@ for jobID in `seq 1 $nJobs`
       60307) intervals="$intervals $jobID";;
       60317) intervals="$intervals $jobID";;
       60318) intervals="$intervals $jobID";;
+	  50115) intervals="$intervals $jobID";;
   esac
 
 #  echo ${intervals}

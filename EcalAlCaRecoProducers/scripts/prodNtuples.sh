@@ -412,7 +412,7 @@ use_parent=0
 [LSF]
 queue = 1nh
 [CAF]
-queue = cmscaf1nd
+queue = cmscaf1nh
 resource = type==SLC6_64
 
 [USER]
