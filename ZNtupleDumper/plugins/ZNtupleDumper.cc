@@ -1374,8 +1374,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	pNormalizedChi2Ele[index] = electron1.gsfTrack()->normalizedChi2();
 	pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
 
-	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();
-	R9Ele[index] = electron1.r9();
+	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
+	//R9Ele[index] = electron1.r9();//original
+	R9Ele[index] = 1.;//original
 
 	//   if(isMC){
 	//     if(electron1.isEB()) 
@@ -1566,7 +1567,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 	pNormalizedChi2Ele[index] = -1; 
 	pAtVtxGsfEle[index] = -1;
 
-	R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();
+	//R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();//original version
+	R9Ele[index] = 2.;
 
 
 	// make it a function
@@ -1733,7 +1735,8 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 	e5x5SCEle[index] = clustertools->e5x5(*photon.superCluster()->seed());
 	eSeedSCEle[index]= photon.superCluster()->seed()->energy();
 
-	R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();
+	//R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();//original
+	R9Ele[index] = 3.;
 
 	//   if(isMC){
 	//     if(photon.isEB()) 
