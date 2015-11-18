@@ -281,7 +281,7 @@ private:
 	Float_t pNormalizedChi2Ele[3];  ///< track normalized chi2 of the fit (GSF)
 
 	Float_t R9Ele[3];      ///< e3x3/rawEnergySCEle
-
+        Int_t   count[3];
 	Float_t invMass;
 	Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too! 
 	Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
@@ -1154,6 +1154,7 @@ void ZNtupleDumper::InitNewTree(){
 
 
 	tree->Branch("R9Ele", R9Ele, "R9Ele[3]/F");
+	tree->Branch("count", count, "count[3]/I");
 
 	tree->Branch("e5x5SCEle", e5x5SCEle, "e5x5SCEle[3]/F");
 	//tree->Branch("eSeedSCEle", eSeedSCEle, "eSeedSCEle[3]/F");
@@ -1377,6 +1378,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
 	//R9Ele[index] = electron1.r9();//original
 	R9Ele[index] = 1.;//original
+	count[index]=1;
 
 	//   if(isMC){
 	//     if(electron1.isEB()) 
@@ -1569,8 +1571,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 
 	//R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();//original version
 	R9Ele[index] = 2.;
-
-
+	count[index]=2.;
 	// make it a function
 	//eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
 	//eleID[index] += ((bool) electron1.electronID("loose")) << 1;
@@ -1737,7 +1738,7 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 
 	//R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();//original
 	R9Ele[index] = 3.;
-
+	count[index]=3;
 	//   if(isMC){
 	//     if(photon.isEB()) 
 	//       R9Ele[index] = R9Ele[index]*1.0045+0.0010;
