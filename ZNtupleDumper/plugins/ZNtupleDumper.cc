@@ -1333,6 +1333,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		esEnergyPlane1SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane1();
 		esEnergyPlane2SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane2();
 		R9Ele[index] = electron1.r9();
+		pModeGsfEle[index] = electron1.gsfTrack()->pMode();
 	}else{
 		energySCEle[index]			= -99;
 		rawEnergySCEle[index]			= -99;
@@ -1340,6 +1341,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		esEnergyPlane1SCEle[index]		= -99;
 		esEnergyPlane2SCEle[index]		= -99;
 		R9Ele[index] = -99;
+		pModeGsfEle[index] = -99;
 	}	
 
 	if(electron1.parentSuperCluster().isAvailable()) {
@@ -1370,7 +1372,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		eSeedSCEle[index]		= -99;
 	}		
 
-	pModeGsfEle[index] = electron1.gsfTrack()->pMode();
+
 	trackMomentumErrorEle[index] = electron1.trackMomentumError();
 	pNormalizedChi2Ele[index] = electron1.gsfTrack()->normalizedChi2();
 	pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
