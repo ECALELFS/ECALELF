@@ -281,7 +281,6 @@ private:
 	Float_t pNormalizedChi2Ele[3];  ///< track normalized chi2 of the fit (GSF)
 
 	Float_t R9Ele[3];      ///< e3x3/rawEnergySCEle
-        Float_t count[3];
 	Float_t invMass;
 	Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too! 
 	Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
@@ -1154,7 +1153,6 @@ void ZNtupleDumper::InitNewTree(){
 
 
 	tree->Branch("R9Ele", R9Ele, "R9Ele[3]/F");
-	tree->Branch("count", count, "count[3]/F");
 
 	tree->Branch("e5x5SCEle", e5x5SCEle, "e5x5SCEle[3]/F");
 	//tree->Branch("eSeedSCEle", eSeedSCEle, "eSeedSCEle[3]/F");
@@ -1334,12 +1332,14 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();
 		esEnergyPlane1SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane1();
 		esEnergyPlane2SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane2();
+		R9Ele[index] = electron1.r9();
 	}else{
-		energySCEle[index]				= -99;
+		energySCEle[index]			= -99;
 		rawEnergySCEle[index]			= -99;
 		esEnergySCEle[index]			= -99;
 		esEnergyPlane1SCEle[index]		= -99;
 		esEnergyPlane2SCEle[index]		= -99;
+		R9Ele[index] = -99;
 	}	
 
 	if(electron1.parentSuperCluster().isAvailable()) {
@@ -1377,8 +1377,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
 	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
 	//R9Ele[index] = electron1.r9();//original
-	R9Ele[index] = 1.;//original
-	count[index]=1.;
 
 	//   if(isMC){
 	//     if(electron1.isEB()) 
@@ -1569,9 +1567,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 	pNormalizedChi2Ele[index] = -1; 
 	pAtVtxGsfEle[index] = -1;
 
-	//R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();//original version
-	R9Ele[index] = 2.;
-	count[index]=2.;
+	R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();//original version
+       
 	// make it a function
 	//eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
 	//eleID[index] += ((bool) electron1.electronID("loose")) << 1;
@@ -1735,10 +1732,8 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 	e3x3SCEle[index] = clustertools->e3x3(*photon.superCluster()->seed());
 	e5x5SCEle[index] = clustertools->e5x5(*photon.superCluster()->seed());
 	eSeedSCEle[index]= photon.superCluster()->seed()->energy();
+	R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();//original
 
-	//R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();//original
-	R9Ele[index] = 3.;
-	count[index]=3.;
 	//   if(isMC){
 	//     if(photon.isEB()) 
 	//       R9Ele[index] = R9Ele[index]*1.0045+0.0010;
