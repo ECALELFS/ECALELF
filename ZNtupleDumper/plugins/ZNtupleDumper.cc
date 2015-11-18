@@ -1375,7 +1375,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
 	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
 	R9Ele[index] = electron1.r9();
-	return; 
 
 	//   if(isMC){
 	//     if(electron1.isEB()) 
@@ -1384,64 +1383,76 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	//       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
 	//   } 
 
+	eleIDMap eleID_map;
+
+	eleID[index]=0;
+	for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
+	  if(electron1.isElectronIDAvailable(it->first)){//
+	    if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
+	  }//
+	}
+	classificationEle[index] = electron1.classification();
+
+	return;//To be fixed
+	
 	const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
 	//assert(recHits!=NULL);
 	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-  
+
 	if(sc.isNonnull()){
-		DetId seedDetId = sc->seed()->seed();
-		if(seedDetId.null()){
-			//assert(electron1.trackerDrivenSeed()); // DEBUG
-			seedDetId = findSCseed(*(sc));
-		}
-
-	
-		if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
-			EBDetId seedDetIdEcal = seedDetId;
-			seedXSCEle[index]=seedDetIdEcal.ieta();
-			seedYSCEle[index]=seedDetIdEcal.iphi();
-		}else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap){
-			EEDetId seedDetIdEcal = seedDetId;
-			seedXSCEle[index]=seedDetIdEcal.ix();
-			seedYSCEle[index]=seedDetIdEcal.iy();
-		}else{ ///< this case is strange but happens for trackerDriven electrons
-			seedXSCEle[index]=0;
-			seedYSCEle[index]=0;
-		}
-		
-		EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-		//assert(seedRecHit!=recHits->end()); // DEBUG
-		seedEnergySCEle[index]=seedRecHit->energy();
-		if(isMC) seedLCSCEle[index]=-10;
-		else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
-		
-		if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
-		else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
-		else gainEle[index]=0;
-	
-
-	float sumLC_E = 0.;
-	float sumE = 0.;
-	if( !isMC){
-		std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = sc->hitsAndFractions();
-		for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-			 detitr != hitsAndFractions_ele1.end(); detitr++ )
-		{
-			EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-			//assert(oneHit!=recHits->end()); // DEBUG
-			sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
-			sumE    += oneHit->energy();
-		}
-		avgLCSCEle[index] = sumLC_E / sumE;
-
-	} else     avgLCSCEle[index] = -10;
-  
-	nHitsSCEle[index] = electron1.superCluster()->size();
+	  DetId seedDetId = sc->seed()->seed();
+	  if(seedDetId.null()){
+	    //assert(electron1.trackerDrivenSeed()); // DEBUG
+	    seedDetId = findSCseed(*(sc));
+	  }
+	  
+	  
+	  if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
+	    EBDetId seedDetIdEcal = seedDetId;
+	    seedXSCEle[index]=seedDetIdEcal.ieta();
+	    seedYSCEle[index]=seedDetIdEcal.iphi();
+	  }else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap){
+	    EEDetId seedDetIdEcal = seedDetId;
+	    seedXSCEle[index]=seedDetIdEcal.ix();
+	    seedYSCEle[index]=seedDetIdEcal.iy();
+	  }else{ ///< this case is strange but happens for trackerDriven electrons
+	    seedXSCEle[index]=0;
+	    seedYSCEle[index]=0;
+	  }
+	  
+	  EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
+	  //assert(seedRecHit!=recHits->end()); // DEBUG
+	  seedEnergySCEle[index]=seedRecHit->energy();
+	  if(isMC) seedLCSCEle[index]=-10;
+	  else seedLCSCEle[index]=laserHandle_->getLaserCorrection(seedDetId,runTime_);
+	  
+	  if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index]=1;
+	  else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
+	  else gainEle[index]=0;
+	  
+	  
+	  float sumLC_E = 0.;
+	  float sumE = 0.;
+	  if( !isMC){
+	    std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = sc->hitsAndFractions();
+	    for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
+		 detitr != hitsAndFractions_ele1.end(); detitr++ )
+	      {
+		EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
+		//assert(oneHit!=recHits->end()); // DEBUG
+		sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
+		sumE    += oneHit->energy();
+	      }
+	    avgLCSCEle[index] = sumLC_E / sumE;
+	    
+	  } else     avgLCSCEle[index] = -10;
+	  
+	  nHitsSCEle[index] = electron1.superCluster()->size();
 	}else{
-		nHitsSCEle[index] = -1;
-		avgLCSCEle[index] = -1;
+	  nHitsSCEle[index] = -1;
+	  avgLCSCEle[index] = -1;
 	}
-
+	
 	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron1.superCluster()->seed()))[index]);
 	//  sigmaIEtaIEtaSCEle[1] = sqrt(clustertools->localCovariances(*(electron2.superCluster()->seed()))[index]);
 	//  sigmaIPhiIPhiBC = sqrt(clustertools->localCovariances(*b)[3]);
@@ -1456,16 +1467,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		etaMCEle[index]=0;
 		phiMCEle[index]=0;
 	}
-
-	eleIDMap eleID_map;
-
-	eleID[index]=0;
-	for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
-		// if(electron1.isElectronIDAvailable(it->first)){
-		// 	  if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;
-		// }
-	}
-	classificationEle[index] = electron1.classification();
 
 	return;
 }
