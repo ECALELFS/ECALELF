@@ -85,13 +85,13 @@ esac
 
 
 if [ "${FILENAME_BASE}" == "PUDumper" ];then
-    MERGEDFILE=PUDumper-${DATASETNAME}-${RUNRANGE}.root
+    MERGEDFILE=PUDumper-${DATASETNAME}-${RUNRANGE}-miniAOD.root
 elif [ "`echo ${FILENAME_BASE} | awk '(/extraID/){printf(\"1\")}'`" == "1" ]; then
-    MERGEDFILE=extraID-${DATASETNAME}-${RUNRANGE}.root
+    MERGEDFILE=extraID-${DATASETNAME}-${RUNRANGE}-miniAOD.root
 elif [ "`echo ${FILENAME_BASE} | awk '(/extraCalibTree/){printf(\"1\")}'`" == "1" ]; then
-    MERGEDFILE=extraCalibTree-${DATASETNAME}-${RUNRANGE}.root
+    MERGEDFILE=extraCalibTree-${DATASETNAME}-${RUNRANGE}-miniAOD.root
 else
-    MERGEDFILE=${DATASETNAME}-${RUNRANGE}.root
+    MERGEDFILE=${DATASETNAME}-${RUNRANGE}-miniAOD.root
 fi
 #else
 #    MERGEDFILE=${DATASETNAME}-${RUNRANGE}-JSON_${JSON}.root

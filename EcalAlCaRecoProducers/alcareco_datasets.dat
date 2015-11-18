@@ -159,6 +159,11 @@ allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15D
 allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM    DYJets_madgraph-RunIISpring15DR74-Asym25ns caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
 allRange /DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM						DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
 #allRange DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM                          DYToEE_amctnlo-RunIISpring15DR74-Asym25ns-v1     caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
+#
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v3/MINIAODSIM   DYJets_amctnlo-RunIISpring15DR74-Asym25ns-miniAOD caf database VALID - -   
+allRange /DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM    DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD caf database VALID - - 
+allRange /DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM						DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1-miniAOD caf database VALID - - 
+#allRange DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/MINIAODSIM                          DYToEE_amctnlo-RunIISpring15DR74-Asym25ns-v1-miniAOD     caf database VALID - - 
 ############### MC For E/p
 #allRange /WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM         WJets_madgraph_13TeV-RunIISpring15DR74-Asym25ns-v1 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - - 
 #/QCD_Pt-15to20_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
@@ -169,3 +174,9 @@ allRange /DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN
 #/QCD_Pt-120to170_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
 #/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
 #/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM
+###################################
+256584-258158 /DoubleEG/Run2015D-PromptReco-v3/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v3-MINIAOD       caf database VALID RUN2015D,RUN2015CD,RUN2015BCD,RUN2015ABCD,Cal_Nov2015
+#
+258159-260737 /DoubleEG/Run2015D-PromptReco-v4/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v4-MINIAOD       caf database VALID RUN2015D,RUN2015CD,RUN2015BCD,RUN2015ABCD,Cal_Nov2015
+#
+254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD		caf database VALID RUN2015C,RUN2015CD

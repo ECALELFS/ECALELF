@@ -10,6 +10,7 @@ isMC=0
 UI_WORKING_DIR=prod_ntuples
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
 LUMIS_PER_JOBS=100
+EVENTS_PER_JOB=50000
 DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
@@ -123,13 +124,17 @@ do
 		    isMC=1
 		    ;;
 		MINIAOD| miniAOD)
-		    TYPE=MINIAODNTUPLE
-		    if [ "${isMC}" == "1" ]; then 
-				TYPE=miniAODSIM;
-		    else
 				TYPE=MINIAODNTUPLE
-		    fi
-		    ;;
+				if [ "${isMC}" == "1" ]; then 
+					TYPE=MINIAODNTUPLE;
+				else
+					TYPE=MINIAODNTUPLE
+				fi
+				;;
+			miniAODSIM)
+				TYPE=MINIAODNTUPLE
+				isMC=1
+				;;
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
 		    if [ "${isMC}" == "1" ]; then
@@ -194,7 +199,7 @@ do
     shift
 done
 
-echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
+#echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
 
 if [ -z "$DATASETNAME" ];then 
     echo "[ERROR] DATASETNAME not defined" >> /dev/stderr
@@ -214,13 +219,13 @@ if [ -z "$TYPE" ];then
     exit 1
 fi
 
-if [ -z "$JSONFILE" -a "$TYPE" != "ALCARECOSIM" ];then 
+if [ -z "$JSONFILE" -a "$isMC" != "1" ];then 
    echo "[ERROR] JSONFILE not defined" >> /dev/stderr
    usage >> /dev/stderr
    exit 1
 fi
 
-if [ -z "$JSONNAME" -a "$TYPE" != "ALCARECOSIM" ];then 
+if [ -z "$JSONNAME" -a "$isMC" != "1" ];then 
    echo "[ERROR] JSONNAME not defined" >> /dev/stderr
    usage >> /dev/stderr
    exit 1
@@ -376,6 +381,10 @@ if [ -n "$FILELIST" ]; then
     fi
 fi
 
+if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`" == "0" ];then
+    unset RUNRANGE
+fi
+
 if [ ! -d "tmp" ];then mkdir tmp/; fi
 cat > ${crabFile} <<EOF
 [CRAB]
@@ -387,15 +396,25 @@ jobtype=cmssw
 EOF
 case ${ORIGIN_REMOTE_DIR_BASE} in
         database)
-        cat >> ${crabFile} <<EOF
+		if [ "$isMC" != "1" ];then
+			cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 datasetpath=${DATASETPATH}
-dbs_url = phys03
+#dbs_url = phys03
 use_dbs3 = 1
 EOF
-        ;;
-        *)
+		else
+			cat >> ${crabFile} <<EOF
+total_number_of_events = -1
+events_per_job = ${EVENTS_PER_JOB}
+datasetpath=${DATASETPATH}
+#dbs_url = phys03
+use_dbs3 = 1
+EOF
+		fi
+			;;
+    *)
         cat >> ${crabFile} <<EOF
 total_number_of_events=${NJOBS}
 number_of_jobs=${NJOBS}
