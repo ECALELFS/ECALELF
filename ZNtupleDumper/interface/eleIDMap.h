@@ -27,8 +27,8 @@ class eleIDMap {
     eleIDmap["tight50nsRun2"]     =0x1000;
 
     //official eleIDs
-    eleIDmap["cutBasedElectronID_Spring15_25ns_V1_standalone_veto"]   = 0x10000;
-    eleIDmap["cutBasedElectronID_Spring15_25ns_V1_standalone_loose"]  = 0x20000;
+    eleIDmap["cutBasedElectronID|Spring15|25ns_V1|standalone|veto"]   = 0x10000;
+    eleIDmap["cutBasedElectronID|Spring15|25ns|V1|standalone|loose"]  = 0x20000;
     eleIDmap["cutBasedElectronID_Spring15_25ns_V1_standalone_medium"] = 0x40000;
     eleIDmap["cutBasedElectronID_Spring15_25ns_V1_standalone_tight"]  = 0x80000;
     
