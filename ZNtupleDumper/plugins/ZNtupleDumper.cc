@@ -644,7 +644,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.getByLabel(rhoTAG,rhoHandle);
   
 	iEvent.getByLabel(metTAG, metHandle); 
-  iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
+	iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
 	//if(metHandle.isValid()==false) iEvent.getByType(metHandle);
 	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
 
@@ -1254,7 +1254,7 @@ void ZNtupleDumper::TreeSetPileupVar(void){
 	if(primaryVertexHandle->size() > 0) {
 		for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin();
 			v != primaryVertexHandle->end(); ++v){
-			if((*v).tracksSize() > 0) nPV++; // non mi ricordo perche' ho fatto cosi'....
+			//if((*v).tracksSize() > 0) nPV++; // non mi ricordo perche' ho fatto cosi'....
 		}
 	}
 
