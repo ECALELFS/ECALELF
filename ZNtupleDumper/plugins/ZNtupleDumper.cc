@@ -1256,10 +1256,10 @@ void ZNtupleDumper::TreeSetPileupVar(void){
 	mcGenWeight=-1;
 
 	if(primaryVertexHandle->size() > 0) {
-		for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin();
-			v != primaryVertexHandle->end(); ++v){
-			//if((*v).tracksSize() > 0) nPV++; // non mi ricordo perche' ho fatto cosi'....
-		}
+	  for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin(); v != primaryVertexHandle->end(); ++v){
+	    //if((*v).tracksSize() > 0) 
+	    nPV++; // non mi ricordo perche' ho fatto cosi'....
+	  }
 	}
 
 	if(isMC){
