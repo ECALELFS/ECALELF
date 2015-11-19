@@ -73,6 +73,7 @@
 #include "DataFormats/EcalDetId/interface/EcalSubdetector.h"
 #include "DataFormats/EcalDetId/interface/EBDetId.h"
 #include "DataFormats/EcalDetId/interface/EEDetId.h"
+#include "DataFormats/EcalDetId/interface/ESDetId.h"
 #include "DataFormats/CaloRecHit/interface/CaloID.h"
 
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
@@ -183,6 +184,7 @@ private:
 	edm::Handle< reco::PFMETCollection > metHandle;
 	edm::Handle<edm::TriggerResults> triggerResultsHandle;
 	edm::Handle<edm::TriggerResults> WZSkimResultsHandle;
+  edm::Handle<EcalRecHitCollection> ESRechitsHandle;
 
 	//------------------------------ Input Tags
 	// input tag for primary vertex
@@ -201,6 +203,7 @@ private:
 	edm::InputTag recHitCollectionEETAG;
 #endif
 
+  edm::InputTag recHitCollectionESTAG;
 	edm::InputTag EESuperClustersTAG;
 	// input rho
 	edm::InputTag rhoTAG;
@@ -269,6 +272,8 @@ private:
 	Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
 	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
 	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
+	Float_t rawESEnergyPlane1SCEle[3];  ///< pre-shower rechit energy sum of Plane 1 associated to the electron 
+	Float_t rawESEnergyPlane2SCEle[3];  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
 
 	Float_t energySCEle_corr[3];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 
@@ -392,6 +397,7 @@ private:
 	//  void Tree_output(TString filename);
 	void TreeSetEventSummaryVar(const edm::Event& iEvent);
 	void TreeSetPileupVar(void);
+	float GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex);
 
 	bool elePreselection(const pat::Electron& electron);
 	//puWeights_class puWeights;
@@ -455,6 +461,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
 #endif
 
+  recHitCollectionESTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionES")),
 	EESuperClustersTAG(iConfig.getParameter<edm::InputTag>("EESuperClusterCollection")),
 	rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
 	conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
@@ -637,6 +644,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.getByLabel(rhoTAG,rhoHandle);
   
 	iEvent.getByLabel(metTAG, metHandle); 
+  iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
 	//if(metHandle.isValid()==false) iEvent.getByType(metHandle);
 	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
 
@@ -777,7 +785,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 						( (1-t1q)*(1-t2q)+4*t1*t2*cos(eleIter1->phi()-eleIter2->phi()))/(
 							(1+t1q)*(1+t2q)
 							);
-					float mass = sqrt(2*eleIter1->energy()*eleIter2->energy() *angle); 
+	  double mass = sqrt(2*eleIter1->energy()*eleIter2->energy() *angle); //use default electron energy, in order to have the same number of events between alcareco and alcarereco ntuples
 			  
 					//	  std::cout<<" ele1 SC: "<<eleIter1->superCluster()->energy()<<" ele1 SC must: "<<eleIter1->parentSuperCluster()->energy()<<" eta1: "<<eleIter1->eta()<<" phi1: "<<eleIter1->phi()<<std::endl
 					//		   <<" ele2 SC: "<<eleIter2->superCluster()->energy()<<" ele2 SC must: "<<eleIter2->parentSuperCluster()->energy()<<" eta2: "<<eleIter2->eta()<<" phi2: "<<eleIter2->phi()<<"mass: "<<mass<<std::endl;
@@ -788,16 +796,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					if(eventType==UNKNOWN) eventType=ZEE;
 					TreeSetDiElectronVar(*eleIter1, *eleIter2);
 				 
-					// if(doExtraCalibTree){
-					// 	TreeSetExtraCalibVar(*eleIter1, *eleIter2);
-					// }
-					// if(doEleIDTree){
-					// 	TreeSetEleIDVar(*eleIter1, *eleIter2);
-					// }
-					// if(doPdfSystTree && isMC){
-					// 	TreeSetPdfSystVar(iEvent);
-					// 	//pdfSystTree->Fill();
-					// }
+	  if(doExtraCalibTree){
+	    TreeSetExtraCalibVar(*eleIter1, *eleIter2);
+	  }
+	  if(doEleIDTree){
+	    TreeSetEleIDVar(*eleIter1, *eleIter2);
+	  }
+	  if(doPdfSystTree && isMC){
+	    TreeSetPdfSystVar(iEvent);
+	    //pdfSystTree->Fill();
+	  }
 				 
 					// if(electronsHandle->size() < NELE &&  eventType == SINGLEELE){
 	
@@ -1148,6 +1156,9 @@ void ZNtupleDumper::InitNewTree(){
 	tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
 	tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
 	tree->Branch("esEnergyPlane1SCEle", esEnergyPlane1SCEle, "esEnergyPlane1SCEle[3]/F");
+  tree->Branch("rawESEnergyPlane2SCEle", rawESEnergyPlane2SCEle, "rawESEnergyPlane2SCEle[3]/F");
+  tree->Branch("rawESEnergyPlane1SCEle", rawESEnergyPlane1SCEle, "rawESEnergyPlane1SCEle[3]/F");
+
 
 	tree->Branch("energySCEle_corr", energySCEle_corr, "energySCEle_corr[3]/F");
 
@@ -1310,6 +1321,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	chargeEle[index] = electron1.charge();
 	etaEle[index]    = electron1.eta(); // degli elettroni
 	phiEle[index]    = electron1.phi();
+
 
 	if(electron1.ecalDrivenSeed()){
 		if(electron1.trackerDrivenSeed()) recoFlagsEle[index]=3;
@@ -1553,6 +1565,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 	esEnergySCEle[index] = electron1.preshowerEnergy();
 	esEnergyPlane1SCEle[index] = electron1.preshowerEnergyPlane1();
 	esEnergyPlane2SCEle[index] = electron1.preshowerEnergyPlane2();
+	rawESEnergyPlane2SCEle[index] = -1;
+	rawESEnergyPlane1SCEle[index] = -1;
 
 	energySCEle_corr[index] = electron1.energy();
 
@@ -1916,6 +1930,39 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 	delete m2;
  
 	return;
+}
+
+
+
+// method to get the raw energy of one plane of ES summing the energy of only recHits associated to the electron SC
+///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
+float ZNtupleDumper::GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex){
+	
+		float RawenergyPlane =0;
+		float pfRawenergyPlane=0;
+		if(ESRechitsHandle.isValid()){
+		for(auto iES = electron.superCluster()->preshowerClustersBegin(); iES != electron.superCluster()->preshowerClustersEnd(); ++iES){
+			const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
+			for(std::vector<std::pair<DetId,float> >::const_iterator rh = hits.begin(); rh!=hits.end(); ++rh){
+				//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
+				//      ++iCount;
+				for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr){
+					ESDetId rhid = ESDetId(esItr->id());
+					if(rhid == (*rh).first){
+						// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
+						if((int) rhid.plane() == (int) planeIndex){
+							RawenergyPlane += esItr->energy();
+							pfRawenergyPlane += rh->second;
+						}
+						break;
+					}
+				}
+			}
+		}
+		}
+			if (pfRawenergyPlane) ; // avoid compilation error for unused var
+		//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl; 
+		return RawenergyPlane;
 }
 
 //////////////
