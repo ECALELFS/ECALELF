@@ -1480,6 +1480,14 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		phiMCEle[index]=0;
 	}
 
+  eleIDMap eleID_map;
+
+  eleID[index]=0;
+  for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
+    if ((bool) electron1.electronID(it->first))
+      eleID[index] |= it->second;
+  }
+
 	return;
 }
 
