@@ -180,3 +180,5 @@ allRange /DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN
 258159-260737 /DoubleEG/Run2015D-PromptReco-v4/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v4-MINIAOD       caf database VALID RUN2015D,RUN2015CD,RUN2015BCD,RUN2015ABCD,Cal_Nov2015
 #
 254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD		caf database VALID RUN2015C,RUN2015CD
+############### Ru2015C 25ns rereco
+254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/RECO		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-25nsReco		caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2015C,RUN2015CD

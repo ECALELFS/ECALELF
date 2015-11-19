@@ -34,6 +34,7 @@ usage(){
     echo "    --createOnly"
     echo "    --check"
     echo "    --crabVersion (=2)"
+    echo "    --file_per_job arg: number of files to process in 1 job (=1)"
     echo "--------------- ECALELF Tutorial"
     echo "    --tutorial"
     echo "--------------- Expert Option"
@@ -43,7 +44,7 @@ usage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,ntupleOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree -- "$@")
+if ! options=$(getopt -u -o ht:p: -l help,tag_file:,period:,scheduler:,singleEle,createOnly,submitOnly,check,ntupleCheck,alcarerecoOnly,ntupleOnly,crabVersion:,json_name:,json:,tutorial,doExtraCalibTree,doEleIDTree,noStandardTree,file_per_job:,weightsReco -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -86,7 +87,8 @@ do
 	--doExtraCalibTree) DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doExtraCalibTree";;
 	--doEleIDTree)      DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doEleIDTree";;
 	--noStandardTree)   DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --noStandardTree";;
-
+ 	--file_per_job)     DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --file_per_job=$2"; shift ;;
+	--weightsReco)      DOWEIGHTSRECO=y;;
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
     (*) break;;
@@ -142,7 +144,7 @@ fi
 if [ -n "${RERECO}" ];then
 	datasets=`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`
 else
-	datasets=`./scripts/parseDatasetFile.sh $fileList | grep ${TAG}`
+	datasets=`./scripts/parseDatasetFile.sh $fileList | grep ${TAG}$`
 fi
 # set IFS to newline in order to divide using new line the datasets
 IFS=$'\n'
@@ -152,11 +154,17 @@ IFS=$'\n'
 for dataset in $datasets
   do
 	
+
+#    echo "=========================================================================================="
+#	echo " [INFO] Dataset $dataset"
 	if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
 	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
-    echo "=========================================================================================="
-#	echo " [INFO] Dataset $dataset"
-#	echo "============================================================"
+	if [ -n "${DOWEIGHTSRECO}" ];then 
+		if [ "`echo $dataset | grep -c weightsReco`" == "0" ]; then continue; fi
+	else
+		if [ "`echo $dataset | grep -c weightsReco`" != "0" ]; then continue; fi
+	fi
+	echo "============================================================"
 	if [ -n "${RERECO}" ];then
 		./scripts/prodAlcarereco.sh -t ${TAGFILE} \
 			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
@@ -164,7 +172,7 @@ for dataset in $datasets
       ${TUTORIAL} $dataset 
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
-			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --file_per_job=10 --extraName=eopBis ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   			--json=${JSONFILE} --json_name=${JSONNAME} \
 			${TUTORIAL} $dataset 
 	fi

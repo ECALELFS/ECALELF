@@ -412,11 +412,11 @@ if(options.skim=="partGun"):
 ###############################
 #============================== TO BE CHECKED FOR PRESHOWER
 process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
-process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
+#process.reducedEcalRecHitsES.scEtThreshold = cms.double(0.)
 
-process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
-process.reducedEcalRecHitsES.noFlag = cms.bool(True)
-process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
+#process.reducedEcalRecHitsES.EcalRecHitCollectionES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
+#process.reducedEcalRecHitsES.noFlag = cms.bool(True)
+#process.reducedEcalRecHitsES.OutputLabel_ES = cms.string('alCaRecHitsES')
 
 #==============================
 
@@ -432,7 +432,7 @@ else:
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
 if(re.match("CMSSW_7_.*", CMSSW_VERSION)):
-    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron)
+    process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron * process.reducedEcalRecHitsES)
 else:
     process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.sandboxRerecoSeq * (process.ALCARECOEcalCalElectronECALSeq + process.reducedEcalRecHitsES))
 
@@ -830,6 +830,7 @@ else:
     process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
 
+process.eleNewEnergiesProducer.electronCollection = myEleCollection
 
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
@@ -839,6 +840,7 @@ if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
+    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
     
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
@@ -857,6 +859,10 @@ if(options.type=="ALCARERECO"):
     elif(options.bunchSpacing==0):
         # auto defined by the bunchSpacingProducer
         process.ecalMultiFitUncalibRecHit.algoPSet.useLumiInfoRunHeader = cms.bool(True)
+    elif(options.bunchSpacing==-1):
+        process.ecalLocalRecoSequence.replace(process.ecalMultiFitUncalibRecHit, process.ecalGlobalUncalibRecHit)
+        process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
+        process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
     else:
         print "[ERROR] only bunchSpacing of 50 and 25 are implemented"
         exit(1)
@@ -865,8 +871,10 @@ process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProdu
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
-#process.zNtupleDumper.recHitCollectionES = cms.InputTag(
 
+if(options.type=="ALCARECOSIM"):
+    process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
+#process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 ############################
 ## Dump the output Python ##
 ############################

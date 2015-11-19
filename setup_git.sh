@@ -13,7 +13,7 @@ checkVERSION(){
 	CMSSW_5_3_21)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
-	CMSSW_7_4_12_patch4)
+	CMSSW_7_4_15_patch1)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
 	    ;;
 	*)
@@ -166,6 +166,9 @@ case $CMSSW_VERSION in
 	CMSSW_7_4_*)
 		git cms-addpkg  Configuration/DataProcessing/
 		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch
+		git cms-addpkg DataFormats/EgammaCandidates/
+		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch
+		git-cms-merge-topic bendavid:mustacheregressionrobust
 		;;
 
     CMSSW_7_5_*)

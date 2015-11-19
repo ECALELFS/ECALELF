@@ -12,7 +12,7 @@ STORAGE_ELEMENT=caf
 #UI_WORKING_DIR=prod_alcarereco
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco
 NTUPLE_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOB=30
+LUMIS_PER_JOB=20
 CREATE=y
 SUBMIT=y
 DOTREE=1
@@ -24,6 +24,8 @@ crab3File=tmp/alcarereco_cfg.py
 PUBLISH=False
 #DBS_URL=phys03
 DBS_URL=global
+BUNCHSPACING=0
+
 usage(){
     echo "`basename $0` {parseDatasetFile options} -t tagFile [options]"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -45,6 +47,7 @@ usage(){
     echo "    --createOnly"
     echo "    --submitOnly"
     echo "    --check"
+	echo "    --weightsReco: using weights for local reco"
     echo "----------"
     echo "    --tutorial: tutorial mode, produces only one sample in you user area"
     echo "    -H, --expertHelp"
@@ -67,7 +70,7 @@ expertUsage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:u: -l help,expertHelp,file_per_job:,nJobs:,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,rereco_remote_dir:,ui_working_dir:,scheduler:,createOnly,submitOnly,check,ntupleCheck,crabVersion:,json:,json_name:,doExtraCalibTree,doEleIDTree,noStandardTree,alcarerecoOnly,ntupleOnly,tutorial -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:u: -l help,expertHelp,file_per_job:,nJobs:,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,rereco_remote_dir:,ui_working_dir:,scheduler:,createOnly,submitOnly,check,ntupleCheck,crabVersion:,json:,json_name:,doExtraCalibTree,doEleIDTree,noStandardTree,alcarerecoOnly,ntupleOnly,tutorial,weightsReco -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -99,6 +102,7 @@ do
 	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
 	--ntupleCheck)      echo "[OPTION] checking ntuple jobs"; unset CREATE; unset SUBMIT; NTUPLECHECK=y; EXTRAOPTION="--check";;
 	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; OUTFILES=""; DOTREE=0;;
+	--weightsReco)    echo "[OPTION] using weights for local reco"; BUNCHSPACING=-1;;
 	--ntupleOnly)     echo "[OPTION] ntupleOnly"; NTUPLEONLY=y;;
 	--rereco_remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
@@ -220,15 +224,11 @@ case $SCHEDULER in
 		;;
 esac
 
-BUNCHSPACING=0
-#case $DATASETNAME in
-	#*-50nsReco) BUNCHSPACING=50;;
-	#*-25nsReco) BUNCHSPACING=25;;
-#	*)
-#		echo "Other bunch spacing not implemented yet in alcaSkimming" >> /dev/stderr
-#		exit 1
-#		;;
-#esac
+case $DATASETNAME in
+#	*-50nsReco) BUNCHSPACING=50;;
+#	*-25nsReco) BUNCHSPACING=25;;
+	*-weightsReco) BUNCHSPACING=-1;;
+esac
 
 
 ALCARAW_REMOTE_DIR=$ALCARAW_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE}
@@ -250,10 +250,11 @@ echo "[INFO] UI_WORKING_DIR=${UI_WORKING_DIR:=prod_alcarereco/${TAG}/${DATASETNA
 
 checkIfRerecoed(){
 	STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
-	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG} | wc -l`" == "0" ]; then 
+	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} |grep ${DATASETNAME} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ | wc -l`" == "0" ]; then 
 		echo "NotRERECOED"
 		return 1; 
 	else 
+		grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETNAME} | grep ${DATASETPATH} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ 
 		return 0; 
 	fi
 	#return is true if not-rerecoed
@@ -265,7 +266,7 @@ if [ -n "${CREATE}" ];then
 	#check if the rereco has already been done
 #	if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME}| grep -c $RUNRANGE`" != "0" ];then
 	if checkIfRerecoed ; then
-		echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+		echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME} ${TAG}"
 		if [ "${DOTREE}" != "0" ]; then
 			echo "          Doing only ntuples"
 			if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
@@ -330,6 +331,8 @@ scheduler = $SCHEDULER
 queue = 1nd
 [CAF]
 queue = cmscaf1nd
+#resource = type==SLC6_64 r&& usage[mem=1024,swap=2500]
+resource = type==SLC6_64 
 
 
 [CMSSW]

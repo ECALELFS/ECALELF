@@ -189,7 +189,7 @@ do
 			CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
 	--isPrivate)      echo "[OPTION] private dataset"; ISPRIVATE=1;;
 
- 	--file_per_job) FILE_PER_JOB=$2; shift ;;
+ 	--file_per_job) echo "[OPTION] file per job: $2"; FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 
 	(--) shift; break;;
@@ -297,7 +297,7 @@ if [ -n "${EXTRANAME}" ];then USER_REMOTE_DIR=$USER_REMOTE_DIR/${EXTRANAME}; fi
 
 if [ -z "${CHECK}" ];then
 	if [ "${TYPE}" == "ALCARERECO" ];then
-		if [ "`cat ntuple_datasets.dat | grep ${DATASETNAME}  | grep ${JSONNAME} | grep $TAG | grep -c $RUNRANGE`" != "0" ];then
+		if [ "`cat ntuple_datasets.dat | grep ${DATASETNAME}  | grep ${JSONNAME} | grep $TAG$ | grep -c $RUNRANGE`" != "0" ];then
 			echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 
 			for file in `eos.select ls -l $STORAGE_PATH/$USER_REMOTE_DIR/  | sed '/^d/ d' | awk '{print $9}'`
@@ -371,13 +371,13 @@ if [ -n "$FILELIST" ]; then
 			let FILE_PER_JOB=$FILE_PER_JOB+1
 		fi
     elif [ -n "$FILE_PER_JOB" ];then
-		let NJOBS=$nFiles/$FILE_PER_JOB
-		if [ "`echo \"$nFiles%$FILE_PER_NJOB\" | bc`" != "0" ];then
+		NJOBS=`perl -w -e "use POSIX; print ceil($nFiles/${FILE_PER_JOB}), qq{\n}"`
+		if [ "`echo \"${nFiles}%${FILE_PER_JOB}\" | bc -l`" != "0" ];then
 			let NJOBS=$NJOBS+1
 		fi
     else
-	NJOBS=$nFiles
-	FILE_PER_JOB=1
+		NJOBS=$nFiles
+		FILE_PER_JOB=1
     fi
 fi
 
@@ -447,7 +447,7 @@ use_parent=0
 [LSF]
 queue = 1nh
 [CAF]
-queue = cmscaf1nd
+queue = cmscaf1nh
 resource = type==SLC6_64
 
 [USER]
