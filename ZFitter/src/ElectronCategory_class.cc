@@ -90,6 +90,8 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 
 
 std::set<TString> ElectronCategory_class::GetCutSet(TString region){
+  std::cout<<"Inside ElectronCategory_class::GetCutSet"<<std::endl;
+  std::cout<<"Region is "<<region<<std::endl;
   TCut cut_string;
   cut_string.Clear();
 
@@ -699,6 +701,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       TObjString *Objstring1 = (TObjString *) splitted->At(1);
             
       TString string1 = Objstring1->GetString();
+      std::cout<<"string 1 is "<<string1<<std::endl;
       string1.Form("%d",eleID_map.eleIDmap[string1.Data()]);
       /*
       if(string1=="loose") string1="2";
@@ -713,7 +716,6 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       else if(string1=="medium50nsRun2") string1="3072";
       else if(string1=="tight50nsRun2") string1="7168";
       */
-
       TCut cutEle1("(eleID[0] & "+string1+")=="+string1);
       TCut cutEle2("(eleID[1] & "+string1+")=="+string1);
 

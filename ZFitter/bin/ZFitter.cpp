@@ -273,7 +273,8 @@ int main(int argc, char **argv) {
   std::string initFileName;
   //  bool savePUweightTree;
   std::string imgFormat="eps", outDirFitResMC="test/MC/fitres", outDirFitResData="test/dato/fitres", outDirImgMC="test/MC/img", outDirImgData="test/dato/img", outDirTable="test/dato/table", selection;
-  TString eleID="";
+  //TString eleID="";
+  TString eleID="cutBasedElectronID|Spring15|25ns|V1|standalone|";
   //std::vector<std::string> signalFiles, bkgFiles, dataFiles;
   std::string commonCut;
   std::string corrEleFile, corrEleType;
@@ -1032,7 +1033,7 @@ int main(int argc, char **argv) {
      ) return 0;
 
   eleID+=selection.c_str();
-  eleID.ReplaceAll("_","");
+  //eleID.ReplaceAll("_","");
 
   //------------------------------ RooSmearer
   RooArgSet args;

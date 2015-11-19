@@ -7,9 +7,15 @@
 # selected
 # some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
 
-d	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD/254227-255031/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
-#d	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v3-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
-#d	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v4-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
-s	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD/254227-255031/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
+#d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v3-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
+#d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v4-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
+#s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
+s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
 
-d	pileupHist	 data/puFiles/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.root
+d	pileupHist	 /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/ZFitter/data/puFiles/puData.root
+s	pileupHist	 /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/ZFitter/data/puFiles/puMC.root
+s1      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_s1-miniAOD_November2015.root
+d1      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d1-miniAOD_November2015.root
+#d2      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d2-miniAOD_November2015.root
+#d3      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d3-miniAOD_November2015.root

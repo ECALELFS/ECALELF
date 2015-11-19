@@ -8,6 +8,7 @@
 #include <TStopwatch.h>
 #define SELECTOR
 #define FIXEDSMEARINGS
+#define my_deb
 SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut):
   //  _chain(chain),
   _regionList(regionList),
@@ -74,7 +75,9 @@ void SmearingImporter::ImportToy(Long64_t nEvents, event_cache_t& eventCache, bo
 
 
 void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddString, bool isMC, Long64_t nEvents, bool isToy, bool externToy){
-
+#ifdef my_deb
+  std::cout<<"inside Import"<<std::endl;
+#endif
   TRandom3 gen(0);
   if(!isMC) gen.SetSeed(12345);
   TRandom3 excludeGen(12345);
@@ -182,6 +185,9 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     exit(1);
   }
   Long64_t entries = chain->GetEntryList()->GetN();
+#ifdef my_deb
+  std::cout<<"In Import of SmearingImporter, you start importing from # entries: "<<entries<<std::endl;
+#endif
   if(nEvents>0 && nEvents<entries){
     std::cout << "[INFO] Importing only " << nEvents << " events" << std::endl;
     entries=nEvents;
@@ -327,16 +333,31 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     //if(event.invMass < 70 || event.invMass > 110) continue;
 
     event.weight = 1.;
+    if(isMC){//remove this check                                                                                                                                                
+      if(weight==0){
+        event.weight=1.;//puWeight seems to be 0                                                                                                                               
+      }
+    }
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
     if(_useFSRweight) event.weight *= FSRweight;
     if(_useWEAKweight) event.weight *= WEAKweight;
     if(_useZPtweight && isMC && _pdfWeightIndex>0) event.weight *= zptweight[_pdfWeightIndex];
+#ifdef my_deb
+    if(isMC){
+    std::cout<<"event weight 1 is "<<event.weight<<std::endl;
+    }
+#endif
+
     if(!isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
       if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
       event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
-
+#ifdef my_deb
+      if(isMC){
+	std::cout<<"event weight 2 "<<event.weight<<std::endl;
+      }
+#endif
       
 #ifdef DEBUG      
       if(jentry<10 || event.weight!=event.weight || event.weight>1.3){
@@ -372,6 +393,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       }
     }
     //#ifdef DEBUG      
+#ifdef my_deb
+    if(isMC){
+    std::cout<<"event weight 3 "<<event.weight<<std::endl;
+    }
+#endif
       if(jentry<10 || event.weight!=event.weight || event.weight>2){
 	std::cout << "jentry = " << jentry 
 		  << "\tevent.weight = " << event.weight 
@@ -415,9 +441,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 }
 
 SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents, bool isToy, bool externToy){
-
   TString eleID_="eleID_"+_eleID;
-
   TString oddString;
   if(odd) oddString+="-odd";
   regions_cache_t cache;
@@ -472,12 +496,18 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   evListName+="_all";
   TEntryList *oldList = _chain->GetEntryList();
   if(oldList==NULL){
-    std::cout << "[STATUS] Setting entry list: " << evListName << std::endl;
+    std::cout << "[STATUS] In SmearingImporter.cc, Setting entry list: " << evListName << std::endl;
     _chain->Draw(">>"+evListName, cutter.GetCut(_commonCut+"-"+eleID_,isMC), "entrylist");
     //_chain->Draw(">>"+evListName, "", "entrylist");
     TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
     //  elist_all->SetBit(!kCanDelete);
     _chain->SetEntryList(elist_all);
+#ifdef my_deb
+    std::cout << "[STATUS] In SmearingImporter.cc, in GetCache, eleID is "<<eleID_<<std::endl;
+    std::cout << "[STATUS] in GetCache, you are calling cutter.GetCut("<<_commonCut<<"-"+eleID_<<","<<isMC<<")"<<std::endl;
+    std::cout << "[STATUS] in GetCache, marking events if "<<cutter.GetCut(_commonCut+"-"+eleID_,isMC)<<std::endl;
+    std::cout << "[STATUS] in SmearingImporter.cc, your cache is of "<<_chain->GetEntryList()->GetN()<<std::endl;
+#endif
   }
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
       region_ele1_itr != _regionList.end();
