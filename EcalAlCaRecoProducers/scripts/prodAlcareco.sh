@@ -22,7 +22,7 @@ NJOBS=100
 OUTFILES="ntuple.root"
 JOBNAME="-SAMPLE-RUNRANGE-JSON"
 PUBLISH="False"
-CRABVERSION=3
+CRABVERSION=2 #Do not use CRAB 3
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
 SPLITBYFILE=0
@@ -318,12 +318,13 @@ OUTFILES=`echo $OUTFILES | sed 's|^,||'`
 echo "[INFO] Generating CMSSW configuration"
 cmsDriver.py reco -s ${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
 
-echo "[INFO] Generating CRAB3 configuration"
+echo "[INFO] Generating CRAB configuration"
 TYPENAME=$TYPE
 if [ "${ISMC}" = "yes" ];then
 TYPENAME="${TYPENAME}SIM"
 fi
 #==============================
+echo "crab2 Config File is ${crab2File}"
 cat > ${crab2File} <<EOF
 [CRAB]
 jobtype = cmssw
