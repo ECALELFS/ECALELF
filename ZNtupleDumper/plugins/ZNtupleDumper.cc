@@ -1383,16 +1383,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	//       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
 	//   } 
 
-	eleIDMap eleID_map;
-
-	eleID[index]=0;
-	for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
-	  if(electron1.isElectronIDAvailable(it->first)){//
-	    if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
-	  }//
-	}
-	classificationEle[index] = electron1.classification();
-
 	return;//To be fixed
 	
 	const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
@@ -1468,6 +1458,15 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		phiMCEle[index]=0;
 	}
 
+	eleIDMap eleID_map;
+
+	eleID[index]=0;
+	for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
+	  //if(electron1.isElectronIDAvailable(it->first)){//
+	  //if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
+	  //}//
+	}
+	classificationEle[index] = electron1.classification();
 	return;
 }
 
