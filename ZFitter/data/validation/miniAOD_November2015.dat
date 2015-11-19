@@ -11,3 +11,5 @@ d	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/nt
 #d	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v3-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
 #d	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v4-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
 s	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
+
+d	pileupHist	 data/puFiles/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.root
