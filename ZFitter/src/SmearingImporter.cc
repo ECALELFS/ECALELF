@@ -9,6 +9,7 @@
 #define SELECTOR
 #define FIXEDSMEARINGS
 #define my_deb
+//#define my_deb_ev
 SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut):
   //  _chain(chain),
   _regionList(regionList),
@@ -340,8 +341,14 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(_useWEAKweight) event.weight *= WEAKweight;
     if(_useZPtweight && isMC && _pdfWeightIndex>0) event.weight *= zptweight[_pdfWeightIndex];
 #ifdef my_deb_ev
-    if(isMC){
-    std::cout<<"event weight 1 is "<<event.weight<<std::endl;
+    if(isMC && event.weight==0){
+    std::cout<<"event weight at point 1 is "<<event.weight<<std::endl;
+    std::cout<<"weight is "<<weight<<std::endl;//this
+    std::cout<<"r9 weight is "<<r9weight[0]*r9weight[1]<<std::endl;
+    std::cout<<"pt weight is "<<ptweight[0]*ptweight[1]<<std::endl;
+    std::cout<<"FSR weight is "<<FSRweight<<std::endl;
+    std::cout<<"WEAK weight is "<<WEAKweight<<std::endl;
+    std::cout<<"zptweightis "<<zptweight[_pdfWeightIndex]<<std::endl;//and this
     }
 #endif
 
@@ -369,6 +376,14 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       else exit(1);
       }
     }
+#ifdef mc_deb
+    std::cout<<mcGenWeight<<std::endl;
+#endif
+    //if(mcGenWeight > 0){
+    //  event.weight *=1;
+    //}else{
+    //  event.weight *=-1;
+    //}
     if(mcGenWeight != -1){
       if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
 
@@ -385,25 +400,24 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     //#ifdef DEBUG      
 #ifdef my_deb_ev
     if(isMC){
-    std::cout<<"event weight 3 "<<event.weight<<std::endl;
+    std::cout<<"event weight at the very end is "<<event.weight<<std::endl;
     }
+//    if(jentry<10 || event.weight!=event.weight || event.weight>2){
+//      std::cout << "jentry = " << jentry 
+//		<< "\tevent.weight = " << event.weight 
+//		<< "\t" << weight << "\t" << mcGenWeight
+//		<< "\t" << r9weight[0] << " " << r9weight[1] 
+//		<< "\t" << ptweight[0] << " " << ptweight[1]
+//		<< "\t" << zptweight[0] 
+//		<< "\t" << WEAKweight << "\t" << FSRweight
+//		<< std::endl;
+//    }
 #endif
-      if(jentry<10 || event.weight!=event.weight || event.weight>2){
-	std::cout << "jentry = " << jentry 
-		  << "\tevent.weight = " << event.weight 
-		  << "\t" << weight << "\t" << mcGenWeight
-		  << "\t" << r9weight[0] << " " << r9weight[1] 
-		  << "\t" << ptweight[0] << " " << ptweight[1]
-		  << "\t" << zptweight[0] 
-		  << "\t" << WEAKweight << "\t" << FSRweight
-		  << std::endl;
-      }
-      //#endif
 
-      if(event.weight==0){//To be fixed
-	event.weight=1;
-      }
-    if(event.weight<=0 || event.weight!=event.weight || event.weight>10) continue;
+    //if(event.weight==0){//ok, fixed
+    //event.weight=1;
+    //}
+    if(event.weight<=0 || event.weight!=event.weight || event.weight>10) {continue;}
 
 #ifdef FIXEDSMEARINGS
     if(isMC){
@@ -430,14 +444,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   chain->GetEntry(0);
   return;
 
-
 }
 
 SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents, bool isToy, bool externToy){
   TString eleID_="eleID_"+_eleID;
-  if(isMC){
-    eleID_="";
-  }
+  //if(isMC){//not needed anymore
+  //  eleID_="";
+  //}
   TString oddString;
   if(odd) oddString+="-odd";
   regions_cache_t cache;
