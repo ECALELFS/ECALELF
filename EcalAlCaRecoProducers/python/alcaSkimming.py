@@ -767,23 +767,23 @@ elif(options.type=='MINIAODNTUPLE'):
     process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
 
 #######insert eleID
-    from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
-    # turn on VID producer, indicate data format  to be
-    # DataFormat.AOD or DataFormat.MiniAOD, as appropriate 
-    if useAOD == True :
-        dataFormat = DataFormat.AOD
-    else :
-        dataFormat = DataFormat.MiniAOD
-
-    switchOnVIDElectronIdProducer(process, dataFormat)
-
-    # define which IDs we want to produce
-    my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V2_cff',
-                         'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
-        
-    #add them to the VID producer
-    for idmod in my_id_modules:
-        setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+#    from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+#    # turn on VID producer, indicate data format  to be
+#    # DataFormat.AOD or DataFormat.MiniAOD, as appropriate 
+#    if useAOD == True :
+#        dataFormat = DataFormat.AOD
+#    else :
+#        dataFormat = DataFormat.MiniAOD
+#
+#    switchOnVIDElectronIdProducer(process, dataFormat)
+#
+#    # define which IDs we want to produce
+#    my_id_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Spring15_25ns_V2_cff',
+#                         'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV60_cff']
+#        
+#    #add them to the VID producer
+#    for idmod in my_id_modules:
+#        setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 #####insert eleID
 
 process.zNtupleDumper.foutName=options.secondaryOutput
