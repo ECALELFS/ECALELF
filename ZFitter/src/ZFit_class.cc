@@ -488,9 +488,11 @@ void ZFit_class::SetFitPar(RooFitResult *fitres_MC){
 }
 
 //get effective sigma
-double ZFit_class::GetEffectiveSigma(RooAbsData *dataset){
+double ZFit_class::GetEffectiveSigma(RooAbsData *dataset, float quant=0.68){
 
-  TH1* h = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+	// it's up to the function that calls GetEffectiveSigma to delete the stored histogram
+	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+	TH1* h = invMass_highBinning;
 
   double TotEvents = h->Integral(1, h->GetNbinsX()-1);
   float LocEvents = 0.;
@@ -502,7 +504,7 @@ double ZFit_class::GetEffectiveSigma(RooAbsData *dataset){
     keepGoing = false;
     for(int iBin=jBin; iBin<binF; ++iBin){
       LocEvents += h->GetBinContent(iBin);
-      if(LocEvents/TotEvents >= 0.68) {
+      if(LocEvents/TotEvents >= quant) {
 	if(iBin-jBin < binF-binI) {
 	  binF = iBin;
 	  binI = jBin;
@@ -598,6 +600,10 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
 
   //EFFECTIVE SIGMA
   sigmaeff_data = GetEffectiveSigma(data_red);
+  //overwriting values
+  sigmaeff_data_map[0.68]=GetEffectiveSigma(data_red);
+  sigmaeff_data_map[0.50]=GetEffectiveSigma(data_red, 0.50);
+  sigmaeff_data_map[0.30]=GetEffectiveSigma(data_red, 0.30);
 
   SetFitPar(fitres_MC);
   RooFitResult *fitres_data = model_pdf->fitTo(*data_red,RooFit::Save(), //RooFit::Range(range.c_str()), 
@@ -624,6 +630,7 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
     chi2_data = plot_data->chiSquare();//invMass.getBins("plotRange")-fitres_data->floatParsFinal().getSize());
   }
   delete data_red;
+  delete invMass_highBinning;
   return fitres_data;
 }
 
@@ -636,6 +643,11 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
 
   //EFFECTIVE SIGMA
   sigmaeff_MC = GetEffectiveSigma(signal_red);
+
+  //overwriting values
+  sigmaeff_MC_map[0.68]=GetEffectiveSigma(signal_red);
+  sigmaeff_MC_map[0.50]=GetEffectiveSigma(signal_red, 0.50);
+  sigmaeff_MC_map[0.30]=GetEffectiveSigma(signal_red, 0.30);
   //std::cout<<sigmaeff<<std::endl;
 
   SetFitPar();
@@ -663,7 +675,7 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
   }
   
   delete signal_red; // delete the reduced dataset
-
+  delete invMass_highBinning;
   return fitres_MC;
 }
 
@@ -713,7 +725,7 @@ void ZFit_class::Fit(TString region, bool doPlot){
     fitres_MC = FitMC(regionMC, doPlot);
     if(fitres_MC !=NULL){
       fitres_MC->SetName("MC");
-      SaveFitRes(fitres_MC,fitResMCFileName, chi2_MC, nEvents_region_MC, sigmaeff_MC); //
+      SaveFitRes(fitres_MC,fitResMCFileName, chi2_MC, nEvents_region_MC, sigmaeff_MC_map); //
       params->writeToFile(paramsMCFileName);		
       if(doPlot) SaveFitPlot(plotMCFileName,true);
     }else{
@@ -738,7 +750,7 @@ void ZFit_class::Fit(TString region, bool doPlot){
     if(fitres_data!=NULL){
       fitres_data->SetName("data");
       params->writeToFile(paramsDataFileName);		
-      SaveFitRes(fitres_data,fitResDataFileName, chi2_data, nEvents_region_data, sigmaeff_data); // isMC=false
+      SaveFitRes(fitres_data,fitResDataFileName, chi2_data, nEvents_region_data, sigmaeff_data_map); // isMC=false
       if(doPlot) SaveFitPlot(plotDataFileName,false);
       delete fitres_data;
     }else {
@@ -872,7 +884,7 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
   return;
 }
 
-void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, double sigmaeff ){
+void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, std::map<float,float> sigmaeff ){
   RooCmdArg LatexFormat(RooFit::Format("NEU",RooFit::AutoPrecision(2),RooFit::VerbatimName(kFALSE)));
 
   TFile fitResFile(fileName,"RECREATE");
@@ -884,7 +896,11 @@ void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, 
   std::ofstream f(fileName,std::ios_base::app);
   f << "nEvents=" << nEvents << std::endl;
   f << "chi2=" << chi2 << std::endl;
-  f << "sigeff=" << sigmaeff << std::endl;
+  f << "sigeff=" << sigmaeff[0.68] << std::endl;
+  f << "sigeff30=" << sigmaeff[0.30] << std::endl;
+  f << "sigeff50=" << sigmaeff[0.50] << std::endl;
+  f << "sigeff68=" << sigmaeff[0.68] << std::endl;
+
   f.close();
 	return;
 }
