@@ -217,6 +217,7 @@ std::string energyBranchNameFromInvMassName(std::string invMass_var){
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass_rawSC") energyBranchName = "rawEnergySCEle";
+  else if(invMass_var=="invMass") energyBranchName = "energyEle";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
@@ -665,31 +666,55 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-
-
+  ////////////////////////////////////////////////////////////////////////                                                                                                      
+  std::cout<<"In ZFitter.cpp, building names for your regions"<<std::endl;
   TString r(regionsFileName.c_str());
   r.Remove(0,r.Last('/')+1); r.ReplaceAll(".dat","");
 
   std::vector<TString> regions = ReadRegionsFromFile(regionsFileName);
   std::vector<TString> runRanges = ReadRegionsFromFile(runRangesFileName);
   std::vector<TString> categories;
-  for(std::vector<TString>::const_iterator region_itr = regions.begin();
-      region_itr != regions.end();
-      region_itr++){
+
+  for(std::vector<TString>::const_iterator cat_itr = regions.begin();
+      cat_itr != regions.end();
+      cat_itr++){
+    std::cout<<"Regions are "<<(*cat_itr)<<std::endl;
+  }
+
+  for(std::vector<TString>::const_iterator cat_itr = runRanges.begin();
+      cat_itr != runRanges.end();
+      cat_itr++){
+    std::cout<<"runRanges are "<<(*cat_itr)<<std::endl;
+  }
+
+  //Building the region full name                         
+  for(std::vector<TString>::const_iterator region_itr = regions.begin(); region_itr != regions.end(); region_itr++){
     if(runRanges.size()>0){
-      for(std::vector<TString>::const_iterator runRange_itr = runRanges.begin();
-	  runRange_itr!=runRanges.end();
-	  runRange_itr++){
-	TString token1,token2; 
-	Ssiz_t ss=0;
-	runRange_itr->Tokenize(token1,ss,"-");
-	ss=runRange_itr->First('-');
-	runRange_itr->Tokenize(token2,ss,"-");
-	categories.push_back((*region_itr)+"-runNumber_"+token1+"_"+token2+"-"+commonCut.c_str());
+      for(std::vector<TString>::const_iterator runRange_itr = runRanges.begin();runRange_itr!=runRanges.end();runRange_itr++){
+        TString token1,token2;
+        //Ssiz_t ss=0;                                                                                                                                                          
+        //std::cout<<"Io parto da questo "<<(*runRange_itr)<<std::endl;                                                                                                         
+        //runRange_itr->Tokenize(token1,ss,"-");                                                                                                                                
+        //std::cout<<"Token 1 is "<<token1<<std::endl;                                                                                                                          
+        //ss=runRange_itr->First('-');                                                                                                                                          
+        //runRange_itr->Tokenize(token2,ss,"-");                                                                                                                                
+        //std::cout<<"Token 2 is "<<token2<<std::endl;                                                                                                                          
+        TString x = (*runRange_itr);
+        TObjArray *tx = x.Tokenize("-");
+        tx->Print();
+        token1=((TObjString *)(tx->At(0)))->String();
+        token2=((TObjString *)(tx->At(1)))->String();
+        //for (Int_t i = 0; i < tx->GetEntries(); i++){std::cout << ((TObjString *)(tx->At(i)))->String() << std::endl;}                                                        
+        categories.push_back((*region_itr)+"-runNumber_"+token1+"_"+token2+"-"+commonCut.c_str());
       }
     }else categories.push_back((*region_itr)+"-"+commonCut.c_str());
   }
-
+  for(std::vector<TString>::const_iterator cat_itr = categories.begin();
+      cat_itr != categories.end();
+      cat_itr++){
+    std::cout<<"check this "<<(*cat_itr)<<std::endl;
+  }
+  ////////////////////////////////////////////////////////////////// 
   
 
   ///------------------------------ to obtain r9weights

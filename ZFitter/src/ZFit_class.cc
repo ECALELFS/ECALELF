@@ -103,17 +103,20 @@ ZFit_class::ZFit_class(TChain *data_chain_,
 void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList){
   signal_chain->Draw(">>list","runNumber>1","entrylist",10);
   TEntryList *l = (TEntryList*) gROOT->FindObject("list");
-
+  TString commonCut_MC;
+  //commonCut_MC=commonCut;//remove this (for eleID MC)
   commonCut+="-eleID_"+eleID_;
+  commonCut_MC=commonCut; //Sam cut for data and MC
+  std::cout<<"commonCut in Import is "<<commonCut<<std::endl;
   TString mcCut, dataCut;
   if(l->GetN()>0){ // runDependent MC, treat it has data
     std::cout << "[INFO] Importing run dependent MC" << std::endl;
-    if(_oddMC) mcCut = cutter.GetCut(commonCut+"-odd", false);
-    else mcCut = cutter.GetCut(commonCut, false);
+    if(_oddMC) mcCut = cutter.GetCut(commonCut_MC+"-odd", false);//remove this (for eleID MC)
+    else mcCut = cutter.GetCut(commonCut_MC, false);//remove this (for eleID MC)
   } else {
     std::cout << "[INFO] Importing std MC" << std::endl;
-    if(_oddMC) mcCut = cutter.GetCut(commonCut+"-odd", true);
-    else mcCut = cutter.GetCut(commonCut, true);
+    if(_oddMC) mcCut = cutter.GetCut(commonCut_MC+"-odd", true);//remove this (for eleID MC)
+    else mcCut = cutter.GetCut(commonCut_MC, true);//remove this (for eleID MC)
   }
   delete l;
 
@@ -124,12 +127,14 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
   std::cout << "--------------- Importing signal mc: " <<signal_chain->GetEntries() <<std::endl;
   //if(signal!=NULL) delete signal;
   
+  std::cout<<"mcCut is "<<mcCut<<std::endl;
   signal = ImportTree(signal_chain, mcCut, branchList);
   commonMC = new TEntryList(*(signal->GetEntryList()));
   //signal->Print();
   //exit(0);
   std::cout << "--------------- Importing data: " << data_chain->GetEntries() << std::endl;
   //if(data!=NULL) delete data;
+  std::cout<<"dataCut is "<<dataCut<<std::endl;
   data = ImportTree(data_chain, dataCut, branchList);
   commonData = new TEntryList(*(data->GetEntryList()));
   //commonData->Print();
@@ -170,7 +175,7 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
   chain->SetBranchStatus(invMass.GetName(), 1);
   chain->AddBranchToCache("*",kTRUE);
   
-  //std::cout << commonCut << std::endl;
+  std::cout <<"commonCut in ZFit_class::ImportTree is "<< commonCut << std::endl;
   TString evListName="evList_";
   evListName+=chain->GetTitle();
   chain->Draw(">>"+evListName,commonCut,"entrylist");
@@ -874,7 +879,8 @@ void ZFit_class::FitToy(TString region, int nToys, int nEvents, bool doPlot){
 
 void ZFit_class::SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, double sigmaeff ){
   RooCmdArg LatexFormat(RooFit::Format("NEU",RooFit::AutoPrecision(2),RooFit::VerbatimName(kFALSE)));
-
+  std::cout<<"Saving result in .tex file"<<std::endl;
+  std::cout<<"Root Filename is "<<fileName<<std::endl;
   TFile fitResFile(fileName,"RECREATE");
   fitResFile.cd();
   fitres->Write();
@@ -1179,6 +1185,7 @@ TString	ZFit_class::GetEnergyVarName(TString invMass_name){
   else if(invMass_var=="invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
+  else if(invMass_var=="invMass") energyBranchName = "energyEle";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";

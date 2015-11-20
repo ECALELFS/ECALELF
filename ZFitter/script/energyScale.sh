@@ -7,7 +7,7 @@ source script/functions.sh
 # - closure test (step3)
 
 index=
-commonCut=Et_20-trigger-noPF
+commonCut=Et_20-noPF
 selection=loose
 invMass_var=invMass_SC_regrCorrSemiParV5_pho
 baseDir=test
@@ -205,6 +205,8 @@ puName ${configFile}
 echo "PUName: $puName"
 
 mcName ${configFile}
+mcName=$(echo $mcName | sed 's|.root||g')
+
 echo "mcName: ${mcName}"
 
 if [ "${invMass_var}" == "invMass_regrCorr_egamma" ];then
@@ -272,7 +274,29 @@ if [ -n "${STEP1}" ];then
 	mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/    
 	echo "[STATUS] Step 1 done"
     else 
-	echo "[STATUS] Step 1 already done" 
+	echo "[STATUS] Step 1 already done"
+
+	echo "[INFO] What you did in step1 is:
+******************************************************************************
+	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile}  \
+	    $isOdd $updateOnly --selection=${selection}  --invMass_var ${invMass_var} --commonCut $commonCut \
+	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img \
+	    > ${outDirData}/log/`basename ${outFile} .dat`.log || exit 1
+	
+	./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut ${commonCut} \
+	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+	    >  ${outDirTable}/`basename ${outFile} .dat`.tex
+	
+	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F "\t" -f awk/recalibOutput.awk |grep -v '^%' > ${outDirTable}/${outFile}
+	
+	#save root files with step1 corrections
+	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
+	    --saveRootMacro --corrEleType HggRunEta \
+	    --corrEleFile ${outDirTable}/${outFile} || exit 1
+	
+	mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/
+******************************************************************************"
     fi
 
 fi
