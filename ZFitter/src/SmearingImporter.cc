@@ -333,18 +333,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     //if(event.invMass < 70 || event.invMass > 110) continue;
 
     event.weight = 1.;
-    if(isMC){//remove this check                                                                                                                                                
-      if(weight==0){
-        event.weight=1.;//puWeight seems to be 0                                                                                                                               
-      }
-    }
     if(_usePUweight) event.weight *= weight;
     if(_useR9weight) event.weight *= r9weight[0]*r9weight[1];
     if(_usePtweight) event.weight *= ptweight[0]*ptweight[1];
     if(_useFSRweight) event.weight *= FSRweight;
     if(_useWEAKweight) event.weight *= WEAKweight;
     if(_useZPtweight && isMC && _pdfWeightIndex>0) event.weight *= zptweight[_pdfWeightIndex];
-#ifdef my_deb
+#ifdef my_deb_ev
     if(isMC){
     std::cout<<"event weight 1 is "<<event.weight<<std::endl;
     }
@@ -353,11 +348,6 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     if(!isMC && _pdfWeightIndex>0 && pdfWeights!=NULL){
       if(((unsigned int)_pdfWeightIndex) > pdfWeights->size()) continue;
       event.weight *= ((*pdfWeights)[0]<=0 || (*pdfWeights)[0]!=(*pdfWeights)[0] || (*pdfWeights)[_pdfWeightIndex]!=(*pdfWeights)[_pdfWeightIndex])? 0 : (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0];
-#ifdef my_deb
-      if(isMC){
-	std::cout<<"event weight 2 "<<event.weight<<std::endl;
-      }
-#endif
       
 #ifdef DEBUG      
       if(jentry<10 || event.weight!=event.weight || event.weight>1.3){
@@ -393,7 +383,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       }
     }
     //#ifdef DEBUG      
-#ifdef my_deb
+#ifdef my_deb_ev
     if(isMC){
     std::cout<<"event weight 3 "<<event.weight<<std::endl;
     }
@@ -410,6 +400,9 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
       }
       //#endif
 
+      if(event.weight==0){//To be fixed
+	event.weight=1;
+      }
     if(event.weight<=0 || event.weight!=event.weight || event.weight>10) continue;
 
 #ifdef FIXEDSMEARINGS
