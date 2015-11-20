@@ -7,17 +7,16 @@
 # selected
 # some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
 
-d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD/254227-255031/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
-#d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v3-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
-#d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/phiSym_materialCorrection_ref/DoubleEG-ZSkim-Run2015D-Prompt-v4-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/unmerged-allRange-miniAOD.root
-#s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
-#s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD-old.root
+#05 Oct rereco per RunC, Prompt per RunD
+#golden + silver json
+d1     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD/254227-255031/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
+d2     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
+d3     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
 
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
-d	pileupHist	 /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/ZFitter/data/puFiles/puData.root
-s	pileupHist	 /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/ZFitter/data/puFiles/puMC.root
-s1      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_s1-miniAOD_November2015.root
-d1      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d1-miniAOD_November2015.root
-#d2      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d2-miniAOD_November2015.root
-#d3      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d3-miniAOD_November2015.root
+s1     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
+s2     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYToEE_amctnlo-RunIISpring15DR74-Asym25ns-v1-miniAOD/allRange/DYToEE_amctnlo-RunIISpring15DR74-Asym25ns-v1-miniAOD-allRange-miniAOD.root
+s3     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/MC_75X/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-miniAOD-allRange-miniAOD.root
+
+d	pileupHist	 /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/ZFitter/pufileData_tot.root
+s	pileupHist	 /afs/cern.ch/work/g/gfasanel/CMSSW_7_4_15/src/Calibration/ZFitter/pufileMC_tot.root
+

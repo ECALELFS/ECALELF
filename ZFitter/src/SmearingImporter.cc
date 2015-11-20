@@ -435,6 +435,9 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents, bool isToy, bool externToy){
   TString eleID_="eleID_"+_eleID;
+  if(isMC){
+    eleID_="";
+  }
   TString oddString;
   if(odd) oddString+="-odd";
   regions_cache_t cache;
