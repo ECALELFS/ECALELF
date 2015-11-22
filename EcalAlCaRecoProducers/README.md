@@ -11,6 +11,7 @@ cmsRun python/alcaSkimming.py type=MINIAODNTUPLE files=file:$file maxEvents=1000
 #Ti trovi una ntupla in locale:
 ls ntuple_numEvent1000.root
 file="root://xrootd.unl.edu//store/mc/RunIISpring15MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/50000/041705A6-6F6F-E511-AC9C-001E6757F1D4.root"
+file= "root://xrootd.unl.edu//store/mc/RunIISpring15DR74/ZToEE_NNPDF30_13TeV-powheg_M_200_400/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/40000/EE92B9F5-934F-E511-85F2-0025905B85D6.root"
 cmsRun python/alcaSkimming.py type=MINIAODNTUPLE files=file:$file maxEvents=1000 isCrab=0 tagFile=config/reRecoTags/phiSym_materialCorrection_ref.py
 ```
  
