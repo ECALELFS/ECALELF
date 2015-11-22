@@ -94,7 +94,8 @@ class EleNewEnergiesProducer : public edm::EDProducer {
       
       virtual void beginRun(edm::Run&, edm::EventSetup const&);
       virtual void endRun(edm::Run&, edm::EventSetup const&);
-      virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	  virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
       // ----------member data ---------------------------
@@ -255,8 +256,7 @@ EleNewEnergiesProducer::endRun(edm::Run&, edm::EventSetup const&)
 }
 
 // ------------ method called when starting to processes a luminosity block ------------
-void
-  EleNewEnergiesProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const& iSetup)
+void  EleNewEnergiesProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const& iSetup)
 {
 	mustache_regr_.setEventSetup(iSetup);
 }
