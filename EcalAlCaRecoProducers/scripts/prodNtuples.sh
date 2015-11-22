@@ -184,7 +184,7 @@ do
     shift
 done
 
-echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
+#echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
 
 if [ -z "$DATASETNAME" ];then 
     echo "[ERROR] DATASETNAME not defined" >> /dev/stderr
@@ -410,9 +410,9 @@ use_parent=0
 
 
 [LSF]
-queue = 1nh
+queue = 1nd
 [CAF]
-queue = cmscaf1nh
+queue = cmscaf1nd
 resource = type==SLC6_64
 
 [USER]
