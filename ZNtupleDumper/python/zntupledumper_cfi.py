@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
+                               useIDforPresel = cms.bool(True),
                                jsonFileName = cms.string(""),
                                electronCollection = cms.InputTag('patElectrons'),
                                muonCollection = cms.InputTag('patMuons'),
@@ -51,4 +52,7 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                     #                      correctionFileName = cms.string(options.correctionFileName),
                                     #                      correctionType = cms.string(options.correctionType),
                                     #                      oddEventFilter = cms.bool(oddEventFilter)
+                               eleID_loose = cms.string("loose25nsRun2"),
+                               eleID_medium= cms.string("medium25nsRun2"),
+                               eleID_tight = cms.string("tight25nsRun2"),
                                )

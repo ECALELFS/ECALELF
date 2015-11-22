@@ -120,19 +120,16 @@ if [ -z "$TAGFILE" ];then
 fi
 
 if [ ! -z "$TAGFILE" ];then
- 
- case ${TAGFILE} in 
- 	*py)
-	echo "[INFO] Extracting GT from file $TAGFILE"
-	TAG=`cat $TAGFILE |grep globaltag | grep -v '#' | sed 's|::All|:All|' | sed 's|:All||' | sed 's|.*(.\([0-Z_]*\).*|\1|'`
-	echo "[INFO] Extracted GT :  $TAG"
-	;;
-
-	*)
-	TAG=$TAGFILE
-	;;
- esac
-
+ 	case ${TAGFILE} in 
+ 		*py)
+			echo "[INFO] Extracting GT from file $TAGFILE"
+			TAG=`cat $TAGFILE |grep globaltag | grep -v '#' | sed 's|::All|:All|' | sed 's|:All||' | sed 's|.*(.\([0-Z_]*\).*|\1|'`
+			echo "[INFO] Extracted GT :  $TAG"
+			;;
+		*)
+			TAG=$TAGFILE
+			;;
+	esac	
 fi
 
 if [ -z "$DATASETPATH" ];then 

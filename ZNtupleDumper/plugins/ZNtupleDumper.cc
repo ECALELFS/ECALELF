@@ -186,7 +186,6 @@ private:
   edm::Handle<edm::TriggerResults> WZSkimResultsHandle;
   edm::Handle<EcalRecHitCollection> ESRechitsHandle;
 
-
   //------------------------------ Input Tags
   // input tag for primary vertex
   edm::InputTag vtxCollectionTAG;
@@ -266,6 +265,7 @@ private:
   Float_t avgLCSCEle[3];
 
   Float_t energyMCEle[3];    ///< Electron MC true energy
+        Float_t energyEle[3];      ///< electron.energy()
   Float_t energySCEle[3];    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
   Float_t energySCEle_must[3];    ///< corrected SuperCluster energy with mustache
   Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
@@ -280,7 +280,6 @@ private:
 	Float_t rawESEnergyPlane1SCEle[3];  ///< pre-shower rechit energy sum of Plane 1 associated to the electron 
 	Float_t rawESEnergyPlane2SCEle[3];  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
 
-
   Float_t energySCEle_corr[3];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
 
   Float_t e3x3SCEle[3];   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
@@ -292,7 +291,6 @@ private:
   Float_t pNormalizedChi2Ele[3];  ///< track normalized chi2 of the fit (GSF)
 
   Float_t R9Ele[3];      ///< e3x3/rawEnergySCEle
-
   Float_t invMass;
   Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too! 
   Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
@@ -407,6 +405,7 @@ private:
   void TreeSetPileupVar(void);
 	float GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex);
 
+	bool elePreselection(const pat::Electron& electron);
   //puWeights_class puWeights;
 
 private:
@@ -427,6 +426,8 @@ private:
   //
   // static data member definitions
   //
+	bool preselID_;
+	std::string eleID_loose, eleID_medium, eleID_tight;
 
   typedef enum {
     ZEE=0,
@@ -439,8 +440,10 @@ private:
     DEBUG
   }eventType_t;
 
+
   eventType_t eventType;
   unsigned int eventTypeCounter[6];
+
 };
 
 
@@ -481,6 +484,11 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
   fsrWeightTAG(iConfig.getParameter< edm::InputTag>("fsrWeightCollection")),
   weakWeightTAG(iConfig.getParameter< edm::InputTag>("weakWeightCollection")),
   fsrWeight(1.), weakWeight(1.),
+  preselID_(iConfig.getParameter<bool>("useIDforPresel")),
+	// used for preselection and event type determination
+	eleID_loose(iConfig.getParameter< std::string>("eleID_loose")),
+	eleID_medium(iConfig.getParameter< std::string>("eleID_medium")),
+	eleID_tight(iConfig.getParameter< std::string>("eleID_tight")),
   eventType(ZEE)
 {
   
@@ -526,6 +534,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   energySCEle[0]=-99;
   energySCEle[1]=-99;
+	energyEle[0]=-99;
+	energyEle[1]=-99;
   energySCEle_must[0]=-99;
   energySCEle_must[1]=-99;
   invMass_SC=-99;
@@ -545,7 +555,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //------------------------------ HLT
   /// \todo check why
   if(triggerResultsTAG.label()!="") iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
-  iEvent.getByLabel(WZSkimResultsTAG,  WZSkimResultsHandle);
+	if(WZSkimResultsTAG.label()!=""){
+		iEvent.getByLabel(WZSkimResultsTAG,  WZSkimResultsHandle); //else it is not produced with ALCARECO selection 
+		//then the type of event has to be defined
 
   //Check if it is Wenu, Z or ZSC event according to triggerResults
   edm::TriggerNames alcaSkimPathNames = iEvent.triggerNames(*WZSkimResultsHandle);
@@ -601,14 +613,17 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	//	std::cout << alcaSkimPathNames.triggerName(*alcaSkimPath_itr) << "\t" << eventType << std::endl;
 	break;
       }
-
-
     }
+		//if(alcaSkimPathIndexes.size()==0){
+		skipEvent=false;
+		eventType=UNKNOWN;
+		//}
     //std::cout << "skip event: " << skipEvent << "\t" << eventType << std::endl;
     //assert(!skipEvent);
     eventTypeCounter[eventType]++;
     if(skipEvent) return; // event not coming from any skim or paths
   }
+	}
 
   //------------------------------ CONVERSIONS
   iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
@@ -623,10 +638,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     iEvent.getByLabel(muonsTAG, muonsHandle);
     //------------------------------ photons
     iEvent.getByLabel(photonsTAG, photonsHandle);
-  }
-
-  else
+	}	else{ 
     iEvent.getByLabel(electronsTAG, electronsHandle);
+	}
 
   //------------------------------ SuperClusters (for high Eta studies)
   iEvent.getByLabel(EESuperClustersTAG, EESuperClustersHandle);
@@ -640,7 +654,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.getByLabel(metTAG, metHandle);
   iEvent.getByLabel(recHitCollectionESTAG,ESRechitsHandle);
   //if(metHandle.isValid()==false) iEvent.getByType(metHandle);
-  reco::PFMET met = ((*metHandle))[0]; /// \todo use corrected phi distribution
+	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
 
 
   //Here the HLTBits are filled. TriggerResults
@@ -680,20 +694,23 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // in Zee at least two loose electrons
   // in particle gun case, the matching with the gen particle is required
 
-  int nWP70   = 0; //only WP70
-  int nMedium = 0; //passing medium eleID
-  int nWP90   = 0; //only WP90
+	int nTight   = 0; //number of electrons passing only the tight  ID for preselection
+	int nMedium  = 0; //number of electrons passing only the medium ID for preselection
+	int nLoose   = 0; //number of electrons passing only the loose  ID for preselection
 
-  if (eventType!=ZMMG) {
+	//if (eventType!=ZMMG) { // count the number of electrons passing the different IDs for preselection and event type determination
+	if (eventType!=UNKNOWN) { // count the number of electrons passing the different IDs for preselection and event type determination
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 	 eleIter1 != electronsHandle->end();
 	 eleIter1++){
-      if( eleIter1->electronID("tight25nsRun2") )       ++nWP70;
-      else if( eleIter1->electronID("medium25nsRun2") ) ++nMedium;
-      else if( eleIter1->electronID("loose25nsRun2") )  ++nWP90;
+			if( eleIter1->electronID(eleID_tight) )          ++nTight;
+			else if( eleIter1->electronID(eleID_medium) ) ++nMedium;
+			else if( eleIter1->electronID(eleID_loose) )  ++nLoose;
     }
   }  
+
   bool doFill=false;
+
   if(eventType==PARTGUN){
     pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
     pat::ElectronCollection::const_iterator eleIter2 = eleIter1;
@@ -726,21 +743,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     if(doEleIDTree){
       TreeSetEleIDVar(*eleIter1, *eleIter2);
     }
-  } 
-  else if(eventType==ZEE || eventType==WENU || eventType==UNKNOWN){
+	} else if(eventType==ZEE || eventType==WENU || eventType==UNKNOWN){
     for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 	 eleIter1 != electronsHandle->end();
 	 eleIter1++){
 
-      //      if(!eleIter1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
-      //        continue;
-      //      }
-      if(!eleIter1->parentSuperCluster().isNonnull()) continue;
-      if(! (eleIter1->electronID("loose25nsRun2")) ) continue;
+			if(! elePreselection(*eleIter1)) continue; 
 
       if(eventType==WENU){
-  	if(! (eleIter1->electronID("tight25nsRun2")) ) continue;
-  	if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
+				if(! (eleIter1->electronID(eleID_tight)) ) continue;
+				if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 	
 	// MET/MT selection
 	if(  met.et() < 25. ) continue;
@@ -766,12 +778,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	    eleIter2 != electronsHandle->end() && doFill==false;
 	    eleIter2++){
 
-	  //	  if(!eleIter2->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
-	  //	    continue;
-	  //	  }
-
-	  // should exit when eleIter1 == end-1
-	  if(! (eleIter2->electronID("loose25nsRun2")) ) continue;
+					if(! elePreselection(*eleIter1)) continue; 
 	  
 	  //	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
 
@@ -787,7 +794,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 									(1+t1q)*(1+t2q)
 									);
 	  double mass = sqrt(2*eleIter1->energy()*eleIter2->energy() *angle); //use default electron energy, in order to have the same number of events between alcareco and alcarereco ntuples
-		  //sqrt(2*eleIter1->parentSuperCluster()->energy()*eleIter2->parentSuperCluster()->energy() *angle); //use mustache SC, in order to have the same number of events between alcareco and alcarereco ntuples
+			  
+					//	  std::cout<<" ele1 SC: "<<eleIter1->superCluster()->energy()<<" ele1 SC must: "<<eleIter1->parentSuperCluster()->energy()<<" eta1: "<<eleIter1->eta()<<" phi1: "<<eleIter1->phi()<<std::endl
+					//		   <<" ele2 SC: "<<eleIter2->superCluster()->energy()<<" ele2 SC must: "<<eleIter2->parentSuperCluster()->energy()<<" eta2: "<<eleIter2->eta()<<" phi2: "<<eleIter2->phi()<<"mass: "<<mass<<std::endl;
 	  
 	  if(mass < 55 ) continue;	  
 	  doFill=true;
@@ -805,28 +814,27 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	    TreeSetPdfSystVar(iEvent);
 	    //pdfSystTree->Fill();
 	  }
-	}
 
-	if(electronsHandle->size() < NELE &&  eventType == SINGLEELE){
+					// if(electronsHandle->size() < NELE &&  eventType == SINGLEELE){
 	
-	  doFill=true;	
-	  TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
-	  TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
+					// 	doFill=true;	
+					// 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron 
+					// 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
-	  if(doExtraCalibTree){
-	    TreeSetExtraCalibVar(*eleIter1, 0);
-	    TreeSetExtraCalibVar(*eleIter1, -1);
-	  }
-	  if(doEleIDTree){
-	    TreeSetEleIDVar(*eleIter1, 0);
-	    TreeSetEleIDVar(*eleIter1, -1);
-	  }
-	}
+					// 	if(doExtraCalibTree){
+					// 		TreeSetExtraCalibVar(*eleIter1, 0);
+					// 		TreeSetExtraCalibVar(*eleIter1, -1);
+					// 	}
+					// 	if(doEleIDTree){
+					// 		TreeSetEleIDVar(*eleIter1, 0);
+					// 		TreeSetEleIDVar(*eleIter1, -1);
+					// 	}
+					// }
       }
     }
   }
 
-  else if (eventType==ZMMG){
+	}	  else if (eventType==ZMMG){
     for( pat::MuonCollection::const_iterator muIter1 = muonsHandle->begin();
 	 muIter1 != muonsHandle->end() && doFill==false;
 	 muIter1++){
@@ -866,7 +874,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
-  if (eventType==ZSC || eventType==UNKNOWN){
+	if (eventType==ZSC){ // || eventType==UNKNOWN){ removed for miniAOD, to be put back in
     
     //leading pt electron in EB (patElectrons should be pt-ordered)
     // iterators storing pat Electons and HighEta SCs
@@ -881,15 +889,15 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
          PatEle1++){
 
       // consider electrons passing at least the loose identification
-      if(!PatEle1->electronID("loose25nsRun2") ) continue; 
-
+			//if(!PatEle1->electronID("loose50nsRun2") ) continue; 
+			//nMedium=0;
       // take the highest pt tight electrons if it exists (the collection is ordered in pt)
       // consider only the electrons passing the tightest electron identification
-      if(nWP70>0){ // if there are tight electrons, consider only those
-	if(!PatEle1->electronID("tight25nsRun2") ) continue; 
-      }else if(nMedium>0){ // if there are only medium electrons, consider only those
-	if(!PatEle1->electronID("medium25nsRun2") ) continue; 
-      }
+			//if(nWP70>0){ // if there are tight electrons, consider only those
+			//if(!PatEle1->electronID("tight50nsRun2") ) continue; 
+			//}else if(nMedium>0){ // if there are only medium electrons, consider only those
+			//if(!PatEle1->electronID("medium50nsRun2") ) continue; 
+			//}
 
       //      if(!PatEle1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
       //        continue;
@@ -947,6 +955,20 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   delete clustertools;
   return;
   
+}
+
+
+bool ZNtupleDumper::elePreselection(const pat::Electron& electron){
+	if(electron.et()<10) return false; // minimum Et cut in preselection
+			
+	//to make alcareco/alcarereco ntuples coeherent 			
+	if(!electron.ecalDriven()) return false;
+			
+	//if(eleIter1->parentSuperCluster().isNull()) continue;
+	if(preselID_){
+		if(! (electron.electronID(eleID_loose))) return false;
+	}
+	return true;
 }
 
 
@@ -1135,6 +1157,7 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("gainEle", gainEle, "gainEle[3]/b");
 
   tree->Branch("energyMCEle", energyMCEle, "energyMCEle[3]/F");
+	tree->Branch("energyEle", energyEle, "energyEle[3]/F");
   tree->Branch("energySCEle", energySCEle, "energySCEle[3]/F");
   tree->Branch("energySCEle_must", energySCEle_must, "energySCEle_must[3]/F");
   tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
@@ -1243,9 +1266,9 @@ void ZNtupleDumper::TreeSetPileupVar(void){
   mcGenWeight=-1;
 
   if(primaryVertexHandle->size() > 0) {
-    for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin();
-	v != primaryVertexHandle->end(); ++v){
-      if((*v).tracksSize() > 0) nPV++; // non mi ricordo perche' ho fatto cosi'....
+	  for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin(); v != primaryVertexHandle->end(); ++v){
+	    //if((*v).tracksSize() > 0) 
+	    nPV++; // non mi ricordo perche' ho fatto cosi'....
     }
   }
 
@@ -1308,6 +1331,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     return;
   }   
 
+	energyEle[index] = electron1.energy();
   PtEle[index]     = electron1.et();  
   chargeEle[index] = electron1.charge();
   etaEle[index]    = electron1.eta(); // degli elettroni
@@ -1322,19 +1346,101 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
   fbremEle[index] = electron1.fbrem(); // fatta con pIn-pOut
 
-  etaSCEle[index] = electron1.superCluster()->eta();
-  phiSCEle[index] = electron1.superCluster()->phi();
+  const reco::SuperClusterRef& sc = electron1.superCluster().isNonnull() ? electron1.superCluster() : electron1.parentSuperCluster();
+
+  if(sc.isNonnull()){
+	  etaSCEle[index] = sc->eta();
+	  phiSCEle[index] = sc->phi();
+  }
+
+	if(electron1.superCluster().isNonnull()) {
+		energySCEle[index]  = electron1.superCluster()->energy();
+		rawEnergySCEle[index]  = electron1.superCluster()->rawEnergy();
+		esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();
+		esEnergyPlane1SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane1();
+		esEnergyPlane2SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane2();
+	}else{
+		energySCEle[index]			= -99;
+		rawEnergySCEle[index]			= -99;
+		esEnergySCEle[index]			= -99;
+		esEnergyPlane1SCEle[index]		= -99;
+		esEnergyPlane2SCEle[index]		= -99;
+	}	
+
+	if(electron1.parentSuperCluster().isAvailable()) {
+		energySCEle_must[index] = electron1.parentSuperCluster()->energy();
+		rawEnergySCEle_must[index]  = electron1.parentSuperCluster()->rawEnergy();
+	} else  {
+		energySCEle_must[index]=-99;
+		rawEnergySCEle_must[index]=-99;
+	}
+
+	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMust");
+	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMustVar");
+
+
+	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(electron1,1);
+	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(electron1,2);
+
+
+
+#ifndef CMSSW42X
+	energySCEle_corr[index] = electron1.correctedEcalEnergy();
+#else
+	energySCEle_corr[index] = electron1.ecalEnergy();
+#endif
+
+	if(sc.isNonnull()){
+		// change in an electron properties please, EleNewEnergyProducer
+		e3x3SCEle[index] = clustertools->e3x3(*sc->seed());
+		e5x5SCEle[index] = clustertools->e5x5(*sc->seed());
+		eSeedSCEle[index]= sc->seed()->energy();
+	}else{
+		e3x3SCEle[index]		= -99;
+		e5x5SCEle[index]		= -99;
+		eSeedSCEle[index]		= -99;
+	}		
+
+	pModeGsfEle[index] = electron1.gsfTrack()->pMode();
+	trackMomentumErrorEle[index] = electron1.trackMomentumError();
+	pNormalizedChi2Ele[index] = electron1.gsfTrack()->normalizedChi2();
+	pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
+
+	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
+	R9Ele[index] = electron1.r9();
+
+	//   if(isMC){
+	//     if(electron1.isEB()) 
+	//       R9Ele[index] = R9Ele[index]*1.0045+0.0010;
+	//     else 
+	//       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
+	//   } 
+
+	eleIDMap eleID_map;
+
+	eleID[index]=0;
+	for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
+	  if(electron1.isElectronIDAvailable(it->first)){//
+	    if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
+	  }//
+	}
+
+	classificationEle[index] = electron1.classification();
+
+//	return;//To be fixed
 
   const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
   //assert(recHits!=NULL);
   const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
   
-  DetId seedDetId = electron1.superCluster()->seed()->seed();
+	if(sc.isNonnull()){
+	  DetId seedDetId = sc->seed()->seed();
   if(seedDetId.null()){
     //assert(electron1.trackerDrivenSeed()); // DEBUG
-    seedDetId = findSCseed(*(electron1.superCluster()));
+	    seedDetId = findSCseed(*(sc));
   }
 
+	  
   if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel){
     EBDetId seedDetIdEcal = seedDetId;
     seedXSCEle[index]=seedDetIdEcal.ieta();
@@ -1358,10 +1464,11 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index]=2;
   else gainEle[index]=0;
   
+	  
   float sumLC_E = 0.;
   float sumE = 0.;
   if( !isMC){
-    std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
+	    std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = sc->hitsAndFractions();
     for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
 	 detitr != hitsAndFractions_ele1.end(); detitr++ )
       {
@@ -1375,6 +1482,10 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   } else     avgLCSCEle[index] = -10;
   
   nHitsSCEle[index] = electron1.superCluster()->size();
+	}else{
+	  nHitsSCEle[index] = -1;
+	  avgLCSCEle[index] = -1;
+	}
 
   //  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron1.superCluster()->seed()))[index]);
   //  sigmaIEtaIEtaSCEle[1] = sqrt(clustertools->localCovariances(*(electron2.superCluster()->seed()))[index]);
@@ -1390,66 +1501,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
     etaMCEle[index]=0;
     phiMCEle[index]=0;
   }
-
-  energySCEle[index]  = electron1.superCluster()->energy();
-  if(electron1.parentSuperCluster().isNonnull()) {
-    energySCEle_must[index] = electron1.parentSuperCluster()->energy();
-    rawEnergySCEle_must[index]  = electron1.parentSuperCluster()->rawEnergy();
-  //energySCEle_must_regrCorr_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPho");
-  energySCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMust");
-  energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMustVar");
-
-  }
-  else  {
-    energySCEle_must[index]=-99;
-    rawEnergySCEle_must[index]=-99;
-	energySCEle_must_regrCorr_ele[index] = -99.;
-	energySigmaSCEle_must_regrCorr_ele[index] = -99.;
-  }
-
-
-  rawEnergySCEle[index]  = electron1.superCluster()->rawEnergy();
-  esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();
-  esEnergyPlane1SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane1();
-  esEnergyPlane2SCEle[index] = electron1.superCluster()-> preshowerEnergyPlane2();
-	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(electron1,1);
-	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(electron1,2);
-
-#ifndef CMSSW42X
-  energySCEle_corr[index] = electron1.correctedEcalEnergy();
-#else
-  energySCEle_corr[index] = electron1.ecalEnergy();
-#endif
-
-
-  // change in an electron properties please, EleNewEnergyProducer
-  e3x3SCEle[index] = clustertools->e3x3(*electron1.superCluster()->seed());
-  e5x5SCEle[index] = clustertools->e5x5(*electron1.superCluster()->seed());
-  eSeedSCEle[index]= electron1.superCluster()->seed()->energy();
-
-  pModeGsfEle[index] = electron1.gsfTrack()->pMode();
-  trackMomentumErrorEle[index] = electron1.trackMomentumError();
-  pNormalizedChi2Ele[index] = electron1.gsfTrack()->normalizedChi2();
-  pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
-
-  R9Ele[index] = e3x3SCEle[index]/electron1.superCluster()->rawEnergy();
-
-  //   if(isMC){
-  //     if(electron1.isEB()) 
-  //       R9Ele[index] = R9Ele[index]*1.0045+0.0010;
-  //     else 
-  //       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
-  //   } 
-
-  eleIDMap eleID_map;
-
-  eleID[index]=0;
-  for (std::map<std::string,UInt_t>::iterator it=eleID_map.eleIDmap.begin(); it!=eleID_map.eleIDmap.end(); ++it) {
-    if ((bool) electron1.electronID(it->first))
-      eleID[index] |= it->second;
-  }
-
-  classificationEle[index] = electron1.classification();
 
   return;
 }
@@ -1552,8 +1603,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
   pNormalizedChi2Ele[index] = -1; 
   pAtVtxGsfEle[index] = -1;
 
-  R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();
-
+	R9Ele[index] = e3x3SCEle[index]/electron1.rawEnergy();//original version
 
   // make it a function
   //eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
@@ -1718,8 +1768,7 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   e3x3SCEle[index] = clustertools->e3x3(*photon.superCluster()->seed());
   e5x5SCEle[index] = clustertools->e5x5(*photon.superCluster()->seed());
   eSeedSCEle[index]= photon.superCluster()->seed()->energy();
-
-  R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();
+	R9Ele[index] = e3x3SCEle[index]/photon.superCluster()->rawEnergy();//original
 
   //   if(isMC){
   //     if(photon.isEB()) 
@@ -1728,13 +1777,13 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
   //       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
   //   } 
 
-  eleID[index] = ((bool) photon.photonID("fiducial")) << 0;
-  eleID[index] += ((bool) photon.photonID("loose")) << 1;
-  eleID[index] += ((bool) photon.photonID("medium")) << 2;
-  eleID[index] += ((bool) photon.photonID("tight")) << 3;
-  eleID[index] += ((bool) photon.photonID("loose25nsRun2")) << 4;
-  eleID[index] += ((bool) photon.photonID("medium25nsRun2")) << 5;
-  eleID[index] += ((bool) photon.photonID("tight25nsRun2")) << 6;
+	// eleID[index] = ((bool) photon.photonID("fiducial")) << 0;
+	// eleID[index] += ((bool) photon.photonID("loose")) << 1;
+	// eleID[index] += ((bool) photon.photonID("medium")) << 2;
+	// eleID[index] += ((bool) photon.photonID("tight")) << 3;
+	// eleID[index] += ((bool) photon.photonID("loose25nsRun2")) << 4;
+	// eleID[index] += ((bool) photon.photonID("medium25nsRun2")) << 5;
+	// eleID[index] += ((bool) photon.photonID("tight25nsRun2")) << 6;
 
   return;
 }
@@ -2373,9 +2422,9 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index){
 	//     dzvtx[index] = electron1.gsfTrack()->dz();
 	//   }
 
-	eleIDloose[index]  = electron1.electronID("loose25nsRun2");
-	eleIDmedium[index] = electron1.electronID("medium25nsRun2");
-	eleIDtight[index]  = electron1.electronID("tight25nsRun2");
+	// eleIDloose[index]  = electron1.electronID("loose50nsRun2");
+	// eleIDmedium[index] = electron1.electronID("medium50nsRun2");
+	// eleIDtight[index]  = electron1.electronID("tight50nsRun2");
 	return;
 }
 
@@ -2402,9 +2451,9 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Photon& photon, int index){
 	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(photonSC, conversionsHandle, bsHandle->position());
 #endif
 
-	eleIDloose[index]  = photon.photonID("loose");
-	eleIDmedium[index] = photon.photonID("medium");
-	eleIDtight[index]  = photon.photonID("tight");
+	// eleIDloose[index]  = photon.photonID("loose");
+	// eleIDmedium[index] = photon.photonID("medium");
+	// eleIDtight[index]  = photon.photonID("tight");
 	return;
 }
 

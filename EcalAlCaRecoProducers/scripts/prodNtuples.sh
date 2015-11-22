@@ -9,7 +9,8 @@ STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOBS=12000
+LUMIS_PER_JOBS=100
+EVENTS_PER_JOB=50000
 DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
@@ -32,10 +33,12 @@ usage(){
     echo "    --store dir"
     echo "    --remote_dir dir: origin files remote dir"
     echo "---------- provided by command-line (mandatory)"
-    echo "    --type alcareco|alcarecosim|ALCARERECO:"
+    echo "    --type alcareco|alcarecosim|ALCARERECO|miniAOD|MINIAOD|miniAODSIM:"
     echo "           alcareco: produced on data"
     echo "           ALCARECOSIM|alcarecosim: alcareco produced on MC"
     echo "           ALCARERECO: alcareco format after rereco on ALCARAW"
+    echo "           miniAOD|MINIAOD: ntuple production from miniAOD"
+    echo "           miniAODSIM: ntuple production from miniAOD from MC"
     echo " *** for MC ***"
     echo "    --isMC"
     echo "    --isParticleGun: redundant, --skim=partGun is the same"
@@ -120,6 +123,18 @@ do
 		ALCARECOSIM)
 		    isMC=1
 		    ;;
+		MINIAOD| miniAOD)
+				TYPE=MINIAODNTUPLE
+				if [ "${isMC}" == "1" ]; then 
+					TYPE=MINIAODNTUPLE;
+				else
+					TYPE=MINIAODNTUPLE
+				fi
+				;;
+			miniAODSIM)
+				TYPE=MINIAODNTUPLE
+				isMC=1
+				;;
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
 		    if [ "${isMC}" == "1" ]; then
@@ -204,13 +219,13 @@ if [ -z "$TYPE" ];then
     exit 1
 fi
 
-if [ -z "$JSONFILE" -a "$TYPE" != "ALCARECOSIM" ];then 
+if [ -z "$JSONFILE" -a "$isMC" != "1" ];then 
     echo "[ERROR] JSONFILE not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
 fi
 
-if [ -z "$JSONNAME" -a "$TYPE" != "ALCARECOSIM" ];then 
+if [ -z "$JSONNAME" -a "$isMC" != "1" ];then 
     echo "[ERROR] JSONNAME not defined" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
@@ -253,8 +268,12 @@ case $TYPE in
 		setUserRemoteDirAlcarereco $ORIGIN_REMOTE_DIR_BASE
 		ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
 		;;
+	MINIAODNTUPLE)
+		#setUserRemoteDirMiniaod $ORIGIN_REMOTE_DIR_BASE
+		#ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+		;;
 	*)
-		TAG=""
+#		TAG=""
 		setUserRemoteDirAlcareco $ORIGIN_REMOTE_DIR_BASE
 		ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
 		;;
@@ -362,6 +381,10 @@ if [ -n "$FILELIST" ]; then
     fi
 fi
 
+if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`" == "0" ];then
+    unset RUNRANGE
+fi
+
 if [ ! -d "tmp" ];then mkdir tmp/; fi
 cat > ${crabFile} <<EOF
 [CRAB]
@@ -373,12 +396,23 @@ jobtype=cmssw
 EOF
 case ${ORIGIN_REMOTE_DIR_BASE} in
         database)
+		if [ "$isMC" != "1" ];then
         cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 datasetpath=${DATASETPATH}
-dbs_url = phys03
+#dbs_url = phys03
+use_dbs3 = 1
 EOF
+		else
+			cat >> ${crabFile} <<EOF
+total_number_of_events = -1
+events_per_job = ${EVENTS_PER_JOB}
+datasetpath=${DATASETPATH}
+#dbs_url = phys03
+use_dbs3 = 1
+EOF
+		fi
         ;;
         *)
         cat >> ${crabFile} <<EOF
@@ -400,7 +434,8 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
+#pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
 get_edm_output=1
 output_file=${OUTFILES}
 

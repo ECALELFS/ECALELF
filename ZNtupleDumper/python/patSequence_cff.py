@@ -92,10 +92,10 @@ muonMatch.src=cms.InputTag('muons')
 #process.electronMatch: assosiation map of gsfelectron and genparticle
 #process.patElectrons: producer of patElectron
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
-
+prePatSequence = cms.Sequence((eleSelectionProducers + eleNewEnergiesProducer))
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
-patSequence=cms.Sequence( (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
-patSequenceMC=cms.Sequence( electronMatch * (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
+patSequence=cms.Sequence( prePatSequence * patElectrons )
+patSequenceMC=cms.Sequence( electronMatch * prePatSequence * patElectrons )
 
 
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
