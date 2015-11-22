@@ -542,7 +542,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
 	// filling infos runNumber, eventNumber, lumi
 	if( !iEvent.isRealData() ){
-		iEvent.getByLabel(edm::InputTag("addPileupInfo"), PupInfo);
+		iEvent.getByLabel(edm::InputTag("slimmedAddPileupInfo"), PupInfo);
 		iEvent.getByLabel(edm::InputTag("generator"), GenEventInfoHandle);
 		isMC=true;
 	} else isMC=false;

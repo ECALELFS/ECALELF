@@ -149,7 +149,7 @@ do
 		    ;;
 	    esac
 	    ;;
-	--isMC) isMC=1; TYPE=ALCARECOSIM;;
+	--isMC) isMC=1;;
 	--isParticleGun) isPARTICLEGUN="y"; SKIM=partGun;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
@@ -447,7 +447,7 @@ use_parent=0
 [LSF]
 queue = 1nh
 [CAF]
-queue = cmscaf1nh
+queue = cmscaf1nd
 resource = type==SLC6_64
 
 [USER]
