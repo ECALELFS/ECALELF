@@ -270,6 +270,10 @@ private:
   Float_t energySCEle_must[3];    ///< corrected SuperCluster energy with mustache
   Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
   Float_t rawEnergySCEle_must[3]; ///< SC mustach energy without cluster corrections
+
+	Float_t energySCEle_must_regrCorr_ele[3]; ///< mustache SC energy derived with regression (offline tool)
+	Float_t energySigmaSCEle_must_regrCorr_ele[3]; ///< mustache SC energy resolution derived with regression (offline tool)
+
   Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
 	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
 	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
@@ -1134,6 +1138,10 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("energySCEle_must", energySCEle_must, "energySCEle_must[3]/F");
   tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
   tree->Branch("rawEnergySCEle_must", rawEnergySCEle_must, "rawEnergySCEle_must[3]/F");
+
+  tree->Branch("energySCEle_must_regrCorr_ele", energySCEle_must_regrCorr_ele, "energySCEle_must_regrCorr_ele[3]/F");
+  tree->Branch("energySCEle_must_regrCorr_ele", energySigmaSCEle_must_regrCorr_ele, "energySigmaSCEle_must_regrCorr_ele[3]/F");
+
   tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
   tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
   tree->Branch("esEnergyPlane1SCEle", esEnergyPlane1SCEle, "esEnergyPlane1SCEle[3]/F");
@@ -1385,11 +1393,18 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
   if(electron1.parentSuperCluster().isNonnull()) {
     energySCEle_must[index] = electron1.parentSuperCluster()->energy();
     rawEnergySCEle_must[index]  = electron1.parentSuperCluster()->rawEnergy();
+  //energySCEle_must_regrCorr_pho[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleJoshPho");
+  energySCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMust");
+  energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMustVar");
+
   }
   else  {
     energySCEle_must[index]=-99;
     rawEnergySCEle_must[index]=-99;
+	energySCEle_must_regrCorr_ele[index] = -99.;
+	energySigmaSCEle_must_regrCorr_ele[index] = -99.;
   }
+
 
   rawEnergySCEle[index]  = electron1.superCluster()->rawEnergy();
   esEnergySCEle[index] = electron1.superCluster()->preshowerEnergy();

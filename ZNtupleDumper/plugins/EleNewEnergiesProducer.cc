@@ -201,10 +201,9 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	   std::pair<double,double> corEle = std::make_pair<double,double>(-1,-1);
 	   if(ele_itr->ecalDriven()){
-		   assert(ele_itr->parentSuperCluster().isNonnull());
-		   assert(ele_itr->parentSuperCluster()->seed().isNonnull());
-		   
-		   corEle = mustache_regr_.GetCorrections(*(ele_itr->parentSuperCluster()));
+		   //assert(ele_itr->parentSuperCluster().isNonnull() && ele_itr->parentSuperCluster()->seed().isNonnull()); //failing for 1/14000 events in MC!
+		   if(ele_itr->parentSuperCluster().isNonnull())
+			   corEle = mustache_regr_.GetCorrections(*(ele_itr->parentSuperCluster()));
 	   }
 	   
 	   //fill the vector with the energies
