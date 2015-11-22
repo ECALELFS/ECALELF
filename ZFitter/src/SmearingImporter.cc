@@ -379,24 +379,28 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 #ifdef mc_deb
     std::cout<<mcGenWeight<<std::endl;
 #endif
-    //if(mcGenWeight > 0){
-    //  event.weight *=1;
-    //}else{
-    //  event.weight *=-1;
-    //}
-    if(mcGenWeight != -1){
-      if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
-
-      if(_excludeByWeight && mcGenWeight!=1){
-	float rnd = excludeGen.Rndm();
-	if(jentry < 10)  std::cout << "mcGen = " << mcGenWeight << "\t" << rnd << std::endl;
-	if(mcGenWeight < rnd){ /// \todo fix the reject by weight in case of pu,r9,pt reweighting
-	  
-	  excludedByWeight++;
-	  continue;
-	} // else event.weight=1;
+    //As simple as that
+    if(isMC){
+      if(mcGenWeight > 0){
+	event.weight *=1;
+      }else{
+	event.weight *=-1;
       }
     }
+//This was for sherpa, not valid anymore
+//    if(mcGenWeight != -1){
+//      if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
+//
+//      if(_excludeByWeight && mcGenWeight!=1){
+//	float rnd = excludeGen.Rndm();
+//	if(jentry < 10)  std::cout << "mcGen = " << mcGenWeight << "\t" << rnd << std::endl;
+//	if(mcGenWeight < rnd){ /// \todo fix the reject by weight in case of pu,r9,pt reweighting
+//	  
+//	  excludedByWeight++;
+//	  continue;
+//	} // else event.weight=1;
+//      }
+//    }
     //#ifdef DEBUG      
 #ifdef my_deb_ev
     if(isMC){
@@ -417,7 +421,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     //if(event.weight==0){//ok, fixed
     //event.weight=1;
     //}
-    if(event.weight<=0 || event.weight!=event.weight || event.weight>10) {continue;}
+    //if(event.weight<=0 || event.weight!=event.weight || event.weight>10) {continue;}
+    if(event.weight>10) {continue;}//also negative weights are possible
 
 #ifdef FIXEDSMEARINGS
     if(isMC){

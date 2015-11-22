@@ -102,25 +102,37 @@ mkSmearerCatData(){
     #$2: outDirData/step...
     #$3: configFile
     #$4: corrEleType
+    echo "Inside mkSmearerCatData"
     if [ ! -e "$2/smearerCat_`basename $1 .dat`_d1-`basename $configFile .dat`.root" ];then
 	echo "[STATUS] Creating smearerCat for data: `basename $configFile .dat` `basename $1 .dat`"
 	./bin/ZFitter.exe -f $3 --regionsFile=$1  \
 	    --saveRootMacro  --addBranch=smearerCat_d $4 || exit 1
 	mv tmp/smearerCat_`basename $1 .dat`_d*-`basename $configFile .dat`.root $2/ || exit 1
     fi
-    cat $3 \
-	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $3.tmp
-    cat $3.tmp $3 | sort | uniq -d > $3.tmp2
-    for line in `cat $3.tmp2 | sed 's|[ ]+|\t|g' | cut  -f 3`;
-      do
-      sed -i "\#$line# d" $3.tmp
+# Not working for me (Giuseppe)
+#    cat $3 \
+#	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $3.tmp
+#    cat $3.tmp $3 | sort | uniq -d > $3.tmp2
+#    for line in `cat $3.tmp2 | sed 's|[ ]+|\t|g' | cut  -f 3`;
+#      do
+#      sed -i "\#$line# d" $3.tmp
+#    done
+#    cat $3.tmp
+#    echo 
+#    echo
+#    echo
+#    echo "file of mkSmearerCatData is" $3
+#    cat $3.tmp >> $3
+#    rm $3.tmp $3.tmp2
+
+##adapted from mkSmearerSignal -->This works
+    basenameConfig=`basename $1 .dat`
+    echo "Data smearer cat are in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root"
+    for file in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root
+    do
+	tag=`echo $file | sed "s|${2}/smearerCat_${basenameConfig}_d\([0-9]\)-.*|d\1|"`
+	echo -e "$tag\tsmearerCat_${basenameConfig}\t`echo $file | sed 's|tmp/||'`" >> $3
     done
-    cat $3.tmp
-    echo 
-    echo
-    echo
-    cat $3.tmp >> $3
-    rm $3.tmp $3.tmp2
 }
 	
 

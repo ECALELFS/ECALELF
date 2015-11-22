@@ -16,7 +16,7 @@ ElectronCategory_class::~ElectronCategory_class(){
 ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAsNtuple_):
   _isRooFit(isRooFit_),
   _roofitNameAsNtuple(roofitNameAsNtuple_),
-  energyBranchName("rawEnergySCEle"),
+  energyBranchName("energyEle"),
   _corrEle(false){
 
   return;

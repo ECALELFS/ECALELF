@@ -63,6 +63,13 @@ EnergyScaleCorrection_class::~EnergyScaleCorrection_class(void){
 float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle){
   if(noCorrections) return 1;
   
+//#ifdef lettura
+//  std::cout<<"runNumber is "<<runNumber<<std::endl;
+//  std::cout<<"isEBEle "<<isEBEle<<std::endl;
+//  std::cout<<"R9Ele is "<<R9Ele<<std::endl;
+//  std::cout<<"etaSCEle is "<<etaSCEle<<std::endl;
+//  std::cout<<"EtEle is "<<EtEle<<std::endl;
+//#endif
   correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle);
   correction_map_t::const_iterator corr_itr = scales.find(category);
   if(corr_itr==scales.end()){ // if not in the standard classes, add it in the list of not defined classes
@@ -83,6 +90,7 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
     	    << "        given for category " <<  corr_itr->first << std::endl;;
 #endif
 
+  std::cout<<"correction is "<<corr_itr->second.scale;
   return corr_itr->second.scale;
 
 }

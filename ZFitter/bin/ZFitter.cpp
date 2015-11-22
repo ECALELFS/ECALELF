@@ -847,7 +847,8 @@ int main(int argc, char **argv) {
 	TChain *ch = (tag_chain_itr->second.find("selected"))->second;
 	if((tag_chain_itr->second.count("pileup"))) continue;
 	TString treeName="pileup";
-	TString filename="tmp/mcPUtree"+tag_chain_itr->first+".root";
+	//TString filename="tmp/mcPUtree"+tag_chain_itr->first+".root";
+	TString filename="data/puTree/mcPUtree"+tag_chain_itr->first+".root";
 	TFile f(filename,"recreate");
 	if(f.IsOpen()){
 	  f.cd();
