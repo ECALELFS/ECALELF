@@ -213,7 +213,13 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
                             secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
-                            skipEvents=cms.untracked.uint32(0)
+                            skipEvents=cms.untracked.uint32(0),
+                            inputCommands = cms.untracked.vstring( [ 'keep *', 
+                                                                     'drop *_correctedHybridSuperClusters_*_RECO',
+#                                                                     'drop *_correctedMulti5x5SuperClustersWithPreshower_*_RECO',
+                                                                     ]
+                                                                   ),
+                             dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
                             )
 
 

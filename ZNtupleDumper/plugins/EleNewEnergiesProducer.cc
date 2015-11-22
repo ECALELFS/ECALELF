@@ -204,6 +204,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 		   //assert(ele_itr->parentSuperCluster().isNonnull() && ele_itr->parentSuperCluster()->seed().isNonnull()); //failing for 1/14000 events in MC!
 		   if(ele_itr->parentSuperCluster().isNonnull())
 			   corEle = mustache_regr_.GetCorrections(*(ele_itr->parentSuperCluster()));
+		   else edm::LogWarning("energyProducer") << "EcalDriven electron withouth parentSC";
 	   }
 	   
 	   //fill the vector with the energies

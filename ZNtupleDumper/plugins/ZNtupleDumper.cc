@@ -296,6 +296,7 @@ private:
   Float_t invMass;
   Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too! 
   Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
+  Float_t invMass_SC_must_regrCorr_ele;   ///< invariant mass using SC energy with mustache corrected with regression
   //   Float_t invMass_e3x3;
   Float_t invMass_e5x5;
   Float_t invMass_rawSC;
@@ -1164,6 +1165,7 @@ void ZNtupleDumper::InitNewTree(){
   tree->Branch("invMass",    &invMass,      "invMass/F");  
   tree->Branch("invMass_SC", &invMass_SC,   "invMass_SC/F");
   tree->Branch("invMass_SC_must", &invMass_SC_must,   "invMass_SC_must/F");
+  tree->Branch("invMass_SC_must_regrCorr_ele", &invMass_SC_must_regrCorr_ele,   "invMass_SC_must_regrCorr_ele/F");
   //   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
   tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
   tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
@@ -1764,6 +1766,9 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
   invMass_SC_must = sqrt(2*energySCEle_must[0]*energySCEle_must[1] *
 		    angle);
 
+  invMass_SC_must_regrCorr_ele = sqrt(2*energySCEle_must_regrCorr_ele[0]*energySCEle_must_regrCorr_ele[1] *
+		    angle);
+
 
   invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
 		       angle);
@@ -1817,6 +1822,7 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
   invMass_SC = sqrt(2*energySCEle[0]*energySCEle[1] *  angle);
 
   invMass_SC_must = sqrt(2*energySCEle_must[0]*energySCEle_must[1] *  angle);
+  invMass_SC_must_regrCorr_ele = sqrt(2*energySCEle_must_regrCorr_ele[0]*energySCEle_must_regrCorr_ele[1] *  angle);
 
 
   invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] * angle);
