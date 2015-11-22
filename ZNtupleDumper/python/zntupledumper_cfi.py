@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                useIDforPresel = cms.bool(True),
+                               pileupInfo = cms.InputTag("addPileupInfo"),
                                jsonFileName = cms.string(""),
                                electronCollection = cms.InputTag('patElectrons'),
                                muonCollection = cms.InputTag('patMuons'),

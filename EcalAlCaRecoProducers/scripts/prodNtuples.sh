@@ -149,7 +149,7 @@ do
 		    ;;
 	    esac
 	    ;;
-	--isMC) isMC=1; TYPE=ALCARECOSIM;;
+	--isMC) isMC=1;;
 	--isParticleGun) isPARTICLEGUN="y"; SKIM=partGun;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;

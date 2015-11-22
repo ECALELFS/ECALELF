@@ -828,6 +828,7 @@ else:
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     process.zNtupleDumper.useIDforPresel = cms.bool(False)
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
+    process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.zNtupleDumper.electronCollection = cms.InputTag('slimmedElectrons')
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
