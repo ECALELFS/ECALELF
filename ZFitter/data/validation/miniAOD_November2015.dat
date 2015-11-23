@@ -24,8 +24,8 @@ s1      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_s1-mi
 s2      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_s2-miniAOD_November2015.root
 #s3      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_s3-miniAOD_November2015.root
 d1      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d1-miniAOD_November2015.root
-#d2      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d2-miniAOD_November2015.root
-#d3      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d3-miniAOD_November2015.root
+d2      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d2-miniAOD_November2015.root
+d3      smearerCat_scaleStep0     friends/smearerCat/smearerCat_scaleStep0_d3-miniAOD_November2015.root
 
 
 s1      smearerCat_scaleStep2smearing_1     friends/smearerCat/smearerCat_scaleStep2smearing_1_s1-miniAOD_November2015.root
