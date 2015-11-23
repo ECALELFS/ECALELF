@@ -1,5 +1,6 @@
 /// Zee Fit program
 
+
 /**\file 
 The aim of the program is to provide a common interface to all the Z
 fitting algorithms reading and combining in the proper way the
@@ -650,21 +651,6 @@ int main(int argc, char **argv) {
   }
 
 
-  ///------------------------------ to obtain run ranges
-  if(vm.count("runDivide")){
-    runDivide_class runDivider;
-    std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
-    runDivider.PrintRunRangeEvents();
-    std::vector<TString> runRanges;
-    if(runRangesFileName!="") runRanges = ReadRegionsFromFile(runRangesFileName);
-    for(std::vector<TString>::const_iterator itr = runRanges.begin();
-	itr != runRanges.end();
-	itr++){
-      std::cout << *itr << "\t" << "-1" << "\t" << runDivider.GetRunRangeTime(*itr) << std::endl;
-    }
-
-    return 0;
-  }
 
   ////////////////////////////////////////////////////////////////////////                                                                                                      
   std::cout<<"In ZFitter.cpp, building names for your regions"<<std::endl;
@@ -1030,6 +1016,21 @@ int main(int argc, char **argv) {
     MergeSamples(tagChainMap, regionsFileNameTag, "s");
     MergeSamples(tagChainMap, regionsFileNameTag, "d");
   }
+
+  ///------------------------------ to obtain run ranges
+  if(vm.count("runDivide")){
+    runDivide_class runDivider;
+    std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
+    runDivider.PrintRunRangeEvents();
+    std::vector<TString> runRanges;
+    if(runRangesFileName!="") runRanges = ReadRegionsFromFile(runRangesFileName);
+    for(std::vector<TString>::const_iterator itr = runRanges.begin();
+	itr != runRanges.end();
+	itr++){
+      std::cout << *itr << "\t" << "-1" << "\t" << runDivider.GetRunRangeTime(*itr) << std::endl;
+    }
+    return 0;
+  }
   
 //   Dump(tagChainMap, "s",0);
 //   Dump(tagChainMap, "s",(tagChainMap["s1"])["selected"]->GetEntries());
@@ -1047,6 +1048,9 @@ int main(int argc, char **argv) {
       }
     }
   }
+
+
+
 
   if(
      vm.count("saveRootMacro") 

@@ -1,6 +1,6 @@
 #include "../interface/runDivide_class.hh"
-#define DEBUG
-
+//#define DEBUG
+#include <cassert>
 runDivide_class::runDivide_class(void)
 {
 
@@ -62,9 +62,9 @@ void runDivide_class::ReadRunRangeLimits(TString fileName)
 
 
 /** this method reads the ntuple and saves the number of events per run in a map */
-void runDivide_class::LoadRunEventNumbers(TTree *tree, TString runNumber_branchName, TString runTime_branchName)
+void runDivide_class::LoadRunEventNumbers(TChain *tree, TString runNumber_branchName, TString runTime_branchName)
 {
-	//void runDivide_class::LoadRunEventNumbers(TTree *tree, TString runNumber_branchName){
+	//void runDivide_class::LoadRunEventNumbers(TChain *tree, TString runNumber_branchName){
 	Int_t runNumber;
 	UInt_t runTime;
 
@@ -218,11 +218,11 @@ std::vector<TString> runDivide_class::GetRunRanges(void)
 	return v;
 }
 
-std::vector<TString> runDivide_class::Divide(TTree *tree, TString fileName,
+std::vector<TString> runDivide_class::Divide(TChain *tree, TString fileName,
         unsigned int nEvents_min,
         TString runNumber_branchName)
 {
-
+	assert(tree!=NULL);
 #ifdef DEBUG
 	std::cout << "[DEBUG] Reading run range limits from file: " << fileName << std::endl;
 #endif
