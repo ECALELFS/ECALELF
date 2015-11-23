@@ -265,6 +265,7 @@ private:
 	Float_t avgLCSCEle[3];
 
 	Float_t energyMCEle[3];    ///< Electron MC true energy
+        Float_t energyEle[3];      ///< electron.energy()
 	Float_t energySCEle[3];    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
 	Float_t energySCEle_must[3];    ///< corrected SuperCluster energy with mustache
 	Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
@@ -528,6 +529,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 	energySCEle[0]=-99;
 	energySCEle[1]=-99;
+	energyEle[0]=-99;
+	energyEle[1]=-99;
 	energySCEle_must[0]=-99;
 	energySCEle_must[1]=-99;
 	invMass_SC=-99;
@@ -1149,6 +1152,7 @@ void ZNtupleDumper::InitNewTree(){
 	tree->Branch("gainEle", gainEle, "gainEle[3]/b");
 
 	tree->Branch("energyMCEle", energyMCEle, "energyMCEle[3]/F");
+	tree->Branch("energyEle", energyEle, "energyEle[3]/F");
 	tree->Branch("energySCEle", energySCEle, "energySCEle[3]/F");
 	tree->Branch("energySCEle_must", energySCEle_must, "energySCEle_must[3]/F");
 	tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
@@ -1156,8 +1160,8 @@ void ZNtupleDumper::InitNewTree(){
 	tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
 	tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
 	tree->Branch("esEnergyPlane1SCEle", esEnergyPlane1SCEle, "esEnergyPlane1SCEle[3]/F");
-  tree->Branch("rawESEnergyPlane2SCEle", rawESEnergyPlane2SCEle, "rawESEnergyPlane2SCEle[3]/F");
-  tree->Branch("rawESEnergyPlane1SCEle", rawESEnergyPlane1SCEle, "rawESEnergyPlane1SCEle[3]/F");
+	tree->Branch("rawESEnergyPlane2SCEle", rawESEnergyPlane2SCEle, "rawESEnergyPlane2SCEle[3]/F");
+	tree->Branch("rawESEnergyPlane1SCEle", rawESEnergyPlane1SCEle, "rawESEnergyPlane1SCEle[3]/F");
 
 
 	tree->Branch("energySCEle_corr", energySCEle_corr, "energySCEle_corr[3]/F");
@@ -1252,10 +1256,10 @@ void ZNtupleDumper::TreeSetPileupVar(void){
 	mcGenWeight=-1;
 
 	if(primaryVertexHandle->size() > 0) {
-		for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin();
-			v != primaryVertexHandle->end(); ++v){
-			//if((*v).tracksSize() > 0) nPV++; // non mi ricordo perche' ho fatto cosi'....
-		}
+	  for(reco::VertexCollection::const_iterator v = primaryVertexHandle->begin(); v != primaryVertexHandle->end(); ++v){
+	    //if((*v).tracksSize() > 0) 
+	    nPV++; // non mi ricordo perche' ho fatto cosi'....
+	  }
 	}
 
 	if(isMC){
@@ -1317,6 +1321,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		return;
 	}   
 
+	energyEle[index] = electron1.energy();
 	PtEle[index]     = electron1.et();  
 	chargeEle[index] = electron1.charge();
 	etaEle[index]    = electron1.eta(); // degli elettroni
