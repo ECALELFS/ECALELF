@@ -826,6 +826,7 @@ if(options.type!="MINIAODNTUPLE"):
 else:
     process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
+    process.eleNewEnergiesProducer.recHitCollectionES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     process.zNtupleDumper.useIDforPresel = cms.bool(False)
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")

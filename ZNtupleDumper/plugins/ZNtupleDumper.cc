@@ -404,7 +404,7 @@ private:
 	//  void Tree_output(TString filename);
 	void TreeSetEventSummaryVar(const edm::Event& iEvent);
 	void TreeSetPileupVar(void);
-	float GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex);
+	float GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsigned int planeIndex);
 
 	bool elePreselection(const pat::Electron& electron);
 	//puWeights_class puWeights;
@@ -1338,6 +1338,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		chargeEle[-index] = -100;
 		etaEle[-index]    = 0;
 		phiEle[-index]    = 0;
+		recoFlagsEle[-index] = -1;
 		return;
 	}
 
@@ -1357,6 +1358,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	fbremEle[index] = electron1.fbrem(); // fatta con pIn-pOut
 
 	const reco::SuperClusterRef& sc = electron1.superCluster().isNonnull() ? electron1.superCluster() : electron1.parentSuperCluster();
+	assert(sc.isNonnull());
 
 	if(sc.isNonnull()) {
 		etaSCEle[index] = sc->eta();
@@ -1389,10 +1391,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMustVar");
 
 
-	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(electron1, 1);
-	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(electron1, 2);
-
-
+	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(sc, 1);
+	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(sc, 2);
 
 #ifndef CMSSW42X
 	energySCEle_corr[index] = electron1.correctedEcalEnergy();
@@ -1401,6 +1401,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 #endif
 
 	if(sc.isNonnull()) {
+		nHitsSCEle[index] = sc->size();
+
 		// change in an electron properties please, EleNewEnergyProducer
 		e3x3SCEle[index] = clustertools->e3x3(*sc->seed());
 		e5x5SCEle[index] = clustertools->e5x5(*sc->seed());
@@ -1439,63 +1441,69 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
 //	return;//To be fixed
 
-	const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-	//assert(recHits!=NULL);
-	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
-	if(sc.isNonnull()) {
-		DetId seedDetId = sc->seed()->seed();
-		if(seedDetId.null()) {
-			//assert(electron1.trackerDrivenSeed()); // DEBUG
-			seedDetId = findSCseed(*(sc));
-		}
+	if(electron1.ecalDrivenSeed() && sc.isNonnull()) {
+		//assert(recHits!=NULL);
+		const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
-
-		if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel) {
-			EBDetId seedDetIdEcal = seedDetId;
-			seedXSCEle[index] = seedDetIdEcal.ieta();
-			seedYSCEle[index] = seedDetIdEcal.iphi();
-		} else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap) {
-			EEDetId seedDetIdEcal = seedDetId;
-			seedXSCEle[index] = seedDetIdEcal.ix();
-			seedYSCEle[index] = seedDetIdEcal.iy();
-		} else { ///< this case is strange but happens for trackerDriven electrons
-			seedXSCEle[index] = 0;
-			seedYSCEle[index] = 0;
-		}
-
-		EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-		//assert(seedRecHit!=recHits->end()); // DEBUG
-		seedEnergySCEle[index] = seedRecHit->energy();
-		if(isMC) seedLCSCEle[index] = -10;
-		else seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
-
-		if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] = 1;
-		else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] = 2;
-		else gainEle[index] = 0;
-
-
-		float sumLC_E = 0.;
-		float sumE = 0.;
-		if( !isMC) {
-			std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = sc->hitsAndFractions();
-			for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-			        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-				EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-				//assert(oneHit!=recHits->end()); // DEBUG
-				sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
-				sumE    += oneHit->energy();
-			}
-			avgLCSCEle[index] = sumLC_E / sumE;
-
-		} else     avgLCSCEle[index] = -10;
-
-		nHitsSCEle[index] = electron1.superCluster()->size();
-	} else {
+		seedXSCEle[index] = 0;
+		seedYSCEle[index] = 0;
 		nHitsSCEle[index] = -1;
-		avgLCSCEle[index] = -1;
-	}
+		avgLCSCEle[index] = -1.;
+		seedEnergySCEle[index] = -1.;
+		seedLCSCEle[index] = -10;
+		avgLCSCEle[index] = -10;
+		gainEle[index] = -1;
 
+		assert(sc->seed().isAvailable());
+		DetId seedDetId = sc->seed()->seed();
+
+		if(seedDetId.null()) {
+			assert(electron1.trackerDrivenSeed()); // DEBUG
+			//seedDetId = findSCseed(*(sc));
+		}
+
+
+		if(!seedDetId.null()) { //false for trackerDriverElectons
+			if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel) {
+				EBDetId seedDetIdEcal = seedDetId;
+				seedXSCEle[index] = seedDetIdEcal.ieta();
+				seedYSCEle[index] = seedDetIdEcal.iphi();
+			} else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap) {
+				EEDetId seedDetIdEcal = seedDetId;
+				seedXSCEle[index] = seedDetIdEcal.ix();
+				seedYSCEle[index] = seedDetIdEcal.iy();
+			}
+
+			const EcalRecHitCollection *recHits = (seedDetId.subdetId() == EcalBarrel) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+
+			EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
+			//assert(seedRecHit!=recHits->end()); // DEBUG
+			if(seedRecHit != recHits->end()) {
+				seedEnergySCEle[index] = seedRecHit->energy();
+
+				float sumLC_E = 0.;
+				float sumE = 0.;
+
+				if( !isMC) {
+					seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
+					std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = sc->hitsAndFractions();
+					for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
+					        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
+						EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
+						//assert(oneHit!=recHits->end()); // DEBUG
+						sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
+						sumE    += oneHit->energy();
+					}
+					avgLCSCEle[index] = sumLC_E / sumE;
+				}
+
+				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] = 1;
+				else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] = 2;
+				else gainEle[index] = 0;
+			}
+		}
+	}
 	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron1.superCluster()->seed()))[index]);
 	//  sigmaIEtaIEtaSCEle[1] = sqrt(clustertools->localCovariances(*(electron2.superCluster()->seed()))[index]);
 	//  sigmaIPhiIPhiBC = sqrt(clustertools->localCovariances(*b)[3]);
@@ -1975,13 +1983,13 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 
 // method to get the raw energy of one plane of ES summing the energy of only recHits associated to the electron SC
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
-float ZNtupleDumper::GetESPlaneRawEnergy(const pat::Electron& electron, unsigned int planeIndex)
+float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsigned int planeIndex)
 {
 
 	float RawenergyPlane = 0;
 	float pfRawenergyPlane = 0;
 	if(ESRechitsHandle.isValid()) {
-		for(auto iES = electron.superCluster()->preshowerClustersBegin(); iES != electron.superCluster()->preshowerClustersEnd(); ++iES) {
+		for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
 			const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
 			for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
 				//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
