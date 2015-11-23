@@ -10,8 +10,8 @@
 #05 Oct rereco per RunC, Prompt per RunD
 #golden + silver json
 d1     selected	    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD/254227-255031/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
-d2     selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
-d3     selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
+#d2     selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD/256584-258158/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
+#d3     selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_dataRun2_Prompt_v4/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco-MINIAOD/258159-260737/246908-260627-Prompt_25ns-v1-golden_silver/unmerged-allRange-miniAOD.root
 
 s1     selected		    root:://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_mcRun2_asymptotic_v2/DYJets_amctnlo-RunIISpring15MiniAODv2-Asym25ns-miniAOD/allRange/DYJets_amctnlo-RunIISpring15MiniAODv2-Asym25ns-miniAOD-allRange-miniAOD.root
 s2     selected		    root:://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/74X_mcRun2_asymptotic_v2/DYJets_madgraph-RunIISpring15MiniAODv2-Asym25ns-miniAOD/allRange/DYJets_madgraph-RunIISpring15MiniAODv2-Asym25ns-miniAOD-allRange-miniAOD.root
