@@ -2,16 +2,20 @@
 # when splitting by run ranges, this file fixes the run range limits
 # for the splitting avoiding the possibility to have run ranges
 # including TS or other important boundaries
-##----- RUN2015A Begin (50ns)
-247607
-##----- RUN2015B Begin (50ns)
-250985
 ##----- RUN2015C Begin (25ns)
-253659
-##----- RUN2015C 50ns run
-256464
-##----- RUN2015C 25ns again.
-254834
+##253659
+254231
+254292
+254790
+255981
 ##----- RUN2015D Begin (25ns)
 256630
+259626
 
+#From Peter's presentation
+#1 254232 254231
+#2 254332 254292 254608
+#3 254906 254790 254914
+#4 256217 255981 256464
+#5 258158 256630 258750
+#6 259818 259626 259891
