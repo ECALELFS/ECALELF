@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 from CondCore.DBCommon.CondDBSetup_cfi import *
-# new pulse shape templates from lone bunch data in 3 IOVs
+# Pulse shapes validated in Cal_Nov2015_PS_v1
+# IC from EoP
 # more details to be added here
 
 RerecoGlobalTag = cms.ESSource("PoolDBESSource",
@@ -10,8 +11,8 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                globaltag = cms.string('74X_dataRun2_Prompt_v2'),
                                toGet = cms.VPSet(
                                  cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
-                                          tag = cms.string("EcalIntercalibConstants_2012ABCD_offline"),
-                                          connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_ECAL"),
+                                          tag = cms.string("EcalIntercalibConstants_Cal_Nov2015_comb_v1"),
+                                          connect = cms.untracked.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/RunII-IC/Cal_Nov2015/combinations/tags/db/EcalIntercalibConstants_Cal_Nov2015_comb_v1.db"),
                                           ),
                                  cms.PSet(record = cms.string("EcalPulseShapesRcd"),
                                           tag = cms.string("EcalPulseShapes_data"),
@@ -28,10 +29,6 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                  cms.PSet(record = cms.string("ESAlignmentRcd"), # only Bon!
                                           tag = cms.string("ESAlignment_measured_v08_offline"),
                                           connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
-                                          ),
-                                 cms.PSet(record = cms.string("ESIntercalibConstantsRcd"),
-                                          tag = cms.string("ESIntercalibConstants_V03_offline"),
-                                          connect = cms.untracked.string("frontier://FrontierPrep/CMS_CONDITIONS"),
                                           ),
                                )
 )

@@ -30,7 +30,7 @@ RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                           connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
                                           ),
                                  cms.PSet(record = cms.string("ESIntercalibConstantsRcd"),
-                                          tag = cms.string("ESIntercalibConstants_V03_offline"),
+                                          tag = cms.string("ESIntercalibConstants_V04_offline"),
                                           connect = cms.untracked.string("frontier://FrontierPrep/CMS_CONDITIONS"),
                                           ),
                                )
