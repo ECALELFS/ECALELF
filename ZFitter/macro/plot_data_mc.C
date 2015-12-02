@@ -172,6 +172,9 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     mc->GetXaxis()->SetRangeUser(x_min,x_max);
   }else if(mc->GetXaxis()->GetXmax()<150){
     mc->GetXaxis()->SetTitle("M_{ee} (GeV/c^{2})");
+    x_min=80;
+    x_max=100;
+    mc->GetXaxis()->SetRangeUser(x_min,x_max);
   }else if(mc->GetXaxis()->GetXmax()>150){
     mc->GetXaxis()->SetTitle("pt2Sum (GeV/c^{2})");
     x_min=20;
@@ -285,7 +288,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 
 
 
-void PlotMeanHist(TString filename, TString energy="8 TeV", TString lumi="", int rebin=0, TString myRegion=""){
+void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="2.4", int rebin=0, TString myRegion=""){
   
   TH2F eventFraction("eventFraction", "", 10, 0, 9, 10, 0, 9);
   int index_max=0;

@@ -78,9 +78,13 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
       scales_not_defined[category]=corr;
     }
     corr_itr = scales_not_defined.find(category);
-    std::cout << "[ERROR] Category not found: " << std::endl;
-    std::cout << category << std::endl;
-    //     exit(1);
+    if(R9Ele>0 && fabs(etaSCEle)<3){
+		std::cout << "[ERROR] Category not found: " << std::endl;
+		std::cout << category << std::endl;
+	}
+#ifdef DEBUG 
+	exit(1);
+#endif
   }
 
 #ifdef DEBUG
@@ -90,7 +94,6 @@ float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, d
     	    << "        given for category " <<  corr_itr->first << std::endl;;
 #endif
 
-  std::cout<<"correction is "<<corr_itr->second.scale;
   return corr_itr->second.scale;
 
 }
@@ -169,16 +172,17 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 
   Int_t nPV_;
   Int_t runNumber_;
-  Float_t etaEle_[2];
-  Float_t etaSCEle_[2];
-  Float_t R9Ele_[2];
-  Float_t energySCEle_[2];
+  Float_t etaEle_[3];
+  Float_t etaSCEle_[3];
+  Float_t R9Ele_[3];
+  Float_t energySCEle_[3];
 
-  Float_t scaleEle_[2];
+  Float_t scaleEle_[3];
 
   TTree *newTree = new TTree("scaleEle",""); //+correctionType,correctionType);
-  newTree->Branch("scaleEle", scaleEle_, "scaleEle[2]/F");
+  newTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
 
+    tree->SetBranchStatus(runNumberBranchName,1);
   if(fastLoop){
     tree->SetBranchStatus("*",0);
     tree->SetBranchStatus(runNumberBranchName,1);
@@ -298,51 +302,57 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
       continue;
     }
 
-    if(format==0){
-      std::string line;
-      std::getline(f_in, line);
-      std::istringstream s_in(line);
-      s_in >> category >> unused >> etaMin >> etaMax 
-	   >> r9Min >> r9Max >> runMin >> runMax 
-	   >> Emean >> err_Emean 
-	   >> rho >> err_rho >> phi >> err_phi;
-      if(s_in.eof()){ // this is not the globe format but the ECALELF format
-	std::cout << "[INFO] format=2" << std::endl;
-	format=2;
-	s_in >> category >> constTerm >> alpha;
-	AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
-      }else{
-	format=1;
-	std::cout << "[INFO] format=1" << std::endl;
-	if(Emean!=0){
-	  constTerm=rho*sin(phi);
-	  alpha=rho*Emean*cos(phi);
-	}else{
-	  alpha=0;
-	  constTerm=rho;
-	}
-	
-	AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
-	
-      }
-    }else if(format==1){
-      f_in >> category >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >> 
-	Emean >> err_Emean >> 
-	rho >> err_rho >> phi >> err_phi;
-      if(Emean!=0){
-	constTerm=rho*sin(phi);
-	alpha=rho*Emean*cos(phi);
-      }else{
-	alpha=0;
-	constTerm=rho;
-      }
-      
-      AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
-      
-    }else{
-      f_in >> category >> constTerm >> alpha;
-      AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
-    } 
+    //Dovrebbe essere equivalente al formato 2, ma il formato 2 legge male (solo) la prima riga => migliorare
+    Emean=1;
+    f_in >> category >> constTerm;
+    AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+//    if(format==0){
+//      std::string line;
+//      std::getline(f_in, line);
+//      std::istringstream s_in(line);
+//      s_in >> category >> unused >> etaMin >> etaMax 
+//	   >> r9Min >> r9Max >> runMin >> runMax 
+//	   >> Emean >> err_Emean 
+//	   >> rho >> err_rho >> phi;// >> err_phi;
+//      if(s_in.eof()){ // this is not the globe format but the ECALELF format
+//	std::cout << "[INFO] format=2" << std::endl;
+//	format=2;
+//	s_in >> category >> constTerm >> alpha;
+//	std::cout<<"constTerm is "<<constTerm<<std::endl;
+//	std::cout<<"alpha is "<<alpha<<std::endl;
+//	AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+//      }else{
+//	format=1;
+//	std::cout << "[INFO] format=1" << std::endl;
+//	if(Emean!=0){
+//	  constTerm=rho*sin(phi);
+//	  alpha=rho*Emean*cos(phi);
+//	}else{
+//	  alpha=0;
+//	  constTerm=rho;
+//	}
+//	
+//	AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+//	
+//      }
+//    }else if(format==1){
+//      f_in >> category >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >> 
+//	Emean >> err_Emean >> 
+//	rho >> err_rho >> phi >> err_phi;
+//      if(Emean!=0){
+//	constTerm=rho*sin(phi);
+//	alpha=rho*Emean*cos(phi);
+//      }else{
+//	alpha=0;
+//	constTerm=rho;
+//      }
+//      
+//      AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+//      
+//    }else{
+//      f_in >> category >> constTerm >> alpha;
+//      AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+//    } 
 #ifdef DEBUG
     std::cout << category << "\t" << etaMin << "\t" << etaMax << "\t" << r9Min << "\t" << r9Max << "\t" << runMin << "\t" << runMax << "\tEmean=" << Emean << "\t" << rho << "\t" << phi << std::endl;
 #endif
@@ -368,8 +378,10 @@ float EnergyScaleCorrection_class::getSmearingSigma(int runNumber, float energy,
       smearings_not_defined[category]=corr;
     }
     corr_itr = smearings_not_defined.find(category);
-    std::cerr << "[WARNING] Category not found: " << std::endl;
-    std::cerr << category << std::endl;
+    if(R9Ele>0 && fabs(etaSCEle)<3){
+      std::cerr << "[WARNING] Category not found: " << std::endl;
+      std::cerr << category << std::endl;
+    }
     //     exit(1);
   }
 
@@ -487,6 +499,17 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree,
   Long64_t nentries = tree->GetEntries();
   for(Long64_t ientry = 0; ientry<tree->GetEntriesFast(); ientry++){
     tree->GetEntry(ientry);
+#ifdef debug_smear
+    std::cout<<"runNumber_ "<<runNumber_<<std::endl;
+    std::cout<<"energyEle_[0] "<<energyEle_[0]<<std::endl;
+    std::cout<<"etaSCEle_[0]"<<etaSCEle_[0]<<std::endl;
+    std::cout<<"R9Ele_[0]"<<R9Ele_[0]<<std::endl;
+    std::cout<<"etaEle_[0]"<<etaEle_[0]<<std::endl;
+    std::cout<<"energyEle_[1] "<<energyEle_[1]<<std::endl;
+    std::cout<<"etaSCEle_[1]"<<etaSCEle_[1]<<std::endl;
+    std::cout<<"R9Ele_[1]"<<R9Ele_[1]<<std::endl;
+    std::cout<<"etaEle_[1]"<<etaEle_[1]<<std::endl;
+#endif
     smearSigmaEle_[0] = getSmearingSigma(runNumber_, energyEle_[0], fabs(etaSCEle_[0]) < 1.4442, 
 					 R9Ele_[0],etaEle_[0]);
     smearSigmaEle_[1] = getSmearingSigma(runNumber_, energyEle_[1], fabs(etaSCEle_[1]) < 1.4442, 

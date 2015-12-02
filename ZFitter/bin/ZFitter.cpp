@@ -274,7 +274,7 @@ int main(int argc, char **argv) {
   std::string ZPtWeightFile;
   std::string initFileName;
   //  bool savePUweightTree;
-  std::string imgFormat="eps", outDirFitResMC="test/MC/fitres", outDirFitResData="test/dato/fitres", outDirImgMC="test/MC/img", outDirImgData="test/dato/img", outDirTable="test/dato/table", selection;
+  std::string imgFormat="png", outDirFitResMC="test/MC/fitres", outDirFitResData="test/dato/fitres", outDirImgMC="test/MC/img", outDirImgData="test/dato/img", outDirTable="test/dato/table", selection;
   //TString eleID="";
   TString eleID="cutBasedElectronID|Spring15|25ns|V1|standalone|";
   //std::vector<std::string> signalFiles, bkgFiles, dataFiles;
@@ -425,7 +425,7 @@ int main(int argc, char **argv) {
     ("initFile", po::value< string >(&initFileName), "Configuration file with init values of fit model")
     ;
   outputOption.add_options()
-    ("imgFormat", po::value<string>(&imgFormat)->default_value("eps"),"")
+    ("imgFormat", po::value<string>(&imgFormat)->default_value("png"),"")
     ("outDirFitResMC", po::value<string>(&outDirFitResMC),"")
     ("outDirFitResData", po::value<string>(&outDirFitResData),"")
     ("outDirImgMC", po::value<string>(&outDirImgMC),"")
@@ -833,8 +833,7 @@ int main(int argc, char **argv) {
 	TChain *ch = (tag_chain_itr->second.find("selected"))->second;
 	if((tag_chain_itr->second.count("pileup"))) continue;
 	TString treeName="pileup";
-	//TString filename="tmp/mcPUtree"+tag_chain_itr->first+".root";
-	TString filename="data/puTree/mcPUtree"+tag_chain_itr->first+".root";
+	TString filename="tmp/mcPUtree"+tag_chain_itr->first+".root";
 	TFile f(filename,"recreate");
 	if(f.IsOpen()){
 	  f.cd();

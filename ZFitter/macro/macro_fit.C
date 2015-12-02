@@ -320,41 +320,42 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
 
     //Setting ranges for next iteration
     if(isScale){//Scale
-      range_min = TMath::Max(minX-15*sigma_minus, rangeLimMin);
-      range_max = TMath::Min(minX+10*sigma_plus, rangeLimMax);   
+      range_min = TMath::Max(minX-5*sigma_minus, rangeLimMin);//15
+      range_max = TMath::Min(minX+5*sigma_plus, rangeLimMax);//10   
       //if((TString(g->GetTitle()).Contains("EB-Et_0_100-gainEle_12-eleID_tight-Et_25-noPF-Et_20"))){
     } else if(isPhi){
-      range_min = TMath::Max(minX-2*sigma_minus, rangeLimMin);
-      range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);   
-      if(minX<0.5){
-	if(!TString(g->GetTitle()).Contains("1_1.4442-gold")) range_max=0.5;
-	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0; range_max=0.3;}
-	if(TString(g->GetTitle()).Contains("0_1-gold")) range_max=0.4;
-      }
-      if(minX>1.2){
-	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0.5; range_max=1.6;};
-      }
+      std::cout<<"this is isPhi"<<std::endl;
+//  range_min = TMath::Max(minX-2*sigma_minus, rangeLimMin);
+//  range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);   
+//  if(minX<0.5){
+//	if(!TString(g->GetTitle()).Contains("1_1.4442-gold")) range_max=0.5;
+//	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0; range_max=0.3;}
+//	if(TString(g->GetTitle()).Contains("0_1-gold")) range_max=0.4;
+//      }
+//      if(minX>1.2){
+//	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0.5; range_max=1.6;};
+//      }
     } else {//sigma
-      range_min = TMath::Max(minX-5*sigma_minus, rangeLimMin);//1.5
-      range_max = TMath::Min(minX+5*sigma_plus,  rangeLimMax);//1.5
+      range_min = TMath::Max(minX-3*sigma_minus, rangeLimMin);//5
+      range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);//5
     }
 
     //std::cout << "[INFO] Points in interval: " << pointsInInterval(X, N, range_min, range_max) << std::endl;
-    if(!(TString(g->GetTitle()).Contains("0_1-bad"))){
-      while (pointsInInterval(X, N, range_min, range_max) < 10 && range_min>rangeLimMin && range_max<rangeLimMax){
-	// incremento del 10% i range
-	std::cout << "[WARNING] Incrementing ranges by 20% because less than 10 points in range" << std::endl;
-	//std::cout << "Old range: [ " << range_min << " : " << range_max << "]" << std::endl;
-	range_min = TMath::Max(range_min-(rangeLimMax-rangeLimMin)*0.05, rangeLimMin);
-	range_max = TMath::Min(range_max+(rangeLimMax-rangeLimMin)*0.05, rangeLimMax);   
-      }
-      while (pointsInInterval(X, N, minX, range_max) < 10 && range_max<rangeLimMax){
-	// incremento del 10% i range
-	std::cout << "[WARNING] Incrementing ranges by 20% because less than 10 points in range" << std::endl;
-	//std::cout << "Old range: [ " << range_min << " : " << range_max << "]" << std::endl;
-	range_max = TMath::Min(range_max+(rangeLimMax-rangeLimMin)*0.05, rangeLimMax);   
-      }
-    }
+    //if(!(TString(g->GetTitle()).Contains("0_1-bad"))){
+    //  while (pointsInInterval(X, N, range_min, range_max) < 10 && range_min>rangeLimMin && range_max<rangeLimMax){
+    //	// incremento del 10% i range
+    //	std::cout << "[WARNING] Incrementing ranges by 20% because less than 10 points in range" << std::endl;
+    //	//std::cout << "Old range: [ " << range_min << " : " << range_max << "]" << std::endl;
+    //	range_min = TMath::Max(range_min-(rangeLimMax-rangeLimMin)*0.05, rangeLimMin);
+    //	range_max = TMath::Min(range_max+(rangeLimMax-rangeLimMin)*0.05, rangeLimMax);   
+    //  }
+    //  while (pointsInInterval(X, N, minX, range_max) < 10 && range_max<rangeLimMax){
+    //	// incremento del 10% i range
+    //	std::cout << "[WARNING] Incrementing ranges by 20% because less than 10 points in range" << std::endl;
+    //	//std::cout << "Old range: [ " << range_min << " : " << range_max << "]" << std::endl;
+    //	range_max = TMath::Min(range_max+(rangeLimMax-rangeLimMin)*0.05, rangeLimMax);   
+    //  }
+    //}
 
     iter++;
 #ifdef DEBUG
@@ -1138,12 +1139,12 @@ void FitProfile2(TString filename, TString energy="8 TeV", TString lumi="", bool
   pt->SetTextSize(0.05);
   pt->SetFillColor(0);
   pt->SetBorderSize(0);
-  TPaveText pave(0.182,0.92,0.48,0.99, "ndc");
+  TPaveText pave(0.1,0.92,0.48,0.99, "ndc");
   pave.SetFillColor(0);
   pave.SetTextAlign(12);
   pave.SetBorderSize(0);
   pave.SetTextSize(0.04);
-  pave.AddText("CMS Preliminary");
+  pave.AddText("CMS Preliminary #sqrt{s} =13 TeV L=2.4 fb^{-1}");
   //if(lumi.Sizeof()>1)  pave.AddText("#sqrt{s}="+energy+"   L="+lumi+" fb^{-1}");
   //else   pave.AddText("#sqrt{s}=8 TeV");
   //gPad->SetTopMargin(0.08391608);

@@ -317,7 +317,7 @@ if [ -n "${MULTIREGION}" ];then
       cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.png");
   delete c;
 
 EOF
@@ -328,7 +328,7 @@ EOF
       cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.png");
   delete c;
 
 EOF
@@ -477,7 +477,7 @@ fi
   cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability("tmp/tmpFile.dat", "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName", "$tableTwo", "$titleOne", "$titleTwo");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.png");
   delete c;
 
 EOF
