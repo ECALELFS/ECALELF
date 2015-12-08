@@ -126,13 +126,13 @@ do
 		MINIAOD| miniAOD)
 				TYPE=MINIAODNTUPLE
 				if [ "${isMC}" == "1" ]; then 
-					TYPE=MINIAODNTUPLE;
+					TYPE=MINIAODMCNTUPLE;
 				else
 					TYPE=MINIAODNTUPLE
 				fi
 				;;
 			miniAODSIM)
-				TYPE=MINIAODNTUPLE
+				TYPE=MINIAODMCNTUPLE
 				isMC=1
 				;;
 		alcarereco | ALCARERECO)

@@ -8,4 +8,5 @@ eleNewEnergiesProducer = cms.EDProducer('EleNewEnergiesProducer',
                                             vertexCollection   = cms.InputTag("offlinePrimaryVertices"),
                                             ),
                                             electronCollection = cms.InputTag("gedGsfElectrons"),
+                                            photonCollection = cms.InputTag("photons"),
 )
