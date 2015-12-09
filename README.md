@@ -13,17 +13,14 @@ Be sure to have a GitHub account and have followed the instructions here:
 ======
 Download instructions.
 
-`wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh`
-
-`chmod +x setup_git.sh`
-
-`./setup_git.sh CMSSW_7_4_15`
-
-`cd CMSSW_7_4_15/src/`
-
-`cmsenv`
-
-`cd Calibration/ZFitter && make && cd -`
+```
+wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh
+chmod +x setup_git.sh
+./setup_git.sh CMSSW_7_4_15_patch1
+cd CMSSW_7_4_15_patch1/src/
+cmsenv
+cd Calibration/ZFitter && make && cd -
+```
 
 If you are using a tcsh shell:
 `cd Calibration && source initCmsEnv.csh`
