@@ -839,6 +839,14 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 if(options.type!="MINIAODNTUPLE"):
     process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+    #configure everything for MINIAOD
+    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+
+    # load new energies in the slimmedElectrons process
+    from Calibration.ZNtupleDumper.miniAODnewEnergies import *
+    process.slimmedElectrons.modifierConfig.modifications=electron_energy_modifications
+
 else:
     #configure everything for MINIAOD
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
