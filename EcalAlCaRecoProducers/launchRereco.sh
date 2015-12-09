@@ -16,7 +16,7 @@ jsonName=246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver
 #config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
 #config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
 # config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-for tagfile in config/reRecoTags/Cal_Nov2015_ICcomb_v8.py
+for tagfile in config/reRecoTags/Cal_Nov2015_newGT_v1.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
