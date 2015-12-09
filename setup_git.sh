@@ -164,11 +164,11 @@ case $CMSSW_VERSION in
 	;;
 	
 	CMSSW_7_4_*)
-		git cms-addpkg  Configuration/DataProcessing/
-		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch
-		git cms-addpkg DataFormats/EgammaCandidates/
-		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch
-		git-cms-merge-topic shervin86:regression
+#		git cms-addpkg DataFormats/EgammaCandidates/ || exit 1
+#		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch || exit 1
+		git-cms-merge-topic shervin86:regression || exit 1
+#		git cms-addpkg  Configuration/DataProcessing/ || exit 1
+#		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch || exit 1
 		;;
 
     CMSSW_7_5_*)
