@@ -396,6 +396,17 @@ jobtype=cmssw
 EOF
 case ${ORIGIN_REMOTE_DIR_BASE} in
         database)
+		case $DATASETPATH in
+			*USER)
+				if [ -z ${DBS_URL} ];then
+					DBS_URL=phys03
+				fi
+				;;
+		esac
+		if [ -n "${DBS_URL}" ];then
+			echo "dbs_url=${DBS_URL}" >> ${crabFile}
+		fi
+
 		if [ "$isMC" != "1" ];then
         cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1
