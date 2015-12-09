@@ -168,7 +168,7 @@ case $CMSSW_VERSION in
 		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch
 		git cms-addpkg DataFormats/EgammaCandidates/
 		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch
-		git-cms-merge-topic bendavid:mustacheregressionrobust
+		git-cms-merge-topic shervin86:regression
 		;;
 
     CMSSW_7_5_*)
