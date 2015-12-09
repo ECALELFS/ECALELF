@@ -840,12 +840,9 @@ if(options.type!="MINIAODNTUPLE"):
     process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
     #configure everything for MINIAOD
-    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
-    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("patElectrons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("patPhotons","","@skipCurrentProcess")
 
-    # load new energies in the slimmedElectrons process
-    from Calibration.ZNtupleDumper.miniAODnewEnergies import *
-    process.slimmedElectrons.modifierConfig.modifications=electron_energy_modifications
 
 else:
     #configure everything for MINIAOD
@@ -882,13 +879,13 @@ if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
-    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
+    #process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
     
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
-    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
+    #process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
 
     if(options.bunchSpacing==25):
         print "bunchSpacing", options.bunchSpacing

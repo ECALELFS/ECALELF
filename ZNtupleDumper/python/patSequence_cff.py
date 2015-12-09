@@ -86,6 +86,26 @@ patPhotons.photonIDSources =  cms.PSet(
 photonMatch.src=cms.InputTag('gedPhotons')
 muonMatch.src=cms.InputTag('muons')
 
+
+#============================== Slimming electron (not really slimming if alcareco
+from PhysicsTools.PatAlgos.slimming.slimmedElectrons_cfi import *
+slimmedElectrons.src = cms.InputTag('patElectrons')
+slimmedElectrons.linkToPackedPFCandidates = cms.bool(False)
+slimmedElectrons.modifierConfig  = cms.PSet(
+    modifications = cms.VPSet(
+    cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatValueMaps'),
+              electron_config = cms.PSet( 
+                  electronSrc = cms.InputTag("slimmedElectrons","","@skipCurrentProcess"),
+                  energySCEleMust = cms.InputTag("eleNewEnergiesProducer","energySCEleMust"),
+                  energySCEleMustVar = cms.InputTag("eleNewEnergiesProducer","energySCEleMustVar"),
+                  energySCElePho = cms.InputTag("eleNewEnergiesProducer","energySCElePho"),
+                  energySCElePhoVar = cms.InputTag("eleNewEnergiesProducer","energySCElePhoVar")
+              ),
+              photon_config   = cms.PSet( )
+          )
+)
+)
+
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection
 #process.eleNewEnergiesProducer: produces value maps of floats with the new calculated electron energy
@@ -93,7 +113,7 @@ muonMatch.src=cms.InputTag('muons')
 #process.patElectrons: producer of patElectron
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
 prePatSequence = cms.Sequence((eleSelectionProducers ))
-postPatSequence = cms.Sequence(eleNewEnergiesProducer)
+postPatSequence = cms.Sequence() #eleNewEnergiesProducer) # * slimmedElectrons )
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
 patSequence=cms.Sequence( prePatSequence * patElectrons * postPatSequence)
 patSequenceMC=cms.Sequence( electronMatch * prePatSequence * patElectrons * postPatSequence)
