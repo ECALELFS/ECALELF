@@ -124,17 +124,13 @@ do
 		    isMC=1
 		    ;;
 		MINIAOD| miniAOD)
-				TYPE=MINIAODNTUPLE
-				if [ "${isMC}" == "1" ]; then 
-					TYPE=MINIAODMCNTUPLE;
-				else
-					TYPE=MINIAODNTUPLE
-				fi
-				;;
-			miniAODSIM)
-				TYPE=MINIAODMCNTUPLE
-				isMC=1
-				;;
+		    TYPE=MINIAODNTUPLE
+		    if [ "${isMC}" == "1" ]; then 
+			MC=1;
+		    else
+			MC=0;
+		    fi
+		    ;;
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
 		    if [ "${isMC}" == "1" ]; then
@@ -446,7 +442,7 @@ split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
 #pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE MC=${MC}
 get_edm_output=1
 output_file=${OUTFILES}
 

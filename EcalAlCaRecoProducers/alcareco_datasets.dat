@@ -176,11 +176,11 @@ allRange /DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_
 #/QCD_Pt-170to300_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v1/AODSIM
 #/QCD_Pt-300toInf_EMEnriched_TuneCUETP8M1_13TeV_pythia8/RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9-v2/AODSIM
 ###################################
-############### Ru2015C 25ns rereco
+############### RUN2015 miniAOD
 #######
 253620-255031 /DoubleEG/Run2015C-PromptReco-v1/MINIAOD       DoubleEG-ZSkim-Run2015C-Prompt-v1-25nsReco-MINIAOD       caf database INVALID RUN2015C,RUN2015CD
-256584-258158 /DoubleEG/Run2015D-PromptReco-v3/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD       caf database VALID RUN2015D,RUN2015CD
-258159-260737 /DoubleEG/Run2015D-PromptReco-v4/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco-MINIAOD       caf database VALID RUN2015D,RUN2015CD
+256584-258158 /DoubleEG/Run2015D-PromptReco-v3/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD-Pho       caf database VALID RUN2015D,RUN2015CD
+258159-260737 /DoubleEG/Run2015D-PromptReco-v4/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco-MINIAOD-Pho       caf database VALID RUN2015D,RUN2015CD
 254227-255031 /DoubleEG/Run2015C_25ns-05Oct2015-v1/MINIAOD		DoubleEG-ZSkim-Run2015C-rereco05Oct2015-MINIAOD		caf database VALID RUN2015C,RUN2015CD
 256584-258158 /DoubleEG/Run2015D-PromptReco-v3/MINIAOD       DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD       caf database VALID RUN2015D,RUN2015CD
 ###################################
@@ -193,9 +193,10 @@ allRange	/DYJetsToLL_M-800to1000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISp
 allRange	/DYJetsToLL_M-1500to2000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_amctnlo_M1500to2000-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID highMass -
 allRange	/DYJetsToLL_M-2000to3000_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_amctnlo_M2000to3000-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID highMass -
 #####
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_amctnlo-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_madgraph-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_amctnlo-RunIISpring15MiniAODv2-Asym25ns-miniAOD-withPho caf database VALID - -
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_madgraph-RunIISpring15MiniAODv2-Asym25ns-miniAOD-withPho caf database VALID - -
 allRange	/DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYToEE_amcatnlo-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
 allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM        DYToEE_powheg-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
-########################
-256584-258158	/DoubleEG/emanuele-ZElectron_Run2015D_v3_74X_dataRun2_Candidate_2015_12_04_11_16_06-5f619c1c848e615f4f8041df1ac5e2bd/USER DoubleEG-emanuele-ZElectron_Run2015D_v3_74X caf database VALID RUN2015D
+#########RERECO by EMANUELE#########
+256584-258158 /DoubleEG/emanuele-ZElectron_Run2015D_v3_74X_dataRun2_Candidate_2015_12_04_11_16_06-5f619c1c848e615f4f8041df1ac5e2bd/USER DoubleEG-emanuele-ZElectron_Run2015D_v3_74X caf database VALID RUN2015D
+258159-260737 /DoubleEG/emanuele-ZElectron_Run2015D_v4_74X_dataRun2_Candidate_2015_12_04_11_16_06-5f619c1c848e615f4f8041df1ac5e2bd/USER DoubleEG-emanuele-ZElectron_Run2015D_v4_74X caf database VALID RUN2015D
