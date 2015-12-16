@@ -2009,8 +2009,9 @@ float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsign
 		}
 	}
 	if (pfRawenergyPlane) ; // avoid compilation error for unused var
+	if (RawenergyPlane); 
 	//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl;
-	return RawenergyPlane;
+	return pfRawenergyPlane;
 }
 
 //////////////

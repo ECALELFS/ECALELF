@@ -172,7 +172,7 @@ for dataset in $datasets
       ${TUTORIAL} $dataset 
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
-			--scheduler=$SCHEDULER --file_per_job=10 --extraName=mergedNewMaster_regression ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --file_per_job=10 --extraName=mergedNewMaster_regression_pfESrecHit ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   			--json=${JSONFILE} --json_name=${JSONNAME} \
 			${TUTORIAL} $dataset 
 	fi
