@@ -21,9 +21,7 @@ CMSSWDir = currentDir+"/../";
 applyPcorr = ["True"]; #decide if you want to apply momentum correction or not                                                                               
 applyEcorr = ["False"]; #decide if you want to apply energy correction or not                                                                               
 split = ["0","1"]; #0=full statistics, 1=even/odd                                                                                                             
-#cut = ["100.","0.10","0.05","0.15","0.30","0.50"];                                                                                                             
-#cut = ["0.05","0.07","0.10"];                                                                                                                                   
-cut = ["0.05"];#size of the E/p cut window                                                                                                                       
+cut = ["0.03","0.05","0.07","0.10","0.15","0.20","0.30","0.50","100."];#size of the E/p cut window     
 smoothCut = ["1"]; #0=use step-function to reweight, 1=use the E/p distribution                                                                                 
 energyType = ["0"]; #0=regression, 1=raw energy
 nLoops = "20"; #number of iterations
