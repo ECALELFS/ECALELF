@@ -2659,10 +2659,11 @@ int main(int argc, char **argv) {
    TFile* momentumscale = new TFile((inputMomentumScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
    std::vector<TGraphErrors*> g_EoC_EB;
   
-   for(int i = 0; i < nRegionsEB; ++i){
-    TString Name = Form("g_pData_EB_0_%d",i);
+   //   for(int i = 0; i < nRegionsEB; ++i){
+   //    TString Name = Form("g_pData_EB_0_%d",i);
+    TString Name = Form("g_EoC_EB_0");
     g_EoC_EB.push_back( (TGraphErrors*)(momentumscale->Get(Name)) );
-   }
+    //   }
 
    std::cout<<"momentum calibration file correctly opened"<<std::endl;
 
@@ -2912,10 +2913,11 @@ int main(int argc, char **argv) {
    TFile* f4 = new TFile((inputMomentumScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
   std::vector<TGraphErrors*> g_EoC_EE;
 
-  for(int i = 0; i < nRegionsEE; ++i){
-    TString Name = Form("g_pData_EE_0_%d",i);
+  //  for(int i = 0; i < nRegionsEE; ++i){
+    //    TString Name = Form("g_pData_EE_0_%d",i);
+    TString Name = Form("g_EoC_EE_0");
     g_EoC_EE.push_back( (TGraphErrors*)(f4->Get(Name)) );
-  }
+    //  }
 
    /// open calibration energy graph
    TFile* f5 = new TFile((inputEnergyScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
