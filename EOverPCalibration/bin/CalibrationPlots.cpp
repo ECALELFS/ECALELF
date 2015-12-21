@@ -113,6 +113,17 @@ int main(int argc, char **argv)
     else{ std::cout<<" Exit from code, no odd input file"<<std::endl; std::exit(EXIT_FAILURE); }
   }
   
+
+  TFile* f4 = new TFile("momentumCalibration2015_EE_ptK.root");
+  std::vector<std::vector<TGraphErrors*> > corrMomentum(1);
+
+  for (int k=0; k<1; k++) {
+    for(int i = 0; i <2; ++i){
+      std::cout<<k<<" "<<i<<std::endl;
+      TString Name = Form("g_pData_EE_%d_%d",k,i);
+      (corrMomentum.at(k)).push_back( (TGraphErrors*)(f4->Get(Name)) );
+    }
+  }
   
   
   //------------
@@ -217,6 +228,8 @@ int main(int argc, char **argv)
   
   std::cout<<"debug"<<std::endl;
   
+  std::map<int, TH2F*> h2_corrP;
+  std::map<int, TH2F*> h2_IC_corr;
   
   // get the IC maps as they come from the algorithm
   std::map<int, TH2F*> h2_IC_raw;
@@ -283,6 +296,21 @@ int main(int argc, char **argv)
     h2_IC_raw_phiNorm[1]  -> Reset("ICEMS");
     h2_IC_raw_phiNorm[-1] -> ResetStats();
     h2_IC_raw_phiNorm[1]  -> ResetStats();
+
+    h2_corrP[-1] = (TH2F*)( h2_IC_raw[-1]->Clone("h2_corrP_EEM") );
+    h2_corrP[1]  = (TH2F*)( h2_IC_raw[1] ->Clone("h2_corrP_EEP") );
+    h2_corrP[-1] -> Reset("ICEMS");
+    h2_corrP[1]  -> Reset("ICEMS");
+    h2_corrP[-1] -> ResetStats();
+    h2_corrP[1]  -> ResetStats();
+
+    h2_IC_corr[-1] = (TH2F*)( h2_IC_raw[-1]->Clone("h2_IC_corr_EEM") );
+    h2_IC_corr[1]  = (TH2F*)( h2_IC_raw[1] ->Clone("h2_IC_corr_EEP") );
+    h2_IC_corr[-1] -> Reset("ICEMS");
+    h2_IC_corr[1]  -> Reset("ICEMS");
+    h2_IC_corr[-1] -> ResetStats();
+    h2_IC_corr[1]  -> ResetStats();
+
     
   std::cout<<"debug"<<std::endl;
     if( evalStat )
@@ -327,6 +355,8 @@ int main(int argc, char **argv)
   else
   {
     NormalizeIC_EE(h2_IC_raw[-1],h2_IC_raw[1],h2_IC_raw_phiNorm[-1],h2_IC_raw_phiNorm[1],TT_centre[-1],TT_centre[1],eRings);
+    //    DrawCorr_EE(h2_IC_raw[-1],h2_IC_raw[1],h2_corrP[-1],h2_corrP[1],TT_centre[-1],TT_centre[1],corrMomentum,eRings,true,1);
+    //    DrawICCorr_EE(h2_IC_raw[-1],h2_IC_raw[1],h2_IC_corr[-1],h2_IC_corr[1],TT_centre[-1],TT_centre[1],corrMomentum,eRings,true);
     if( evalStat )
     {
       NormalizeIC_EE(h2_ICEven_raw[-1],h2_ICEven_raw[1],h2_IC_raw_phiNorm_even[-1],h2_IC_raw_phiNorm_even[1],TT_centre[-1],TT_centre[1],eRings);
@@ -592,7 +622,7 @@ int main(int argc, char **argv)
         }
       }
     
-    NormalizeIC_EB(h2_IC_crackCorr[0],h2_IC_crackCorr_phiNorm[0],TT_centre[0]);
+    NormalizeIC_EB(h2_IC_crackCorr[0],h2_IC_crackCorr_phiNorm[0],TT_centre[0],false);
     
     outFile -> mkdir("crackCorr");
     outFile -> cd("crackCorr");
@@ -723,6 +753,12 @@ int main(int argc, char **argv)
   {
     DrawICMap(h2_IC_raw_phiNorm[-1],outputFolder+"/EEM_h2_IC_raw_phiNorm","png",isEB);
     DrawICMap(h2_IC_raw_phiNorm[+1],outputFolder+"/EEP_h2_IC_raw_phiNorm","png",isEB);
+
+    //    DrawICMap(h2_corrP[-1],outputFolder+"/EEM_h2_corrP","png",isEB);
+    //    DrawICMap(h2_corrP[+1],outputFolder+"/EEP_h2_corrP","png",isEB);
+    
+    //    DrawICMap(h2_IC_corr[-1],outputFolder+"/EEM_h2_IC_corr","png",isEB);
+    //DrawICMap(h2_IC_corr[+1],outputFolder+"/EEP_h2_IC_corr","png",isEB);
     
     DrawSpreadHisto(h_spread[-1],outputFolder+"/EEM_h_spread","f_EE_spread_vsEta_EEM","png",isEB);
     DrawSpreadHisto(h_spread[0],  outputFolder+"/EE_h_spread","f_EE_spread_vsEta_EE", "png",isEB);
