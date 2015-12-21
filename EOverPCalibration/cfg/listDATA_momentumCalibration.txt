@@ -1,5 +1,7 @@
-##/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/DoubleElectron_Run2011AB-29Jun2012.root
-/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012A-13Jul-v1.root
-/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012B-13Jul-v1.root
-/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012C-v2.root
-/gwteray/users/benaglia/CALIBRATION/NTUPLES_EOverP/ReReco/Cal_Dic2012/DoubleElectron-ZSkim-RUN2012C-v3.root
+##WEIGHTS
+root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v4-weightsReco/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
+root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v3-weightsReco/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
+
+#MULTIFIT
+#root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
+#root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
