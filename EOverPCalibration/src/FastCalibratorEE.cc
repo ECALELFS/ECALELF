@@ -234,9 +234,10 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    if (ientry < 0) break;
    nb = fChain->GetEntry(jentry);   
    nbytes += nb;
-   //std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
+   //   std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
    if (!(jentry%1000000))std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
 
+   if (eventNumber==471368767) continue; //this event needs to be debugged..
 
    float pIn, FdiEta;
    ///=== electron tight W or Z only Endcap
@@ -276,6 +277,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 	      thisE += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC; /// SC energy
     }
 
+
     for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle1->size(); iRecHit++ ) {
             
             float thisIC = 1.;
@@ -296,12 +298,13 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    
     bool skipElectron = false;
 
+
     /// Option for MCTruth analysis
     if(!isMCTruth){ 
        pIn = pAtVtxGsfEle[0];
        if (applyMomentumCorrection) {
-	 int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
-	 pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
+	 //	 int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
+	 pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
        }
     }
     else{ 
@@ -341,7 +344,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     int seed_hashedIndex = 0;
     float E_seed = 0;
     float thisE3x3 = 0;
-  
+
     /// Cycle on the all the recHits of the Event: to get the old IC and the corrected SC energy
     for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle2->size(); iRecHit++ ) {
             
@@ -354,12 +357,10 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
               E_seed=energyRecHitSCEle2 -> at(iRecHit);
 
             }
-    
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
             
-            if(recoFlagRecHitSCEle2 -> at(iRecHit) < 4) /// Only Good channels
-            thisE += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC;
-             
+	    if(recoFlagRecHitSCEle2 -> at(iRecHit) < 4)  /// Only Good channels
+	      thisE += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC;   
     }
 
     for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle2->size(); iRecHit++ ) {
@@ -385,8 +386,8 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
     if(!isMCTruth){
        pIn = pAtVtxGsfEle[1];
        if (applyMomentumCorrection) {
-	 int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
-	 pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+	 // int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
+	 pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
        }
     }
     else{ 
@@ -481,7 +482,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 
      }
    }
-  
+
+   float EPCutValue=100.;
   
    /// ----------------- Calibration Loops -----------------------------//
    for ( int iLoop = 0; iLoop < nLoops; iLoop++ ) {
@@ -492,6 +494,21 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
     std::vector<float> theDenominator_EEP(m_regions*2+1, 0.);
     std::vector<float> theNumerator_EEM(m_regions+1, 0.);
     std::vector<float> theDenominator_EEM(m_regions+1, 0.);
+
+    if (iLoop==0)  EPCutValue = 100.;
+    //    else if (iLoop==1)  EPCutValue = 0.50;
+    //else if (iLoop==7)  EPCutValue = 0.10;
+    //else if (iLoop==13) EPCutValue = 0.05;
+    //if (iLoop==0)  EPCutValue = 100.;
+    //else if (iLoop==1)  EPCutValue = 0.15;
+    //else if (iLoop==6) EPCutValue = 0.10;
+    //else if (iLoop==11) EPCutValue = 0.05;
+    //else if (iLoop==1) EPCutValue = EPMin;
+
+    //if (iLoop==0)  EPCutValue = 100.;
+    //    else if (iLoop==1)  EPCutValue = EPMin;
+    //    else           EPCutValue = EPCutValue*0.82;
+    else EPCutValue = EPMin;
     
     ///==== build E/p distribution ele 1 and 2
     BuildEoPeta_ele(iLoop,nentries,useW,useZ,applyMomentumCorrection,applyEnergyCorrection,useRawEnergy,theScalibration,isSaveEPDistribution,isR9selection,R9Min,isfbrem,fbremMax,isPtCut,PtMin,isMCTruth);
@@ -512,6 +529,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         nb = fChain->GetEntry(jentry);   
         nbytes += nb;
         
+	if (eventNumber==471368767) continue; //this event needs to be debugged..
         
         //*********************************
 	// JSON FILE AND DUPLIACTES IN DATA
@@ -599,8 +617,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         /// MCTruth option 
          if(!isMCTruth) {
            pIn = pAtVtxGsfEle[0];
-	   int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
-	   pIn /= myMomentumScale[regionId] -> Eval( phiEle[0] );
+	   //	   int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
+	   pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
          }
          else{
            pIn = energyMCEle[0];
@@ -641,13 +659,13 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                if ( GetZsideFromHashedIndex(thisIndex) < 0 ) h_occupancy_EEM -> Fill(GetIxFromHashedIndex(thisIndex), GetIyFromHashedIndex(thisIndex) );
                else                                          h_occupancy_EEP -> Fill(GetIxFromHashedIndex(thisIndex), GetIyFromHashedIndex(thisIndex) );
              }
-            
+	     
              ///Use full statistic
              if( splitStat == 0 ){
                if(thisCaliBlock == 0){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEM[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC / 
                                                   thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;
@@ -657,8 +675,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                
                if( thisCaliBlock == 1 ){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEP[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC / 
                                                   thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;
@@ -672,8 +690,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              if( splitStat == 1 && eventNumber%2 == 0 ){
                if( thisCaliBlock == 0 ){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEM[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC /
                                                   thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;
@@ -683,8 +701,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                
                if(thisCaliBlock == 1){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEP[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC /
                                                   thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;
@@ -697,8 +715,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              if( splitStat == -1 && eventNumber%2 != 0 ){
                if(thisCaliBlock == 0){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEM[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC /
                                                   thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;
@@ -708,8 +726,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                
                if(thisCaliBlock == 1){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[0])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[0])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEP[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC /
                                                   thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;
@@ -788,8 +806,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
           /// Option for MCTruth Analysis
           if(!isMCTruth)  {
             pIn = pAtVtxGsfEle[1];
-	    int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
-	    pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+	    //	    int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
+	    pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
           }
           else{
             pIn = energyMCEle[1];
@@ -837,8 +855,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
               if( splitStat == 0){
                 if(thisCaliBlock == 0){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                   theNumerator_EEM[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC /
                                                    thisE*(pIn-esEnergySCEle[1])/thisE*EoPweight;
@@ -848,8 +866,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                 
                 if( thisCaliBlock == 1 ){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                   theNumerator_EEP[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC /
                                                    thisE*(pIn-esEnergySCEle[1])/thisE*EoPweight;
@@ -863,8 +881,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
               if( splitStat == 1 && eventNumber%2 == 0 ){
                 if( thisCaliBlock == 0 ){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                   theNumerator_EEM[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC /
                                                    thisE*(pIn-esEnergySCEle[1])/thisE*EoPweight;
@@ -874,8 +892,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                
                if( thisCaliBlock == 1 ){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEP[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC /
                                                   thisE*(pIn-esEnergySCEle[1])/thisE*EoPweight;
@@ -888,8 +906,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              if( splitStat == -1 && eventNumber%2 != 0 ){
                if(thisCaliBlock == 0){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                  theNumerator_EEM[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC /
                                                   thisE*(pIn-esEnergySCEle[1])/thisE*EoPweight;
@@ -898,8 +916,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
                 
                 if( thisCaliBlock == 1 ){
 		 float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
-                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+                 if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/(pIn-esEnergySCEle[1])));
+                 else if (fabs(thisE/(pIn-esEnergySCEle[1])-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		 else EoPweight=0.00000001;
                   theNumerator_EEP[thisIndex]   += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC /
                                                    thisE*(pIn-esEnergySCEle[0])/thisE*EoPweight;

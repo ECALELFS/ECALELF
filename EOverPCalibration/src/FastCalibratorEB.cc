@@ -478,6 +478,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
    }
 
    /// ----------------- Calibration Loops -----------------------------//
+
+  float EPCutValue=100.;
    
    for ( int iLoop = 0; iLoop < nLoops; iLoop++ ) {
 
@@ -487,7 +489,15 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
    
     std::vector<float> theNumerator(m_regions, 0.);
     std::vector<float> theDenominator(m_regions, 0.);
-     
+
+    if (iLoop==0)  EPCutValue = 100.;    
+    //    else if (iLoop==1)  EPCutValue = 0.50;
+    // else if (iLoop==7)  EPCutValue = 0.10;
+    //else if (iLoop==13) EPCutValue = 0.05;
+    //else if (iLoop==1) EPCutValue = EPMin;
+    //else           EPCutValue = EPCutValue*0.82;
+    else EPCutValue = EPMin;
+   
     std::cout << "Number of analyzed events = " << nentries << std::endl;
     
     ///==== build E/p distribution ele 1 and 2
@@ -630,8 +640,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               /// use full statistics
               if ( splitStat == 0 ) {
 		float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		else if (fabs(thisE/pIn-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+		if (fabs(thisE/pIn-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
+		else if (fabs(thisE/pIn-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		else EoPweight=0.00000001;                
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPweight;
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPweight;
@@ -640,8 +650,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               /// Use Half Statistic only even   
               else if ( splitStat == 1 && eventNumber%2 == 0 ) {
 		float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		else if (fabs(thisE/pIn-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+		if (fabs(thisE/pIn-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
+		else if (fabs(thisE/pIn-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		else EoPweight=0.00000001;                
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPweight;
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPweight;
@@ -649,8 +659,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               /// use odd event
               else if ( splitStat == -1 && eventNumber%2 != 0 ) {
 		float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		else if (fabs(thisE/pIn-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+		if (fabs(thisE/pIn-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
+		else if (fabs(thisE/pIn-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		else EoPweight=0.00000001;                
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPweight;
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPweight;
@@ -767,8 +777,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               if ( splitStat == 0 ) {
                 
 		float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		else if (fabs(thisE/pIn-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+		if (fabs(thisE/pIn-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
+		else if (fabs(thisE/pIn-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		else EoPweight=0.00000001;                
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPweight;
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPweight;
@@ -776,8 +786,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               /// use evens    
               else if ( splitStat == 1 && eventNumber%2 == 0 ) {
 		float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		else if (fabs(thisE/pIn-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+		if (fabs(thisE/pIn-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
+		else if (fabs(thisE/pIn-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		else EoPweight=0.00000001;                
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*pIn/thisE*EoPweight;
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPweight;
@@ -785,8 +795,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
              /// use odds
               else if ( splitStat == -1 && eventNumber%2 != 0 ) {
 		float EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		if (fabs(thisE/pIn-1)<EPMin && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
-		else if (fabs(thisE/pIn-1)<EPMin) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
+		if (fabs(thisE/pIn-1)<EPCutValue && smoothCut==1) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(thisE/pIn));
+		else if (fabs(thisE/pIn-1)<EPCutValue) EoPweight = EoPHisto->GetBinContent(EoPHisto->FindBin(1));
 		else EoPweight=0.00000001;                
                 theNumerator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*(thisIC/thisE)*pIn/thisE*EoPweight;
                 theDenominator[thisIndex] += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC/thisE*EoPweight;
