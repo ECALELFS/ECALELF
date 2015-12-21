@@ -27,6 +27,7 @@ configuration files.
 #include <stdexcept>
 #include <boost/program_options.hpp>
 
+#include <TEventList.h>
 #include <TChain.h>
 #include <TStopwatch.h>
 #include <TF1.h>
@@ -517,9 +518,9 @@ int main(int argc, char **argv) {
     ("evtsPerPoint", po::value<int>(&evtsPerPoint)->default_value(1000),"events per point")
     ("useRegression", po::value<int>(&useRegression)->default_value(0),"use regression")
     ("dayMin", po::value<string>(&dayMin)->default_value("1-7-2015"),"day min")
-    ("dayMax", po::value<string>(&dayMax)->default_value("20-10-2015"),"day max")
+    ("dayMax", po::value<string>(&dayMax)->default_value("15-11-2015"),"day max")
     ("dayZOOM", po::value<string>(&dayZOOM)->default_value("10-8-2015"),"day ZOOM")
-    ("LUMI", po::value<string>(&LUMI)->default_value("209.22"),"LUMI")
+    ("LUMI", po::value<string>(&LUMI)->default_value("1.9"),"LUMI")
     ;
    laserMonitoringEPvsPUOption.add_options()
     ("laserMonitoringEPvsPU", "call the laser monitoring with E/p")
@@ -1453,15 +1454,16 @@ int main(int argc, char **argv) {
   int runNumber;
   int runTime;
   int nPU;
-  float avgLCSCEle[3], seedLaserAlphaSCEle1, etaSCEle[3], phiSCEle[3], energySCEle[3], esEnergySCEle[3], pAtVtxGsfEle[3], energySCEle_corr[3];
+  float avgLCSCEle[3],  etaSCEle[3], phiSCEle[3], energySCEle[3], esEnergySCEle[3], pAtVtxGsfEle[3], energySCEle_corr[3];
   int seedXSCEle[3], seedYSCEle[3];//, seedZside;
-  
+  //  float seedLaserAlphaSCEle1;
+
   data->SetBranchStatus("*",0);
   data->SetBranchStatus("runNumber",1);  
   data->SetBranchStatus("runTime",1);
   data->SetBranchStatus("nPU",1);
   data->SetBranchStatus("avgLCSCEle",1);
-  data->SetBranchStatus("seedLaserAlphaSCEle1",1);
+  //  data->SetBranchStatus("seedLaserAlphaSCEle1",1);
   //  data->SetBranchStatus("ele1_EOverP",1);
   data->SetBranchStatus("etaSCEle",1);
   data->SetBranchStatus("phiSCEle",1);
@@ -1477,7 +1479,7 @@ int main(int argc, char **argv) {
   data->SetBranchAddress("runTime", &runTime);
   data->SetBranchAddress("nPU", &nPU);
   data->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
-  data->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
+  //data->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
   //  data->SetBranchAddress("ele1_EOverP", &EoP);
   data->SetBranchAddress("etaSCEle", &etaSCEle);
   data->SetBranchAddress("phiSCEle", &phiSCEle);
@@ -1498,7 +1500,7 @@ int main(int argc, char **argv) {
   mc->SetBranchStatus("runTime",1);
   mc->SetBranchStatus("nPU",1);
   mc->SetBranchStatus("avgLCSCEle",1);
-  mc->SetBranchStatus("seedLaserAlphaSCEle1",1);
+  //  mc->SetBranchStatus("seedLaserAlphaSCEle1",1);
   //  mc->SetBranchStatus("ele1_EOverP",1);
   mc->SetBranchStatus("etaSCEle",1);
   mc->SetBranchStatus("phiSCEle",1);
@@ -1514,7 +1516,7 @@ int main(int argc, char **argv) {
   mc->SetBranchAddress("runTime", &runTime);
   mc->SetBranchAddress("nPU", &nPU);
   mc->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
-  mc->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
+  //mc->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
   //  mc->SetBranchAddress("ele1_EOverP", &EoP);
   mc->SetBranchAddress("etaSCEle", &etaSCEle);
   mc->SetBranchAddress("phiSCEle", &phiSCEle);
@@ -1593,7 +1595,7 @@ int main(int argc, char **argv) {
   
   for(int ientry = 0; ientry < mc->GetEntries(); ++ientry)
   {
-    if( (ientry%100000 == 0) ) std::cout << "reading MC entry " << ientry << "\r" << std::flush;
+    if( (ientry%10000 == 0) ) std::cout << "reading MC entry " << ientry << "\r" << std::endl;//std::flush;
     mc->GetEntry(ientry);
     
     // selections
@@ -1637,11 +1639,13 @@ int main(int argc, char **argv) {
   std::vector<bool> isSavedEntries(nEntries);
   std::vector<Sorter> sortedEntries;
   std::vector<int> timeStampFirst;
-  
+
   for(int ientry = 0; ientry < nEntries; ++ientry)
   {
     data -> GetEntry(ientry);
     isSavedEntries.at(ientry) = false;
+
+    if( (ientry%10000 == 0) ) std::cout << "reading data entry " << ientry << "\r" << std::endl;//std::flush;
     
     // selections
     if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
@@ -1691,12 +1695,17 @@ int main(int argc, char **argv) {
   int nWideBins = 1;
   std::vector<int> wideBinEntryMax;
   int timeStampOld = -1;
-  
+
+  //  TEventList* evlist=new TEventList("events");
+  //  data->Draw(">>events","","goff");
+  //  TEventList* evlist = (TEventList*) gDirectory->Get("events");
+    
   wideBinEntryMax.push_back(0);  
   for(int iSaved = 0; iSaved < nSavePts; ++iSaved)
   {
-    if( iSaved%100000 == 0 ) std::cout << "reading saved entry " << iSaved << "\r" << std::flush;
+    if( iSaved%10000 == 0 ) std::cout << "reading saved entry " << iSaved << "\r" << std::endl;//std::flush;
     data->GetEntry(sortedEntries[iSaved].entry);  
+    //    data->GetEntry(evlist->GetEntry(sortedEntries[iSaved].entry));
     
     if( iSaved == 0 )
     {
@@ -1854,7 +1863,7 @@ int main(int argc, char **argv) {
   int iSaved = -1;
   for(int ientry = 0; ientry < nEntries; ++ientry)
   {
-    if( (ientry%100000 == 0) ) std::cout << "reading entry " << ientry << "\r" << std::flush;
+    if( (ientry%100000 == 0) ) std::cout << "reading entry " << ientry << "\r" << std::endl;//std::flush;
     
     if( isSavedEntries.at(ientry) == false ) continue;
     
@@ -1881,7 +1890,8 @@ int main(int argc, char **argv) {
     if( iSaved == binEntryMax.at(bin+1)-1 ) MaxRun[bin] = runNumber;
     AveRun[bin] += runNumber;
     
-    float LT = (-1. / seedLaserAlphaSCEle1 * log(avgLCSCEle[0]));
+    //    float LT = (-1. / seedLaserAlphaSCEle1 * log(avgLCSCEle[0]));
+    float LT = 1.;
     AveLT[bin] += LT;
     AveLT2[bin] += LT*LT;
     
@@ -2323,7 +2333,7 @@ int main(int argc, char **argv) {
   //-------------------
  
   
-      
+  /*      
   for ( int i = 0; i < nBins; ++i)
     {
       
@@ -2353,7 +2363,7 @@ int main(int argc, char **argv) {
       histoEoC -> Print((folderName+"/"+folderName+"_histoEoC"+to_string(i)+".pdf").c_str(),"pdf");    
       
     }
-  
+  */  
 
   //-------------------
   // Final Plot vs date
@@ -2440,7 +2450,7 @@ int main(int argc, char **argv) {
   latex -> Draw("same");
   
   //sprintf(latexBuffer,"#sqrt{s} = 8 TeV   L = 3.95 fb^{-1}");
-  sprintf(latexBuffer,"#sqrt{s} = 13 TeV, L =%s pb^{-1} ", LUMI.c_str());
+  sprintf(latexBuffer,"#sqrt{s} = 13 TeV, L =%s fb^{-1} ", LUMI.c_str());
 
   // sprintf(latexBuffer, LUMI.c_str());
   TLatex* latex2 = new TLatex(0.18,0.84,latexBuffer);  
@@ -2639,6 +2649,9 @@ int main(int argc, char **argv) {
   
   cplot -> SaveAs((folderName+"/"+folderName+"_history_vsTime.C").c_str());
   cplot_run -> SaveAs((folderName+"/"+folderName+"_history_vsRun.C").c_str());
+
+  cplot -> SaveAs((folderName+"/"+folderName+"_history_vsTime.root").c_str());
+  cplot_run -> SaveAs((folderName+"/"+folderName+"_history_vsRun.root").c_str());
 
   
   
@@ -2927,7 +2940,7 @@ int main(int argc, char **argv) {
   
   for(int ientry = 0; ientry < mc->GetEntries(); ++ientry)
   {
-    if( (ientry%100000 == 0) ) std::cout << "reading MC entry " << ientry << "\r" << std::flush;
+    if( (ientry%100000 == 0) ) std::cout << "reading MC entry " << ientry << "\r" << std::endl;//std::flush;
     mc->GetEntry(ientry);
     
     // selections
@@ -3192,7 +3205,7 @@ int main(int argc, char **argv) {
   int iSaved = -1;
   for(int ientry = 0; ientry < nEntries; ++ientry)
   {
-    if( (ientry%100000 == 0) ) std::cout << "reading entry " << ientry << "\r" << std::flush;
+    if( (ientry%100000 == 0) ) std::cout << "reading entry " << ientry << "\r" << std::endl;//std::flush;
     
     if( isSavedEntries.at(ientry) == false ) continue;
     
