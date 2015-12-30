@@ -506,25 +506,22 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     }
     else if (version_ == tightElectronStream) {
       //set("fiducial");
-      set("maxNumberOfExpectedMissingHits", 1);
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
-      set("hoe_EB",        0.045772);         set("hoe_EE",          0.067778);
-      set("deta_EB",       0.006046);         set("deta_EE",         0.007057);
-      set("dphi_EB",       0.028092);         set("dphi_EE",         0.030159);
-      set("sihih_EB",      0.009947);         set("sihih_EE",        0.028237 );
-      set("ooemoop_EB",    0.020118,false);   set("ooemoop_EE",      0.098919,false);  
+      set("hoe_EB",        0.0597);        set("hoe_EE",          0.0615);
+      set("deta_EB",       0.00926);       set("deta_EE",         0.00724);
+      set("dphi_EB",       0.0336);        set("dphi_EE",         0.0918);
+      set("sihih_EB",      0.0101);        set("sihih_EE",        0.0279 );
+      //      set("ooemoop_EB",    0.012,false);   set("ooemoop_EE",      0.00999,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
       set("d0vtx_EB",      100.,false );         set("d0vtx_EE",        100.,false);
-      set("dzvtx_EB",      100.,false);         set("dzvtx_EE",         100.,false);
-      set("pfIso_EB",      0.069537);         set("pfIso_EE",        0.078265);         
-      set("pfIsoLowPt_EB", 0.069537);         set("pfIsoLowPt_EE",   0.078265);         
-      set("relTrackIso_EB", 0.2,false);    set("relTrackIso_EE", 0.2,false);  
-      set("relEcalIso_EB",  0.2,false);	   set("relEcalIso_EE",  0.2,false);
-      set("relHcalIso_EB",  0.2,false);	   set("relHcalIso_EE",  0.2,false);
-      //      set("relTrackIso_EB", 0.1);    set("relTrackIso_EE", 0.1);
-      //set("relEcalIso_EB",  0.1);          set("relEcalIso_EE",  0.1);
-      //set("relHcalIso_EB",  0.1);          set("relHcalIso_EE",  0.1);
+      set("dzvtx_EB",      100.,false);         set("dzvtx_EE",        100.,false);
+      set("pfIso_EB",      0.0354);        set("pfIso_EE",        0.0646);         
+      set("pfIsoLowPt_EB", 0.0354);        set("pfIsoLowPt_EE",   0.0646);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-
   }
 
 #ifdef shervin
@@ -605,12 +602,6 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
 #ifdef CMSSW_7_2_X
     Double_t eleET = electron.et();
-    Double_t etaSC = electron.superCluster()->eta();
-    // effective area for isolation
-
-    float AEff = ElectronEffectiveArea::GetElectronEffectiveArea(ElectronEffectiveArea::kEleGammaAndNeutralHadronIso03, 
-    								 etaSC, ElectronEffectiveArea::kEleEAData2012);  
-
 #else
     //    Double_t eleET = electron.p4().Pt();
     Double_t eleET = electron.et();
