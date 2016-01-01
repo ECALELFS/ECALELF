@@ -8,8 +8,8 @@ config.section_('JobType')
 config.JobType.psetName = 'EcalAlCaRecoProducers/python/alcaSkimming.py'
 #config.JobType.psetName = 'processDump.py'
 config.JobType.pluginName = 'Analysis'
-config.JobType.outputFiles= ['ntuple.root']
-config.JobType.pyCfgParams = ['isCrab=1', 'skim=WSkim', 'maxEvents=-1', 'type=ALCARECO', 'tagFile=EcalAlCaRecoProducers/config/reRecoTags/test75x.py','doTreeOnly=1', 'electronStream=1','doTree=1']
+config.JobType.outputFiles= ['ntuple.root','extraCalibTree.root']
+config.JobType.pyCfgParams = ['isCrab=1', 'skim=WSkim', 'maxEvents=-1', 'type=ALCARECO', 'tagFile=EcalAlCaRecoProducers/config/reRecoTags/test75x.py','doTreeOnly=1', 'electronStream=1','doTree=3']
 config.JobType.allowUndistributedCMSSW = True
 #config.JobType.inputFiles = ['PHYS14_25_V2_All_L1FastJet_AK8PFchs.txt','PHYS14_25_V2_All_L2Relative_AK8PFchs.txt','PHYS14_25_V2_All_L3Absolute_AK8PFchs.txt','PHYS14_25_V2_All_L1FastJet_AK4PFchs.txt','PHYS14_25_V2_All_L2Relative_AK4PFchs.txt','PHYS14_25_V2_All_L3Absolute_AK4PFchs.txt' ]
 config.section_('Data')
