@@ -4,6 +4,11 @@
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
 # with command line options: reco -s RAW2DIGI,RECO -n 100 --filein=/store/data/Run2012D/SingleElectron/RAW/v1/000/208/307/0085A34B-BD3A-E211-B6E9-003048D2BC4C.root --data --conditions=auto:run2_data --nThreads=4 --dirout=./
 import FWCore.ParameterSet.Config as cms
+import os, sys, imp, re
+import FWCore.ParameterSet.VarParsing as VarParsing
+import subprocess
+import copy
+
 
 process = cms.Process('RECO')
 
@@ -18,6 +23,18 @@ process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
 process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+
+options = VarParsing.VarParsing('standard')
+
+options.register ('tagFile',
+                  "",
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.string,
+                  "path of the file with the reReco tags")
+
+options.parseArguments()
+
+print options
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100)
@@ -58,7 +75,16 @@ process.RECOSIMoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_Prompt_v1', '')
+
+if(len(options.tagFile)>0):
+    execfile(options.tagFile) # load the GT 
+    process.GlobalTag = RerecoGlobalTag 
+else:
+    print "******************************"
+    print "[ERROR] no file with tags specified"
+    sys.exit(1)
+
+#process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_Prompt_v1', '')
 
 # Path and EndPath definitions
 process.raw2digi_step = cms.Path(process.RawToDigi)
