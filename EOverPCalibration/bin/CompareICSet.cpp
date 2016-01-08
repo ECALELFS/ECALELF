@@ -58,7 +58,8 @@ gROOT->SetStyle("Plain");
 gStyle->SetPadTickX(1);
 gStyle->SetPadTickY(1);
 gStyle->SetOptTitle(1); 
-gStyle->SetOptStat(1111111); 
+//gStyle->SetOptStat(1111111); 
+gStyle->SetOptStat(0000000); 
 gStyle->SetFitFormat("6.3g"); 
 gStyle->SetPalette(1); 
 gStyle->SetOptTitle(0);
@@ -128,7 +129,7 @@ File3 >> iEta1 >> iPhi1 >> iz1 >> ic1 >> eic1 ;
  if (iz1==-1) cont++;
 }
  std::cout<<"ciao "<<cont<<std::endl;
- getchar();
+ // getchar();
 
  // TApplication* theApp = new TApplication("Application",&argc, argv);
 
