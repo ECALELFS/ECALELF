@@ -617,8 +617,10 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         /// MCTruth option 
          if(!isMCTruth) {
            pIn = pAtVtxGsfEle[0];
-	   //	   int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
-	   pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+	   if (applyMomentumCorrection) {
+	     //	   int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
+	     pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+	   }
          }
          else{
            pIn = energyMCEle[0];
@@ -806,8 +808,10 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
           /// Option for MCTruth Analysis
           if(!isMCTruth)  {
             pIn = pAtVtxGsfEle[1];
-	    //	    int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
-	    pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
+	    if (applyMomentumCorrection) {
+	      //	    int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
+	      pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
+	    }
           }
           else{
             pIn = energyMCEle[1];
