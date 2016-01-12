@@ -48,7 +48,8 @@ if(!File2.is_open()){
     return -1;
 }
 
-
+ std::ofstream FileRatio("ratio.txt");
+ std::ofstream FileAbsolute("absolute.txt");
 
 // Set style options
 /*gROOT->Reset();
@@ -161,6 +162,18 @@ Name = Form("ratiomapEEm");
 TH2F * ratiomap_EEm = (TH2F*) map1_EEm->Clone("ratiomapEEm");
 ratiomap_EEm->Reset();
 
+Name = Form("absolutemapEB");
+TH2F * absolutemap_EB = (TH2F*) map1_EB->Clone("absolutemapEB");
+absolutemap_EB->Reset();
+
+Name = Form("absolutemapEEp");
+TH2F * absolutemap_EEp = (TH2F*) map1_EEp->Clone("absolutemapEEp");
+absolutemap_EEp->Reset();
+
+Name = Form("absolutemapEEm");
+TH2F * absolutemap_EEm = (TH2F*) map1_EEm->Clone("absolutemapEEm");
+absolutemap_EEm->Reset();
+
 Name = Form("diffHistEB");
 TH1F * diffHistEB = new TH1F(Name,Name,100,-0.6,0.6);
 diffHistEB->SetLineWidth(2);
@@ -193,11 +206,17 @@ for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
  if(map1_EB->GetBinContent(iPhi,iEta)==-1. || map2_EB->GetBinContent(iPhi,iEta)==-1.){
  diffmap_EB->SetBinContent(iPhi,iEta,-1.);
  ratiomap_EB->SetBinContent(iPhi,iEta,-1.);
+ absolutemap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta));
+ FileRatio << iEta << "\t" << iPhi << "\t" << 0 << "\t" << -1. << "\t" << -999. << std::endl;
+ FileAbsolute << iEta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
  continue;}
 
  diffmap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
  diffHistEB->Fill(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
  ratiomap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta)/map2_EB->GetBinContent(iPhi,iEta));
+ absolutemap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta)*map2_EB->GetBinContent(iPhi,iEta));
+ FileRatio << iEta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)/map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+ FileAbsolute << iEta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)*map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
  correlationEB->Fill(map1_EB->GetBinContent(iPhi,iEta),map2_EB->GetBinContent(iPhi,iEta));
 
  }
@@ -210,11 +229,17 @@ for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
   if(map1_EEp->GetBinContent(ix,iy)==-1. || map2_EEp->GetBinContent(ix,iy)==-1.){
   diffmap_EEp->SetBinContent(ix,iy,-1.);
   ratiomap_EEp->SetBinContent(ix,iy,-1.);
+  absolutemap_EEp->SetBinContent(ix,iy,map1_EEp->GetBinContent(ix,iy));
+  FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << -1. << "\t" << -999. << std::endl;
+  FileAbsolute << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
   continue;}
 
   diffmap_EEp->SetBinContent(ix,iy,map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
   diffHistEEp->Fill(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
   ratiomap_EEp->SetBinContent(ix,iy,map1_EEp->GetBinContent(ix,iy)/map2_EEp->GetBinContent(ix,iy));
+  absolutemap_EEp->SetBinContent(ix,iy,map1_EEp->GetBinContent(ix,iy)*map2_EEp->GetBinContent(ix,iy));
+  FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy)/map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+  FileAbsolute << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy)*map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
   correlationEEp->Fill(map1_EEp->GetBinContent(ix,iy),map2_EEp->GetBinContent(ix,iy));
 
  }
@@ -227,11 +252,17 @@ for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
  if(map1_EEm->GetBinContent(ix,iy)==-1. || map2_EEm->GetBinContent(ix,iy)==-1.){
  diffmap_EEm->SetBinContent(ix,iy,-1.);
  ratiomap_EEm->SetBinContent(ix,iy,-1.);
+ absolutemap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy));
+ FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+  FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << -1. << "\t" << -999. << std::endl;
  continue;}
 
  diffmap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
  diffHistEEm->Fill(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
  ratiomap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy)/map2_EEm->GetBinContent(ix,iy));
+ absolutemap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy)*map2_EEm->GetBinContent(ix,iy));
+  FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEp->GetBinContent(ix,iy)/map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+  FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEp->GetBinContent(ix,iy)*map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
  correlationEEm->Fill(map1_EEm->GetBinContent(ix,iy),map2_EEm->GetBinContent(ix,iy));
 
  }
@@ -1133,11 +1164,48 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  leg12->AddEntry(phiProfileEEm2,"EE- Projection II set ", "LP");
  leg12->Draw("same");
 
+ c[24] = new TCanvas("habsoluteEB","habsoluteEB");
+ c[24]->SetLeftMargin(0.1); 
+ c[24]->SetRightMargin(0.13); 
+ c[24]->SetGridx();
+  
+ absolutemap_EB->GetXaxis()->SetNdivisions(1020);
+ absolutemap_EB->GetXaxis() -> SetLabelSize(0.03);
+ absolutemap_EB->GetXaxis() ->SetTitle("i#phi");
+ absolutemap_EB->GetYaxis() ->SetTitle("i#eta");
+ absolutemap_EB->GetZaxis() ->SetRangeUser(0.85,1.15);
+ absolutemap_EB->Draw("COLZ");
+
+ c[25] = new TCanvas("habsoluteEEp","habsoluteEEp");
+ c[25]->SetLeftMargin(0.1); 
+ c[25]->SetRightMargin(0.13); 
+ c[25]->SetGridx();
+  
+ absolutemap_EEp->GetXaxis()->SetNdivisions(1020);
+ absolutemap_EEp->GetXaxis() -> SetLabelSize(0.03);
+ absolutemap_EEp->GetXaxis() ->SetTitle("ix");
+ absolutemap_EEp->GetYaxis() ->SetTitle("iy");
+ absolutemap_EEp->GetZaxis() ->SetRangeUser(0.7,1.3);
+ absolutemap_EEp->Draw("COLZ");
+
+
+ c[26] = new TCanvas("habsoluteEEm","habsoluteEEm");
+ c[26]->SetLeftMargin(0.1); 
+ c[26]->SetRightMargin(0.13); 
+ c[26]->SetGridx();
+  
+ absolutemap_EEm->GetXaxis()->SetNdivisions(1020);
+ absolutemap_EEm->GetXaxis() -> SetLabelSize(0.03);
+ absolutemap_EEm->GetXaxis() ->SetTitle("ix");
+ absolutemap_EEm->GetYaxis() ->SetTitle("iy");
+ absolutemap_EEm->GetZaxis() ->SetRangeUser(0.7,1.3);
+ absolutemap_EEm->Draw("COLZ");
+
 
  TFile f("compareIC.root","recreate");
  f.cd();
 
- for (int i=0; i<24; i++) {
+ for (int i=0; i<27; i++) {
    c[i]->Write();
  }
 
