@@ -219,6 +219,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       else if (versionStr.CompareTo("loose50nsRun2")==0) version=loose50nsRun2;
       else if (versionStr.CompareTo("medium50nsRun2")==0) version=medium50nsRun2;
       else if (versionStr.CompareTo("tight50nsRun2")==0) version=tight50nsRun2;
+      else if (versionStr.CompareTo("medium25nsRun2Boff")==0) version=medium25nsRun2Boff;
       else {
 	std::cerr << "[ERROR] version type not defined" << std::endl;
 	std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -406,7 +407,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
       set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-    else if (version_ == medium25nsRun2) {  //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+    else if (version_ == medium25nsRun2 || version_ == medium25nsRun2Boff) {  //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
       set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
       set("hasMatchedConversion");
@@ -423,6 +424,12 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
       set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
       set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
+
+	  if(version_ == medium25nsRun2Boff){
+		  set("pfIso_EB",      100, false);        set("pfIso_EE",      100, false);
+		  set("pfIsoLowPt_EB", 100, false);        set("pfIsoLowPt_EE", 100, false);
+	  }
+		  
     }
     else if (version_ == tight25nsRun2) {  //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
       //set("fiducial");
