@@ -59,9 +59,10 @@ gROOT->SetStyle("Plain");
 gStyle->SetPadTickX(1);
 gStyle->SetPadTickY(1);
 gStyle->SetOptTitle(1); 
-//gStyle->SetOptStat(1111111); 
-gStyle->SetOptStat(0000000); 
-gStyle->SetFitFormat("6.3g"); 
+gStyle->SetOptStat(00000000); 
+gStyle->SetOptFit(1111); 
+//gStyle->SetOptStat(0000000); 
+//gStyle->SetFitFormat("6.3g"); 
 gStyle->SetPalette(1); 
 gStyle->SetOptTitle(0);
 
@@ -125,8 +126,8 @@ std::cout<<" End second file "<<std::endl;
  while (!File3.eof() || !File4.eof()){
 File3 >> iEta1 >> iPhi1 >> iz1 >> ic1 >> eic1 ;
  File4 >> iEta2 >> iPhi2 >> iz2 >> ic2 >> eic2;
- if (ic1!=ic2)
-   std::cout<<"iEta: "<<iEta1<<" iPhi: "<<iPhi1<<" diff IC: "<<ic1-ic2<<std::endl;
+ // if (ic1!=ic2)
+   //   std::cout<<"iEta: "<<iEta1<<" iPhi: "<<iPhi1<<" diff IC: "<<ic1-ic2<<std::endl;
  if (iz1==-1) cont++;
 }
  std::cout<<"ciao "<<cont<<std::endl;
@@ -175,48 +176,139 @@ TH2F * absolutemap_EEm = (TH2F*) map1_EEm->Clone("absolutemapEEm");
 absolutemap_EEm->Reset();
 
 Name = Form("diffHistEB");
-TH1F * diffHistEB = new TH1F(Name,Name,100,-0.6,0.6);
+TH1F * diffHistEB = new TH1F(Name,Name,500,-0.2,0.2);
 diffHistEB->SetLineWidth(2);
 
+Name = Form("diffHistEB_0_20");
+TH1F * diffHistEB_0_20 = new TH1F(Name,Name,200,-0.2,0.2);
+diffHistEB_0_20->SetLineWidth(2);
+
+Name = Form("diffHistEB_20_40");
+TH1F * diffHistEB_20_40 = new TH1F(Name,Name,200,-0.2,0.2);
+diffHistEB_20_40->SetLineWidth(2);
+
+Name = Form("diffHistEB_40_60");
+TH1F * diffHistEB_40_60 = new TH1F(Name,Name,200,-0.2,0.2);
+diffHistEB_40_60->SetLineWidth(2);
+
+Name = Form("diffHistEB_60_85");
+TH1F * diffHistEB_60_85 = new TH1F(Name,Name,200,-0.2,0.2);
+diffHistEB_60_85->SetLineWidth(2);
+
 Name = Form("diffHistEEp");
-TH1F * diffHistEEp = new TH1F(Name,Name,100,-0.6,0.6);
+TH1F * diffHistEEp = new TH1F(Name,Name,100,-0.4,0.4);
 diffHistEEp->SetLineWidth(2);
 
+Name = Form("diffHistEEp_0_5");
+TH1F * diffHistEEp_0_5 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEp_0_5->SetLineWidth(2);
+
+Name = Form("diffHistEEp_5_15");
+TH1F * diffHistEEp_5_15 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEp_5_15->SetLineWidth(2);
+
+Name = Form("diffHistEEp_15_25");
+TH1F * diffHistEEp_15_25 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEp_15_25->SetLineWidth(2);
+
+Name = Form("diffHistEEp_25_35");
+TH1F * diffHistEEp_25_35 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEp_25_35->SetLineWidth(2);
+
 Name = Form("diffHistEEm");
-TH1F * diffHistEEm = new TH1F(Name,Name,100,-0.6,0.6);
+TH1F * diffHistEEm = new TH1F(Name,Name,100,-0.4,0.4);
 diffHistEEm->SetLineWidth(2);
 
+Name = Form("diffHistEEm_0_5");
+TH1F * diffHistEEm_0_5 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEm_0_5->SetLineWidth(2);
+
+Name = Form("diffHistEEm_5_15");
+TH1F * diffHistEEm_5_15 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEm_5_15->SetLineWidth(2);
+
+Name = Form("diffHistEEm_15_25");
+TH1F * diffHistEEm_15_25 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEm_15_25->SetLineWidth(2);
+
+Name = Form("diffHistEEm_25_35");
+TH1F * diffHistEEm_25_35 = new TH1F(Name,Name,50,-0.4,0.4);
+diffHistEEm_25_35->SetLineWidth(2);
+
+
 Name = Form("correlationEB");
-TH2F * correlationEB = new TH2F(Name,Name,100,0.2,2.,100,0.2,2.);
+TH2F * correlationEB = new TH2F(Name,Name,100,0.9,1.1,100,0.9,1.1);
 
 Name = Form("correlationEEp");
-TH2F * correlationEEp= new TH2F(Name,Name,100,0.2,2.,100,0.2,2.);
+TH2F * correlationEEp= new TH2F(Name,Name,100,0.8,1.2,100,0.8,1.2);
 
 Name = Form("correlationEEm");
-TH2F * correlationEEm= new TH2F(Name,Name,100,0.2,2.,100,0.2,2.);
+TH2F * correlationEEm= new TH2F(Name,Name,100,0.8,1.2,100,0.8,1.2);
+
+TEndcapRings *eRings = new TEndcapRings();
 
 
+ float sumEB=0, sum2EB=0;
+ float sumEEp=0, sum2EEp=0;
+ float sumEEm=0, sum2EEm=0;
 
+ float sumEB_0_20=0, sum2EB_0_20=0;
+ float sumEB_20_40=0, sum2EB_20_40=0;
+ float sumEB_40_60=0, sum2EB_40_60=0;
+ float sumEB_60_85=0, sum2EB_60_85=0;
 
+ float sumEEp_0_5=0, sum2EEp_0_5=0;
+ float sumEEp_5_15=0, sum2EEp_5_15=0;
+ float sumEEp_15_25=0, sum2EEp_15_25=0;
+ float sumEEp_25_35=0, sum2EEp_25_35=0;
 
+ float sumEEm_0_5=0, sum2EEm_0_5=0;
+ float sumEEm_5_15=0, sum2EEm_5_15=0;
+ float sumEEm_15_25=0, sum2EEm_15_25=0;
+ float sumEEm_25_35=0, sum2EEm_25_35=0;
 
-for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
  for(int iEta=1; iEta<map1_EB->GetNbinsY()+1; iEta++){
+   if (iEta==86) continue;
+   for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
 
+     int eta = iEta-86;
  if(map1_EB->GetBinContent(iPhi,iEta)==-1. || map2_EB->GetBinContent(iPhi,iEta)==-1.){
  diffmap_EB->SetBinContent(iPhi,iEta,-1.);
  ratiomap_EB->SetBinContent(iPhi,iEta,-1.);
  absolutemap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta));
- FileRatio << iEta << "\t" << iPhi << "\t" << 0 << "\t" << -1. << "\t" << -999. << std::endl;
- FileAbsolute << iEta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+ FileRatio << eta << "\t" << iPhi << "\t" << 0 << "\t" << -1. << "\t" << -999. << std::endl;
+ FileAbsolute << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
  continue;}
+
+ sumEB+=map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta);
+ sum2EB+=(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta))*(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+ if (abs(eta)<20) {
+   sumEB_0_20+=map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta);
+   sum2EB_0_20+=(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta))*(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+   diffHistEB_0_20->Fill(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+ }   
+ else if (abs(eta)<40) {
+   sumEB_20_40+=map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta);
+   sum2EB_20_40+=(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta))*(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+   diffHistEB_20_40->Fill(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+ }   
+ else if (abs(eta)<60) {
+   sumEB_40_60+=map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta);
+   sum2EB_40_60+=(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta))*(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+   diffHistEB_40_60->Fill(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+ }   
+ else {
+   sumEB_60_85+=map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta);
+   sum2EB_60_85+=(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta))*(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+   diffHistEB_60_85->Fill(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
+ }   
 
  diffmap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
  diffHistEB->Fill(map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta));
  ratiomap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta)/map2_EB->GetBinContent(iPhi,iEta));
  absolutemap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta)*map2_EB->GetBinContent(iPhi,iEta));
- FileRatio << iEta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)/map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
- FileAbsolute << iEta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)*map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+ FileRatio << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)/map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+ FileAbsolute << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)*map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
  correlationEB->Fill(map1_EB->GetBinContent(iPhi,iEta),map2_EB->GetBinContent(iPhi,iEta));
 
  }
@@ -226,6 +318,8 @@ for(int iPhi =1; iPhi<map1_EB->GetNbinsX()+1; iPhi++){
 for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
  for(int iy=1; iy<map1_EEp->GetNbinsY()+1; iy++){
 
+   if(map1_EEp->GetBinContent(ix,iy)==0 || map2_EEp->GetBinContent(ix,iy)==0) continue;
+
   if(map1_EEp->GetBinContent(ix,iy)==-1. || map2_EEp->GetBinContent(ix,iy)==-1.){
   diffmap_EEp->SetBinContent(ix,iy,-1.);
   ratiomap_EEp->SetBinContent(ix,iy,-1.);
@@ -233,6 +327,32 @@ for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
   FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << -1. << "\t" << -999. << std::endl;
   FileAbsolute << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
   continue;}
+
+ sumEEp+=map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy);
+ sum2EEp+=(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy))*(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+
+ int iEta = int(eRings->GetEndcapIeta(ix,iy,1))-86;
+
+ if (abs(iEta)<5) {
+   sumEEp_0_5+=map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy);
+   sum2EEp_0_5+=(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy))*(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+   diffHistEEp_0_5->Fill(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+ }
+ else if (abs(iEta)<15) {
+   sumEEp_5_15+=map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy);
+   sum2EEp_5_15+=(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy))*(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+   diffHistEEp_5_15->Fill(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+ }
+ else if (abs(iEta)<25) {
+   sumEEp_15_25+=map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy);
+   sum2EEp_15_25+=(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy))*(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+   diffHistEEp_15_25->Fill(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+ }
+ else {
+   sumEEp_25_35+=map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy);
+   sum2EEp_25_35+=(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy))*(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+   diffHistEEp_25_35->Fill(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
+ }
 
   diffmap_EEp->SetBinContent(ix,iy,map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
   diffHistEEp->Fill(map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy));
@@ -246,8 +366,11 @@ for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
 }
 
 
+
 for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
  for(int iy=1; iy<map1_EEm->GetNbinsY()+1; iy++){
+
+   if(map1_EEm->GetBinContent(ix,iy)==0 || map2_EEm->GetBinContent(ix,iy)==0) continue;
 
  if(map1_EEm->GetBinContent(ix,iy)==-1. || map2_EEm->GetBinContent(ix,iy)==-1.){
  diffmap_EEm->SetBinContent(ix,iy,-1.);
@@ -257,12 +380,38 @@ for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
   FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << -1. << "\t" << -999. << std::endl;
  continue;}
 
+ sumEEm+=map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy);
+ sum2EEm+=(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy))*(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+
+ int iEta = int(eRings->GetEndcapIeta(ix,iy,1))-86;
+
+ if (abs(iEta)<5) {
+   sumEEm_0_5+=map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy);
+   sum2EEm_0_5+=(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy))*(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+   diffHistEEm_0_5->Fill(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+ }
+ else if (abs(iEta)<15) {
+   sumEEm_5_15+=map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy);
+   sum2EEm_5_15+=(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy))*(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+   diffHistEEm_5_15->Fill(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+ }
+ else if (abs(iEta)<25) {
+   sumEEm_15_25+=map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy);
+   sum2EEm_15_25+=(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy))*(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+   diffHistEEm_15_25->Fill(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+ }
+ else {
+   sumEEm_25_35+=map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy);
+   sum2EEm_25_35+=(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy))*(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+   diffHistEEm_25_35->Fill(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
+ }
+
  diffmap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
  diffHistEEm->Fill(map1_EEm->GetBinContent(ix,iy)-map2_EEm->GetBinContent(ix,iy));
  ratiomap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy)/map2_EEm->GetBinContent(ix,iy));
  absolutemap_EEm->SetBinContent(ix,iy,map1_EEm->GetBinContent(ix,iy)*map2_EEm->GetBinContent(ix,iy));
-  FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEp->GetBinContent(ix,iy)/map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
-  FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEp->GetBinContent(ix,iy)*map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+  FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy)/map2_EEm->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+  FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy)*map2_EEm->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
  correlationEEm->Fill(map1_EEm->GetBinContent(ix,iy),map2_EEm->GetBinContent(ix,iy));
 
  }
@@ -270,6 +419,102 @@ for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
 
 
 
+TF1 *fgaus2 = new TF1("fgaus2","gaus",-0.02,0.02);
+
+ std::cout<<"FIT: "<<std::endl;
+ 
+fgaus2->SetParameter(1,0);
+fgaus2->SetParameter(2,diffHistEB->GetRMS());
+//fgaus2->SetRange(0-0.5*diffHistEB->GetRMS(),0+0.5*diffHistEB->GetRMS());
+fgaus2->SetRange(-0.03,0.03);
+fgaus2->SetLineColor(kRed);
+//diffHistEB->Fit("fgaus2","QRME");
+cout<<" EB-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEB_0_20->Fit("fgaus2","QRME");
+cout<<" EB_0_20-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEB_20_40->Fit("fgaus2","QRME");
+cout<<" EB_20_40-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEB_40_60->Fit("fgaus2","QRME");
+cout<<" EB_40_60-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEB_60_85->Fit("fgaus2","QRME");
+cout<<" EB_60_85-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+
+
+fgaus2->SetParameter(1,0);
+fgaus2->SetParameter(2,diffHistEEp->GetRMS());
+fgaus2->SetRange(-0.1,0.08);
+//fgaus2->SetRange(0-0.5*diffHistEEp->GetRMS(),0+0.5*diffHistEEp->GetRMS());
+fgaus2->SetLineColor(kRed);
+//diffHistEEp->Fit("fgaus2","QRME");
+cout<<" EEp-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEp_0_5->Fit("fgaus2","QRME");
+cout<<" EEp_0_5-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEp_5_15->Fit("fgaus2","QRME");
+cout<<" EEp_5_15-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEp_15_25->Fit("fgaus2","QRME");
+cout<<" EEp_15_25-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEp_25_35->Fit("fgaus2","QRME");
+cout<<" EEp_25_35-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+
+
+fgaus2->SetParameter(1,0);
+fgaus2->SetParameter(2,diffHistEEm->GetRMS());
+fgaus2->SetRange(-0.1,0.08);
+//fgaus2->SetRange(0-0.5*diffHistEEm->GetRMS(),0+0.5*diffHistEEm->GetRMS());
+fgaus2->SetLineColor(kRed);
+fgaus2->SetLineColor(kRed);
+//diffHistEEm->Fit("fgaus2","QRME");
+cout<<" EEm-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEm_0_5->Fit("fgaus2","QRME");
+cout<<" EEm_0_5-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEm_5_15->Fit("fgaus2","QRME");
+cout<<" EEm_5_15-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEm_15_25->Fit("fgaus2","QRME");
+cout<<" EEm_15_25-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+diffHistEEm_25_35->Fit("fgaus2","QRME");
+cout<<" EEm_25_35-Mean: "<<fgaus2->GetParameter(1)<<" RMSFit: "<<fgaus2->GetParameter(2)<<endl; //<<" chi2/ndf: "<<fgaus2->GetChisquare()/fgaus2->GetNDF()<<endl;
+
+
+ cout<<"RMS:"<<endl;
+cout<<" EB-Meandist: "<<diffHistEB->GetMean()<<" RMSdist "<<diffHistEB->GetRMS()<<endl;
+cout<<" EB_0_20-Meandist: "<<diffHistEB_0_20->GetMean()<<" RMSdist "<<diffHistEB_0_20->GetRMS()<<endl;
+cout<<" EB_20_40-Meandist: "<<diffHistEB_20_40->GetMean()<<" RMSdist "<<diffHistEB_20_40->GetRMS()<<endl;
+cout<<" EB_40_60-Meandist: "<<diffHistEB_40_60->GetMean()<<" RMSdist "<<diffHistEB_40_60->GetRMS()<<endl;
+cout<<" EB_60_85-Meandist: "<<diffHistEB_60_85->GetMean()<<" RMSdist "<<diffHistEB_60_85->GetRMS()<<endl;
+
+cout<<" EEp-Meandist: "<<diffHistEEp->GetMean()<<" RMSdist "<<diffHistEEp->GetRMS()<<endl;
+cout<<" EEp_0_5-Meandist: "<<diffHistEEp_0_5->GetMean()<<" RMSdist "<<diffHistEEp_0_5->GetRMS()<<endl;
+cout<<" EEp_5_15-Meandist: "<<diffHistEEp_5_15->GetMean()<<" RMSdist "<<diffHistEEp_5_15->GetRMS()<<endl;
+cout<<" EEp_15_25-Meandist: "<<diffHistEEp_15_25->GetMean()<<" RMSdist "<<diffHistEEp_15_25->GetRMS()<<endl;
+cout<<" EEp_25_35-Meandist: "<<diffHistEEp_25_35->GetMean()<<" RMSdist "<<diffHistEEp_25_35->GetRMS()<<endl;
+
+cout<<" EEm-Meandist: "<<diffHistEEm->GetMean()<<" RMSdist "<<diffHistEEm->GetRMS()<<endl;
+cout<<" EEm_0_5-Meandist: "<<diffHistEEm_0_5->GetMean()<<" RMSdist "<<diffHistEEm_0_5->GetRMS()<<endl;
+cout<<" EEm_5_15-Meandist: "<<diffHistEEm_5_15->GetMean()<<" RMSdist "<<diffHistEEm_5_15->GetRMS()<<endl;
+cout<<" EEm_15_25-Meandist: "<<diffHistEEm_15_25->GetMean()<<" RMSdist "<<diffHistEEm_15_25->GetRMS()<<endl;
+cout<<" EEm_25_35-Meandist: "<<diffHistEEm_25_35->GetMean()<<" RMSdist "<<diffHistEEm_25_35->GetRMS()<<endl;
+
+
+
+ std::cout<<"SOMME: "<<std::endl;
+ std::cout<<"EB: "<<sumEB<<" EB2: "<<sum2EB<<std::endl;
+ std::cout<<"EE+: "<<sumEEp<<" EE+2: "<<sum2EEp<<std::endl;
+ std::cout<<"EE-: "<<sumEEm<<" EE-2: "<<sum2EEm<<std::endl;
+
+ std::cout<<"EB_0_20: "<<sumEB_0_20<<" EB2_0_20: "<<sum2EB_0_20<<std::endl;
+ std::cout<<"EB_20_40: "<<sumEB_20_40<<" EB2_20_40: "<<sum2EB_20_40<<std::endl;
+ std::cout<<"EB_40_60: "<<sumEB_40_60<<" EB2_40_60: "<<sum2EB_40_60<<std::endl;
+ std::cout<<"EB_60_85: "<<sumEB_60_85<<" EB2_60_85: "<<sum2EB_60_85<<std::endl;
+
+ std::cout<<"EE+_0_5: "<<sumEEp_0_5<<" EE+2_0_5: "<<sum2EEp_0_5<<std::endl;
+ std::cout<<"EE+_5_15: "<<sumEEp_5_15<<" EE+2_5_15: "<<sum2EEp_5_15<<std::endl;
+ std::cout<<"EE+_15_25: "<<sumEEp_15_25<<" EE+2_15_25: "<<sum2EEp_15_25<<std::endl;
+ std::cout<<"EE+_25_35: "<<sumEEp_25_35<<" EE+2_25_35: "<<sum2EEp_25_35<<std::endl;
+
+ std::cout<<"EE-_0_5: "<<sumEEm_0_5<<" EE-2_0_5: "<<sum2EEm_0_5<<std::endl;
+ std::cout<<"EE-_5_15: "<<sumEEm_5_15<<" EE-2_5_15: "<<sum2EEm_5_15<<std::endl;
+ std::cout<<"EE-_15_25: "<<sumEEm_15_25<<" EE-2_15_25: "<<sum2EEm_15_25<<std::endl;
+ std::cout<<"EE-_25_35: "<<sumEEm_25_35<<" EE-2_25_35: "<<sum2EEm_25_35<<std::endl;
 
 /// Profile along phi  for EB:
 
@@ -312,7 +557,6 @@ for(int iPhi =1; iPhi<map2_EB->GetNbinsX()+1; iPhi++){
 
 /// Profile along phi  for EE+:
 
-TEndcapRings *eRings = new TEndcapRings();
 std::vector<double> vectSum;
 std::vector<double> vectCounter;
  
@@ -813,7 +1057,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  ///--- Draw plots
  ///-----------------------------------------------------------------
  
- TCanvas *c[30];
+ TCanvas *c[34];
 
  c[0] = new TCanvas("hdiffEB","hdiffEB");
  c[0]->SetLeftMargin(0.1); 
@@ -832,7 +1076,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  c[1]->SetRightMargin(0.13); 
  c[1]->SetLogy();
 
- diffHistEB->GetXaxis()->SetTitle("c_{#pi}-c_{ele}"); 
+ diffHistEB->GetXaxis()->SetTitle("c_{1}-c_{2}"); 
  diffHistEB->Draw();
 
  
@@ -856,10 +1100,11 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
 
  correlationEB->GetXaxis()->SetNdivisions(1020);
  correlationEB->GetXaxis() -> SetLabelSize(0.03);
- correlationEB->GetXaxis() ->SetTitle("c_{#pi}");
- correlationEB->GetYaxis() ->SetTitle("c_{ele}");
+ correlationEB->GetXaxis() ->SetTitle("c_{1}");
+ correlationEB->GetYaxis() ->SetTitle("c_{2}");
  correlationEB->Draw("COLZ");
 
+ std::cout<<"correlation EB: "<<correlationEB->GetCorrelationFactor()<<std::endl;
  
  c[4] = new TCanvas("hdiffEEp","hdiffEEp");
  c[4]->SetLeftMargin(0.1); 
@@ -878,7 +1123,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  c[5]->SetRightMargin(0.13); 
  c[5]->SetLogy();
 
- diffHistEEp->GetXaxis()->SetTitle("c_{#pi}-c_{ele}"); 
+ diffHistEEp->GetXaxis()->SetTitle("c_{1}-c_{2}"); 
  diffHistEEp->Draw();
  
  c[6] = new TCanvas("hratioEEp","hratioEEp");
@@ -901,9 +1146,11 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
   
  correlationEEp->GetXaxis()->SetNdivisions(1020);
  correlationEEp->GetXaxis() -> SetLabelSize(0.03);
- correlationEEp->GetXaxis() ->SetTitle("c_{#pi}");
- correlationEEp->GetYaxis() ->SetTitle("c_{ele}");
+ correlationEEp->GetXaxis() ->SetTitle("c_{1}");
+ correlationEEp->GetYaxis() ->SetTitle("c_{2}");
  correlationEEp->Draw("COLZ");
+
+ std::cout<<"correlation EE+: "<<correlationEEp->GetCorrelationFactor()<<std::endl;
 
  c[8] = new TCanvas("hdiffEEm","hdiffEEm");
  c[8]->SetLeftMargin(0.1); 
@@ -922,7 +1169,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  c[9]->SetRightMargin(0.13); 
  c[9]->SetLogy();
 
- diffHistEEm->GetXaxis()->SetTitle("c_{#pi}-c_{ele}"); 
+ diffHistEEm->GetXaxis()->SetTitle("c_{1}-c_{2}"); 
  diffHistEEm->Draw();
  
 
@@ -947,9 +1194,11 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
   
  correlationEEm->GetXaxis()->SetNdivisions(1020);
  correlationEEm->GetXaxis() -> SetLabelSize(0.03);
- correlationEEm->GetXaxis() ->SetTitle("c_{#pi}");
- correlationEEm->GetYaxis() ->SetTitle("c_{ele}");
+ correlationEEm->GetXaxis() ->SetTitle("c_{1}");
+ correlationEEm->GetYaxis() ->SetTitle("c_{2}");
  correlationEEm->Draw("COLZ");
+
+ std::cout<<"correlation EE-: "<<correlationEEm->GetCorrelationFactor()<<std::endl;
 
 
  c[12] = new TCanvas("phiProjectionEB","phiProjectionEB");
@@ -1202,10 +1451,88 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  absolutemap_EEm->Draw("COLZ");
 
 
+ c[27] = new TCanvas("map1_EB","map1_EB");
+ c[27]->SetLeftMargin(0.1); 
+ c[27]->SetRightMargin(0.13); 
+ c[27]->SetGridx();
+  
+ map1_EB->GetXaxis()->SetNdivisions(1020);
+ map1_EB->GetXaxis() -> SetLabelSize(0.03);
+ map1_EB->GetXaxis() ->SetTitle("i#phi");
+ map1_EB->GetYaxis() ->SetTitle("i#eta");
+ map1_EB->GetZaxis() ->SetRangeUser(0.9,1.1);
+ map1_EB->Draw("COLZ");
+
+
+ c[28] = new TCanvas("map1_EEp","map1_EEp");
+ c[28]->SetLeftMargin(0.1); 
+ c[28]->SetRightMargin(0.13); 
+ c[28]->SetGridx();
+  
+ map1_EEp->GetXaxis()->SetNdivisions(1020);
+ map1_EEp->GetXaxis() -> SetLabelSize(0.03);
+ map1_EEp->GetXaxis() ->SetTitle("i#phi");
+ map1_EEp->GetYaxis() ->SetTitle("i#eta");
+ map1_EEp->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map1_EEp->Draw("COLZ");
+
+
+ c[29] = new TCanvas("map1_EEm","map1_EEm");
+ c[29]->SetLeftMargin(0.1); 
+ c[29]->SetRightMargin(0.13); 
+ c[29]->SetGridx();
+  
+ map1_EEm->GetXaxis()->SetNdivisions(1020);
+ map1_EEm->GetXaxis() -> SetLabelSize(0.03);
+ map1_EEm->GetXaxis() ->SetTitle("i#phi");
+ map1_EEm->GetYaxis() ->SetTitle("i#eta");
+ map1_EEm->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map1_EEm->Draw("COLZ");
+
+
+ c[30] = new TCanvas("map2_EB","map2_EB");
+ c[30]->SetLeftMargin(0.1); 
+ c[30]->SetRightMargin(0.13); 
+ c[30]->SetGridx();
+  
+ map2_EB->GetXaxis()->SetNdivisions(1020);
+ map2_EB->GetXaxis() -> SetLabelSize(0.03);
+ map2_EB->GetXaxis() ->SetTitle("i#phi");
+ map2_EB->GetYaxis() ->SetTitle("i#eta");
+ map2_EB->GetZaxis() ->SetRangeUser(0.9,1.1);
+ map2_EB->Draw("COLZ");
+
+
+ c[31] = new TCanvas("map2_EEp","map2_EEp");
+ c[31]->SetLeftMargin(0.1); 
+ c[31]->SetRightMargin(0.13); 
+ c[31]->SetGridx();
+  
+ map2_EEp->GetXaxis()->SetNdivisions(1020);
+ map2_EEp->GetXaxis() -> SetLabelSize(0.03);
+ map2_EEp->GetXaxis() ->SetTitle("i#phi");
+ map2_EEp->GetYaxis() ->SetTitle("i#eta");
+ map2_EEp->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map2_EEp->Draw("COLZ");
+
+
+ c[32] = new TCanvas("map2_EEm","map2_EEm");
+ c[32]->SetLeftMargin(0.1); 
+ c[32]->SetRightMargin(0.13); 
+ c[32]->SetGridx();
+  
+ map2_EEm->GetXaxis()->SetNdivisions(1020);
+ map2_EEm->GetXaxis() -> SetLabelSize(0.03);
+ map2_EEm->GetXaxis() ->SetTitle("i#phi");
+ map2_EEm->GetYaxis() ->SetTitle("i#eta");
+ map2_EEm->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map2_EEm->Draw("COLZ");
+
+
  TFile f("compareIC.root","recreate");
  f.cd();
 
- for (int i=0; i<27; i++) {
+ for (int i=0; i<33; i++) {
    c[i]->Write();
  }
 
