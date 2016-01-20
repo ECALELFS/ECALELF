@@ -157,6 +157,7 @@ public:
 
   RooRealVar invMass;
   TString energyVar_name;
+	TH1* invMass_highBinning;
   BW_CB_pdf_class convBwCbPdf;
   Cruijff_pdf_class cruijffPdf;
 
@@ -188,8 +189,8 @@ public:
   TChain *data;
   TChain *signal;
 
-	TH1* invMass_highBinning;
 	RooAbsData *invMass_dataRed;
+
 
   RooAbsPdf *signal_pdf;
   RooAbsPdf *model_pdf;
