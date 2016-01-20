@@ -1,7 +1,6 @@
 #include "../interface/puWeights_class.hh"
 #include <stdlib.h>
 #include <TROOT.h>
-#include <TRandom3.h>
 //#define DEBUG
 puWeights_class::~puWeights_class(){
 
@@ -27,7 +26,6 @@ double puWeights_class::GetWeight(int nPU, int runNumber){
   }
 
   PUweights_t::const_iterator weight_itr = PUweights_itr->second.find(nPU);
-  //PUweights_t::const_iterator weight_itr = PUweights_itr->second.find(nPU+1);
   if(weight_itr== PUweights_itr->second.end()){
     warningCounter++;
     if(warningCounter==1){
@@ -121,12 +119,8 @@ runMin=1; //FIXME
     exit(1);
     return;
   }
-	  TRandom3 g(0);
-		Long64_t randomInt=g.Integer(1000000);
-		TString filename="tmp/puMC_hist"; filename+=randomInt;filename+=".root";
+
   TH1D* puMC_hist = (TH1D*) mc.Get("pileup");
-	puMC_hist->SaveAs(filename);
-	
   if(puMC_hist==NULL){
     TTree *puMC_tree = (TTree*) mc.Get("PUDumper/pileup");
     if(puMC_tree==NULL){
@@ -136,11 +130,10 @@ runMin=1; //FIXME
     }
     puMC_tree->Draw("nPUtrue>>pileupHist_mc(60,0,60)","BX==0");
     puMC_hist = (TH1D *) gROOT->FindObject("pileupHist_mc");
-    puMC_hist->SaveAs(filename);
+    puMC_hist->SaveAs("tmp/puMC_hist.root");
   }
   
   TH1D *puData_hist = (TH1D *) data.Get("pileup");
-	puData_hist->SaveAs("tmp/puData_hist.root");
   //  puData_hist->GetBinWidth(3);
   if(puData_hist==NULL){
     puData_hist = (TH1D *) data.Get("PUDumper/pileup");
@@ -175,13 +168,11 @@ runMin=1; //FIXME
   nBins=std::min(MAX_PU_REWEIGHT,nBins);
 
   float puMC_int = puMC_hist->Integral(0,nBins);
-  float puMC_int_lc = puMC_hist->GetEntries();
   float puData_int = puData_hist->Integral(0,nBins);
   puMC_hist->Scale(1./puMC_int);
   puData_hist->Scale(1./puData_int);
 
   double puMCweight_int=0;
-	TH1D *test = new TH1D ("test","test",60,0,60);
   for (int i = 0; i<nBins; i++) {
     double binContent=puMC_hist->GetBinContent(i+1);
     if(binContent==0 && puData_hist->GetBinContent(i+1)!=0){
@@ -199,7 +190,6 @@ runMin=1; //FIXME
     // integral of the MC and rescale the weights by that 
     puMCweight_int+=weight * binContent; 
     weights_itr->second.insert(std::pair<int,double>(i,weight));
-		test->Fill(i,weight*binContent);
 #ifdef DEBUG
     std::cout << "[DEBUG] " << weights_itr->first << "\t" << weights_itr->second[i] << "\t" << weights_itr->second.size() << std::endl;
 #endif
@@ -209,7 +199,7 @@ runMin=1; //FIXME
     weights_itr->second[i]/=puMCweight_int;
   }
   PUweights_itr=PUWeightsRunDepMap.begin();
- // if(TString(puMC_hist->GetName()).Contains("Hist")) delete puMC_hist;
+  if(TString(puMC_hist->GetName()).Contains("Hist")) delete puMC_hist;
   return;
 }
 
@@ -217,7 +207,6 @@ runMin=1; //FIXME
 // fastLoop = false if for any reason you don't want to change the branch status of the MC tree
 TTree *puWeights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString nPUbranchName){
   TString runNumberBranchName="runNumber";
-  nPUbranchName="nPV"; //FIXME, defaults to nPU for some reason
 
   Float_t weight=0;
   TTree *newTree = new TTree("pileup","");
@@ -228,24 +217,17 @@ TTree *puWeights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString nPUb
     tree->SetBranchStatus(nPUbranchName,1);
     tree->SetBranchStatus(runNumberBranchName,1);
   }
-	
+
   Int_t nPU[200];
   Int_t runNumber;
   tree->SetBranchAddress(nPUbranchName, nPU);
   tree->SetBranchAddress(runNumberBranchName, &runNumber);
   // loop over tree 
-	TH1D *test = new TH1D ("testtree","testtree",60,0,60);
-	TH1D *testnw = new TH1D ("testnw","testnw",60,0,60);
   for(Long64_t ientry = 0; ientry<tree->GetEntriesFast(); ientry++){
     tree->GetEntry(ientry);
     weight = GetWeight((int)nPU[0], runNumber); //only intime pu
     newTree->Fill();
-		test->Fill((int)nPU[0],weight);
-		testnw->Fill((int)nPU[0]);
-		if (ientry %100000 ==0) std::cout << " debug entry " << ientry << ", nPU " << nPU[0] << ", weight " << weight << std::endl;
   }
-  test->SaveAs("testtree.C");
-  testnw->SaveAs("testnw.C");
 
   
   if(fastLoop) tree->SetBranchStatus("*",1);
