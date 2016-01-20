@@ -60,6 +60,7 @@ ZFit_class::ZFit_class(TChain *data_chain_,
   bkg_chain(bkg_chain_),
 
   invMass(invMass_VarName, "Mee", invMass_min, invMass_max,"GeV/c^{2}"),
+	invMass_highBinning(NULL),
   convBwCbPdf(invMass),
   cruijffPdf(invMass),
 
@@ -175,7 +176,6 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
   evListName+=chain->GetTitle();
   chain->Draw(">>"+evListName,commonCut,"entrylist");
   TEntryList *elist = (TEntryList*)gDirectory->Get(evListName);
- 
   std::cout << "[INFO] Selected events: " << chain->GetTitle() << "\t" <<  elist->GetN() << std::endl;
   chain->SetEntryList(elist);
   
@@ -397,7 +397,7 @@ RooAbsData *ZFit_class::ReduceDataset(TChain *data, TString region, bool isMC, b
 
   std::cout << "------------------------------" << std::endl;
   
-  
+ 	 
   return reduced;
   
 }
@@ -491,37 +491,57 @@ void ZFit_class::SetFitPar(RooFitResult *fitres_MC){
 double ZFit_class::GetEffectiveSigma(RooAbsData *dataset, float quant=0.68){
 
 	// it's up to the function that calls GetEffectiveSigma to delete the stored histogram
-	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+//	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),6000);
+
 	TH1* h = invMass_highBinning;
 
   double TotEvents = h->Integral(1, h->GetNbinsX()-1);
-  float LocEvents = 0.;
+  double LocEvents = 0.;
   int binI = h->FindBin(h->GetMean());
   int binF = h->GetNbinsX()-1;
-  bool keepGoing = false;
+ // bool keepGoing = false;
+	#ifdef DEBUG
+	  double frac = 0.;
+	#endif
   for(int jBin=binI; jBin>0; --jBin){
     LocEvents = 0.;
-    keepGoing = false;
+   // keepGoing = false;
+	  #ifdef DEBUG
+	      std::cout<<"j: "<<h->GetBinCenter(jBin)<<" I: "<<h->GetBinCenter(binI)<<" F: "<<h->GetBinCenter(binF)<<" frac: "<<frac<<std::endl;
+	  #endif
     for(int iBin=jBin; iBin<binF; ++iBin){
       LocEvents += h->GetBinContent(iBin);
       if(LocEvents/TotEvents >= quant) {
 	if(iBin-jBin < binF-binI) {
 	  binF = iBin;
 	  binI = jBin;
-	  keepGoing = true;
+	//  keepGoing = true;
 	}
 	break;
       }
       if(iBin == binF-1 && binF == h->GetNbinsX()-1){
-	keepGoing = true;
+	//keepGoing = true;
+	#ifdef DEBUG
+		  frac = LocEvents/TotEvents;
+		  std::cout<<"trovato nuovo intervallo piu piccolo di prima"<<std::endl;
+	#endif
 	--binI;
       }
-      if(iBin == binF-1 && binF != h->GetNbinsX()-1) break;
+  //    if(iBin == binF-1 && binF != h->GetNbinsX()-1) break;
+	      if(iBin == binF-1 && binF != h->GetNbinsX()-1) {
+	#ifdef DEBUG
+		std::cout<<"qui: esci" <<std::endl; 
+	#endif
+		//	keepGoing=true; 
+		break; 
+	      }
     }
-    if(keepGoing == false) break;
+   // if(keepGoing == false) break;
   }
-  float sigma = (h->GetBinCenter(binF) - h->GetBinCenter(binI))/2.;
-  std::cout << " >>> effective sigma: " << sigma << std::endl;
+  double sigma = (h->GetBinCenter(binF) - h->GetBinCenter(binI))/2.;
+  //std::cout << " >>> effective sigma: " << sigma << std::endl;
+	std::cout << ">>> - effective sigma: " << sigma << " interval start from: "<<h->GetBinCenter(binI)<<" finish to: "<<h->GetBinCenter(binF)<<std::endl;
   return sigma;
 }
 
@@ -588,15 +608,15 @@ void ZFit_class::Fit(TH1F *hist, bool isMC){
 
 
 RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fitres_MC){
-  RooAbsData *data_red   = ReduceDataset(data, region, false, _isDataUnbinned);
+	RooAbsData *data_red   = ReduceDataset(data, region, false, _isDataUnbinned);
   nEvents_region_data=data_red->sumEntries();
   if(nEvents_region_data < 100){
-    data_red   = ReduceDataset(data, region, false, _isDataUnbinned);
-    nEvents_region_data=data_red->sumEntries();
+    data_red   = ReduceDataset(data, region, false, true);
+ //   nEvents_region_data=data_red->sumEntries();
   }
-  if(nEvents_region_data < 100) return NULL;
+ // if(nEvents_region_data < 100) return NULL;
   int numcpu=4;
-  if(_isDataUnbinned) numcpu=1;
+  if(_isDataUnbinned) numcpu=1;//this is because in previous versions of ROOT, the unbinned fit did not support nCPU>1 (to be checked in newer versions)
 
   //EFFECTIVE SIGMA
   sigmaeff_data = GetEffectiveSigma(data_red);
@@ -622,7 +642,7 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
   SetFitPar(fitres_data);
   
   // add the rescaled width map 
-  
+ 	 
   if(doPlot){
     PlotFit(data_red,false);
     plot_data->Print();
@@ -631,6 +651,7 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
   }
   delete data_red;
   delete invMass_highBinning;
+  invMass_highBinning=NULL;
   return fitres_data;
 }
 
@@ -676,6 +697,7 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
   
   delete signal_red; // delete the reduced dataset
   delete invMass_highBinning;
+  invMass_highBinning=NULL;
   return fitres_MC;
 }
 
@@ -738,7 +760,15 @@ void ZFit_class::Fit(TString region, bool doPlot){
     // take the fit result from the file
     std::cout << "[INFO] Fit results for MC taken from file:" << fitResMCFileName << std::endl;
     TFile fitResMCFile(fitResMCFileName,"OPEN");
-    fitres_MC = (RooFitResult *) ((RooFitResult *)fitResMCFile.Get("MC"))->Clone("MC_fitres");
+		if (((RooFitResult *)fitResMCFile.Get("data"))){
+    fitres_MC = (RooFitResult *) ((RooFitResult *)fitResMCFile.Get("data"))->Clone("MC_fitres");
+		}
+		else if((RooFitResult *)fitResMCFile.Get("MC")){
+		fitres_MC = (RooFitResult *) ((RooFitResult *)fitResMCFile.Get("MC"))->Clone("MC_fitres");
+		}
+		else {
+		std::cout << "ERROR specified fit res directory contains no fitres. exit " ; exit(1); 
+		}
     fitResMCFile.Close();
     fitres_MC->Print();
 
@@ -1195,8 +1225,11 @@ TString	ZFit_class::GetEnergyVarName(TString invMass_name){
   else if(invMass_var=="invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
+  else if(invMass_var=="invMass_rawSC") energyBranchName = "rawEnergySCEle";
+  else if(invMass_var=="invMass_rawSC_esSC") energyBranchName = "rawEnergySCEle+esEnergySCEle";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
+  else if(invMass_var=="invMass_SC_must") energyBranchName = "energySCEle_must";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";

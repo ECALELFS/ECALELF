@@ -196,9 +196,10 @@ for category in $categories
 
 ## rescaledWidth
   resolutionLine=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $width_Data $width_MC xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
-  resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data $sigmaeff_MC xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
-  resolutionLine_sigmaEff_fifty=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data_fifty $sigmaeff_MC_fifty xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
- resolutionLine_sigmaEff_thirty=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data_thirty $sigmaeff_MC_thirty xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+ # resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data $sigmaeff_MC xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+	resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data \pm 0 $sigmaeff_MC \pm 0 xxx xxx" |sed 's|\\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+	resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data_fifty \pm 0 $sigmaeff_MC \pm 0 xxx xxx" |sed 's|\\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+ resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data_thirty \pm 0 $sigmaeff_MC \pm 0 xxx xxx" |sed 's|\\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
 
  # echo " res line $resolutionLine"
   line="$category & $events & $deltaM_Data & $deltaM_MC & $deltaP &  $width_Data &  $width_MC $resolutionLine & \$ $chi2_Data \$ & \$ $selEff \$  &  $eventsMC & \$ $chi2_MC \$ & \$ $sigmaeff_Data \$ & \$ $sigmaeff_MC \$ & \$ $sigmaeff_Data_thirty \$ & \$ $sigmaeff_MC_thirty \$ & \$ $sigmaeff_Data_fifty \$ & \$ $sigmaeff_MC_fifty \$ $resolutionLine_sigmaEff_sixtyeight $resolutionLine_sigmaEff_fifty $resolutionLine_sigmaEff_thirty\\\\"

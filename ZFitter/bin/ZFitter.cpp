@@ -217,6 +217,9 @@ std::string energyBranchNameFromInvMassName(std::string invMass_var){
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
+  else if(invMass_var=="invMass_SC_must") energyBranchName = "energySCEle_must";
+  else if(invMass_var=="invMass_rawSC") energyBranchName = "rawEnergySCEle";
+  else if(invMass_var=="invMass_rawSC_esSC") energyBranchName = "rawEnergySCEle+esEnergySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
@@ -365,9 +368,9 @@ int main(int argc, char **argv) {
     ("useWEAKweight", "activate the WEAK interference weight in MC")
     ("saveRootMacro","")
     //
-    ("selection", po::value<string>(&selection)->default_value("loose"),"")
-    ("commonCut", po::value<string>(&commonCut)->default_value("Et_25-trigger-noPF"),"")
-    ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_regrCorr_ele"),"")
+    ("selection", po::value<string>(&selection)->default_value("loose25nsRun2"),"")
+    ("commonCut", po::value<string>(&commonCut)->default_value("Et_25"),"")
+    ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"),"")
     ("invMass_min", po::value<float>(&invMass_min)->default_value(65.),"")
     ("invMass_max", po::value<float>(&invMass_max)->default_value(115.),"")
     ("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25),"Smearing binning")
@@ -679,10 +682,13 @@ int main(int argc, char **argv) {
 	  runRange_itr!=runRanges.end();
 	  runRange_itr++){
 	TString token1,token2; 
-	Ssiz_t ss=0;
-	runRange_itr->Tokenize(token1,ss,"-");
-	ss=runRange_itr->First('-');
-	runRange_itr->Tokenize(token2,ss,"-");
+  //Ssiz_t ss=0;
+	//runRange_itr->Tokenize(token1,ss,"-");
+	//ss=runRange_itr->First('-');
+	//runRange_itr->Tokenize(token2,ss,"-");
+	TObjArray *tx = runRange_itr->Tokenize("-");
+	token1 = ((TObjString *)(tx->At(0)))->String();
+	token2 = ((TObjString *)(tx->At(1)))->String();
 	categories.push_back((*region_itr)+"-runNumber_"+token1+"_"+token2+"-"+commonCut.c_str());
       }
     }else categories.push_back((*region_itr)+"-"+commonCut.c_str());

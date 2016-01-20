@@ -92,6 +92,12 @@ case $invMass_var in
     invMass_rawSC)
 	invMassVarName="raw SC energy"
 	;;
+    invMass_SC_must)
+	invMassVarName="regression SC energy"
+	;;
+    invMass_rawSC_esSC)
+	invMassVarName="raw and es SC energy"
+	;;
     invMass_SC_corr)
 	invMassVarName="corrected ECAL energy"
 	;;
@@ -163,9 +169,10 @@ case ${TYPE} in
 	validationTableSlides
 	validationFitSlides
 	validationBackupSlides
-#	validationStabilitySlides
+	validationStabilitySlides
 	if [ "$USER" == "lcorpe" -o "$USER" ==  "lbrianza" ];then
-	cat tex/template.tex \
+	#cat tex/template.tex \
+	cat ${dirSlides}/intro.tex \
 			${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex \
