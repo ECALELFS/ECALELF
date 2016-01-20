@@ -126,7 +126,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
  public: // interface  
   
-  enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2};
+	enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff};
   
   //  SimpleCutBasedElectronIDSelectionFunctor(): {}
 

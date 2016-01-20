@@ -4,6 +4,9 @@ json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/
 json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt
 jsonName=246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver
 
+json25nsBoff=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_ZeroTesla_25ns_JSON.txt
+jsonName=246908-260627-Prompt_ZeroTesla_25ns
+
 #CHECK="--check"
 # config/reRecoTags/pulseShapeStudy_Run2015_rereco_v1.py
 # 
@@ -16,7 +19,7 @@ jsonName=246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver
 #config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
 #config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
 # config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-for tagfile in config/reRecoTags/Cal_Nov2015_newGT_ES_v1.py
+for tagfile in config/reRecoTags/Cal_Nov2015_newGT_0T_v{1,2}.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
@@ -33,7 +36,7 @@ do
 			*)
 				echo 
 ## 			./scripts/RerecoQuick.sh -p RUN2015C50ns -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
-				./scripts/RerecoQuick.sh -p RUN2015CD -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
+				./scripts/RerecoQuick.sh -p RUN2015CDBoff -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
 				;;
 		esac
 	done
@@ -47,7 +50,7 @@ do
 				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName  --ntupleOnly  --singleEle  $CHECK
 				;;
 			*)
-				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
+				./scripts/RerecoQuick.sh -p RUN2015CDBoff    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
 				;;
 		esac
 	done

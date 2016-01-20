@@ -197,3 +197,6 @@ allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring15M
 allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYJets_madgraph-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
 allRange	/DYToEE_13TeV-amcatnloFXFX-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM          DYToEE_amcatnlo-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
 allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_asymptotic_v2-v1/MINIAODSIM        DYToEE_powheg-RunIISpring15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
+#####
+256584-258158 /DoubleEG_0T/Run2015D-PromptReco-v3/MINIAOD       DoubleEG_0T-ZSkim-Run2015D-Prompt-v3-25nsReco-MINIAOD       caf database VALID RUN2015DBoff,RUN2015CDBoff
+#258159-260737 /DoubleEG_0T/Run2015D-PromptReco-v4/MINIAOD       DoubleEG_0T-ZSkim-Run2015D-Prompt-v4-25nsReco-MINIAOD       caf database VALID RUN2015DBoff,RUN2015CDBoff
