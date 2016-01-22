@@ -221,6 +221,7 @@ std::string energyBranchNameFromInvMassName(std::string invMass_var){
   else if(invMass_var=="invMass") energyBranchName = "energyEle";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
+  else if(invMass_var=="invMass_SC_pho_regrCorr") energyBranchName = "energySCEle_pho_regrCorr";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
   else if(invMass_var=="invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
@@ -859,6 +860,8 @@ int main(int argc, char **argv) {
     std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
     TString treeName="scaleEle_"+corrEleType;
     EnergyScaleCorrection_class eScaler(corrEleFile);
+    UpdateFriends(tagChainMap, regionsFileNameTag);//improve this
+    assert((tagChainMap["d1"])["selected"]->GetBranch("R9Eleprime")!=NULL);
 
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
@@ -866,7 +869,7 @@ int main(int argc, char **argv) {
       if(tag_chain_itr->first.CompareTo("d")==0 || !tag_chain_itr->first.Contains("d")) continue; //only data
       if(tag_chain_itr->second.count(treeName)!=0) continue; //skip if already present
       TChain *ch = (tag_chain_itr->second.find("selected"))->second;
-     
+
       TString filename="tmp/scaleEle_"+corrEleType+"_"+tag_chain_itr->first+"-"+chainFileListTag+".root";
       std::cout << "[STATUS] Saving electron scale corrections to root file:" << filename << std::endl;
 
@@ -875,7 +878,9 @@ int main(int argc, char **argv) {
 	  std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 	  exit(1);
 	}
-	TTree *corrTree = eScaler.GetCorrTree(ch);
+	TString bName= (ch->GetBranch("R9Eleprime")!=NULL) ? "R9Eleprime" : "R9Ele";
+	TTree *corrTree = eScaler.GetCorrTree(ch,true,"runNumber", bName);
+
 	corrTree->SetName(TString("scaleEle_")+corrEleType.c_str());
 	corrTree->SetTitle(corrEleType.c_str());
 	f.cd();
@@ -920,7 +925,6 @@ int main(int argc, char **argv) {
 	eScaler.SetSmearingType(1);
 	eScaler.SetSmearingCBAlpha(smearingCBAlpha);
       }
-      
       TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
       f.cd();
       corrTree->SetName(TString("smearEle_")+smearEleType.c_str());
@@ -1089,8 +1093,8 @@ int main(int argc, char **argv) {
     RooAbsReal *const_term_=NULL;
     RooRealVar *const_term_v = args.getSize() ==0 ? NULL : (RooRealVar *) args.find("constTerm_"+varName);
     if(const_term_v==NULL){
-      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.00, 0.000,0.05); 
-      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.00, 0.000,0.02);
+      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); 
+      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.00, 0.000,0.02);//default value set to 0
       const_term_v->setError(0.03); // 1%
       //const_term_v->setConstant(true);
       args.add(*const_term_v);
