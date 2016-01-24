@@ -133,7 +133,7 @@ mkSmearerCatData(){
 #Once cat files exist, just write them in the bare configfile
     for tag in `grep "^d" $3 | grep selected | awk -F" " ' { print $1 } '`
     do
-	echo -e "${tag}\tsmearerCat_${basenameConfig}\tdata/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
+	echo -e "${tag}\tsmearerCat_${basenameConfig}\t$2/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
     done
 #    echo "Data smearer cat are in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root"
 #    for file in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root
