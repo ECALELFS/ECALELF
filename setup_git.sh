@@ -16,6 +16,9 @@ checkVERSION(){
 	CMSSW_7_4_15_patch1)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
 	    ;;
+	CMSSW_7_6_3)
+	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
+	    ;;
 	*)
 	    echo "[ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
 	    echo "        Be sure that you don't want 5_3_14_patch2 or CMSSW_7_2_*"
@@ -177,6 +180,9 @@ case $CMSSW_VERSION in
 	git cms-addpkg Configuration/StandardSequences
 	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 	;;
+	CMSSW_7_6_*)
+		git-cms-merge-topic shervin86:76X || exit 1
+		;;
 
 
 esac
