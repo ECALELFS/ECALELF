@@ -130,7 +130,10 @@ case ${STEP} in
     2) 	STEP2=y;;
     3) 	STEP3=y;; 
     4)  STEP4=y;;
+    4bis)  STEP4bis=y; extension=amctnlo;;
     # for systematics
+    4amctnlo) STEP4=y; extension=amctnlo;; 
+    4madgraph) STEP4=y; extension=madgraph;; 
     4weight) STEP4=y; extension=weight;;
     4medium) STEP4=y; extension=medium;;
     4tight)  STEP4=y; extension=tight;;
@@ -144,9 +147,9 @@ case ${STEP} in
 #     madgraph) MCSAMPLE=y; extension=madgraph;; 
 #     powheg) MCSAMPLE=y; extension=powheg;; 
 #     sherpa) MCSAMPLE=y; extension=sherpa;; 
-    madgraph) PDFWEIGHT=y; extension=madgraph;; 
-    powheg)   PDFWEIGHT=y; extension=powheg;; 
-    sherpa)   PDFWEIGHT=y; extension=sherpa;; 
+#    madgraph) PDFWEIGHT=y; extension=madgraph;; 
+#    powheg)   PDFWEIGHT=y; extension=powheg;; 
+#    sherpa)   PDFWEIGHT=y; extension=sherpa;; 
     pdfWeight) PDFWEIGHT=y;  extension=pdfWeight;;
     fsrWeight) PDFWEIGHT=y;  extension=fsrWeight;;
     weakWeight) PDFWEIGHT=y;  extension=weakWeight;;
@@ -180,7 +183,8 @@ esac
 
 #####################
 outFileStep1=step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat
-outFileStep2=step2${extension}-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
+#outFileStep2=step2${extension}-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
+outFileStep2=step2-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
 outFileStep4=step4-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat
 outFileStep7=step7-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9Et.dat
 outFileStep8=step8-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9Et.dat
@@ -480,7 +484,7 @@ if [ -n "${STEP2}" ];then
 
     #categorize in eta-r9(prime) regions
 
-    if [[ $scenario = "Categorize" ]]; then
+    if [[ $scenario = "Categorize" ]] || [[ $scenario = "" ]]; then
 #	cat $configFile \
 #	    | sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tscaleEle_HggRunEta\t${outDirData}/step1/scaleEle_HggRunEta_\1-`basename $configFile .dat`.root|}" | sort | uniq > ${outDirData}/step2${extension}/`basename ${configFile}`
 
@@ -516,7 +520,7 @@ if [ -n "${STEP2}" ];then
 	echo "cp ${outDirData}/step2${extension}/fitres_test/params-${basenameEE}-${commonCut}.txt ${outDirData}/step2${extension}/fitres/init-params-step2_2-${commonCut}.txt"
     fi
     
-    if [[ $scenario = "Submit_jobs" ]]; then
+    if [[ $scenario = "Submit_jobs" ]] || [[ $scenario = "" ]]; then
 	echo "Jobs are submitted only if this file doesn't exist: ${outDirTable}/${outFile}"
 	
 	if [ ! -e "${outDirTable}/${outFile}" -o -n "$FORCE" ];then
@@ -559,12 +563,12 @@ if [ -n "${STEP2}" ];then
 	    -J "${basenameEE} step2[1-50]" \
 	    "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; mkdir ${outDirData}/step2/\$LSB_JOBINDEX/fitres/ -p; mkdir ${outDirData}/step2/\$LSB_JOBINDEX/img -p; ./bin/ZFitter.exe -f $outDirData/step2/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} --selection=${selection} --outDirFitResMC=${outDirMC}/fitres --outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step2/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step2/\$LSB_JOBINDEX/fitres  --smearerFit --autoNsmear --autoBin ${initFile_2}  --corrEleType=HggRunEta || exit 1; touch ${outDirData}/step2/\$LSB_JOBINDEX/${basenameEE}-done"
 	    #"cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; mkdir ${outDirData}/step2/\$LSB_JOBINDEX/fitres/ -p; mkdir ${outDirData}/step2/\$LSB_JOBINDEX/img -p; ./bin/ZFitter.exe -f $outDirData/step2/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} --selection=${selection} --outDirFitResMC=${outDirMC}/fitres --outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step2/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step2/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile_2}  --corrEleType=HggRunEta || exit 1; touch ${outDirData}/step2/\$LSB_JOBINDEX/${basenameEE}-done"
-#	while [ "`bjobs -J \"${basenameEB} step2\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 1m; done
-#	while [ "`bjobs -J \"${basenameEE} step2\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 1m; done
+	while [ "`bjobs -J \"${basenameEB} step2\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 1m; done
+	while [ "`bjobs -J \"${basenameEE} step2\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 1m; done
 
     fi #Submit_jobs
 
-    if [[ $scenario = Fit_and_plot ]]; then
+    if [[ $scenario = Fit_and_plot ]] || [[ $scenario = "" ]]; then
 	./script/haddTGraph.sh -o ${outDirData}/step2/fitres/outProfile-${basenameEB}-${commonCut}.root ${outDirData}/step2/*/fitres/outProfile-${basenameEB}-${commonCut}.root
 	./script/haddTGraph.sh -o ${outDirData}/step2/fitres/outProfile-${basenameEE}-${commonCut}.root ${outDirData}/step2/*/fitres/outProfile-${basenameEE}-${commonCut}.root
 	
@@ -590,7 +594,7 @@ if [ -n "${STEP2}" ];then
     fi #Fit_and_plot
 
     #### Setting file with scale corrections of step1 x step2
-    if [[ $scenario = write_down_corr_step1_step2 ]]; then
+    if [[ $scenario = write_down_corr_step1_step2 ]] || [[ $scenario = "" ]]; then
 	###scale
 	sed -i 's|^EB-||;s|^EE-||' ${outDirTable}/${outFileStep1}
 	grep scale ${outDirData}/step2/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\([^ \t]*\)-gold|\1 gold|; s|\([^ \t]*\)-bad|\1 bad|;s|\([^ \t]*\)-highR9|\1 highR9|; s|\([^ \t]*\)-lowR9|\1 lowR9|'  > tmp/res_corr.dat 
@@ -655,6 +659,195 @@ if [ -n "${STEP4}" ];then
     else
 	newSelection=${selection}
     fi
+    
+    #eta x R9 with smearing method having fixed the scale in step2
+    regionFileEB=${regionFileStep4EB}
+    regionFileEE=${regionFileStep4EE}
+    basenameEB=`basename $regionFileEB .dat`
+    basenameEE=`basename $regionFileEE .dat`
+    regionFile=$regionFileEB
+    outFile=$outDirTable/outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat
+    
+    checkStepDep step2
+    
+    if [ ! -e "${outDirMC}/${extension}/fitres" ];then mkdir ${outDirMC}/${extension}/fitres -p; fi
+    if [ ! -e "${outDirMC}/${extension}/img" ];then    mkdir ${outDirMC}/${extension}/img -p; fi
+    if [ ! -e "${outDirData}/step4${extension}/fitres" ];then mkdir ${outDirData}/step4${extension}/fitres -p; fi
+    if [ ! -e "${outDirData}/step4${extension}/img" ];then    mkdir ${outDirData}/step4${extension}/img -p; fi
+    
+    if [ -e "${outDirTable}/params-step4-${commonCut}.txt" ];then 
+	initFile="--initFile=${outDirTable}/params-step4-${commonCut}.txt"; 
+    else 
+	initFile=""
+    fi
+    
+    if [[ $scenario = "cat_step4" ]] || [[ $scenario = "" ]]; then
+    #cat $configFile \
+#	| sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tscaleEle_HggRunEtaR9\t${outDirData}/step2/scaleEle_HggRunEtaR9_\1-`basename $configFile .dat`.root|}" | sort | uniq > $outDirData/step4${extension}/`basename $configFile`
+	echo "$configFile"
+	cat $configFile > ${outDirData}/step4${extension}/`basename ${configFile}`
+	for tag in `grep "^d" $configFile | grep selected | awk -F" " ' { print $1 } '`
+	do
+	    echo "${tag} scaleEle_HggRunEtaR9 ${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile .dat`.root" >> ${outDirData}/step4${extension}/`basename ${configFile}`
+	done
+	echo "configFile for step4" is $outDirData/step4${extension}/`basename $configFile`
+	
+	MCscenario=""
+	case $extension in
+	    amctnlo)  sample=s1 ;;
+            madgraph) sample=s2 ;;
+            *)        sample=s1 ;;
+	esac
+	
+	case $extension in
+            amctnlo|madgraph)
+		cat ${outDirData}/step4${extension}/`basename ${configFile}` \
+		    |grep -v '#' \
+                    | grep -v "r9weights" \
+                    | grep -v "pileup" \
+		    | sed '/^d/d' \
+                    | sed "/^${sample}/{p; s|^s|d|}" \
+                    > tmp/step4${extension}.dat
+		mv tmp/step4${extension}.dat $outDirData/step4${extension}/`basename $configFile`
+		MCscenario="--noPU --onlyScale" #add this is the job definition
+		;;
+	esac
+	
+#    mkSmearerCatSignal $regionFileEB
+#    mkSmearerCatSignal $regionFileEE
+#    mkSmearerCatSignal $regionFileStep4EBEE
+
+	mkSmearerCatSignal $regionFileEB $outDirData/step4${extension}/`basename $configFile`
+	mkSmearerCatSignal $regionFileEE $outDirData/step4${extension}/`basename $configFile`
+	mkSmearerCatSignal $regionFileStep4EBEE $outDirData/step4${extension}/`basename $configFile`
+	mkSmearerCatData   $regionFileEB ${outDirData}/step4 $outDirData/step4${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
+	mkSmearerCatData   $regionFileEE ${outDirData}/step4 $outDirData/step4${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
+	mkSmearerCatData   $regionFileStep4EBEE ${outDirData}/step4 $outDirData/step4${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
+
+	case $extension in
+	    ##At this point it takes care of the cat files
+            amctnlo|madgraph)
+		cat ${outDirData}/step4${extension}/`basename ${configFile}` \
+		    | sed '/^d/d' \
+                    | sed "/^${sample}/{p; s|^s|d|}" \
+                    > tmp/step4${extension}.dat
+		mv tmp/step4${extension}.dat $outDirData/step4${extension}/`basename $configFile`
+		MCscenario="--noPU --onlyScale" #add this is the job definition
+		;;
+	esac
+    fi # it closes cat_step4
+    
+    if [[ $scenario = "jobs_step4" ]] || [[ $scenario = "" ]]; then
+	if [ ! -e "${outFile}" -o -n "$FORCE" ];then
+	    #jobs are submitted if ${outFile} does NOT exist
+	    if [ "${extension}" == "weight" ];then
+		updateOnly="$updateOnly --useR9weight"
+	    fi
+	    
+	# save the corrections in root files
+	# this way I do not reproduce the ntuples with the corrections any time
+	    
+	    echo "jobs in step4 are configured in $extension"
+	    echo "Submitting jobs with selection=${newSelection} and additional settings=${MCscenario}"
+	    echo "Check this command in case of doubt:"
+	    echo "./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${MCscenario}"
+
+	    for index in `seq 1 50`
+	    do
+		mkdir ${outDirData}/step4${extension}/${index}/fitres/ -p 
+		mkdir ${outDirData}/step4${extension}/${index}/img -p 
+	    done
+	    cat $outDirData/step4${extension}/`basename $configFile`
+	    
+	    bsub -q 2nd \
+		-oo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stdout.log \
+		-eo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stderr.log \
+		-J "${basenameEB} step4${extension}[1-50]" \
+		"cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
+./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${MCscenario} || exit 1; touch ${outDirData}/step4${extension}/\$LSB_JOBINDEX/`basename $regionFileEB .dat`-done"
+	    
+	    bsub -q cmscaf1nd \
+		-oo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stdout.log \
+		-eo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stderr.log \
+		-J "${basenameEE} step4${extension}[1-50]" \
+		"cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
+./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${MCscenario} || exit 1; touch ${outDirData}/step4${extension}/\$LSB_JOBINDEX/`basename $regionFileEE .dat`-done"
+	    
+	fi #submit jobs if outFile doesn't exist
+	
+	while [ "`bjobs -J \"${basenameEB} step4${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
+	while [ "`bjobs -J \"${basenameEE} step4${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
+	
+	./script/haddTGraph.sh -o ${outDirData}/step4${extension}/fitres/outProfile-$basenameEB-${commonCut}.root ${outDirData}/step4${extension}/*/fitres/outProfile-$basenameEB-${commonCut}.root
+	./script/haddTGraph.sh -o ${outDirData}/step4${extension}/fitres/outProfile-$basenameEE-${commonCut}.root ${outDirData}/step4${extension}/*/fitres/outProfile-$basenameEE-${commonCut}.root
+#    
+    fi #it closes jobs_step4
+    
+    if [[ $scenario = "fit_step4" ]] || [[ $scenario = "" ]]; then
+	echo "you are fitting in step4"
+	######################################################
+	echo "{" > tmp/fitProfiles.C
+	echo "gROOT->ProcessLine(\".include $ROOFITSYS/include\");" >> tmp/fitProfiles.C
+	echo "gROOT->ProcessLine(\".L macro/macro_fit.C+\");" >> tmp/fitProfiles.C
+	echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/fitProfiles.C
+	echo "FitProfile2(\"${outDirData}/step4${extension}/fitres/outProfile-$basenameEB-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
+	echo "FitProfile2(\"${outDirData}/step4${extension}/fitres/outProfile-$basenameEE-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
+	echo "}" >> tmp/fitProfiles.C
+	root -l -b -q tmp/fitProfiles.C
+	
+	cat ${outDirData}/step4${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config > ${outFile}
+	grep -v absEta_0_1 ${outDirData}/step4${extension}/img/outProfile-${basenameEE}-${commonCut}-FitResult-.config >> ${outFile}
+    fi #it closes fit_step4
+
+    if [[ $scenario = "smear_step4" ]] || [[ $scenario = "" ]]; then
+	##cat "`echo $initFile | sed 's|.*=||'`" |grep "C L" >>  ${outFile}## what's the purpose of this?
+	##getSmearEleCfg ${outFile} > `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat ##awk script does not exist anymore
+	###write constTerm at the end of step4
+	grep constTerm ${outFile} |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-${commonCut}||g" > tmp/smear.dat
+	categories=`grep constTerm tmp/smear.dat | cut -f 1`
+	categories=`echo $categories | sed "s/constTerm_//g"`
+	categories=(${categories// / }) # array
+	smearings=`grep constTerm tmp/smear.dat | cut -f 2`
+	smearings=(${smearings// / }) # array
+	errors_smear=`grep constTerm tmp/smear.dat | cut -f 3`
+	errors_smear=(${errors_smear// / }) # array
+	if [ -e `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat ]; then rm `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat; fi
+	if [ -e `dirname ${outFile}`/`basename $outFile .dat`-smearEle_err.dat ]; then rm `dirname ${outFile}`/`basename $outFile .dat`-smearEle_err.dat; fi
+	for i in "${!smearings[@]}"; do 
+	    echo ${categories[$i]} ${smearings[$i]}>> `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat;
+	    echo ${categories[$i]} ${smearings[$i]} ${errors_smear[$i]}>> `dirname ${outFile}`/`basename $outFile .dat`-smearEle_err.dat
+	done
+	echo "complete set of smearing corrections is in `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat"
+
+	#save root files with step1*step2 (scale corrections)
+	#./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile} --saveRootMacro --smearEleType stochastic --smearEleFile `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat || exit 1
+	#mv corrections somewhere: do not leave them in tmp/
+    fi
+##exit 0
+##cat ${outFile}
+##cat `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat
+    
+##PlotOnly
+    if [[ $scenario = "plotOnly_step4" ]] || [[ $scenario = "" ]]; then
+	./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  ${MCscenario} || exit 1
+    
+    
+	./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly ${MCscenario} || exit 1
+    
+    
+	./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile $regionFileStep4EBEE $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  --smearEleFile=`dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat --smearEleType=EtaR9_const ${MCscenario} || exit 1
+    fi #it closes plotOnly
+
+fi #step4_is_closed
+
+###############STEP4bis
+if [ -n "${STEP4bis}" ];then
+    if [ "${extension}" == "medium" -o "${extension}" == "tight" ];then
+	newSelection=${extension}
+    else
+	newSelection=${selection}
+    fi
+
 
     #eta x R9 with smearing method having fixed the scale in step2
     regionFileEB=${regionFileStep4EB}
@@ -664,7 +857,9 @@ if [ -n "${STEP4}" ];then
     regionFile=$regionFileEB
     outFile=$outDirTable/outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat
 
-    checkStepDep step2
+#    if [ "${extension}" == "loose" ]; then ##NEW, only in the nominal case do the check
+	checkStepDep step2
+ #   fi
 
     if [ ! -e "${outDirMC}/${extension}/fitres" ];then mkdir ${outDirMC}/${extension}/fitres -p; fi
     if [ ! -e "${outDirMC}/${extension}/img" ];then    mkdir ${outDirMC}/${extension}/img -p; fi
@@ -677,88 +872,36 @@ if [ -n "${STEP4}" ];then
 	initFile=""
     fi
 
-    cat $configFile \
-	| sed "/selected/{p; s|^\(d[1-9]\)\tselected.*|\1\tscaleEle_HggRunEtaR9\t${outDirData}/step2/scaleEle_HggRunEtaR9_\1-`basename $configFile .dat`.root|}" | sort | uniq > $outDirData/step4${extension}/`basename $configFile`
+    cat $configFile > ${outDirData}/step4${extension}/`basename ${configFile}`
+    for tag in `grep "^d" $configFile | grep selected | awk -F" " ' { print $1 } '`
+    do
+	echo "${tag} scaleEle_HggRunEtaR9 ${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile .dat`.root" >> ${outDirData}/step4${extension}/`basename ${configFile}`
+    done
+    echo "configFile for step4" is $outDirData/step4${extension}/`basename $configFile`
 
-    
-#    mkSmearerCatSignal $regionFileEB
-#    mkSmearerCatSignal $regionFileEE
-#    mkSmearerCatSignal $regionFileStep4EBEE
-#    mkSmearerCatData   $regionFileEB ${outDirData}/step4 $outDirData/step4${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
-#    mkSmearerCatData   $regionFileEE ${outDirData}/step4 $outDirData/step4${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
-#    mkSmearerCatData   $regionFileStep4EBEE ${outDirData}/step4 $outDirData/step4${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
-#
-#    if [ ! -e "${outFile}" -o -n "$FORCE" ];then
-#	
-#	
-#	if [ "${extension}" == "weight" ];then
-#	    updateOnly="$updateOnly --useR9weight"
-#	fi
-#	
-#	# save the corrections in root files
-#	# this way I do not reproduce the ntuples with the corrections any time
-#
-#
-#	for index in `seq 1 50`
-#	  do
-#	  mkdir ${outDirData}/step4${extension}/${index}/fitres/ -p 
-#	  mkdir ${outDirData}/step4${extension}/${index}/img -p 
-#	done
-#	cat $outDirData/step4${extension}/`basename $configFile`
-#
-#	bsub -q 2nd \
-#	    -oo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stdout.log \
-#	    -eo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stderr.log \
-#	    -J "${basenameEB} step4${extension}[1-50]" \
-#	      "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
-#./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 || exit 1; touch ${outDirData}/step4${extension}/\$LSB_JOBINDEX/`basename $regionFileEB .dat`-done"
+#NEW
+    MCscenario=""
+    case $extension in
+	amctnlo)  sample=s1 ;;
+        madgraph) sample=s2 ;;
+        *)        sample=s1 ;;
+    esac
 
-#	bsub -q cmscaf1nd \
-#	    -oo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stdout.log \
-#	    -eo ${outDirData}/step4${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stderr.log \
-#	    -J "${basenameEE} step4${extension}[1-50]" \
-#	      "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
-#./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 || exit 1; touch ${outDirData}/step4${extension}/\$LSB_JOBINDEX/`basename $regionFileEE .dat`-done"
+    case $extension in
+        amctnlo|madgraph)
+            cat ${outDirData}/step4${extension}/`basename ${configFile}` |grep -v '#' \
+                | grep -v "r9weights" \
+                | grep -v "pileup" \
+                | sed '/^d/ d' \
+                | sed "/^${sample}/{p; s|^s|d|}" \
+                > tmp/step4${extension}.dat
+	    mv tmp/step4${extension}.dat $outDirData/step4${extension}/`basename $configFile`
+	    MCscenario="--noPU --onlyScale" #add this is the job definition
+            ;;
+    esac
 
-##    fi
-#    while [ "`bjobs -J \"${basenameEB} step4${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
-#    while [ "`bjobs -J \"${basenameEE} step4${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
-#
-#    ./script/haddTGraph.sh -o ${outDirData}/step4${extension}/fitres/outProfile-$basenameEB-${commonCut}.root ${outDirData}/step4${extension}/*/fitres/outProfile-$basenameEB-${commonCut}.root
-#    ./script/haddTGraph.sh -o ${outDirData}/step4${extension}/fitres/outProfile-$basenameEE-${commonCut}.root ${outDirData}/step4${extension}/*/fitres/outProfile-$basenameEE-${commonCut}.root
-#
-#    
-#	######################################################33
-#    echo "{" > tmp/fitProfiles.C
-#    echo "gROOT->ProcessLine(\".include $ROOFITSYS/include\");" >> tmp/fitProfiles.C
-#    echo "gROOT->ProcessLine(\".L macro/macro_fit.C+\");" >> tmp/fitProfiles.C
-#    echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/fitProfiles.C
-#    echo "FitProfile2(\"${outDirData}/step4${extension}/fitres/outProfile-$basenameEB-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
-#    echo "FitProfile2(\"${outDirData}/step4${extension}/fitres/outProfile-$basenameEE-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
-#    echo "}" >> tmp/fitProfiles.C
-#    root -l -b -q tmp/fitProfiles.C
-#
-#fi    
-#    cat ${outDirData}/step4${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult.config > ${outFile}
-#    grep -v absEta_0_1 ${outDirData}/step4${extension}/img/outProfile-${basenameEE}-${commonCut}-FitResult.config >> ${outFile}
-#
-#    cat "`echo $initFile | sed 's|.*=||'`" |grep "C L" >>  ${outFile}
-#    getSmearEleCfg ${outFile} > `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat
-#
+fi #step4bis is closed
 
-##exit 0
-##cat ${outFile}
-##cat `dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat
-#    ./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  || exit 1
-    
-    
-#     ./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  || exit 1
-     
-
-#    ./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile $regionFileStep4EBEE $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  --smearEleFile=`dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat --smearEleType=EtaR9_const || exit 1
-
-
-fi
 
 
 if [ -n "${STEP3WEIGHT}" ];then

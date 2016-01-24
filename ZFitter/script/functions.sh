@@ -23,12 +23,11 @@ puName(){
 }
 
 mcName(){
-    ## MC name
+    ## create MC name
     # $1 = configFile
     if [ -z "${mcName}" ];then
-	mcCount=`grep -v '#' $1 | grep  'selected' | grep '^s' | cut -f 3 |wc -l`
-
-	mcTags=`grep -v '#' $1  | grep  'selected' | grep '^s' | cut -f 1 | sort | uniq`
+	mcCount=`grep -v '#' $1 | grep  'selected' | grep '^s' | cut -f 3 |wc -l` #counts how many MC you have
+	mcTags=`grep -v '#' $1  | grep  'selected' | grep '^s' | cut -f 1 | sort | uniq` #this is s1, s2, ecc...
 	for mcTag in ${mcTags}
 	  do
 	  mcFiles=`grep -v '#' $1  | grep  'selected' | grep "^${mcTags}" | cut -f 3`
@@ -52,21 +51,25 @@ mcName(){
 
 
 mkSmearerCatSignal(){
-
-    if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s2-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s3-`basename $configFile .dat`.root" ];then
+    #if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s2-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s3-`basename $configFile .dat`.root" ];then
+    basenameConfig=`basename $1 .dat`
+    if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ];then
 	echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
  	./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
  	    --saveRootMacro  --addBranch=smearerCat_s  || exit 1
-	basenameConfig=`basename $1 .dat`
-	for file in tmp/smearerCat_${basenameConfig}_s*-`basename $configFile .dat`.root
-	  do
-	  
-	  tag=`echo $file | sed "s|tmp/smearerCat_${basenameConfig}_s\([0-9]\)-.*|s\1|"`
-	  
-	  mv $file data/smearerCat/ || exit 1
-	  echo -e "$tag\tsmearerCat_${basenameConfig}\tdata/smearerCat/`echo $file | sed 's|tmp/||'`" >> $configFile
+	for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
+	#for file in tmp/smearerCat_${basenameConfig}_s*-`basename $configFile .dat`.root
+	do
+	    mv tmp/smearerCat_${basenameConfig}_${tag}-`basename $configFile .dat`.root data/smearerCat/ || exit 1
 	done
     fi
+
+#Once cat files exist, just write them in the bare configfile
+    for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
+    do
+	echo -e "${tag}\tsmearerCat_${basenameConfig}\tdata/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
+    done
+
     
 #     tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
 #     for tag in $tags
@@ -102,7 +105,8 @@ mkSmearerCatData(){
     #$2: outDirData/step...
     #$3: configFile
     #$4: corrEleType
-    echo "Inside mkSmearerCatData"
+    ##echo "Inside mkSmearerCatData"
+    basenameConfig=`basename $1 .dat`
     if [ ! -e "$2/smearerCat_`basename $1 .dat`_d1-`basename $configFile .dat`.root" ];then
 	echo "[STATUS] Creating smearerCat for data: `basename $configFile .dat` `basename $1 .dat`"
 	./bin/ZFitter.exe -f $3 --regionsFile=$1  \
@@ -126,13 +130,17 @@ mkSmearerCatData(){
 #    rm $3.tmp $3.tmp2
 
 ##adapted from mkSmearerSignal -->This works
-    basenameConfig=`basename $1 .dat`
-    echo "Data smearer cat are in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root"
-    for file in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root
+#Once cat files exist, just write them in the bare configfile
+    for tag in `grep "^d" $3 | grep selected | awk -F" " ' { print $1 } '`
     do
-	tag=`echo $file | sed "s|${2}/smearerCat_${basenameConfig}_d\([0-9]\)-.*|d\1|"`
-	echo -e "$tag\tsmearerCat_${basenameConfig}\t`echo $file | sed 's|tmp/||'`" >> $3
+	echo -e "${tag}\tsmearerCat_${basenameConfig}\tdata/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
     done
+#    echo "Data smearer cat are in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root"
+#    for file in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root
+#    do
+#	tag=`echo $file | sed "s|${2}/smearerCat_${basenameConfig}_d\([0-9]\)-.*|d\1|"`
+#	echo -e "$tag\tsmearerCat_${basenameConfig}\t`echo $file | sed 's|tmp/||'`" >> $3
+#    done
 }
 	
 
