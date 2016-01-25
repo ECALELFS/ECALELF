@@ -61,7 +61,9 @@ echo "[SMEAR] dat file is in tmp/`basename ${corr_file} .dat`_smear.dat "
 
 
 Prepare_Table(){
-echo "\begin{table}[htb]"> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
+echo "\documentclass[9pt, xcolor=dvipsnames]{beamer}"> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
+echo "\begin{document}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
+echo "\begin{table}[htb]">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 #echo " \caption{Results for scale and smearing corrections: scale has to be applied to data, smearing to MC.}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo " \begin{center}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "   \begin{tabular}{ccc}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
@@ -79,10 +81,12 @@ echo "   \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "    \end{tabular}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "  \end{center}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "\end{table}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
+echo "\end{document}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 
 #########constTerm##########################################################################
-
-echo "\begin{table}[htb]"> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
+echo "\documentclass[9pt, xcolor=dvipsnames]{beamer}"> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
+echo "\begin{document}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
+echo "\begin{table}[htb]">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo " \begin{center}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "   \begin{tabular}{ccc}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "     \hline">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
@@ -98,6 +102,7 @@ echo "   \hline">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "    \end{tabular}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "  \end{center}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "\end{table}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
+echo "\end{document}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 }
 
 ############################################################################################################################

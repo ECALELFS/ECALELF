@@ -1,8 +1,12 @@
 #s|-\([A-z]\)| \1|g
-s|[-]*absEta_0_1| $\\abs{\\eta} < 1$|
-s|[-]*absEta_1_1.4442| $\\abs{\\eta} > 1$|
-s|[-]*absEta_1.566_2| $\\abs{\\eta} < 2$|
-s|[-]*absEta_2_2.5| $\\abs{\\eta} > 2$|
+#s|[-]*absEta_0_1| $\\abs{\\eta} < 1$|
+#s|[-]*absEta_1_1.4442| $\\abs{\\eta} > 1$|
+#s|[-]*absEta_1.566_2| $\\abs{\\eta} < 2$|
+#s|[-]*absEta_2_2.5| $\\abs{\\eta} > 2$|
+s|[-]*absEta_0_1| $\|\\eta\| < 1$|
+s|[-]*absEta_1_1.4442| $\|\\eta\| > 1$|
+s|[-]*absEta_1.566_2| $\|\\eta\| < 2$|
+s|[-]*absEta_2_2.5| $\|\\eta\| > 2$|
 s|^EB_EE |EB/EE |
 s|^EB_EEp|EB/EE+|
 s|^EB_EEm|EB/EE-|
@@ -16,6 +20,8 @@ s|[-]*runNumber_\([0-9]*\)_\([0-9]*\)| [\1 - \2]|g
 #/[A-z]*_[.0-9]*_[.0-9]*/{s|\([A-z]*\)_\([.0-9]*\)_\([.0-9]*\)|$ \2 \\leq \1 < \3 $|g}
 s|[-]gold| $R9 > 0.94$|
 s|[-]bad| $R9 < 0.94$|
+s|[-]highR9| $R9 > 0.94$|
+s|[-]lowR9| $R9 < 0.94$|
 s|Gold| $R9 > 0.94$|g
 s|Bad| $R9 < 0.94$|g
 s|EB/EE|%EB/EE|
