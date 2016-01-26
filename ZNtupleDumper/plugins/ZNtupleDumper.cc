@@ -189,29 +189,28 @@ private:
 
 	//------------------------------ Input Tags
 	// input tag for primary vertex
-	edm::InputTag vtxCollectionTAG;
-	edm::InputTag BeamSpotTAG;
-	// input tag for electrons
-	edm::InputTag electronsTAG;
-	edm::InputTag muonsTAG;
-	edm::InputTag photonsTAG;
+	edm::EDGetTokenT<GenEventInfoProduct> generatorInfoToken_;
+	edm::EDGetTokenT<reco::VertexCollection> vtxCollectionToken_;
+	//edm::InputTag vtxCollectionTAG;
+	edm::EDGetTokenT<reco::BeamSpot>         beamSpotToken_;
+	//edm::InputTag BeamSpotTAG;
+	edm::EDGetTokenT<pat::ElectronCollection> electronsToken_;
+	edm::EDGetTokenT<pat::MuonCollection>     muonsToken_;
+	edm::EDGetTokenT<pat::PhotonCollection>     photonsToken_;
 
-#ifdef CMSSW_7_2_X
-	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEBTAG;
-	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEETAG;
-#else
-	edm::InputTag recHitCollectionEBTAG;
-	edm::InputTag recHitCollectionEETAG;
-#endif
-
-	edm::InputTag recHitCollectionESTAG;
-	edm::InputTag EESuperClustersTAG;
+	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEBToken_;
+	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEEToken_;
+	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionESToken_;
+	
+	edm::EDGetTokenT<std::vector<reco::SuperCluster> > EESuperClustersToken_;
 	// input rho
-	edm::InputTag rhoTAG, pileupInfoTAG;
-	edm::InputTag conversionsProducerTAG;
-	edm::InputTag metTAG;
-	edm::InputTag triggerResultsTAG;
-	edm::InputTag WZSkimResultsTAG;
+	edm::EDGetTokenT<double> rhoToken_;
+	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > pileupInfoToken_;
+	edm::EDGetTokenT<reco::ConversionCollection> conversionsProducerToken_;
+	edm::EDGetTokenT<reco::PFMETCollection> metToken_;
+	edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+	edm::EDGetTokenT<edm::TriggerResults> WZSkimResultsToken_;
+	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
 	std::vector< std::string> hltPaths, SelectEvents;
 private:
 	std::string foutName;
@@ -455,25 +454,21 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	//  isMC(iConfig.getParameter<bool>("isMC")),
 	isPartGun(iConfig.getParameter<bool>("isPartGun")),
 	doHighEta_LowerEtaCut(iConfig.getParameter<double>("doHighEta_LowerEtaCut")),
-	vtxCollectionTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
-	BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
-	electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
-	muonsTAG(iConfig.getParameter<edm::InputTag>("muonCollection")),
-	photonsTAG(iConfig.getParameter<edm::InputTag>("photonCollection")),
-#ifdef CMSSW_7_2_X
-	recHitCollectionEBTAG(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEB" ))),
-	recHitCollectionEETAG(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEE" ))),
-#else
-	recHitCollectionEBTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEB")),
-	recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
-#endif
-
-	recHitCollectionESTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionES")),
-	EESuperClustersTAG(iConfig.getParameter<edm::InputTag>("EESuperClusterCollection")),
-	rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
-	pileupInfoTAG(iConfig.getParameter<edm::InputTag>("pileupInfo")),
-	conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
-	metTAG(iConfig.getParameter<edm::InputTag>("metCollection")),
+	vtxCollectionToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
+	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
+	electronsToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronCollection"))),
+	muonsToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonCollection"))),
+	photonsToken_(consumes<pat::PhotonCollection>(iConfig.getParameter<edm::InputTag>("photonCollection"))),
+	recHitCollectionEBToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEB" ))),
+	recHitCollectionEEToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEE" ))),
+	recHitCollectionESToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("recHitCollectionES"))),
+	EESuperClustersToken_(consumes<reco::SuperClusterCollection>(iConfig.getParameter< edm::InputTag>("EESuperClusterCollection"))),
+	rhoToken_(consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastJet"))),
+	pileupInfoToken_(consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileupInfo"))),
+	conversionsProducerToken_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversionCollection"))),
+	metToken_(consumes<reco::PFMETCollection>(iConfig.getParameter<edm::InputTag>("metCollection"))),
+	triggerResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResultsCollection"))),
+	WZSkimResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection"))),
 	triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
 	WZSkimResultsTAG(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection")),
 	hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
@@ -550,16 +545,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 	// filling infos runNumber, eventNumber, lumi
 	if( !iEvent.isRealData() ) {
-		iEvent.getByLabel(pileupInfoTAG, PupInfo);
-		iEvent.getByLabel(edm::InputTag("generator"), GenEventInfoHandle);
+		iEvent.getByToken(pileupInfoToken_, PupInfo);
+		iEvent.getByToken(generatorInfoToken_, GenEventInfoHandle);
 		isMC = true;
 	} else isMC = false;
 
 	//------------------------------ HLT
 	/// \todo check why
-	if(triggerResultsTAG.label() != "") iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
+	if(triggerResultsTAG.label() != "") iEvent.getByToken(triggerResultsToken_, triggerResultsHandle);
 	if(WZSkimResultsTAG.label() != "") {
-		iEvent.getByLabel(WZSkimResultsTAG,  WZSkimResultsHandle); //else it is not produced with ALCARECO selection
+		iEvent.getByToken(WZSkimResultsToken_,  WZSkimResultsHandle); //else it is not produced with ALCARECO selection
 		//then the type of event has to be defined
 
 		//Check if it is Wenu, Z or ZSC event according to triggerResults
@@ -629,33 +624,33 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	}
 
 	//------------------------------ CONVERSIONS
-	iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
+	iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
 
 	//------------------------------
-	clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG,
-	        recHitCollectionEETAG);
+	clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBToken_,
+	        recHitCollectionEEToken_);
 
 	//------------------------------ electrons
 	if (eventType == ZMMG) {
 		//------------------------------ muons
-		iEvent.getByLabel(muonsTAG, muonsHandle);
+		iEvent.getByToken(muonsToken_, muonsHandle);
 		//------------------------------ photons
-		iEvent.getByLabel(photonsTAG, photonsHandle);
+		iEvent.getByToken(photonsToken_, photonsHandle);
 	}	else {
-		iEvent.getByLabel(electronsTAG, electronsHandle);
+		iEvent.getByToken(electronsToken_, electronsHandle);
 	}
 
 	//------------------------------ SuperClusters (for high Eta studies)
-	iEvent.getByLabel(EESuperClustersTAG, EESuperClustersHandle);
+	iEvent.getByToken(EESuperClustersToken_, EESuperClustersHandle);
 
 	// for conversions with full vertex fit
 	//------------------------------  VERTEX
-	iEvent.getByLabel(vtxCollectionTAG, primaryVertexHandle);
-	iEvent.getByLabel(BeamSpotTAG, bsHandle);
-	iEvent.getByLabel(rhoTAG, rhoHandle);
+	iEvent.getByToken(vtxCollectionToken_, primaryVertexHandle);
+	iEvent.getByToken(beamSpotToken_, bsHandle);
+	iEvent.getByToken(rhoToken_, rhoHandle);
 
-	iEvent.getByLabel(metTAG, metHandle);
-	iEvent.getByLabel(recHitCollectionESTAG, ESRechitsHandle);
+	iEvent.getByToken(metToken_, metHandle);
+	iEvent.getByToken(recHitCollectionESToken_, ESRechitsHandle);
 	//if(metHandle.isValid()==false) iEvent.getByType(metHandle);
 	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
 
@@ -2524,7 +2519,8 @@ void ZNtupleDumper::InitPdfSystTree(void)
 	//   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
 	//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/i");
 
-
+#ifdef PDFWEIGHTS
+// this part is deprecated
 	for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
 	        pdfWeightTAGS_itr != pdfWeightTAGS.end();
 	        pdfWeightTAGS_itr++) {
@@ -2538,17 +2534,18 @@ void ZNtupleDumper::InitPdfSystTree(void)
 
 	pdfSystTree->Branch("fsrWeight", &fsrWeight, "fsrWeight/F");
 	pdfSystTree->Branch("weakWeight", &weakWeight, "weakWeight/F");
+#endif
 	return;
 }
 
 void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent)
 {
-
+#ifdef PDFWEIGHTS
 	for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
 	        pdfWeightTAGS_itr != pdfWeightTAGS.end();
 	        pdfWeightTAGS_itr++) {
 		int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
-		iEvent.getByLabel(*pdfWeightTAGS_itr, pdfWeightHandle);
+		iEvent.getByToken(*pdfWeightTAGS_itr, pdfWeightHandle);
 
 		//pdfSystWeight[i] =
 		std::vector<Double_t> weights = std::vector<Double_t>(*pdfWeightHandle);
@@ -2562,14 +2559,16 @@ void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent)
 		//    }
 	}
 
-	iEvent.getByLabel(fsrWeightTAG, fsrWeightHandle);
-	iEvent.getByLabel(weakWeightTAG, weakWeightHandle);
+	iEvent.getByToken(fsrWeightTAG, fsrWeightHandle);
+	iEvent.getByToken(weakWeightTAG, weakWeightHandle);
 
 	fsrWeight = (Float_t) * fsrWeightHandle;
 	weakWeight = (Float_t) * weakWeightHandle;
-
+#endif
 	return ;
 }
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ZNtupleDumper);
+
+//  LocalWords:  pileupInfoTAG conversionsProducerTAG triggerResultsTAG
