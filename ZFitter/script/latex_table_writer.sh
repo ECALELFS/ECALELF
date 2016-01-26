@@ -1,7 +1,11 @@
 #! /bin/bash
 
-corr_file=test/dato/December2015_Rereco_C_D/loose/invMass_SC_corr/table/outFile-step2-invMass_SC_corr-loose-Et_20-noPF-HggRunEtaR9.dat
-commonCut=-Et_20-noPF
+#corr_file=test/dato/December2015_Rereco_C_D/loose/invMass_SC_corr/table/outFile-step2-invMass_SC_corr-loose-Et_20-noPF-HggRunEtaR9.dat
+#commonCut=-Et_20-noPF
+corr_file=$1
+commonCut=$2
+echo "corr_file is $corr_file"
+echo "commonCut are $commonCut"
 ##################Function definition#################################################################################################
 Write_dat_for_table(){
 ##Scale corrections: per i dati -> 1/scala_MC
@@ -31,8 +35,7 @@ for i in "${!scales_data[@]}"; do
 echo ${categories[$i]} "runNumber 0 999999" ${scales_data[$i]} ${errors_data[$i]} >> tmp/`basename ${corr_file} .dat`_scale.dat
 done
 
-echo "[SCALE] dat file is in tmp/`basename ${corr_file} .dat`_scale.dat "
-
+echo tmp/`basename ${corr_file} .dat`_scale.dat
 #############################constTerm part#########################################################################################
 grep constTerm ${corr_file} |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|${commonCut}||g" > tmp/corr_MC.dat
 
@@ -56,7 +59,8 @@ for i in "${!smearings[@]}"; do
 echo ${categories[$i]} ${smearings_percentage[$i]} ${errors_smear_percentage[$i]} >> tmp/`basename ${corr_file} .dat`_smear.dat
 done
 
-echo "[SMEAR] dat file is in tmp/`basename ${corr_file} .dat`_smear.dat "
+echo tmp/`basename ${corr_file} .dat`_smear.dat
+
 }
 
 
@@ -68,7 +72,7 @@ echo "\begin{table}[htb]">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo " \begin{center}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "   \begin{tabular}{ccc}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "     \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
-echo "     Category & Scale [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat #I want to write \\ -> you have to escape \ 
+echo "     Category & \\DeltaP [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat #I want to write \\ -> you have to escape \ 
 
 for i in "${!scales_data[@]}"; do
 #categories_name[$i]=`echo ${categories[$i]} | sed "s/_/-/g"`
@@ -83,6 +87,7 @@ echo "  \end{center}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "\end{table}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "\end{document}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 
+echo "[SCALE] tex file is in tmp/table_`basename ${corr_file} .dat`_scale_tex.dat "
 #########constTerm##########################################################################
 echo "\documentclass[9pt, xcolor=dvipsnames]{beamer}"> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "\begin{document}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
@@ -90,7 +95,7 @@ echo "\begin{table}[htb]">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo " \begin{center}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "   \begin{tabular}{ccc}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "     \hline">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
-echo "     Category & Smear [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat #I want to write \\ -> you have to escape \ 
+echo "     Category & \\Delta\\sigma [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat #I want to write \\ -> you have to escape \ 
 
 for i in "${!smearings_percentage[@]}"; do
 categories_name[$i]=`echo ${categories[$i]} | sed -f sed/tex.sed`
@@ -103,6 +108,7 @@ echo "    \end{tabular}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "  \end{center}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "\end{table}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
 echo "\end{document}">> tmp/table_`basename ${corr_file} .dat`_smear_tex.dat
+echo "[SMEAR] tex file is in tmp/table_`basename ${corr_file} .dat`_smear_tex.dat "
 }
 
 ############################################################################################################################
