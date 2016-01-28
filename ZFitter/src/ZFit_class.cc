@@ -1182,7 +1182,7 @@ TString	ZFit_class::GetEnergyVarName(TString invMass_name){
   TString energyBranchName="";
   TString invMass_var=invMass_name;
   if(invMass_var=="invMass_SC_regrCorr_ele") energyBranchName = "energySCEle_regrCorr_ele";
-  else if(invMass_var=="invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
+  else if(invMass_var=="invMass_SC_pho_regrCorr") energyBranchName = "energySCEle_pho_regrCorr";
   else if(invMass_var=="invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass") energyBranchName = "energyEle";
