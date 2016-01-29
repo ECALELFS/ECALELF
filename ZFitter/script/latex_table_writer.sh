@@ -32,7 +32,8 @@ done
 
 if [ -e tmp/`basename ${corr_file} .dat`_scale.dat ]; then rm tmp/`basename ${corr_file} .dat`_scale.dat; fi
 for i in "${!scales_data[@]}"; do 
-echo ${categories[$i]} "runNumber 0 999999" ${scales_data[$i]} ${errors_data[$i]} >> tmp/`basename ${corr_file} .dat`_scale.dat
+#echo ${categories[$i]} "runNumber 0 999999" ${scales_data[$i]} ${errors_data[$i]} >> tmp/`basename ${corr_file} .dat`_scale.dat
+echo ${categories[$i]} ${scales_data[$i]} ${errors_data[$i]} >> tmp/`basename ${corr_file} .dat`_scale.dat
 done
 
 echo tmp/`basename ${corr_file} .dat`_scale.dat
