@@ -40,7 +40,7 @@ s|CenterModule|CM|
 s|NoBorderModule|NB|
 s|\(.*\)_SingleEle|ele1 \1 \& ele2 !\1|
 s|entries ([0-9]* weighted) ||
-s| & \\| \\|
+#s| & \\| \\|
 s|[0-9]*/[0-9]*/\([0-9]*\)|\1|
 s|[-]EBGapEle1_5-EBGapEle2_5| GAP|
 s|[-]!EBGapEle1_5-!EBGapEle2_5| noGAP|
