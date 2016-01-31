@@ -12,11 +12,11 @@ BEGIN{
     }
     printf "}"
     print "\\hline"
-    printf "Category & \\Delta\\P [\\%]  & Uncertainty[\\%]"
+    printf "Category & \\Delta P [\\%]  & \Delta[\\%]"
     for(i=1; i<=(NF/3 -1);i++){ 
 	printf " & Uncertainty[\\%]"
     }
-    printf"\\\\ \\hline \n" #I want to write \\ -> you have to escape \ 
+    printf" \\\\ \\hline \n" #I want to write \\ -> you have to escape \ 
 
 }
 #NF is number of fields
@@ -27,7 +27,7 @@ BEGIN{
 	if(v<0) v*=-1
 	printf("\t %s %.2f", "&", v)
     }
-    printf("\\\\ \n")
+    printf(" \\\\ \n")
 }
 
 #(/^#/){
