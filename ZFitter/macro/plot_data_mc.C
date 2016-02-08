@@ -158,7 +158,8 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
        
   mc->SetLineColor(kRed);
   mc->SetLineWidth(2);
-  mc->SetFillStyle(1001);
+  //mc->SetFillStyle(1001);//colore pieno
+  mc->SetFillStyle(3001);
   mc->SetFillColor(kRed);
   
   mc->Draw();
@@ -183,8 +184,8 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   }
 
   char ylabel[100];
-  //sprintf(ylabel,"Events/%.1f GeV",mc->GetBinWidth(1));
-  sprintf(ylabel,"Events");
+  sprintf(ylabel,"Events/%.1f GeV",mc->GetBinWidth(1));
+  //sprintf(ylabel,"Events");
   mc->GetYaxis()->SetTitle(ylabel);
   mc->GetYaxis()->SetTitleOffset(1.05);
 
@@ -218,15 +219,25 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   ks+=line;
   std::cout << "" << ks << std::endl;
   
-  TPaveText pave(0.182,0.8,0.38,0.92, "ndc");
+  //  TPaveText pave(0.182,0.3,0.58,0.92, "ndc");
+  // 	pv->DeleteText();
+  // pave.SetFillColor(0);
+  // pave.SetTextAlign(12);
+  // pave.SetBorderSize(0);
+  // pave.SetTextSize(0.036);
+  // pave.AddText("CMS Preliminary");
+  // pave.AddText("#sqrt{s}="+energy);
+  // if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
+
+  TPaveText pave(0.182,0.97,0.4,0.99, "ndc");
   // 	pv->DeleteText();
   pave.SetFillColor(0);
   pave.SetTextAlign(12);
   pave.SetBorderSize(0);
   pave.SetTextSize(0.036);
-  pave.AddText("CMS Preliminary");
-  pave.AddText("#sqrt{s}="+energy);
-  if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
+  pave.AddText("CMS Preliminary   #sqrt{s}="+energy+"  L="+lumi+" fb^{-1}");
+  //pave.AddText("#sqrt{s}="+energy);
+  //if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
 
   pave.Draw();	
 
@@ -250,7 +261,10 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     sRatio->Draw();
 
     TGraphErrors *ratioGraph = new TGraphErrors(sRatio);
-    ratioGraph->SetMarkerColor(kBlue);
+    //ratioGraph->SetMarkerColor(kBlue);
+    ratioGraph->SetMarkerColor(kBlack);
+    ratioGraph->SetMarkerSize(0.8);
+
     ratioGraph->Draw("AP");
     //ratioGraph->GetXaxis()->SetRangeUser(data->GetXaxis()->GetXmin(),data->GetXaxis()->GetXmax());//To set limits correctly               
     //ratioGraph->GetXaxis()->SetRangeUser(mc->GetXaxis()->GetXmin(),mc->GetXaxis()->GetXmax());//To set limits correctly               
@@ -274,7 +288,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     c->cd();
   }
   
-  std::cout<<"Saving the plots"<<std::endl;
+  std::cout<<"*****************Saving the plots"<<std::endl;
   c->SaveAs(img_filename(filename, region, ".eps"));
   c->SaveAs(img_filename(filename, region, ".png"));
   c->SaveAs(img_filename(filename, region, ".C"));
@@ -288,7 +302,8 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 
 
 
-void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="2.4", int rebin=0, TString myRegion=""){
+void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="2.6", int rebin=4, TString myRegion=""){
+  //rebin=4 --> binwidth=0.5 GeV
   
   TH2F eventFraction("eventFraction", "", 10, 0, 9, 10, 0, 9);
   int index_max=0;
@@ -361,7 +376,7 @@ void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="2.4",
 
   /*------------------------------ Plotting */
   TCanvas *c = new TCanvas("c","c");
-  TLegend *legend = new TLegend(0.7,0.8,0.95,0.92);
+  TLegend *legend = new TLegend(0.7,0.7,0.92,0.95);
   legend->SetFillStyle(3001);
   legend->SetFillColor(1);
   legend->SetTextFont(22); // 132

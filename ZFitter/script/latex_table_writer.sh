@@ -73,7 +73,7 @@ echo "\begin{table}[htb]">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo " \begin{center}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "   \begin{tabular}{ccc}">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "     \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
-echo "     Category & \\DeltaP [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat #I want to write \\ -> you have to escape \ 
+echo "     Category & \\Delta P [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat #I want to write \\ -> you have to escape \ 
 
 for i in "${!scales_data[@]}"; do
 #categories_name[$i]=`echo ${categories[$i]} | sed "s/_/-/g"`
