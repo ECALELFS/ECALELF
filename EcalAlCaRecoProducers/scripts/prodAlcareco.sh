@@ -123,7 +123,7 @@ if [ ! -z "$TAGFILE" ];then
  	case ${TAGFILE} in 
  		*py)
 			echo "[INFO] Extracting GT from file $TAGFILE"
-			TAG=`cat $TAGFILE |grep globaltag | grep -v '#' | sed 's|::All|:All|' | sed 's|:All||' | sed 's|.*(.\([0-Z_]*\).*|\1|'`
+			TAG=`cat $TAGFILE |grep globaltag | grep -v '#' | sed 's|::All|:All|' | sed 's|:All||' | sed  -r 's|.*\(.([_[:alnum:]]*).*|\1|'`
 			echo "[INFO] Extracted GT :  $TAG"
 			;;
 		*)
@@ -310,7 +310,7 @@ if [ -z "${CHECK}" ] || [ -n "${CREATE}" ];then
 	echo "[INFO Run Range ${RUNRANGE}"
 	
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
-
+echo $ALCATYPE $DATA $TAG
 echo "[INFO] Generating CMSSW configuration"
 cmsDriver.py reco -s ${ALCATYPE} -n 10 ${DATA} --conditions=${TAG} --nThreads=4 --customise_commands="process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))" $CUSTOMISE --no_exec  --python_filename=${CMSSWCONFIG} --processName=ALCARECO
 

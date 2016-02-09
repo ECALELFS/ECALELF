@@ -331,13 +331,15 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 #${ENERGY}/
 #${DATASETNAME}/tmp-${DATASETNAME}-${RUNRANGE}
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
-
+#echo ${ORIGIN_REMOTE_DIR}
+#echo ${USER_REMOTE_DIR}
+#exit 0
 if [ -n "${CREATE}" ];then
 
-case ${ORIGIN_REMOTE_DIR_BASE} in
+case ${ORIGIN_REMOTE_DIR} in
     database)
-	FILELIST=""
-	;;
+		FILELIST=""
+		;;
     *)
 	echo ${FILELIST}
 	if [ -z "${FILELIST}" ];then
