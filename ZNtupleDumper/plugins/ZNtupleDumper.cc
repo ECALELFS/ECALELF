@@ -274,6 +274,9 @@ private:
 	Float_t energySCEle_must_regrCorr_ele[3]; ///< mustache SC energy derived with regression (offline tool)
 	Float_t energySigmaSCEle_must_regrCorr_ele[3]; ///< mustache SC energy resolution derived with regression (offline tool)
 
+	Float_t energySCEle_pho_regrCorr[3]; ///< mustache SC energy derived with regression (offline tool)
+	Float_t energySigmaSCEle_pho_regrCorr[3]; ///< mustache SC energy resolution derived with regression (offline tool)
+
 	Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
 	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
 	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
@@ -295,6 +298,8 @@ private:
 	Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too!
 	Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
 	Float_t invMass_SC_must_regrCorr_ele;   ///< invariant mass using SC energy with mustache corrected with regression
+	Float_t invMass_SC_pho_regrCorr;   ///< invariant mass using SC energy from associated photon
+
 	//   Float_t invMass_e3x3;
 	Float_t invMass_e5x5;
 	Float_t invMass_rawSC;
@@ -1174,7 +1179,10 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("rawEnergySCEle_must", rawEnergySCEle_must, "rawEnergySCEle_must[3]/F");
 
 	tree->Branch("energySCEle_must_regrCorr_ele", energySCEle_must_regrCorr_ele, "energySCEle_must_regrCorr_ele[3]/F");
-	tree->Branch("energySCEle_must_regrCorr_ele", energySigmaSCEle_must_regrCorr_ele, "energySigmaSCEle_must_regrCorr_ele[3]/F");
+	tree->Branch("energySigmaSCEle_must_regrCorr_ele", energySigmaSCEle_must_regrCorr_ele, "energySigmaSCEle_must_regrCorr_ele[3]/F");
+
+	tree->Branch("energySCEle_pho_regrCorr", energySCEle_pho_regrCorr, "energySCEle_pho_regrCorr[3]/F");
+	tree->Branch("energySigmaSCEle_pho_regrCorr", energySigmaSCEle_pho_regrCorr, "energySigmaSCEle_pho_regrCorr[3]/F");
 
 	tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
 	tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
@@ -1199,6 +1207,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("invMass_SC", &invMass_SC,   "invMass_SC/F");
 	tree->Branch("invMass_SC_must", &invMass_SC_must,   "invMass_SC_must/F");
 	tree->Branch("invMass_SC_must_regrCorr_ele", &invMass_SC_must_regrCorr_ele,   "invMass_SC_must_regrCorr_ele/F");
+	tree->Branch("invMass_SC_pho_regrCorr", &invMass_SC_pho_regrCorr,   "invMass_SC_pho_regrCorr/F");
 	//   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
 	tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
 	tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
@@ -1391,8 +1400,11 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		rawEnergySCEle_must[index] = -99;
 	}
 
-	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMust");
-	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMustVar");
+	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMust");
+	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMustVar");
+
+	energySCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePho");
+	energySigmaSCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePhoVar");
 
 
 	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(sc, 1);
@@ -1841,6 +1853,8 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	invMass_SC_must_regrCorr_ele = sqrt(2 * energySCEle_must_regrCorr_ele[0] * energySCEle_must_regrCorr_ele[1] *
 	                                    angle);
 
+	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *
+	                                    angle);
 
 	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
 	                     angle);
@@ -1896,6 +1910,7 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 
 	invMass_SC_must = sqrt(2 * energySCEle_must[0] * energySCEle_must[1] *  angle);
 	invMass_SC_must_regrCorr_ele = sqrt(2 * energySCEle_must_regrCorr_ele[0] * energySCEle_must_regrCorr_ele[1] *  angle);
+	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *  angle);
 
 
 	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] * angle);
@@ -1989,29 +2004,33 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
 float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsigned int planeIndex)
 {
-
 	float RawenergyPlane = 0;
 	float pfRawenergyPlane = 0;
-	if(ESRechitsHandle.isValid()) {
-		for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
-			const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
-			for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
-				//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
-				//      ++iCount;
-				for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
-					ESDetId rhid = ESDetId(esItr->id());
-					if(rhid == (*rh).first) {
-						// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
-						if((int) rhid.plane() == (int) planeIndex) {
-							RawenergyPlane += esItr->energy();
-							pfRawenergyPlane += rh->second;
-						}
-						break;
-					}
-				}
-			}
+
+	if(!ESRechitsHandle.isValid()) 
+	  return RawenergyPlane;
+	if (!sc->preshowerClusters().isAvailable()) //protection for miniAOD
+	  return RawenergyPlane;
+
+	for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
+	  const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
+	  for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
+	    //      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
+	    //      ++iCount;
+	    for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
+	      ESDetId rhid = ESDetId(esItr->id());
+	      if(rhid == (*rh).first) {
+		// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
+		if((int) rhid.plane() == (int) planeIndex) {
+		  RawenergyPlane += esItr->energy();
+		  pfRawenergyPlane += rh->second;
 		}
+		break;
+	      }
+	    }
+	  }
 	}
+
 	if (pfRawenergyPlane) ; // avoid compilation error for unused var
 	if (RawenergyPlane); 
 	//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl;
