@@ -869,7 +869,7 @@ int main(int argc, char **argv) {
 	  std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 	  exit(1);
 	}
-	TTree *corrTree = eScaler.GetCorrTree(ch);
+	TTree *corrTree = eScaler.GetCorrTree(ch, "runNumber", "R9Eleprime");
 	corrTree->SetName(TString("scaleEle_")+corrEleType.c_str());
 	corrTree->SetTitle(corrEleType.c_str());
 	f.cd();
