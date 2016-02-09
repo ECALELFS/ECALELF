@@ -571,15 +571,16 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 
 
 
-TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
+TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
     TString category,  TString selection, 
-    TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, TString outputPath, TString label4Print,
+					 std::vector<TString> dataLabel_vec, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, TString outputPath, TString label4Print,
     bool logy=false, bool usePU=true, bool ratio=true,bool array=false,bool usePU2=false,bool smear=false, bool scale=false, bool useR9Weight=false, TString pdfIndex=""){
   TStopwatch watch;
   watch.Start();
   //gStyle->SetOptStat(11);//Giuseppe
 
   int nHist= mc_vec.size();
+  int nHistData= data_vec.size();
   int colors[4]={kRed,kGreen,kBlue,kCyan};
   int fillstyle[4]={0,0,0,0};
   if(nHist>4) return NULL;
@@ -679,7 +680,25 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
   }else {
     data->Draw(branchNameData+">>data_hist"+binning, selection_data);
   }
-	int counter=0;
+
+
+  int dataCounter=0;
+  for(std::vector<TChain *>::const_iterator data_itr = data_vec.begin();
+        data_itr != data_vec.end();
+        data_itr++){
+      TChain *data = *data_itr;
+
+      TString dataHistName; dataHistName+=data_itr-data_vec.begin(); dataHistName+="_hist";
+	  //TString selection_MC2 =selection_MC.GetTitle();
+
+
+	  data->Draw(branchNameData+">>"+dataHistName+binning, selection_data);   
+	  ++dataCounter;
+  }
+  
+
+
+  int counter=0;
   if(nHist > 0){
     for(std::vector<TChain *>::const_iterator mc_itr = mc_vec.begin();
         mc_itr != mc_vec.end();
@@ -741,6 +760,78 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 	leg->SetTextSize(0.04);
 	//   if(dataLabel !="" && mcLabel !="") leg->Draw();
 	//   //c->GetListOfPrimitives()->Add(leg,"");
+
+
+	for(int i=0; i < nHist; i++){
+		TString mcHistName; mcHistName+=i; mcHistName+="_hist";
+		TH1F *s = (TH1F *) gROOT->FindObject(mcHistName);
+		if (array) {
+			TString mcHistName1; mcHistName1+=i; mcHistName1+="_hist1";
+			TH1F *s1 = (TH1F *) gROOT->FindObject(mcHistName1);
+			s1->Sumw2();
+			s->Sumw2();
+			s->Add(s1,1);
+		}
+
+		s->SetStats(0);
+		s->SetTitle("");
+		if(s==NULL) continue;
+		std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
+		if(d->Integral()==0 && s->Integral()==0){
+			delete c;
+			return NULL;
+		}
+		if(logy){
+			s->GetYaxis()->SetRangeUser(0.1,max);
+		} else {
+			s->GetYaxis()->SetRangeUser(0,max);
+		}
+		s->GetYaxis()->SetTitle(yLabel);
+		s->GetXaxis()->SetTitle(xLabel);
+
+		s->SetMarkerStyle(20);
+		s->SetMarkerSize(1);
+		s->SetMarkerColor(colors[i]);
+		s->SetFillStyle(fillstyle[i]);
+		s->SetFillColor(colors[i]);
+		s->SetLineColor(colors[i]);
+		s->SetLineWidth(2);
+		if (branchname =="nPV" ){
+			s->SetName("pileup");
+			s->SaveAs("tmp/s_PUhist_0.root");
+		}
+		//		pad1->cd();
+		//		TCanvas *c2 = new TCanvas("c2","c2",500,500);
+		//		c2->cd();
+		TH1F* s_norm = NULL;
+		//		std::cout << "debug s->entries "<< s->GetEntries() << std::endl;
+		//   s->GetYaxis()->SetRangeUser(0,1.2*s->GetMaximum());
+		//	s->Draw("hist");
+		if(i==0) {s_norm = (TH1F *)  (s->DrawNormalized("hist L", d->Integral())); std::cout << " drew signal plot (norm) " << std::endl;}
+		// if(i==0) {s_norm = (TH1F *)  (s->DrawNormalized("hist", d->Integral()));s->Draw(); std::cout << " drew signal plot (norm " << std::endl;}
+		else {s_norm = (TH1F *) (s->DrawNormalized("hist same L", d->Integral())); std::cout << " drew signal plot on same" << std::endl;}
+		//   c2->SaveAs("test.pdf");
+		if(logy){
+			//d_norm->GetYaxis()->SetRangeUser(0.1,max);
+			s_norm->GetYaxis()->SetRangeUser(0.1,max);
+		} else {
+			//d_norm->GetYaxis()->SetRangeUser(0,max);  
+			s_norm->GetYaxis()->SetRangeUser(0,max);  
+		}
+
+		if(mcLabel_vec[i] !="") leg->AddEntry(s,mcLabel_vec[i], "lf");
+
+		//         TH1F *sRatio = (TH1F *) s->Clone(mcHistName+"_ratio");
+		//        sRatio->Divide(d);
+		//       if(ratio){
+		//        //  c->cd(2);
+		//         pad2->cd();
+		//        if(i==0) sRatio->Draw();
+		//       else sRatio->Draw("same");
+		//    pad1->cd();
+		//   }
+
+	}
 
 
 	TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
@@ -814,10 +905,10 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 		s->SetFillColor(colors[i]);
 		s->SetLineColor(colors[i]);
 		s->SetLineWidth(2);
-	if (branchname =="nPV" ){
-	s->SetName("pileup");
- 	s->SaveAs("tmp/s_PUhist_0.root");
-	}
+		if (branchname =="nPV" ){
+			s->SetName("pileup");
+			s->SaveAs("tmp/s_PUhist_0.root");
+		}
 		//		pad1->cd();
 		//		TCanvas *c2 = new TCanvas("c2","c2",500,500);
 		//		c2->cd();
