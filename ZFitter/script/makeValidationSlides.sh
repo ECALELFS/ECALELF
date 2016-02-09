@@ -95,6 +95,9 @@ case $invMass_var in
     invMass_SC_must)
 	invMassVarName="regression SC energy"
 	;;
+    invMass_SC_must_regrCorr_ele)
+	invMassVarName="regression SC energy (mustache)"
+	;;
     invMass_rawSC_esSC)
 	invMassVarName="raw and es SC energy"
 	;;
