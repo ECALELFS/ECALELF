@@ -37,7 +37,7 @@ handleRecHitsES = Handle('edm::SortedCollection<EcalRecHit,edm::StrictWeakOrderi
 handleRhoFastJet = Handle('double')
 
 electronTAG = 'gedGsfElectrons'
-electronTAG = 'electronRecalibSCAssociator'
+#electronTAG = 'electronRecalibSCAssociator'
 
 
 EErecHitmap_ele1 = TH2F("EErecHitmap_ele1", "EErecHitmap_ele1",
@@ -56,7 +56,8 @@ EBrecHitmap_ele2 = TH2F("EBrecHitmap_ele2", "EBrecHitmap_ele2",
                    171,-85,85,
                    360,0,360)
 
-print file_format, file, electronTAG, processName, maxEvents
+print  file, electronTAG
+#, processName, maxEvents
 
 print "run    lumi  event     isEB    energy     eSC  rawESC    e5x5    E_ES, etaEle, phiEle, etaSC, phiSC, clustersSize, nRecHits"
 for event in events:
@@ -92,7 +93,7 @@ for event in events:
 #        event.getByLabel("kt6PFJets","rho","RECO",handleRhoFastJet)
 
     
-#    print "Num of electrons: ",len(electrons)
+    print "Num of electrons: ",len(electrons)
     if(len(electrons)>=2):
      ele_counter=0
      for electron in electrons:
