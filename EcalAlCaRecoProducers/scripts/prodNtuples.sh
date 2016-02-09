@@ -271,6 +271,7 @@ case $TYPE in
 	MINIAODNTUPLE)
 		#setUserRemoteDirMiniaod $ORIGIN_REMOTE_DIR_BASE
 		#ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+		ORIGIN_REMOTE_DIR=${ORIGIN_REMOTE_DIR_BASE}
 		;;
 	*)
 #		TAG=""
@@ -331,9 +332,10 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 #${ENERGY}/
 #${DATASETNAME}/tmp-${DATASETNAME}-${RUNRANGE}
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
-#echo ${ORIGIN_REMOTE_DIR}
-#echo ${USER_REMOTE_DIR}
-#exit 0
+# echo ${ORIGIN_REMOTE_DIR}
+# echo
+# echo ${USER_REMOTE_DIR}
+# exit 0
 if [ -n "${CREATE}" ];then
 
 case ${ORIGIN_REMOTE_DIR} in
