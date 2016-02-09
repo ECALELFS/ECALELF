@@ -1,9 +1,9 @@
 #!/bin/bash
 
 #tag_name=""
-commonCut=Et_25
-selection=WP80_PU
-invMass_var=invMass_SC_regrCorr_ele
+commonCut="Et_25"
+selection=loose25nsRun2
+invMass_var=invMass_SC_must_regrCorr_ele
 configFile=data/validation/monitoring_2012_53X.dat 
 FLOATTAILSTEXT="Fixed Tail" 
 runRangesFile=data/runRanges/monitoring.dat 
@@ -193,14 +193,11 @@ if [ -n "$VALIDATION" ];then
     mcSample=${mcName}
     dataSample=${dataName}
     regionFile=data/regions/validation.dat
-echo "
+	regionFile=data/regions/validation_0T.dat
+
     ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	--outDirImgMC=${outDirMC}/img   --outDirImgData=${outDirData}/img  --commonCut $commonCut $NOPUOPT $FLOATTAILSOPT --imgFormat $imgFormat --selection $selection > ${outDirData}/log/validation.log||  exit 1
-"
-    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	--outDirImgMC=${outDirMC}/img   --outDirImgData=${outDirData}/img  --commonCut $commonCut $NOPUOPT $FLOATTAILSOPT --imgFormat $imgFormat --selection $selection> ${outDirData}/log/validation.log||  exit 1
+	--outDirImgMC=${outDirMC}/img   --outDirImgData=${outDirData}/img  --commonCut=${commonCut}  --imgFormat=${imgFormat} --selection=${selection}  $NOPUOPT $FLOATTAILSOPT > ${outDirData}/log/validation.log||  exit 1
 
 
     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
