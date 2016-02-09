@@ -161,15 +161,15 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 
   Int_t nPV_;
   Int_t runNumber_;
-  Float_t etaEle_[2];
-  Float_t etaSCEle_[2];
-  Float_t R9Ele_[2];
-  Float_t energySCEle_[2];
+  Float_t etaEle_[3];
+  Float_t etaSCEle_[3];
+  Float_t R9Ele_[3];
+  Float_t energySCEle_[3];
 
-  Float_t scaleEle_[2];
+  Float_t scaleEle_[3];
 
   TTree *newTree = new TTree("scaleEle",""); //+correctionType,correctionType);
-  newTree->Branch("scaleEle", scaleEle_, "scaleEle[2]/F");
+  newTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
 
   if(fastLoop){
     tree->SetBranchStatus("*",0);
@@ -202,6 +202,7 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 				   R9Ele_[0],etaEle_[0], energySCEle_[0]/cosh(etaSCEle_[0]), nPV_, nPVmean);
     scaleEle_[1] = ScaleCorrection(runNumber_, fabs(etaSCEle_[1]) < 1.4442, 
 				   R9Ele_[1],etaEle_[1], energySCEle_[1]/cosh(etaSCEle_[1]), nPV_, nPVmean);
+	scaleEle_[2] = 1;
     newTree->Fill();
     if(ientry%(nentries/100)==0) std::cerr << "\b\b\b\b" << std::setw(2) << ientry/(nentries/100) << "%]";
   }
