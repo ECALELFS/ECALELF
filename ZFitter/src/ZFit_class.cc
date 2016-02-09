@@ -162,7 +162,6 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
   if(chain->GetBranch("smearEle")) chain->SetBranchStatus("smearEle", 1);
   if(chain->GetBranch("puWeight")) chain->SetBranchStatus("puWeight", 1);
   if(chain->GetBranch("r9Weight")) chain->SetBranchStatus("r9Weight", 1);
-  if(chain->GetBranch("invMassSigma_SC_regrCorr_pho")) chain->SetBranchStatus("invMassSigma_SC_regrCorr_pho", 1);
   chain->SetBranchStatus("R9Ele",1);
   chain->SetBranchStatus("etaEle",1);
   chain->SetBranchStatus("recoFlagsEle", 1);
@@ -1246,6 +1245,7 @@ TString	ZFit_class::GetEnergyVarName(TString invMass_name){
   else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
   else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
   else if(invMass_var=="invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
+  else if(invMass_var=="invMass_SC_must_regrCorr_ele") energyBranchName = "energySCEle_must_regrCorr_ele";
   return energyBranchName;
 }
 
