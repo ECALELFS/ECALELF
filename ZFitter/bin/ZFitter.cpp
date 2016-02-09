@@ -218,6 +218,7 @@ std::string energyBranchNameFromInvMassName(std::string invMass_var){
   else if(invMass_var=="invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
   else if(invMass_var=="invMass_SC") energyBranchName = "energySCEle";
   else if(invMass_var=="invMass_SC_must") energyBranchName = "energySCEle_must";
+  else if(invMass_var=="invMass_SC_must_regrCorr_ele") energyBranchName = "energySCEle_must_regrCorr_ele";
   else if(invMass_var=="invMass_rawSC") energyBranchName = "rawEnergySCEle";
   else if(invMass_var=="invMass_rawSC_esSC") energyBranchName = "rawEnergySCEle+esEnergySCEle";
   else if(invMass_var=="invMass_SC_corr") energyBranchName = "energySCEle_corr";
