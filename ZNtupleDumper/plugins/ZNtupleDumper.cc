@@ -438,7 +438,7 @@ private:
 		PARTGUN,
 		UNKNOWN,
 		SINGLEELE, //no skim, no preselection and no selection are applied
-		DEBUG
+		DEBUG_T
 	} eventType_t;
 
 
@@ -590,7 +590,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				}
 			}
 
-			eventType = DEBUG;
+			eventType = DEBUG_T;
 			bool skipEvent = true;
 			for(std::set<unsigned int>::const_iterator alcaSkimPath_itr = alcaSkimPathIndexes.begin();
 			        alcaSkimPath_itr != alcaSkimPathIndexes.end() && skipEvent == true;
@@ -691,6 +691,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			}
 		}
 	}
+#ifdef DEBUG
+	std::cout << "After trigger selection" << std::endl;
+#endif
 
 	// count electrons: needed to avoid double counting events in Wenu and Zee samples
 	// in Wenu is required ONLY ONE tight electron
@@ -747,6 +750,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			TreeSetEleIDVar(*eleIter1, *eleIter2);
 		}
 	} else if(eventType == ZEE || eventType == WENU || eventType == UNKNOWN) {
+				#ifdef DEBUG
+				std::cout << "[DEBUG] Electrons in the event: " << electronsHandle->size() << std::endl;
+				#endif
+
 		for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 		        eleIter1 != electronsHandle->end();
 		        eleIter1++) {
@@ -782,7 +789,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				        eleIter2++) {
 
 					if(! elePreselection(*eleIter1)) continue;
-
+					#ifdef DEBUG
+					std::cout << "[DEBUG] Electron passing preselection" << std::endl;
+					#endif
 					//	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
 
 					//calculate the invariant mass
@@ -1034,7 +1043,7 @@ void ZNtupleDumper::beginJob()
 		InitPdfSystTree();
 	}
 
-	for(int i = ZEE; i <= DEBUG; i++) {
+	for(int i = ZEE; i <= DEBUG_T; i++) {
 		eventTypeCounter[i] = 0;
 	}
 
@@ -1069,7 +1078,7 @@ void ZNtupleDumper::endJob()
 	}
 
 
-	for(int i = ZEE; i <= DEBUG; i++) {
+	for(int i = ZEE; i <= DEBUG_T; i++) {
 		std::cout << "[NTUPLEDUMPER] EventTypeCounter[" << i << "]\t" << eventTypeCounter[i] << std::endl;
 	}
 }
