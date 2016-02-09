@@ -82,6 +82,7 @@ if [ -n "${plusMC}" ];then
 	6)
 	    columnMC=7
 	    ;;
+		15) columnMC=16;;
 	*)
 	    echo "[ERROR] plusMC option with column number != 3,6,8" >> /dev/stderr
 	    exit 1
@@ -145,7 +146,7 @@ if [ -n "${columnMC}" ];then
     echo "MC" >> tmp/MC.tex
     echo " " >> tmp/MC.tex
 #	cat $file
-    cut -d '&' -f ${columnMC} $file |grep -v '#'>> tmp/MC.tex
+    grep -v '#' $file | cut -d '&' -f ${columnMC} >> tmp/MC.tex
 fi
 
 echo "$tabLine} \hline" > tmp/file.tex
