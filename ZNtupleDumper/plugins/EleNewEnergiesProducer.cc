@@ -222,7 +222,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
        reco::SuperCluster correctedSuperCluster;
 
        if (ele_itr->parentSuperCluster().isAvailable())
-	 correctedSuperCluster=*(ele_itr->parentSuperCluster());
+		   correctedSuperCluster=*(ele_itr->parentSuperCluster());
        else
        	 correctedSuperCluster=*(ele_itr->superCluster()); //just to make it run also on MINIAOD...
 
@@ -232,7 +232,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
        if (!correctedSuperCluster.clusters().isAvailable())
 	 continue;
 
-       mustache_regr_.modifyObject(correctedSuperCluster);
+	   //  mustache_regr_.modifyObject(correctedSuperCluster);
        //fill the vector with the energies
        energySC_must[iEle]=correctedSuperCluster.correctedEnergy();
        energySC_mustVar[iEle]=correctedSuperCluster.correctedEnergyUncertainty();
