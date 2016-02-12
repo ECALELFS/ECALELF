@@ -459,6 +459,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	//  isMC(iConfig.getParameter<bool>("isMC")),
 	isPartGun(iConfig.getParameter<bool>("isPartGun")),
 	doHighEta_LowerEtaCut(iConfig.getParameter<double>("doHighEta_LowerEtaCut")),
+	generatorInfoToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator"))),
 	vtxCollectionToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
 	electronsToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronCollection"))),
@@ -1435,7 +1436,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
 
 	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
-	R9Ele[index] = electron1.r9();
+	R9Ele[index] = electron1.full5x5_r9();
 
 	//   if(isMC){
 	//     if(electron1.isEB())
