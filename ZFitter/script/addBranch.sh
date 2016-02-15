@@ -1,5 +1,5 @@
 #! /bin/bash
-file=$(echo $1 |sed "s|data/validation/||"| sed "s|.dat||" ) #so you can tab the name of the file :-)
+file=`basename $1 .dat`
 branch=$2
 
 if [[ $1 = "" ]]; then

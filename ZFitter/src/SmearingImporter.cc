@@ -235,6 +235,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
   }
   }
 
+
   for(Long64_t jentry=0; jentry < entries; jentry++){
     Long64_t entryNumber= chain->GetEntryNumber(jentry);
     chain->GetEntry(entryNumber);
@@ -481,6 +482,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
   if(_chain->GetBranch("smearEle")!=NULL){
     std::cout << "[STATUS] Activating branch smearEle" << std::endl;
     _chain->SetBranchStatus("smearEle", 1);
+    _chain->SetBranchStatus("smearSigmaEle", 1);//This is the sigma used to smear the MC
   } 
 
  

@@ -7,7 +7,7 @@ do
     tag=`grep "$f" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
     mv tmp/pu_temp.root tmp/pu_${tag}.root
 done 
-hadd data/puHistos/pu_data_${file}.root tmp/pu_d*.root
+hadd -f data/puHistos/pu_data_${file}.root tmp/pu_d*.root
 
 #pileup histos for MC
 for f in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $3 } '`
@@ -16,7 +16,7 @@ do
     tag=`grep "$f" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
     mv tmp/pu_temp.root tmp/pu_${tag}.root
 done 
-hadd data/puHistos/pu_MC_${file}.root tmp/pu_s*.root
+hadd -f data/puHistos/pu_MC_${file}.root tmp/pu_s*.root
 
 rm tmp/pu_*.root
 
