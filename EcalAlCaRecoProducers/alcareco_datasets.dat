@@ -207,3 +207,20 @@ allRange		/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-0TPU25nsData201
 #
 254227-255031	/DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD	DoubleEG-Run2015C-16DecRereco-25nsReco-MINIAOD	caf	database VALID RUN2015C,RUN2015CD
 256630-260627	/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD	DoubleEG-Run2015D-16DecRereco-25nsReco-MINIAOD	caf	database VALID RUN2015D,RUN2015CD
+####
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_120_200/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_120to200-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_200_400/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_200to400-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_400_800/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_400to800-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_800_1400/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_800to1400-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_1400_2300/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_1400to2300-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_2300_3500/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_2300to3500-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_3500_4500/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_3500to4500-RunIIFall15-miniAOD caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_6000_Inf/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM DYToEE_powheg_6000toInf-RunIIFall15-miniAOD caf database VALID - -
+####
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM  DYJets_madgraph-RunIIFall15-miniAOD caf database VALID - -
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIIFall15MiniAODv2-PU25nsData2015v1_76X_mcRun2_asymptotic_v12-v1/MINIAODSIM  DYJets_amctnlo-RunIIFall15MiniAODv2-Asym25ns-miniAOD caf database VALID - -
+####
+allRange	/DoubleEG_0T/Run2015C_25ns-27Jan2016-v2/MINIAOD	DoubleEG_0T-Run2015C-27Jan2016-v2-MINIAOD	caf	database VALID RUN2015C,RUN2015CD
+allRange	/DoubleEG_0T/Run2015D-27Jan2016-v2/MINIAOD	DoubleEG_0T-Run2015D-27Jan2016-v2-MINIAOD	caf	database VALID RUN2015D,RUN2015CD
+####
+allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-magnetOffBS0T_PU25nsData2015v1_0T_76X_mcRun2_0T_v1-v1/MINIAODSIM DYToEE_powheg-RunIIFall15-Boff-miniAOD caf database VALID - -

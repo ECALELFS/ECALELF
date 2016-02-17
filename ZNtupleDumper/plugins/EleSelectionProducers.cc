@@ -33,7 +33,9 @@
 #include "Calibration/ZNtupleDumper/interface/SimpleCutBasedElectronIDSelectionFunctor.h"
 
 #include "DataFormats/RecoCandidate/interface/IsoDeposit.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
 
+#include "DataFormats/PatCandidates/interface/Electron.h"
 //
 // class declaration
 //
@@ -44,6 +46,10 @@ class EleSelectionProducers : public edm::EDProducer {
   typedef float SelectionValue_t;
   typedef edm::ValueMap<SelectionValue_t> SelectionMap;
   typedef std::vector< edm::Handle< edm::ValueMap<double> > > IsoDepositValsHandles_t;
+//	typedef std::vector<reco::GsfElectron> electronCollection_t;
+	//typedef pat::ElectronCollection electronCollection_t;
+	// typedef SimpleCutBasedElectronIDSelectionFunctor::electronCollection_t electronCollection_t;
+	// typedef SimpleCutBasedElectronIDSelectionFunctor::electronRef_t electronRef_t;
 
 public:
   explicit EleSelectionProducers(const edm::ParameterSet&);
@@ -63,7 +69,7 @@ private:
 
   // ----------member data ---------------------------
 private:
-  edm::Handle<std::vector<reco::GsfElectron> > electronsHandle;
+  edm::Handle<electronCollection_t> electronsHandle;
   edm::Handle<reco::ConversionCollection> conversionsHandle;
   edm::Handle<reco::BeamSpot> bsHandle;
   edm::Handle<reco::VertexCollection> vertexHandle;
@@ -72,15 +78,16 @@ private:
 
 
   /// input tag for electrons
-  edm::InputTag electronsTAG;
+	edm::EDGetTokenT<electronCollection_t > electronsToken_;
+//	edm::EDGetTokenT<edm::View< electronCollection_t > > electronsToken_;
   // conversions
-  edm::InputTag conversionsProducerTAG;
-  edm::InputTag BeamSpotTAG;
-  edm::InputTag VertexTAG;
+	edm::EDGetTokenT<reco::ConversionCollection>  conversionsProducerToken_;
+	edm::EDGetTokenT<reco::BeamSpot>  BeamSpotToken_;
+	edm::EDGetTokenT<reco::VertexCollection>  VertexToken_;
   // isolation
-  edm::InputTag chIsoValsTAG, emIsoValsTAG, nhIsoValsTAG;
+	edm::EDGetTokenT<edm::ValueMap<double> > chIsoValsToken_, emIsoValsToken_, nhIsoValsToken_;
   /// input rho
-  edm::InputTag rhoTAG;
+  edm::EDGetTokenT<double> rhoToken_;
 
 
   SimpleCutBasedElectronIDSelectionFunctor fiducial_selector;
@@ -96,20 +103,21 @@ private:
   SimpleCutBasedElectronIDSelectionFunctor loose50nsRun2_selector;
   SimpleCutBasedElectronIDSelectionFunctor medium50nsRun2_selector;
   SimpleCutBasedElectronIDSelectionFunctor tight50nsRun2_selector;
+  SimpleCutBasedElectronIDSelectionFunctor medium25nsRun2Boff_selector;
 
 };
 
 
 EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
-  electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
-  conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
-  BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
-  VertexTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
-  chIsoValsTAG(iConfig.getParameter<edm::InputTag>("chIsoVals")),
-  emIsoValsTAG(iConfig.getParameter<edm::InputTag>("emIsoVals")),
-  nhIsoValsTAG(iConfig.getParameter<edm::InputTag>("nhIsoVals")),
-  rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
-
+	electronsToken_(consumes<electronCollection_t>(iConfig.getParameter<edm::InputTag>("electronCollection"))),
+	conversionsProducerToken_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversionCollection"))),
+	BeamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
+	VertexToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
+	chIsoValsToken_(consumes<edm::ValueMap<double> >(iConfig.getParameter<edm::InputTag>("chIsoVals"))),
+	emIsoValsToken_(consumes<edm::ValueMap<double> >(iConfig.getParameter<edm::InputTag>("emIsoVals"))),
+	nhIsoValsToken_(consumes<edm::ValueMap<double> >(iConfig.getParameter<edm::InputTag>("nhIsoVals"))),
+	rhoToken_(consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastJet"))),
+	
   fiducial_selector("fiducial", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   WP70_PU_selector("WP70PU", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
@@ -135,7 +143,9 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   medium50nsRun2_selector("medium50nsRun2", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
   tight50nsRun2_selector("tight50nsRun2", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-		 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
+						 chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
+  medium25nsRun2Boff_selector("medium25nsRun2Boff", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
+		  chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
   //register your products
   /* Examples
@@ -160,7 +170,7 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
   produces< SelectionMap >("loose50nsRun2");
   produces< SelectionMap >("medium50nsRun2");
   produces< SelectionMap >("tight50nsRun2");
-
+  produces< SelectionMap >("medium25nsRun2Boff");
   //now do what ever other initialization is needed
   
 }
@@ -211,21 +221,23 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   std::auto_ptr<SelectionMap> mediumMap50nsRun2(new SelectionMap());
   std::auto_ptr<SelectionMap> tightMap50nsRun2(new SelectionMap());
 
+  std::vector<SelectionValue_t>  medium25nsRun2Boff_vec;   std::auto_ptr<SelectionMap> mediumMap25nsRun2Boff(new SelectionMap());
+
 
   //------------------------------ ELECTRON
-  iEvent.getByLabel(electronsTAG, electronsHandle);
+  iEvent.getByToken(electronsToken_, electronsHandle);
   //if(!electronsHandle.isValid()){
   //  std::cerr << "[ERROR] electron collection not found" << std::endl;
   //  return;
   //}
    
   //------------------------------ CONVERSIONS
-  iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
+  iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
   //   std::cout << conversionsHandle.isValid() << std::endl;
-  iEvent.getByLabel(BeamSpotTAG, bsHandle);
-  iEvent.getByLabel(VertexTAG, vertexHandle);
+  iEvent.getByToken(BeamSpotToken_, bsHandle);
+  iEvent.getByToken(VertexToken_, vertexHandle);
   //------------------------------ RHO
-  iEvent.getByLabel(rhoTAG,rhoHandle);
+  iEvent.getByToken(rhoToken_,rhoHandle);
 
   //------------------------------ ISO DEPOSITS
 #ifdef CMSSW_7_2_X
@@ -245,9 +257,9 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 #ifdef DEBUG
   std::cout << "[DEBUG] Starting loop over electrons" << std::endl;
 #endif
-  for(reco::GsfElectronCollection::const_iterator ele_itr = (electronsHandle)->begin(); 
+  for(electronCollection_t::const_iterator ele_itr = (electronsHandle)->begin(); 
       ele_itr != (electronsHandle)->end(); ele_itr++){
-    const reco::GsfElectronRef eleRef(electronsHandle, ele_itr-electronsHandle->begin());
+    const electronRef_t eleRef(electronsHandle, ele_itr-electronsHandle->begin());
 
     // the new tree has one event per each electron
     pat::strbitset fiducial_ret;
@@ -263,6 +275,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     pat::strbitset loose50nsRun2_ret;
     pat::strbitset medium50nsRun2_ret;
     pat::strbitset tight50nsRun2_ret;
+    pat::strbitset medium25nsRun2Boff_ret;
 
 
     fiducial_selector(eleRef, fiducial_ret);
@@ -300,6 +313,9 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
     medium50nsRun2_vec.push_back(medium50nsRun2_selector.result());
     tight50nsRun2_selector(eleRef, tight50nsRun2_ret);
     tight50nsRun2_vec.push_back(tight50nsRun2_selector.result());
+
+    medium25nsRun2Boff_selector(eleRef, medium25nsRun2Boff_ret);
+    medium25nsRun2Boff_vec.push_back(medium25nsRun2Boff_selector.result());
 
     if(((bool)tight_selector.result())){
       if(!(bool) medium_selector.result() || !(bool) loose_selector.result()){
@@ -342,6 +358,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	exit (1);
       }
     }
+
     
     //     WP80_PU_vec.push_back((SelectionValue_t)WP80_PU_selector.bitMask());
     //     WP90_PU_vec.push_back((SelectionValue_t)WP90_PU_selector.bitMask());
@@ -369,6 +386,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   SelectionMap::Filler loose50nsRun2_filler(*looseMap50nsRun2);
   SelectionMap::Filler medium50nsRun2_filler(*mediumMap50nsRun2);
   SelectionMap::Filler tight50nsRun2_filler(*tightMap50nsRun2);
+  SelectionMap::Filler medium25nsRun2Boff_filler(*mediumMap25nsRun2Boff);
 
   //fill and insert valuemap
   fiducial_filler.insert(electronsHandle,fiducial_vec.begin(),fiducial_vec.end());
@@ -384,6 +402,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   loose50nsRun2_filler.insert(electronsHandle,loose50nsRun2_vec.begin(),loose50nsRun2_vec.end());
   medium50nsRun2_filler.insert(electronsHandle,medium50nsRun2_vec.begin(),medium50nsRun2_vec.end());
   tight50nsRun2_filler.insert(electronsHandle,tight50nsRun2_vec.begin(),tight50nsRun2_vec.end());
+  medium25nsRun2Boff_filler.insert(electronsHandle,medium25nsRun2Boff_vec.begin(),medium25nsRun2Boff_vec.end());
 
   
   fiducial_filler.fill();
@@ -399,6 +418,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   loose50nsRun2_filler.fill();
   medium50nsRun2_filler.fill();
   tight50nsRun2_filler.fill();
+  medium25nsRun2Boff_filler.fill();
     
 
   //------------------------------
@@ -416,7 +436,7 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.put(looseMap50nsRun2, "loose50nsRun2");
   iEvent.put(mediumMap50nsRun2, "medium50nsRun2");
   iEvent.put(tightMap50nsRun2, "tight50nsRun2");
- 
+  iEvent.put(mediumMap25nsRun2Boff, "medium25nsRun2Boff");
 }
 
 // ------------ method called once each job just before starting event loop  ------------

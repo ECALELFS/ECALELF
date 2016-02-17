@@ -475,7 +475,7 @@ if(options.type!="MINIAODNTUPLE"):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
     process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.eleNewEnergiesProducer * process.EIsequence)
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.eleSelectionProducers * process.eleNewEnergiesProducer * process.EIsequence)
     
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -852,6 +852,12 @@ else:
     process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
     process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
 
+    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
+    process.eleSelectionProducers.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
+    process.eleSelectionProducers.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
+    process.eleSelectionProducers.BeamSpotCollection = cms.InputTag('offlineBeamSpot')
+    process.eleSelectionProducers.conversionCollection = cms.InputTag('reducedEgamma','reducedConversions')
+
     # load new energies in the slimmedElectrons process
     from Calibration.ZNtupleDumper.miniAODnewEnergies import *
     process.slimmedElectrons.modifierConfig.modifications=electron_energy_modifications
@@ -870,6 +876,7 @@ else:
     process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
     process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
+    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
 
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
