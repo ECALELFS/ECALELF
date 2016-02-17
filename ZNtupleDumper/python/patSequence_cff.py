@@ -14,18 +14,6 @@ from Calibration.ZNtupleDumper.phoPat_cfi import *
     
 #------------------------------ new energies
 from Calibration.ZNtupleDumper.elenewenergiesproducer_cfi import *
-#eleNewEnergiesProducer.regrPhoFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ph_52x.root'
-#eleNewEnergiesProducer.regrEleFile='src/Calibration/EleNewEnergiesProducer/data/gbrv3ele_52x.root'
-#eleNewEnergiesProducer.regrEleFile_fra='src/Calibration/EleNewEnergiesProducer/data/eleEnergyRegWeights_V1.root'
-#eleNewEnergiesProducer.ptSplit=cms.bool(False)
-
-#from EgammaAnalysis.ElectronTools.electronRegressionEnergyProducer_cfi import *
-#eleRegressionEnergy.inputElectronsTag = cms.InputTag('gedGsfElectrons')
-#eleRegressionEnergy.inputCollectionType = cms.uint32(0)
-#eleRegressionEnergy.useRecHitCollections = cms.bool(True)
-#eleRegressionEnergy.produceValueMaps = cms.bool(True)
-#eleRegressionEnergy.rhoCollection = cms.InputTag('kt6PFJetsForRhoCorrection',"rho")
-#eleRegressionEnergy.vertexCollection = cms.InputTag('offlinePrimaryVertices')
 
 #------------------------------ electronID producer
 from Calibration.ZNtupleDumper.eleselectionproducers_cfi import *

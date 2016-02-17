@@ -125,15 +125,6 @@ do
 		    ;;
 		MINIAOD| miniAOD)
 				TYPE=MINIAODNTUPLE
-				if [ "${isMC}" == "1" ]; then 
-					TYPE=MINIAODMCNTUPLE;
-				else
-					TYPE=MINIAODNTUPLE
-				fi
-				;;
-			miniAODSIM)
-				TYPE=MINIAODMCNTUPLE
-				isMC=1
 				;;
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
@@ -511,7 +502,7 @@ if [ -n "${CHECK}" ];then
 		echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
 		resubmitCrab.sh -u ${UI_WORKING_DIR}
     else
-		if [ "${isMC}" == "1" ];then
+		if [ "${isMC}" == "1" -a "${TYPE}" != "MINIAODNTUPLE" ];then
 			OUTFILES="$OUTFILES PUDumper"
 		fi
 		for file in $OUTFILES

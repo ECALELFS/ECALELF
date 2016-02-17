@@ -20,13 +20,10 @@
 <use name="RecoEcal/EgammaClusterAlgos"/>
 <use name="Geometry/EcalAlgo"/>
 <use name="DataFormats/Math"/>
-<use name="RecoEcal/EgammaCoreTools"/>
 <use name="PhysicsTools/SelectorUtils"/>
 <use name="root"/>
 <use name="rootcore"/>
 <use name="roofit"/>
-<use name="CondFormats/EcalObjects"/>
-<use name="HiggsAnalysis/GBRLikelihoodEGTools"/>
 <Flags CppDefines="REGRESSION=4"/>
 <Flags CppDefines="CMSSW_7_2_X"/>
 <flags EDM_PLUGIN="1"/>

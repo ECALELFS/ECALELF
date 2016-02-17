@@ -130,6 +130,7 @@
 #include "DataFormats/Provenance/interface/ParameterSetID.h"
 
 #include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 //#define DEBUG
 
@@ -555,6 +556,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		iEvent.getByToken(generatorInfoToken_, GenEventInfoHandle);
 		isMC = true;
 	} else isMC = false;
+
 
 	//------------------------------ HLT
 	/// \todo check why
@@ -1452,6 +1454,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		if(electron1.isElectronIDAvailable(it->first)) { //
 			if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
 		}//
+		if(it->first == "medium25nsRun2Boff"){
+			eleID[index] |= ((bool) electron1.userFloat(it->first));
+		}
 	}
 
 	classificationEle[index] = electron1.classification();

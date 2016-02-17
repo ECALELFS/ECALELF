@@ -40,7 +40,7 @@
 #include "DataFormats/GsfTrackReco/interface/GsfTrack.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/GsfTrackReco/interface/GsfTrackFwd.h"
-
+#include "DataFormats/PatCandidates/interface/Electron.h"
 
 #include "DataFormats/EcalRecHit/interface/EcalRecHit.h"
 #include "DataFormats/EcalRecHit/interface/EcalRecHitCollections.h"
@@ -121,11 +121,23 @@
   Strongly modified by Shervin
 */
 
+#define MINIAOD
+#ifndef MINIAOD
+typedef reco::GsfElectron electron_t;
+typedef reco::GsfElectronRef electronRef_t;
+typedef reco::GsfElectronCollection electronCollection_t;
+#else
+typedef pat::Electron electron_t;
+typedef pat::ElectronRef electronRef_t;
+typedef pat::ElectronCollection electronCollection_t;
+#endif
 
-class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectronRef>  {
+class SimpleCutBasedElectronIDSelectionFunctor : public Selector<electronRef_t>  {
+
 
  public: // interface  
-  
+
+	
 	enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff};
   
   //  SimpleCutBasedElectronIDSelectionFunctor(): {}
@@ -182,7 +194,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 #endif
 
  SimpleCutBasedElectronIDSelectionFunctor(TString versionStr, 
-					  const edm::Handle<reco::GsfElectronCollection>& electronsHandle,
+					  const edm::Handle<electronCollection_t>& electronsHandle,
 					  const edm::Handle<reco::ConversionCollection>& ConversionsHandle, 
 					  const edm::Handle<reco::BeamSpot>& BeamSpotHandle, 
 					  const edm::Handle<reco::VertexCollection>& VertexHandle,
@@ -547,7 +559,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
   }
 #endif
 
-  bool operator()( const reco::GsfElectronRef& electron, pat::strbitset& ret)
+  bool operator()( const electronRef_t& electron, pat::strbitset& ret)
   {
     // new electron, clear old electron bitmask
     retInternal_ = getBitTemplate();
@@ -567,11 +579,11 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
     return (float) retInternal_;
   }
 
-  using Selector<reco::GsfElectronRef>::operator();
+  using Selector<electronRef_t>::operator();
   // function with the Spring10 variable definitions
-  bool WPxx_PU( const reco::GsfElectronRef electronRef, pat::strbitset& ret)
+  bool WPxx_PU( const electronRef_t electronRef, pat::strbitset& ret)
   {
-    const reco::GsfElectron electron = *electronRef;
+    const auto electron = *electronRef;
 
     //    ret.set(false);
     // effective areas
@@ -826,7 +838,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
  private: // member variables
   // version of the cuts  
   Version_t version_;
-  const edm::Handle<reco::GsfElectronCollection>& electronsHandle_;
+  const edm::Handle<electronCollection_t>& electronsHandle_;
   const edm::Handle<reco::ConversionCollection>& ConversionsHandle_;
   const edm::Handle<reco::BeamSpot>& BeamSpotHandle_;
   const edm::Handle<reco::VertexCollection>& VertexHandle_;
