@@ -1,4 +1,6 @@
 #! /bin/bash
+shopt -s expand_aliases
+source ~/.bashrc
 #1)Fai pileupHist
 pileupHist(){
 script/pileup_histoMaker.sh $file
@@ -18,61 +20,49 @@ done
 }
 
 Categorize(){
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
+    ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
+    mv tmp/smearerCat_${region1}_*${file}* friends/smearerCat/ 
+    for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
+    do
+	echo "${tag} smearerCat_${region1} friends/smearerCat/smearerCat_${region1}_${tag}-${file}.root" >> data/validation/${file}.dat 
+    done
+    for tag in `grep "^d" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
+    do  
+	echo "${tag} smearerCat_${region1} friends/smearerCat/smearerCat_${region1}_${tag}-${file}.root" >> data/validation/${file}.dat 
+    done
+    if [[ ${region2} != "" ]];then
+	./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
+	
+	mv tmp/smearerCat_${region2}_*${file}* friends/smearerCat/ 
+	for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
+	do
+	    echo "${tag} smearerCat_${region2} friends/smearerCat/smearerCat_${region2}_${tag}-${file}.root" >> data/validation/${file}.dat 
+	done
+	for tag in `grep "^d" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
+	do  
+	    echo "${tag} smearerCat_${region2} friends/smearerCat/smearerCat_${region2}_${tag}-${file}.root" >> data/validation/${file}.dat 
+	done
+    fi
 
-#categorie
-mv tmp/smearerCat_${region1}_*${file}* friends/smearerCat/ 
-mv tmp/smearerCat_${region2}_*${file}* friends/smearerCat/ 
-for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
-do
-    echo "${tag} smearerCat_${region1} friends/smearerCat/smearerCat_${region1}_${tag}-${file}.root" >> data/validation/${file}.dat 
-    echo "${tag} smearerCat_${region2} friends/smearerCat/smearerCat_${region2}_${tag}-${file}.root" >> data/validation/${file}.dat 
-done
-for tag in `grep "^d" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
-do  
-    echo "${tag} smearerCat_${region1} friends/smearerCat/smearerCat_${region1}_${tag}-${file}.root" >> data/validation/${file}.dat 
-    echo "${tag} smearerCat_${region2} friends/smearerCat/smearerCat_${region2}_${tag}-${file}.root" >> data/validation/${file}.dat 
-done
-}
-
-#2_advanced)Fai i pileupTree e categorizza
-Cat_and_pileUpTrees(){
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
-
-#pileUPtree
-for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
-do
-    #tag e' s1, s2, ...
-    mv tmp/mcPUtree${tag}.root  data/puTree/${tag}_${file}.root
-    echo "${tag} pileup data/puTree/${tag}_${file}.root" >> data/validation/${file}.dat 
-done
-
-#categorie
-mv tmp/smearerCat_${region1}_*${file}* friends/smearerCat/ 
-mv tmp/smearerCat_${region2}_*${file}* friends/smearerCat/ 
-for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
-do
-    echo "${tag} smearerCat_${region1} friends/smearerCat/smearerCat_${region1}_${tag}-${file}.root" >> data/validation/${file}.dat 
-    echo "${tag} smearerCat_${region2} friends/smearerCat/smearerCat_${region2}_${tag}-${file}.root" >> data/validation/${file}.dat 
-done
-for tag in `grep "^d" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
-do  
-    echo "${tag} smearerCat_${region1} friends/smearerCat/smearerCat_${region1}_${tag}-${file}.root" >> data/validation/${file}.dat 
-    echo "${tag} smearerCat_${region2} friends/smearerCat/smearerCat_${region2}_${tag}-${file}.root" >> data/validation/${file}.dat 
-done
 }
 
 #Un giro di prova
 Test_1_job(){
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=Et_20-noPF --autoBin --smearerFit ${initParameters1}
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=Et_20-noPF --autoBin --smearerFit  ${initParameters2}
-#./script/fit.sh test/dato/fitres/outProfile-${region1}-Et_20-noPF.root
-#./script/fit.sh test/dato/fitres/outProfile-${region2}-Et_20-noPF.root
-#Likelihood_plot_dir=~/scratch1/www/Validation_ntuple_Paolo
-#mv test/dato/img/outProfile-${region1}-Et_20-noPF-*.png ${Likelihood_plot_dir}
-#mv test/dato/img/outProfile-${region2}-Et_20-noPF-*.png ${Likelihood_plot_dir}
+#    ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=Et_20-noPF --autoBin --smearerFit ${initParameters1} ${eleID}
+    if [[ ${region2} != "" ]];then
+	./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=Et_20-noPF --autoBin --smearerFit  ${initParameters2} ${eleID}
+    fi
+./script/fit.sh test/dato/fitres/outProfile-${region1}-Et_20-noPF.root
+
+if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension} -p; mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat; fi
+mv test/dato/img/outProfile-${region1}-Et_20-noPF-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat
+#Plot_data_MC del test job                                                                                                                                                      
+echo "{" > tmp/plotter_data_MC.C
+echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/plotter_data_MC.C
+echo "PlotMeanHist(\"test/dato/fitres/histos-${region1}-Et_20-noPF.root\");" >> tmp/plotter_data_MC.C
+echo "}" >> tmp/plotter_data_MC.C
+root -l -b -q ~/rootlogon.C tmp/plotter_data_MC.C
+mv test/dato/img/histos-${region1}-Et_20-noPF* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat
 }
 
 
