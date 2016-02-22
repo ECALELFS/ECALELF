@@ -71,7 +71,13 @@
 
 #include "RecoEgamma/EgammaTools/interface/SCEnergyCorrectorSemiParm.h"
 
+#include "DataFormats/Common/interface/View.h"
+#include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/PatCandidates/interface/Photon.h"
 
+#include "FWCore/Utilities/interface/EDGetToken.h"
+
+#include <DataFormats/Math/interface/deltaR.h>
 //
 // class declaration
 //
@@ -110,7 +116,7 @@ private:
   edm::InputTag BeamSpotTAG;
   
   /// input tag for electrons
-  edm::InputTag electronsTAG;
+  //  edm::InputTag electronsTAG;
 
   /// input rho
   edm::InputTag rhoTAG;
@@ -122,7 +128,11 @@ private:
 
 private:
   // Handle to the electron collection
-  edm::Handle<std::vector<reco::GsfElectron> > electronsHandle;
+
+  edm::EDGetTokenT< edm::View<pat::Electron> > electronsTAG;
+  edm::EDGetTokenT< edm::View<pat::Photon> > photonsTAG;
+  edm::Handle<edm::View<pat::Electron> > electronsHandle;
+  edm::Handle<edm::View<pat::Photon> > photonsHandle;
   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > recHitCollectionEBHandle;
   edm::Handle<edm::SortedCollection<EcalRecHit,edm::StrictWeakOrdering<EcalRecHit> > > recHitCollectionEEHandle;
   edm::Handle<reco::BeamSpot> bsHandle;
@@ -133,8 +143,7 @@ private:
   edm::Handle<reco::ConversionCollection> conversionsHandle;
 
   //------------------------------ Josh's regression (Hgg)
-
-	SCEnergyCorrectorSemiParm mustache_regr_; 
+  SCEnergyCorrectorSemiParm mustache_regr_; 
 };
 
 //
@@ -150,16 +159,20 @@ private:
 // constructors and destructor
 //
 EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig):
-  electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection"))
+  electronsTAG ( consumes<edm::View<pat::Electron> >(iConfig.getParameter<edm::InputTag>( "electronCollection" ) ) ),
+  photonsTAG ( consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>( "photonCollection" ) ) )
+	       //  electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection"))
 {
-	std::cout << electronsTAG << std::endl;
+  //	std::cout << electronsTAG << std::endl;
   // this name are hard coded, should be put in the cfi
   produces< NewEnergyMap >("energySCEleMust");
   produces< NewEnergyMap >("energySCEleMustVar");  
+  produces< NewEnergyMap >("energySCElePho");
+  produces< NewEnergyMap >("energySCElePhoVar");  
 
  //now do what ever other initialization is needed
   edm::ConsumesCollector iC = consumesCollector();
-  mustache_regr_.setTokens(iC, iConfig.getParameterSet("scEnergyCorrectorSemiParm"));
+  mustache_regr_.setTokens(iConfig.getParameterSet("scEnergyCorrectorSemiParm"), iC);
 }
 
 
@@ -182,52 +195,85 @@ void
 EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-   mustache_regr_.setEvent(iEvent);
 
-   std::vector<v_t>  energySC_must;
-   std::vector<v_t>  energySC_mustVar;
 
    std::auto_ptr<NewEnergyMap> energySC_mustMap(new NewEnergyMap());
    std::auto_ptr<NewEnergyMap> energySC_mustVarMap(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap> energySC_phoMap(new NewEnergyMap());
+   std::auto_ptr<NewEnergyMap> energySC_phoVarMap(new NewEnergyMap());
 
-   //------------------------------ ELECTRON
-   iEvent.getByLabel(electronsTAG, electronsHandle);
+   iEvent.getByToken(electronsTAG, electronsHandle);   
+   iEvent.getByToken(photonsTAG, photonsHandle);
+   mustache_regr_.setEvent(iEvent);
+
+   std::vector<v_t>  energySC_must(electronsHandle->size(),-999.);
+   std::vector<v_t>  energySC_mustVar(electronsHandle->size(),-999);
+   std::vector<v_t>  energySC_pho(electronsHandle->size(),-999.);
+   std::vector<v_t>  energySC_phoVar(electronsHandle->size(),-999);
    
    //iSetup.get<CaloTopologyRecord>().get(topologyHandle);
+   for(unsigned int iEle=0; iEle< electronsHandle->size(); ++iEle)
+     {
+       edm::Ptr<pat::Electron> ele_itr=electronsHandle->ptrAt(iEle);
+       
+       if(!ele_itr->ecalDriven())
+	 continue;
+       
+       reco::SuperCluster correctedSuperCluster;
 
+       if (ele_itr->parentSuperCluster().isAvailable())
+	 correctedSuperCluster=*(ele_itr->parentSuperCluster());
+       else
+       	 correctedSuperCluster=*(ele_itr->superCluster()); //just to make it run also on MINIAOD...
 
-   for(reco::GsfElectronCollection::const_iterator ele_itr = (electronsHandle)->begin(); 
-	   ele_itr != (electronsHandle)->end(); ele_itr++){
+       if (ele_itr->pt()<5) //clusters not available in MINIAOD 
+	 continue;
 
-	   std::pair<double,double> corEle = std::make_pair<double,double>(-1,-1);
-	   if(ele_itr->ecalDriven()){
-		   //assert(ele_itr->parentSuperCluster().isNonnull() && ele_itr->parentSuperCluster()->seed().isNonnull()); //failing for 1/14000 events in MC!
-		   if(ele_itr->parentSuperCluster().isNonnull())
-			   corEle = mustache_regr_.GetCorrections(*(ele_itr->parentSuperCluster()));
-		   else edm::LogWarning("energyProducer") << "EcalDriven electron withouth parentSC";
-	   }
-	   
-	   //fill the vector with the energies
-	   energySC_must.push_back(corEle.first);
-	   energySC_mustVar.push_back(corEle.second);
-   }
+       if (!correctedSuperCluster.clusters().isAvailable())
+	 continue;
+
+       mustache_regr_.modifyObject(correctedSuperCluster);
+       //fill the vector with the energies
+       energySC_must[iEle]=correctedSuperCluster.correctedEnergy();
+       energySC_mustVar[iEle]=correctedSuperCluster.correctedEnergyUncertainty();
+
+       //now associate electron to photon via SC
+       for (auto pho_itr=photonsHandle->begin();pho_itr != photonsHandle->end(); ++pho_itr)
+	 {
+	   float dR=deltaR(ele_itr->superCluster()->eta(),ele_itr->superCluster()->phi(),pho_itr->superCluster()->eta(),pho_itr->superCluster()->phi());
+	   if (dR<1E-2)
+	     {
+	       energySC_pho[iEle] = pho_itr->energy();
+	       energySC_phoVar[iEle] = pho_itr->getCorrectedEnergyError(pho_itr->getCandidateP4type());
+	       break;
+	     }
+	 }
+     }
 
   //prepare product 
   // declare the filler of the ValueMap
   NewEnergyMap::Filler energySC_must_filler(   *energySC_mustMap);
   NewEnergyMap::Filler energySC_mustVar_filler(*energySC_mustVarMap);
+  NewEnergyMap::Filler energySC_pho_filler(   *energySC_phoMap);
+  NewEnergyMap::Filler energySC_phoVar_filler(*energySC_phoVarMap);
 
   //fill and insert valuemapv
-  energySC_must_filler.insert(electronsHandle,energySC_must.begin(),energySC_must.end());
-  energySC_mustVar_filler.insert(electronsHandle,energySC_mustVar.begin(),energySC_mustVar.end());//fra
+  energySC_must_filler.insert( electronsHandle, energySC_must.begin(),energySC_must.end());
+  energySC_mustVar_filler.insert( electronsHandle, energySC_mustVar.begin(),energySC_mustVar.end());//fra
+  energySC_pho_filler.insert( electronsHandle,    energySC_pho.begin(),   energySC_pho.end());
+  energySC_phoVar_filler.insert( electronsHandle, energySC_phoVar.begin(),energySC_phoVar.end());//fra
 
   energySC_must_filler.fill();
-  energySC_mustVar_filler.fill();//fra
+  energySC_mustVar_filler.fill();
+  energySC_pho_filler.fill();
+  energySC_phoVar_filler.fill();
 
   //------------------------------
   // put the ValueMap in the event
   iEvent.put(energySC_mustMap, "energySCEleMust");
   iEvent.put(energySC_mustVarMap, "energySCEleMustVar");
+  iEvent.put(energySC_phoMap, "energySCElePho");
+  iEvent.put(energySC_phoVarMap, "energySCElePhoVar");
   
 }
 
