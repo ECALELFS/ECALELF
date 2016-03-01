@@ -1,6 +1,9 @@
 #! /bin/bash
 shopt -s expand_aliases
 source ~/.bashrc
+
+#CommonCuts=Et_20-noPF #Standard common cuts
+CommonCuts=Et_30-noPF #Standard common cuts
 #1)Fai pileupHist
 pileupHist(){
 script/pileup_histoMaker.sh $file
@@ -48,21 +51,22 @@ Categorize(){
 
 #Un giro di prova
 Test_1_job(){
-#    ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=Et_20-noPF --autoBin --smearerFit ${initParameters1} ${eleID}
+    ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID}
     if [[ ${region2} != "" ]];then
-	./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=Et_20-noPF --autoBin --smearerFit  ${initParameters2} ${eleID}
+	./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=${CommonCuts} --autoBin --smearerFit  ${initParameters2} ${eleID}
     fi
-./script/fit.sh test/dato/fitres/outProfile-${region1}-Et_20-noPF.root
+./script/fit.sh test/dato/fitres/outProfile-${region1}-${CommonCuts}.root
 
-if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension} -p; mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat; fi
-mv test/dato/img/outProfile-${region1}-Et_20-noPF-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat
+if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension} -p; mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp; fi
+#moving the fits in the web-space
+mv test/dato/img/outProfile-${region1}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 #Plot_data_MC del test job                                                                                                                                                      
 echo "{" > tmp/plotter_data_MC.C
-echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/plotter_data_MC.C
-echo "PlotMeanHist(\"test/dato/fitres/histos-${region1}-Et_20-noPF.root\");" >> tmp/plotter_data_MC.C
+echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C++\");" >> tmp/plotter_data_MC.C
+echo "PlotMeanHist(\"test/dato/fitres/histos-${region1}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
 echo "}" >> tmp/plotter_data_MC.C
 root -l -b -q ~/rootlogon.C tmp/plotter_data_MC.C
-mv test/dato/img/histos-${region1}-Et_20-noPF* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_4cat
+mv test/dato/img/histos-${region1}-${CommonCuts}* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 }
 
 
@@ -85,14 +89,14 @@ Submit_50_jobs(){
             -eo ${outDirData}/${extension}/%I/fitres/${region1}-stderr.log\
             -J "${region1} ${extension}[1-50]"\
             "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a; echo \$CMSSW_VERSION;
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=Et_20-noPF --autoBin --smearerFit ${initParameters1} --outDirFitResData=${outDirData}/${extension}/\$LSB_JOBINDEX/fitres/;"  
+./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} --outDirFitResData=${outDirData}/${extension}/\$LSB_JOBINDEX/fitres/;"  
 
  bsub -q 2nd\
             -oo ${outDirData}/${extension}/%I/fitres/${region2}-stdout.log\
             -eo ${outDirData}/${extension}/%I/fitres/${region2}-stderr.log\
             -J "${region2} ${extension}[1-50]"\
             "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a; echo \$CMSSW_VERSION;
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=Et_20-noPF --autoBin --smearerFit ${initParameters2} --outDirFitResData=${outDirData}/${extension}/\$LSB_JOBINDEX/fitres/;"
+./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters2} --outDirFitResData=${outDirData}/${extension}/\$LSB_JOBINDEX/fitres/;"
 }
 #wait until jobs are finished, then make the mean likelihood and fit
 Likelihood_Fitter(){
@@ -100,12 +104,12 @@ Likelihood_Fitter(){
 #while [ "`bjobs -J \"${region1} ${extension}[1-50]\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
 #while [ "`bjobs -J \"${region2} ${extension}[1-50]\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
 ###########################Make Likelihood plots###########################
-./script/haddTGraph.sh -o ${outDirData}/${extension}/fitres/outProfile-${region1}-Et_20-noPF.root ${outDirData}/${extension}/*/fitres/outProfile-${region1}-Et_20-noPF.root
+./script/haddTGraph.sh -o ${outDirData}/${extension}/fitres/outProfile-${region1}-${CommonCuts}.root ${outDirData}/${extension}/*/fitres/outProfile-${region1}-${CommonCuts}.root
 echo "{" > tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "gROOT->ProcessLine(\".include $ROOFITSYS/include\");" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "gROOT->ProcessLine(\".L macro/macro_fit.C+\");" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/fitProfiles_${invMass_type}_${extension}.C
-echo "FitProfile2(\"${outDirData}/${extension}/fitres/outProfile-${region1}-Et_20-noPF.root\",\"\",\"\",true,true,true);" >> tmp/fitProfiles_${invMass_type}_${extension}.C
+echo "FitProfile2(\"${outDirData}/${extension}/fitres/outProfile-${region1}-${CommonCuts}.root\",\"\",\"\",true,true,true);" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "}" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 if [ ! -e "${outDirData}/${extension}/img" ];then mkdir test/dato/img/${extension}/img -p; fi
 root -l -b -q tmp/fitProfiles_${invMass_type}_${extension}.C
@@ -114,12 +118,12 @@ if [ ! -e "~/scratch1/www/${extension}/" ];then mkdir ~/scratch1/www/${extension
 mv ${outDirData}/${extension}/img/*.png ~/scratch1/www/${extension}/
 echo "************Find png plots in scratch1/www/${extension}/img/"
 ##REGION2
-./script/haddTGraph.sh -o ${outDirData}/${extension}/fitres/outProfile-${region2}-Et_20-noPF.root ${outDirData}/${extension}/*/fitres/outProfile-${region2}-Et_20-noPF.root
+./script/haddTGraph.sh -o ${outDirData}/${extension}/fitres/outProfile-${region2}-${CommonCuts}.root ${outDirData}/${extension}/*/fitres/outProfile-${region2}-${CommonCuts}.root
 echo "{" > tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "gROOT->ProcessLine(\".include $ROOFITSYS/include\");" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "gROOT->ProcessLine(\".L macro/macro_fit.C+\");" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/fitProfiles_${invMass_type}_${extension}.C
-echo "FitProfile2(\"${outDirData}/${extension}/fitres/outProfile-${region2}-Et_20-noPF.root\",\"\",\"\",true,true,true);" >> tmp/fitProfiles_${invMass_type}_${extension}.C
+echo "FitProfile2(\"${outDirData}/${extension}/fitres/outProfile-${region2}-${CommonCuts}.root\",\"\",\"\",true,true,true);" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 echo "}" >> tmp/fitProfiles_${invMass_type}_${extension}.C
 if [ ! -e "${outDirData}/${extension}/img" ];then mkdir test/dato/img/${extension}/img -p; fi
 root -l -b -q tmp/fitProfiles_${invMass_type}_${extension}.C
@@ -133,8 +137,8 @@ Plot_data_MC(){
 if [ ! -e "~/scratch1/www/${extension}/data_MC/" ]; then mkdir ~/scratch1/www/${extension}/data_MC -p; cp ~/scratch1/www/index.php ~/scratch1/www/${extension}/data_MC/; fi
 echo "{" > tmp/plotter_data_MC.C
 echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/plotter_data_MC.C
-echo "PlotMeanHist(\"${outDirData}/${extension}/1/fitres/histos-${region1}-Et_20-noPF.root\");" >> tmp/plotter_data_MC.C
-echo "PlotMeanHist(\"${outDirData}/${extension}/1/fitres/histos-${region2}-Et_20-noPF.root\");" >> tmp/plotter_data_MC.C
+echo "PlotMeanHist(\"${outDirData}/${extension}/1/fitres/histos-${region1}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
+echo "PlotMeanHist(\"${outDirData}/${extension}/1/fitres/histos-${region2}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
 echo "}" >> tmp/plotter_data_MC.C
 root -l -b -q tmp/plotter_data_MC.C
 mv ${outDirData}/${extension}/1/./img/histos-${region1}*.png ~/scratch1/www/${extension}/data_MC/
@@ -143,8 +147,8 @@ mv ${outDirData}/${extension}/1/./img/histos-${region2}*.png ~/scratch1/www/${ex
 
 Write_down_dat_corr(){
 ##Scale corrections: per i dati -> 1/scala_MC
-grep scale ${outDirData}/${extension}/img/outProfile-${region1}-Et_20-noPF-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-Et_20-noPF||g"> tmp/corr_MC.dat
-grep scale ${outDirData}/${extension}/img/outProfile-${region2}-Et_20-noPF-FitResult-.config |  grep -v absEta_0_1 | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-Et_20-noPF||g">> tmp/corr_MC.dat
+grep scale ${outDirData}/${extension}/img/outProfile-${region1}-${CommonCuts}-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-${CommonCuts}||g"> tmp/corr_MC.dat
+grep scale ${outDirData}/${extension}/img/outProfile-${region2}-${CommonCuts}-FitResult-.config |  grep -v absEta_0_1 | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-${CommonCuts}||g">> tmp/corr_MC.dat
 
 categories=`grep scale tmp/corr_MC.dat | cut -f 1`
 categories=`echo $categories | sed "s/scale_//g"`
@@ -166,8 +170,8 @@ echo ${categories[$i]} "runNumber 0 999999" ${scales_data[$i]} ${errors[$i]} >> 
 done
 
 
-grep constTerm ${outDirData}/${extension}/img/outProfile-${region1}-Et_20-noPF-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-Et_20-noPF||g" >> tmp/corr_MC.dat
-grep constTerm ${outDirData}/${extension}/img/outProfile-${region2}-Et_20-noPF-FitResult-.config |  grep -v absEta_0_1 | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-Et_20-noPF||g" >> tmp/corr_MC.dat
+grep constTerm ${outDirData}/${extension}/img/outProfile-${region1}-${CommonCuts}-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-${CommonCuts}||g" >> tmp/corr_MC.dat
+grep constTerm ${outDirData}/${extension}/img/outProfile-${region2}-${CommonCuts}-FitResult-.config |  grep -v absEta_0_1 | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|-${CommonCuts}||g" >> tmp/corr_MC.dat
 
 smearings=`grep constTerm tmp/corr_MC.dat | cut -f 2`
 smearings=(${smearings// / }) # array
@@ -204,14 +208,14 @@ closure_test(){
 #senza initParameters, ma applicando le correzioni trovate
 #Likelihood con minimo a 1 per la scala e zero per lo smearing
 #Data/MC plot perfetti
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=Et_20-noPF --autoBin --smearerFit --corrEleType=EtaR9_${extension} --smearEleType=stochastic_${extension} --profileOnly --plotOnly > test/dato/fitres/closure_step2_1.dat
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type}  --commonCut=Et_20-noPF --autoBin --smearerFit --corrEleType=EtaR9_${extension} --smearEleType=stochastic_${extension} --profileOnly --plotOnly > test/dato/fitres/closure_step2_2.dat
+./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit --corrEleType=EtaR9_${extension} --smearEleType=stochastic_${extension} --profileOnly --plotOnly > test/dato/fitres/closure_step2_1.dat
+./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit --corrEleType=EtaR9_${extension} --smearEleType=stochastic_${extension} --profileOnly --plotOnly > test/dato/fitres/closure_step2_2.dat
 if [ ! -e "test/dato/${extension}/closure_step2_${file}_${extension}/" ]; then mkdir test/dato/${extension}/closure_step2_${file}_${extension}/; fi
 mv test/dato/fitres/closure_step2*.dat test/dato/${extension}/closure_step2_${file}_${extension}/ #output of the closure tests "job"
-mv test/dato/fitres/outProfile-${region1}-Et_20-noPF.root test/dato/${extension}/closure_step2_${file}_${extension}/
-mv test/dato/fitres/outProfile-${region2}-Et_20-noPF.root test/dato/${extension}/closure_step2_${file}_${extension}/
-mv test/dato/fitres/histos-${region1}-Et_20-noPF.root test/dato/${extension}/closure_step2_${file}_${extension}/
-mv test/dato/fitres/histos-${region2}-Et_20-noPF.root test/dato/${extension}/closure_step2_${file}_${extension}/
+mv test/dato/fitres/outProfile-${region1}-${CommonCuts}.root test/dato/${extension}/closure_step2_${file}_${extension}/
+mv test/dato/fitres/outProfile-${region2}-${CommonCuts}.root test/dato/${extension}/closure_step2_${file}_${extension}/
+mv test/dato/fitres/histos-${region1}-${CommonCuts}.root test/dato/${extension}/closure_step2_${file}_${extension}/
+mv test/dato/fitres/histos-${region2}-${CommonCuts}.root test/dato/${extension}/closure_step2_${file}_${extension}/
 }
 
 Prepare_Table(){
@@ -250,16 +254,16 @@ echo "\end{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-scale${categories[0]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-scale${categories[1]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-scale${categories[0]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-scale${categories[1]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{scale parameter for ${categories_name[0]} (left) and ${categories_name[1]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
 
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-scale${categories[2]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-scale${categories[3]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-scale${categories[2]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-scale${categories[3]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{scale parameter for ${categories_name[2]} (left) and ${categories_name[3]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
@@ -269,16 +273,16 @@ echo "\end{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-scale${categories[4]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-scale${categories[5]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-scale${categories[4]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-scale${categories[5]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{scale parameter for ${categories_name[4]} (left) and ${categories_name[5]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
 
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-scale${categories[6]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-scale${categories[7]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-scale${categories[6]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-scale${categories[7]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{scale parameter for ${categories_name[6]} (left) and ${categories_name[7]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
@@ -288,16 +292,16 @@ echo "\end{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-constTerm${categories[0]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-constTerm${categories[1]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-constTerm${categories[0]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-constTerm${categories[1]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{constTerm parameter for ${categories_name[0]} (left) and ${categories_name[1]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
 
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-constTerm${categories[2]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-constTerm${categories[3]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-constTerm${categories[2]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-constTerm${categories[3]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{constTerm parameter for ${categories_name[2]} (left) and ${categories_name[3]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
@@ -307,16 +311,16 @@ echo "\end{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{frame}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-constTerm${categories[4]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-constTerm${categories[5]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-constTerm${categories[4]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-constTerm${categories[5]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{constTerm parameter for ${categories_name[4]} (left) and ${categories_name[5]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
 
 echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\begin{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-constTerm${categories[6]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
-echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-constTerm${categories[7]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-constTerm${categories[6]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
+echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-constTerm${categories[7]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{center}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\caption{constTerm parameter for ${categories_name[6]} (left) and ${categories_name[7]} (right)}">>tmp/slide_${file}_${extension}_profileOnly.tex
 echo "\end{figure}">>tmp/slide_${file}_${extension}_profileOnly.tex
@@ -356,14 +360,14 @@ do
     echo "\begin{frame}">>tmp/slide_${file}_${extension}.tex
     echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}.tex
     echo "\begin{center}">>tmp/slide_${file}_${extension}.tex
-    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-scale${categories[$index]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}.tex
-    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-Et_20-noPF-constTerm${categories[$index]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}.tex
+    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-scale${categories[$index]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}.tex
+    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region1}-${CommonCuts}-constTerm${categories[$index]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}.tex
     echo "\end{center}">>tmp/slide_${file}_${extension}.tex
     echo "\caption{scale parameter (left) and smearing parameter (right) for ${categories_name[$index]}}">>tmp/slide_${file}_${extension}.tex
     echo "\end{figure}">>tmp/slide_${file}_${extension}.tex
     echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}.tex
     echo "\begin{center}">>tmp/slide_${file}_${extension}.tex
-    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/data_MC/histos-${region1}-Et_20-noPF_${categories[$index]}-Et_20-noPF${categories[$index]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}.tex
+    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/data_MC/histos-${region1}-${CommonCuts}_${categories[$index]}-${CommonCuts}${categories[$index]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}.tex
     echo "\end{center}">>tmp/slide_${file}_${extension}.tex
     echo "\caption{Data/MC comparison for ${categories_name[$index]}}">>tmp/slide_${file}_${extension}.tex
     echo "\end{figure}">>tmp/slide_${file}_${extension}.tex
@@ -375,14 +379,14 @@ do
     echo "\begin{frame}">>tmp/slide_${file}_${extension}.tex
     echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}.tex
     echo "\begin{center}">>tmp/slide_${file}_${extension}.tex
-    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-scale${categories[$index]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}.tex
-    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-Et_20-noPF-constTerm${categories[$index]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}.tex
+    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-scale${categories[$index]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}.tex
+    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/outProfile-${region2}-${CommonCuts}-constTerm${categories[$index]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}.tex
     echo "\end{center}">>tmp/slide_${file}_${extension}.tex
     echo "\caption{scale parameter (left) and smearing parameter (right) for ${categories_name[$index]}}">>tmp/slide_${file}_${extension}.tex
     echo "\end{figure}">>tmp/slide_${file}_${extension}.tex
     echo "\begin{figure}[!htbp]">>tmp/slide_${file}_${extension}.tex
     echo "\begin{center}">>tmp/slide_${file}_${extension}.tex
-    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/data_MC/histos-${region2}-Et_20-noPF_${categories[$index]}-Et_20-noPF${categories[$index]}-Et_20-noPF}.png}">>tmp/slide_${file}_${extension}.tex
+    echo "\includegraphics[width=0.43\textwidth]{{/afs/cern.ch/user/g/gfasanel/scratch1/www/${extension}/data_MC/histos-${region2}-${CommonCuts}_${categories[$index]}-${CommonCuts}${categories[$index]}-${CommonCuts}}.png}">>tmp/slide_${file}_${extension}.tex
     echo "\end{center}">>tmp/slide_${file}_${extension}.tex
     echo "\caption{Data/MC comparison for ${categories_name[$index]}}">>tmp/slide_${file}_${extension}.tex
     echo "\end{figure}">>tmp/slide_${file}_${extension}.tex

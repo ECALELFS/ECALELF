@@ -166,6 +166,8 @@ TTree *EnergyScaleCorrection_class::GetCorrTree(TChain *tree, bool fastLoop,
 						TString energySCEleBranchName,
 						TString nPVBranchName
 						){
+
+  std::cout<<"in GetCorrTree r9 is "<<R9EleBranchName<<std::endl;
   float nPVmean = 0;
 //   if(correctionType.Contains("nPV"))
 //     nPVmean = GetMean_nPV(tree, fastLoop,nPVBranchName);
@@ -260,24 +262,10 @@ void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, in
   return;
 }
 
-/** 
- *  File structure:
-EBlowEtaBad8TeV    0 0.0 1.0 -999. 0.94 -999999 999999 6.73 0. 7.7e-3  6.32e-4 0.00 0.16
-EBlowEtaGold8TeV   0 0.0 1.0 0.94  999. -999999 999999 6.60 0. 7.4e-3  6.50e-4 0.00 0.16
-EBhighEtaBad8TeV   0 1.0 1.5 -999. 0.94 -999999 999999 6.73 0. 1.26e-2 1.03e-3 0.00 0.07
-EBhighEtaGold8TeV  0 1.0 1.5 0.94  999. -999999 999999 6.52 0. 1.12e-2 1.32e-3 0.00 0.22
-##################################################################################################
-EElowEtaBad8TeV    0 1.5 2.0 -999. 0.94 -999999 999999 0.   0. 1.98e-2 3.03e-3 0.  0.
-EElowEtaGold8TeV   0 1.5 2.0 0.94  999. -999999 999999 0.   0. 1.63e-2 1.22e-3 0.  0.
-EEhighEtaBad8TeV   0 2.0 3.0 -999. 0.94 -999999 999999 0.   0. 1.92e-2 9.22e-4 0.  0.
-EEhighEtaGold8TeV  0 2.0 3.0 0.94  999. -999999 999999 0.   0. 1.86e-2 7.81e-4 0.  0.
-##################################################################################################
-*
- */
-
 void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
   std::cout << "[STATUS] Reading smearing values from file: " << filename << std::endl;
   std::ifstream f_in(filename);
+  std::ifstream check_format(filename);
   if(!f_in.good()){
     std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
     exit(1);
@@ -285,27 +273,66 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
   
   int runMin=0, runMax=900000;
   int unused=0;
+  double another_value=0.;
   TString category, region2;
-  //double smearing, err_smearing;
-  double rho, phi, Emean, constTerm, alpha, err_rho, err_phi, err_Emean, err_alpha=0., err_constTerm=0.;
+  double rho, phi, Emean, constTerm, alpha=0., err_rho, err_phi, err_Emean, err_alpha=0., err_constTerm=0.;
   double etaMin, etaMax, r9Min, r9Max;
+  int format=0; ///< 0=unknown, decided on the fly; 1=smearing format; 2=scale format
 
-  int format=0; ///< 0=unknown; 1=globe; 2=ECALELF toy
-  while(f_in.peek()!=EOF && f_in.good()){
+  //while(f_in.peek()!=10){//looping over the dat file
+  check_format.get();//take the first line
+  if(format==0){
+    std::string line;
+    std::getline(check_format, line);
+    std::istringstream s_in(line);
+    s_in >> category >> constTerm >> another_value; //se ci sono soltanto 2 colonne nel file, allora e' formato 1, altrimenti e' formato 2
+    if(s_in.eof()){ // this is not the globe format but the ECALELF format
+      std::cout << "[INFO] this is the simple smearing format" << std::endl;
+      format=1;
+    }else{
+      std::cout << "[INFO] this is the scale format" << std::endl;
+      format=2;
+    }
+  }
+
+  while(f_in.peek()!=EOF && f_in.good()){//looping over the dat file
     if(f_in.peek()==10){ // 10 = \n
       f_in.get(); 
       continue;
     }
-
     if(f_in.peek() == 35){ // 35 = #
       f_in.ignore(1000,10); // ignore the rest of the line until \n
       continue;
     }
+    
+    //subito decidi il formato
+//    if(format==0){
+//      std::string line;
+//      std::getline(f_in, line);
+//      std::istringstream s_in(line);
+//      s_in >> category >> constTerm >> another_value; //se ci sono soltanto 2 colonne nel file, allora e' formato 1, altrimenti e' formato 2
+//      if(s_in.eof()){ // this is not the globe format but the ECALELF format
+//	std::cout << "[INFO] this is the simple smearing format" << std::endl;
+//	format=1;
+//      }else{
+//	std::cout << "[INFO] this is the scale format" << std::endl;
+//	format=2;
+//      }
+//    }
 
-    //Dovrebbe essere equivalente al formato 2, ma il formato 2 legge male (solo) la prima riga => migliorare
-    Emean=1;
-    f_in >> category >> constTerm;
+    //now you have decided the correct format
+    
+    if(format==1){
+      f_in >> category >> constTerm;
+    }else if (format==2){
+      f_in >> category >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >>
+        Emean >> err_Emean >>
+        rho >> err_rho >> phi >> err_phi;
+    }
+    
     AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
+
+    //original -->must be tweaked
 //    if(format==0){
 //      std::string line;
 //      std::getline(f_in, line);
@@ -356,11 +383,10 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
 #ifdef DEBUG
     std::cout << category << "\t" << etaMin << "\t" << etaMax << "\t" << r9Min << "\t" << r9Max << "\t" << runMin << "\t" << runMax << "\tEmean=" << Emean << "\t" << rho << "\t" << phi << std::endl;
 #endif
-  }
+}
   
   f_in.close();
   //  runCorrection_itr=runMin_map.begin();
-  
   noSmearings=false;
   
   return;
@@ -394,7 +420,11 @@ float EnergyScaleCorrection_class::getSmearingSigma(int runNumber, float energy,
 
   double constTerm=corr_itr->second.constTerm;
   double alpha=corr_itr->second.alpha;
+  if(alpha){//if alpha is zero, sometimes you can have nan if energy/cosh is also 0 --> it's just annoying
   return sqrt(constTerm*constTerm + alpha*alpha/(energy/cosh(etaSCEle)));
+  }else{
+    return constTerm;
+  }
 
 }
 
@@ -460,6 +490,7 @@ TTree *EnergyScaleCorrection_class::GetSmearTree(TChain *tree,
 						 TString etaSCEleBranchName
 						 
 						 ){
+  cout<<"energyEleBranchName in EnergyScaleCorrection is "<<energyEleBranchName<<endl;
   Int_t runNumber_;
   Float_t energyEle_[2];
   Float_t etaEle_[2];
@@ -643,6 +674,9 @@ correctionCategory_class::correctionCategory_class(TString category_){
     }
 
     if(category.find("gold")!=std::string::npos || category.find("Gold")!=std::string::npos){ r9min=0.94; r9max=10;}
-    else if(category.find("bad")!=std::string::npos || category.find("Bad")!=std::string::npos){ r9min=-1; r9max=0.94;};
+    else if(category.find("highR9")!=std::string::npos){ r9min=0.94; r9max=10;}
+    else if(category.find("bad")!=std::string::npos || category.find("Bad")!=std::string::npos){ r9min=-1; r9max=0.94;}
+    else if(category.find("lowR9")!=std::string::npos){ r9min=-1; r9max=0.94;};
+
     
 }
