@@ -25,7 +25,7 @@ cut = ["0.15"];#size of the E/p cut window (default is 0.15)
 smoothCut = ["1"]; #0=use step-function to reweight, 1=use the E/p distribution                                                                                 
 energyType = ["0"]; #0=regression, 1=raw energy
 nLoops = "20"; #number of iterations
-ntupleName = "data-Run2015D-25ns-multifit" #options: "data-Run2015D-25ns-multifit", "data-Run2015D-25ns-weights" or "data-Run2015D-25ns-stream". 
+ntupleName = "DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1-allRange" #options: "data-Run2015D-25ns-multifit", "data-Run2015D-25ns-weights" or "data-Run2015D-25ns-stream". 
 #For the MC use: "DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1-allRange"
 
 folder_dat = "/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/" #folder containing the .dat files (don't touch this)
@@ -47,7 +47,7 @@ for b in range(len(split)):
                     for g in range(len(energyType)):
                         fn = "Job_"+ntupleName+""+nLoops+"loop_2015/Job_"+"EB"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
                         outScript = open(fn+".sh","w");
-                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+"_hadd.dat --EOverPCalib --outputPath output_"+ntupleName+"_"+nLoops+"loop_2015_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EB"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2015_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EB_scE.root"
+                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outputPath output_"+ntupleName+"_"+nLoops+"loop_2015_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EB"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2015_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EB_scE.root"
                         print command;
                         outScript.write('#!/bin/bash');
                         outScript.write("\n"+'cd '+CMSSWDir);
@@ -56,20 +56,18 @@ for b in range(len(split)):
                         outScript.write("\necho $PWD");
                         outScript.write("\nls");
 
-                        outScript.write("\necho \"copia1\" ");
+                        outScript.write("\necho \"copy main tree\" ");
                         outScript.write("\ncmsStage "+folder+""+ntupleName+".root ./")
-                        outScript.write("\necho \"copia2\" ");
+                        outScript.write("\necho \"copy extracalib tree\" ");
                         outScript.write("\ncmsStage "+folder+"extraCalibTree-"+ntupleName+".root ./")
                         
-                        outScript.write("\necho \"copia13\" ");
+                        outScript.write("\necho \"copiy additional files\" ");
 #                        outScript.write("\ncp -v /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/* .")                                                        
-                        outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EB_pTk.root ./")
-                        outScript.write("\necho \"copia14\" ");
-                        outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EB_scE.root ./")
-                        outScript.write("\necho \"copia15\" ");
-                        outScript.write("\ncmsStage "+folder_dat+"EoverPcalibration_batch_"+ntupleName+"_hadd.dat ./")
-                        outScript.write("\ncmsStage "+folder+"MomentumCalibration2015_eta1_eta1.root ./")
-                        outScript.write("\necho \"fine copia\" ");
+                        outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EB_pTk.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EB_scE.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"EoverPcalibration_batch_"+ntupleName+".dat ./")
+                        outScript.write("\ncmsStage "+folder_dat+"MomentumCalibration2015_eta1_eta1.root ./")
+                        outScript.write("\necho \"end copy\" ");
 
                         outScript.write("\nls")
                         outScript.write("\necho \"eseguo: "+command+"\" ")
@@ -93,7 +91,7 @@ for b in range(len(split)):
                     for g in range(len(energyType)):
                         fn = "Job_"+ntupleName+""+nLoops+"loop_2015/Job_"+"EE"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
                         outScript = open(fn+".sh","w");
-                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+"_hadd.dat --EOverPCalib --outputPath output_"+ntupleName+"_"+nLoops+"loop_2015_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EE"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2015_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EE_scE.root"
+                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outputPath output_"+ntupleName+"_"+nLoops+"loop_2015_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EE"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2015_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EE_scE.root"
                         print command;
                         outScript.write('#!/bin/bash');
                         outScript.write("\n"+'cd '+CMSSWDir);
@@ -103,20 +101,18 @@ for b in range(len(split)):
                         outScript.write("\nls");
 
 
-                        outScript.write("\necho \"copia1\" ");
+                        outScript.write("\necho \"copy main tree\" ");
                         outScript.write("\ncmsStage "+folder+""+ntupleName+".root ./")
-                        outScript.write("\necho \"copia2\" ");
+                        outScript.write("\necho \"copy extracalibtree\" ");
                         outScript.write("\ncmsStage "+folder+"extraCalibTree-"+ntupleName+".root ./")
                         
-                        outScript.write("\necho \"copia13\" ");
+                        outScript.write("\necho \"copy additional files\" ");
 #                        outScript.write("\ncp -v /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/* .")                                                        
-                        outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EE_pTk.root ./")
-                        outScript.write("\necho \"copia14\" ");
-                        outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EE_scE.root ./")
-                        outScript.write("\necho \"copia15\" ");
-                        outScript.write("\ncmsStage "+folder_dat+"EoverPcalibration_batch_"+ntupleName+"_hadd.dat ./")
-                        outScript.write("\ncmsStage "+folder+"MomentumCalibration2015_eta1_eta1.root ./")
-                        outScript.write("\necho \"fine copia\" ");
+                        outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EE_pTk.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EE_scE.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"EoverPcalibration_batch_"+ntupleName+".dat ./")
+                        outScript.write("\ncmsStage "+folder_dat+"MomentumCalibration2015_eta1_eta1.root ./")
+                        outScript.write("\necho \"end copy\" ");
                         outScript.write("\nls")
                         outScript.write("\necho \"eseguo: "+command+"\" ")
                         outScript.write("\n"+command);
