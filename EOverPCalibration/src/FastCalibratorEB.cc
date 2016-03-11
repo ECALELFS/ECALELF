@@ -128,7 +128,8 @@ void FastCalibratorEB::Init(TTree *tree){
   fChain->SetBranchStatus("PtEle", 1);             fChain->SetBranchAddress("PtEle", &PtEle, &b_PtEle);
   fChain->SetBranchStatus("phiEle", 1);             fChain->SetBranchAddress("phiEle", &phiEle, &b_phiEle);
   fChain->SetBranchStatus("rawEnergySCEle", 1);             fChain->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle, &b_rawEnergySCEle);
-  fChain->SetBranchStatus("energySCEle", 1);             fChain->SetBranchAddress("energySCEle", &energySCEle, &b_energySCEle);
+  fChain->SetBranchStatus("energySCEle_must", 1);             fChain->SetBranchAddress("energySCEle_must", &energySCEle, &b_energySCEle);
+  //  fChain->SetBranchStatus("energySCEle", 1);             fChain->SetBranchAddress("energySCEle", &energySCEle, &b_energySCEle);
   fChain->SetBranchStatus("etaSCEle", 1);             fChain->SetBranchAddress("etaSCEle", &etaSCEle, &b_etaSCEle);
   fChain->SetBranchStatus("esEnergySCEle", 1);             fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle, &b_esEnergySCEle);
   fChain->SetBranchStatus("pAtVtxGsfEle", 1);             fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle, &b_pAtVtxGsfEle);

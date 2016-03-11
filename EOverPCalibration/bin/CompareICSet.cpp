@@ -50,6 +50,7 @@ if(!File2.is_open()){
 
  std::ofstream FileRatio("ratio.txt");
  std::ofstream FileAbsolute("absolute.txt");
+ std::ofstream FileMiscalib("miscalib.txt");
 
 // Set style options
 /*gROOT->Reset();
@@ -176,23 +177,23 @@ TH2F * absolutemap_EEm = (TH2F*) map1_EEm->Clone("absolutemapEEm");
 absolutemap_EEm->Reset();
 
 Name = Form("diffHistEB");
-TH1F * diffHistEB = new TH1F(Name,Name,500,-0.2,0.2);
+TH1F * diffHistEB = new TH1F(Name,Name,500,-0.3,0.3);
 diffHistEB->SetLineWidth(2);
 
 Name = Form("diffHistEB_0_20");
-TH1F * diffHistEB_0_20 = new TH1F(Name,Name,200,-0.2,0.2);
+TH1F * diffHistEB_0_20 = new TH1F(Name,Name,200,-1,1);
 diffHistEB_0_20->SetLineWidth(2);
 
 Name = Form("diffHistEB_20_40");
-TH1F * diffHistEB_20_40 = new TH1F(Name,Name,200,-0.2,0.2);
+TH1F * diffHistEB_20_40 = new TH1F(Name,Name,200,-1,1);
 diffHistEB_20_40->SetLineWidth(2);
 
 Name = Form("diffHistEB_40_60");
-TH1F * diffHistEB_40_60 = new TH1F(Name,Name,200,-0.2,0.2);
+TH1F * diffHistEB_40_60 = new TH1F(Name,Name,200,-1,1);
 diffHistEB_40_60->SetLineWidth(2);
 
 Name = Form("diffHistEB_60_85");
-TH1F * diffHistEB_60_85 = new TH1F(Name,Name,200,-0.2,0.2);
+TH1F * diffHistEB_60_85 = new TH1F(Name,Name,200,-1,1);
 diffHistEB_60_85->SetLineWidth(2);
 
 Name = Form("diffHistEEp");
@@ -200,19 +201,19 @@ TH1F * diffHistEEp = new TH1F(Name,Name,100,-0.4,0.4);
 diffHistEEp->SetLineWidth(2);
 
 Name = Form("diffHistEEp_0_5");
-TH1F * diffHistEEp_0_5 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEp_0_5 = new TH1F(Name,Name,50,-1,1);
 diffHistEEp_0_5->SetLineWidth(2);
 
 Name = Form("diffHistEEp_5_15");
-TH1F * diffHistEEp_5_15 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEp_5_15 = new TH1F(Name,Name,50,-1,1);
 diffHistEEp_5_15->SetLineWidth(2);
 
 Name = Form("diffHistEEp_15_25");
-TH1F * diffHistEEp_15_25 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEp_15_25 = new TH1F(Name,Name,50,-1,1);
 diffHistEEp_15_25->SetLineWidth(2);
 
 Name = Form("diffHistEEp_25_35");
-TH1F * diffHistEEp_25_35 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEp_25_35 = new TH1F(Name,Name,50,-1,1);
 diffHistEEp_25_35->SetLineWidth(2);
 
 Name = Form("diffHistEEm");
@@ -220,19 +221,19 @@ TH1F * diffHistEEm = new TH1F(Name,Name,100,-0.4,0.4);
 diffHistEEm->SetLineWidth(2);
 
 Name = Form("diffHistEEm_0_5");
-TH1F * diffHistEEm_0_5 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEm_0_5 = new TH1F(Name,Name,50,-1,1);
 diffHistEEm_0_5->SetLineWidth(2);
 
 Name = Form("diffHistEEm_5_15");
-TH1F * diffHistEEm_5_15 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEm_5_15 = new TH1F(Name,Name,50,-1,1);
 diffHistEEm_5_15->SetLineWidth(2);
 
 Name = Form("diffHistEEm_15_25");
-TH1F * diffHistEEm_15_25 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEm_15_25 = new TH1F(Name,Name,50,-1,1);
 diffHistEEm_15_25->SetLineWidth(2);
 
 Name = Form("diffHistEEm_25_35");
-TH1F * diffHistEEm_25_35 = new TH1F(Name,Name,50,-0.4,0.4);
+TH1F * diffHistEEm_25_35 = new TH1F(Name,Name,50,-1,1);
 diffHistEEm_25_35->SetLineWidth(2);
 
 
@@ -278,6 +279,8 @@ TEndcapRings *eRings = new TEndcapRings();
  absolutemap_EB->SetBinContent(iPhi,iEta,map1_EB->GetBinContent(iPhi,iEta));
  FileRatio << eta << "\t" << iPhi << "\t" << 0 << "\t" << -1. << "\t" << -999. << std::endl;
  FileAbsolute << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+ FileMiscalib << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+
  continue;}
 
  sumEB+=map1_EB->GetBinContent(iPhi,iEta)-map2_EB->GetBinContent(iPhi,iEta);
@@ -311,6 +314,13 @@ TEndcapRings *eRings = new TEndcapRings();
  FileAbsolute << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)*map2_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
  correlationEB->Fill(map1_EB->GetBinContent(iPhi,iEta),map2_EB->GetBinContent(iPhi,iEta));
 
+ if ( (iPhi>20 && iPhi<40) || (iPhi>60 && iPhi<80) || (iPhi>100 && iPhi<120) || (iPhi>140 && iPhi<160))
+   FileMiscalib << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)*1.3 << "\t" << -999. << std::endl;
+ else if ((iPhi>200 && iPhi<240) || (iPhi>280 && iPhi<300) || (iPhi>340 && iPhi<360))
+   FileMiscalib << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta)*0.7 << "\t" << -999. << std::endl;
+ else
+   FileMiscalib << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi,iEta) << "\t" << -999. << std::endl;
+
  }
 }
 
@@ -326,6 +336,8 @@ for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
   absolutemap_EEp->SetBinContent(ix,iy,map1_EEp->GetBinContent(ix,iy));
   FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << -1. << "\t" << -999. << std::endl;
   FileAbsolute << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+  FileMiscalib << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
+
   continue;}
 
  sumEEp+=map1_EEp->GetBinContent(ix,iy)-map2_EEp->GetBinContent(ix,iy);
@@ -361,6 +373,13 @@ for(int ix =1; ix<map1_EEp->GetNbinsX()+1; ix++){
   FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy)/map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
   FileAbsolute << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy)*map2_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
   correlationEEp->Fill(map1_EEp->GetBinContent(ix,iy),map2_EEp->GetBinContent(ix,iy));
+
+  if ( (ix>20 && ix<30) || (ix>50 && ix<55) || (ix>80 && ix<90))
+    FileMiscalib << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy)*1.3 << "\t" << -999. << std::endl;
+  else if ((ix>5 && ix<15) || (ix>40 && ix<45) || (ix>60 && ix<70))
+    FileMiscalib << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy)*0.7 << "\t" << -999. << std::endl;
+  else
+    FileMiscalib << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
 
  }
 }
@@ -413,6 +432,13 @@ for(int ix =1; ix<map1_EEm->GetNbinsX()+1; ix++){
   FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy)/map2_EEm->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
   FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy)*map2_EEm->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
  correlationEEm->Fill(map1_EEm->GetBinContent(ix,iy),map2_EEm->GetBinContent(ix,iy));
+
+  if ( (ix>20 && ix<30) || (ix>50 && ix<55) || (ix>80 && ix<90))
+    FileMiscalib << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy)*1.3 << "\t" << -999. << std::endl;
+  else if ((ix>5 && ix<15) || (ix>40 && ix<45) || (ix>60 && ix<70))
+    FileMiscalib << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy)*0.7 << "\t" << -999. << std::endl;
+  else
+    FileMiscalib << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix,iy) << "\t" << -999. << std::endl;
 
  }
 }
@@ -1460,7 +1486,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  map1_EB->GetXaxis() -> SetLabelSize(0.03);
  map1_EB->GetXaxis() ->SetTitle("i#phi");
  map1_EB->GetYaxis() ->SetTitle("i#eta");
- map1_EB->GetZaxis() ->SetRangeUser(0.9,1.1);
+ map1_EB->GetZaxis() ->SetRangeUser(0.6,1.4);
  map1_EB->Draw("COLZ");
 
 
@@ -1473,7 +1499,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  map1_EEp->GetXaxis() -> SetLabelSize(0.03);
  map1_EEp->GetXaxis() ->SetTitle("i#phi");
  map1_EEp->GetYaxis() ->SetTitle("i#eta");
- map1_EEp->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map1_EEp->GetZaxis() ->SetRangeUser(0.6,1.4);
  map1_EEp->Draw("COLZ");
 
 
@@ -1486,7 +1512,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  map1_EEm->GetXaxis() -> SetLabelSize(0.03);
  map1_EEm->GetXaxis() ->SetTitle("i#phi");
  map1_EEm->GetYaxis() ->SetTitle("i#eta");
- map1_EEm->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map1_EEm->GetZaxis() ->SetRangeUser(0.6,1.4);
  map1_EEm->Draw("COLZ");
 
 
@@ -1499,7 +1525,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  map2_EB->GetXaxis() -> SetLabelSize(0.03);
  map2_EB->GetXaxis() ->SetTitle("i#phi");
  map2_EB->GetYaxis() ->SetTitle("i#eta");
- map2_EB->GetZaxis() ->SetRangeUser(0.9,1.1);
+ map2_EB->GetZaxis() ->SetRangeUser(0.6,1.4);
  map2_EB->Draw("COLZ");
 
 
@@ -1512,7 +1538,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  map2_EEp->GetXaxis() -> SetLabelSize(0.03);
  map2_EEp->GetXaxis() ->SetTitle("i#phi");
  map2_EEp->GetYaxis() ->SetTitle("i#eta");
- map2_EEp->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map2_EEp->GetZaxis() ->SetRangeUser(0.6,1.4);
  map2_EEp->Draw("COLZ");
 
 
@@ -1525,7 +1551,7 @@ cout<<" Second Set : Mean dist = "<<etaProfileEEm2->GetMean()<<" RMS dist "<<eta
  map2_EEm->GetXaxis() -> SetLabelSize(0.03);
  map2_EEm->GetXaxis() ->SetTitle("i#phi");
  map2_EEm->GetYaxis() ->SetTitle("i#eta");
- map2_EEm->GetZaxis() ->SetRangeUser(0.7,1.3);
+ map2_EEm->GetZaxis() ->SetRangeUser(0.6,1.4);
  map2_EEm->Draw("COLZ");
 
 
