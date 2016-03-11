@@ -250,6 +250,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+            if (thisIndex<0) continue;
            
             if(energyRecHitSCEle1 -> at(iRecHit) > E_seed &&  recoFlagRecHitSCEle1->at(iRecHit) < 4 ) /// control if this recHit is good
             {
@@ -269,6 +270,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+            if (thisIndex<0) continue;
            
             ///! 3x3 matrix informations in order to apply R9 selection
 	    
@@ -333,6 +335,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+            if (thisIndex<0) continue;
             
             if(energyRecHitSCEle2 -> at(iRecHit) > E_seed && recoFlagRecHitSCEle2->at(iRecHit) < 4)
             {
@@ -353,6 +356,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+            if (thisIndex<0) continue;
            
             if (iLoop > 0) thisIC = h_scale_EB_hashedIndex -> GetBinContent(thisIndex+1);
          
@@ -565,6 +569,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+            if (thisIndex<0) continue;
            
             if (iLoop > 0 ) thisIC = h_scale_EB_hashedIndex -> GetBinContent(thisIndex+1);
             
@@ -586,6 +591,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+            if (thisIndex<0) continue;
      
             if (iLoop > 0) thisIC = h_scale_EB_hashedIndex -> GetBinContent(thisIndex+1);
          
@@ -630,6 +636,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
            
               int thisIndex = GetHashedIndexEB(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
               float thisIC = 1.;
+            if (thisIndex<0) continue;
 
               if (iLoop > 0) thisIC = h_scale_EB_hashedIndex -> GetBinContent(thisIndex+1);
   
@@ -702,6 +709,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+            if (thisIndex<0) continue;
+
             if (iLoop > 0) thisIC = h_scale_EB_hashedIndex -> GetBinContent(thisIndex+1);
             
             if(recoFlagRecHitSCEle2->at(iRecHit) < 4)
@@ -723,6 +732,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEB(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+            if (thisIndex<0) continue;
+
             // IC obtained from previous Loops
             if (iLoop > 0) thisIC = h_scale_EB_hashedIndex -> GetBinContent(thisIndex+1);
 
@@ -765,6 +776,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
               if (recoFlagRecHitSCEle2->at(iRecHit) >= 4) continue ;
   
               int thisIndex = GetHashedIndexEB(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+	      if (thisIndex<0) continue;
 	      //  std::cout<<"DEBUG: "<<thisIndex<<" "<<XRecHitSCEle2->at(iRecHit)<<" "<<YRecHitSCEle2->at(iRecHit)<<" "<<ZRecHitSCEle2->at(iRecHit)<<std::endl;
               float thisIC = 1.;
            

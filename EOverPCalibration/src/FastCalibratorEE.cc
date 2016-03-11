@@ -262,7 +262,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
-	    //	    if (thisIndex<0) continue;
+	    if (thisIndex<0) continue;  if(YRecHitSCEle1->at(iRecHit)>100) continue;
           
             if(energyRecHitSCEle1 -> at(iRecHit) > E_seed && recoFlagRecHitSCEle1 -> at(iRecHit) < 4 ){
               seed_hashedIndex=GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
@@ -277,11 +277,11 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 	      thisE += theScalibration[thisIndex]*energyRecHitSCEle1 -> at(iRecHit)*FdiEta*thisIC; /// SC energy
     }
 
-
     for (unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle1->size(); iRecHit++ ) {
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+	    if (thisIndex<0) continue;  if(YRecHitSCEle1->at(iRecHit)>100) continue;
 
 	    if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
          
@@ -350,6 +350,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+	    if (thisIndex<0) continue;   if(YRecHitSCEle2->at(iRecHit)>100) continue;
 
             if(energyRecHitSCEle2 -> at(iRecHit) > E_seed && recoFlagRecHitSCEle2 -> at(iRecHit) < 4 ){
               seed_hashedIndex=GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
@@ -358,7 +359,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 
             }
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
-            
+
 	    if(recoFlagRecHitSCEle2 -> at(iRecHit) < 4)  /// Only Good channels
 	      thisE += theScalibration[thisIndex]*energyRecHitSCEle2 -> at(iRecHit)*FdiEta*thisIC;   
     }
@@ -367,6 +368,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+	    if (thisIndex<0) continue;   if(YRecHitSCEle2->at(iRecHit)>100) continue;
             // IC obtained from previous Loops
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
          
@@ -576,6 +578,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+	    if (thisIndex<0) continue;  if(YRecHitSCEle1->at(iRecHit)>100) continue;
   
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
             
@@ -594,6 +597,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
             
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+	    if (thisIndex<0) continue;  if(YRecHitSCEle1->at(iRecHit)>100) continue;
     
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
             
@@ -651,6 +655,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
              if(recoFlagRecHitSCEle1 -> at(iRecHit) >= 4) continue;
              
              int thisIndex = GetHashedIndexEE(XRecHitSCEle1->at(iRecHit), YRecHitSCEle1->at(iRecHit), ZRecHitSCEle1->at(iRecHit));
+	    if (thisIndex<0) continue;  if(YRecHitSCEle1->at(iRecHit)>100) continue;
              float thisIC = 1.;
              
              if( iLoop > 0 ) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
@@ -769,6 +774,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
           for(unsigned int iRecHit = 0; iRecHit < energyRecHitSCEle2->size(); iRecHit++ ){
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+	    if (thisIndex<0) continue;   if(YRecHitSCEle2->at(iRecHit)>100) continue;
            
 	    if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
             
@@ -786,6 +792,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
           {
             float thisIC = 1.;
             int thisIndex = GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
+	    if (thisIndex<0) continue;   if(YRecHitSCEle2->at(iRecHit)>100) continue;
             
             if (iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
             
@@ -845,6 +852,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
               
               int thisIndex = GetHashedIndexEE(XRecHitSCEle2->at(iRecHit), YRecHitSCEle2->at(iRecHit), ZRecHitSCEle2->at(iRecHit));
               float thisIC = 1.;
+	    if (thisIndex<0) continue;   if(YRecHitSCEle2->at(iRecHit)>100) continue;
               
               if(iLoop > 0) thisIC = h_scale_hashedIndex_EE -> GetBinContent(thisIndex+1);
                 
