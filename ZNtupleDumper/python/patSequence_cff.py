@@ -40,172 +40,12 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 # to access the float:
 # electron.userFloat("eleNewEnergiesProducer:energySCEleJoshEle")
 # electron.userFloat("eleNewEnergiesProducer:energySCEleJoshEle:MVAntuplizer")
-'''
+
 patElectrons.userData.userFloats.src = [
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEle"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleVar"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPho"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoVar"),
-    cms.InputTag("eleNewEnergiesProducer",    "energyEleFra" ),
-    cms.InputTag("eleNewEnergiesProducer",    "energyEleFraVar" ),
-    cms.InputTag("eleNewEnergiesProducer",    "energyEleFra" ),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV4pdfval"),
-                                                                            
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV5pdfval"),
-                                                                            
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV4pdfval"),
-                                                                            
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV5pdfval"),
-    ###############
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV6pdfval"),
-
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV6pdfval"),
-    ###############
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV7pdfval"),
-
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV7pdfval"),
-    ###############
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParamV8pdfval"),
-
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParamV8pdfval"),
-
-    ###############
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV6pdfval"),
-
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV6pdfval"),
-    ###############
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV7pdfval"),
-
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV7pdfval"),
-    ###############
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshEleSemiParam7TeVtrainV8pdfval"),
-
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8ecorr"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8sigmaEoverE"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8cbmean"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8sigma"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8alpha1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8gamma1"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8alpha2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8gamma2"),
-    cms.InputTag("eleNewEnergiesProducer",    "energySCEleJoshPhoSemiParam7TeVtrainV8pdfval"),
-
-    cms.InputTag("eleRegressionEnergy:eneRegForGsfEle"),
-    cms.InputTag("eleRegressionEnergy", "eneErrorRegForGsfEle")
+    cms.InputTag("eleNewEnergiesProducer", "energySCEleMust"),
+    cms.InputTag("eleNewEnergiesProducer", "energySCEleMustVar"),
     ]
-'''
+
 
 #============================== Adding electron ID to patElectrons
 patElectrons.addElectronID=cms.bool(True)
@@ -252,10 +92,10 @@ muonMatch.src=cms.InputTag('muons')
 #process.electronMatch: assosiation map of gsfelectron and genparticle
 #process.patElectrons: producer of patElectron
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
-
+prePatSequence = cms.Sequence((eleSelectionProducers + eleNewEnergiesProducer))
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
-patSequence=cms.Sequence( (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
-patSequenceMC=cms.Sequence( electronMatch * (eleSelectionProducers + eleNewEnergiesProducer) * patElectrons )
+patSequence=cms.Sequence( prePatSequence * patElectrons )
+patSequenceMC=cms.Sequence( electronMatch * prePatSequence * patElectrons )
 
 
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")

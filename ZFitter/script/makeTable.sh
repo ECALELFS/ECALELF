@@ -99,7 +99,7 @@ for region in $regions
 done
 fi
 
-echo "#category & events & DeltaM_data & DeltaM_MC & DeltaP & width_data & width_MC & rescaledWidth_data & rescaledWidth_MC & additionalSmearing & chi2data & events/lumi & eventsMC & chi2mc & sigmaeff_data & sigmaeff_mc"
+echo "#category & events & DeltaM_data & DeltaM_MC & DeltaP & width_data & width_MC & rescaledWidth_data & rescaledWidth_MC & additionalSmearing & chi2data & events/lumi & eventsMC & chi2mc & sigmaeff_data & sigmaeff_mc & sigmaeff_data_thirty & sigmaeff_mc_thirty & sigmaeff_data_fifty & sigmaeff_mc_fifty"
 for category in $categories
   do
 #  echo $category
@@ -141,8 +141,13 @@ for category in $categories
   eventsMC="`grep nEvents $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.0f\",$1)}'`"
   chi2_Data="`grep chi2 $fileData | cut -d '=' -f 2 | awk '{printf(\"%.2f\",$1)}'`"
   chi2_MC="`grep chi2 $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.2f\",$1)}'`"
-  sigmaeff_Data="`grep sigeff $fileData | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
-  sigmaeff_MC="`grep sigeff $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+  sigmaeff_Data="`grep sigeff68 $fileData | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+  sigmaeff_MC="`grep sigeff68 $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+  sigmaeff_Data_fifty="`grep sigeff50 $fileData | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+  sigmaeff_MC_fifty="`grep sigeff50 $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+  sigmaeff_Data_thirty="`grep sigeff30 $fileData | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+  sigmaeff_MC_thirty="`grep sigeff30 $fileMC | cut -d '=' -f 2 | awk '{printf(\"%.4f\",$1)}'`"
+
   if [ -n "${runRanges}" ];then
       runRange=`echo $category | sed 's|.*-runNumber_||;s|-.*||;s|_|-|'`
       lumi=`grep $runRange $runRangesFile | awk '{if(NF>3){ print $4} else{ print "0"};}'`
@@ -191,8 +196,13 @@ for category in $categories
 
 ## rescaledWidth
   resolutionLine=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $width_Data $width_MC xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+ # resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data $sigmaeff_MC xxx xxx" |sed 's|\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+	resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data \pm 0 $sigmaeff_MC \pm 0 xxx xxx" |sed 's|\\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+	resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data_fifty \pm 0 $sigmaeff_MC \pm 0 xxx xxx" |sed 's|\\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+ resolutionLine_sigmaEff_sixtyeight=`echo "$category events $deltaM_Data $deltaM_MC $deltaP $sigmaeff_Data_thirty \pm 0 $sigmaeff_MC \pm 0 xxx xxx" |sed 's|\\\$||g;s|\\\pm||g;s|&||g' | awk -f awk/newResolution.awk`
+
  # echo " res line $resolutionLine"
-  line="$category & $events & $deltaM_Data & $deltaM_MC & $deltaP &  $width_Data &  $width_MC $resolutionLine & \$ $chi2_Data \$ & \$ $selEff \$  &  $eventsMC & \$ $chi2_MC \$ & \$ $sigmaeff_Data \$ & \$ $sigmaeff_MC \$\\\\"
+  line="$category & $events & $deltaM_Data & $deltaM_MC & $deltaP &  $width_Data &  $width_MC $resolutionLine & \$ $chi2_Data \$ & \$ $selEff \$  &  $eventsMC & \$ $chi2_MC \$ & \$ $sigmaeff_Data \$ & \$ $sigmaeff_MC \$ & \$ $sigmaeff_Data_thirty \$ & \$ $sigmaeff_MC_thirty \$ & \$ $sigmaeff_Data_fifty \$ & \$ $sigmaeff_MC_fifty \$ $resolutionLine_sigmaEff_sixtyeight $resolutionLine_sigmaEff_fifty $resolutionLine_sigmaEff_thirty\\\\"
   echo $line 
  
 # mettere la formattazione qui

@@ -13,7 +13,10 @@ checkVERSION(){
 	CMSSW_5_3_21)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
 	    ;;
-	CMSSW_7_4_15)
+	CMSSW_7_4_15_patch1)
+	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
+	    ;;
+	CMSSW_7_6_3)
 	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
 	    ;;
 	*)
@@ -164,10 +167,11 @@ case $CMSSW_VERSION in
 	;;
 	
 	CMSSW_7_4_*)
-		git cms-addpkg  Configuration/DataProcessing/
-		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch
-		git cms-addpkg DataFormats/EgammaCandidates/
-		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch
+#		git cms-addpkg DataFormats/EgammaCandidates/ || exit 1
+#		git apply Calibration/EcalAlCaRecoProducers/test/full5x5.patch || exit 1
+		git-cms-merge-topic shervin86:regression || exit 1
+#		git cms-addpkg  Configuration/DataProcessing/ || exit 1
+#		git apply Calibration/EcalAlCaRecoProducers/test/RecoTLR.patch || exit 1
 		;;
 
     CMSSW_7_5_*)
@@ -176,6 +180,9 @@ case $CMSSW_VERSION in
 	git cms-addpkg Configuration/StandardSequences
 	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 	;;
+	CMSSW_7_6_*)
+		git-cms-merge-topic shervin86:76X || exit 1
+		;;
 
 
 esac

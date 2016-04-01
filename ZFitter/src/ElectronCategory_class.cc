@@ -131,7 +131,9 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 
   TCut preshower_ele1_cut = "abs(etaEle_ele1) > 1.7";
   TCut preshower_ele2_cut = "abs(etaEle_ele2) > 1.7";
-
+  
+	TCut SameSign_cut = "abs(chargeEle_ele1 - chargeEle_ele2) < 0.1";
+	TCut OppositeSign_cut = "abs( chargeEle_ele1 - chargeEle_ele2 ) > 0.1 ";
 
 
   TCut EBlowEta_ele1_cut = "abs(etaEle_ele1) < 1.";
@@ -282,6 +284,47 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
     if(string.CompareTo("EEm")==0){ 
       cut_string+=EEm_cut;
       cutSet.insert(TString(EEm_cut));
+      continue;
+    }
+    if(string.CompareTo("EEhighEta")==0){ 
+      cut_string+=EE_cut;
+      cut_string+=EEhighEta_cut;
+      cutSet.insert(TString(EE_cut));
+      cutSet.insert(TString(EEhighEta_cut));
+      continue;
+    }
+    if(string.CompareTo("EElowEta")==0){ 
+      cut_string+=EE_cut;
+      cut_string+=EElowEta_cut;
+      cutSet.insert(TString(EE_cut));
+      cutSet.insert(TString(EElowEta_cut));
+      continue;
+    }
+    if(string.CompareTo("EBhighEta")==0){ 
+      cut_string+=EB_cut;
+      cut_string+=EBhighEta_cut;
+      cutSet.insert(TString(EB_cut));
+      cutSet.insert(TString(EBhighEta_cut));
+      continue;
+    }
+    
+    if(string.CompareTo("EBlowEta")==0){ 
+      cut_string+=EB_cut;
+      cut_string+=EBlowEta_cut;
+      cutSet.insert(TString(EB_cut));
+      cutSet.insert(TString(EBlowEta_cut));
+      continue;
+    }
+    
+		if(string.CompareTo("SameSign")==0){ 
+      cut_string+=SameSign_cut;
+      cutSet.insert(TString(SameSign_cut));
+      continue;
+    }
+		
+		if(string.CompareTo("OppositeSign")==0){ 
+      cut_string+=OppositeSign_cut;
+      cutSet.insert(TString(OppositeSign_cut));
       continue;
     }
 

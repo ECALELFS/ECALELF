@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
+                               useIDforPresel = cms.bool(True),
+                               pileupInfo = cms.InputTag("addPileupInfo"),
                                jsonFileName = cms.string(""),
                                electronCollection = cms.InputTag('patElectrons'),
                                muonCollection = cms.InputTag('patMuons'),
@@ -9,7 +11,7 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                #recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE"),
                                recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits"),
                                recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits"),
-															 recHitCollectionES = cms.InputTag("ecalPreshowerRecHit", "EcalRecHitsES"),
+                               recHitCollectionES = cms.InputTag("ecalPreshowerRecHit", "EcalRecHitsES"),
                                EESuperClusterCollection = cms.InputTag("correctedMulti5x5SuperClustersWithPreshower"),
                                rhoFastJet = cms.InputTag('kt6PFJetsForRhoCorrection',"rho"),
                                vertexCollection = cms.InputTag('offlinePrimaryVertices'),
@@ -51,4 +53,7 @@ zNtupleDumper = cms.EDAnalyzer('ZNtupleDumper',
                                     #                      correctionFileName = cms.string(options.correctionFileName),
                                     #                      correctionType = cms.string(options.correctionType),
                                     #                      oddEventFilter = cms.bool(oddEventFilter)
+                               eleID_loose = cms.string("loose25nsRun2"),
+                               eleID_medium= cms.string("medium25nsRun2"),
+                               eleID_tight = cms.string("tight25nsRun2"),
                                )

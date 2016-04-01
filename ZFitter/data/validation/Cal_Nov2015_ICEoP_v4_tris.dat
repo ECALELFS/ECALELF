@@ -1,0 +1,23 @@
+# list of files to run on
+# type	treeName	fileName
+# files are added to the same chain if they have the same treeName and the same type
+# chain with the same type are added as friends
+# only three type are admitted: s (signal), b (bkg), d (data)
+# all treeName are admitted, but some are mandatory:
+# selected
+# some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
+#d1	selected  root://eoscms//eos/cms//store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Run2015B_WF2_ICtransp2012_v4/DoubleEG-ZSkim-RUN2015B-ALCARAW-21Jul15-v1/251022-251883/51022-251562-Prompt-pfgEcal-noLaserProblem/DoubleEG-ZSkim-RUN2015B-ALCARAW-21Jul15-v1-251022-251883.root
+d3 selected root://eoscms///eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/./Cal_Nov2015_ICEoP_v4/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eop/unmerged-allRange.root
+d2 selected root://eoscms///eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/./Cal_Nov2015_ICEoP_v4/DoubleEG-ZSkim-Run2015D-Prompt-v3-25nsReco/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eop/unmerged-allRange.root
+d1 selected root://eoscms///eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/./Cal_Nov2015_ICEoP_v4/DoubleEG-ZSkim-Run2015C-Prompt-v1-25nsReco/253620-255031/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eop/unmerged-allRange.root
+d pileupHist data/pu/Cal_Nov2015_ICEoP_v4_tris/pufile_tot.root
+#d pileupHist /data/pu/Cal_Nov2015_ICEoP_v4_tris/pufile_d3.root
+#d pileupHist /data/pu/Cal_Nov2015_ICEoP_v4_tris/pufile_d2.root
+#d pileupHist /data/pu/Cal_Nov2015_ICEoP_v4_tris/pufile_d1.root
+s	pileupHist	data/pu/mc/puMadgraph-25ns.root
+s1 selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJets_madgraph-RunIISpring15DR74-Asym25ns/allRange/246908-258750-Prompt_25ns-v1-esPlanes/DYJets_madgraph-RunIISpring15DR74-Asym25ns-allRange.root
+s1 pileup data/pu/mcPUtrees1.root
+#s2 selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1/allRange/246908-258750-Prompt_25ns-v1-esPlanes/DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1-allRange.root
+
+#s1 selected root://eoscms.cern.ch//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJets_madgraph-RunIISpring15DR74-Asym25ns/allRange/DYJets_madgraph-RunIISpring15DR74-Asym25ns-allRange.root
+#s2  selected root://eoscms.cern.ch//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJets_amctnlo-RunIISpring15DR74-Asym25ns/allRange/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-allRange.root

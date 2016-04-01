@@ -33,11 +33,11 @@
   \dualslide{
     \centering
     \emph{EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-Et_25.eps}
+   \IfFileExists{\imgDir/EB-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-Et_25.pdf}}{not found}
   }{
     \centering
     \emph{EE/EE}
-    \includegraphics[width=\textwidth]{\imgDir/EE-Et_25.eps}
+   \IfFileExists{\imgDir/EE-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EE-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}
@@ -75,11 +75,11 @@
   \dualslide{
     \centering
     \emph{golden EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-gold-Et_25.eps}
+   \IfFileExists{\imgDir/EB-gold-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-gold-Et_25.pdf}}{not found}
   }{
     \centering
     \emph{golden EE/EE}
-    \includegraphics[width=\textwidth]{\imgDir/EE-gold-Et_25.eps}
+    \IfFileExists{\imgDir/EE-gold-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EE-gold-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}
@@ -118,11 +118,11 @@
   \dualslide{
     \centering
     \emph{bad EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-bad-Et_25.eps}
+    \IfFileExists{\imgDir/EB-bad-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-bad-Et_25.pdf}}{not found}
   }{
     \centering
     \emph{bad EE/EE}
-    \includegraphics[width=\textwidth]{\imgDir/EE-bad-Et_25.eps}
+    \IfFileExists{\imgDir/EE-bad-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EE-bad-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}
@@ -160,11 +160,11 @@
   \dualslide{
     \centering
   $ 0<|\eta|<1$ \emph{ gold EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-absEta_0_1-gold-Et_25.eps}
+    \IfFileExists{\imgDir/EB-absEta_0_1-gold-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-absEta_0_1-gold-Et_25.pdf}}{not found}
   }{
     \centering
    $0<|\eta|<1$  \emph{ bad EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-absEta_0_1-bad-Et_25.eps}
+    \IfFileExists{\imgDir/EB-absEta_0_1-bad-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-absEta_0_1-bad-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}
@@ -202,12 +202,11 @@
   \dualslide{
     \centering
    $1<|\eta|<1.4442$  \emph{ gold EB/EB}
- %   \includegraphics[width=\textwidth]{\imgDir/EB-absEta_1_1.4442-gold-Et_25.eps}
- Insufficient statistics
+    \IfFileExists{\imgDir/EB-absEta_1_1.4442-gold-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-absEta_1_1.4442-gold-Et_25.pdf}}{not found}
   }{
     \centering
   $ 1<|\eta|<1.4442$  \emph{ bad EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-absEta_1_1.4442-bad-Et_25.eps}
+    \IfFileExists{\imgDir/EB-absEta_1_1.4442-bad-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-absEta_1_1.4442-bad-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}
@@ -245,12 +244,12 @@
   \dualslide{
     \centering
    $0<|\eta|<1$  \emph{ EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-absEta_0_1-Et_25.eps}
+    \IfFileExists{\imgDir/EB-absEta_0_1-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-absEta_0_1-Et_25.pdf}}{not found}
  %Insufficient statistics
   }{
     \centering
    $1<|\eta|<1.4442$  \emph{ EB/EB}
-    \includegraphics[width=\textwidth]{\imgDir/EB-absEta_1_1.4442-Et_25.eps}
+    \IfFileExists{\imgDir/EB-absEta_1_1.4442-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EB-absEta_1_1.4442-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}
@@ -288,12 +287,13 @@
   \dualslide{
     \centering
    $1.566<|\eta|<2$  \emph{ EE/EE}
-    \includegraphics[width=\textwidth]{\imgDir/EE-absEta_1.556_2-Et_25.eps}
+    \IfFileExists{\imgDir/EE-absEta_1.556_2-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EE-absEta_1.556_2-Et_25.pdf}}{not found}
  %Insufficient statistics
   }{
     \centering
    $2<|\eta|<2.5$  \emph{ EE/EE}
-    \includegraphics[width=\textwidth]{\imgDir/EE-absEta_2_2.5-Et_25.eps}
+    \includegraphics[width=\textwidth]{\imgDir/EE-absEta_2_2.5-Et_25.pdf}
+    \IfFileExists{\imgDir/EE-absEta_2_2.5-Et_25.pdf}{\includegraphics[width=\textwidth]{\imgDir/EE-absEta_2_2.5-Et_25.pdf}}{not found}
   }       
   
   \begin{block}{}

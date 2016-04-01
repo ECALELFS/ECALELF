@@ -34,11 +34,13 @@ mkdir -p $OUTDIR
 files=""
 for file in $@
 do
+echo $file
+sort $file -o $file
 files="$files $file"
 done
 
 it=0;
-array=( 3 5 6 8 10 11 15 )
+array=( 2 3 5 6 8 10 11 15 )
 for it in "${array[@]}"
 do
 
@@ -46,6 +48,9 @@ do
 # !bs = backslash sign \ (sub later)
 # !us = backslash sign _ (sub later)
 case $it in 
+    2)
+	cName="events"
+	;;
     3|4)
 	cName="!ds !bsDelta m!ds"
 	;;
@@ -74,7 +79,7 @@ esac
 
 
 tmpFile=$OUTDIR/slide$it.tex
-./script/compareColumns.sh --column $it $files
+./script/compareColumns.sh -e  --column $it $files
 cp tex/compareSlides.tex $tmpFile 
 sed -i "/_TABLE_/ r tmp/file.tex" $tmpFile
 sed -i '/_TABLE_/ d' $tmpFile
@@ -84,7 +89,7 @@ sed -i "s|!bs|\\\|g " $tmpFile
 sed -i "s|!ds|$|g " $tmpFile
 
 done
-
+#cat $tmpFile
 
 cat > $OUTDIR/slide0.tex <<EOF
 \begin{comment}
@@ -132,7 +137,7 @@ cat > $OUTDIR/slide0.tex <<EOF
 
 EOF
 
-cat tex/template.tex $OUTDIR/slide*.tex tex/template_end.tex > $OUTDIR/comparison.tex
+#cat tex/template.tex $OUTDIR/slide{3,8}.tex $OUTDIR/slide{5,6,10,11,15}.tex tex/template_end.tex > $OUTDIR/comparison.tex
+cat tex/template.tex $OUTDIR/slide{8,15,3,11,2,}.tex tex/template_end.tex > $OUTDIR/comparison.tex
 
-
-pdflatex $OUTDIR/comparison.tex
+pdflatex -interaction nonstopmode -file-line-error $OUTDIR/comparison.tex

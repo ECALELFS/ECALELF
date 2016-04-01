@@ -32,15 +32,17 @@ from the directory EcalAlCaRecoProducers
    alcarecosim and ...) when the script RerecoQuick.sh is launched
 
  3. The rereco files produced are stored in
-   /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/8TeV/tag_name
+\verbatim
+   /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/13TeV/tag_name
+\endverbatim
 
  4. The final merged ntuple is stored in: 
-   /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/tag_name/
+   /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/tag_name/
 
 \subsection RERECO_instructions Instructions
 
 -# <b>CREATE</b> the tag_name.py in EcalAlCaRecoProducers/config/reRecoTags directory \n
-  Se more detailes below, in section "TAG FILE" 
+  Se more detailes below, in section \ref TAGFILES 
 -# check the syntax of the tag_name.py file
 \code
 \endcode

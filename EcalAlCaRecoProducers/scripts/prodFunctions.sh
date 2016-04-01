@@ -166,7 +166,14 @@ setUserRemoteDirAlcareco(){
 			echo "                       ${ENERGY} or ${DATASETNAME} or ${RUNRANGE}" >> /dev/stderr
 			exit 1
 		fi
-		USER_REMOTE_DIR=$1/${ENERGY}/${DATASETNAME}/${RUNRANGE}
+		case $1 in 
+			database)
+				USER_REMOTE_DIR=$1
+				;;
+			*)
+				USER_REMOTE_DIR=$1/${ENERGY}/${DATASETNAME}/${RUNRANGE}
+				;;
+		esac
 	fi
 }
 

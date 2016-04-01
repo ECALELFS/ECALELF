@@ -1,0 +1,7 @@
+s1 selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/74X_mcRun2_0T_v0/DYToEE_powheg-RunIISpring15_0T/allRange/DYToEE_powheg-RunIISpring15_0T-allRange.root
+#
+d1		selected		root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_newGT_0T_v2/DoubleEG_0T-ZSkim-Run2015C-Prompt-v2-25nsReco/255910-256245/246908-260627-Prompt_ZeroTesla_25ns/nopreselID_v3/unmerged-allRange.root
+d2		selected		root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_newGT_0T_v2/DoubleEG_0T-ZSkim-Run2015C-Prompt-v3-25nsReco/256268-256464/246908-260627-Prompt_ZeroTesla_25ns/nopreselID_v3/unmerged-allRange.root
+d3		selected		root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_newGT_0T_v2/DoubleEG_0T-ZSkim-Run2015D-Prompt-v3-25nsReco/257032-257059/246908-260627-Prompt_ZeroTesla_25ns/nopreselID_v3/unmerged-allRange.root
+d4		selected		root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_newGT_0T_v2/DoubleEG_0T-ZSkim-Run2015D-Prompt-v4-25nsReco/258159-260737/246908-260627-Prompt_ZeroTesla_25ns/nopreselID_v3/unmerged-allRange.root
+

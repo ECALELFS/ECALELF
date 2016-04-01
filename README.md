@@ -13,17 +13,14 @@ Be sure to have a GitHub account and have followed the instructions here:
 ======
 Download instructions.
 
-`wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh`
-
-`chmod +x setup_git.sh`
-
-`./setup_git.sh CMSSW_7_4_15`
-
-`cd CMSSW_7_4_15/src/`
-
-`cmsenv`
-
-`cd Calibration/ZFitter && make && cd -`
+```
+wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh
+chmod +x setup_git.sh
+./setup_git.sh CMSSW_7_6_3
+cd CMSSW_7_6_3/src/
+cmsenv
+cd Calibration/ZFitter && make && cd -
+```
 
 If you are using a tcsh shell:
 `cd Calibration && source initCmsEnv.csh`
@@ -35,28 +32,6 @@ Every time you enter in a new shell you have to do:
 `source initCmsEnv.csh`
 or
 `source initCmsEnv.sh`
-
-Problem:
-if you have an error in compilation like
-
-consider to edit the following file: `DataFormats/CaloRecHit/src/classes_def.xml`
-changing the following lines:
-
-` <class name="reco::CaloCluster" ClassVersion="11">`
-
-`   <version ClassVersion="11" checksum="3936140"/>`
-
-`  </class>`
-
-to 
-
-` <class name="reco::CaloCluster" ClassVersion="11">`
-
-`   <version ClassVersion="12" checksum="4003646624"/>`
-
-`</class>`
-
-
 
 
 ======

@@ -17,7 +17,7 @@
 #include <TFitResult.h>
 #include <TFitResultPtr.h>
 //#define DEBUG
-#define lightLabels
+//#define lightLabels
 enum plotType { onlyData=0, onlyDataBis, dataMC, dataMCs, dataOverMC, dataOverMCfit, onlyMCs};
 
 TH1F *stabilityHist(TGraphErrors *g_data, double& y_err_mean){
@@ -81,7 +81,7 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
 	 >> deltaM_data >> err_deltaM_data
 	 >> deltaM_MC >> err_deltaM_MC;
 
-    //std::cout << region << "\t" << xVar << "\t" << rangeMin << "\t" << rangeMax << "\t" << deltaM_data << "\t" << deltaM_MC << "\t" << err_deltaM_MC << "\t" << f_in.peek() << std::endl;
+    std::cout << region << "\t" << xVar << "\t" << rangeMin << "\t" << rangeMax << "\t" << deltaM_data << "\t" << deltaM_MC << "\t" << err_deltaM_MC << "\t" << f_in.peek() << std::endl;
 
     if(f_in.peek()!=10){ // 10 = \n
       isDeltaG=true;
@@ -124,12 +124,16 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
       }
 #ifndef lightLabels
       xLabels.push_back(rangeMin+"-"+rangeMax);
+			std::cout << "[INFO] not light labels " << std::endl;
 #else
+			std::cout << "[INFO] light labels " << std::endl;
       if(i_point%3==0) xLabels.push_back(rangeMin);
       else xLabels.push_back("");
 #endif
-      //      deltaM_data_graph.GetXaxis()->SetBinLabel(i_point, rangeMin+"-"+rangeMax);
+      std::cout << "[INFO] rangeMin "<<  rangeMin << ", rangeMax " << rangeMax << std::endl;
+      deltaM_data_graph.GetXaxis()->SetBinLabel(i_point, rangeMin+"-"+rangeMax); //FIXME ??
       i_point++;
+
       if(i_point>99){
 	std::cerr << "[ERROR] maximum number of points reached" << std::endl;
 	return NULL;
@@ -206,6 +210,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   // column=-10: ECAL paper
   gStyle->SetOptStat(0);
   gStyle->SetOptFit(0);
+	std::cout << "[INFO] Stability plot - setting general gStyle options" << std::endl;
 
   if(column==-10){
     f_corr_legend="with laser monitoring corrections";
@@ -219,6 +224,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
     else if(filename_corr.Contains("sigmaCBover")) yTitle="#sigma_{CB}/peak_{CB} [%]";
     else if(filename_corr.Contains("sigma")) yTitle="#sigma_{CB} [GeV/c^{2}]";
   }
+	std::cout << "[INFO] Stability plot - setting general Y axis title: " << yTitle << std::endl;
 
   if(!xTitle.Sizeof()>1){    
     if(filename_corr.Contains("nPV"))     xTitle = "Number of reconstructed vertexes";
@@ -226,7 +232,10 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
     if(filename_corr.Contains("unixtime")) xTitle="Time";
     if(filename_corr.Contains("abs_eta")) xTitle="|#eta|";
   }
-  TString yTitle2;
+	
+	std::cout << "[INFO] Stability plot - setting general X axis title: " << xTitle << std::endl;
+  
+	TString yTitle2;
   if (yTitle.Contains("#Delta")){
     yTitle2 = "#Delta P [%]";
   }
@@ -239,6 +248,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   if(column<0)  c = new TCanvas("c", region);
   else  c = new TCanvas("c", region, 900,500);
   c->cd();
+	std::cout << "[INFO] Stability plot - plotting data "<< std::endl;
 
   TGraphErrors *g_data = columns_vs_var(filename_corr, region, 0,rMin, rMax);
   TGraphErrors *g_MC = columns_vs_var(filename_corr, region, 1,rMin, rMax);
@@ -250,7 +260,8 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
     g_dataMC = columns_vs_var(filename_corr, region, 2,rMin, rMax);
     if(filename_unCorr.Sizeof()>1) g_dataMC_unCorr = columns_vs_var(filename_unCorr, region, 2, rMin, rMax);
   }
-  
+ 
+	std::cout << "[INFO] Stability plot  styling graphs "<< std::endl;
   //------------------------------ style
   g_data -> SetMarkerStyle(20);
   g_data->SetMarkerSize(1.2);
@@ -314,6 +325,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   g_multi->GetYaxis()->SetTitleOffset(g_multi->GetYaxis()->GetTitleOffset()/labelScale);
   g_multi->GetYaxis()->SetLabelSize(g_multi->GetYaxis()->GetLabelSize()*labelScale);
 
+	std::cout << "[INFO] Stability plot  auto-set range "<< std::endl;
   // automatic setting of the range
   if( rMax == rMin || rMax < rMin){
     g_multi->GetYaxis()->SetRangeUser(g_multi->GetYaxis()->GetXmin(), g_multi->GetYaxis()->GetXmax() *1.1);
@@ -349,6 +361,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   pad1->cd();
 
   if(xTitle.Contains("runNumber")){
+	std::cout << "[INFO] Stability plot - runNumber "<< std::endl;
     TAxis *axis = g_multi->GetXaxis();
     TAxis *axis_data = g_data->GetXaxis();
     for(int i_bin =0; i_bin < (int) axis_data->GetNbins()-4; i_bin++){
@@ -422,6 +435,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   }
 
 
+	std::cout << "[INFO] Stability plot - legend "<< std::endl;
   TLegend *legend;
   TPaveText *pt;
   if(column == -2){
@@ -722,7 +736,7 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
   pave->SetTextAlign(12);
   pave->SetBorderSize(0);
   pave->SetTextSize(0.04);
-  pave->AddText("CMS Preliminary   #sqrt{s}=8 TeV");
+  pave->AddText("CMS Preliminary   #sqrt{s}=13 TeV");
   //if(lumi.Sizeof()>1)  pave->AddText("#sqrt{s}="+energy+"   L="+lumi+" fb^{-1}");
   //else
   //pave->AddText("#sqrt{s}=8 TeV");
@@ -1115,7 +1129,7 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
     if(column<0 ){
       pt->Clear();
       pt->AddText("CMS Preliminary 2012");
-      pt->AddText("#sqrt{s} = 8TeV, L = 19.6 fb^{-1}");
+      pt->AddText("#sqrt{s} = 13TeV, L = xx fb^{-1}");
       if(region.Contains("EB")) pt->AddText("ECAL Barrel");
       if(region.Contains("EE")) pt->AddText("ECAL Endcap");
       pt->Draw("NDC");

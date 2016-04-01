@@ -89,7 +89,17 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
   //  GsfElectronCoreRefProd rEleCore = const_cast<edm::Event&>(iEvent).getRefBeforePut<GsfElectronCoreCollection>();
   GsfElectronCoreRefProd rEleCore = e.getRefBeforePut<GsfElectronCoreCollection>();
   edm::Ref<GsfElectronCoreCollection>::key_type idxEleCore = 0;
-  
+
+#ifdef DEBUG
+  std::cout << "[DEBUG" << "Electron collection size: " << eleHandle->size() << std::endl;
+#endif
+
+  if(superClusterEEHandle->size()+superClusterEBHandle->size()< eleHandle->size()){
+	  edm::LogError("ALCARERECO") << "Reconstructed SCs < old electrons";
+#ifdef DEBUG
+	  assert(superClusterEEHandle->size()+superClusterEBHandle->size()>= eleHandle->size());
+#endif
+  }
   for(reco::GsfElectronCollection::const_iterator eleIt = eleHandle->begin(); eleIt != eleHandle->end(); eleIt++)
     {
       float DeltaRMineleSCbarrel(0.15); //initial minDeltaR

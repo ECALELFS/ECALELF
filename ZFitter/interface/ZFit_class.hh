@@ -108,7 +108,7 @@ public:
 
   void Import(TString commonCut, TString eleID_, std::set<TString>& branchList);
 
-  double GetEffectiveSigma(RooAbsData *dataset);
+	double GetEffectiveSigma(RooAbsData *dataset, float quant);
 
   // this method makes the fit on data and MC
   void Fit(TString region="", bool doPlot=true);
@@ -157,6 +157,7 @@ public:
 
   RooRealVar invMass;
   TString energyVar_name;
+	TH1* invMass_highBinning;
   BW_CB_pdf_class convBwCbPdf;
   Cruijff_pdf_class cruijffPdf;
 
@@ -174,7 +175,8 @@ public:
   RooPlot *plot_data;
   RooPlot *plot_MC;
   float chi2_data, chi2_MC;
-  float sigmaeff_data, sigmaeff_MC;
+	float sigmaeff_data, sigmaeff_MC;
+	std::map< float, float> sigmaeff_data_map, sigmaeff_MC_map;
  private:
   //-------------------- Pointers to the objects 
   //--------------- Z parameters to be declared depending on the signal pdf
@@ -186,6 +188,9 @@ public:
 
   TChain *data;
   TChain *signal;
+
+	RooAbsData *invMass_dataRed;
+
 
   RooAbsPdf *signal_pdf;
   RooAbsPdf *model_pdf;
@@ -220,7 +225,7 @@ public:
   void PlotFit(RooAbsData *signal_red, RooAbsData *data_red);
   void PlotFit(RooAbsData *data_red, bool isMC=true);
 
-  void SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, double sigmaeff);
+	void SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, std::map<float, float> sigmaeff);
 
   //  std::map<TString, TH1F *> MakeHistMap(const chain_map_t& map, TString region);
 
