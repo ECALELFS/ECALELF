@@ -718,6 +718,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	int nTight   = 0; //number of electrons passing only the tight  ID for preselection
 	int nMedium  = 0; //number of electrons passing only the medium ID for preselection
 	int nLoose   = 0; //number of electrons passing only the loose  ID for preselection
+	int nEle     = 0; //number of electrons saved in the electron stream
 
 	//if (eventType!=ZMMG) { // count the number of electrons passing the different IDs for preselection and event type determination
 	if (eventType != UNKNOWN) { // count the number of electrons passing the different IDs for preselection and event type determination
@@ -727,6 +728,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			if( eleIter1->electronID(eleID_tight) )          ++nTight;
 			else if( eleIter1->electronID(eleID_medium) ) ++nMedium;
 			else if( eleIter1->electronID(eleID_loose) )  ++nLoose;
+			nEle++;
 		}
 	}
 
