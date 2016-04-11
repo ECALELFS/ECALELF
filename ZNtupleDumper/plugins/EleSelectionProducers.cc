@@ -72,16 +72,17 @@ private:
 
 
   /// input tag for electrons
-  edm::InputTag electronsTAG;
+  edm::EDGetTokenT<std::vector<reco::GsfElectron> > electronsToken_;
   // conversions
-  edm::InputTag conversionsProducerTAG;
-  edm::InputTag BeamSpotTAG;
-  edm::InputTag VertexTAG;
+  edm::EDGetTokenT<reco::ConversionCollection> conversionsProducerToken_;
+  edm::EDGetTokenT<reco::BeamSpot>         BeamSpotToken_;
+  edm::EDGetTokenT<reco::VertexCollection> VertexToken_;
   // isolation
-  edm::InputTag chIsoValsTAG, emIsoValsTAG, nhIsoValsTAG;
+  edm::EDGetTokenT<edm::ValueMap<double> > chIsoValsToken_;
+  edm::EDGetTokenT<edm::ValueMap<double> > emIsoValsToken_;
+  edm::EDGetTokenT<edm::ValueMap<double> > nhIsoValsToken_;
   /// input rho
-  edm::InputTag rhoTAG;
-
+  edm::EDGetTokenT<double> rhoToken_;
 
   SimpleCutBasedElectronIDSelectionFunctor fiducial_selector;
   SimpleCutBasedElectronIDSelectionFunctor WP70_PU_selector;
@@ -102,14 +103,14 @@ private:
 
 
 EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
-  electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
-  conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
-  BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
-  VertexTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
-  chIsoValsTAG(iConfig.getParameter<edm::InputTag>("chIsoVals")),
-  emIsoValsTAG(iConfig.getParameter<edm::InputTag>("emIsoVals")),
-  nhIsoValsTAG(iConfig.getParameter<edm::InputTag>("nhIsoVals")),
-  rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
+  electronsToken_(consumes<std::vector<reco::GsfElectron> >(iConfig.getParameter<edm::InputTag>("electronCollection"))),
+  conversionsProducerToken_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversionCollection"))),
+  BeamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
+  VertexToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
+  chIsoValsToken_(consumes<edm::ValueMap<double> >(iConfig.getParameter<edm::InputTag>("chIsoVals"))),
+  emIsoValsToken_(consumes<edm::ValueMap<double> >(iConfig.getParameter<edm::InputTag>("emIsoVals"))),
+  nhIsoValsToken_(consumes<edm::ValueMap<double> >(iConfig.getParameter<edm::InputTag>("nhIsoVals"))),
+  rhoToken_(consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastJet"))),
 
   fiducial_selector("fiducial", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 		    chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
@@ -219,33 +220,33 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 
 
   //------------------------------ ELECTRON
-  iEvent.getByLabel(electronsTAG, electronsHandle);
+  iEvent.getByToken(electronsToken_, electronsHandle);
   //if(!electronsHandle.isValid()){
   //  std::cerr << "[ERROR] electron collection not found" << std::endl;
   //  return;
   //}
    
   //------------------------------ CONVERSIONS
-  iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
+  iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
   //   std::cout << conversionsHandle.isValid() << std::endl;
-  iEvent.getByLabel(BeamSpotTAG, bsHandle);
-  iEvent.getByLabel(VertexTAG, vertexHandle);
+  iEvent.getByToken(BeamSpotToken_, bsHandle);
+  iEvent.getByToken(VertexToken_, vertexHandle);
   //------------------------------ RHO
-  iEvent.getByLabel(rhoTAG,rhoHandle);
+  iEvent.getByToken(rhoToken_,rhoHandle);
 
   //------------------------------ ISO DEPOSITS
 #ifdef CMSSW_7_2_X
 #else
-  iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
+  iEvent.getByToken(chIsoValsToken_, chIsoValsHandle);
   if(!chIsoValsHandle.isValid()){
-    chIsoValsTAG=edm::InputTag(chIsoValsTAG.label().substr(0,chIsoValsTAG.label().find("PFIso",chIsoValsTAG.label().size()-6))+"Gsf", chIsoValsTAG.instance(), chIsoValsTAG.process());
-    emIsoValsTAG=edm::InputTag(emIsoValsTAG.label().substr(0,emIsoValsTAG.label().find("PFIso",emIsoValsTAG.label().size()-6))+"Gsf", emIsoValsTAG.instance(), emIsoValsTAG.process());
-    nhIsoValsTAG=edm::InputTag(nhIsoValsTAG.label().substr(0,nhIsoValsTAG.label().find("PFIso",nhIsoValsTAG.label().size()-6))+"Gsf", nhIsoValsTAG.instance(), nhIsoValsTAG.process());
+    chIsoValsToken_=edm::InputTag(chIsoValsToken_.label().substr(0,chIsoValsToken_.label().find("PFIso",chIsoValsToken_.label().size()-6))+"Gsf", chIsoValsToken_.instance(), chIsoValsToken_.process());
+    emIsoValsToken_=edm::InputTag(emIsoValsToken_.label().substr(0,emIsoValsToken_.label().find("PFIso",emIsoValsToken_.label().size()-6))+"Gsf", emIsoValsToken_.instance(), emIsoValsToken_.process());
+    nhIsoValsToken_=edm::InputTag(nhIsoValsToken_.label().substr(0,nhIsoValsToken_.label().find("PFIso",nhIsoValsToken_.label().size()-6))+"Gsf", nhIsoValsToken_.instance(), nhIsoValsToken_.process());
 
-    iEvent.getByLabel(chIsoValsTAG, chIsoValsHandle);
+    iEvent.getByToken(chIsoValsToken_, chIsoValsHandle);
   }
-  iEvent.getByLabel(emIsoValsTAG, emIsoValsHandle);  
-  iEvent.getByLabel(nhIsoValsTAG, nhIsoValsHandle);
+  iEvent.getByToken(emIsoValsToken_, emIsoValsHandle);  
+  iEvent.getByToken(nhIsoValsToken_, nhIsoValsHandle);
 #endif  
    
 #ifdef DEBUG
