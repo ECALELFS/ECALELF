@@ -203,3 +203,7 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15MiniAODv2-74X_mcRun2_
 #####
 allRange		/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-0TPU25nsData2015v1_magnetOffBS0T_74X_mcRun2_0T_v0-v2/AODSIM DYToEE_powheg-RunIISpring15_0T caf database VALID - -
 allRange		/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring15DR74-0TPU25nsData2015v1_magnetOffBS0T_74X_mcRun2_0T_v0-v2/AODSIM DYToEE_powheg-RunIISpring15_0T caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco/ VALID - -
+####
+#
+254227-255031	/DoubleEG/Run2015C_25ns-16Dec2015-v1/MINIAOD	DoubleEG-Run2015C-16DecRereco-25nsReco-MINIAOD	caf	database VALID RUN2015C,RUN2015CD
+256630-260627	/DoubleEG/Run2015D-16Dec2015-v2/MINIAOD	DoubleEG-Run2015D-16DecRereco-25nsReco-MINIAOD	caf	database VALID RUN2015D,RUN2015CD

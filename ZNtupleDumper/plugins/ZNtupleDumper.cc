@@ -191,30 +191,29 @@ private:
 
 	//------------------------------ Input Tags
 	// input tag for primary vertex
-	edm::InputTag vtxCollectionTAG;
-	edm::InputTag BeamSpotTAG;
-	// input tag for electrons
-	edm::InputTag electronsTAG;
-	edm::InputTag muonsTAG;
-	edm::InputTag photonsTAG;
+	edm::EDGetTokenT<GenEventInfoProduct> generatorInfoToken_;
+	edm::EDGetTokenT<reco::VertexCollection> vtxCollectionToken_;
+	//edm::InputTag vtxCollectionTAG;
+	edm::EDGetTokenT<reco::BeamSpot>         beamSpotToken_;
+	//edm::InputTag BeamSpotTAG;
+	edm::EDGetTokenT<pat::ElectronCollection> electronsToken_;
+	edm::EDGetTokenT<pat::MuonCollection>     muonsToken_;
+	edm::EDGetTokenT<pat::PhotonCollection>     photonsToken_;
 
-#ifdef CMSSW_7_2_X
-	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEBTAG;
-	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEETAG;
-#else
-	edm::InputTag recHitCollectionEBTAG;
-	edm::InputTag recHitCollectionEETAG;
-#endif
-
-	edm::InputTag recHitCollectionESTAG;
-	edm::InputTag EESuperClustersTAG;
+	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEBToken_;
+	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionEEToken_;
+	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionESToken_;
+	
+	edm::EDGetTokenT<std::vector<reco::SuperCluster> > EESuperClustersToken_;
 	// input rho
-	edm::InputTag rhoTAG, pileupInfoTAG;
-	edm::InputTag conversionsProducerTAG;
-	edm::InputTag metTAG;
-        edm::InputTag caloMetTAG;
-	edm::InputTag triggerResultsTAG;
-	edm::InputTag WZSkimResultsTAG;
+	edm::EDGetTokenT<double> rhoToken_;
+	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > pileupInfoToken_;
+	edm::EDGetTokenT<reco::ConversionCollection> conversionsProducerToken_;
+	edm::EDGetTokenT<reco::PFMETCollection> metToken_;
+	edm::EDGetTokenT<reco::CaloMETCollection> caloMetToken_;
+	edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
+	edm::EDGetTokenT<edm::TriggerResults> WZSkimResultsToken_;
+	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
 	std::vector< std::string> hltPaths, SelectEvents;
 private:
 	std::string foutName;
@@ -278,6 +277,9 @@ private:
 	Float_t energySCEle_must_regrCorr_ele[3]; ///< mustache SC energy derived with regression (offline tool)
 	Float_t energySigmaSCEle_must_regrCorr_ele[3]; ///< mustache SC energy resolution derived with regression (offline tool)
 
+	Float_t energySCEle_pho_regrCorr[3]; ///< mustache SC energy derived with regression (offline tool)
+	Float_t energySigmaSCEle_pho_regrCorr[3]; ///< mustache SC energy resolution derived with regression (offline tool)
+
 	Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
 	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
 	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
@@ -299,6 +301,8 @@ private:
 	Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too!
 	Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
 	Float_t invMass_SC_must_regrCorr_ele;   ///< invariant mass using SC energy with mustache corrected with regression
+	Float_t invMass_SC_pho_regrCorr;   ///< invariant mass using SC energy from associated photon
+
 	//   Float_t invMass_e3x3;
 	Float_t invMass_e5x5;
 	Float_t invMass_rawSC;
@@ -460,26 +464,22 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	//  isMC(iConfig.getParameter<bool>("isMC")),
 	isPartGun(iConfig.getParameter<bool>("isPartGun")),
 	doHighEta_LowerEtaCut(iConfig.getParameter<double>("doHighEta_LowerEtaCut")),
-	vtxCollectionTAG(iConfig.getParameter<edm::InputTag>("vertexCollection")),
-	BeamSpotTAG(iConfig.getParameter<edm::InputTag>("BeamSpotCollection")),
-	electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection")),
-	muonsTAG(iConfig.getParameter<edm::InputTag>("muonCollection")),
-	photonsTAG(iConfig.getParameter<edm::InputTag>("photonCollection")),
-#ifdef CMSSW_7_2_X
-	recHitCollectionEBTAG(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEB" ))),
-	recHitCollectionEETAG(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEE" ))),
-#else
-	recHitCollectionEBTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEB")),
-	recHitCollectionEETAG(iConfig.getParameter<edm::InputTag>("recHitCollectionEE")),
-#endif
-
-	recHitCollectionESTAG(iConfig.getParameter<edm::InputTag>("recHitCollectionES")),
-	EESuperClustersTAG(iConfig.getParameter<edm::InputTag>("EESuperClusterCollection")),
-	rhoTAG(iConfig.getParameter<edm::InputTag>("rhoFastJet")),
-	pileupInfoTAG(iConfig.getParameter<edm::InputTag>("pileupInfo")),
-	conversionsProducerTAG(iConfig.getParameter<edm::InputTag>("conversionCollection")),
-	metTAG(iConfig.getParameter<edm::InputTag>("metCollection")),
-        caloMetTAG(iConfig.getParameter<edm::InputTag>("caloMetCollection")),
+	vtxCollectionToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
+	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
+	electronsToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronCollection"))),
+	muonsToken_(consumes<pat::MuonCollection>(iConfig.getParameter<edm::InputTag>("muonCollection"))),
+	photonsToken_(consumes<pat::PhotonCollection>(iConfig.getParameter<edm::InputTag>("photonCollection"))),
+	recHitCollectionEBToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEB" ))),
+	recHitCollectionEEToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEE" ))),
+	recHitCollectionESToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("recHitCollectionES"))),
+	EESuperClustersToken_(consumes<reco::SuperClusterCollection>(iConfig.getParameter< edm::InputTag>("EESuperClusterCollection"))),
+	rhoToken_(consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastJet"))),
+	pileupInfoToken_(consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileupInfo"))),
+	conversionsProducerToken_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversionCollection"))),
+	metToken_(consumes<reco::PFMETCollection>(iConfig.getParameter<edm::InputTag>("metCollection"))),
+        caloMetToken_(consumes<reco::CaloMETCollection>(iConfig.getParameter<edm::InputTag>("caloMetCollection"))), //for the stream
+	triggerResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResultsCollection"))),
+	WZSkimResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection"))),
 	triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
 	WZSkimResultsTAG(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection")),
 	hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
@@ -556,16 +556,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 	// filling infos runNumber, eventNumber, lumi
 	if( !iEvent.isRealData() ) {
-		iEvent.getByLabel(pileupInfoTAG, PupInfo);
-		iEvent.getByLabel(edm::InputTag("generator"), GenEventInfoHandle);
+		iEvent.getByToken(pileupInfoToken_, PupInfo);
+		iEvent.getByToken(generatorInfoToken_, GenEventInfoHandle);
 		isMC = true;
 	} else isMC = false;
 
 	//------------------------------ HLT
 	/// \todo check why
-	if(triggerResultsTAG.label() != "") iEvent.getByLabel(triggerResultsTAG, triggerResultsHandle);
+	if(triggerResultsTAG.label() != "") iEvent.getByToken(triggerResultsToken_, triggerResultsHandle);
 	if(WZSkimResultsTAG.label() != "") {
-		iEvent.getByLabel(WZSkimResultsTAG,  WZSkimResultsHandle); //else it is not produced with ALCARECO selection
+		iEvent.getByToken(WZSkimResultsToken_,  WZSkimResultsHandle); //else it is not produced with ALCARECO selection
 		//then the type of event has to be defined
 
 		//Check if it is Wenu, Z or ZSC event according to triggerResults
@@ -639,39 +639,39 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	}
 
 	//------------------------------ CONVERSIONS
-	iEvent.getByLabel(conversionsProducerTAG, conversionsHandle);
+	iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
 
 	//------------------------------
-	clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBTAG,
-	        recHitCollectionEETAG);
+	clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBToken_,
+	        recHitCollectionEEToken_);
 
 	//------------------------------ electrons
 	if (eventType == ZMMG) {
 		//------------------------------ muons
-		iEvent.getByLabel(muonsTAG, muonsHandle);
+		iEvent.getByToken(muonsToken_, muonsHandle);
 		//------------------------------ photons
-		iEvent.getByLabel(photonsTAG, photonsHandle);
+		iEvent.getByToken(photonsToken_, photonsHandle);
 	}	else {
-		iEvent.getByLabel(electronsTAG, electronsHandle);
+		iEvent.getByToken(electronsToken_, electronsHandle);
 	}
 
 	//------------------------------ SuperClusters (for high Eta studies)
-	iEvent.getByLabel(EESuperClustersTAG, EESuperClustersHandle);
+	iEvent.getByToken(EESuperClustersToken_, EESuperClustersHandle);
 
 	// for conversions with full vertex fit
 	//------------------------------  VERTEX
-	iEvent.getByLabel(vtxCollectionTAG, primaryVertexHandle);
-	iEvent.getByLabel(BeamSpotTAG, bsHandle);
-	iEvent.getByLabel(rhoTAG, rhoHandle);
+	iEvent.getByToken(vtxCollectionToken_, primaryVertexHandle);
+	iEvent.getByToken(beamSpotToken_, bsHandle);
+	iEvent.getByToken(rhoToken_, rhoHandle);
 
-	iEvent.getByLabel(metTAG, metHandle);
-	iEvent.getByLabel(recHitCollectionESTAG, ESRechitsHandle);
+	iEvent.getByToken(metToken_, metHandle);
+	iEvent.getByToken(recHitCollectionESToken_, ESRechitsHandle);
 	//if(metHandle.isValid()==false) iEvent.getByType(metHandle);
 	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
 	reco::CaloMET caloMet;
 
 	if (caloMetHandle.isValid()==true) {
-	  iEvent.getByLabel(caloMetTAG, caloMetHandle); 
+	  iEvent.getByToken(caloMetToken_, caloMetHandle);
 	  caloMet = ((*caloMetHandle))[0]; //get hlt met
 	}
 
@@ -804,7 +804,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				if (nEle!=1) continue;
 				//if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 			  
-				iEvent.getByLabel(caloMetTAG, caloMetHandle); 
+				iEvent.getByToken(caloMetToken_, caloMetHandle);
 				if (caloMetHandle.isValid()==false) continue;
 			  
 				// MET/MT selection
@@ -1221,7 +1221,10 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("rawEnergySCEle_must", rawEnergySCEle_must, "rawEnergySCEle_must[3]/F");
 
 	tree->Branch("energySCEle_must_regrCorr_ele", energySCEle_must_regrCorr_ele, "energySCEle_must_regrCorr_ele[3]/F");
-	tree->Branch("energySCEle_must_regrCorr_ele", energySigmaSCEle_must_regrCorr_ele, "energySigmaSCEle_must_regrCorr_ele[3]/F");
+	tree->Branch("energySigmaSCEle_must_regrCorr_ele", energySigmaSCEle_must_regrCorr_ele, "energySigmaSCEle_must_regrCorr_ele[3]/F");
+
+	tree->Branch("energySCEle_pho_regrCorr", energySCEle_pho_regrCorr, "energySCEle_pho_regrCorr[3]/F");
+	tree->Branch("energySigmaSCEle_pho_regrCorr", energySigmaSCEle_pho_regrCorr, "energySigmaSCEle_pho_regrCorr[3]/F");
 
 	tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
 	tree->Branch("esEnergyPlane2SCEle", esEnergyPlane2SCEle, "esEnergyPlane2SCEle[3]/F");
@@ -1246,6 +1249,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("invMass_SC", &invMass_SC,   "invMass_SC/F");
 	tree->Branch("invMass_SC_must", &invMass_SC_must,   "invMass_SC_must/F");
 	tree->Branch("invMass_SC_must_regrCorr_ele", &invMass_SC_must_regrCorr_ele,   "invMass_SC_must_regrCorr_ele/F");
+	tree->Branch("invMass_SC_pho_regrCorr", &invMass_SC_pho_regrCorr,   "invMass_SC_pho_regrCorr/F");
 	//   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
 	tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
 	tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
@@ -1438,8 +1442,11 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		rawEnergySCEle_must[index] = -99;
 	}
 
-	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMust");
-	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("eleNewEnergiesProducer:energySCEleMustVar");
+	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMust");
+	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMustVar");
+
+	energySCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePho");
+	energySigmaSCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePhoVar");
 
 
 	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(sc, 1);
@@ -1888,6 +1895,8 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	invMass_SC_must_regrCorr_ele = sqrt(2 * energySCEle_must_regrCorr_ele[0] * energySCEle_must_regrCorr_ele[1] *
 	                                    angle);
 
+	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *
+	                                    angle);
 
 	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
 	                     angle);
@@ -1943,6 +1952,7 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 
 	invMass_SC_must = sqrt(2 * energySCEle_must[0] * energySCEle_must[1] *  angle);
 	invMass_SC_must_regrCorr_ele = sqrt(2 * energySCEle_must_regrCorr_ele[0] * energySCEle_must_regrCorr_ele[1] *  angle);
+	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *  angle);
 
 
 	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] * angle);
@@ -2036,29 +2046,33 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
 float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsigned int planeIndex)
 {
-
 	float RawenergyPlane = 0;
 	float pfRawenergyPlane = 0;
-	if(ESRechitsHandle.isValid()) {
-		for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
-			const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
-			for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
-				//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
-				//      ++iCount;
-				for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
-					ESDetId rhid = ESDetId(esItr->id());
-					if(rhid == (*rh).first) {
-						// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
-						if((int) rhid.plane() == (int) planeIndex) {
-							RawenergyPlane += esItr->energy();
-							pfRawenergyPlane += rh->second;
-						}
-						break;
-					}
-				}
-			}
+
+	if(!ESRechitsHandle.isValid()) 
+	  return RawenergyPlane;
+	if (!sc->preshowerClusters().isAvailable()) //protection for miniAOD
+	  return RawenergyPlane;
+
+	for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
+	  const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
+	  for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
+	    //      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
+	    //      ++iCount;
+	    for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
+	      ESDetId rhid = ESDetId(esItr->id());
+	      if(rhid == (*rh).first) {
+		// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
+		if((int) rhid.plane() == (int) planeIndex) {
+		  RawenergyPlane += esItr->energy();
+		  pfRawenergyPlane += rh->second;
 		}
+		break;
+	      }
+	    }
+	  }
 	}
+
 	if (pfRawenergyPlane) ; // avoid compilation error for unused var
 	if (RawenergyPlane); 
 	//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl;
@@ -2566,7 +2580,8 @@ void ZNtupleDumper::InitPdfSystTree(void)
 	//   pdfSystTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
 	//   pdfSystTree->Branch("runTime",       &runTime,         "runTime/i");
 
-
+#ifdef PDFWEIGHTS
+// this part is deprecated
 	for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
 	        pdfWeightTAGS_itr != pdfWeightTAGS.end();
 	        pdfWeightTAGS_itr++) {
@@ -2580,17 +2595,18 @@ void ZNtupleDumper::InitPdfSystTree(void)
 
 	pdfSystTree->Branch("fsrWeight", &fsrWeight, "fsrWeight/F");
 	pdfSystTree->Branch("weakWeight", &weakWeight, "weakWeight/F");
+#endif
 	return;
 }
 
 void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent)
 {
-
+#ifdef PDFWEIGHTS
 	for(std::vector< edm::InputTag >::const_iterator pdfWeightTAGS_itr = pdfWeightTAGS.begin();
 	        pdfWeightTAGS_itr != pdfWeightTAGS.end();
 	        pdfWeightTAGS_itr++) {
 		int i = pdfWeightTAGS_itr - pdfWeightTAGS.begin();
-		iEvent.getByLabel(*pdfWeightTAGS_itr, pdfWeightHandle);
+		iEvent.getByToken(*pdfWeightTAGS_itr, pdfWeightHandle);
 
 		//pdfSystWeight[i] =
 		std::vector<Double_t> weights = std::vector<Double_t>(*pdfWeightHandle);
@@ -2604,14 +2620,16 @@ void ZNtupleDumper::TreeSetPdfSystVar(const edm::Event& iEvent)
 		//    }
 	}
 
-	iEvent.getByLabel(fsrWeightTAG, fsrWeightHandle);
-	iEvent.getByLabel(weakWeightTAG, weakWeightHandle);
+	iEvent.getByToken(fsrWeightTAG, fsrWeightHandle);
+	iEvent.getByToken(weakWeightTAG, weakWeightHandle);
 
 	fsrWeight = (Float_t) * fsrWeightHandle;
 	weakWeight = (Float_t) * weakWeightHandle;
-
+#endif
 	return ;
 }
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(ZNtupleDumper);
+
+//  LocalWords:  pileupInfoTAG conversionsProducerTAG triggerResultsTAG
