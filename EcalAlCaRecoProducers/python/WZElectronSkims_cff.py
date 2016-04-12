@@ -242,15 +242,14 @@ ZeeSelectorElectronStream =  cms.EDProducer("CandViewShallowCloneCombiner",
 
 #met, mt cuts for W selection
 MT="sqrt(2*daughter(0).pt*daughter(1).pt*(1 - cos(daughter(0).phi - daughter(1).phi)))"
-MET_CUT_MIN = 0.
+MET_CUT_MIN = 25.
 W_ELECTRON_ET_CUT_MIN = 30.0
-MT_CUT_MIN = 0.
+MT_CUT_MIN = 50.
 
 WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("pfMet PassingVetoId"), # charge coniugate states are implied
     checkCharge = cms.bool(False),                           
-#    cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
-    cut   = cms.string(("daughter(1).pt > %f") % (W_ELECTRON_ET_CUT_MIN))
+    cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
 )
 
 WenuSelectorElectronStream = cms.EDProducer("CandViewShallowCloneCombiner",
