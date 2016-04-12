@@ -425,6 +425,8 @@ if(options.isPrivate == 0):
 else:
     process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
 
+if(options.electronStream == 1):
+    process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","RECO")
 
 process.NtupleFilterSeq = cms.Sequence()
 if(ZSkim):
@@ -787,6 +789,8 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
         process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO')
+        if (options.electronStream==1):
+            process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')            
     else:
         if(options.doTree==0):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
@@ -864,7 +868,6 @@ if(options.type!="MINIAODNTUPLE"):
     process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("patElectrons","","@skipCurrentProcess")
     process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("patPhotons","","@skipCurrentProcess")
 
-
 else:
     #configure everything for MINIAOD
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
@@ -936,6 +939,7 @@ process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProdu
 if (options.electronStream==1):
     process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMet')
     process.zNtupleDumper.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
+    process.zNtupleDumper.electronStream = cms.bool(True)
     process.eleSelectionProducers.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
 
 if(options.type=="ALCARECOSIM"):

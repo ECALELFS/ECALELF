@@ -215,12 +215,13 @@ private:
 	edm::EDGetTokenT<edm::TriggerResults> WZSkimResultsToken_;
 	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
 	std::vector< std::string> hltPaths, SelectEvents;
+
 private:
 	std::string foutName;
 
 	bool doExtraCalibTree;
 	bool doEleIDTree;
-
+        bool electronStream;
 
 	edm::Service<TFileService> fs; //< output file for extra ntuples
 	TTree *tree;                   //< output file for standard ntuple
@@ -487,6 +488,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	foutName(iConfig.getParameter<std::string>("foutName")),
 	doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
 	doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
+	electronStream(iConfig.getParameter<bool>("electronStream")),
 	doPdfSystTree(false),
 	pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections")),
 	fsrWeightTAG(iConfig.getParameter< edm::InputTag>("fsrWeightCollection")),
@@ -605,11 +607,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				if(WZSkimResultsHandle->accept(*alcaSkimPath_itr)) {
 					skipEvent = false;
 					std::string hltName_str(alcaSkimPathNames.triggerName(*alcaSkimPath_itr));
-					if(hltName_str.find("WElectronStream")!=std::string::npos)
-					        eventType=WENU;
-					else if(hltName_str.find("ZElectronStream")!=std::string::npos)
-					        eventType=ZEE;
-					else if(hltName_str.find("WElectron") != std::string::npos)
+					if(hltName_str.find("WElectron") != std::string::npos)
 						eventType = WENU;
 					else if(hltName_str.find("ZSCElectron") != std::string::npos)
 						eventType = ZSC;
@@ -637,6 +635,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			if(skipEvent) return; // event not coming from any skim or paths
 		}
 	}
+	if (electronStream)
+	  eventType=WSTREAM;
 
 	//------------------------------ CONVERSIONS
 	iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
@@ -1442,11 +1442,13 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		rawEnergySCEle_must[index] = -99;
 	}
 
-	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMust");
-	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMustVar");
+	//I temporarly removed the following isntructions, since they don't work (and I don't know if they are needed)
 
-	energySCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePho");
-	energySigmaSCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePhoVar");
+	//	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMust");
+	//energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMustVar");
+
+	//energySCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePho");
+	//energySigmaSCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePhoVar");
 
 
 	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(sc, 1);
