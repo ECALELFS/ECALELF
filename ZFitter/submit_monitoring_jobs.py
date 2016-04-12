@@ -15,14 +15,18 @@ parser.add_option('--generateOnly',      action='store_true', dest='generateOnly
 
 (options, args) = parser.parse_args()
 
-localReco = "multifit" #type of local reco: "multifit" or "weights"
+ntupleName = "data-Run2015D-25ns-multifit"
+#options: "data-Run2015D-25ns-multifit", "data-Run2015D-25ns-weights" or "data-Run2015D-25ns-stream".
+folder = "/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/"
 
 currentDir = os.getcwd();
 CMSSWDir = currentDir+"/../";
 
-fn = "Job_monitoring_"+localReco+"/Job_"+"EB";
+os.system("mkdir Job_monitoring_"+ntupleName)
+fn = "Job_monitoring_"+ntupleName+"/Job_"+"EB";
+
 outScript = open(fn+".sh","w");
-command = "ZFitter.exe -f EoverPcalibration_batch_"+localReco+"_hadd.dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EB --yMIN 0.85 --LUMI 2.5"
+command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EB --yMIN 0.85 --LUMI 2.5"
 print command;
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'cd '+CMSSWDir);
@@ -32,24 +36,24 @@ outScript.write("\necho $PWD");
 outScript.write("\nls");
 
 outScript.write("\necho \"copia1\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/"+localReco+".root ./")
+outScript.write("\ncmsStage "+folder+ntupleName+".root ./")
 outScript.write("\necho \"copia2\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/"+localReco+"-extraCalibTree.root ./")
+outScript.write("\ncmsStage "+folder+"extraCalibTree-"+ntupleName+".root ./")
 
 outScript.write("\necho \"copia13\" ");
 #                        outScript.write("\ncp -v /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/* .")
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/momentumCalibration2015_EB_pTk.root ./")
+outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EB_pTk.root ./")
 outScript.write("\necho \"copia14\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/momentumCalibration2015_EB_scE.root ./")
+outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EB_scE.root ./")
 outScript.write("\necho \"copia15\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/EoverPcalibration_batch_"+localReco+"_hadd.dat ./")
+outScript.write("\ncmsStage "+folder+"EoverPcalibration_batch_"+ntupleName+".dat ./")
 outScript.write("\necho \"fine copia\" ");
 
 outScript.write("\nls")
 outScript.write("\necho \"eseguo: "+command+"\" ")
 outScript.write("\n"+command);
 outScript.write("\nls")
-outScript.write("\ncp -v -r EB__/ "+currentDir+"/EB_"+localReco+"/")
+outScript.write("\ncp -v -r EB__/ "+currentDir+"/EB_"+ntupleName+"/")
 outScript.close();
 os.system("chmod 777 "+currentDir+"/"+fn+".sh");
 command2 = "bsub -q cmscaf1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
@@ -63,9 +67,9 @@ print command2
 
 
 
-fn = "Job_monitoring_"+localReco+"/Job_"+"EE";
+fn = "Job_monitoring_"+ntupleName+"/Job_"+"EE";
 outScript = open(fn+".sh","w");
-command = "ZFitter.exe -f EoverPcalibration_batch_"+localReco+"_hadd.dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EE --yMIN 0.65 --yMAX 1.15 --LUMI 2.5"
+command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EE --yMIN 0.65 --yMAX 1.15 --LUMI 2.5"
 print command;
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'cd '+CMSSWDir);
@@ -76,24 +80,24 @@ outScript.write("\nls");
 
 
 outScript.write("\necho \"copia1\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/"+localReco+".root ./")
+outScript.write("\ncmsStage "+folder+ntupleName+".root ./")
 outScript.write("\necho \"copia2\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/"+localReco+"-extraCalibTree.root ./")
+outScript.write("\ncmsStage "+folder+"extraCalibTree"+ntupleName+".root ./")
 
 outScript.write("\necho \"copia13\" ");
 #                        outScript.write("\ncp -v /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/* .")
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/momentumCalibration2015_EE_pTk.root ./")
+outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EE_pTk.root ./")
 outScript.write("\necho \"copia14\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/momentumCalibration2015_EE_scE.root ./")
+outScript.write("\ncmsStage "+folder+"momentumCalibration2015_EE_scE.root ./")
 outScript.write("\necho \"copia15\" ");
-outScript.write("\ncmsStage /store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/EoverPcalibration_batch_"+localReco+"_hadd.dat ./")
+outScript.write("\ncmsStage "+folder+"EoverPcalibration_batch_"+ntupleName+".dat ./")
 outScript.write("\necho \"fine copia\" ");
 
 outScript.write("\nls")
 outScript.write("\necho \"eseguo: "+command+"\" ")
 outScript.write("\n"+command);
 outScript.write("\nls")
-outScript.write("\ncp -v -r EE__/ "+currentDir+"/EE_"+localReco+"/")
+outScript.write("\ncp -v -r EE__/ "+currentDir+"/EE_"+ntupleName+"/")
 outScript.close();
 os.system("chmod 777 "+currentDir+"/"+fn+".sh");
 command2 = "bsub -q cmscaf1nd -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
