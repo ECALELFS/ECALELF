@@ -2154,7 +2154,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
 		energyRecHitSCEle[-index].clear();
 		LCRecHitSCEle[-index].clear();
 		ICRecHitSCEle[-index].clear();
-		seedLaserAlphaSCEle[-index].clear();
+		seedLaserAlphaSCEle[-index] = -99.;
 		return;
 	}
 
@@ -2166,7 +2166,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
 	energyRecHitSCEle[index].clear();
 	LCRecHitSCEle[index].clear();
 	ICRecHitSCEle[index].clear();
-	seedLaserAlphaSCEle[index].clear();
+	seedLaserAlphaSCEle[index] = -99.;
 
 	//  EcalIntercalibConstantMap icMap = icHandle->get()
 	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
@@ -2244,7 +2244,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
 		energyRecHitSCEle[-index].clear();
 		LCRecHitSCEle[-index].clear();
 		ICRecHitSCEle[-index].clear();
-		seedLaserAlphaSCEle[-index].clear();
+		seedLaserAlphaSCEle[-index] = -99.;
 		return;
 	}
 
@@ -2256,7 +2256,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
 	energyRecHitSCEle[index].clear();
 	LCRecHitSCEle[index].clear();
 	ICRecHitSCEle[index].clear();
-	seedLaserAlphaSCEle[index].clear();
+	seedLaserAlphaSCEle[index] = -99.;
 
 	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
 	nHitsSCEle[index] = hitsAndFractions_ele1.size();
@@ -2366,7 +2366,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index)
 		energyRecHitSCEle[-index].clear();
 		LCRecHitSCEle[-index].clear();
 		ICRecHitSCEle[-index].clear();
-		seedLaserAlphaSCEle[-index].clear();
+		seedLaserAlphaSCEle[-index] = -99.;
 		return;
 	}
 
@@ -2378,7 +2378,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index)
 	energyRecHitSCEle[index].clear();
 	LCRecHitSCEle[index].clear();
 	ICRecHitSCEle[index].clear();
-	seedLaserAlphaSCEle[index].clear();
+	seedLaserAlphaSCEle[index] = -99.;
 
 	//  EcalIntercalibConstantMap icMap = icHandle->get()
 	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = photon.superCluster()->hitsAndFractions();
@@ -2456,7 +2456,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Muon& muon1, int index)
 		energyRecHitSCEle[-index].clear();
 		LCRecHitSCEle[-index].clear();
 		ICRecHitSCEle[-index].clear();
-		seedLaserAlphaSCEle[-index].clear();
+		seedLaserAlphaSCEle[-index] = -99.;
 		return;
 	}
 
@@ -2468,7 +2468,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Muon& muon1, int index)
 	energyRecHitSCEle[index].clear();
 	LCRecHitSCEle[index].clear();
 	ICRecHitSCEle[index].clear();
-	seedLaserAlphaSCEle[index].clear();
+	seedLaserAlphaSCEle[index] = -99.;
 
 	return;
 }

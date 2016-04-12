@@ -510,6 +510,7 @@ int main(int argc, char **argv) {
     ("targetTypeEB", po::value<int>(&targetTypeEB)->default_value(1),"compute corrections on: 1=pTk, 2=energy, 3=E/p")
     ("R9cutEB", po::value<float>(&R9cutEB)->default_value(0.),"apply R9 cut")
     ("energyTypeEB", po::value<int>(&energyTypeEB)->default_value(0),"0=rawEnergy, 1=scEnergy")
+    ;
   laserMonitoringEPOption.add_options()
     ("laserMonitoringEP", "call the laser monitoring with E/p")
     ("yMIN", po::value<float>(&yMIN)->default_value(0.65),"y min")
