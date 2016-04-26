@@ -6,6 +6,7 @@ OutALCARECOEcalRecalElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noD
 OutALCARECOEcalRecalElectron_noDrop.outputCommands+=cms.untracked.vstring(
     'keep *_electronRecalibSCAssociator_*_*',
     'keep *_TriggerResults_*_*',
+    'keep *_*Uncalib*_*_*',
 #		'keep *_endcapRecalibSC_*_*',
 
     )

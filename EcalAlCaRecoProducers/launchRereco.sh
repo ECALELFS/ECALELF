@@ -21,7 +21,7 @@ json25ns=$json25nsBoff
 #config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
 #config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
 # config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-for tagfile in config/reRecoTags/Cal_Nov2015_newGT_0T_v5.py
+for tagfile in config/reRecoTags/76X_dataRun2_v19.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
@@ -33,7 +33,7 @@ do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
  			#./scripts/RerecoQuick.sh -p RUN2015C50ns -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK} #--singleEle 
-				./scripts/RerecoQuick.sh -p Cal_Nov2015 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK} --singleEle --weightsReco
+				./scripts/RerecoQuick.sh -p RUN2015CDBoff -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK} --singleEle --weightsReco
 				;;
 			*)
 				echo 
