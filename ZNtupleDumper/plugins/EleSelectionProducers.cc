@@ -3,8 +3,9 @@
 // Package:    EleSelectionProducers
 // Class:      EleSelectionProducers
 //
-/**\class EleSelectionProducers EleSelectionProducers.cc Calibration/EleSelectionProducers/src/EleSelectionProducers.cc
+/**\class  EleSelectionProducers EleSelectionProducers.cc Calibration/ZNtupleDumper/plugins/EleSelectionProducers.cc
 
+   \brief Class saving ValueMaps of floats 
  */
 //
 // Original Author:  Shervin Nourbakhsh,40 1-B24,+41227671643,
