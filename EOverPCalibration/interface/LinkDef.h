@@ -1,4 +1,4 @@
-#ifndef ROOT_TREE_VECTOR_LINKDEF_H 
+#ifndef ROOT_TREE_VECTOR_LINKDEF_H
 #define ROOT_TREE_VECTOR_LINKDEF_H 1
 
 #include "Math/Vector4D.h"

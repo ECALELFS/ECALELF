@@ -5,7 +5,7 @@
 //
 // Package:    AlCaECALRecHitReducer
 // Class:      AlCaECALRecHitReducer
-// 
+//
 /**\class AlCaECALRecHitReducer AlCaECALRecHitReducer.cc Calibration/EcalAlCaRecoProducers/src/AlCaECALRecHitReducer.cc
 
  Description: Example of a producer of AlCa electrons
@@ -45,48 +45,49 @@
 //! class declaration
 //!
 
-class AlCaECALRecHitReducer : public edm::EDProducer {
- public:
-  //! ctor
-  explicit AlCaECALRecHitReducer(const edm::ParameterSet&);
-  ~AlCaECALRecHitReducer();
-  
-  
-  //! producer
-  virtual void produce(edm::Event &, const edm::EventSetup&);
-  
- private:
-  // ----------member data ---------------------------
-  
-  
-  
-  edm::EDGetTokenT<EcalRecHitCollection> ebRecHitsToken_;
-  edm::EDGetTokenT<EcalRecHitCollection> eeRecHitsToken_;
-  edm::EDGetTokenT<EcalRecHitCollection> esRecHitsToken_;
-  edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
-  std::vector< edm::EDGetTokenT<edm::View < reco::RecoCandidate> > > eleViewTokens_;
+class AlCaECALRecHitReducer : public edm::EDProducer
+{
+public:
+	//! ctor
+	explicit AlCaECALRecHitReducer(const edm::ParameterSet&);
+	~AlCaECALRecHitReducer();
 
-  edm::EDGetTokenT<reco::PhotonCollection> photonToken_;
-  edm::EDGetTokenT<reco::SuperClusterCollection> EESuperClusterToken_;
-  std::string alcaBarrelHitsCollection_;
-  std::string alcaEndcapHitsCollection_;
-  std::string alcaPreshowerHitsCollection_;
-  int etaSize_;
-  int phiSize_;
-  //float weight_;
-  //  int esNstrips_;
-  //int esNcolumns_;
 
-  //  bool selectByEleNum_;
-  //  int minEleNumber_;
-  //  double minElePt_;
-  double minEta_highEtaSC_;
-  std::string alcaCaloClusterCollection_;
+	//! producer
+	virtual void produce(edm::Event &, const edm::EventSetup&);
 
-  void AddMiniRecHitCollection(const reco::SuperCluster& sc,
-			       std::set<DetId>& reducedRecHitMap,
-			       const CaloTopology *caloTopology
-			       );
+private:
+	// ----------member data ---------------------------
+
+
+
+	edm::EDGetTokenT<EcalRecHitCollection> ebRecHitsToken_;
+	edm::EDGetTokenT<EcalRecHitCollection> eeRecHitsToken_;
+	edm::EDGetTokenT<EcalRecHitCollection> esRecHitsToken_;
+	edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
+	std::vector< edm::EDGetTokenT<edm::View < reco::RecoCandidate> > > eleViewTokens_;
+
+	edm::EDGetTokenT<reco::PhotonCollection> photonToken_;
+	edm::EDGetTokenT<reco::SuperClusterCollection> EESuperClusterToken_;
+	std::string alcaBarrelHitsCollection_;
+	std::string alcaEndcapHitsCollection_;
+	std::string alcaPreshowerHitsCollection_;
+	int etaSize_;
+	int phiSize_;
+	//float weight_;
+	//  int esNstrips_;
+	//int esNcolumns_;
+
+	//  bool selectByEleNum_;
+	//  int minEleNumber_;
+	//  double minElePt_;
+	double minEta_highEtaSC_;
+	std::string alcaCaloClusterCollection_;
+
+	void AddMiniRecHitCollection(const reco::SuperCluster& sc,
+	                             std::set<DetId>& reducedRecHitMap,
+	                             const CaloTopology *caloTopology
+	                            );
 
 
 };

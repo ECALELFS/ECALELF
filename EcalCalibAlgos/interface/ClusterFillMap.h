@@ -6,27 +6,27 @@
 
 class ClusterFillMap : public VFillMap
 {
-	public:
+public:
 	//!ctor
 	ClusterFillMap (int ,
-			int ,
-			const std::map<int,int>& ,
-			double,
-			double, 
-		        const std::map<int,int>&,
-  			EcalIntercalibConstantMap *,
-			EcalIntercalibConstantMap *);
-	
+	                int ,
+	                const std::map<int, int>& ,
+	                double,
+	                double,
+	                const std::map<int, int>&,
+	                EcalIntercalibConstantMap *,
+	                EcalIntercalibConstantMap *);
+
 	//!dtor
 	~ClusterFillMap ();
 
 	//!Fills the map
-        void fillMap (const std::vector<std::pair<DetId,float> > &, 
-			const DetId,
-			const EcalRecHitCollection *, 
-			const EcalRecHitCollection *,
-			std::map<int,double> & xtlMap,
-			double & ) ;
+	void fillMap (const std::vector<std::pair<DetId, float> > &,
+	              const DetId,
+	              const EcalRecHitCollection *,
+	              const EcalRecHitCollection *,
+	              std::map<int, double> & xtlMap,
+	              double & ) ;
 };
 #endif
 #endif

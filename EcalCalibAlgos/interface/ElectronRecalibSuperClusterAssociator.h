@@ -1,13 +1,13 @@
 #ifndef ElectronRecalibSuperClusterAssociator_h
 #define ElectronRecalibSuperClusterAssociator_h
-  
+
 //
 // Package:         RecoEgamma/EgammaElectronProducers
 // Class:           ElectronRecalibSuperClusterAssociator
-// 
-// Description:   
-  
-  
+//
+// Description:
+
+
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "DataFormats/Common/interface/Handle.h"
@@ -25,24 +25,24 @@
 
 class ElectronRecalibSuperClusterAssociator : public edm::EDProducer
 {
- public:
+public:
 
-  explicit ElectronRecalibSuperClusterAssociator(const edm::ParameterSet& conf);
+	explicit ElectronRecalibSuperClusterAssociator(const edm::ParameterSet& conf);
 
-  virtual ~ElectronRecalibSuperClusterAssociator();
+	virtual ~ElectronRecalibSuperClusterAssociator();
 
-  virtual void produce(edm::Event& e, const edm::EventSetup& c);
+	virtual void produce(edm::Event& e, const edm::EventSetup& c);
 
- private:
-  edm::InputTag electronSrc_;
-  edm::InputTag superClusterCollectionEB_;
-  edm::InputTag superClusterCollectionEE_;
+private:
+	edm::InputTag electronSrc_;
+	edm::InputTag superClusterCollectionEB_;
+	edm::InputTag superClusterCollectionEE_;
 
-  std::string outputLabel_;
+	std::string outputLabel_;
 
-  edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;     
-  edm::EDGetTokenT<reco::SuperClusterCollection> ebScToken_;
-  edm::EDGetTokenT<reco::SuperClusterCollection> eeScToken_;
+	edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
+	edm::EDGetTokenT<reco::SuperClusterCollection> ebScToken_;
+	edm::EDGetTokenT<reco::SuperClusterCollection> eeScToken_;
 
 };
 #endif

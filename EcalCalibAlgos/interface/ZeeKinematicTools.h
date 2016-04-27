@@ -29,26 +29,27 @@
 // class declaration
 //
 
-class ZeeKinematicTools {
+class ZeeKinematicTools
+{
 
-   public:
+public:
 
-      ZeeKinematicTools();
-      ~ZeeKinematicTools();
+	ZeeKinematicTools();
+	~ZeeKinematicTools();
 
-      static float calculateZMass_noTK(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
-      static float calculateZMass_withTK(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
-      static float calculateZEta(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
-      static float calculateZTheta(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
-      static float calculateZRapidity(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
-      static float calculateZPhi(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
-      static float calculateZPt(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate);
+	static float calculateZMass_noTK(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
+	static float calculateZMass_withTK(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
+	static float calculateZEta(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
+	static float calculateZTheta(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
+	static float calculateZRapidity(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
+	static float calculateZPhi(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
+	static float calculateZPt(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate);
 
-      static float calculateZMassWithCorrectedElectrons_noTK(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection);
-      static float calculateZMassWithCorrectedElectrons_withTK(const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection);
+	static float calculateZMassWithCorrectedElectrons_noTK(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection);
+	static float calculateZMassWithCorrectedElectrons_withTK(const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection);
 
-      static float cosThetaElectrons_SC( const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection );
-      static float cosThetaElectrons_TK( const std::pair<calib::CalibElectron*,calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection );
+	static float cosThetaElectrons_SC( const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection );
+	static float cosThetaElectrons_TK( const std::pair<calib::CalibElectron*, calib::CalibElectron*>& aZCandidate, float ele1EnergyCorrection, float ele2EnergyCorrection );
 
 
 

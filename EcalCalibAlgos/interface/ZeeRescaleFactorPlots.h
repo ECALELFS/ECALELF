@@ -5,7 +5,7 @@
 //
 // Package:    ElectronCalibration
 // Class:      ElectronCalibration
-// 
+//
 /**\class ElectronCalibration ElectronCalibration.cc Calibration/EcalCalibAlgos/src/ElectronCalibration.cc
 
  Description: Perform single electron calibration (tested on TB data only).
@@ -50,18 +50,19 @@
 // class declaration
 //
 
-class ZeeRescaleFactorPlots {
- 
- public:
-  ZeeRescaleFactorPlots( char* );
-  ~ZeeRescaleFactorPlots();
-  
-  void writeHistograms( ZIterativeAlgorithmWithFit* );
-  
- private:
-  
-  TFile* file_;
-  char* fileName_;
-  
+class ZeeRescaleFactorPlots
+{
+
+public:
+	ZeeRescaleFactorPlots( char* );
+	~ZeeRescaleFactorPlots();
+
+	void writeHistograms( ZIterativeAlgorithmWithFit* );
+
+private:
+
+	TFile* file_;
+	char* fileName_;
+
 };
 #endif

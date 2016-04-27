@@ -32,24 +32,25 @@
 
 using namespace std;
 
-class addBranch_class{
-  
-public:
-  addBranch_class(void);
-  ~addBranch_class(void);
+class addBranch_class
+{
 
-  /// specify the new branch you want in BranchName
-  TTree *AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop=true, bool isMC=false);
-  TTree* AddBranch_ZPt(TChain* originalTree, TString treename, TString energyBranchName, bool fastLoop=true);
-  EnergyScaleCorrection_class *scaler;
-  TString _commonCut;
-  std::vector<TString> _regionList;
+public:
+	addBranch_class(void);
+	~addBranch_class(void);
+
+	/// specify the new branch you want in BranchName
+	TTree *AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop = true, bool isMC = false);
+	TTree* AddBranch_ZPt(TChain* originalTree, TString treename, TString energyBranchName, bool fastLoop = true);
+	EnergyScaleCorrection_class *scaler;
+	TString _commonCut;
+	std::vector<TString> _regionList;
 
 private:
 
-  TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop=true, bool isMC=true);
-  TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);
-  TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
+	TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop = true, bool isMC = true);
+	TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);
+	TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
 
 };
 
