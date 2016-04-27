@@ -2,6 +2,23 @@
 * \mainpage 
 * \author Shervin Nourbakhsh
 *
+* \par Documentation
+* The documentation of this packaged is provided in these pages extracted with doxygen from the source code and several txt files contained in the package itself.
+
+The code in this package takes the name of ECALELF 
+(Ecal CALibration with ELectrons Framework) 
+
+Informations for the implementation or re-implementation can be
+obtained looking the the various header files that will be completed
+with exaustive documentation (in the future)
+
+If you have doxygen, you can run the command
+\code doxygen fulldoc  \endcode
+from the Calibration/ directory and you can navigate instructions and code locally with
+\verbatim firefox doc/doxygen/fulldoc/html/index.html \endverbatim
+
+
+*
 * \ref preReq
 *
 * \ref page1

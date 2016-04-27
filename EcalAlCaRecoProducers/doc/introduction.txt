@@ -10,20 +10,8 @@
 All the code needed to the ECAL studies and calibration with Zee is
 available in this package.
 
-The documentation of this packaged is provided in these pages extracted with doxygen from the source code and several txt files contained in the package itself.
-
 The code in this package takes the name of ECALELF 
 (Ecal CALibration with ELectrons Framework) 
-
-Informations for the implementation or re-implementation can be
-obtained looking the the various header files that will be completed
-with exaustive documentation (in the future)
-
-If you have doxygen, you can run the command
-\code doxygen fulldoc  \endcode
-from the Calibration/ directory and you can navigate instructions and code locally with
-\verbatim firefox doc/doxygen/fulldoc/html/index.html \endverbatim
-
 
 ### The general calibration workflow is:
 \image html doc/ecalelf_schema.png
@@ -31,9 +19,9 @@ from the Calibration/ directory and you can navigate instructions and code local
 
  1. start from AOD/RECO or AOD/RECO+RAW
  2. apply a ZSkim or a ZSCSkim or a WSkim selection to reduce the size of the dataset 
- 3. produce the ALCARAW from AOD/RECO+RAW:
+ 3. produce the ALCARAW (EcalUncal{Z,W}Electron is the name of the centrally produced samples) from AOD/RECO+RAW:
     in this format most of the collections are
-    dropped and only the electrons, the uncalibrated rec hits
+    dropped and only the electrons, the ECAL digis
     and few other collections like the beamspot, the conversions, the
     rhoFastJet are kept
 
@@ -53,7 +41,7 @@ from the Calibration/ directory and you can navigate instructions and code local
     the electrons
 
  6. define if the electron pass some selections running the
-    EleSelectionProducer that creates valueMaps of floats with the
+    EleSelectionProducers that creates valueMaps of floats with the
     following meaning:
     for cut-based selections 1=pass, 0=fail
     for MVA selections the float is the output of the MVA
