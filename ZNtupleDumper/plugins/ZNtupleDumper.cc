@@ -2239,58 +2239,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Electron& electron1, int ind
 	//  EcalIntercalibConstantMap icMap = icHandle->get()
 	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.superCluster()->hitsAndFractions();
 	nHitsSCEle[index] = hitsAndFractions_ele1.size();
-
-
-        // from HERE
-	const EcalRecHitCollection *recHits = (electron1.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
-	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-	for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-	        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-		//      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
-		EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-		if(oneHit == recHits->end()) {
-			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId()
-			                               << " in subdetector " << (detitr->first).subdetId() << " bailing out";
-			//assert(0);
-			continue;
-		}
-		recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-		rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
-		if(electron1.isEB()) {
-			EBDetId recHitId(detitr->first);
-			XRecHitSCEle[index].push_back(recHitId.ieta());
-			YRecHitSCEle[index].push_back(recHitId.iphi());
-			ZRecHitSCEle[index].push_back(recHitId.zside());
-		} else {
-			EEDetId recHitId(detitr->first);
-			XRecHitSCEle[index].push_back(recHitId.ix());
-			YRecHitSCEle[index].push_back(recHitId.iy());
-			ZRecHitSCEle[index].push_back(recHitId.zside());
-		}
-		energyRecHitSCEle[index].push_back(oneHit->energy());
-		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-		// 1) get laser correction coefficient
-		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
-		//laserHandle->
-		// 2) get intercalibration
-		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
-		EcalIntercalibConstant icalconst = 1.;
-		if( icalit != icalMap.end() ) {
-			icalconst = (*icalit);
-			// std::cout << "icalconst set to: " << icalconst << std::endl;
-		} else {
-			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
-			//assert(0);
-			continue;
-		}
-		// 3) get adc2GeV
-		//float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ?
-		// float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-		ICRecHitSCEle[index].push_back(icalconst);
-	}
         TreeSetExtraCalibVar(hitsAndFractions_ele1, index, electron1.isEB());
-
 	return;
 }
 
@@ -2301,77 +2250,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const reco::SuperCluster& electron1, in
 
 	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
 	nHitsSCEle[index] = hitsAndFractions_ele1.size();
-
-	const EcalRecHitCollection *recHitsEB = clustertools->getEcalEBRecHitCollection();
-	const EcalRecHitCollection *recHitsEE = clustertools->getEcalEERecHitCollection();
-
-	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
-	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-
-	for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-	        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-		// get out the DetId of the hit
-		DetId hitId = (detitr -> first);
-		// define a iterator of the EcalRecoHit
-		EcalRecHitCollection::const_iterator oneHit(NULL);
-
-		// treat it seperately for EB and EE
-		if ( hitId.subdetId() == EcalBarrel) {
-			oneHit = recHitsEB->find( hitId );
-			// protection of the missing hit
-			if(oneHit == recHitsEB->end()) {
-				edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
-				assert(0);
-			}
-			// redifine EBDetId and get EB hit position
-			EBDetId recHitId(hitId);
-			XRecHitSCEle[index].push_back(recHitId.ieta());
-			YRecHitSCEle[index].push_back(recHitId.iphi());
-			ZRecHitSCEle[index].push_back(recHitId.zside());
-		} else if ( hitId.subdetId() == EcalEndcap ) {
-			oneHit = recHitsEE->find( hitId );
-			// protection of the missing hit
-			if(oneHit == recHitsEE->end()) {
-				edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << hitId.rawId() << "bailing out";
-				assert(0);
-			}
-			// redifine EEDetId and get EE hit position
-			EEDetId recHitId(hitId);
-			XRecHitSCEle[index].push_back(recHitId.ix());
-			YRecHitSCEle[index].push_back(recHitId.iy());
-			ZRecHitSCEle[index].push_back(recHitId.zside());
-		} else {
-			// error if not able to find the hit in EE and EB
-			edm::LogError("ZNtupleDumper") << "SC hit cannot be found in EB and EE. " ;
-			assert(0);
-		}
-
-		// other information
-		recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-		rawIdRecHitSCEle[index].push_back(hitId.rawId());
-
-		energyRecHitSCEle[index].push_back(oneHit->energy());
-
-		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-		// 1) get laser correction coefficient
-		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(hitId, runTime_));
-		// 2) get intercalibration
-		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(hitId);
-		EcalIntercalibConstant icalconst = 1.;
-		if( icalit != icalMap.end() ) {
-			icalconst = (*icalit);
-			// std::cout << "icalconst set to: " << icalconst << std::endl;
-		} else {
-			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (hitId).rawId() << "bailing out";
-			assert(0);
-		}
-		// 3) get adc2GeV
-		//float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel );
-		// float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-		ICRecHitSCEle[index].push_back(icalconst);
-
-	}
-
+        TreeSetExtraCalibVar(hitsAndFractions_ele1, index, electron1.seed()->seed().subdetId() == EcalBarrel);
 	return;
 }
 
@@ -2394,55 +2273,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Photon& photon, int index)
 	//  EcalIntercalibConstantMap icMap = icHandle->get()
 	std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = photon.superCluster()->hitsAndFractions();
 	nHitsSCEle[index] = hitsAndFractions_ele1.size();
-
-	const EcalRecHitCollection *recHits = (photon.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
-	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-	for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-	        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-		//      EcalRecHitCollection::const_iterator theSeedHit = recHits->find (id); // trash this
-		EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-		if(oneHit == recHits->end()) {
-			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId()
-			                               << " in subdetector " << (detitr->first).subdetId() << " bailing out";
-			//assert(0);
-			continue;
-		}
-		recoFlagRecHitSCEle[index].push_back(oneHit->recoFlag());
-		rawIdRecHitSCEle[index].push_back(detitr->first.rawId());
-		if(photon.isEB()) {
-			EBDetId recHitId(detitr->first);
-			XRecHitSCEle[index].push_back(recHitId.ieta());
-			YRecHitSCEle[index].push_back(recHitId.iphi());
-			ZRecHitSCEle[index].push_back(recHitId.zside());
-		} else {
-			EEDetId recHitId(detitr->first);
-			XRecHitSCEle[index].push_back(recHitId.ix());
-			YRecHitSCEle[index].push_back(recHitId.iy());
-			ZRecHitSCEle[index].push_back(recHitId.zside());
-		}
-		energyRecHitSCEle[index].push_back(oneHit->energy());
-		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
-		// 1) get laser correction coefficient
-		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
-		//laserHandle->
-		// 2) get intercalibration
-		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
-		EcalIntercalibConstant icalconst = 1.;
-		if( icalit != icalMap.end() ) {
-			icalconst = (*icalit);
-			// std::cout << "icalconst set to: " << icalconst << std::endl;
-		} else {
-			edm::LogError("ZNtupleDumper") << "No intercalib const found for xtal "  << (detitr->first).rawId() << "bailing out";
-			//assert(0);
-			continue;
-		}
-		// 3) get adc2GeV
-		//float adcToGeV = ( (detitr -> first).subdetId() == EcalBarrel ) ?
-		// float(adcToGeVHandle->getEBValue()) : float(adcToGeVHandle->getEEValue());
-		ICRecHitSCEle[index].push_back(icalconst);
-	}
-
+        TreeSetExtraCalibVar(hitsAndFractions_ele1, index, photon.superCluster()->seed()->seed().subdetId() == EcalBarrel);
 	return;
 }
 
