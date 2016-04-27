@@ -33,44 +33,44 @@
 ZeeRescaleFactorPlots::ZeeRescaleFactorPlots( char* fileName )
 {
 
-  fileName_ = fileName;
-  file_ = new TFile(fileName_, "RECREATE");
+	fileName_ = fileName;
+	file_ = new TFile(fileName_, "RECREATE");
 }
 
 
 ZeeRescaleFactorPlots::~ZeeRescaleFactorPlots()
 {
 
-  file_->Close();
+	file_->Close();
 
-  delete file_;
+	delete file_;
 
 }
 
 //========================================================================
 
-void ZeeRescaleFactorPlots::writeHistograms(ZIterativeAlgorithmWithFit* theAlgorithm_){
+void ZeeRescaleFactorPlots::writeHistograms(ZIterativeAlgorithmWithFit* theAlgorithm_)
+{
 
-  file_ -> cd();
-
-  
-  const ZIterativeAlgorithmWithFit::ZIterativeAlgorithmWithFitPlots* algoHistos = theAlgorithm_->getHistos();
-
-  for (int iIteration=0;iIteration<theAlgorithm_->getNumberOfIterations();iIteration++)
-    for (int iChannel=0;iChannel<theAlgorithm_->getNumberOfChannels();iChannel++)
-      {
-
-	if(iChannel%20==0){
-	  
-	  file_ -> cd();
-	  
-	  algoHistos->weightedRescaleFactor[iIteration][iChannel]->Write();
-	  algoHistos->unweightedRescaleFactor[iIteration][iChannel]->Write();
-	  algoHistos->weight[iIteration][iChannel]->Write();
-	}
+	file_ -> cd();
 
 
-      }
+	const ZIterativeAlgorithmWithFit::ZIterativeAlgorithmWithFitPlots* algoHistos = theAlgorithm_->getHistos();
+
+	for (int iIteration = 0; iIteration < theAlgorithm_->getNumberOfIterations(); iIteration++)
+		for (int iChannel = 0; iChannel < theAlgorithm_->getNumberOfChannels(); iChannel++) {
+
+			if(iChannel % 20 == 0) {
+
+				file_ -> cd();
+
+				algoHistos->weightedRescaleFactor[iIteration][iChannel]->Write();
+				algoHistos->unweightedRescaleFactor[iIteration][iChannel]->Write();
+				algoHistos->weight[iIteration][iChannel]->Write();
+			}
+
+
+		}
 
 
 }

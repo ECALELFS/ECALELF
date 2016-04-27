@@ -58,102 +58,102 @@
 class Pi0FixedMassWindowCalibration :  public edm::ESProducerLooper
 {
 
- public:
+public:
 
-  /// Constructor
-  Pi0FixedMassWindowCalibration( const edm::ParameterSet& iConfig );
-  
-  /// Destructor
-  ~Pi0FixedMassWindowCalibration();
+	/// Constructor
+	Pi0FixedMassWindowCalibration( const edm::ParameterSet& iConfig );
 
-  /// Dummy implementation (job done in duringLoop)
-  virtual void produce(edm::Event&, const edm::EventSetup&) {};
+	/// Destructor
+	~Pi0FixedMassWindowCalibration();
 
-  /// Called at beginning of job
-  virtual void beginOfJob();
+	/// Dummy implementation (job done in duringLoop)
+	virtual void produce(edm::Event&, const edm::EventSetup&) {};
 
-  /// Called at end of job
-  virtual void endOfJob();
+	/// Called at beginning of job
+	virtual void beginOfJob();
 
-  /// Called at beginning of loop
-  virtual void startingNewLoop( unsigned int iLoop );
+	/// Called at end of job
+	virtual void endOfJob();
 
-  /// Called at end of loop
-  virtual Status endOfLoop( const edm::EventSetup&, unsigned int iLoop );
+	/// Called at beginning of loop
+	virtual void startingNewLoop( unsigned int iLoop );
 
-  /// Called at each event 
-  virtual Status duringLoop( const edm::Event&, const edm::EventSetup& );
+	/// Called at end of loop
+	virtual Status endOfLoop( const edm::EventSetup&, unsigned int iLoop );
 
- private:
+	/// Called at each event
+	virtual Status duringLoop( const edm::Event&, const edm::EventSetup& );
 
-  //  static const double PDGPi0Mass;
+private:
 
-  int nevent;
+	//  static const double PDGPi0Mass;
 
-  unsigned int theMaxLoops;   
-  std::string ecalHitsProducer_;
-  std::string barrelHits_;
+	int nevent;
 
-
-  IslandClusterAlgo::VerbosityLevel verbosity;
-
-  std::string barrelHitProducer_;
-  std::string barrelHitCollection_;
-  std::string barrelClusterCollection_;
-  std::string clustershapecollectionEB_;
-  std::string barrelClusterShapeAssociation_;
-
-  PositionCalc posCalculator_; // position calculation algorithm
-  ClusterShapeAlgo shapeAlgo_; // cluster shape algorithm
-  IslandClusterAlgo * island_p;
-
-  // Selection algorithm parameters
-  double selePi0PtGammaOneMin_;
-  double selePi0PtGammaTwoMin_;
-
-  double selePi0DRBelt_;
-  double selePi0DetaBelt_;
-
-  double selePi0PtPi0Min_;
-
-  double selePi0S4S9GammaOneMin_;
-  double selePi0S4S9GammaTwoMin_;
-  double selePi0S9S25GammaOneMin_;
-  double selePi0S9S25GammaTwoMin_;
-
-  double selePi0EtBeltIsoRatioMax_;
- 
-  double selePi0MinvMeanFixed_;
-  double selePi0MinvSigmaFixed_;
+	unsigned int theMaxLoops;
+	std::string ecalHitsProducer_;
+	std::string barrelHits_;
 
 
+	IslandClusterAlgo::VerbosityLevel verbosity;
 
-  std::vector<DetId> barrelCells;
+	std::string barrelHitProducer_;
+	std::string barrelHitCollection_;
+	std::string barrelClusterCollection_;
+	std::string clustershapecollectionEB_;
+	std::string barrelClusterShapeAssociation_;
 
-  // input calibration constants
-  double oldCalibs_barl[85][360][2];
-  double newCalibs_barl[85][360][2];
-  double wxtals[85][360][2];
-  double mwxtals[85][360][2];
+	PositionCalc posCalculator_; // position calculation algorithm
+	ClusterShapeAlgo shapeAlgo_; // cluster shape algorithm
+	IslandClusterAlgo * island_p;
 
-  // steering parameters
+	// Selection algorithm parameters
+	double selePi0PtGammaOneMin_;
+	double selePi0PtGammaTwoMin_;
 
-  edm::ParameterSet theParameterSet;
+	double selePi0DRBelt_;
+	double selePi0DetaBelt_;
+
+	double selePi0PtPi0Min_;
+
+	double selePi0S4S9GammaOneMin_;
+	double selePi0S4S9GammaTwoMin_;
+	double selePi0S9S25GammaOneMin_;
+	double selePi0S9S25GammaTwoMin_;
+
+	double selePi0EtBeltIsoRatioMax_;
+
+	double selePi0MinvMeanFixed_;
+	double selePi0MinvSigmaFixed_;
 
 
-  
 
-  // map for all RecHits from ECal:
-  std::map<DetId, EcalRecHit> *recHitsEB_map;
+	std::vector<DetId> barrelCells;
 
-  const EcalRecHitCollection* ecalRecHitBarrelCollection;
-  const EcalRecHitCollection* recalibEcalRecHitCollection;
+	// input calibration constants
+	double oldCalibs_barl[85][360][2];
+	double newCalibs_barl[85][360][2];
+	double wxtals[85][360][2];
+	double mwxtals[85][360][2];
+
+	// steering parameters
+
+	edm::ParameterSet theParameterSet;
 
 
-  // root tree
-  TFile* theFile;
 
-  bool isfirstcall_;
+
+	// map for all RecHits from ECal:
+	std::map<DetId, EcalRecHit> *recHitsEB_map;
+
+	const EcalRecHitCollection* ecalRecHitBarrelCollection;
+	const EcalRecHitCollection* recalibEcalRecHitCollection;
+
+
+	// root tree
+	TFile* theFile;
+
+	bool isfirstcall_;
 
 };
 

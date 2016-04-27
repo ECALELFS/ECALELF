@@ -2,7 +2,7 @@
 //
 // Package:    miscalibExample
 // Class:      miscalibExample
-// 
+//
 /**\class miscalibExample miscalibExample.cc Calibration/EcalCalibAlgos/src/miscalibExample.cc
 
  Description: Perform single electron calibration (tested on TB data only).
@@ -65,46 +65,48 @@ class miscalibExample : public edm::EDAnalyzer {
 miscalibExample::miscalibExample(const edm::ParameterSet& iConfig)
 {
 
-   rootfile_                  = iConfig.getUntrackedParameter<std::string>("rootfile","ecalSimpleTBanalysis.root");
-   correctedHybridSuperClusterProducer_ = iConfig.getParameter<std::string>("correctedHybridSuperClusterProducer");
-   correctedHybridSuperClusterCollection_ = iConfig.getParameter<std::string>("correctedHybridSuperClusterCollection");
+	rootfile_                  = iConfig.getUntrackedParameter<std::string>("rootfile", "ecalSimpleTBanalysis.root");
+	correctedHybridSuperClusterProducer_ = iConfig.getParameter<std::string>("correctedHybridSuperClusterProducer");
+	correctedHybridSuperClusterCollection_ = iConfig.getParameter<std::string>("correctedHybridSuperClusterCollection");
 
 }
 
 
 miscalibExample::~miscalibExample()
 {
- 
+
 
 }
 
 //========================================================================
 void
-miscalibExample::beginJob() {
+miscalibExample::beginJob()
+{
 //========================================================================
 
-  // Book histograms 
-  scEnergy = new TH1F("scEnergy","SuperCluster energy", 100, 20., 80.);
-  read_events=0;
- 
- }
+	// Book histograms
+	scEnergy = new TH1F("scEnergy", "SuperCluster energy", 100, 20., 80.);
+	read_events = 0;
+
+}
 
 //========================================================================
 void
-miscalibExample::endJob() {
+miscalibExample::endJob()
+{
 //========================================================================
 
-   std::cout << "************* STATISTICS **************" << std::endl;
-   std::cout << "Read Events: " << read_events << std::endl;
+	std::cout << "************* STATISTICS **************" << std::endl;
+	std::cout << "Read Events: " << read_events << std::endl;
 
 
 /////////////////////////////////////////////////////////////////////////////
 
-  TFile f(rootfile_.c_str(),"RECREATE");
+	TFile f(rootfile_.c_str(), "RECREATE");
 
-  scEnergy->Write(); 
-  f.Close();
- 
+	scEnergy->Write();
+	f.Close();
+
 }
 
 
@@ -114,28 +116,27 @@ void
 miscalibExample::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 //=================================================================================
-   using namespace edm;
-   using namespace std;
+	using namespace edm;
+	using namespace std;
 
-   read_events++;
+	read_events++;
 
- // Get hybrid super clusters after energy correction
- 
-  Handle<reco::SuperClusterCollection> pCorrectedHybridSuperClusters;
-  iEvent.getByLabel(correctedHybridSuperClusterProducer_, correctedHybridSuperClusterCollection_, pCorrectedHybridSuperClusters);
-  if (!pCorrectedHybridSuperClusters.isValid()) {
-    LogError("EgammaSimpleAnalyzer") << "Error! can't get collection with label " << correctedHybridSuperClusterCollection_.c_str() ;
-  }
-  const reco::SuperClusterCollection* correctedHybridSuperClusters = pCorrectedHybridSuperClusters.product();
+// Get hybrid super clusters after energy correction
+
+	Handle<reco::SuperClusterCollection> pCorrectedHybridSuperClusters;
+	iEvent.getByLabel(correctedHybridSuperClusterProducer_, correctedHybridSuperClusterCollection_, pCorrectedHybridSuperClusters);
+	if (!pCorrectedHybridSuperClusters.isValid()) {
+		LogError("EgammaSimpleAnalyzer") << "Error! can't get collection with label " << correctedHybridSuperClusterCollection_.c_str() ;
+	}
+	const reco::SuperClusterCollection* correctedHybridSuperClusters = pCorrectedHybridSuperClusters.product();
 
 
-  reco::SuperClusterCollection::const_iterator superClusterIt;
-  for(superClusterIt=correctedHybridSuperClusters->begin(); superClusterIt!=correctedHybridSuperClusters->end(); superClusterIt++ )
-  {
+	reco::SuperClusterCollection::const_iterator superClusterIt;
+	for(superClusterIt = correctedHybridSuperClusters->begin(); superClusterIt != correctedHybridSuperClusters->end(); superClusterIt++ ) {
 
-  scEnergy->Fill(superClusterIt->energy());
+		scEnergy->Fill(superClusterIt->energy());
 
-  }
+	}
 
 }
 

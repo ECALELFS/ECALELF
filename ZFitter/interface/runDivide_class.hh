@@ -16,42 +16,43 @@ using namespace std;
 //#define DEBUG
 
 
-class runDivide_class{
+class runDivide_class
+{
 
-public: 
-  runDivide_class(void);
-  ~runDivide_class(void);
+public:
+	runDivide_class(void);
+	~runDivide_class(void);
 
-  std::map<unsigned int,Long64_t> eventsRunMap;
-  std::map<unsigned int,UInt_t> runMinTimeRunMap;
-  std::map<unsigned int,UInt_t> runMaxTimeRunMap;
+	std::map<unsigned int, Long64_t> eventsRunMap;
+	std::map<unsigned int, UInt_t> runMinTimeRunMap;
+	std::map<unsigned int, UInt_t> runMaxTimeRunMap;
 
-  void ReadRunRangeLimits(TString fileName);
-  //  void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName);
-  void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName="runNumber", TString runTime_branchName="runTime");
-  
-  void FillRunLimits(unsigned int nEvents_min=50000); 
-  std::vector<TString> GetRunRanges(void);
-  std::vector<std::pair<TString,Long64_t> > GetRunRangeEvents(void);
+	void ReadRunRangeLimits(TString fileName);
+	//  void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName);
+	void LoadRunEventNumbers(TTree *tree, TString runNumber_branchName = "runNumber", TString runTime_branchName = "runTime");
 
-  std::vector<TString> Divide(TTree *tree, 
-			      TString fileName, // limits
-			      unsigned int nEvents_min=50000, 
-			      TString runNumber_branchName="runNumber");
+	void FillRunLimits(unsigned int nEvents_min = 50000);
+	std::vector<TString> GetRunRanges(void);
+	std::vector<std::pair<TString, Long64_t> > GetRunRangeEvents(void);
 
-  void PrintMap(void);
-  void PrintRunRangeEvents(void);
+	std::vector<TString> Divide(TTree *tree,
+	                            TString fileName, // limits
+	                            unsigned int nEvents_min = 50000,
+	                            TString runNumber_branchName = "runNumber");
 
-  TString GetRunRangeTime(TString runRange);
+	void PrintMap(void);
+	void PrintRunRangeEvents(void);
+
+	TString GetRunRangeTime(TString runRange);
 private:
-  
-  std::set<unsigned int> limits; // set of limits given by source file
-  std::set<unsigned int> runLimits; // set of limits by minEvent number and limits
-  //std::map<unsigned int, Long64_t> runLimits;
-  void PrintRunRanges(void);
+
+	std::set<unsigned int> limits; // set of limits given by source file
+	std::set<unsigned int> runLimits; // set of limits by minEvent number and limits
+	//std::map<unsigned int, Long64_t> runLimits;
+	void PrintRunRanges(void);
 
 
-  
+
 };
 
 

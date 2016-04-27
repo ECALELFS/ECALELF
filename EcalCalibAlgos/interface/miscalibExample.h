@@ -33,26 +33,27 @@
 
 
 
-class miscalibExample : public edm::EDAnalyzer {
-   public:
-      explicit miscalibExample(const edm::ParameterSet&);
-      ~miscalibExample();
+class miscalibExample : public edm::EDAnalyzer
+{
+public:
+	explicit miscalibExample(const edm::ParameterSet&);
+	~miscalibExample();
 
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);
-      virtual void beginJob();
-      virtual void endJob();
-   private:
+	virtual void analyze(const edm::Event&, const edm::EventSetup&);
+	virtual void beginJob();
+	virtual void endJob();
+private:
 
 
-      // ----------member data ---------------------------
-      std::string rootfile_;
-      std::string correctedHybridSuperClusterProducer_;
-      std::string correctedHybridSuperClusterCollection_;
-      std::string BarrelHitsCollection_;
-      std::string ecalHitsProducer_ ;
-      int read_events;
+	// ----------member data ---------------------------
+	std::string rootfile_;
+	std::string correctedHybridSuperClusterProducer_;
+	std::string correctedHybridSuperClusterCollection_;
+	std::string BarrelHitsCollection_;
+	std::string ecalHitsProducer_ ;
+	int read_events;
 
-      TH1F* scEnergy;
+	TH1F* scEnergy;
 };
 
 #endif

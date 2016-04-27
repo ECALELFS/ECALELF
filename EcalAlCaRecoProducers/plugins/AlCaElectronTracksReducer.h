@@ -5,7 +5,7 @@
 //
 // Package:    AlCaElectronTracksReducer
 // Class:      AlCaElectronTracksReducer
-// 
+//
 /**\class AlCaECALRecHitReducer AlCaECALRecHitReducer.cc Calibration/EcalAlCaRecoProducers/src/AlCaECALRecHitReducer.cc
 
  Description: This plugin saves tracks and trackExtras that are associated to an electron creating two new track and track extra collections
@@ -35,24 +35,25 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/TrackExtraFwd.h"
 
-class AlCaElectronTracksReducer : public edm::EDProducer {
- public:
+class AlCaElectronTracksReducer : public edm::EDProducer
+{
+public:
 
-  explicit AlCaElectronTracksReducer(const edm::ParameterSet&);
-  ~AlCaElectronTracksReducer();
-  
-  virtual void produce(edm::Event &, const edm::EventSetup&);
+	explicit AlCaElectronTracksReducer(const edm::ParameterSet&);
+	~AlCaElectronTracksReducer();
+
+	virtual void produce(edm::Event &, const edm::EventSetup&);
 
 private:
-  // ----------member data ---------------------------
-  // input collections
-  edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
-  edm::EDGetTokenT<reco::TrackCollection> generalTracksToken_;
-  edm::EDGetTokenT<reco::TrackExtraCollection> generalTracksExtraToken_;
-  
-  // output collection' names
-  std::string alcaTrackCollection_;
-  std::string alcaTrackExtraCollection_;
+	// ----------member data ---------------------------
+	// input collections
+	edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
+	edm::EDGetTokenT<reco::TrackCollection> generalTracksToken_;
+	edm::EDGetTokenT<reco::TrackExtraCollection> generalTracksExtraToken_;
+
+	// output collection' names
+	std::string alcaTrackCollection_;
+	std::string alcaTrackExtraCollection_;
 
 };
 

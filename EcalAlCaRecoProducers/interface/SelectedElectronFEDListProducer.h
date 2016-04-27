@@ -12,7 +12,7 @@
 #include <memory>
 #include <stdint.h>
 
-// common 
+// common
 #include "DataFormats/Common/interface/Handle.h"
 // egamma objects
 #include "DataFormats/EgammaReco/interface/SuperCluster.h"
@@ -95,140 +95,145 @@
 using namespace std;
 
 // Pixel region class
-class PixelRegion {  
-     public:     
-      PixelRegion(math::XYZVector & momentum, float dphi = 0.5, float deta = 0.5, float maxz = 24.0){
-       vector = momentum;
-       dPhi = dphi ;
-       dEta = deta ;
-       maxZ = maxz ; 
-       cosphi = vector.x()/vector.rho();
-       sinphi = vector.y()/vector.rho(); 
-       atantheta = vector.z()/vector.rho();
-      }
+class PixelRegion
+{
+public:
+	PixelRegion(math::XYZVector & momentum, float dphi = 0.5, float deta = 0.5, float maxz = 24.0)
+	{
+		vector = momentum;
+		dPhi = dphi ;
+		dEta = deta ;
+		maxZ = maxz ;
+		cosphi = vector.x() / vector.rho();
+		sinphi = vector.y() / vector.rho();
+		atantheta = vector.z() / vector.rho();
+	}
 
-     math::XYZVector vector;
-     float dPhi,dEta,maxZ;
-     float cosphi, sinphi, atantheta;
+	math::XYZVector vector;
+	float dPhi, dEta, maxZ;
+	float cosphi, sinphi, atantheta;
 };
 
 // Pixel module class
-class PixelModule{
-    public:
+class PixelModule
+{
+public:
 
-      PixelModule() {}
-      PixelModule(float phi, float eta) : Phi(phi), Eta(eta), x(0.), y(0.), z(0.), DetId(0), Fed(0) {}
-      bool operator < (const PixelModule& m) const {
-        if(Phi < m.Phi) return true;
-        if(Phi == m.Phi && Eta < m.Eta) return true;
-        if(Phi == m.Phi && Eta == m.Eta && DetId < m.DetId) return true;
-        return false;
-      }
+	PixelModule() {}
+	PixelModule(float phi, float eta) : Phi(phi), Eta(eta), x(0.), y(0.), z(0.), DetId(0), Fed(0) {}
+	bool operator < (const PixelModule& m) const
+	{
+		if(Phi < m.Phi) return true;
+		if(Phi == m.Phi && Eta < m.Eta) return true;
+		if(Phi == m.Phi && Eta == m.Eta && DetId < m.DetId) return true;
+		return false;
+	}
 
-      float Phi,Eta;
-      float x, y, z;
-      unsigned int DetId;
-      unsigned int Fed;
+	float Phi, Eta;
+	float x, y, z;
+	unsigned int DetId;
+	unsigned int Fed;
 
 };
 
 
 // main class
 template<typename TEle, typename TCand>
-class SelectedElectronFEDListProducer : public edm::EDProducer {
+class SelectedElectronFEDListProducer : public edm::EDProducer
+{
 
- public:
+public:
 
-   explicit SelectedElectronFEDListProducer( const edm::ParameterSet &);
-   virtual ~SelectedElectronFEDListProducer();
+	explicit SelectedElectronFEDListProducer( const edm::ParameterSet &);
+	virtual ~SelectedElectronFEDListProducer();
 
-   static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
-
-
- protected:
-
-  virtual void beginJob() ;
-  virtual void endJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
+	static void fillDescriptions(edm::ConfigurationDescriptions & descriptions);
 
 
- private:
+protected:
 
-  typedef std::vector<TEle>  TEleColl ;
-  typedef std::vector<TCand> TCandColl ;
+	virtual void beginJob() ;
+	virtual void endJob() ;
+	virtual void produce(edm::Event&, const edm::EventSetup&);
 
- public:
 
- void pixelFedDump( std::vector<PixelModule>::const_iterator & itDn,  
-                    std::vector<PixelModule>::const_iterator & itUp,
-                    const PixelRegion & region);
+private:
 
- private:
+	typedef std::vector<TEle>  TEleColl ;
+	typedef std::vector<TCand> TCandColl ;
 
-  // input parameter of the producer
-  std::vector<edm::InputTag> recoEcalCandidateTags_ ;
-  std::vector<edm::InputTag> electronTags_ ;
-  edm::InputTag              beamSpotTag_ ;
-  edm::InputTag              rawDataTag_ ;
+public:
 
-  std::vector<int> isGsfElectronCollection_ ;
-  std::vector<int> addThisSelectedFEDs_ ;
+	void pixelFedDump( std::vector<PixelModule>::const_iterator & itDn,
+	                   std::vector<PixelModule>::const_iterator & itUp,
+	                   const PixelRegion & region);
 
-  edm::InputTag              HBHERecHitTag_;
+private:
 
-  edm::FileInPath ESLookupTable_ ; 
+	// input parameter of the producer
+	std::vector<edm::InputTag> recoEcalCandidateTags_ ;
+	std::vector<edm::InputTag> electronTags_ ;
+	edm::InputTag              beamSpotTag_ ;
+	edm::InputTag              rawDataTag_ ;
 
-  bool dumpSelectedEcalFed_ ;
-  bool dumpSelectedSiStripFed_ ;
-  bool dumpSelectedSiPixelFed_ ;
-  bool dumpSelectedHCALFed_;
-  bool dumpAllEcalFed_ ;
-  bool dumpAllTrackerFed_;
-  bool dumpAllHCALFed_;
+	std::vector<int> isGsfElectronCollection_ ;
+	std::vector<int> addThisSelectedFEDs_ ;
 
-  double dRStripRegion_  ;
-  double dPhiPixelRegion_;
-  double dEtaPixelRegion_;
-  double maxZPixelRegion_;
-  double dRHcalRegion_;
+	edm::InputTag              HBHERecHitTag_;
 
-  std::string outputLabelModule_ ;
+	edm::FileInPath ESLookupTable_ ;
 
-  // Token for the input collection
-  edm::EDGetTokenT<FEDRawDataCollection>     rawDataToken_ ;
-  edm::EDGetTokenT<reco::BeamSpot>           beamSpotToken_ ;
-  edm::EDGetTokenT<HBHERecHitCollection> hbheRecHitToken_;
-  std::vector<edm::EDGetTokenT<trigger::TriggerFilterObjectWithRefs> > recoEcalCandidateToken_ ;
-  std::vector<edm::EDGetTokenT<TEleColl> >   electronToken_; 
+	bool dumpSelectedEcalFed_ ;
+	bool dumpSelectedSiStripFed_ ;
+	bool dumpSelectedSiPixelFed_ ;
+	bool dumpSelectedHCALFed_;
+	bool dumpAllEcalFed_ ;
+	bool dumpAllTrackerFed_;
+	bool dumpAllHCALFed_;
 
-  // used inside the producer
-  uint32_t eventCounter_ ;
-  math::XYZVector beamSpotPosition_;
+	double dRStripRegion_  ;
+	double dPhiPixelRegion_;
+	double dEtaPixelRegion_;
+	double maxZPixelRegion_;
+	double dRHcalRegion_;
 
-  // internal info for ES geometry
-  int ES_fedId_[2][2][40][40];
+	std::string outputLabelModule_ ;
 
-  // fed list and output raw data
-  std::vector<uint32_t> fedList_ ;
+	// Token for the input collection
+	edm::EDGetTokenT<FEDRawDataCollection>     rawDataToken_ ;
+	edm::EDGetTokenT<reco::BeamSpot>           beamSpotToken_ ;
+	edm::EDGetTokenT<HBHERecHitCollection> hbheRecHitToken_;
+	std::vector<edm::EDGetTokenT<trigger::TriggerFilterObjectWithRefs> > recoEcalCandidateToken_ ;
+	std::vector<edm::EDGetTokenT<TEleColl> >   electronToken_;
 
-  // get the raw data
-  FEDRawDataCollection* RawDataCollection_ ;
-  // get calo geomentry and electronic map
-  const EcalElectronicsMapping* TheMapping_ ;
-  const CaloGeometry* geometry_ ;
-  const CaloSubdetectorGeometry *geometryES_ ;
+	// used inside the producer
+	uint32_t eventCounter_ ;
+	math::XYZVector beamSpotPosition_;
 
-  // get pixel geometry and electronic map
-  std::unique_ptr<SiPixelFedCablingTree> PixelCabling_;
-  std::vector<PixelModule>               pixelModuleVector_ ;
+	// internal info for ES geometry
+	int ES_fedId_[2][2][40][40];
 
-  // get strip geometry and electronic map
-  const SiStripRegionCabling*   StripRegionCabling_;
-  SiStripRegionCabling::Cabling cabling_ ;
-  std::pair<double,double>      regionDimension_ ;
+	// fed list and output raw data
+	std::vector<uint32_t> fedList_ ;
 
-  // get hcal geometry and electronic map
-  const HcalElectronicsMap* hcalReadoutMap_;
+	// get the raw data
+	FEDRawDataCollection* RawDataCollection_ ;
+	// get calo geomentry and electronic map
+	const EcalElectronicsMapping* TheMapping_ ;
+	const CaloGeometry* geometry_ ;
+	const CaloSubdetectorGeometry *geometryES_ ;
+
+	// get pixel geometry and electronic map
+	std::unique_ptr<SiPixelFedCablingTree> PixelCabling_;
+	std::vector<PixelModule>               pixelModuleVector_ ;
+
+	// get strip geometry and electronic map
+	const SiStripRegionCabling*   StripRegionCabling_;
+	SiStripRegionCabling::Cabling cabling_ ;
+	std::pair<double, double>      regionDimension_ ;
+
+	// get hcal geometry and electronic map
+	const HcalElectronicsMap* hcalReadoutMap_;
 
 };
 
