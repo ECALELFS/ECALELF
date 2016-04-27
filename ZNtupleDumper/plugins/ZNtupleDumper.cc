@@ -206,7 +206,7 @@ private:
 	edm::EDGetTokenT<EcalRecHitCollection> recHitCollectionESToken_;
 	edm::EDGetTokenT<EcalUncalibratedRecHitCollection> ebURHToken_;
 	edm::EDGetTokenT<EcalUncalibratedRecHitCollection> eeURHToken_;
-	
+
 	edm::EDGetTokenT<std::vector<reco::SuperCluster> > EESuperClustersToken_;
 
 	// input rho
@@ -1471,7 +1471,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		if(electron1.isElectronIDAvailable(it->first)) { //
 			if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
 		}//
-		if(it->first == "medium25nsRun2Boff"){
+		if(it->first == "medium25nsRun2Boff") {
 			eleID[index] |= ((bool) electron1.userFloat(it->first));
 		}
 	}
@@ -1877,7 +1877,7 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	                                    angle);
 
 	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *
-	                                    angle);
+	                               angle);
 
 	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
 	                     angle);
@@ -2030,28 +2030,28 @@ float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsign
 	float RawenergyPlane = 0;
 	float pfRawenergyPlane = 0;
 
-	if(!ESRechitsHandle.isValid()) 
-	  return RawenergyPlane;
+	if(!ESRechitsHandle.isValid())
+		return RawenergyPlane;
 	if (!sc->preshowerClusters().isAvailable()) //protection for miniAOD
-	  return RawenergyPlane;
+		return RawenergyPlane;
 
 	for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
-	  const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
-	  for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
-	    //      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
-	    //      ++iCount;
-	    for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
-	      ESDetId rhid = ESDetId(esItr->id());
-	      if(rhid == (*rh).first) {
-		// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
-		if((int) rhid.plane() == (int) planeIndex) {
-		  RawenergyPlane += esItr->energy();
-		  pfRawenergyPlane += rh->second;
+		const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
+		for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
+			//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
+			//      ++iCount;
+			for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
+				ESDetId rhid = ESDetId(esItr->id());
+				if(rhid == (*rh).first) {
+					// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
+					if((int) rhid.plane() == (int) planeIndex) {
+						RawenergyPlane += esItr->energy();
+						pfRawenergyPlane += rh->second;
+					}
+					break;
+				}
+			}
 		}
-		break;
-	      }
-	    }
-	  }
 	}
 
 	if (pfRawenergyPlane) ; // avoid compilation error for unused var
