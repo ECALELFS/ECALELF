@@ -240,7 +240,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     Long64_t entryNumber= chain->GetEntryNumber(jentry);
     chain->GetEntry(entryNumber);
     if(isToy){
-      int modulo=eventNumber%5;
+      //int modulo=eventNumber%5;
+      int modulo=eventNumber%10;
       if(jentry<10){
 	std::cout << "Dividing toyMC events: " << isMC << "\t" << eventNumber << "\t" << modulo
 		  << "\t" << mcGenWeight 
@@ -248,8 +249,10 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	
       }
 
-      if(isMC && modulo<2) continue;
-      if(!isMC && modulo>=2) continue;
+      //if(!isMC && modulo>=2) continue;//Data is chosen if 0,1
+      //if(isMC && modulo<2) continue; //MC is chosen if 2,3,4
+      if(!isMC && modulo>=2) continue;//Data is chosen if 0,1
+      if(isMC && modulo<2) continue; //MC is chosen if >1
     }
 
     // reject events:
@@ -453,7 +456,14 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 }
 
 SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents, bool isToy, bool externToy){
-  TString eleID_="eleID_"+_eleID;
+  TString eleID_="";
+  if(_eleID=="loose"){//se e' solo loose, gli manca il pezzo davanti, perche' in RUN2 i nomi sono NOMELUNGHISSIMO
+    eleID_="";
+    std::cout<<"[INFO] _eleID is loose in GetCache --> resetting to empty string"<<std::endl;
+  }else{   
+    std::cout<<"[INFO] _eleID is "<<_eleID<<" in GetCache"<<std::endl;
+    eleID_="eleID_"+_eleID;//Standard scenario (not 0T) is eleID_NOMELUNGHISSIMO_loose
+  }
   //if(isMC){//not needed anymore
   //  eleID_="";
   //}
