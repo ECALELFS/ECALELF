@@ -537,18 +537,20 @@ double RooSmearer::getLogLikelihood(TH1F* data, TH1F* prob) const
 //	//Poisson likelihood 
 //	logL+=  weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)) - prob->GetBinContent(ibin));
 //#else
-//	// Binomial likelihood
-//	logL+= weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)) + (data->Integral()-data->GetBinContent(ibin))*ROOT::Math::Util::EvalLog(1-prob->GetBinContent(ibin)));
-//#endif
-//	} 
-      
+      // Binomial likelihood
       if(prob->GetBinContent(ibin)>0){
-	
+	double weight= 	(data->GetBinContent(ibin)>0) ? data->GetBinError(ibin) * data->GetBinError(ibin) / data->GetBinContent(ibin) : 1;	
+	logL+= weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)) + (data->Integral()-data->GetBinContent(ibin))*ROOT::Math::Util::EvalLog(1-prob->GetBinContent(ibin)));
+      }
+      //#endif
+      //	} 
+      
+      //Multinomial
+      //if(prob->GetBinContent(ibin)>0){
 	//double weight= 	(data->GetBinContent(ibin)>0) ? data->GetBinError(ibin) * data->GetBinError(ibin) / data->GetBinContent(ibin) : 1;	
-	double weight=1;
-
-	logL+= weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)));
-	} 
+	//double weight=1;
+	//logL+= weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)));
+      //} 
 
 #ifdef DEBUG
 	else {
