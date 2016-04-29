@@ -212,6 +212,18 @@ void RooSmearer::InitCategories(bool mcToy){
 
       //------------------------------ deactivating category
       cat.active=true;
+      
+      //Just print out the category index
+      if(cat.categoryIndex1 == cat.categoryIndex2){ // diagonal category
+	std::cout << "[INFO on index] Diagonal Category: " << ZeeCategories.size() 
+		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+		  <<"; Integral is "<<cat.hist_data->Integral()<<std::endl; 
+      }else{//not diagonal category
+	std::cout << "[INFO on index] Off-Diag Category: " << ZeeCategories.size() 
+		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+		  <<"; Integral is "<<cat.hist_data->Integral()<<std::endl; 
+      }
+      
       //DEACTIVATION STRATEGY TO BE TWEAKED (COMMENTED FOR THE MOMENT)
       //unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
 //      unsigned int deactiveMinEvents = 1; //_deactive_minEventsDiag;
@@ -236,14 +248,16 @@ void RooSmearer::InitCategories(bool mcToy){
 	if(cat.hist_data->Integral() < deactiveMinEvents){
 	  std::cout << "[INFO] Diagonal Category: " << ZeeCategories.size() 
 		    << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-		    << " has been deactivated: events in data less "<<deactiveMinEvents<<std::endl; 
+		    << " has been deactivated: events in data less "<<deactiveMinEvents
+		    <<"; Integral is "<<cat.hist_data->Integral()<<std::endl; 
 	  cat.active=false;
 	}
       }else{//not diagonal category
 	if(cat.hist_data->Integral() < deactiveMinEvents_off){
 	  std::cout << "[INFO] Off-Diag Category: " << ZeeCategories.size() 
 		    << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-		    << " has been deactivated: events in data less "<<deactiveMinEvents<<std::endl; 
+		    << " has been deactivated: events in data less "<<deactiveMinEvents_off
+		    <<"; Integral is "<<cat.hist_data->Integral()<<std::endl; 
 	  cat.active=false;
 	}
       }
@@ -266,7 +280,7 @@ void RooSmearer::InitCategories(bool mcToy){
 	AutoNBins(cat);
       }
       cat.nSmearToy=_nSmearToy;
-      std::cout<<"number of smear toy"<<_nSmearToy<<std::endl;
+      std::cout<<"number of smear toy: "<<_nSmearToy<<std::endl;
       if(smearscan || (cat.active && _autoNsmear)) AutoNSmear(cat);
       
 
