@@ -237,16 +237,16 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 		energySC_must[iEle] = correctedSuperCluster.correctedEnergy();
 		energySC_mustVar[iEle] = correctedSuperCluster.correctedEnergyUncertainty();
 
-		if(photonsHandle.isValid()){
-		//now associate electron to photon via SC
-		for (auto pho_itr = photonsHandle->begin(); pho_itr != photonsHandle->end(); ++pho_itr) {
-			float dR = deltaR(ele_itr->superCluster()->eta(), ele_itr->superCluster()->phi(), pho_itr->superCluster()->eta(), pho_itr->superCluster()->phi());
-			if (dR < 1E-2) {
-				energySC_pho[iEle] = pho_itr->energy();
-				energySC_phoVar[iEle] = pho_itr->getCorrectedEnergyError(pho_itr->getCandidateP4type());
-				break;
+		if(photonsHandle.isValid()) {
+			//now associate electron to photon via SC
+			for (auto pho_itr = photonsHandle->begin(); pho_itr != photonsHandle->end(); ++pho_itr) {
+				float dR = deltaR(ele_itr->superCluster()->eta(), ele_itr->superCluster()->phi(), pho_itr->superCluster()->eta(), pho_itr->superCluster()->phi());
+				if (dR < 1E-2) {
+					energySC_pho[iEle] = pho_itr->energy();
+					energySC_phoVar[iEle] = pho_itr->getCorrectedEnergyError(pho_itr->getCandidateP4type());
+					break;
+				}
 			}
-		}
 		}
 	}
 
