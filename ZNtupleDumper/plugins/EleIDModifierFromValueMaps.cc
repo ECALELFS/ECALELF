@@ -24,7 +24,7 @@ public:
     ValueMaps tok_valuemaps;    
   };
 
-  EleSelectionModifierFromValueMaps(const edm::ParameterSet& conf);
+  EleIDModifierFromValueMaps(const edm::ParameterSet& conf);
   
   void setEvent(const edm::Event&) override final;
   void setEventContent(const edm::EventSetup&) override final;
@@ -40,11 +40,11 @@ private:
 };
 
 DEFINE_EDM_PLUGIN(ModifyObjectValueFactory,
-          EleSelectionModifierFromValueMaps,
-          "EleSelectionModifierFromValueMaps");
+          EleIDModifierFromValueMaps,
+          "EleIDModifierFromValueMaps");
 
-EleSelectionModifierFromValueMaps::
-EleSelectionModifierFromValueMaps(const edm::ParameterSet& conf) :
+EleIDModifierFromValueMaps::
+EleIDModifierFromValueMaps(const edm::ParameterSet& conf) :
   ModifyObjectValueBase(conf) {
   constexpr char electronSrc[] =  "electronSrc";
 
@@ -70,7 +70,7 @@ namespace {
   }
 }
 
-void EleSelectionModifierFromValueMaps::
+void EleIDModifierFromValueMaps::
 setEvent(const edm::Event& evt) {
   eles_by_oop.clear();
   ele_vmaps.clear();
@@ -93,8 +93,7 @@ setEvent(const edm::Event& evt) {
 
 }
 
-void EleSelectionModifierFromValueMaps::
-setEventContent(const edm::EventSetup& evs) {
+void EleIDModifierFromValueMaps::setEventContent(const edm::EventSetup& evs) {
 }
 
 namespace {
@@ -102,8 +101,7 @@ namespace {
   inline void make_consumes(T& tag,U& tok,V& sume) { if( !(empty_tag == tag) ) tok = sume.template consumes<edm::ValueMap<float> >(tag); }
 }
 
-void EleSelectionModifierFromValueMaps::
-setConsumes(edm::ConsumesCollector& sumes) {
+void EleIDModifierFromValueMaps::setConsumes(edm::ConsumesCollector& sumes) {
   //setup electrons
   if( !(empty_tag == e_conf.electron_src) ) e_conf.tok_electron_src = sumes.consumes<edm::View<pat::Electron> >(e_conf.electron_src);  
 
@@ -120,8 +118,7 @@ namespace {
   }
 }
 
-void EleSelectionModifierFromValueMaps::
-modifyObject(pat::Electron& ele) const {
+void EleIDModifierFromValueMaps::modifyObject(pat::Electron& ele) const {
   // we encounter two cases here, either we are running AOD -> MINIAOD
   // and the value maps are to the reducedEG object, can use original object ptr
   // or we are running MINIAOD->MINIAOD and we need to fetch the pat objects to reference
@@ -144,7 +141,7 @@ modifyObject(pat::Electron& ele) const {
     float value(0.0);
     assignValue(ptr,itr->second,ele_vmaps,value);
     if( !ele.isElectronIDAvailable(itr->first) ) {
-		pat::Electron::IdPair id_pair = std::make_pair<std::string, float>(itr->first, value);
+		pat::Electron::IdPair id_pair(itr->first, value);
 		eleIDs.push_back(id_pair);
     } else {
       throw cms::Exception("ValueNameAlreadyExists")
