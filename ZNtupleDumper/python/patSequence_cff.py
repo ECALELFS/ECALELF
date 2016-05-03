@@ -104,9 +104,27 @@ slimmedElectrons.modifierConfig  = cms.PSet(
                   tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
                   ),
               photon_config   = cms.PSet( )
-          )
-)
-)
+          ),
+    cms.PSet( modifierName = cms.string('EleIDModifierFromValueMaps'),
+             electron_config = cms.PSet(
+                electronSrc  = slimmedElectrons.src,
+                  fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
+                  WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
+                  WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
+                  WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
+                  loose       = cms.InputTag("eleSelectionProducers", "loose"),
+                  medium      = cms.InputTag("eleSelectionProducers", "medium"),
+                  tight      = cms.InputTag("eleSelectionProducers", "tight"),
+                  loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
+                  medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+                  tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
+                  loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
+                  medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+                  tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
+                ),
+             )                
+    )
+    )
 
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection
