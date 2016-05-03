@@ -5,7 +5,7 @@
 //
 /**\class  EleSelectionProducers EleSelectionProducers.cc Calibration/ZNtupleDumper/plugins/EleSelectionProducers.cc
 
-   \brief Class saving ValueMaps of floats 
+   \brief Class saving ValueMaps of floats
  */
 //
 // Original Author:  Shervin Nourbakhsh,40 1-B24,+41227671643,

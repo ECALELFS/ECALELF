@@ -25,22 +25,22 @@
 void main(int argc, char **argv)
 {
 
-  TRandom3 genRand;
+	TRandom3 genRand;
 
-  std::ofstream io1;
-  io1.open ("scalibMapEE.txt");
-  
-  float r, scalib;
+	std::ofstream io1;
+	io1.open ("scalibMapEE.txt");
 
-  for (r=0; r<40; r++) {
+	float r, scalib;
 
-    if (fabs(r)<5)         scalib = genRand.Gaus(1,0.01);
-    else if (fabs(r)<15)    scalib = genRand.Gaus(1,0.005);
-    else if (fabs(r)<30)    scalib = genRand.Gaus(1,0.005);
-    else if (fabs(r)<40)    scalib = genRand.Gaus(1,0.01);
-    else                      scalib = genRand.Gaus(1,0.015);
- 
-    io1<<r<<"    "<<scalib<<"\n";
-  }
+	for (r = 0; r < 40; r++) {
+
+		if (fabs(r) < 5)         scalib = genRand.Gaus(1, 0.01);
+		else if (fabs(r) < 15)    scalib = genRand.Gaus(1, 0.005);
+		else if (fabs(r) < 30)    scalib = genRand.Gaus(1, 0.005);
+		else if (fabs(r) < 40)    scalib = genRand.Gaus(1, 0.01);
+		else                      scalib = genRand.Gaus(1, 0.015);
+
+		io1 << r << "    " << scalib << "\n";
+	}
 
 }
