@@ -36,24 +36,24 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 
 
 #============================== Adding electron ID to patElectrons
-patElectrons.addElectronID=cms.bool(True)
-patElectrons.electronIDSources =  cms.PSet(
-    # configure many IDs as InputTag <someName> = <someTag> you
-    # can comment out those you don't want to save some disk space
-    fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
-    WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
-    WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
-    WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
-    loose       = cms.InputTag("eleSelectionProducers", "loose"),
-    medium      = cms.InputTag("eleSelectionProducers", "medium"),
-    tight      = cms.InputTag("eleSelectionProducers", "tight"),
-    loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
-    medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
-    tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
-    loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
-    medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
-    tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
-    )
+# patElectrons.addElectronID=cms.bool(True)
+# patElectrons.electronIDSources =  cms.PSet(
+#     # configure many IDs as InputTag <someName> = <someTag> you
+#     # can comment out those you don't want to save some disk space
+#     fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
+#     WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
+#     WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
+#     WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
+#     loose       = cms.InputTag("eleSelectionProducers", "loose"),
+#     medium      = cms.InputTag("eleSelectionProducers", "medium"),
+#     tight      = cms.InputTag("eleSelectionProducers", "tight"),
+#     loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
+#     medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+#     tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
+#     loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
+#     medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+#     tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
+#     )
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')
 
@@ -83,16 +83,48 @@ slimmedElectrons.modifierConfig  = cms.PSet(
     modifications = cms.VPSet(
     cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatValueMaps'),
               electron_config = cms.PSet( 
-                  electronSrc = cms.InputTag("slimmedElectrons","","@skipCurrentProcess"),
+#                  electronSrc = cms.InputTag("slimmedElectrons","","@skipCurrentProcess"),
+                  electronSrc = slimmedElectrons.src,
                   energySCEleMust = cms.InputTag("eleNewEnergiesProducer","energySCEleMust"),
                   energySCEleMustVar = cms.InputTag("eleNewEnergiesProducer","energySCEleMustVar"),
                   energySCElePho = cms.InputTag("eleNewEnergiesProducer","energySCElePho"),
-                  energySCElePhoVar = cms.InputTag("eleNewEnergiesProducer","energySCElePhoVar")
-              ),
+                  energySCElePhoVar = cms.InputTag("eleNewEnergiesProducer","energySCElePhoVar"),
+                  fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
+                  WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
+                  WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
+                  WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
+                  loose       = cms.InputTag("eleSelectionProducers", "loose"),
+                  medium      = cms.InputTag("eleSelectionProducers", "medium"),
+                  tight      = cms.InputTag("eleSelectionProducers", "tight"),
+                  loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
+                  medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+                  tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
+                  loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
+                  medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+                  tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
+                  ),
               photon_config   = cms.PSet( )
-          )
-)
-)
+          ),
+    cms.PSet( modifierName = cms.string('EleIDModifierFromValueMaps'),
+             electron_config = cms.PSet(
+                electronSrc  = slimmedElectrons.src,
+                  fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
+                  WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
+                  WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
+                  WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
+                  loose       = cms.InputTag("eleSelectionProducers", "loose"),
+                  medium      = cms.InputTag("eleSelectionProducers", "medium"),
+                  tight      = cms.InputTag("eleSelectionProducers", "tight"),
+                  loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
+                  medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+                  tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
+                  loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
+                  medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+                  tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
+                ),
+             )                
+    )
+    )
 
 #process.trackerDrivenRemoverSeq: sequence to remove events with trackerDriven electrons
 #process.eleSelectionProducers: produces value maps of floats that says if the electron passes the given selection
@@ -100,8 +132,8 @@ slimmedElectrons.modifierConfig  = cms.PSet(
 #process.electronMatch: assosiation map of gsfelectron and genparticle
 #process.patElectrons: producer of patElectron
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
-prePatSequence = cms.Sequence((eleSelectionProducers ))
-postPatSequence = cms.Sequence() #eleNewEnergiesProducer) # * slimmedElectrons )
+prePatSequence = cms.Sequence() #(eleSelectionProducers ))
+postPatSequence = cms.Sequence(eleSelectionProducers * eleNewEnergiesProducer * slimmedElectrons )
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
 patSequence=cms.Sequence( prePatSequence * patElectrons * postPatSequence)
 patSequenceMC=cms.Sequence( electronMatch * prePatSequence * patElectrons * postPatSequence)
@@ -117,3 +149,5 @@ eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons"
 patElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
 patElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()
 
+slimmedElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
+slimmedElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()

@@ -1,3 +1,7 @@
+<use   name="CommonTools/CandAlgos"/>
+<use   name="CondCore/PluginSystem"/>
+<use   name="CondCore/DBOutputService"/>
+<use   name="CondFormats/EgammaObjects"/>
 <use   name="CondFormats/DataRecord"/>
 <use   name="CondFormats/EcalObjects"/>
 <use   name="DataFormats/EcalDetId"/>
