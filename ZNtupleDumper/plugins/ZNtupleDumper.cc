@@ -733,9 +733,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 		        eleIter1 != electronsHandle->end();
 		        eleIter1++) {
-			if( eleIter1->userFloat(eleID_tight) )          ++nTight;
-			else if( eleIter1->userFloat(eleID_medium) ) ++nMedium;
-			else if( eleIter1->userFloat(eleID_loose) )  ++nLoose;
+			if( eleIter1->electronID(eleID_tight) )          ++nTight;
+			else if( eleIter1->electronID(eleID_medium) ) ++nMedium;
+			else if( eleIter1->electronID(eleID_loose) )  ++nLoose;
 		}
 	}
 
@@ -785,7 +785,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			if(! elePreselection(*eleIter1)) continue;
 
 			if(eventType == WENU) {
-				if(! (eleIter1->userFloat(eleID_tight)) ) continue;
+				if(! (eleIter1->electronID(eleID_tight)) ) continue;
 				if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 
 				// MET/MT selection
@@ -880,7 +880,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			        muIter2++) {
 
 				// should exit when muIter1 == end-1
-				//if(! muIter2->userFloat("loose") ) continue;
+				//if(! muIter2->electronID("loose") ) continue;
 				for( pat::PhotonCollection::const_iterator phoIter1 = photonsHandle->begin();
 				        phoIter1 != photonsHandle->end() && doFill == false;
 				        phoIter1++) {
@@ -925,14 +925,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		        PatEle1++) {
 
 			// consider electrons passing at least the loose identification
-			//if(!PatEle1->userFloat("loose50nsRun2") ) continue;
+			//if(!PatEle1->electronID("loose50nsRun2") ) continue;
 			//nMedium=0;
 			// take the highest pt tight electrons if it exists (the collection is ordered in pt)
 			// consider only the electrons passing the tightest electron identification
 			//if(nWP70>0){ // if there are tight electrons, consider only those
-			//if(!PatEle1->userFloat("tight50nsRun2") ) continue;
+			//if(!PatEle1->electronID("tight50nsRun2") ) continue;
 			//}else if(nMedium>0){ // if there are only medium electrons, consider only those
-			//if(!PatEle1->userFloat("medium50nsRun2") ) continue;
+			//if(!PatEle1->electronID("medium50nsRun2") ) continue;
 			//}
 
 			//      if(!PatEle1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
@@ -1003,7 +1003,7 @@ bool ZNtupleDumper::elePreselection(const pat::Electron& electron)
 
 	//if(eleIter1->parentSuperCluster().isNull()) continue;
 	if(preselID_) {
-		if(! (electron.userFloat(eleID_loose))) return false;
+		if(! (electron.electronID(eleID_loose))) return false;
 	}
 	return true;
 }
@@ -1469,7 +1469,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	eleID[index] = 0;
 	for (std::map<std::string, UInt_t>::iterator it = eleID_map.eleIDmap.begin(); it != eleID_map.eleIDmap.end(); ++it) {
 		if(electron1.isElectronIDAvailable(it->first)) { //
-			if ((bool) electron1.userFloat(it->first))  eleID[index] |= it->second;//
+			if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
 		}//
 		if(it->first == "medium25nsRun2Boff") {
 			eleID[index] |= ((bool) electron1.userFloat(it->first));
@@ -1663,13 +1663,13 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 	R9Ele[index] = e3x3SCEle[index] / electron1.rawEnergy(); //original version
 
 	// make it a function
-	//eleID[index] = ((bool) electron1.userFloat("fiducial")) << 0;
-	//eleID[index] += ((bool) electron1.userFloat("loose")) << 1;
-	//eleID[index] += ((bool) electron1.userFloat("medium")) << 2;
-	//eleID[index] += ((bool) electron1.userFloat("tight")) << 3;
-	//eleID[index] += ((bool) electron1.userFloat("WP90PU")) << 4;
-	//eleID[index] += ((bool) electron1.userFloat("WP80PU")) << 5;
-	//eleID[index] += ((bool) electron1.userFloat("WP70PU")) << 6;
+	//eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
+	//eleID[index] += ((bool) electron1.electronID("loose")) << 1;
+	//eleID[index] += ((bool) electron1.electronID("medium")) << 2;
+	//eleID[index] += ((bool) electron1.electronID("tight")) << 3;
+	//eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
+	//eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
+	//eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
 	//classificationEle[index] = electron1.classification();
 
 	// temporary ignor the id and classification
@@ -2346,9 +2346,9 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index)
 	//     dzvtx[index] = electron1.gsfTrack()->dz();
 	//   }
 
-	// eleIDloose[index]  = electron1.userFloat("loose50nsRun2");
-	// eleIDmedium[index] = electron1.userFloat("medium50nsRun2");
-	// eleIDtight[index]  = electron1.userFloat("tight50nsRun2");
+	// eleIDloose[index]  = electron1.electronID("loose50nsRun2");
+	// eleIDmedium[index] = electron1.electronID("medium50nsRun2");
+	// eleIDtight[index]  = electron1.electronID("tight50nsRun2");
 	return;
 }
 
