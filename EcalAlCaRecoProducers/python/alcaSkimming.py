@@ -544,7 +544,7 @@ process.outputRECO = cms.OutputModule("PoolOutputModule",
                                       maxSize = cms.untracked.int32(5120000),
                                       outputCommands = cms.untracked.vstring('keep *'),
                                       fileName = cms.untracked.string('RECO.root'),
-                                      SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
+#                                      SelectEvents = process.OutALCARECOEcalCalElectron.SelectEvents,
                                       dataset = cms.untracked.PSet(
                                           filterName = cms.untracked.string(''),
                                           dataTier = cms.untracked.string('RECO')
@@ -670,7 +670,7 @@ else:
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                               * process.pdfWeightsSeq * process.ntupleSeq)
 
-process.NtupleEndPath = cms.EndPath( process.zNtupleDumper)
+process.NtupleEndPath = cms.EndPath( process.zNtupleDumper )
 
 
 if(not doTreeOnly):
@@ -827,7 +827,7 @@ else:
 
 
 process.patElectrons.electronSource = myEleCollection
-process.eleSelectionProducers.electronCollection = myEleCollection
+process.eleSelectionProducers.electronCollection = cms.InputTag("patElectrons")
 process.electronMatch.src = myEleCollection
 if (options.skim=="ZmmgSkim"):
     process.alCaIsolatedElectrons.photonLabel = cms.InputTag("gedPhotons")
@@ -839,10 +839,6 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 if(options.type!="MINIAODNTUPLE"):
     process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
-    #configure everything for MINIAOD
-    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("patElectrons","","@skipCurrentProcess")
-    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("patPhotons","","@skipCurrentProcess")
-
 
 else:
     #configure everything for MINIAOD
@@ -876,23 +872,21 @@ else:
     process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
     process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
-    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
+#    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
 
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
     process = EcalRecal(process)
-    process.eleSelectionProducers.electronCollection   = recalibElectronSrc
     process.patElectrons.electronSource                = recalibElectronSrc
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
-    #process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
+
     
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
-    #process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
 
     if(options.bunchSpacing==25):
         print "bunchSpacing", options.bunchSpacing
