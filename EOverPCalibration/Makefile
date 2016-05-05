@@ -1,37 +1,4 @@
-CXXFLAGS=-Wall  -pedantic -std=c++11
-
-ROOT_LIB:=`root-config --libs --glibs`
-ROOT_FLAGS:=`root-config --cflags --ldflags`
-ROOT_INCLUDE:=`root-config --incdir`
-
-# Boost
-BOOST = /afs/cern.ch/cms/slc5_amd64_gcc434/external/boost/1.47.0
-#BOOST=/afs/cern.ch/cms/slc5_amd64_gcc472/external/boost/1.50.0
-SCRAMTOOL=$(shell which scram &>/dev/null || echo 1)
-
-ifeq ($(SCRAMTOOL),1)
-	ROOFIT_LIB="-lRooFit"
-	ROOSTAT_LIB="-lRooStats"
-	ROOFIT_INCLUDE="./"
-else
-	ROOFIT_INCLUDE := $(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep INCLUDE= | sed 's|INCLUDE=||')
-	ROOFIT_LIB := -l$(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep LIB= | sed 's|LIB=||')
-	ROOFIT_LIB += -l$(shell cd $(CMSSW_BASE); scram tool info roofit | grep LIB= | sed 's|LIB=||')
-	ROOFIT_LIBDIR = -L$(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep LIBDIR= | sed 's|LIBDIR=||')
-	ROOFIT_LIB+=$(ROOFIT_LIBDIR)
-endif
-ROOSTAT_LIB="-lRooStats"
-
-
-INCLUDEDIR=./interface
-SRCDIR=./src
-BUILDDIR=./bin
-OBJ_DIR=./lib
-
-#################
-INCLUDE=-I$(INCLUDEDIR) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
-LIB=-L$(BOOST)/lib -L/usr/lib64 # -L/usr/lib 
-
+include ../ZFitter/MakeVars
 
 #### Make the list of modules from the list of .cc files in the SRC directory
 MODULES=$(shell ls $(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
