@@ -42,17 +42,17 @@
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="../../d2/d63/classAlCaECALRecHitReducer.html#a9493a66a98fab1de3e8e360fd970a539">AlCaECALRecHitReducer::AlCaECALRecHitReducer</a>  (const edm::ParameterSet &amp;)</dt>
+<dt><a class="anchor" id="_todo000007"></a>Member <a class="el" href="../../d2/d63/classAlCaECALRecHitReducer.html#a9493a66a98fab1de3e8e360fd970a539">AlCaECALRecHitReducer::AlCaECALRecHitReducer</a>  (const edm::ParameterSet &amp;)</dt>
 <dd>make sure that the new caloClusterCollection has no duplicates  </dd>
-<dt><a class="anchor" id="_todo000003"></a>Namespace <a class="el" href="../../d8/dcc/namespacestd.html">std</a>  </dt>
+<dt><a class="anchor" id="_todo000004"></a>Namespace <a class="el" href="../../d8/dcc/namespacestd.html">std</a>  </dt>
 <dd><ul>
 <li>move addbranch_pt to private and correct the usage in <a class="el" href="../../dd/d99/ZFitter_8cpp.html" title="Zee Fit program. ">ZFitter.cpp</a></li>
 <li>move scaler to private  </li>
 </ul>
 </dd>
-<dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="../../d8/dfa/classZFit__class.html#a4e6d11d88a1547adc65defe46cebd413">ZFit_class::~ZFit_class</a>  (void)</dt>
+<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="../../d8/dfa/classZFit__class.html#a4e6d11d88a1547adc65defe46cebd413">ZFit_class::~ZFit_class</a>  (void)</dt>
 <dd></dd>
-<dt><a class="anchor" id="_todo000002"></a>File <a class="el" href="../../dd/d99/ZFitter_8cpp.html">ZFitter.cpp</a>  </dt>
+<dt><a class="anchor" id="_todo000003"></a>File <a class="el" href="../../dd/d99/ZFitter_8cpp.html">ZFitter.cpp</a>  </dt>
 <dd><ul>
 <li>remove commonCut from category name and add it in the <a class="el" href="../../d8/dfa/classZFit__class.html" title="Zee Fit class: BW+CB and Cruijff. ">ZFit_class</a> in order to not repeate the cut</li>
 <li>make alpha fitting more generic (look for alphaName)</li>
@@ -67,11 +67,13 @@
 <li>Use MET corrections<ul>
 <li><a href="https://twiki.cern.ch/twiki/bin/view/CMS/MissingET">https://twiki.cern.ch/twiki/bin/view/CMS/MissingET</a></li>
 <li><a href="https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMetAnalysis">https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMetAnalysis</a></li>
-<li><a href="https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETRecipe53X">https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETRecipe53X</a></li>
+<li><a href="https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETRecipe53X">https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMETRecipe53X</a> </li>
 </ul>
 </li>
 </ul>
 </dd>
+<dt><a class="anchor" id="_todo000002"></a>Member <a class="el" href="../../da/df9/classZNtupleDumper.html#a38bd1531d85f6232c807deaf0cc7f03c">ZNtupleDumper::GetESPlaneRawEnergy</a>  (const reco::SuperClusterRef &amp;sc, unsigned int planeIndex)</dt>
+<dd>highly inefficient: instead of the loop over the recHits should use a -&gt;find() method, it should return both energies of both planes </dd>
 </dl>
 </div></div><!-- contents -->
 <!-- start footer part -->

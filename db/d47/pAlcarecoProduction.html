@@ -42,7 +42,11 @@
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p>AlCaReco centrally produced have a bug, you need to run a reReco of the AlCaRaw with the Prompt GT: <a class="el" href="../../db/d68/pFindInfos.html#pFindPromptGT">How to find the Prompt GT</a></p>
-<p>Then follow the instructions for a rereco using as <b>tag_name</b> the name of the GT: <a class="el" href="../../df/d7b/page5.html">Rereco production</a> </p>
+<p>Then follow the instructions for a rereco using as <b>tag_name</b> the name of the GT: <a class="el" href="../../df/d7b/page5.html">Rereco production</a></p>
+<h1>Tips and tricks</h1>
+<p>Case: you are producing alcareco and ntuples in the same job. You don't want to wait till the completion of all the alcareco jobs and want to start using the ntuples with ~90% of the jobs completed. In order to allow the following steps of the &ndash;check option, you should add manually a fine in the crab config directory: </p>
+<pre class="fragment">touch prod_alcareco/DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v2/allRange/res/finished
+</pre><p>At this point the ntuples will be merged and moved. You need to remove the file if you want then to proceed with the normal checks and resubmission of failing jobs </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

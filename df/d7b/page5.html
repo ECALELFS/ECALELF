@@ -55,14 +55,15 @@ Output files</h2>
 <ol type="1">
 <li>alcarereco_datasets.dat is the file with the list of all the rerecos already done</li>
 <li>ntuple_datasets.dat is the file with the list of all the ntuples already produced These two files are updated automatically with a line that summarizes all the relevant information about the rereco/ntuples (run range, dataset name, alcaraw name, storage_element, user_remote_dir_base, tag_name and, for ntuples, if they are produced from alcareco or alcarecosim and ...) when the script RerecoQuick.sh is launched</li>
-<li>The rereco files produced are stored in /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/8TeV/tag_name</li>
-<li>The final merged ntuple is stored in: /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/tag_name/</li>
+<li>The rereco files produced are stored in <pre class="fragment">   /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/13TeV/tag_name
+</pre></li>
+<li>The final merged ntuple is stored in: /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/tag_name/</li>
 </ol>
 <h2><a class="anchor" id="RERECO_instructions"></a>
 Instructions</h2>
 <ol type="1">
 <li><b>CREATE</b> the tag_name.py in EcalAlCaRecoProducers/config/reRecoTags directory <br/>
- Se more detailes below, in section "TAG FILE"</li>
+ Se more detailes below, in section <a class="el" href="../../df/d7b/page5.html#TAGFILES">TAG FILES</a></li>
 <li>check the syntax of the tag_name.py file <div class="fragment"></div><!-- fragment --></li>
 <li>commit the file in GITHUB: <div class="fragment"><div class="line">git add config/reRecoTags/tag_name.py</div>
 <div class="line">git commit -m <span class="stringliteral">&quot;....&quot;</span> config/reRecoTags/tag_name.py</div>
