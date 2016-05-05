@@ -1,18 +1,16 @@
 #ifndef h2Chain_h
 #define h2Chain_h
 
-#include "TROOT.h"
-#include "TH1.h"
-#include "TH2.h"
+#include "TH2F.h"
 #include "TFile.h"
-#include "THStack.h"
-//#include "TCanvas.h"
-#include "TPad.h"
+#include "TString.h"
 
 #include <vector>
+#include <string>
 
 
-struct h2Chain {
+class h2Chain {
+public:
 	h2Chain (TString baseName, TString baseTitle,
 	         int nbinsx, double minx, double maxx,
 	         int nbinsy, double miny, double maxy, int NUM) ;
