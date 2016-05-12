@@ -2,11 +2,19 @@
 #define EnergyScaleCorrection_class_hh
 /// Read and get energy scale and smearings from .dat files
 /**\class EnergyScaleCorrection_class EnergyScaleCorrection_class.cc Calibration/ZFitter/src/EnergyScaleCorrection_class.cc
- *
+ *  \author Shervin Nourbakhsh
  *
  */
 
-/** Description Shervin
+/** Description
+	This module is taken from the ECALELF package, used to derive the energy scales and smearings.
+
+	There are two sub-classes:
+	 - correctionValue_class that defines the corrections
+     - correctionCategory_class that defines the categories
+	 There is one map that associates the correction to the category (values read from text file)
+
+	 There is one class that reads the text files with the corrections and returns the scale/smearings given the electron/photon properties
  */
 
 #include <TString.h>
@@ -17,46 +25,45 @@
 #include <TChain.h>
 #include <TRandom3.h>
 #include <string>
-#include <RooRealVar.h>
-#include <RooCBShape.h>
 
-using namespace std;
-
+//============================== First auxiliary class
 class correctionValue_class
 {
 public:
 	// values
-	float scale, scale_err;
-	float constTerm, constTerm_err;
-	float alpha, alpha_err;
+	float scale, scale_err, scale_err_syst;
+	float rho, rho_err;
+	float phi, phi_err;
 	float Emean, Emean_err;
 
 	correctionValue_class(void)
 	{
 		scale = 1;
 		scale_err = 0;
-		constTerm = 0;
-		constTerm_err = 0;
-		alpha = 0;
-		alpha_err = 0;
+		scale_err_syst = 0;
+		rho = 0;
+		rho_err = 0;
+		phi = 0;
+		phi_err = 0;
 		Emean = 0;
 		Emean_err = 0;
 	};
 
 	friend std::ostream& operator << (std::ostream& os, const correctionValue_class a)
 	{
-		os <<  " "
-		   << a.scale << " +/- " << a.scale_err //<< std::endl
-		   <<  " "
-		   << a.constTerm << " +/- " << a.constTerm_err //<< std::endl
-		   <<  " "
-		   << a.alpha << " +/- " << a.alpha_err
-		   <<  " "
+		os <<  "( "
+		   << a.scale << " +/- " << a.scale_err << " +/- " << a.scale_err_syst << ")"
+		   <<  "\t"
+		   << a.rho << " +/- " << a.rho_err
+		   <<  "\t"
+		   << a.phi << " +/- " << a.phi_err
+		   <<  "\t"
 		   << a.Emean << " +/- " << a.Emean_err;
 		return os;
 	};
 };
 
+//============================== Second auxiliary class
 class correctionCategory_class
 {
 	// for class definition and ordering
@@ -65,18 +72,28 @@ public:
 	unsigned int runmax;
 
 private:
-	float r9min;
-	float r9max;
-	float etmin;
-	float etmax;
-	float etamin;
-	float etamax;
-
-	// name of the category
-	//std::string category;
+	// definition of the variables used for binning and the min-max ranges
+	float r9min;  ///< min R9 vaule for the bin
+	float r9max;  ///< max R9 value for the bin
+	float etmin;  ///< min Et value for the bin
+	float etmax;  ///< max Et value for the bin
+	float etamin; ///< min eta value for the bin
+	float etamax; ///< max eta value for the bin
 
 
 public:
+	/** there are two constructors:
+	    - the first using the values taken from the e/gamma object
+	    - the second used to define the categories and the correction values
+	*/
+
+	/** This constructor uses a string to define the category
+	    The string is used in the .dat file where the corrections are defined
+	    The syntax of the strings follows the definitions in the ECALELF ElectronCategory_class: http://ecalelfs.github.io/ECALELF/d5/d11/classElectronCategory__class.html
+	*/
+	correctionCategory_class(TString category_); ///< constructor with name of the category according to ElectronCategory_class
+
+	/// this constructor is used to assign a category to the electron/photon given values in input
 	inline  correctionCategory_class(const unsigned int runNumber, const float etaEle, const float R9Ele, const float EtEle)
 	{
 		runmin = runNumber;
@@ -89,10 +106,10 @@ public:
 		etmax = EtEle;
 	}
 
-	correctionCategory_class(TString category_); ///< constructor with name of the category according to ElectronCategory_class
-
+	/// for ordering of the categories
 	bool operator<(const correctionCategory_class& b) const;
 
+	/// for DEBUG
 	friend std::ostream& operator << (std::ostream& os, const correctionCategory_class a)
 	{
 		os <<  a.runmin << " " << a.runmax
@@ -104,100 +121,86 @@ public:
 };
 
 
-//typedef std::map < TString, std::pair<double, double> > correction_map_t;
+//==============================
+/// map associating the category and the correction
 typedef std::map < correctionCategory_class, correctionValue_class > correction_map_t;
 
+
+
+//============================== Main class
 class EnergyScaleCorrection_class
 {
 
 public:
-	bool noCorrections, noSmearings;
+	enum fileFormat_t {
+		UNKNOWN = 0,
+		GLOBE,
+		ECALELF_TOY,
+		ECALELF
+	};
+
+	enum paramSmear_t {
+		kNone = 0,
+		kRho,
+		kPhi,
+		kNParamSmear
+	};
+
+	bool doScale, doSmearings;
 
 public:
-	EnergyScaleCorrection_class(TString correctionFileName,
-	                            TString smearingFileName = ""); ///< constructor with correction file names
+	EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed = 0);
+	EnergyScaleCorrection_class() {}; ///< dummy constructor needed in ElectronEnergyCalibratorRun2
 	~EnergyScaleCorrection_class(void);
 
-	float getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle); // deprecated
-	float ScaleCorrection(int runNumber, bool isEBEle, double R9Ele, double etaSCEle,
-	                      double EtEle,
-	                      int nPV = 0, float nPVmean = 0); ///< method to get energy scale corrections
-	TTree *GetCorrTree(TChain *tree, bool fastLoop = true,
-	                   TString runNumberBranchName = "runNumber",
-	                   TString R9EleBranchName = "R9Ele",
-	                   TString etaEleBranchName = "etaEle",
-	                   TString etaSCEleBranchName = "etaSCEle",
-	                   TString energySCEleBranchName = "energySCEle",
-	                   TString nPVBranchName = "nPV");
+
+//------------------------------ scales
+	float ScaleCorrection(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle,
+	                      double EtEle ) const; ///< method to get energy scale corrections
+
+	float ScaleCorrectionUncertainty(unsigned int runNumber, bool isEBEle,
+	                                 double R9Ele, double etaSCEle, double EtEle) const; ///< method to get scale correction uncertainties: it's stat+syst in eta x R9 categories
 
 private:
-	void ReadFromFile(TString filename); ///<   category  "runNumber"   runMin  runMax   deltaP  err_deltaP
+	correctionValue_class getScaleCorrection(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; ///< returns the correction value class
+	float getScaleOffset(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; // returns the correction value
+	float getScaleStatUncertainty(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; // returns the stat uncertainty
+	float getScaleSystUncertainty(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; // technical implementation
 
-	float GetMean_nPV(TChain *tree, bool fastLoop, TString nPVBranchName);
-	void Add(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_);
 
-public:
+	void ReadFromFile(TString filename); ///<   category  "runNumber"   runMin  runMax   deltaP  err_deltaP_per_bin err_deltaP_stat err_deltaP_syst
+
+	// this method adds the correction values read from the txt file to the map
+	void AddScale(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_, double err_syst_deltaP);
 
 	//============================== smearings
-private:
-	int smearingType_;
+public:
+	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, paramSmear_t par, float nSigma = 0.) const;
+	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, float nSigma_rho, float nSigma_phi) const;
 
-	TRandom3 *rgen_;
+
+private:
+	fileFormat_t smearingType_;
+
 	correction_map_t scales, scales_not_defined;
 	correction_map_t smearings, smearings_not_defined;
 
 	void AddSmearing(TString category_, int runMin_, int runMax_, //double smearing_, double err_smearing_);
-	                 double constTerm, double err_constTerm, double alpha, double err_alpha, double Emean, double err_Emean);
-	float getSmearingSigma(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
+	                 double rho, double err_rho, double phi, double err_phi, double Emean, double err_Emean);
 	void ReadSmearingFromFile(TString filename); ///< File structure: category constTerm alpha;
 public:
-	inline void SetSmearingType(int value)
+	inline void SetSmearingType(fileFormat_t value)
 	{
 		if(value >= 0 && value <= 1) {
 			smearingType_ = value;
 		} else {
-			smearingType_ = 0;
+			smearingType_ = UNKNOWN;
 		}
 	};
-	inline void SetSmearingCBAlpha(double value)
-	{
-		cut.setVal(value);
-	};
-	inline void SetSmearingCBPower(double value)
-	{
-		power.setVal(value);
-	};
 
-	float getSmearing(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle);
-	float getSmearingRho(int runNumber, float energy, bool isEBEle, float R9Ele, float etaSCEle); ///< public for sigmaE estimate
+	float getSmearingRho(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle) const; ///< public for sigmaE estimate
 
 
-
-	TTree *GetSmearTree(TChain *tree, bool fastLoop,
-	                    TString energyEleBranchName,
-	                    TString runNumberBranchName = "runNumber",
-	                    TString R9EleBranchName = "R9Ele",
-	                    TString etaEleBranchName = "etaEle",
-	                    TString etaSCEleBranchName = "etaSCEle"
-	                   );
-
-	//---------- CB parameters
-	RooRealVar 	deltaM;
-	RooRealVar 	sigma;
-	RooRealVar 	cut;
-	RooRealVar 	power;
-	RooRealVar    x;
-	//--------------- BW parameters
-	//RooRealVar  mRes;
-	//RooRealVar  Gamma;
-
-	//  RooRealVar& invMass_ref;
-	//RooBreitWigner bw_pdf;
-	RooCBShape resCB;
-	RooDataSet *data;
-	int index_data;
-	// convolution
-	//RooFFTConvPdf conv_pdf;
 
 };
 
