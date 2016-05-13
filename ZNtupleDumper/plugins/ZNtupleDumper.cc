@@ -344,7 +344,7 @@ private:
 	std::vector<float>     LCRecHitSCEle[3];
 	std::vector<float>     ICRecHitSCEle[3];
 	std::vector<float>  AlphaRecHitSCEle[3];
-	std::vector<float*> ootAmplisUncalibRecHitSCEle[3];
+	std::vector<std::vector<float> > ootAmplisUncalibRecHitSCEle[3];
 	std::vector<float> ampliUncalibRecHitSCEle[3];
 	std::vector<float> ampliErrUncalibRecHitSCEle[3];
 	std::vector<float> pedEUncalibRecHitSCEle[3];
@@ -2191,7 +2191,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const std::vector<std::pair<DetId, floa
 		// UncalibRecHit's information on OOT amplitudes
 		float amplis[EcalDataFrame::MAXSAMPLES];
 		for (int i = 0; i < EcalDataFrame::MAXSAMPLES; ++i) amplis[i] = oneUHit->outOfTimeAmplitude(i);
-		ootAmplisUncalibRecHitSCEle[index].push_back(amplis);
+		ootAmplisUncalibRecHitSCEle[index].push_back(std::vector<float>(amplis, amplis + EcalDataFrame::MAXSAMPLES));
 		ampliUncalibRecHitSCEle[index].push_back(oneUHit->amplitude());
 		ampliErrUncalibRecHitSCEle[index].push_back(oneUHit->amplitudeError());
 		pedEUncalibRecHitSCEle[index].push_back(oneUHit->pedestal());
