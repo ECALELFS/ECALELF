@@ -341,6 +341,7 @@ private:
 	std::vector<int>        YRecHitSCEle[3];
 	std::vector<int>        ZRecHitSCEle[3];
 	std::vector<float> energyRecHitSCEle[3];
+	std::vector<float> fracRecHitSCEle[3];
 	std::vector<float>     LCRecHitSCEle[3];
 	std::vector<float>     ICRecHitSCEle[3];
 	std::vector<float>  AlphaRecHitSCEle[3];
@@ -2087,6 +2088,8 @@ void ZNtupleDumper::InitExtraCalibTree()
 	extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
 	extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
 	extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
+	extraCalibTree->Branch("fracRecHitSCEle1", &(fracRecHitSCEle[0]));
+	extraCalibTree->Branch("fracRecHitSCEle2", &(fracRecHitSCEle[1]));
 	extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
 	extraCalibTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
 	extraCalibTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
@@ -2138,6 +2141,7 @@ void ZNtupleDumper::resetExtraVariables(int index)
 	YRecHitSCEle[aidx].clear();
 	ZRecHitSCEle[aidx].clear();
 	energyRecHitSCEle[aidx].clear();
+	fracRecHitSCEle[aidx].clear();
 	ampliErrUncalibRecHitSCEle[aidx].clear();
 	ampliUncalibRecHitSCEle[aidx].clear();
 	chi2UncalibRecHitSCEle[aidx].clear();
@@ -2181,6 +2185,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const std::vector<std::pair<DetId, floa
 			ZRecHitSCEle[index].push_back(recHitId.zside());
 		}
 		energyRecHitSCEle[index].push_back(oneHit->energy());
+                fracRecHitSCEle[index].push_back(detitr->second);
 		EcalUncalibratedRecHitCollection::const_iterator oneUHit = uncHits->find( (detitr -> first) ) ;
 		if(oneUHit == uncHits->end()) {
 			edm::LogError("ZNtupleDumper") << "No uncalibRecHit found for xtal "  << (detitr->first).rawId()
