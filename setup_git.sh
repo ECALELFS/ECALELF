@@ -62,14 +62,14 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
-	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	lbrianza|lcorpe)
-	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	*)
             ### if you are not Shervin download this to have some useful scripts
-	    git clone -b newMaster https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	    cd $myDir/EcalAlCaRecoProducers/
 	    git clone https://github.com/ECALELFS/Utilities.git bin
 	    ;;
@@ -184,16 +184,14 @@ case $CMSSW_VERSION in
 	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 	;;
 	CMSSW_7_6_*)
-		git cms-merge-topic shervin86:76X || exit 1
-		;;
+	    git cms-merge-topic shervin86:76X || exit 1
+	    ;;
 	CMSSW_8_0_*)
-		git cms-merge-topic shervin86:fix80X || exit 1
-		;;
-
+	    git cms-addpkg FWCore/ParameterSet
+	    git cms-merge-topic shervin86:fix80X || exit 1
+	    ;;
 
 esac
-
-
 
 # compile
 scram b -j16
