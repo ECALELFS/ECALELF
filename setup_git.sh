@@ -62,7 +62,7 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
-	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	lbrianza|lcorpe)
 	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
