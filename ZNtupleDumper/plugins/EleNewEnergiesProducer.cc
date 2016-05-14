@@ -173,7 +173,7 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
 
 //now do what ever other initialization is needed
 	edm::ConsumesCollector iC = consumesCollector();
-	mustache_regr_.setTokens(iC, iConfig.getParameterSet("scEnergyCorrectorSemiParm"));
+	mustache_regr_.setTokens(iConfig.getParameterSet("scEnergyCorrectorSemiParm"),iC);
 }
 
 

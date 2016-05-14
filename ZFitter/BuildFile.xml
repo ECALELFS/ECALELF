@@ -6,6 +6,7 @@
 <use name="Calibration/EOverPCalibration"/>
 <use   name="boost_program_options"/>
 <use   name="boost_filesystem"/>
+<use name="FWCore/ParameterSet"/>
 <lib name="TreePlayer"/>
 <export>
    <lib name="1"/>
