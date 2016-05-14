@@ -836,7 +836,11 @@ int main(int argc, char **argv)
 				std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 				exit(1);
 			}
+#ifdef toBeFixed
 			TTree *corrTree = eScaler.GetCorrTree(ch, "runNumber", "R9Eleprime");
+#else
+			TTree *corrTree = NULL;
+#endif
 			corrTree->SetName(TString("scaleEle_") + corrEleType.c_str());
 			corrTree->SetTitle(corrEleType.c_str());
 			f.cd();
@@ -861,7 +865,11 @@ int main(int argc, char **argv)
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[STATUS] Getting energy smearings from file: " << smearEleFile << std::endl;
 		TString treeName = "smearEle_" + smearEleType;
+#ifdef toBeFixed
 		EnergyScaleCorrection_class eScaler("", smearEleFile);
+#else
+		EnergyScaleCorrection_class eScaler();
+#endif
 		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
@@ -877,12 +885,16 @@ int main(int argc, char **argv)
 				std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 				exit(1);
 			}
+#ifdef shervin
 			if(TString(smearEleType).Contains("CB")) {
 				eScaler.SetSmearingType(1);
 				eScaler.SetSmearingCBAlpha(smearingCBAlpha);
 			}
-
 			TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
+#else 
+			TTree *corrTree = NULL;
+#endif
+
 			f.cd();
 			corrTree->SetName(TString("smearEle_") + smearEleType.c_str());
 			corrTree->SetTitle(smearEleType.c_str());
@@ -924,11 +936,11 @@ int main(int argc, char **argv)
 		TString branchName = treeName;
 		std::cout << "#### --> " << treeName << "\t" << t << "\t" << *branch_itr << std::endl;
 		if(branchName == "smearerCat") treeName += "_" + regionsFileNameTag;
-
+#ifdef invMassSigma
 		if(treeName.Contains("invMassSigma")) {
 			newBrancher.scaler = new EnergyScaleCorrection_class("", smearEleFile);
 		}
-
+#endif
 		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
