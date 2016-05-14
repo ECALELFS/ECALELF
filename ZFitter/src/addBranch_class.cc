@@ -40,7 +40,7 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 	Float_t         etaEle[2];
 	Float_t         energyEle[2];
 	Float_t         corrEle[2] = {1., 1.};
-	Float_t         ZPt, ZPta;
+	Float_t         ZPt;
 
 	originalChain->SetBranchAddress("etaEle", etaEle);
 	originalChain->SetBranchAddress("phiEle", phiEle);
@@ -81,6 +81,8 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 
 TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassSigmaName, bool fastLoop, bool isMC)
 {
+/// does not compile
+#ifdef shervin
 	if(scaler == NULL) {
 		std::cerr << "[ERROR] EnergyScaleCorrection class not initialized" << std::endl;
 		exit(1);
@@ -237,6 +239,9 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 	if(fastLoop)   originalChain->SetBranchStatus("*", 1);
 	originalChain->ResetBranchAddresses();
 	return newtree;
+#else
+	return NULL;
+#endif
 }
 
 
