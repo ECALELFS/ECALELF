@@ -1,4 +1,5 @@
 #include "../interface/GetHashedIndexEE.h"
+#include <algorithm>
 
 const int kxf[] =  {
 	41,  51,  41,  51,  41,  51,  36,  51,  36,  51,
