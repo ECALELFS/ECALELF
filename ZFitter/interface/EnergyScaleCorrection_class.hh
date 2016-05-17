@@ -23,7 +23,6 @@
 #include <map>
 #include <math.h>
 #include <TChain.h>
-#include <TRandom3.h>
 #include <string>
 
 //============================== First auxiliary class
@@ -149,7 +148,7 @@ public:
 	bool doScale, doSmearings;
 
 public:
-	EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed = 0);
+	EnergyScaleCorrection_class(std::string correctionFileName);
 	EnergyScaleCorrection_class() {}; ///< dummy constructor needed in ElectronEnergyCalibratorRun2
 	~EnergyScaleCorrection_class(void);
 
@@ -177,7 +176,6 @@ private:
 public:
 	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, paramSmear_t par, float nSigma = 0.) const;
 	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, float nSigma_rho, float nSigma_phi) const;
-
 
 private:
 	fileFormat_t smearingType_;

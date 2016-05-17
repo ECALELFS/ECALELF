@@ -15,7 +15,7 @@
 //#define DEBUG
 //#define PEDANTIC_OUTPUT
 
-EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed):
+EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName):
 	doScale(false), doSmearings(false),
 	smearingType_(ECALELF)
 {
