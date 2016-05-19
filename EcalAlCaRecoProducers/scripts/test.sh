@@ -1,6 +1,5 @@
 xrdcp -v  $local_dir
 
-cmsDriver.py myreco -s RAW2DIGI,RECO  --filein=$myFile --data --conditions=$ --era=Run2_2016  --scenario=pp --processName=reRECO --customise=L1Trigger/Configuration/customiseReEmul.L1TEventSetupForHF1x1TPs
 
 echo "[INFO] Running on 1000 events, output in $local_dir"
 cmsRun alcaSkimming.py files=file://$local_dir/RAW-RECO.root output=$local_dir/sandbox.root maxEvents=1000
