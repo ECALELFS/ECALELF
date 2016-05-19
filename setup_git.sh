@@ -65,11 +65,11 @@ if [ ! -d "$myDir" ];then
 	    git clone -b 80X-devel git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	lbrianza|lcorpe)
-	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	*)
             ### if you are not Shervin download this to have some useful scripts
-	    git clone -b newMaster https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	    cd $myDir/EcalAlCaRecoProducers/
 	    git clone https://github.com/ECALELFS/Utilities.git bin
 	    ;;
