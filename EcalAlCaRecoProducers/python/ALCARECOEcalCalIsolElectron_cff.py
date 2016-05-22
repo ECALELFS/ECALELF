@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+from RecoLuminosity.LumiProducer.bunchSpacingProducer_cfi import *
 
 #===================================================== removing events with trackerDrivenOnly electrons
 # if you want to filter events with trackerDrivenOnly electrons
@@ -50,6 +51,7 @@ ALCARECOEcalCalElectronECALSeq = cms.Sequence( alCaIsolatedElectrons)
 # sequence that reduces the RECO format (not ECAL part) into ALCARECO
 ALCARECOEcalCalElectronNonECALSeq = cms.Sequence( kt6PFJetsForRhoCorrection +
                                               alcaElectronTracksReducer 
+#                                             + pfisoALCARECO + bunchSpacingProducer
                                               )
 
 ALCARECOEcalCalElectronSeq = cms.Sequence( ALCARECOEcalCalElectronNonECALSeq+
