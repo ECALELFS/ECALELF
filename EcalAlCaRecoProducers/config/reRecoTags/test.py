@@ -1,6 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-from CondCore.DBCommon.CondDBSetup_cfi import *
+#from CondCore.DBCommon.CondDBSetup_cfi import * #==> deprecated
+from CondCore.CondDB.CondDB_cfi import * 
+
+
 
 RerecoGlobalTag = cms.ESSource("PoolDBESSource",
                                CondDBSetup,
