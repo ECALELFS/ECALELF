@@ -14,10 +14,10 @@ Be sure to have a GitHub account and have followed the instructions here:
 Download instructions.
 
 ```
-wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh
+wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/80X-devel/setup_git.sh
 chmod +x setup_git.sh
-./setup_git.sh CMSSW_8_0_7
-cd CMSSW_8_0_7/src/
+./setup_git.sh CMSSW_8_0_8
+cd CMSSW_8_0_8/src/
 cmsenv
 cd Calibration/ZFitter && make && cd -
 ```
