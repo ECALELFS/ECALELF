@@ -231,7 +231,8 @@ process.source = cms.Source("PoolSource",
 
 
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True)
+    wantSummary = cms.untracked.bool(True),
+    SkipEvent = cms.untracked.vstring('ProductNotFound'),
 )
 
 # Other statements
@@ -751,8 +752,8 @@ else:
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
 #    process.zNtupleDumper.electronCollection = cms.InputTag('slimmedECALELFElectrons')
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
-    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('')
-    process.zNtupleDumper.SelectEvents = cms.vstring('')
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')
+    process.zNtupleDumper.SelectEvents = cms.vstring('NtuplePath')
     process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
     process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
