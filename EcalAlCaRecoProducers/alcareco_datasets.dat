@@ -227,5 +227,9 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-magnetOffBS0T
 
 ###################################2016 Campaign###########################################################
 allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM	DYJets_madgraph-RunIISpring16 database VALID - - 
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM			DYJets_madgraph-RunIISpring16-AODSIM   database	 VALID - -
+
 272023-273146	/DoubleEG/Run2016B-PromptReco-v1/MINIAOD DoubleEG-Run2016B-PromptReco-v1 caf database VALID RUN2016B
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD DoubleEG-Run2016B-PromptReco-v2 caf database VALID RUN2016B
+272023-273146	/DoubleEG/Run2016B-PromptReco-v1/AOD DoubleEG-Run2016B-PromptReco-v1-AOD caf database VALID RUN2016B
+273150-273730	/DoubleEG/Run2016B-PromptReco-v2/AOD DoubleEG-Run2016B-PromptReco-v2-AOD caf database VALID RUN2016B
