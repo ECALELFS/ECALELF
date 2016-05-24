@@ -369,8 +369,8 @@ private:
         Float_t sigmaIEtaIEta_F5x5[3];
         Float_t R9_F5x5[3];
         Float_t E1x5_F5x5[3];
-        Float_t E2x5_F5x5[3];
-        Float_t E3x3_F5x5[3];
+        //Float_t E2x5_F5x5[3];
+        //Float_t E3x3_F5x5[3];
         Float_t E5x5_F5x5[3];
         Float_t E1x3[3];
         Float_t E2x2[3];
@@ -2313,8 +2313,8 @@ void ZNtupleDumper::InitEleIDTree()
         eleIDTree->Branch("sigmaIEtaIEta_F5x5", sigmaIEtaIEta_F5x5);
         eleIDTree->Branch("R9_F5x5", R9_F5x5, "R9_F5x5[3]/F");
         eleIDTree->Branch("E1x5_F5x5", E1x5_F5x5, "E1x5_F5x5[3]/F");
-        eleIDTree->Branch("E2x5_F5x5", E2x5_F5x5, "E2x5_F5x5[3]/F");
-        eleIDTree->Branch("E3x3_F5x5", E3x3_F5x5, "E3x3_F5x5[3]/F");
+        //eleIDTree->Branch("E2x5_F5x5", E2x5_F5x5, "E2x5_F5x5[3]/F");
+        //eleIDTree->Branch("E3x3_F5x5", E3x3_F5x5, "E3x3_F5x5[3]/F");
         eleIDTree->Branch("E5x5_F5x5", E5x5_F5x5, "E5x5_F5x5[3]/F");
         eleIDTree->Branch("E1x3", E1x3, "E1x3[3]/F");
         eleIDTree->Branch("E2x2", E2x2, "E2x2[3]/F");
