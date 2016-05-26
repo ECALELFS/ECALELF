@@ -56,11 +56,6 @@ options.register('doTreeOnly',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "bool: doTreeOnly=1 true, doTreeOnly=0 false")
-options.register('pdfSyst',
-                 0, #default value False
-                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
-                 VarParsing.VarParsing.varType.int,          # string, int, or float
-                 "bool: pdfSyst=1 true, pdfSyst=0 false")
 options.register('bunchSpacing',
                  0,
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -145,17 +140,12 @@ process = cms.Process(processName)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
-process.load('Configuration.StandardSequences.RawToDigi_Data_cff')
-process.load('Configuration.StandardSequences.L1Reco_cff')
-process.load('Configuration.StandardSequences.Reconstruction_Data_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('Configuration.StandardSequences.GeometryDB_cff')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff') ## please double check
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
-process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
+#FrontierConditions_GlobalTag_cff
 # import of ALCARECO sequences
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff') # reduction of recHits
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
@@ -177,8 +167,6 @@ process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
 
-# pdfSystematics
-process.load('Calibration.EcalAlCaRecoProducers.pdfSystematics_cff')
 
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
@@ -316,13 +304,9 @@ process.MinMuonNumberFilter = cms.EDFilter("CandViewCountFilter",
 process.MinPhoNumberFilter = cms.EDFilter("CandViewCountFilter",
                                           src = cms.InputTag("gedPhotons"),
                                           minNumber = cms.uint32(1))
-process.MinEleNumberFilter = cms.EDFilter("CandViewCountFilter",
-                                          src = myEleCollection,
-                                          minNumber = cms.uint32(1))
+process.filterSeq = cms.Sequence()
 if (ZmmgSkim==True):
     process.filterSeq = cms.Sequence(process.MinMuonNumberFilter * process.MinPhoNumberFilter)
-else:
-    process.filterSeq = cms.Sequence(process.MinEleNumberFilter)
 
 if (HLTFilter):
     from HLTrigger.HLTfilters.hltHighLevel_cfi import *
@@ -411,7 +395,7 @@ if(options.type!="MINIAODNTUPLE"):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
     process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence * process.EIsequence)
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.EIsequence * process.patSequence)
     
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -420,12 +404,6 @@ if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree
 if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
 
-if(MC and options.pdfSyst==1):
-    process.pdfWeightsSeq = cms.Sequence(process.pdfWeights + process.weakWeight + process.fsrWeight)
-
-    process.zNtupleDumper.pdfWeightCollections = cms.VInputTag(cms.InputTag('pdfWeights:cteq66'), cms.InputTag("pdfWeights:MRST2006nnlo"), cms.InputTag('pdfWeights:NNPDF10'))
-else:
-    process.pdfWeightsSeq = cms.Sequence()
 
 
 
@@ -500,11 +478,6 @@ process.outputRECO = cms.OutputModule("PoolOutputModule",
 ##############################################################
 # Setting Path
 ################################
-process.raw2digi_step = cms.Path(process.RawToDigi)
-process.L1Reco_step = cms.Path(process.L1Reco)
-process.reconstruction_step = cms.Path(process.reconstruction)
-process.endjob_step = cms.EndPath(process.endOfProcess)
-#process.endjob_step*=process.outputRECO
 # Skim check paths to measure efficiency and purity of the skims
 # reco efficiencies are not taken into account
 # eff = N_skim/N_gen | after reco requirements and gen filter
@@ -512,26 +485,21 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 
 # ALCARAW
 process.pathALCARECOEcalUncalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
-                                                       process.pfIsoEgamma *
                                                        process.seqALCARECOEcalUncalElectron 
                                                        )
 process.pathALCARECOEcalUncalZElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
-                                                   process.pfIsoEgamma *
                                                    process.seqALCARECOEcalUncalZElectron )
 process.pathALCARECOEcalUncalZSCElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
-                                                     process.pfIsoEgamma *
                                                      ~process.ZeeFilter * process.ZSCFilter *
                                                          process.seqALCARECOEcalUncalZSCElectron 
                                                      )
 process.pathALCARECOEcalUncalWElectron = cms.Path( process.PUDumperSeq * process.filterSeq * process.preFilterSeq *
-                                                   process.pfIsoEgamma *
                                                    ~process.ZeeFilter * ~process.ZSCFilter * process.WenuFilter *
                                                    process.seqALCARECOEcalUncalWElectron 
                                                    )
 process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq *
                                                     process.filterSeq * process.FilterMuSeq * process.ZmmgSkimSeq * 
                                                     ~process.ZeeFilter * ~process.ZSCFilter * ~process.WenuFilter *
-                                                    process.pfIsoEgamma *
                                                     process.seqALCARECOEcalUncalElectron ) #* process.hltReporter)
 
 
@@ -539,7 +507,7 @@ process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq *
 process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 
 if(options.doTree>0):
-    process.pathALCARERECOEcalCalElectron+=cms.Sequence( process.pdfWeightsSeq * process.ntupleSeq)
+    process.pathALCARERECOEcalCalElectron+=cms.Sequence(  process.ntupleSeq)
 
 # ALCARECO
 process.pathALCARECOEcalCalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *
@@ -570,14 +538,14 @@ if (options.skim=="ZmmgSkim"):
     process.NtuplePath = cms.Path(process.filterSeq * process.FilterMuSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
-                              * process.pdfWeightsSeq * process.ntupleSeq)
+                               * process.ntupleSeq)
 else:
     process.NtuplePath = cms.Path(process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
-                              * process.pdfWeightsSeq * process.ntupleSeq)
+                               * process.ntupleSeq)
 
-process.NtupleEndPath = cms.EndPath( process.outputRECO * process.zNtupleDumper  )
+process.NtupleEndPath = cms.EndPath(  process.zNtupleDumper  )
 
 
 if(not doTreeOnly):
@@ -593,7 +561,7 @@ if(not doTreeOnly):
 ############### JSON Filter
 if(options.doTree>0):
     if((options.doTree>0 and options.doTreeOnly==0)):
-        # or (options.type=='ALCARECOSIM' and len(options.jsonFile)>0) ):
+        # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
         print "[INFO] Using json file"
         process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
     else:
@@ -653,7 +621,7 @@ if(options.type=='ALCARAW'):
 
 elif(options.type=='ALCARERECO'):
     if(doTreeOnly):
-        process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
+        process.NtuplePath = cms.Path( process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
     else:
         if(options.doTree>0):
@@ -661,7 +629,7 @@ elif(options.type=='ALCARERECO'):
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step)
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     if(doTreeOnly):
-        process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
+        process.NtuplePath = cms.Path(process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
         process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO')
     else:
@@ -770,7 +738,7 @@ if(options.type=="ALCARERECO"):
     
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
-    process.MinEleNumberFilter.src = recalibElectronSrc
+#    process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
 
     if(options.bunchSpacing==25):
