@@ -184,16 +184,14 @@ case $CMSSW_VERSION in
 	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 	;;
 	CMSSW_7_6_*)
-		git cms-merge-topic shervin86:76X || exit 1
-		;;
+	    git cms-merge-topic shervin86:76X || exit 1
+	    ;;
 	CMSSW_8_0_*)
-		git cms-merge-topic shervin86:fix80X || exit 1
-		;;
-
+	    git cms-addpkg FWCore/ParameterSet
+	    git cms-merge-topic shervin86:fix80X || exit 1
+	    ;;
 
 esac
-
-
 
 # compile
 scram b -j16
