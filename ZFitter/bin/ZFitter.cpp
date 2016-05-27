@@ -276,8 +276,9 @@ int main(int argc, char **argv) {
   std::string initFileName;
   //  bool savePUweightTree;
   std::string imgFormat="png", outDirFitResMC="test/MC/fitres", outDirFitResData="test/dato/fitres", outDirImgMC="test/MC/img", outDirImgData="test/dato/img", outDirTable="test/dato/table", selection;
-  //TString eleID="";
-  TString eleID="cutBasedElectronID|Spring15|25ns|V1|standalone|";
+  TString eleID="";
+  eleID="cutBasedElectronID|Spring15|25ns|V1|standalone|";//comment this for 0T
+  std::cout<<"[INFO] eleID starts with: "<<eleID<<std::endl;
   //std::vector<std::string> signalFiles, bkgFiles, dataFiles;
   std::string commonCut;
   std::string corrEleFile, corrEleType;
@@ -372,7 +373,7 @@ int main(int argc, char **argv) {
     //
     ("selection", po::value<string>(&selection)->default_value("loose"),"")
     ("commonCut", po::value<string>(&commonCut)->default_value("Et_25-trigger-noPF"),"")
-    ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_regrCorr_ele"),"")
+    ("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_corr"),"")
     ("invMass_min", po::value<float>(&invMass_min)->default_value(65.),"")
     ("invMass_max", po::value<float>(&invMass_max)->default_value(115.),"")
     ("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25),"Smearing binning")
@@ -861,7 +862,7 @@ int main(int argc, char **argv) {
     TString treeName="scaleEle_"+corrEleType;
     EnergyScaleCorrection_class eScaler(corrEleFile);
     UpdateFriends(tagChainMap, regionsFileNameTag);//improve this
-    assert((tagChainMap["d1"])["selected"]->GetBranch("R9Eleprime")!=NULL);
+    //assert((tagChainMap["d1"])["selected"]->GetBranch("R9Eleprime")!=NULL);//assert dice: se non c'e' il branch r9eleprime --> killa
 
     for(tag_chain_map_t::const_iterator tag_chain_itr=tagChainMap.begin();
 	tag_chain_itr!=tagChainMap.end();
@@ -1023,7 +1024,8 @@ int main(int argc, char **argv) {
   ///------------------------------ to obtain run ranges
   if(vm.count("runDivide")){
     runDivide_class runDivider;
-    std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
+    //std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
+    std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits_0T.dat", nEvents_runDivide);
     runDivider.PrintRunRangeEvents();
     std::vector<TString> runRanges;
     if(runRangesFileName!="") runRanges = ReadRegionsFromFile(runRangesFileName);
@@ -1093,8 +1095,10 @@ int main(int argc, char **argv) {
     RooAbsReal *const_term_=NULL;
     RooRealVar *const_term_v = args.getSize() ==0 ? NULL : (RooRealVar *) args.find("constTerm_"+varName);
     if(const_term_v==NULL){
-      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); 
-      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.00, 0.000,0.02);//default value set to 0
+      //if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.0, 0.000,0.05); //default value set to 0.01 for constTerm
+      //else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.0, 0.000,0.05);//default value set to 0.01 for constTermFix
+      if(vm.count("constTermFix")==0) const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); //default value set to 0.01 for constTerm
+      else const_term_v = new RooRealVar("constTerm_"+varName, "constTerm_"+varName,0.01, 0.000,0.05);//default value set to 0.01 for constTermFix
       const_term_v->setError(0.03); // 1%
       //const_term_v->setConstant(true);
       args.add(*const_term_v);
@@ -1722,11 +1726,14 @@ int main(int argc, char **argv) {
 	smearer.SetHistBinning(80,100,invMass_binWidth); // to do before Init
 	if(vm.count("runToy")){
 	  smearer.SetPuWeight(false);
-
 	  smearer.SetToyScale(1, constTermToy);
-	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true,initFileName.c_str());
-	  //	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
-	  else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
+	  if(vm.count("initFile")) {
+	    smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str()); 
+	    //that false is externToy; _isDataSmeared=!externToy --> quindi qui dico
+	    //se runToy e gli passo un initFile => pre-scala/smeara i dati
+	  }else{
+	    smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
+	  }
 	  std::cout << "[DEBUG] " << constTermToy << std::endl;
 	} else{
 	  if(vm.count("initFile")){
