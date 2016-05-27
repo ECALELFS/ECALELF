@@ -592,6 +592,7 @@ int main(int argc, char **argv)
 			(tagChainMap[tag])[chainName]->SetTitle(tag);
 		}
 		std::cout << "Adding file: " << tag << "\t" << chainName << "\t" << fileName << std::endl;
+		//std::cout << "[yacine]: " << tag << "\t" << chainName << "\t" << fileName <<"\t"<<tagChainMap[tag])[chainName]->Add(fileName, -1)<< std::endl;
 		if((tagChainMap[tag])[chainName]->Add(fileName, -1) == 0) exit(1);
 #ifdef DEBUG
 		std::cout << "[DEBUG] " << tag << "\t" << chainName << "\t" << fileName << "\t" << (tagChainMap[tag])[chainName]->GetEntries() << std::endl;
@@ -620,6 +621,7 @@ int main(int argc, char **argv)
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
 		runDivide_class runDivider;
+		std::cout << "[yacine runDivide] the chain :: " << (tagChainMap["d"])["selected"] << "\t" << nEvents_runDivide << std::endl;
 		std::vector<TString> v = runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		std::vector<TString> runRanges;

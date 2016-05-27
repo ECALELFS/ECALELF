@@ -4,7 +4,7 @@
 commonCut="Et_25"
 selection=loose25nsRun2
 invMass_var=invMass_SC_must_regrCorr_ele
-configFile=data/validation/monitoring_2012_53X.dat 
+configFile=data/validation/EoverPcalibration_2016.dat #monitoring_2012_53X.dat 
 FLOATTAILSTEXT="Fixed Tail" 
 runRangesFile=data/runRanges/monitoring.dat 
 baseDir=test
