@@ -20,8 +20,9 @@ findDefinition(){
 		
 		*)
 			#don't print anything
-#			ff=`grep -A 10 ${object} ${file}`
-#			echo $ff
+			ff=`grep -A 10 ${object} ${file} | sed '1 d;/EDFilter/{Q}; /EDProducer/{Q}; /EDAnalyzer/{Q}'`
+			echo $ff
+#			echo $ff >> /dev/stderr
 			return 1
 			;;
 	esac
@@ -50,6 +51,16 @@ printDefinition(){
 
 			printDefinition $S $LL
 		done
+	else
+		if [ -n "$SS" ];then
+			let L=$2
+			while [ $L -gt 0 ]
+			do
+				echo -n "--"
+				let L=$L-1
+			done
+			echo " **> " $SS
+		fi
 	fi
 }
 

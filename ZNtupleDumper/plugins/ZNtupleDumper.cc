@@ -601,9 +601,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					        selectEvents_itr++) {
 						if(std::regex_match(trgName, std::regex(*selectEvents_itr))) {
 							alcaSkimPathIndexes.insert(i);
-							//std::cout << " - Trigger path saved in ntuples: " << trgName << "\t" << i << std::endl;
+							std::cout << " - Trigger path saved in ntuples: " << trgName << "\t" << i << std::endl;
 							break;
 						}
+
 					}
 					//if(alcaSkimPathIndexes.count(i)==0){
 					//std::cout << " -! Trigger path not saved in ntuples: " << trgName <<  "\t" << i << std::endl;
@@ -639,8 +640,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				}
 			}
 			//if(alcaSkimPathIndexes.size()==0){
-			skipEvent = false;
-			eventType = UNKNOWN;
+//			skipEvent = false;
+//			eventType = UNKNOWN;
 			//}
 			//std::cout << "skip event: " << skipEvent << "\t" << eventType << std::endl;
 			//assert(!skipEvent);
