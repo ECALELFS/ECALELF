@@ -1219,3 +1219,4 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-magnetOffBS0T
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD	DoubleEG-Run2016B-PromptReco-v2-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE		271036-273450_noL1T_v1
 272023-273146	/DoubleEG/Run2016B-PromptReco-v1/MINIAOD	DoubleEG-Run2016B-PromptReco-v1-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE		DCSONLY
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD	DoubleEG-Run2016B-PromptReco-v2-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE		DCSONLY
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM	DYJets_amcatnlo-RunIISpring16-miniAODv1	srm-eoscms.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE	80X_mcRun2_asymptotic_2016_v3	

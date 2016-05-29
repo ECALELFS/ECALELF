@@ -15,7 +15,6 @@ DOEXTRACALIBTREE=0
 CREATE=y
 SUBMIT=y
 DOTREE=1
-PDFSYST=0
 SKIM=""
 OUTFILES="ntuple.root"
 crabFile=tmp/ntuple.cfg
@@ -49,7 +48,6 @@ usage(){
     echo "---------- optional common"
     echo "    --doExtraCalibTree"
     echo "    --doEleIDTree"
-    echo "    --doPdfSystTree"
     echo "    --noStandardTree"
     echo "    --createOnly"
     echo "    --submitOnly"
@@ -79,7 +77,7 @@ expertUsage(){
 #------------------------------ parsing
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,doPdfSystTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -171,7 +169,6 @@ do
         #name of the output files is hardcoded in ZNtupleDumper
 	--doExtraCalibTree) echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
 	--doEleIDTree) let DOTREE=${DOTREE}+4;OUTFILES="${OUTFILES},eleIDTree.root";;
-	--doPdfSystTree) let DOTREE=${DOTREE}+8;;
 	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
@@ -226,10 +223,6 @@ fi
 setEnergy $DATASETPATH
 
 
-#case ${isMC} in #FIXME
-#    1) PDFSYST=1;;
-#    0) PDFSYST=0;;
-#esac #FIXME
 
 if [ "${TYPE}" != "ALCARERECO" -a "${TYPE}" != "ALCARAW" ];then
     ORIGIN_REMOTE_DIR_BASE=`echo ${ORIGIN_REMOTE_DIR_BASE} | sed 's|alcaraw|alcareco|g'`
@@ -440,8 +433,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-#pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=config/reRecoTags/test75x.py isPrivate=$ISPRIVATE
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1 pdfSyst=${PDFSYST} jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
 get_edm_output=1
 output_file=${OUTFILES}
 
