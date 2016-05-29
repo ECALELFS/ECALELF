@@ -270,6 +270,7 @@ myEleCollection =  cms.InputTag("gedGsfElectrons")
 
 if(options.type=="MINIAODNTUPLE" ):
     myEleCollection= cms.InputTag("slimmedElectrons")
+process.MinEleNumberFilter.src = myEleCollection
 
 #Define the sequences
 #
@@ -694,10 +695,11 @@ else:
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
-    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons")
     process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
 
-    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
+#    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
+    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons")
     process.eleSelectionProducers.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.eleSelectionProducers.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.eleSelectionProducers.BeamSpotCollection = cms.InputTag('offlineBeamSpot')
