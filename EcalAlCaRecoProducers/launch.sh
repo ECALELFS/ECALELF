@@ -15,9 +15,9 @@ CHECK=--check
 option=--createOnly
 where=remoteGlidein
 tag_MC=config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16-miniAODv1 | head -1` --type MINIAOD -t ${tag_MC} -s noSkim --json=${json} --json_name="RunII-2016" --scheduler=${where} ${option}
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16-miniAODv1 | head -1` --type MINIAOD -t ${tag_MC} -s noSkim --json="NOJSON" --json_name="NOJSON" --scheduler=${where} ${option}
 
-if [[ $option == "--createOnly" ]]; then
-    crab -c prod_ntuples/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYJets_amcatnlo-RunIISpring16-miniAODv1/allRange/RunII-2016/ -submit 1
-fi
+#if [[ $option == "--createOnly" ]]; then
+#    crab -c prod_ntuples/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYJets_amcatnlo-RunIISpring16-miniAODv1/allRange/RunII-2016/ -submit 1
+#fi
 
