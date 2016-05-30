@@ -47,84 +47,91 @@ Categorize(){
 
 }
 
-#Un giro di prova
-Test_1_job(){
+Just_plot(){
 echo "test"
-   command_region1="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections"
-   echo $command_region1
-   #eval $command_region1
+echo "your histograms will appear in RUN2_ECAL_Calibration/${extension}/"
+   command_region1="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections --plotOnly | tee test/dato/fitres/temp_log_file.dat"
+   echo "[COMMAND:] "$command_region1
+   eval $command_region1
   if [[ ${region2} != "" ]];then
-      command_region2="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections"
+      command_region2="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections --plotOnly| tee test/dato/fitres/temp_log_file_2.dat"
       echo $command_region2
-      #eval $command_region2
+      eval $command_region2
   fi
+
+}
+
+#Un giro di prova
+Test_1_job(){ #There is also Test_1_job_stoc 
+echo "test"
+echo "your test job will appear in RUN2_ECAL_Calibration/${extension}/"
+   command_region1="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections | tee test/dato/fitres/temp_log_file.dat #--corrEleType=HggRunEta #--corrEleType=Zcorr_76 --initFile=init_test_ICHEP.dat --profileOnly --onlyDiagonal"
+   echo "[COMMAND:] "$command_region1
+   eval $command_region1
+  if [[ ${region2} != "" ]];then
+      command_region2="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections | tee test/dato/fitres/temp_log_file_2.dat"
+      echo $command_region2
+      eval $command_region2
+  fi
+
+Plot_Test_job
+}
+
+Plot_Test_job(){
+echo "Plot Test job"
 
   ./script/fit.sh test/dato/fitres/outProfile-${region1}-${CommonCuts}.root
 if [[ ${region2} != "" ]];then
    ./script/fit.sh test/dato/fitres/outProfile-${region2}-${CommonCuts}.root
 fi
 
-if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}/" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/ -p; mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp; fi
+if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}/" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/ -p; mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp; fi
 #moving the fits in the web-space
+#mv test/dato/img/outProfile-${region1}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 mv test/dato/img/outProfile-${region1}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 
 if [[ ${region2} != "" ]];then
    mv test/dato/img/outProfile-${region2}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 fi
 
-#Plot_data_MC del test job                                                                                                                                                      
+#Plot_data_MC del test job                                                                                                                                                     
 echo "{" > tmp/plotter_data_MC.C
 echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C++\");" >> tmp/plotter_data_MC.C
 #Nei temp non ci metto le pecette di luminosita' e centro di massa
 #PlotMeanHist("test/dato/fitres/stochastic_smearing_applied/histos-scaleStep0-Et_30-noPF.root","13 TeV B=0T","0.6")
-echo "PlotMeanHist(\"test/dato/fitres/histos-${region1}-${CommonCuts}.root\",\"\",\"\");" >> tmp/plotter_data_MC.C
+echo "PlotMeanHist(\"test/dato/fitres/histos-${region1}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
 if [[ ${region2} != "" ]];then
-    echo "PlotMeanHist(\"test/dato/fitres/histos-${region2}-${CommonCuts}.root\",\"\",\"\");" >> tmp/plotter_data_MC.C
+    echo "PlotMeanHist(\"test/dato/fitres/histos-${region2}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
 fi
 echo "}" >> tmp/plotter_data_MC.C
 root -l -b -q ~/rootlogon.C tmp/plotter_data_MC.C
 
 reducedCommonCuts=$(echo $CommonCuts| sed 's/-noPF//g')
+#mv test/dato/img/histos-${region1}-${reducedCommonCuts}* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 mv test/dato/img/histos-${region1}-${reducedCommonCuts}* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 if [[ ${region2} != "" ]];then
     mv test/dato/img/histos-${region2}-${reducedCommonCuts}* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
 fi
 }
 
-
-#Test_1_job(){ #Rinforzare
-#    ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID}
-#    if [[ ${region2} != "" ]];then
-#	./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type} --commonCut=${CommonCuts} --autoBin --smearerFit  ${initParameters2} ${eleID}
-#    fi
-#./script/fit.sh test/dato/fitres/outProfile-${region1}-${CommonCuts}.root
-#
-#if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension} -p; mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp; fi
-##moving the fits in the web-space
-#mv test/dato/img/outProfile-${region1}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
-##Plot_data_MC del test job                                                                                                                                                      
-#echo "{" > tmp/plotter_data_MC.C
-#echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C++\");" >> tmp/plotter_data_MC.C
-#echo "PlotMeanHist(\"test/dato/fitres/histos-${region1}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
-#echo "}" >> tmp/plotter_data_MC.C
-#root -l -b -q ~/rootlogon.C tmp/plotter_data_MC.C
-#mv test/dato/img/histos-${region1}-${CommonCuts}* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp
-#}
-
 Test_1_job_stoc(){
 echo "test stoc"
    command_region1="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections"
    echo $command_region1
-   #eval $command_region1
+   eval $command_region1
   if [[ ${region2} != "" ]];then
       command_region2="./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region2}.dat --invMass_var=${invMass_type}  --commonCut=${CommonCuts} --autoBin --smearerFit ${initParameters1} ${eleID} $corrections"
       echo $command_region2
-      #eval $command_region2
+      eval $command_region2
   fi
 
+  echo "Fitting root file test/dato/fitres/stochastic_smearing_applied/outProfile-${region1}-${CommonCuts}.root"
   ./script/fit.sh test/dato/fitres/stochastic_smearing_applied/outProfile-${region1}-${CommonCuts}.root
+  mv test/dato/img/stochastic_smearing_applied/outProfile-${region1}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc
+
 if [[ ${region2} != "" ]];then
    ./script/fit.sh test/dato/fitres/stochastic_smearing_applied/outProfile-${region2}-${CommonCuts}.root
+   mv test/dato/img/stochastic_smearing_applied/outProfile-${region2}-${CommonCuts}-* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc
 fi
 
 if [ ! -e "/afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc" ];then mkdir ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc -p; cp ~/scratch1/www/index.php ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc; fi
@@ -140,9 +147,9 @@ echo "{" > tmp/plotter_data_MC.C
 echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C++\");" >> tmp/plotter_data_MC.C
 #Nei temp non ci metto le pecette di luminosita' e centro di massa
 #PlotMeanHist("test/dato/fitres/stochastic_smearing_applied/histos-scaleStep0-Et_30-noPF.root","13 TeV B=0T","0.6")
-echo "PlotMeanHist(\"test/dato/fitres/stochastic_smearing_applied/histos-${region1}-${CommonCuts}.root\",\"\",\"\");" >> tmp/plotter_data_MC.C
+echo "PlotMeanHist(\"test/dato/fitres/stochastic_smearing_applied/histos-${region1}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
 if [[ ${region2} != "" ]];then
-    echo "PlotMeanHist(\"test/dato/fitres/stochastic_smearing_applied/histos-${region2}-${CommonCuts}.root\",\"\",\"\");" >> tmp/plotter_data_MC.C
+    echo "PlotMeanHist(\"test/dato/fitres/stochastic_smearing_applied/histos-${region2}-${CommonCuts}.root\");" >> tmp/plotter_data_MC.C
 fi
 echo "}" >> tmp/plotter_data_MC.C
 root -l -b -q ~/rootlogon.C tmp/plotter_data_MC.C
@@ -150,6 +157,9 @@ mv test/dato/img/stochastic_smearing_applied/histos-${region1}-${CommonCuts}* ~/
 if [[ ${region2} != "" ]];then
     mv test/dato/img/stochastic_smearing_applied/histos-${region2}-${CommonCuts}* ~/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc
 fi
+
+echo "Plots for stochastic check are in /afs/g/gfasanel/scratch1/www/RUN2_ECAL_Calibration/${extension}/temp_stoc"
+
 }
 
 Submit_50_jobs(){

@@ -12,8 +12,8 @@ fi
 invMass_type=$2
 ####76 corrections####
 scale_file=/afs/cern.ch/user/g/gfasanel/scratch1/CMSSW_7_4_15/src/Calibration/ZFitter/test/dato/February2016_Rereco_76/loose/invMass_SC_pho_regrCorr/table/step2-invMass_SC_pho_regrCorr-loose-Et_20-noPF-HggRunEtaR9.dat
-#smear_file=/afs/cern.ch/user/g/gfasanel/scratch1/CMSSW_7_4_15/src/Calibration/ZFitter/test/dato/February2016_Rereco_76/loose/invMass_SC_pho_regrCorr/table/outFile-step4-invMass_SC_pho_regrCorr-loose-Et_20-noPF-HggRunEtaR9-smearEle.dat
-smear_file=smear_ele_corrections/smear_RUN2_RUN1like.dat
+smear_file=/afs/cern.ch/user/g/gfasanel/scratch1/CMSSW_7_4_15/src/Calibration/ZFitter/test/dato/February2016_Rereco_76/loose/invMass_SC_pho_regrCorr/table/outFile-step4-invMass_SC_pho_regrCorr-loose-Et_20-noPF-HggRunEtaR9-smearEle.dat
+##smear_file=smear_ele_corrections/smear_RUN2_RUN1like.dat
 #scale_file=0T_corrections/0T_scale.dat
 #smear_file=0T_corrections/0T_smearings.dat
 ####76 corrections####
@@ -35,7 +35,7 @@ if [ "$3" != "no_scale_corr" ]; then
 	echo "${tag} scaleEle_${scale_corr_name} friends/others/scaleEle_${scale_corr_name}_${tag}-${file}.root" >> data/validation/${file}.dat 
     done
 fi
-if [ "$3" != "no_smear_corr" ]; then 
+if [ "$4" != "no_smear_corr" ]; then 
     echo "Creating smear corrections" 
     ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/scaleStep0.dat invMass_var=${invMass_type} --saveRootMacro --smearEleType=${smear_corr_name} --smearEleFile=${smear_file}
     mv tmp/smearEle_${smear_corr_name}_s*-${file}.root friends/others/

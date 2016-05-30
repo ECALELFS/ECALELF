@@ -23,9 +23,68 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
   if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
   if(BranchName.CompareTo("iSM")==0)       return AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
   if(BranchName.CompareTo("smearerCat")==0)       return AddBranch_smearerCat(originalChain, treename, isMC);
+  if(BranchName.CompareTo("R9Eleprime")==0)       return AddBranch_R9Eleprime(originalChain, treename, isMC);//after r9 transformation
   if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_",""), fastLoop);
   std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
   return NULL;
+}
+
+TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString treename, bool isMC){
+  //to have a branch with r9prime
+  //From the original tree take R9 and eta
+  Float_t         R9Ele[3];
+  Float_t         etaEle[3];
+
+  originalChain->SetBranchStatus("*",0);
+  originalChain->SetBranchStatus("etaEle",1);
+  originalChain->SetBranchStatus("R9Ele",1);
+  originalChain->SetBranchAddress("etaEle", etaEle);
+  originalChain->SetBranchAddress("R9Ele", R9Ele);
+
+  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
+  //root file with r9 transformation:
+  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
+  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
+  f->Close();
+
+  TTree* newtree = new TTree(treename, treename);
+  Float_t R9Eleprime[3];
+  newtree->Branch("R9Eleprime", R9Eleprime, "R9Eleprime[3]/F");
+
+  Long64_t nentries= originalChain->GetEntries();
+  for(Long64_t ientry = 0; ientry< nentries; ientry++){
+    originalChain->GetEntry(ientry);
+    if(isMC){
+      //electron 0
+      if(abs(etaEle[0]) < 1.4442){//barrel
+	R9Eleprime[0]=gR9EB->Eval(R9Ele[0]);
+      }else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5){//endcap
+	R9Eleprime[0]=gR9EE->Eval(R9Ele[0]);;
+      }else{
+	R9Eleprime[0]=R9Ele[0];
+      }
+      
+      //electron 1
+      if(abs(etaEle[1]) < 1.4442){//barrel
+	R9Eleprime[1]=gR9EB->Eval(R9Ele[1]);
+      }else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5){//endcap
+	R9Eleprime[1]=gR9EE->Eval(R9Ele[1]);;
+      }else{
+	R9Eleprime[1]=R9Ele[1];
+      }
+    }else{//no transformation needed for data
+      //std::cout<<"R9 in data is not transformed ->R9Eleprime==R9Ele"<<std::endl;
+      R9Eleprime[0]=R9Ele[0];
+      R9Eleprime[1]=R9Ele[1];
+    }
+
+    R9Eleprime[2]=-999;//not used the third electron
+    newtree->Fill();
+  }
+
+  originalChain->SetBranchStatus("*",1);
+  originalChain->ResetBranchAddresses();
+  return newtree;
 }
 
 TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, TString energyBranchName, bool fastLoop){
@@ -334,6 +393,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
   
   /// \todo disable branches using cutter
   originalChain->SetBranchStatus("*",0);
+  //originalChain->SetBranchStatus("R9Eleprime",1);
   
   std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
   for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
@@ -344,6 +404,8 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
     std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr);
     for(std::set<TString>::const_iterator itr = branchNames.begin();
 	itr != branchNames.end(); itr++){
+      std::cout<<"Activating branches in addBranch_class.cc"<<std::endl;
+      std::cout<<"Branch is "<<*itr<<std::endl;
       originalChain->SetBranchStatus(*itr, 1);
     }
     if(    cutter._corrEle==true) originalChain->SetBranchStatus("scaleEle", 1);
@@ -359,7 +421,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 	TTreeFormula *selector = new TTreeFormula("selector-"+(region), cutter.GetCut(region+oddString, isMC), originalChain);
 	catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector,NULL));
 	//selector->Print();
-	//std::cout << cutter.GetCut(region+oddString, isMC) << std::endl;
+	std::cout << cutter.GetCut(region+oddString, isMC) << std::endl;
 	//exit(0);
       } else {
 	TString region1=*region_ele1_itr;

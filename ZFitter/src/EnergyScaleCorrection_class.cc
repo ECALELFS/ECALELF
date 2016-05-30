@@ -290,7 +290,7 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
       std::cout << "[INFO] this is the simple smearing format" << std::endl;
       format=1;
     }else{
-      std::cout << "[INFO] this is the scale format" << std::endl;
+      std::cout << "[INFO] this is the complete smearing format" << std::endl;
       format=2;
     }
   }
@@ -328,7 +328,15 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename){
       f_in >> category >> unused >> etaMin >> etaMax >> r9Min >> r9Max >> runMin >> runMax >>
         Emean >> err_Emean >>
         rho >> err_rho >> phi >> err_phi;
+      if(Emean!=0){
+        constTerm=rho*sin(phi);
+        alpha=rho*Emean*cos(phi);
+      }else{
+        alpha=0;
+        constTerm=rho;
+      }
     }
+
     
     AddSmearing(category, runMin, runMax, constTerm,  err_constTerm, alpha, err_alpha, Emean, err_Emean);
 

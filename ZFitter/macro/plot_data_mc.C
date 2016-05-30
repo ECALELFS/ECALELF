@@ -114,7 +114,7 @@ void PlotCanvas(TCanvas *c, TH1F *mc, TH1F *data, TH1F *mcSmeared){
 
 
 
-void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="", TString lumi="", bool ratio=true){
+void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="13", TString lumi="2.6", bool ratio=true){
 
   c->Clear();
   TPad * pad1 = new TPad("pad1", "pad1",0.00,0.25, 1,1.);  
@@ -125,28 +125,28 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   float xscale=1;
   std::cout<<"Starting plotting. Method Plot of plot_data_mc.C"<<endl;
   if(ratio){
-
-  pad1->SetRightMargin(0.15);
-  pad1->SetBottomMargin(0.01);
-  //  pad1->SetLogy();
-  pad1->Draw();
-  pad1->cd();
-  c->cd();
-  pad2->SetGrid();
-  pad2->SetBottomMargin(0.5);
-  pad2->SetTopMargin(0.01);
-  pad2->SetRightMargin(0.15);
-  pad2->Draw();
-  pad2->cd();
-  c->cd();
-  pad3->SetGrid();    
-  //pad2->SetTopMargin(0.01);
-  pad3->SetBottomMargin(0.4);
-  pad3->SetRightMargin(0.1);
-  //  pad3->Draw();
-  //  pad3->cd();
+    //pad1->SetTopMargin(0.04); -->che cosa e' pad1? boh
+    //pad1->SetRightMargin(0.15);
+    pad1->SetBottomMargin(0.01);
+    //  pad1->SetLogy();
+    pad1->Draw();
+    pad1->cd();
+    c->cd();
+    //pad2 e pad3 sono entrambe per il ratio
+    pad2->SetGrid(); //->pad2??
+    pad2->SetBottomMargin(0.5);
+    pad2->SetTopMargin(0.02);
+  //pad2->SetRightMargin(0.15);
+    pad2->Draw();
+    pad2->cd();
+    c->cd();
+    pad3->SetGrid(); //->pad3???
+    pad3->SetBottomMargin(0.4);
+    pad3->SetRightMargin(0.1);
+    //  pad3->Draw();
+    //  pad3->cd();
     
-  pad1->cd();
+    pad1->cd();
 
   }
 
@@ -210,7 +210,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 
   legend->Clear();
   legend->AddEntry(mc,"MC","f");
-  legend->AddEntry(mcSmeared,"MC smeared","l");
+  legend->AddEntry(mcSmeared,"MC smear","l");
   legend->AddEntry(data,"data","p");
   double KS=data->KolmogorovTest(mcSmeared);
   TString ks="Kolmogorov test: ";
@@ -235,16 +235,16 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   pave.SetTextAlign(12);
   pave.SetBorderSize(0);
   pave.SetTextSize(0.036);
-  pave.AddText("CMS Preliminary   #sqrt{s}="+energy+"  L="+lumi+" fb^{-1}");
+  pave.AddText("CMS #font[50]{Preliminary} "+lumi+" fb^{-1} ("+energy+")");
   //pave.AddText("#sqrt{s}="+energy);
   //if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
 
   pave.Draw();	
 
   legend->SetTextFont(22); // 132
-  legend->SetTextSize(0.04); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
+  legend->SetTextSize(0.06); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
   //  legend->SetFillColor(0); // colore di riempimento bianco
-  legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
+  //legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
   //    SetLegendStyle(legend);
   
   legend->SetBorderSize(0);
@@ -254,6 +254,8 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   
   
   if(ratio){
+    //data->GetXaxis()->SetRangeUser(x_min,x_max);
+    //mcSmeared_norm->GetXaxis()->SetRangeUser(x_min,x_max);
     TH1F *sRatio = (TH1F*) data->Clone("sRatio");
     sRatio->Divide(mcSmeared_norm);
     
@@ -302,7 +304,8 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 
 
 
-void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="2.6", int rebin=4, TString myRegion=""){
+void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="0.218", int rebin=4, TString myRegion=""){
+  //rebin=2 --> per il closure test in Et
   //rebin=4 --> binwidth=0.5 GeV
   
   TH2F eventFraction("eventFraction", "", 10, 0, 9, 10, 0, 9);
@@ -376,13 +379,13 @@ void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="2.6",
 
   /*------------------------------ Plotting */
   TCanvas *c = new TCanvas("c","c");
-  TLegend *legend = new TLegend(0.7,0.7,0.92,0.95);
+  TLegend *legend = new TLegend(0.6,0.6,0.65,0.88);
   legend->SetFillStyle(3001);
   legend->SetFillColor(1);
   legend->SetTextFont(22); // 132
   legend->SetTextSize(0.04); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
   //  legend->SetFillColor(0); // colore di riempimento bianco
-  legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
+  //legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
   //    SetLegendStyle(legend);
 
   TH1F *mc_all[3]={NULL}, *data_all[3]={NULL}, *mcSmeared_all[3]={NULL};

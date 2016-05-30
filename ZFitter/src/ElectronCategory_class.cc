@@ -25,7 +25,6 @@ ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAs
 // nEle tells you if the cut is on electron 1 (nEle=1), electron 2 (nEle=2), both(nEle=0)
 TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool corrEle){
 
-
   if(region.Sizeof()<=1){
     std::cerr << "[ERROR]: no region defined" << std::endl;
     return "error";
@@ -161,6 +160,14 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
   TCut bad_ele2_cut = "R9Ele_ele2 < 0.94";
   TCut bad_cut = bad_ele1_cut && bad_ele2_cut;
 
+  TCut highR9_ele1_cut = "R9Eleprime_ele1 >= 0.94";
+  TCut highR9_ele2_cut = "R9Eleprime_ele2 >= 0.94";
+  TCut highR9_cut = highR9_ele1_cut && highR9_ele2_cut;
+
+  TCut lowR9_ele1_cut = "R9Eleprime_ele1 < 0.94";
+  TCut lowR9_ele2_cut = "R9Eleprime_ele2 < 0.94";
+  TCut lowR9_cut = lowR9_ele1_cut && lowR9_ele2_cut;
+
   // EB Reference Region
   TCut EBRefReg_ele1_cut = "(abs(seedXSCEle_ele1) > 5 && abs(seedXSCEle_ele1) < 21 && (seedYSCEle_ele1 %20) > 5 && (seedYSCEle_ele1%20) <16)";
   TCut EBRefReg_ele2_cut = "(abs(seedXSCEle_ele2) > 5 && abs(seedXSCEle_ele2) < 21 && (seedYSCEle_ele2 %20) > 5 && (seedYSCEle_ele2%20) <16)";
@@ -293,12 +300,20 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
-    //--------------- R9
-    if(string.CompareTo("gold")==0){
-      cut_string+=gold_cut;
-      cutSet.insert(TString(gold_cut));
+    //--------------with R9Transformation by Matteo
+    if(string.CompareTo("lowR9")==0){
+      cut_string+=lowR9_cut;
+      cutSet.insert(TString(lowR9_cut));
       continue;
     }
+
+    if(string.CompareTo("highR9")==0){
+      cut_string+=highR9_cut;
+      cutSet.insert(TString(highR9_cut));
+      continue;
+    }
+
+    //--------------without R9Transformation 
 
     if(string.CompareTo("bad")==0){
       cut_string+=bad_cut;
@@ -306,6 +321,11 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
+    if(string.CompareTo("gold")==0){
+      cut_string+=gold_cut;
+      cutSet.insert(TString(gold_cut));
+      continue;
+    }
     //---------------
     //--------------- gain
     if(string.Contains("gainEle")){
@@ -631,6 +651,23 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
+    //--------------- R9
+    if(string.Contains("lowR9_")){
+      TObjArray *splitted = string.Tokenize("_");
+      if(splitted->GetEntries() != 2){
+	std::cerr << "ERROR: incomplete lowR9 cut point definition" << std::endl;
+	continue;
+      } else{
+	TObjString *Objstring1 = (TObjString *) splitted->At(1);
+	TString string1 = Objstring1->GetString();
+	
+	TCut cutEle1("R9Eleprime_ele1 < "+string1);
+	TCut cutEle2("R9Eleprime_ele2 < "+string1);
+	cut_string+=cutEle1 && cutEle2;
+	cutSet.insert(TString(cutEle1 && cutEle2));
+	delete splitted;
+      }
+    }
 
     //--------------- Et
     if(string.Contains("Et_")||string.Contains("EtSingleEle_")){
@@ -865,7 +902,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 	TCut R9_ele1_cut("R9Ele_ele1"+sign+string1);
 	TCut R9_ele2_cut("R9Ele_ele2"+sign+string1);
 
-	if(string.Contains("SingleEle"))
+	if(string.Contains("SinsgleEle"))
 	  //	  cut_string += (R9_ele1_cut || R9_ele2_cut);
 	  cutSet.insert(TString(R9_ele1_cut || R9_ele2_cut));
 	else{
@@ -901,6 +938,33 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
+    //---------------R9Eleprime
+    if(string.Contains("r9prime") || string.Contains("r9prime")){
+      TObjArray *splitted = string.Tokenize("_");
+      if(string.Contains("r9primep") || string.Contains("r9primem")){
+	if(splitted->GetEntries() != 2){
+	  std::cerr << "ERROR: incomplete r9prime region definition" << std::endl;
+	  continue;
+	} 
+	TString sign;
+	if(string.Contains("r9primep")) sign=" >= ";
+	else if(string.Contains("r9primem"))  sign=" < ";
+	else exit(1);
+
+	TObjString *Objstring1 = (TObjString *) splitted->At(1);
+
+	TString string1 = Objstring1->GetString();
+
+	TCut ele1_cut("R9Eleprime_ele1"+sign+string1);
+	TCut ele2_cut("R9Eleprime_ele2"+sign+string1);
+	
+	cutSet.insert(TString(ele1_cut));
+	cutSet.insert(TString(ele2_cut));
+      }
+      
+      delete splitted;
+      continue;
+    }
 
     //--------------- nPV
     if(string.Contains("nPV")){

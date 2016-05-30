@@ -7,8 +7,9 @@ source script/functions.sh
 # - closure test (step3)
 
 index=
-commonCut=Et_20-noPF
-selection=loose
+#commonCut=Et_20-noPF #Standard common Cuts for Z calibration
+commonCut=Et_30-noPF #Et_30 for 0 T calibration
+selection=loose #you can change this via steps_maker.sh
 invMass_var=invMass_SC_corr
 baseDir=test
 updateOnly="--updateOnly --fit_type_value=1" # --profileOnly --initFile=init.txt"
@@ -24,8 +25,16 @@ regionFileStep2EE=data/regions/scaleStep2smearing_2_R9prime.dat
 regionFileStep4EBEE=data/regions/scaleStep4smearing_0.dat
 #regionFileStep4EB=data/regions/scaleStep4smearing_1.dat
 #regionFileStep4EE=data/regions/scaleStep4smearing_2.dat
-regionFileStep4EB=data/regions/scaleStep4smearing_1_R9prime.dat
-regionFileStep4EE=data/regions/scaleStep4smearing_2_R9prime.dat
+##with R9 reweight
+#regionFileStep4EB=data/regions/scaleStep4smearing_1_R9prime.dat
+#regionFileStep4EE=data/regions/scaleStep4smearing_2_R9prime.dat
+regionFileStep4EB=data/regions/scaleStep0.dat
+regionFileStep4EE=data/regions/scaleStep0_bis.dat
+
+regionFileStep4EB_93=data/regions/scaleStep4smearing_1_R9prime_93.dat
+regionFileStep4EE_93=data/regions/scaleStep4smearing_2_R9prime_93.dat
+regionFileStep4EB_95=data/regions/scaleStep4smearing_1_R9prime_95.dat
+regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9prime_95.dat
 
 regionFileStep5EB=data/regions/scaleStep2smearing_9.dat
 regionFileStep5EE=data/regions/scaleStep2smearing_10.dat
@@ -102,6 +111,8 @@ case ${selection} in
 	;;
     tight)
 	;;
+    diphotonIso25nsRun2Boff)
+	;;
     *)
 	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
         exit 1
@@ -137,6 +148,11 @@ case ${STEP} in
     4weight) STEP4=y; extension=weight;;
     4medium) STEP4=y; extension=medium;;
     4tight)  STEP4=y; extension=tight;;
+    4Et_22)  STEP4=y; extension=Et_22;;
+    4Et_25)  STEP4=y; extension=Et_25;;
+    4R9_93)  STEP4=y; extension=r9syst_93;;
+    4R9_95)  STEP4=y; extension=r9syst_95;;
+    4pho)    STEP4=y; extension=invMass_SC_pho_regrCorr;;
     5)  STEP5=y;;
     6)  STEP6=y;;
     8)  STEP8=y;;
@@ -401,6 +417,8 @@ if [ -n "${STEP1Plotter}" ];then
 	--outDirImgData ${outDirData}/step1/img/stability/before_run_corr/$xVar/ -x $xVar -y scaledWidth || exit 1
     ./script/stability.sh -t  ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.tex \
 	--outDirImgData ${outDirData}/step1/img/stability/before_run_corr/$xVar/ -x $xVar -y peak --allRegions || exit 1
+    ./script/stability.sh -t  ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.tex \
+	--outDirImgData ${outDirData}/step1/img/stability/before_run_corr/$xVar/ -x $xVar -y scaledWidth --allRegions || exit 1
 
 echo "Initial scale vs run plots in ${outDirData}/step1/img/stability/before_run_corr/$xVar/"
 
@@ -416,6 +434,8 @@ echo "Initial scale vs run plots in ${outDirData}/step1/img/stability/before_run
 	--outDirImgData ${outDirData}/step1/img/stability/$xVar/ -x $xVar -y scaledWidth || exit 1
     ./script/stability.sh -t  ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex \
 	--outDirImgData ${outDirData}/step1/img/stability/$xVar/ -x $xVar -y peak --allRegions || exit 1
+    ./script/stability.sh -t  ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex \
+	--outDirImgData ${outDirData}/step1/img/stability/$xVar/ -x $xVar -y scaledWidth --allRegions || exit 1
     echo "Final scale vs run plots in ${outDirData}/step1/img/stability/$xVar/"
 fi
 
@@ -659,10 +679,32 @@ if [ -n "${STEP4}" ];then
     else
 	newSelection=${selection}
     fi
+
+    if [ "${extension}" == "Et_22" ];then
+	echo "[INFO] You are using Et_22-noPF as commonCut"
+	oldCommonCut=$commonCut
+	commonCut="Et_22-noPF"
+    elif [ "${extension}" == "Et_25" ];then
+	echo "[INFO] You are using Et_25-noPF as commonCut"
+	oldCommonCut=$commonCut
+	commonCut="Et_25-noPF"
+    fi
+    if [ "${extension}" == "invMass_SC_pho_regrCorr" ];then
+	echo "[INFO] You are using invMass_SC_pho_regrCorr"
+	oldMass=${invMass_var}
+	invMass_var="invMass_SC_pho_regrCorr"
+    fi
     
     #eta x R9 with smearing method having fixed the scale in step2
     regionFileEB=${regionFileStep4EB}
     regionFileEE=${regionFileStep4EE}
+    if [ "${extension}" == "r9syst_93" ]; then
+	regionFileEB=${regionFileStep4EB_93}
+	regionFileEE=${regionFileStep4EE_93}
+    elif [ "${extension}" == "r9syst_95" ]; then
+	regionFileEB=${regionFileStep4EB_95}
+	regionFileEE=${regionFileStep4EB_95}
+    fi
     basenameEB=`basename $regionFileEB .dat`
     basenameEE=`basename $regionFileEE .dat`
     regionFile=$regionFileEB
@@ -752,6 +794,7 @@ if [ -n "${STEP4}" ];then
 	    echo "Check this command in case of doubt:"
 	    echo "./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${MCscenario}"
 
+	    echo "./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step4${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${MCscenario}"
 	    for index in `seq 1 50`
 	    do
 		mkdir ${outDirData}/step4${extension}/${index}/fitres/ -p 
@@ -784,6 +827,8 @@ if [ -n "${STEP4}" ];then
     fi #it closes jobs_step4
     
     if [[ $scenario = "fit_step4" ]] || [[ $scenario = "" ]]; then
+	./script/haddTGraph.sh -o ${outDirData}/step4${extension}/fitres/outProfile-$basenameEB-${commonCut}.root ${outDirData}/step4${extension}/*/fitres/outProfile-$basenameEB-${commonCut}.root
+	./script/haddTGraph.sh -o ${outDirData}/step4${extension}/fitres/outProfile-$basenameEE-${commonCut}.root ${outDirData}/step4${extension}/*/fitres/outProfile-$basenameEE-${commonCut}.root
 	echo "you are fitting in step4"
 	######################################################
 	echo "{" > tmp/fitProfiles.C
@@ -838,71 +883,14 @@ if [ -n "${STEP4}" ];then
 	./bin/ZFitter.exe -f $outDirData/step4${extension}/`basename $configFile` --regionsFile $regionFileStep4EBEE $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step4${extension}/img/ --outDirFitResData=${outDirData}/step4${extension}/fitres --constTermFix  --smearerFit  --smearingEt --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  --smearEleFile=`dirname ${outFile}`/`basename $outFile .dat`-smearEle.dat --smearEleType=EtaR9_const ${MCscenario} || exit 1
     fi #it closes plotOnly
 
+    if [ "${extension}" == "Et_22" -o "${extension}" == "Et_25" ];then
+	commonCut=${oldCommonCut}
+    fi
+    if [ "${extension}" == "invMass_SC_pho_regrCorr" ];then
+	invMass_var=$oldMass
+    fi
+
 fi #step4_is_closed
-
-###############STEP4bis
-if [ -n "${STEP4bis}" ];then
-    if [ "${extension}" == "medium" -o "${extension}" == "tight" ];then
-	newSelection=${extension}
-    else
-	newSelection=${selection}
-    fi
-
-
-    #eta x R9 with smearing method having fixed the scale in step2
-    regionFileEB=${regionFileStep4EB}
-    regionFileEE=${regionFileStep4EE}
-    basenameEB=`basename $regionFileEB .dat`
-    basenameEE=`basename $regionFileEE .dat`
-    regionFile=$regionFileEB
-    outFile=$outDirTable/outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat
-
-#    if [ "${extension}" == "loose" ]; then ##NEW, only in the nominal case do the check
-	checkStepDep step2
- #   fi
-
-    if [ ! -e "${outDirMC}/${extension}/fitres" ];then mkdir ${outDirMC}/${extension}/fitres -p; fi
-    if [ ! -e "${outDirMC}/${extension}/img" ];then    mkdir ${outDirMC}/${extension}/img -p; fi
-    if [ ! -e "${outDirData}/step4${extension}/fitres" ];then mkdir ${outDirData}/step4${extension}/fitres -p; fi
-    if [ ! -e "${outDirData}/step4${extension}/img" ];then    mkdir ${outDirData}/step4${extension}/img -p; fi
-
-    if [ -e "${outDirTable}/params-step4-${commonCut}.txt" ];then 
-	initFile="--initFile=${outDirTable}/params-step4-${commonCut}.txt"; 
-    else 
-	initFile=""
-    fi
-
-    cat $configFile > ${outDirData}/step4${extension}/`basename ${configFile}`
-    for tag in `grep "^d" $configFile | grep selected | awk -F" " ' { print $1 } '`
-    do
-	echo "${tag} scaleEle_HggRunEtaR9 ${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile .dat`.root" >> ${outDirData}/step4${extension}/`basename ${configFile}`
-    done
-    echo "configFile for step4" is $outDirData/step4${extension}/`basename $configFile`
-
-#NEW
-    MCscenario=""
-    case $extension in
-	amctnlo)  sample=s1 ;;
-        madgraph) sample=s2 ;;
-        *)        sample=s1 ;;
-    esac
-
-    case $extension in
-        amctnlo|madgraph)
-            cat ${outDirData}/step4${extension}/`basename ${configFile}` |grep -v '#' \
-                | grep -v "r9weights" \
-                | grep -v "pileup" \
-                | sed '/^d/ d' \
-                | sed "/^${sample}/{p; s|^s|d|}" \
-                > tmp/step4${extension}.dat
-	    mv tmp/step4${extension}.dat $outDirData/step4${extension}/`basename $configFile`
-	    MCscenario="--noPU --onlyScale" #add this is the job definition
-            ;;
-    esac
-
-fi #step4bis is closed
-
-
 
 if [ -n "${STEP3WEIGHT}" ];then
     regionFile=data/regions/scaleStep3.dat

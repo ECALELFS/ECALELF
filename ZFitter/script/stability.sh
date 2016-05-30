@@ -110,7 +110,7 @@ case $yVar in
 		;;
 	esac
 	yMin=1
-	yMax=2
+	yMax=4
 	;;
     chi2)
 	columns=11-13

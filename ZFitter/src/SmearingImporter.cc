@@ -241,18 +241,25 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
     chain->GetEntry(entryNumber);
     if(isToy){
       //int modulo=eventNumber%5;
-      int modulo=eventNumber%10;
-      if(jentry<10){
-	std::cout << "Dividing toyMC events: " << isMC << "\t" << eventNumber << "\t" << modulo
-		  << "\t" << mcGenWeight 
-		  << std::endl;
-	
-      }
+//      if(jentry<10){
+//	std::cout << "Dividing toyMC events: " << isMC << "\t" << eventNumber << "\t" << modulo
+//		  << "\t" << mcGenWeight 
+//		  << std::endl;
+//	
+//      }
+      //10.000
+      //int modulo=eventNumber%20;
+      //if(!isMC && modulo>=1) continue;//Data is chosen if 0
+      //if(isMC && ( modulo<1 || modulo > 11) ) continue; //MC is chosen if >0
+
+      //1000 nei dati
+      int modulo=eventNumber%100;
+      if(!isMC && modulo>=1) continue;//Data is chosen if 0
+      if(isMC && ( modulo<1 || modulo > 21) ) continue; //MC is chosen if >0
 
       //if(!isMC && modulo>=2) continue;//Data is chosen if 0,1
       //if(isMC && modulo<2) continue; //MC is chosen if 2,3,4
-      if(!isMC && modulo>=2) continue;//Data is chosen if 0,1
-      if(isMC && modulo<2) continue; //MC is chosen if >1
+
     }
 
     // reject events:

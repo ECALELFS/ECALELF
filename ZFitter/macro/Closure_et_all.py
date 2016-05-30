@@ -114,35 +114,34 @@ gr_endcap_38.SetMarkerStyle(20)
 gr_endcap_38.SetMarkerColor(kRed)
 gr_endcap_38.SetLineColor(kRed)
 gr_barrel_0.SetMarkerSize(1.5)
-gr_barrel_0.SetMarkerStyle(21)
+gr_barrel_0.SetMarkerStyle(kOpenSquare)
 gr_barrel_0.SetMarkerColor(kBlue) 
-gr_barrel_0.SetLineColor(kBlue) #~blue
+gr_barrel_0.SetLineColor(kBlue)
 gr_endcap_0.SetMarkerSize(1.5)
-gr_endcap_0.SetMarkerStyle(21)
-gr_endcap_0.SetMarkerColor(kRed) #~red
-gr_endcap_0.SetLineColor(kRed) #~red
-
+gr_endcap_0.SetMarkerStyle(kOpenSquare)
+gr_endcap_0.SetMarkerColor(kRed)
+gr_endcap_0.SetLineColor(kRed) 
 
 if(options.type=="scale"):
-    box=TBox(0,-1,18,1)
-    #shadedGray= TColor.GetColorTransparent(kGray, 0.5)
-    box.SetFillColor(12)
-    box.SetFillStyle(3004)
-    box.Draw("")
-
-
-gr_barrel_38.GetXaxis().SetLimits(0,18)
-gr_barrel_38.Draw("Psame")
-gr_endcap_38.Draw("Psame")
-gr_barrel_0.Draw("Psame")
-gr_endcap_0.Draw("Psame")
+    box=TBox(0.1,-1,18,1)
+    #shadedYellow=TColor.GetColorTransparent(kYellow,0.35)
+    #box.SetFillColor(shadedYellow)
+    box.SetFillColor(kYellow-9)
+    box.SetFillStyle(3001)
+    box.SetLineColor(kYellow-9)
+    #box.SetFillColor(12)
+    #box.SetFillStyle(3004)
+    box.Draw("same")
 
 if(options.type=="scale"):
     line=TLine(0,0,18,0)
     line.SetLineWidth(2)
     line.Draw("same")
-
-
+gr_barrel_38.GetXaxis().SetLimits(0,18)
+gr_barrel_38.Draw("Psame")
+gr_endcap_38.Draw("Psame")
+gr_barrel_0.Draw("Psame")
+gr_endcap_0.Draw("Psame")
 
 #if(options.type=="scale"):
 leg=TLegend(0.3,0.7,0.99,0.9)
@@ -153,10 +152,10 @@ leg.SetFillStyle(0)
 leg.SetBorderSize(0)
 if(options.type=="scale"):
     leg.AddEntry(box ,"syst. uncertainty","f")
-leg.AddEntry(gr_barrel_38,"EB 3.8T","pe")
-leg.AddEntry(gr_barrel_0 ,"EB 0T","pe")
-leg.AddEntry(gr_endcap_38,"EE 3.8T","pe")
-leg.AddEntry(gr_endcap_0 ,"EE 0T","pe")
+leg.AddEntry(gr_barrel_38,"EB 3.8T","p")
+leg.AddEntry(gr_barrel_0 ,"EB 0T","p")
+leg.AddEntry(gr_endcap_38,"EE 3.8T","p")
+leg.AddEntry(gr_endcap_0 ,"EE 0T","p")
 leg.SetTextSize(0.04)
 leg.Draw()
 
@@ -186,6 +185,7 @@ high_endcap =ROOT.TLatex(0.63,0.15,"EE: E_{T}> 85 GeV")
 high_endcap.SetNDC()
 high_endcap.SetTextSize(0.025)
 high_endcap.Draw()
+
 
 c1.SaveAs("~/scratch1/www/RUN2_ECAL_Calibration/Closure_et/summary_"+options.type+".png")
 c1.SaveAs("~/scratch1/www/RUN2_ECAL_Calibration/Closure_et/summary_"+options.type+".pdf")

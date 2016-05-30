@@ -240,19 +240,14 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
   double range_max=TMath::Min(TMath::MaxElement(g->GetN(),g->GetX()),rangeLimMax);
 
   //Adjust the ranges with respect to the position of the minimum
-  ///if(!isScale){//case constTerm
-  int n = g->GetN(); double* y = g->GetY(); int locmin = TMath::LocMin(n,y);
-  double* x = g->GetX();//x corresponding to y min
-  //std::cout<<"adjusting ranges around "<<x[locmin]<<std::endl;
   if(!isScale){//case constTerm
+    int n = g->GetN(); double* y = g->GetY(); int locmin = TMath::LocMin(n,y);
+    double* x = g->GetX();//x corresponding to y min
+    std::cout<<"adjusting ranges around "<<x[locmin]<<std::endl;
     range_min=TMath::Max(x[locmin]-0.01,0.);
     range_max=TMath::Min(range_max,x[locmin]+0.015);//larger range on right side
-  }else{
-    range_min=TMath::Max(x[locmin]-0.01,0.);
-    range_max=TMath::Min(range_max,x[locmin]+0.01);//symmetric for scale
-  }
-  ///}  
-  //cout<<"[FIT STATUS]: Preliminary fit to pol2. Range is ["<<range_min<<","<<range_max<<"]"<<endl;
+  }  
+  cout<<"[FIT STATUS]: Preliminary fit to pol2. Range is ["<<range_min<<","<<range_max<<"]"<<endl;
   g->Fit("pol2","0FR+","",range_min,range_max);//entire x range has been fitted
   //The idea is to fit with a pol2 and then use the fitted parameters as initialization parameters for the iterative fit to asym parabola                      
   TF1 *fun = (TF1*) g->GetListOfFunctions()->At(g->GetListOfFunctions()->GetSize()-1);
@@ -270,7 +265,6 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
   if(sigma<1e-5 || sigma>1e10 || sigma!=sigma) sigma=1e-4;
   double sigma_plus=sigma;
   double sigma_minus=sigma;
-  double sigma_mean=0.;
   double minX=g->GetX()[TMath::LocMin(g->GetN(),g->GetY())];
   if(minX==0 || minX<rangeLimMin || minX > rangeLimMax) minX= -fun->GetParameter(1) / (2* fun->GetParameter(2));
   double old_chi2=0., chi2=0.;
@@ -305,17 +299,17 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
     sigma_minus_old=sigma_minus;
 
     if(minX<=rangeLimMin+1e-9){
-      //std::cout << "[INFO] Fixing min" << std::endl;
+      std::cout << "[INFO] Fixing min" << std::endl;
       f2->SetParLimits(2,0,100);
     }
     if(minX>=rangeLimMax-1e-9){
-      //std::cout << "[INFO] Fixing max" << std::endl;
+      std::cout << "[INFO] Fixing max" << std::endl;
       f2->SetParLimits(3,0,100);
     }
 
     TString fname="f2_iter_"; fname+=iter;
     f2->SetName(fname); 
-    //std::cout << "[FIT STATUS] Iter: "<<iter<<" : Fit range: [ " << range_min << " : " << range_max << "]" << std::endl;
+    std::cout << "[FIT STATUS] Iter: "<<iter<<" : Fit range: [ " << range_min << " : " << range_max << "]" << std::endl;
     f2->SetRange(range_min,range_max);
     g->Fit(f2,"0R+","",range_min, range_max);
     fun->GetRange(range_min, range_max);   
@@ -326,46 +320,26 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
 
     //Setting ranges for next iteration
     if(isScale){//Scale
-      //if(TString(g->GetTitle()).Contains("Et_0_60")){
-      //minX=0.99992;//by hand for this category
-      //}
-      //std::cout<<"[INFO] Adjusting scale range for next iteration"<<std::endl;
-      //std::cout<<"[INFO] minX is "<<minX<<std::endl;
-      //std::cout<<"[INFO] sigma_minus is "<<sigma_minus<<std::endl;
-      //std::cout<<"[INFO] sigma_plus is "<<sigma_plus<<std::endl;
-      range_min = TMath::Max(minX-8*sigma_minus, rangeLimMin);//15
-      range_max = TMath::Min(minX+8*sigma_plus, rangeLimMax);//10   
-      if((sigma_plus/sigma_minus) > 4 || (sigma_plus/sigma_minus) < 0.25){//if sigmas are too different
-	std::cout<<"[INFO] sigma_plus and minus are too different: Taking the mean"<<std::endl;
-	sigma_mean=(sigma_plus+sigma_minus)/2;
-	range_min = TMath::Max(minX-4*sigma_mean, rangeLimMin);
-	range_max = TMath::Min(minX+4*sigma_mean, rangeLimMax);   
-      }
+      range_min = TMath::Max(minX-5*sigma_minus, rangeLimMin);//15
+      range_max = TMath::Min(minX+5*sigma_plus, rangeLimMax);//10   
       //if((TString(g->GetTitle()).Contains("EB-Et_0_100-gainEle_12-eleID_tight-Et_25-noPF-Et_20"))){
     } else if(isPhi){
-      std::cout<<"you are fitting isPhi"<<std::endl;
-      range_min = TMath::Max(minX-2*sigma_minus, rangeLimMin);
-      range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);   
-      if(minX<0.5){
-	if(!TString(g->GetTitle()).Contains("1_1.4442-gold")) range_max=0.5;
-	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0; range_max=0.3;}
-	if(TString(g->GetTitle()).Contains("0_1-gold")) range_max=0.4;
-      }
-      if(minX>1.2){
-	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0.5; range_max=1.6;};
-      }
+      std::cout<<"this is isPhi"<<std::endl;
+//  range_min = TMath::Max(minX-2*sigma_minus, rangeLimMin);
+//  range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);   
+//  if(minX<0.5){
+//	if(!TString(g->GetTitle()).Contains("1_1.4442-gold")) range_max=0.5;
+//	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0; range_max=0.3;}
+//	if(TString(g->GetTitle()).Contains("0_1-gold")) range_max=0.4;
+//      }
+//      if(minX>1.2){
+//	if(TString(g->GetTitle()).Contains("0_1-bad")){ range_min=0.5; range_max=1.6;};
+//      }
     } else {//sigma
       range_min = TMath::Max(minX-3*sigma_minus, rangeLimMin);//5
       range_max = TMath::Min(minX+3*sigma_plus,  rangeLimMax);//5
-      if((sigma_minus) > 0.04){//likelihood is flat
-	std::cout<<"[INFO] sigma_minus is too big --> taking sigma_plus"<<std::endl;
-	sigma_mean=sigma_plus;
-	range_min = TMath::Max(minX-4*sigma_mean, rangeLimMin);
-	range_max = TMath::Min(minX+4*sigma_mean, rangeLimMax);   
-      }
     }
 
-    //Points in interval
     //std::cout << "[INFO] Points in interval: " << pointsInInterval(X, N, range_min, range_max) << std::endl;
     //if(!(TString(g->GetTitle()).Contains("0_1-bad"))){
     //  while (pointsInInterval(X, N, range_min, range_max) < 10 && range_min>rangeLimMin && range_max<rangeLimMax){
@@ -412,8 +386,8 @@ TF1* IterMinimumFit(TGraphErrors *g, bool isScale, bool isPhi=false)
     }
     
     }
-    
     return f2;
+    //end of IterMinimumFit
 }
 
 typedef struct{
@@ -964,15 +938,9 @@ std::vector<TGraph *> GetGraphVector(int nToys, TString region, TFile *f){
 }
 
 
-void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bool isPhi, TString variable, double delta_min=2, double delta_max=2){
-  //cout<<"[STATUS] Calling Plot of macro_fit.C"<<endl;
-  //cout<<"[STATUS] You are plotting "<<g->GetTitle()<<endl;
-
-  double func_min;
-  double func_max;
-  fun->GetRange(func_min,func_max);
-  //std::cout<<"just before return "<<my_min<<" "<<my_max<<std::endl;
-
+void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bool isPhi, TString variable){
+  cout<<"[STATUS] Calling Plot of macro_fit.C"<<endl;
+  cout<<"[STATUS] You are plotting "<<g->GetTitle()<<endl;
   //so, with the name of g you can change the plot style for a specific g
   gStyle->SetOptTitle(0);  
   //std::cout<<"fun->GetParameter(2) "<<fun->GetParameter(2)<<std::endl;
@@ -983,22 +951,18 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
   }
   //cout<<"Inside macro_fit:: Plot sigma is "<<sigma<<endl;
   c->Clear();
+  //You should do it via rootlogon
+  //c->SetTopMargin(0.15);
+  //c->SetBottomMargin(0.15);
+  //c->SetRightMargin(0.15);
 
   if(isScale) {//scale
     Double_t xMin, xMax,yMin;
-    //Double_t yMax = rangeWithPoints(g, 3, &xMin, &xMax);//useless
+    Double_t yMax = rangeWithPoints(g, 3, &xMin, &xMax);
     xMin=0.96;
     xMax=1.04;
-    //xMin=std::max(fun->GetMinimumX()-7*sigma,0.96);//4*sigma
-    //xMax=std::min(fun->GetMinimumX()+7*sigma,1.04);
-    if(delta_min > 1){
-      xMin=std::max(fun->GetMinimumX() - delta_min*(fun->GetMinimumX() - func_min),0.96);
-      xMax=std::min(fun->GetMinimumX() + delta_max*(func_max - fun->GetMinimumX()),1.04);
-    }else{
-      xMin=delta_min;
-      xMax=delta_max;
-    }
-
+    xMin=std::max(fun->GetMinimumX()-6*sigma,0.96);//4*sigma
+    xMax=std::min(fun->GetMinimumX()+6*sigma,1.04);
     //xMin=1.00;//by hand
     //xMax=1.02;//
     yMin=TMath::MinElement(g->GetN(),g->GetY());
@@ -1016,15 +980,13 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
       if(g->GetX()[kmax]< xMax){//punto in x subito prima xMax
       break;}
     }
-    double ymax_set=0.;
-    ///ymax_set=std::max(fun->Eval(xMin),fun->Eval(xMax));
-    //cout<<fun->Eval(xMin)<<endl;
-    //cout<<fun->Eval(xMax)<<endl;
-    //cout<<g->GetY()[kmin]<<endl;
-    //cout<<g->GetY()[kmax]<<endl;
-    ///ymax_set=std::max(ymax_set,g->GetY()[kmin]);
-    ///ymax_set=std::max(ymax_set,g->GetY()[kmax]);
-    ymax_set=std::max(g->GetY()[kmin], g->GetY()[kmax]);
+    double ymax_set=std::max(fun->Eval(xMin),fun->Eval(xMax));
+    cout<<fun->Eval(xMin)<<endl;
+    cout<<fun->Eval(xMax)<<endl;
+    cout<<g->GetY()[kmin]<<endl;
+    cout<<g->GetY()[kmax]<<endl;
+    ymax_set=std::max(ymax_set,g->GetY()[kmin]);
+    ymax_set=std::max(ymax_set,g->GetY()[kmax]);
     g->GetYaxis()->SetRangeUser(yMin -1,ymax_set);
     //g->GetYaxis()->SetRangeUser(yMin -1,300);//non meno di 200 pero'
     std::cout<<"In Plot: range y is ["<<yMin -1<<","<<ymax_set<<"]"<<std::endl;
@@ -1037,13 +999,8 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
   }else {//not scale; constTerm
     double xMin=0.0;
     double xMax=0.045;
-    if(delta_min > 1){
-      xMin=std::max(0.,fun->GetMinimumX() - delta_min*(fun->GetMinimumX() - func_min));
-      xMax=std::min(fun->GetMinimumX() + delta_max*(func_max - fun->GetMinimumX()),0.045);//4
-    }else{
-      xMin=delta_min;
-      xMax=delta_max;
-    }
+    xMin=std::max(0.,fun->GetMinimumX()-4*sigma);//4
+    xMax=std::min(fun->GetMinimumX()+4*sigma,0.045);//4
     //xMin=0.0;//by hand
     //xMax=0.035;//by hand
     double yMin=TMath::MinElement(g->GetN(),g->GetY());
@@ -1061,13 +1018,9 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
       if(g->GetX()[kmax]< xMax){//punto in x subito prima xMax
       break;}
     }
-    
-    //double ymax_set=std::max(fun->Eval(xMin),fun->Eval(xMax));
-    //ymax_set=std::max(ymax_set,g->GetY()[kmin]);
-    //ymax_set=std::max(ymax_set,g->GetY()[kmax]);
-
-    double ymax_set=std::max(g->GetY()[kmin],g->GetY()[kmax]);
-
+    double ymax_set=std::max(fun->Eval(xMin),fun->Eval(xMax));
+    ymax_set=std::max(ymax_set,g->GetY()[kmin]);
+    ymax_set=std::max(ymax_set,g->GetY()[kmax]);
     g->GetYaxis()->SetRangeUser(yMin -1,ymax_set);
     //double yMin=TMath::MinElement(g->GetN(),g->GetY());
     //double xMin=std::max(fun->GetMinimumX()-4.5*sigma,0.);
@@ -1123,6 +1076,23 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
     //std::cout << out_char << std::endl;
   }
 
+  /* case symm
+  if(isScale){
+    sprintf(out_char,"%s #DeltaP = %.3f ^{+ %.3f}_{- %.3f} %s" , "", //region.Data(), 
+	    (fun->GetMinimumX())*100 ,
+	    100./(sqrt(2* fun->GetParameter(2))), 100./(sqrt(2* fun->GetParameter(2))) , "%");
+  } else if(isPhi){
+    sprintf(out_char,"%s #Delta#phi = %.2f ^{+ %.2f}_{- %.2f} %s" , "", //region.Data(), 
+	    fun->GetMinimumX(),
+	    1./(sqrt(2* fun->GetParameter(2))), 1./(sqrt(2* fun->GetParameter(2))), "");
+    //std::cout << out_char << std::endl;
+  } else {
+    sprintf(out_char,"%s #Delta#sigma = %.2f ^{+ %.2f}_{- %.2f} %s" , "", //region.Data(), 
+	    fun->GetMinimumX()*100,
+	    1./(sqrt(2* fun->GetParameter(2))) *100, 1./(sqrt(2* fun->GetParameter(2))) *100, "%");
+    //std::cout << out_char << std::endl;
+    }*/
+  
   pt->Clear();
   pt->AddText(out_char);
   pt->Draw();
@@ -1131,8 +1101,9 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
 
 
 
-void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", bool doScale=true, bool doResolution=true, bool doPhi=false, TString singleRegion="All", TString variable_to_fit="All", double delta_min=2., double delta_max=2.){
+void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", bool doScale=true, bool doResolution=true, bool doPhi=false){
   gStyle->SetOptFit(0);  
+  //std::ofstream ffout("tmp/out.out");
   std::ofstream ffout(img_filename(filename,"FitResult","",".dat"));  
   typedef std::vector<TGraph *> g_vec_t;
   typedef  std::map<TString, g_vec_t> map_region_t;
@@ -1145,24 +1116,6 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
   }
 
   TList *KeyList = f_in.GetListOfKeys();
-  std::cout<<"[FILE] "<<filename<<std::endl;
-  for(int i =0; i <  KeyList->GetEntries(); i++){
-    //Questo loop mi serve solo per stampare a schermo le regioni
-    TKey *currentKey=(TKey *)KeyList->At(i);
-    TString className=currentKey->GetClassName();
-    // se non e' un TGraph passa oltre
-    if (! (className.CompareTo("TGraph")==0)) continue;
-    TGraph *g = (TGraph *)currentKey->ReadObj(); 
-    TString name=g->GetName();
-    name.Remove(0,name.First('_')+1);
-    TString variable=name(0,name.First('_'));
-    name.Remove(0,name.First('_')+1);
-    TString region=name(0,name.Last('_'));
-    name.Remove(0,name.Last('_')+1);
-    if(variable.EqualTo("scale")){//giusto per non scrivere piu' volte la stessa regione
-      std::cout<<"[REGION] ./script/fit.sh "<<filename<<" "<<region<<std::endl;
-    }
-  }
   for(int i =0; i <  KeyList->GetEntries(); i++){
     TKey *currentKey=(TKey *)KeyList->At(i);
     TString className=currentKey->GetClassName();
@@ -1177,21 +1130,11 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
     name.Remove(0,name.Last('_')+1);
     TString index=name(0,name.Length());
     name=g->GetName();
-    
-    if(singleRegion != "All"){
-      if(!region.EqualTo(singleRegion)){
-	continue;
-      }
-    }
-    if(variable_to_fit != "All"){;
-      if(!variable.EqualTo(variable_to_fit)){
-	continue;
-      }
-    }
+    //std::cout << name << " " << variable << " " << region << " " << index << std::endl;    
     (graph_map[variable])[region].push_back(g);  
   }
 
-
+  //std::cout << "Create TPaveText" << std::endl;
   TPaveText *pt = new TPaveText(0.65,0.91,0.997,0.997,"NDC");
   pt->SetTextSize(0.05);
   pt->SetFillColor(0);
@@ -1201,7 +1144,11 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
   pave.SetTextAlign(12);
   pave.SetBorderSize(0);
   pave.SetTextSize(0.04);
-  pave.AddText("CMS Preliminary 0.218 fb^{-1} (13 TeV)");
+  pave.AddText("CMS Preliminary 2.6 fb^{-1} (13 TeV)");
+  //pave.AddText("CMS Preliminary 0.6 fb^{-1} (13 TeV B=0T)");
+  //if(lumi.Sizeof()>1)  pave.AddText("#sqrt{s}="+energy+"   L="+lumi+" fb^{-1}");
+  //else   pave.AddText("#sqrt{s}=8 TeV");
+  //gPad->SetTopMargin(0.08391608);
 
   RooArgSet *vars= new RooArgSet();
 
@@ -1229,7 +1176,7 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
 	   )
 	 ) continue;
 
-      std::cout << "region: "<<region << " variable: " << variable << "\t second.size: " << map_region_itr->second.size() << std::endl;
+      std::cout << region << " " << variable << "\t" << map_region_itr->second.size() << std::endl;
 
       float y_min=1e10;
       std::cout << "Getting mean graph in macro/FitProfile2" << std::endl;
@@ -1258,7 +1205,20 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
       g->Draw();
       fun->Draw("same");
       test->SaveAs("tmp/test.png");
-
+      /*TCanvas *c_my2=new TCanvas("c_my2","c_my2");
+      g->Draw("AEP");                               
+      c_my2->SaveAs("test_graph_afterFit.png");*/
+      /*                                         
+      TF1* f=new TF1("f","pol2",0.98,1.02); //This is the IDEA of the iterative fit (mine) inside IterMinimumFit
+      g->Fit(f,"OFR+","",0.98,1.02);                                                                            
+      TF1* fun=new TF1("fun",asymmetricParabola,0.98,1.02,4);                                                   
+      fun->SetParameter(0,0);                                                                                   
+      double minX=f->GetMinimumX();                                                                             
+      fun->SetParameter(1,minX);                                                                                
+      double sigma=1./sqrt(2* f->GetParameter(2));                                                              
+      fun->SetParameter(2,1/(2*sigma*sigma));                                                                   
+      fun->SetParameter(3,1/(2*sigma*sigma));                                                                   
+      g->Fit(fun,"OFR+","",0.98,1.02);*/
       if (!fun)
 	{
 	  std::cout << "FIT HAD PROBLEMS!: fit function not returned" << std::endl;
@@ -1272,7 +1232,7 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
 	    << 1./(sqrt(2*fun->GetParameter(2))) << " " 
 	    << 1./(sqrt(2*fun->GetParameter(3))) <<  std::endl;
 
-      Plot(c, g, fun, pt, isScale, isPhi,variable, delta_min, delta_max);
+      Plot(c, g, fun, pt, isScale, isPhi,variable);
       string title=g->GetTitle();
 
       pave.Draw();
@@ -1298,6 +1258,7 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
   delete pt;
   return;
 }
+
 
   
   

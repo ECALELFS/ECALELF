@@ -101,12 +101,12 @@ ZFit_class::ZFit_class(TChain *data_chain_,
 
 
 void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList){
-  signal_chain->Draw(">>list","runNumber>1","entrylist",10);
+  signal_chain->Draw(">>list","runNumber>2","entrylist",10);//if MC not run dep -->runNumber==1, still the histo is filled with 1.5 so >1 can be dangerous
   TEntryList *l = (TEntryList*) gROOT->FindObject("list");
   TString commonCut_MC;
   //commonCut_MC=commonCut;//remove this (for eleID MC)
   commonCut+="-eleID_"+eleID_;
-  commonCut_MC=commonCut; //Sam cut for data and MC
+  commonCut_MC=commonCut; //same cut for data and MC
   std::cout<<"commonCut in Import is "<<commonCut<<std::endl;
   TString mcCut, dataCut;
   if(l->GetN()>0){ // runDependent MC, treat it has data
@@ -114,7 +114,7 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
     if(_oddMC) mcCut = cutter.GetCut(commonCut_MC+"-odd", false);//remove this (for eleID MC)
     else mcCut = cutter.GetCut(commonCut_MC, false);//remove this (for eleID MC)
   } else {
-    std::cout << "[INFO] Importing std MC" << std::endl;
+    std::cout << "[INFO] Importing std MC (not run-dependent)" << std::endl;
     if(_oddMC) mcCut = cutter.GetCut(commonCut_MC+"-odd", true);//remove this (for eleID MC)
     else mcCut = cutter.GetCut(commonCut_MC, true);//remove this (for eleID MC)
   }
@@ -273,6 +273,7 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TEntryList *entryList){
     invMass_*=sqrt(corrEle_[0] * corrEle_[1] *(smearEle_[0]) * (smearEle_[1]));
     invMass.setVal(invMass_ );
     weight.setVal(weight_*pileupWeight_ * r9weight_[0]*r9weight_[1]); 
+    std::cout<<"DEBUGGONE 1 weight is"<<weight_*pileupWeight_ * r9weight_[0]*r9weight_[1]<<std::endl;
     if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
   }
   data->Print();
@@ -346,6 +347,7 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut){
     invMass_*=sqrt(corrEle_[0] * corrEle_[1] *(smearEle_[0]) * (smearEle_[1]));
     invMass.setVal(invMass_ );
     weight.setVal(weight_*pileupWeight_ * r9weight_[0]*r9weight_[1]); 
+    std::cout<<"DEBUGGONE weight is"<<weight_*pileupWeight_ * r9weight_[0]*r9weight_[1]<<std::endl;
     if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
   }
   delete selector;
@@ -367,6 +369,7 @@ RooAbsData *ZFit_class::ReduceDataset(TChain *data, TString region, bool isMC, b
   //std::cout << cutter.GetCut(region,isMC) << std::endl;
   TStopwatch myClock;
   myClock.Start();
+  //std::cout<<"[DEBUG] In reducing dataset"<<cutter.GetCut(region,isMC)<<std::endl;
   RooAbsData *reduced = TreeToRooDataSet(data, cutter.GetCut(region,isMC)); 
   myClock.Stop();
   if(!isUnbinned){ //if not an unbinned fit, transform the roodataset in histogram
@@ -635,6 +638,7 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
 RooFitResult *ZFit_class::FitMC(TString region, bool doPlot){
   RooAbsData *signal_red = ReduceDataset(signal, region, true, _isMCUnbinned);
   nEvents_region_MC = signal_red->sumEntries();
+  std::cout<<"[DEBUG] ZFit_class:FitMC; nEvents_region_MC "<<nEvents_region_MC<<std::endl;
   if( nEvents_region_MC < 30) return NULL;
   int numcpu=4;
   if(!_isMCUnbinned) numcpu=2; // would prefer 1, but bug in RooFit: wrong error estimation for weighted datahist if 1 cpu
@@ -722,8 +726,8 @@ void ZFit_class::Fit(TString region, bool doPlot){
       params->writeToFile(paramsMCFileName);		
       if(doPlot) SaveFitPlot(plotMCFileName,true);
     }else{
-      std::cerr << "[WARNING] MC fit for region: " << region << " not possible because nEvents < 100" << std::endl;
-      std::cout << "[WARNING] MC fit for region: " << region << " not possible because nEvents < 100" << std::endl;
+      std::cerr << "[WARNING] MC fit for region: " << regionMC << " not possible because nEvents < 100" << std::endl;
+      std::cout << "[WARNING] MC fit for region: " << regionMC << " not possible because nEvents < 100" << std::endl;
       return;
     }      
   } else {

@@ -282,6 +282,7 @@ TCanvas *var_Stability(TString filename_corr, TString region, double rMin=3, dou
   //g_MC -> SetDrawOption("");
   
   TMultiGraph *g_multi = new TMultiGraph();
+  //g_multi->SetMaximum(4.);
   if(column>0 )   g_multi->Add(g_MC,"L3");
   g_multi->Add(g_data,"P");
 
@@ -722,10 +723,10 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
   pave->SetTextAlign(12);
   pave->SetBorderSize(0);
   pave->SetTextSize(0.04);
-  pave->AddText("CMS Preliminary   #sqrt{s}=8 TeV");
+  pave->AddText("CMS Preliminary   #sqrt{s}=13 TeV");
   //if(lumi.Sizeof()>1)  pave->AddText("#sqrt{s}="+energy+"   L="+lumi+" fb^{-1}");
   //else
-  //pave->AddText("#sqrt{s}=8 TeV");
+  //pave->AddText("#sqrt{s}=13 TeV");
 
   if(column<0)  c = new TCanvas("c", region);
   else  c = new TCanvas("c", region, 1000,500);

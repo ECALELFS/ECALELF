@@ -27,9 +27,12 @@ if [[ $sel = "" ]]; then
     sel="loose"
 fi
 
-./script/energyScale.sh --step=1 -f data/validation/${file}.dat --invMass_var=${invMass_type} --runRangesFile=data/runRanges/${file}_interval_${interval}.dat --selection=$sel
+echo "[INFO] You are making step1"
+#./script/energyScale.sh --step=1 -f data/validation/${file}.dat --invMass_var=${invMass_type} --runRangesFile=data/runRanges/${file}_interval_${interval}.dat --selection=$sel
+echo "[INFO] You are making step1stab"
 ./script/energyScale.sh --step=1stability -f data/validation/${file}.dat --invMass_var=${invMass_type} --runRangesFile=data/runRanges/${file}_interval_${interval}.dat --selection=$sel
 ##Only summary plots if you need them (it also writes names in tmp/1plot.dat)
+echo "[INFO] You are making step1plotter"
 ./script/energyScale.sh --step=1plotter -f data/validation/${file}.dat --invMass_var=${invMass_type} --runRangesFile=data/runRanges/${file}_interval_${interval}.dat --selection=$sel > tmp/1plot.dat
 
 PUName=$(grep "PUName" tmp/1plot.dat | awk -F":" '{print $2}')
@@ -71,7 +74,7 @@ cp test/dato/${file}/${selection}/${invMass_type}/img/*.png ~/scratch1/www/RUN2_
 ##Final Fits
 cp test/dato/${file}/${selection}/${invMass_type}/step1/img/*.png ~/scratch1/www/RUN2_ECAL_Calibration/${file}/${invMass_type}/Step1_stab/Fits/data/
 
-
+echo "[INFO] You are making step2"
 ####################STEP2###################################
 ./script/energyScale.sh --step=2 -f data/validation/${file}.dat --invMass_var=${invMass_type} --runRangesFile=data/runRanges/${file}_interval_${interval}.dat | tee tmp/debug_step2.dat
 if [ ! -d "/afs/cern.ch/work/g/gfasanel/www/RUN2_ECAL_Calibration/${file}/${invMass_type}/step2" ];then 
@@ -86,6 +89,7 @@ cp test/dato/${file}/loose/${invMass_type}/table/step2-${invMass_type}-loose-Et_
 cp tmp/table_outFile-step2-${invMass_type}-loose-Et_20-noPF-HggRunEtaR9_scale_tex.dat ~/scratch1/www/RUN2_ECAL_Calibration/${file}/${invMass_type}/step2/
 cp tmp/table_outFile-step2-${invMass_type}-loose-Et_20-noPF-HggRunEtaR9_smear_tex.dat ~/scratch1/www/RUN2_ECAL_Calibration/${file}/${invMass_type}/step2/
 
+echo "[INFO] You are making step4"
 ##############Now go to step4 ##############################
 ./script/energyScale.sh --step=4 -f data/validation/${file}.dat --invMass_var=${invMass_type} --runRangesFile=data/runRanges/${file}_interval_${interval}.dat | tee tmp/debug_step4.dat
 if [ ! -d "/afs/cern.ch/work/g/gfasanel/www/RUN2_ECAL_Calibration/${file}/${invMass_type}/step4" ];then 
