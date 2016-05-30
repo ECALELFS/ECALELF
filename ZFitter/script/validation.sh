@@ -2,7 +2,8 @@
 
 #tag_name=""
 commonCut="Et_25"
-selection=loose25nsRun2
+#selection="cutBasedElectronId|Spring15|25ns|V1|standalone|loose"
+selection="fiducial"
 invMass_var=invMass_SC_must_regrCorr_ele
 configFile=data/validation/EoverPcalibration_2016.dat #monitoring_2012_53X.dat 
 FLOATTAILSTEXT="Fixed Tail" 
@@ -73,7 +74,7 @@ do
 	--validation) VALIDATION=y;;
 	--stability)  STABILITY=y;;
 	--slides)     SLIDES=y;;
-	--noPU)     NOPUOPT="--noPU"; NOPU="noPU";;
+	--noPU)     NOPUOPT="--noPU"; NOPU="noPU"; puName="noPU";;
 	--floatTails)    FLOATTAILSOPT="--fit_type_value=0"; FLOATTAILS="floatingTail"; FLOATTAILSTEXT="Floating Tail";;
 	--dryRun)     DRYRUN="1";;
 	--selection) selection=$2; echo "test selection" $selection ; shift;;
@@ -197,7 +198,7 @@ if [ -n "$VALIDATION" ];then
 
     ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	--outDirImgMC=${outDirMC}/img   --outDirImgData=${outDirData}/img  --commonCut=${commonCut}  --imgFormat=${imgFormat} --selection=${selection}  $NOPUOPT $FLOATTAILSOPT > ${outDirData}/log/validation.log||  exit 1
+	--outDirImgMC=${outDirMC}/img   --outDirImgData=${outDirData}/img  --commonCut=${commonCut}  --imgFormat=${imgFormat} --selection=${selection}  $NOPUOPT $FLOATTAILSOPT || exit 1 #> ${outDirData}/log/validation.log||  exit 1
 
 
     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \

@@ -23,9 +23,11 @@ Description: class that provide flexible and simple way to fit the Zee invariant
 
 // this is because GetBranch seems not working properly, so will ignore that
 //#define BUG
+#include <TObjArray.h>
+#include <TChainElement.h>
 
 
-//#define DEBUG
+#define DEBUG
 //#define FIT_DEBUG
 //#define NOIMPORT
 //#define NUM_EVENTS 100
@@ -106,8 +108,9 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 {
 	signal_chain->Draw(">>list", "runNumber>1", "entrylist", 10);
 	TEntryList *l = (TEntryList*) gROOT->FindObject("list");
+	assert(l!=NULL);
 
-	commonCut += "-eleID_" + eleID_;
+//	commonCut += "-eleID_" + eleID_;
 	TString mcCut, dataCut;
 	if(l->GetN() > 0) { // runDependent MC, treat it has data
 		std::cout << "[INFO] Importing run dependent MC" << std::endl;
@@ -122,12 +125,16 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 
 	if(_oddData) dataCut = cutter.GetCut(commonCut + "-odd", false);
 	else dataCut = cutter.GetCut(commonCut, false);
-	//std::cout << dataCut << std::endl;
+#ifdef DEBUG	
+	std::cout << "MC CUT: " << mcCut << std::endl;
+	std::cout << "DATA CUT: " << dataCut << std::endl;
+#endif
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
 	std::cout << "--------------- Importing signal mc: " << signal_chain->GetEntries() << std::endl;
 	//if(signal!=NULL) delete signal;
 
 	signal = ImportTree(signal_chain, mcCut, branchList);
+	assert(signal->GetEntryList()!=NULL);
 	commonMC = new TEntryList(*(signal->GetEntryList()));
 	//signal->Print();
 	//exit(0);
@@ -170,17 +177,45 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 	chain->SetBranchStatus("recoFlagsEle", 1);
 	chain->SetBranchStatus("eleID", 1);
 	chain->SetBranchStatus("eventNumber", 1);
+	std::cout << "[STATUS] Enabling branch: " << invMass.GetName() << std::endl;
 	chain->SetBranchStatus(invMass.GetName(), 1);
+	chain->SetBranchStatus("invMass_SC", 1);
 	chain->AddBranchToCache("*", kTRUE);
 
 	//std::cout << commonCut << std::endl;
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
+#ifdef DEBUG
+	std::cout << commonCut << std::endl;
+#endif
+	commonCut="";
 	chain->Draw(">>" + evListName, commonCut, "entrylist");
 	TEntryList *elist = (TEntryList*)gDirectory->Get(evListName);
+	assert(elist!=NULL);
 	std::cout << "[INFO] Selected events: " << chain->GetTitle() << "\t" <<  elist->GetN() << std::endl;
-	chain->SetEntryList(elist);
+#ifdef DEBUG
+	elist->Print();
+	TObjArray *fFiles = chain->GetListOfFiles();
+    Int_t ne = fFiles->GetEntries();
+    Int_t listfound=0;
+    TString treename, filename;
+ 
+    TEntryList *templist = 0;
+    for (Int_t ie = 0; ie<ne; ie++){
+       auto chainElement = (TChainElement*)fFiles->UncheckedAt(ie);
+       treename = chainElement->GetName();
+       filename = chainElement->GetTitle();
+       templist = elist->GetEntryList(filename+"/"+treename, filename, "ne");
+       if (templist) {
+          listfound++;
+          templist->SetTreeNumber(ie);
+       }
+	   std::cout << listfound << "\t"<< treename << "\t" << filename << std::endl;
+    }
 
+#endif
+	chain->SetEntryList(elist, "ne");
+	assert(chain->GetEntryList()!=NULL);
 	//delete elist; // do not delete
 	//std::cout << "[INFO] Selected events: " <<  chain->GetEntryList()->GetN() << std::endl;
 
