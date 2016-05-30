@@ -81,10 +81,10 @@ class correctionCategory_class{
   bool operator<(const correctionCategory_class& b) const;
 
   friend std::ostream& operator << (std::ostream& os, const correctionCategory_class a){
-    os <<  a.runmin << " " << a.runmax 
-       << "\t" << a.etamin << " "<<a.etamax 
-       << "\t" << a.r9min << " "<<a.r9max 
-       << "\t" << a.etmin << " " << a.etmax;
+    os <<  "RunMin: "<<a.runmin << " RunMax: " << a.runmax 
+       << "\tEtaMin: " << a.etamin << " EtaMax: "<<a.etamax 
+       << "\tR9Min: " << a.r9min << " R9Max: "<<a.r9max 
+       << "\tEtMin: " << a.etmin << " EtMax: " << a.etmax;
     return os;
   };
 };
