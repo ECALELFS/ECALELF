@@ -1024,8 +1024,8 @@ int main(int argc, char **argv) {
   ///------------------------------ to obtain run ranges
   if(vm.count("runDivide")){
     runDivide_class runDivider;
-    //std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
-    std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits_0T.dat", nEvents_runDivide);
+    std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
+    //std::vector<TString> v=runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits_0T.dat", nEvents_runDivide);
     runDivider.PrintRunRangeEvents();
     std::vector<TString> runRanges;
     if(runRangesFileName!="") runRanges = ReadRegionsFromFile(runRangesFileName);
