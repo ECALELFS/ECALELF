@@ -180,12 +180,12 @@ fi
 cat > tmp/stability_macro.C <<EOF
 
 {
-  gROOT->ProcessLine(".L src/setTDRStyle.C+");
+  //gROOT->ProcessLine(".L src/setTDRStyle.C+");
   gROOT->ProcessLine(".L macro/stability.C+");
 
-  setTDRStyle();
-  tdrStyle->SetOptTitle(0);
-   gROOT->SetStyle("tdrStyle");  
+  //setTDRStyle();
+  //tdrStyle->SetOptTitle(0);
+  //gROOT->SetStyle("tdrStyle");  
   TCanvas *c;
 
 std::vector<TString> filenameList;
