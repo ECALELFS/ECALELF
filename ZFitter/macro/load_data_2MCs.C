@@ -10,7 +10,7 @@
 
   ReassociateFriends(_file0, data);
   ReassociateFriends(_file1, signalA);
-  //ReassociateFriends(_file2, signalB);
+  ReassociateFriends(_file2, signalB);
 
    TDirectory *curDir = new TDirectory("curDir","");
    curDir->cd();
