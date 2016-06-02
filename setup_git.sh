@@ -2,24 +2,27 @@
 
 checkVERSION(){
     case $CMSSW_VERSION in
-	CMSSW_5_3_7_patch6)
-	    echo "[ERROR] $CMSSW_VERSION now deprecated, please use the CMSSW_5_3_14_patch2"
-	    exit 1
-	    ;;
-	CMSSW_5_3_14_patch2)
-	    echo "[ERROR] $CMSSW_VERSION now deprecated, please use the CMSSW_5_3_14_patch2"
-	    exit 1
-	    ;;
-	CMSSW_5_3_21)
-	    echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
-	    ;;
-	CMSSW_7_4_15_patch1)
-	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
-	    ;;
-	CMSSW_7_6_3)
-	    echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
-	    ;;
-	*)
+		CMSSW_5_3_7_patch6)
+			echo "[ERROR] $CMSSW_VERSION now deprecated, please use the CMSSW_5_3_14_patch2"
+			exit 1
+			;;
+		CMSSW_5_3_14_patch2)
+			echo "[ERROR] $CMSSW_VERSION now deprecated, please use the CMSSW_5_3_14_patch2"
+			exit 1
+			;;
+		CMSSW_5_3_21)
+			echo "[INFO] Installing for $CMSSW_VERSION (2012 8TeV)"
+			;;
+		CMSSW_7_4_15_patch1)
+			echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
+			;;
+		CMSSW_7_6_3)
+			echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
+			;;
+		CMSSW_8_0_7)
+			echo "[INFO] Installing for $CMSSW_VERSION (2016 13TeV)"
+			;;
+		*)
 	    echo "[ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
 	    echo "        Be sure that you don't want 5_3_14_patch2 or CMSSW_7_2_*"
 	    
@@ -59,7 +62,7 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
-	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone -b 80X-devel git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	lbrianza|lcorpe)
 	    git clone -b newMaster git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
@@ -181,7 +184,10 @@ case $CMSSW_VERSION in
 	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 	;;
 	CMSSW_7_6_*)
-		git-cms-merge-topic shervin86:76X || exit 1
+		git cms-merge-topic shervin86:76X || exit 1
+		;;
+	CMSSW_8_0_*)
+		git cms-merge-topic shervin86:fix80X || exit 1
 		;;
 
 

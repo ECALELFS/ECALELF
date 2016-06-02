@@ -341,10 +341,11 @@ private:
 	std::vector<int>        YRecHitSCEle[3];
 	std::vector<int>        ZRecHitSCEle[3];
 	std::vector<float> energyRecHitSCEle[3];
+	std::vector<float> fracRecHitSCEle[3];
 	std::vector<float>     LCRecHitSCEle[3];
 	std::vector<float>     ICRecHitSCEle[3];
 	std::vector<float>  AlphaRecHitSCEle[3];
-	std::vector<float*> ootAmplisUncalibRecHitSCEle[3];
+	std::vector<std::vector<float> > ootAmplisUncalibRecHitSCEle[3];
 	std::vector<float> ampliUncalibRecHitSCEle[3];
 	std::vector<float> ampliErrUncalibRecHitSCEle[3];
 	std::vector<float> pedEUncalibRecHitSCEle[3];
@@ -365,6 +366,17 @@ private:
 	Float_t dr03HcalTowerSumEt[3];
 	Float_t deltaPhiSuperClusterTrackAtVtx[3];
 	Float_t deltaEtaSuperClusterTrackAtVtx[3];
+        Float_t sigmaIEtaIEta_F5x5[3];
+        Float_t R9_F5x5[3];
+        Float_t E1x5_F5x5[3];
+        //Float_t E2x5_F5x5[3];
+        //Float_t E3x3_F5x5[3];
+        Float_t E5x5_F5x5[3];
+        Float_t E1x3[3];
+        Float_t E2x2[3];
+        Float_t S4[3];
+        Float_t etaWidth[3];
+        Float_t phiWidth[3];
 	Bool_t hasMatchedConversion[3];
 	Int_t maxNumberOfExpectedMissingHits[3];
 	Float_t pfMVA[3];
@@ -2087,6 +2099,8 @@ void ZNtupleDumper::InitExtraCalibTree()
 	extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
 	extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
 	extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
+	extraCalibTree->Branch("fracRecHitSCEle1", &(fracRecHitSCEle[0]));
+	extraCalibTree->Branch("fracRecHitSCEle2", &(fracRecHitSCEle[1]));
 	extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
 	extraCalibTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
 	extraCalibTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
@@ -2138,6 +2152,7 @@ void ZNtupleDumper::resetExtraVariables(int index)
 	YRecHitSCEle[aidx].clear();
 	ZRecHitSCEle[aidx].clear();
 	energyRecHitSCEle[aidx].clear();
+	fracRecHitSCEle[aidx].clear();
 	ampliErrUncalibRecHitSCEle[aidx].clear();
 	ampliUncalibRecHitSCEle[aidx].clear();
 	chi2UncalibRecHitSCEle[aidx].clear();
@@ -2181,6 +2196,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const std::vector<std::pair<DetId, floa
 			ZRecHitSCEle[index].push_back(recHitId.zside());
 		}
 		energyRecHitSCEle[index].push_back(oneHit->energy());
+                fracRecHitSCEle[index].push_back(detitr->second);
 		EcalUncalibratedRecHitCollection::const_iterator oneUHit = uncHits->find( (detitr -> first) ) ;
 		if(oneUHit == uncHits->end()) {
 			edm::LogError("ZNtupleDumper") << "No uncalibRecHit found for xtal "  << (detitr->first).rawId()
@@ -2191,7 +2207,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const std::vector<std::pair<DetId, floa
 		// UncalibRecHit's information on OOT amplitudes
 		float amplis[EcalDataFrame::MAXSAMPLES];
 		for (int i = 0; i < EcalDataFrame::MAXSAMPLES; ++i) amplis[i] = oneUHit->outOfTimeAmplitude(i);
-		ootAmplisUncalibRecHitSCEle[index].push_back(amplis);
+		ootAmplisUncalibRecHitSCEle[index].push_back(std::vector<float>(amplis, amplis + EcalDataFrame::MAXSAMPLES));
 		ampliUncalibRecHitSCEle[index].push_back(oneUHit->amplitude());
 		ampliErrUncalibRecHitSCEle[index].push_back(oneUHit->amplitudeError());
 		pedEUncalibRecHitSCEle[index].push_back(oneUHit->pedestal());
@@ -2294,6 +2310,17 @@ void ZNtupleDumper::InitEleIDTree()
 	eleIDTree->Branch("dr03EcalRecHitSumEt", dr03EcalRecHitSumEt, "dr03EcalRecHitSumEt[3]/F");
 	eleIDTree->Branch("dr03HcalTowerSumEt", dr03HcalTowerSumEt, "dr03HcalTowerSumEt[3]/F");
 	eleIDTree->Branch("sigmaIEtaIEtaSCEle", sigmaIEtaIEtaSCEle, "sigmaIEtaIEtaSCEle[3]/F");
+        eleIDTree->Branch("sigmaIEtaIEta_F5x5", sigmaIEtaIEta_F5x5);
+        eleIDTree->Branch("R9_F5x5", R9_F5x5, "R9_F5x5[3]/F");
+        eleIDTree->Branch("E1x5_F5x5", E1x5_F5x5, "E1x5_F5x5[3]/F");
+        //eleIDTree->Branch("E2x5_F5x5", E2x5_F5x5, "E2x5_F5x5[3]/F");
+        //eleIDTree->Branch("E3x3_F5x5", E3x3_F5x5, "E3x3_F5x5[3]/F");
+        eleIDTree->Branch("E5x5_F5x5", E5x5_F5x5, "E5x5_F5x5[3]/F");
+        eleIDTree->Branch("E1x3", E1x3, "E1x3[3]/F");
+        eleIDTree->Branch("E2x2", E2x2, "E2x2[3]/F");
+        eleIDTree->Branch("S4", S4, "S4[3]/F");
+        eleIDTree->Branch("etaWidth", etaWidth, "etaWidth[3]/F");
+        eleIDTree->Branch("phiWidth", phiWidth, "phiWidth[3]/F");
 	//  eleIDTree->Branch("sigmaIPhiIPhiSCEle", sigmaIPhiIPhiSCEle, "sigmaIPhiIPhiSCEle[3]/F");
 	eleIDTree->Branch("deltaEtaSuperClusterTrackAtVtx", deltaEtaSuperClusterTrackAtVtx, "deltaEtaSuperClusterTrackAtVtx[3]/F");
 	eleIDTree->Branch("deltaPhiSuperClusterTrackAtVtx", deltaPhiSuperClusterTrackAtVtx, "deltaPhiSuperClusterTrackAtVtx[3]/F");
@@ -2332,6 +2359,21 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index)
 	pfMVA[index]   = electron1.mva_e_pi();
 	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
 	maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
+
+        sigmaIEtaIEta_F5x5[index] = electron1.full5x5_sigmaIetaIeta();
+        R9_F5x5[index] = electron1.full5x5_r9();
+        E1x5_F5x5[index] = electron1.full5x5_e1x5();    
+        E5x5_F5x5[index] = electron1.full5x5_e5x5();
+        const reco::CaloClusterPtr seed_clu = electron1.superCluster()->seed();
+        E1x3[index] = clustertools->e1x3( *seed_clu );
+        E2x2[index] = clustertools->e2x2( *seed_clu );
+        //E2x5_F5x5[index] = electron1.full5x5_e2x5();
+        //E3x3_F5x5[index] = electron1.full5x5_e3x3();
+        S4[index]   = clustertools->e2x2( *seed_clu ) / clustertools->e5x5( *seed_clu );
+        etaWidth[index] = electron1.superCluster()->etaWidth();
+        phiWidth[index] = electron1.superCluster()->phiWidth();
+
+
 
 
 	//   if (primaryVertexHandle->size() > 0) {

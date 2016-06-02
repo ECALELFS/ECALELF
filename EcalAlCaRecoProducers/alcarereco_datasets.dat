@@ -89,3 +89,7 @@
 256268-256464	/DoubleEG_0T/Run2015C-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG_0T-ZSkim-Run2015C-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2015_newGT_0T_v5
 257032-257059	/DoubleEG_0T/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG_0T-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2015_newGT_0T_v5
 258159-260737	/DoubleEG_0T/Run2015D-EcalUncalZElectron-PromptReco-v4/ALCARECO	DoubleEG_0T-ZSkim-Run2015D-Prompt-v4-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2015_newGT_0T_v5
+257032-257059	/DoubleEG_0T/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG_0T-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	76X_dataRun2_v19
+258159-260737	/DoubleEG_0T/Run2015D-EcalUncalZElectron-PromptReco-v4/ALCARECO	DoubleEG_0T-ZSkim-Run2015D-Prompt-v4-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	76X_dataRun2_v19
+255910-256245	/DoubleEG_0T/Run2015C-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG_0T-ZSkim-Run2015C-Prompt-v2-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	76X_dataRun2_v19
+256268-256464	/DoubleEG_0T/Run2015C-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG_0T-ZSkim-Run2015C-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	76X_dataRun2_v19

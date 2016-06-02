@@ -16,8 +16,8 @@ Download instructions.
 ```
 wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/newMaster/setup_git.sh
 chmod +x setup_git.sh
-./setup_git.sh CMSSW_7_6_3
-cd CMSSW_7_6_3/src/
+./setup_git.sh CMSSW_8_0_7
+cd CMSSW_8_0_7/src/
 cmsenv
 cd Calibration/ZFitter && make && cd -
 ```

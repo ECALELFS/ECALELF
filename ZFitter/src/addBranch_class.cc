@@ -1,7 +1,6 @@
 #include "../interface/addBranch_class.hh"
 #include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
-#include <TLorentzVector.h>
 #include <iostream>
 
 //#define DEBUG
@@ -41,8 +40,7 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 	Float_t         etaEle[2];
 	Float_t         energyEle[2];
 	Float_t         corrEle[2] = {1., 1.};
-	Float_t         ZPt, ZPta;
-	TLorentzVector ele1, ele2;
+	Float_t         ZPt;
 
 	originalChain->SetBranchAddress("etaEle", etaEle);
 	originalChain->SetBranchAddress("phiEle", phiEle);
@@ -69,15 +67,8 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 		float regrCorr_fra_pt0 = sqrt(((energyEle[0] * energyEle[0]) - mass * mass) / (1 + sinh(etaEle[0]) * sinh(etaEle[0])));
 		float regrCorr_fra_pt1 = sqrt(((energyEle[1] * energyEle[1]) - mass * mass) / (1 + sinh(etaEle[1]) * sinh(etaEle[1])));
 		ZPt =
-		    TMath::Sqrt(pow(regrCorr_fra_pt0 * TMath::Sin(phiEle[0]) + regrCorr_fra_pt1 * TMath::Sin(phiEle[1]), 2) + pow(regrCorr_fra_pt0 * TMath::Cos(phiEle[0]) + regrCorr_fra_pt1 * TMath::Cos(phiEle[1]), 2));
+		    sqrt(pow(regrCorr_fra_pt0 * sin(phiEle[0]) + regrCorr_fra_pt1 * sin(phiEle[1]), 2) + pow(regrCorr_fra_pt0 * cos(phiEle[0]) + regrCorr_fra_pt1 * cos(phiEle[1]), 2));
 
-		ele1.SetPtEtaPhiE(energyEle[0] / cosh(etaEle[0]), etaEle[0], phiEle[0], energyEle[0]);
-		ele2.SetPtEtaPhiE(energyEle[1] / cosh(etaEle[1]), etaEle[1], phiEle[1], energyEle[1]);
-		ZPta = (ele1 + ele2).Pt();
-		if(fabs(ZPt - ZPta) > 0.001) {
-			std::cerr << "[ERROR] ZPt not well calculated" << ZPt << "\t" << ZPta << std::endl;
-			exit(1);
-		}
 
 		newtree->Fill();
 	}
@@ -90,6 +81,8 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 
 TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassSigmaName, bool fastLoop, bool isMC)
 {
+/// does not compile
+#ifdef shervin
 	if(scaler == NULL) {
 		std::cerr << "[ERROR] EnergyScaleCorrection class not initialized" << std::endl;
 		exit(1);
@@ -246,6 +239,9 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 	if(fastLoop)   originalChain->SetBranchStatus("*", 1);
 	originalChain->ResetBranchAddresses();
 	return newtree;
+#else
+	return NULL;
+#endif
 }
 
 
