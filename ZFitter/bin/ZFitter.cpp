@@ -202,7 +202,7 @@ void MergeSamples(tag_chain_map_t& tagChainMap, TString regionsFileNameTag, TStr
 				(tagChainMap[tag])[chainName]->SetTitle(tag);
 			}
 			(tagChainMap[tag])[chainName]->Add(chain_itr->second);
-			std::cout << tag << "\t tag_chain_itr:" << tag_chain_itr->first << "\t chainName:" << chainName <<  "\t chain_itr_second:" << chain_itr->second << "\t second_gettitle:" << chain_itr->second->GetTitle() << std::endl;
+			std::cout << tag << "\t" << tag_chain_itr->first << "\t" << chainName <<  "\t" << chain_itr->second << "\t" << chain_itr->second->GetTitle() << std::endl;
 
 		}
 	}
@@ -593,7 +593,7 @@ int main(int argc, char **argv)
 		}
 		std::cout << "Adding file: " << tag << "\t" << chainName << "\t" << fileName << std::endl;
 		//std::cout << "[yacine]: " << tag << "\t" << chainName << "\t" << fileName <<"\t"<<tagChainMap[tag])[chainName]->Add(fileName, -1)<< std::endl;
-		if((tagChainMap[tag])[chainName]->Add(fileName + "/" + chainName, -1) == 0) exit(1);
+		if((tagChainMap[tag])[chainName]->Add(fileName, -1) == 0) exit(1);
 #ifdef DEBUG
 		std::cout << "[DEBUG] " << tag << "\t" << chainName << "\t" << fileName << "\t" << (tagChainMap[tag])[chainName]->GetEntries() << std::endl;
 #endif
