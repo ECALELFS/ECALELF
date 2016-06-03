@@ -16,12 +16,12 @@ runDivide_class::~runDivide_class(void)
 void runDivide_class::ReadRunRangeLimits(TString fileName)
 {
 
-  //no file provided for limits: no limits
+	//no file provided for limits: no limits
 	if(fileName.IsNull()) {
-	  std::cout << "[WARNING] No run range limits file provided" << std::endl;
-	  return;
+		std::cout << "[WARNING] No run range limits file provided" << std::endl;
+		return;
 	}
-	
+
 	std::ifstream file(fileName);
 	if(!file.good()) {
 		std::cerr << "[ERROR] File " << fileName << "to opened" << std::endl;
@@ -68,10 +68,10 @@ void runDivide_class::LoadRunEventNumbers(TTree *tree, TString runNumber_branchN
 	Int_t runNumber;
 	UInt_t runTime;
 
-	std::cout << "tree ptr  == "<< tree << std::endl;
-	std::cout << "tree name == "<< tree->GetName() << std::endl;
-	std::cout << "tree neve == "<< tree->GetEntries() << std::endl;
-	
+	std::cout << "tree ptr  == " << tree << std::endl;
+	std::cout << "tree name == " << tree->GetName() << std::endl;
+	std::cout << "tree neve == " << tree->GetEntries() << std::endl;
+
 	tree->SetBranchStatus("*", 0);
 	tree->SetBranchStatus(runNumber_branchName, 1);
 	tree->SetBranchStatus(runTime_branchName, 1);
@@ -226,10 +226,10 @@ std::vector<TString> runDivide_class::Divide(TTree *tree, TString fileName,
         unsigned int nEvents_min,
         TString runNumber_branchName)
 {
-  
-	std::cout << "[divide fnc]tree ptr  == "<< tree << std::endl;
-	std::cout << "[divide fnc]tree name == "<< tree->GetName() << std::endl;
-	std::cout << "[divide fnc]tree neve == "<< tree->GetEntries() << std::endl;
+
+	std::cout << "[divide fnc]tree ptr  == " << tree << std::endl;
+	std::cout << "[divide fnc]tree name == " << tree->GetName() << std::endl;
+	std::cout << "[divide fnc]tree neve == " << tree->GetEntries() << std::endl;
 #ifdef DEBUG
 	std::cout << "[DEBUG] Reading run range limits from file: " << fileName << std::endl;
 #endif

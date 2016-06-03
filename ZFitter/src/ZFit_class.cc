@@ -108,9 +108,9 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 {
 	signal_chain->Draw(">>list", "runNumber>1", "entrylist", 10);
 	TEntryList *l = (TEntryList*) gROOT->FindObject("list");
-	assert(l!=NULL);
+	assert(l != NULL);
 
-//	commonCut += "-eleID_" + eleID_;
+	commonCut += "-eleID_" + eleID_;
 	TString mcCut, dataCut;
 	if(l->GetN() > 0) { // runDependent MC, treat it has data
 		std::cout << "[INFO] Importing run dependent MC" << std::endl;
@@ -125,7 +125,7 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 
 	if(_oddData) dataCut = cutter.GetCut(commonCut + "-odd", false);
 	else dataCut = cutter.GetCut(commonCut, false);
-#ifdef DEBUG	
+#ifdef DEBUG
 	std::cout << "MC CUT: " << mcCut << std::endl;
 	std::cout << "DATA CUT: " << dataCut << std::endl;
 #endif
@@ -134,7 +134,7 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 	//if(signal!=NULL) delete signal;
 
 	signal = ImportTree(signal_chain, mcCut, branchList);
-	assert(signal->GetEntryList()!=NULL);
+	assert(signal->GetEntryList() != NULL);
 	commonMC = new TEntryList(*(signal->GetEntryList()));
 	//signal->Print();
 	//exit(0);
@@ -186,23 +186,23 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
 #ifdef DEBUG
-	std::cout << commonCut << std::endl;
+	std::cout << "[DEBUG] commonCut ::" << commonCut << std::endl;
 #endif
-  chain->Draw(">>" + evListName, commonCut, "entrylist");
-  TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
+	chain->Draw(">>" + evListName, commonCut, "entrylist");
+	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
 #ifdef DEBUG
-  std::cout << "[DEBUG] chain ptr :\t" << chain << std::endl;
-#endif  
-  TECALChain *chain_ecal = (TECALChain*)chain;
-  chain_ecal->TECALChain::SetEntryList(elist);
-  assert(elist != NULL);
-  std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
-  chain = dynamic_cast<TChain*>(chain_ecal);
-#ifdef DEBUG
-  std::cout << "[DEBUG] new chain ptr :\t" << chain_ecal << std::endl;
-  std::cout << "[DEBUG]     chain ptr :\t" << chain      << std::endl;
+	std::cout << "[DEBUG] chain ptr :\t" << chain << std::endl;
 #endif
-  return chain;
+	TECALChain *chain_ecal = (TECALChain*)chain;
+	chain_ecal->TECALChain::SetEntryList(elist);
+	assert(elist != NULL);
+	std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
+	chain = dynamic_cast<TChain*>(chain_ecal);
+#ifdef DEBUG
+	std::cout << "[DEBUG] new chain ptr :\t" << chain_ecal << std::endl;
+	std::cout << "[DEBUG]     chain ptr :\t" << chain      << std::endl;
+#endif
+	return chain;
 }
 
 
@@ -272,11 +272,11 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TEntryList *entryList)
 		//chain->LoadTree(chainEntry); // this also returns treeEntry
 		//    chain->GetEntry(chainEntry);
 		chain->GetEntry(chain->GetEntryNumber(jentry));
-//     Long64_t ientry = entryList->GetEntry(jentry);
-//     //std::cerr << "ientry = " << ientry << std::endl;
-//     if(chain->LoadTree(ientry)<=0) exit(1);
-//     if(chain->GetEntry(ientry)<=0) exit(1);
-//     if( != ientry) exit(1);
+		//     Long64_t ientry = entryList->GetEntry(jentry);
+		//     //std::cerr << "ientry = " << ientry << std::endl;
+		//     if(chain->LoadTree(ientry)<=0) exit(1);
+		//     if(chain->GetEntry(ientry)<=0) exit(1);
+		//     if( != ientry) exit(1);
 		if(jentry < 1)  std::cout << "[DEBUG] PU: " << pileupWeight_
 			                          << std::endl;
 		if(jentry < 1)  std::cout << "[DEBUG] corrEle[0]: " << corrEle_[0] << std::endl;
@@ -519,7 +519,7 @@ double ZFit_class::GetEffectiveSigma(RooAbsData *dataset, float quant = 0.68)
 {
 
 	// it's up to the function that calls GetEffectiveSigma to delete the stored histogram
-//	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
+	//	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
 	if(invMass_highBinning == NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(), 6000);
 
 	TH1* h = invMass_highBinning;
@@ -528,7 +528,6 @@ double ZFit_class::GetEffectiveSigma(RooAbsData *dataset, float quant = 0.68)
 	double LocEvents = 0.;
 	int binI = h->FindBin(h->GetMean());
 	int binF = h->GetNbinsX() - 1;
-// bool keepGoing = false;
 #ifdef DEBUG
 	double frac = 0.;
 #endif
@@ -642,9 +641,9 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
 	nEvents_region_data = data_red->sumEntries();
 	if(nEvents_region_data < 100) {
 		data_red   = ReduceDataset(data, region, false, true);
-//   nEvents_region_data=data_red->sumEntries();
+		//   nEvents_region_data=data_red->sumEntries();
 	}
-// if(nEvents_region_data < 100) return NULL;
+	// if(nEvents_region_data < 100) return NULL;
 	int numcpu = 4;
 	if(_isDataUnbinned) numcpu = 1; //this is because in previous versions of ROOT, the unbinned fit did not support nCPU>1 (to be checked in newer versions)
 
