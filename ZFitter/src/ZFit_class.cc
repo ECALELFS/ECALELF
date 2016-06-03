@@ -191,15 +191,19 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
   commonCut="";
   chain->Draw(">>" + evListName, commonCut, "entrylist");
   TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
-
-  TECALChain *chain_ecal = (TECALChain*)chain->Clone();
-  std::cout << "before the SetEntryListECAL" << std::endl;
+#ifdef DEBUG
+  std::cout << "[DEBUG] chain ptr :\t" << chain << std::endl;
+#endif  
+  TECALChain *chain_ecal = (TECALChain*)chain;
   chain_ecal->TECALChain::SetEntryList(elist);
-  
   assert(elist != NULL);
   std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
-
-  return (TChain*)chain_ecal;
+  chain = dynamic_cast<TChain*>(chain_ecal);
+#ifdef DEBUG
+  std::cout << "[DEBUG] new chain ptr :\t" << chain_ecal << std::endl;
+  std::cout << "[DEBUG]     chain ptr :\t" << chain      << std::endl;
+#endif
+  return chain;
 }
 
 
