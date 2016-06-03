@@ -188,38 +188,21 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 #ifdef DEBUG
 	std::cout << commonCut << std::endl;
 #endif
-	commonCut="";
-	chain->Draw(">>" + evListName, commonCut, "entrylist");
-	TEntryList *elist = (TEntryList*)gDirectory->Get(evListName);
-	assert(elist!=NULL);
-	std::cout << "[INFO] Selected events: " << chain->GetTitle() << "\t" <<  elist->GetN() << std::endl;
+  chain->Draw(">>" + evListName, commonCut, "entrylist");
+  TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
 #ifdef DEBUG
-	elist->Print();
-	TObjArray *fFiles = chain->GetListOfFiles();
-    Int_t ne = fFiles->GetEntries();
-    Int_t listfound=0;
-    TString treename, filename;
- 
-    TEntryList *templist = 0;
-    for (Int_t ie = 0; ie<ne; ie++){
-       auto chainElement = (TChainElement*)fFiles->UncheckedAt(ie);
-       treename = chainElement->GetName();
-       filename = chainElement->GetTitle();
-       templist = elist->GetEntryList(filename+"/"+treename, filename, "ne");
-       if (templist) {
-          listfound++;
-          templist->SetTreeNumber(ie);
-       }
-	   std::cout << listfound << "\t"<< treename << "\t" << filename << std::endl;
-    }
-
+  std::cout << "[DEBUG] chain ptr :\t" << chain << std::endl;
+#endif  
+  TECALChain *chain_ecal = (TECALChain*)chain;
+  chain_ecal->TECALChain::SetEntryList(elist);
+  assert(elist != NULL);
+  std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
+  chain = dynamic_cast<TChain*>(chain_ecal);
+#ifdef DEBUG
+  std::cout << "[DEBUG] new chain ptr :\t" << chain_ecal << std::endl;
+  std::cout << "[DEBUG]     chain ptr :\t" << chain      << std::endl;
 #endif
-	chain->SetEntryList(elist, "ne");
-	assert(chain->GetEntryList()!=NULL);
-	//delete elist; // do not delete
-	//std::cout << "[INFO] Selected events: " <<  chain->GetEntryList()->GetN() << std::endl;
-
-	return chain;
+  return chain;
 }
 
 
