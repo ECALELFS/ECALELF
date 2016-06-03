@@ -7,6 +7,6 @@ eleNewEnergiesProducer = cms.EDProducer('EleNewEnergiesProducer',
                                             ecalRecHitsEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits"),
                                             vertexCollection   = cms.InputTag("offlinePrimaryVertices"),
                                             ),
-                                            electronCollection = cms.InputTag("patElectrons"),
+                                            electronCollection = cms.InputTag("gedGsfElectrons"),
                                             photonCollection = cms.InputTag("photons"),
 )
