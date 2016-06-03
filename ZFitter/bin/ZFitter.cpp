@@ -892,7 +892,7 @@ int main(int argc, char **argv)
 				eScaler.SetSmearingCBAlpha(smearingCBAlpha);
 			}
 			TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
-#else 
+#else
 			TTree *corrTree = NULL;
 #endif
 
