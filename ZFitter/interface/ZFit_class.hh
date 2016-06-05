@@ -31,6 +31,11 @@
 #include <RooPlot.h>
 #include <TMath.h>
 #include <TString.h>
+// needed for TEntryList fix
+#include <TEntryList.h>
+#include <TChainElement.h>
+
+//*********************************
 #include "ElectronCategory_class.hh"
 #include "BW_CB_pdf_class.hh"
 #include "Cruijff_pdf_class.hh"
