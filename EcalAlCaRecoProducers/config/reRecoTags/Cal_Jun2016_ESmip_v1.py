@@ -10,7 +10,7 @@ RerecoGlobalTag = GlobalTag.clone(
                                toGet = cms.VPSet(
         cms.PSet(record = cms.string("ESIntercalibConstantsRcd"),
                  tag = cms.string("ESIntercalibConstants_Run1_Run2_V05_offline"),
-                 connect = cms.untracked.string("sqlite:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ES_MIP/Cal_Jun2016/tags/sqlite/sqlite_esMIPs_offline_DBv2.db")
+                 connect = cms.string("sqlite:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ES_MIP/Cal_Jun2016/tags/sqlite/sqlite_esMIPs_offline_DBv2.db")
                  )
         # cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
         #          tag = cms.string("EcalIntercalibConstants_v10_offline"),
