@@ -118,7 +118,6 @@ do
     shift
 done
 
-
 if [ -n "${VERBOSE}" ];then
 	echo "DEBUG ALCARERECO DOEXTRACALIBTREE $DOEXTRACALIBTREE"
 	echo "DEBUG DOTREEE $DOTREE"
@@ -217,6 +216,9 @@ case $SCHEDULER in
     lsf)
 		USESERVER=0
 		;;
+	remoteGlidein)
+		USESERVER=0
+		;;
     *)
 		echo "[ERROR] SCHEDULER not accepted: only caf and lsf" >> /dev/stderr
 		usage >> /dev/stderr
@@ -249,8 +251,9 @@ echo "[INFO] UI_WORKING_DIR=${UI_WORKING_DIR:=prod_alcarereco/${TAG}/${DATASETNA
 #fi
 
 checkIfRerecoed(){
+# the STORAGE_ELEMENT is not included in the check because EOS can have two different strings if running using lsf/caf or remoteGlidein
 	STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
-	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} |grep ${DATASETNAME} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ | wc -l`" == "0" ]; then 
+	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} |grep ${DATASETNAME} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ | wc -l`" == "0" ]; then 
 		echo "NotRERECOED"
 		return 1; 
 	else 

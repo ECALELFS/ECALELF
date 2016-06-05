@@ -12,7 +12,8 @@ RERECO=y  #not used
 fileList=alcaraw_datasets.dat
 crabVersion=2
 DOEXTRACALIBTREE=" "
-
+JSONNAME=""
+JSONFILE=""
 
 usage(){
     echo "`basename $0` -p period -t tagFile"
@@ -68,6 +69,8 @@ do
 		    ;;
 		caf)
 		    ;;
+			remoteGlidein)
+				;;
 		*)
 		    echo "[ERROR] Scheduler ${SCHEDULER} not defined: use only lsf or caf" >> /dev/stderr
 		    exit 1
@@ -82,8 +85,8 @@ do
 	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; unset NTUPLE; EXTRAEXTRAOPTION="--alcarerecoOnly";;
 	--ntupleOnly) echo "[OPTION] ntupleOnly"; unset RERECO; fileList=alcarereco_datasets.dat;; #EXTRAEXTRAOPTION="--ntupleOnly";;
  	--crabVersion) crabVersion=$2;  shift;;
- 	--json) JSONFILE=$2;  shift;;
-	--json_name) JSONNAME=$2; shift;;
+ 	--json) JSONFILE="--json=$2";  shift;;
+	--json_name) JSONNAME="--json_name=$2"; shift;;
 	--doExtraCalibTree) DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doExtraCalibTree";;
 	--doEleIDTree)      DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --doEleIDTree";;
 	--noStandardTree)   DOEXTRACALIBTREE="${DOEXTRACALIBTREE} --noStandardTree";;
@@ -168,12 +171,12 @@ for dataset in $datasets
 	if [ -n "${RERECO}" ];then
 		./scripts/prodAlcarereco.sh -t ${TAGFILE} \
 			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
-  			--json=${JSONFILE} --json_name=${JSONNAME} --crabVersion=${crabVersion}\
+  			${JSONFILE} ${JSONNAME} --crabVersion=${crabVersion}\
       ${TUTORIAL} $dataset 
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
 			--scheduler=$SCHEDULER --file_per_job=10 --extraName=nopreselID_v3  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
-  			--json=${JSONFILE} --json_name=${JSONNAME} \
+  			${JSONFILE} ${JSONNAME} \
 			${TUTORIAL} $dataset 
 
 	fi
