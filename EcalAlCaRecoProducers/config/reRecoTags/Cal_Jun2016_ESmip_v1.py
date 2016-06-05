@@ -7,7 +7,11 @@ from CondCore.ESSources.CondDBESSource_cfi import *
 RerecoGlobalTag = GlobalTag.clone(
                                globaltag = cms.string('80X_dataRun2_Prompt_v8'),
                                #toGet = cms.VPSet( ),   # hook to override or add single payloads
-                               #    toGet = cms.VPSet(
+                               toGet = cms.VPSet(
+        cms.Pset(record = cms.string("ESIntercalibConstantsRcd"),
+                 tag = cms.string("ESIntercalibConstants_Run1_Run2_V05_offline"),
+                 connect = cms.untracked.string("sqlite:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ES_MIP/Cal_Jun2016/tags/sqlite/sqlite_esMIPs_offline_DBv2.db").
+                 )
                                # cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
                                #          tag = cms.string("EcalIntercalibConstants_v10_offline"),
                                #          connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_ECAL")
@@ -28,5 +32,5 @@ RerecoGlobalTag = GlobalTag.clone(
                                #     tag = cms.string('EcalLaserAlphas_test_prompt'),
                                #     connect = cms.untracked.string('frontier://FrontierProd/CMS_COND_31X_ECAL')
                                #    )
-                               #  ),
+        ),
                                )
