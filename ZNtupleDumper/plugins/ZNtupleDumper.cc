@@ -308,6 +308,7 @@ private:
 
 	//   Float_t invMass_e3x3;
 	Float_t invMass_e5x5;
+	Float_t invMass_fulle5x5;
 	Float_t invMass_rawSC;
 	Float_t invMass_rawSC_must;
 	Float_t invMass_rawSC_esSC;
@@ -1235,6 +1236,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("invMass_SC_pho_regrCorr", &invMass_SC_pho_regrCorr,   "invMass_SC_pho_regrCorr/F");
 	//   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
 	tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
+	tree->Branch("invMass_fulle5x5",    &invMass_fulle5x5,      "invMass_fulle5x5/F");
 	tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
 	tree->Branch("invMass_rawSC_must", &invMass_rawSC_must,   "invMass_rawSC_must/F");
 	tree->Branch("invMass_rawSC_esSC", &invMass_rawSC_esSC,   "invMass_rawSC_esSC/F");
@@ -1863,6 +1865,9 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 
 	invMass = sqrt(2 * electron1.energy() * electron2.energy() * angle);
 	invMass_e5x5   = sqrt(2 * electron1.e5x5() * electron2.e5x5() *
+	                      angle);
+
+	invMass_fulle5x5   = sqrt(2 * electron1.full5x5_e5x5() * electron2.full5x5_e5x5() *
 	                      angle);
 
 	invMass_SC = sqrt(2 * energySCEle[0] * energySCEle[1] *

@@ -560,12 +560,13 @@ if(not doTreeOnly):
 
 
 ############### JSON Filter
-if(options.doTree>0):
+if(options.doTree>0 and not MC):
     if((options.doTree>0 and options.doTreeOnly==0)):
         # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
         print "[INFO] Using json file"
         process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
     else:
+        
         if(len(options.jsonFile)>0):
             print "[INFO] Using json file"
             import FWCore.PythonUtilities.LumiList as LumiList
@@ -664,8 +665,6 @@ if(options.isCrab==1):
 else:
     pathPrefix=CMSSW_BASE+'/' #./src/Calibration/EleNewEnergiesProducer' #CMSSW_BASE+'/src/Calibration/EleNewEnergiesProducer/'
     print "[INFO] Running locally: pathPrefix="+pathPrefix
-
-
 
 
 ############################################################
