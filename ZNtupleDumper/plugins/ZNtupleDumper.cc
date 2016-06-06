@@ -336,7 +336,7 @@ private:
 	Int_t nRecHitsEle[3];
 	Int_t nHitsSCEle[3];
 	std::vector<int> recoFlagRecHitSCEle[3];
-	std::vector<float>  rawIdRecHitSCEle[3];
+	std::vector<unsigned int>  rawIdRecHitSCEle[3];
 	std::vector<int>        XRecHitSCEle[3];
 	std::vector<int>        YRecHitSCEle[3];
 	std::vector<int>        ZRecHitSCEle[3];

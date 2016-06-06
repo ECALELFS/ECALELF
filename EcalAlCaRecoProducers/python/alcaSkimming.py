@@ -561,7 +561,7 @@ if(not doTreeOnly):
 
 ############### JSON Filter
 if(options.doTree>0):
-    if((options.doTree>0 and options.doTreeOnly==0)):
+    if((options.doTreeOnly==0)):
         # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
         print "[INFO] Using json file"
         process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
