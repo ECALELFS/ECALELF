@@ -2407,6 +2407,7 @@ int main(int argc, char **argv) {
   else
     hPad->GetYaxis()->SetTitle("Relative E/p scale"); 
   hPad->GetYaxis()->SetTitleOffset(tYoffset);
+  hPad->GetXaxis()->SetTitleOffset(0.8);
   hPad->GetXaxis()->SetLabelSize(0.03);
   hPad->GetXaxis()->SetTitleSize(labSize2);
   hPad->GetYaxis()->SetLabelSize(labSize);
@@ -2443,7 +2444,7 @@ int main(int argc, char **argv) {
   
   char latexBuffer[250];
   
-  sprintf(latexBuffer,"CMS 2015 Preliminary");
+  sprintf(latexBuffer,"CMS 2016 Preliminary");
   TLatex* latex = new TLatex(0.18,0.89,latexBuffer);  
   latex -> SetNDC();
   latex -> SetTextFont(62);
@@ -2571,6 +2572,7 @@ int main(int argc, char **argv) {
   else
     hPad->GetYaxis()->SetTitle("Relative E/p scale"); 
   hPad->GetYaxis()->SetTitleOffset(tYoffset);
+  hPad->GetYaxis()->SetTitleOffset(0.8);
   hPad->GetXaxis()->SetLabelSize(labSize);
   hPad->GetXaxis()->SetTitleSize(labSize);
   hPad->GetYaxis()->SetLabelSize(labSize);

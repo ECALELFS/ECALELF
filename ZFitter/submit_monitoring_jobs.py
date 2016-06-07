@@ -15,7 +15,7 @@ parser.add_option('--generateOnly',      action='store_true', dest='generateOnly
 
 (options, args) = parser.parse_args()
 
-ntupleName = "data-Run2015D-25ns-multifit"
+ntupleName = "data-SingleElectron-MINIAOD-Run2016B"
 #options: "data-Run2015D-25ns-multifit", "data-Run2015D-25ns-weights" or "data-Run2015D-25ns-stream".
 folder = "/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/"
 
@@ -26,13 +26,14 @@ os.system("mkdir Job_monitoring_"+ntupleName)
 fn = "Job_monitoring_"+ntupleName+"/Job_"+"EB";
 
 outScript = open(fn+".sh","w");
-command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EB --yMIN 0.85 --LUMI 2.5"
+command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EB --yMIN 0.85 --LUMI 0.8 --dayMin 15-03-2016 --dayMax 06-06-2016"
 print command;
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'cd '+CMSSWDir);
 outScript.write("\n"+'eval `scram runtime -sh`');
 outScript.write("\n"+'cd -');
 outScript.write("\necho $PWD");
+outScript.write("mkdir EB__");
 outScript.write("\nls");
 
 outScript.write("\necho \"copia1\" ");
@@ -69,13 +70,14 @@ print command2
 
 fn = "Job_monitoring_"+ntupleName+"/Job_"+"EE";
 outScript = open(fn+".sh","w");
-command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EE --yMIN 0.65 --yMAX 1.15 --LUMI 2.5"
+command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EE --yMIN 0.85 --LUMI 0.8 --dayMin 15-03-2016 --dayMax 06-06-2016"
 print command;
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'cd '+CMSSWDir);
 outScript.write("\n"+'eval `scram runtime -sh`');
 outScript.write("\n"+'cd -');
 outScript.write("\necho $PWD");
+outScript.write("mkdir EE__");
 outScript.write("\nls");
 
 
