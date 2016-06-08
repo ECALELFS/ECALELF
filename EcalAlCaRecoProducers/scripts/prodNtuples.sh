@@ -440,7 +440,7 @@ output_file=${OUTFILES}
 
 
 use_parent=0
-#lumi_mask=
+lumi_mask=${JSONFILE}
 
 
 [LSF]
