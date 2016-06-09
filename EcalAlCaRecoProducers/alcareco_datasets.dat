@@ -230,9 +230,10 @@ allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16Mi
 allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM			DYJets_madgraph-RunIISpring16   caf database	 VALID - -
 allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM			DYJets_amcatnlo-RunIISpring16-miniAODv1 caf database VALID - - 
 allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/MINIAODSIM		DYJets_madgraph-RunIISpring16-miniAODv1 caf database VALID - -
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM					ZToEE_NNPDF30-powheg-Spring16		caf database VALID - -
 ### Data
-272023-273146	/DoubleEG/Run2016B-PromptReco-v1/MINIAOD DoubleEG-Run2016B-PromptReco-v1-miniAOD_06June caf database VALID RUN2016B
-#273150-274240	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD DoubleEG-Run2016B-PromptReco-v2-miniAOD_06June caf database VALID RUN2016B
-273150-274443	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD DoubleEG-Run2016B-PromptReco-v2-miniAOD_06June caf database VALID RUN2016B
+272023-273146	/DoubleEG/Run2016B-PromptReco-v1/MINIAOD DoubleEG-Run2016B-PromptReco-v1-miniAOD_03June_v3 caf database VALID RUN2016B
+273150-274240	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD DoubleEG-Run2016B-PromptReco-v2-miniAOD_03June_v3 caf database VALID RUN2016B
+274241-274443	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD DoubleEG-Run2016B-PromptReco-v2-miniAOD_08June_DCS caf database VALID RUN2016B
 #272023-273146	/DoubleEG/Run2016B-PromptReco-v1/AOD DoubleEG-Run2016B-PromptReco-v1 caf database VALID RUN2016B
 #273150-273730	/DoubleEG/Run2016B-PromptReco-v2/AOD DoubleEG-Run2016B-PromptReco-v2 caf database VALID RUN2016B
