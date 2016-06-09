@@ -216,7 +216,7 @@ private:
 	edm::EDGetTokenT<std::vector<PileupSummaryInfo> > pileupInfoToken_;
 	edm::EDGetTokenT<reco::ConversionCollection> conversionsProducerToken_;
 	edm::EDGetTokenT<reco::PFMETCollection> metToken_;
-        edm::InputTag caloMetTAG;
+        edm::EDGetTokenT<reco::CaloMETCollection> caloMetToken_;
 	edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
 	edm::EDGetTokenT<edm::TriggerResults> WZSkimResultsToken_;
 	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
@@ -497,9 +497,9 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	pileupInfoToken_(consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileupInfo"))),
 	conversionsProducerToken_(consumes<reco::ConversionCollection>(iConfig.getParameter<edm::InputTag>("conversionCollection"))),
 	metToken_(consumes<reco::PFMETCollection>(iConfig.getParameter<edm::InputTag>("metCollection"))),
+        caloMetToken_(consumes<reco::CaloMETCollection>(iConfig.getParameter<edm::InputTag>("caloMetCollection"))), //for the stream
 	triggerResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("triggerResultsCollection"))),
 	WZSkimResultsToken_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection"))),
-        caloMetTAG(iConfig.getParameter<edm::InputTag>("caloMetCollection")),
 	triggerResultsTAG(iConfig.getParameter<edm::InputTag>("triggerResultsCollection")),
 	WZSkimResultsTAG(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection")),
 	hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
@@ -696,7 +696,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	reco::CaloMET caloMet;
 
 	if (caloMetHandle.isValid()==true) {
-	  iEvent.getByLabel(caloMetTAG, caloMetHandle); 
+	  iEvent.getByToken(caloMetToken_, caloMetHandle); 
 	  caloMet = ((*caloMetHandle))[0]; //get hlt met
 	}
 
@@ -829,7 +829,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				if (nEle!=1) continue;
 				//if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 			  
-				iEvent.getByLabel(caloMetTAG, caloMetHandle); 
+				iEvent.getByToken(caloMetToken_, caloMetHandle); 
 				if (caloMetHandle.isValid()==false) continue;
 			  
 				// MET/MT selection
