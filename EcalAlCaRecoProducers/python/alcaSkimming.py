@@ -568,7 +568,7 @@ if(options.doTree>0 and not MC):
     else:
         
         if(len(options.jsonFile)>0):
-            print "[INFO] Using json file"
+            print "[INFO] Using json file [switch 2]"
             import FWCore.PythonUtilities.LumiList as LumiList
             process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
 

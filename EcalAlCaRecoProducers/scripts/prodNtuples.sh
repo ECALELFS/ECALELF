@@ -187,6 +187,11 @@ do
     shift
 done
 
+#No json file if you run on MC
+if [ "${isMC}" == "1" ]; then
+    JSONFILE=""
+    echo "json file is ${JSONFLE}"
+fi
 #echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
 
 if [ -z "$DATASETNAME" ];then 
@@ -458,6 +463,10 @@ copy_data = 1
 storage_element=$STORAGE_ELEMENT
 user_remote_dir=$USER_REMOTE_DIR
 storage_path=$STORAGE_PATH
+
+#storage_element=srm-eosuser.cern.ch
+#user_remote_dir=$USER_REMOTE_DIR
+#storage_path=/srm/v2/server?SFN=/eos/user/g/gfasanel
 
 thresholdLevel=50
 eMail = shervin@cern.ch
