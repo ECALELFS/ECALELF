@@ -792,7 +792,7 @@ if(options.type=="ALCARERECO"):
 #process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
 
 if (options.electronStream==1):
-    process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMet')
+    process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMetClean')
     process.zNtupleDumper.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
     process.eleSelectionProducers.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
 
