@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 eleSelectionProducers = cms.EDProducer('EleSelectionProducers',
-                                       electronCollection = cms.InputTag('gedGsfElectrons'),
+                                       electronCollection = cms.InputTag('patElectrons'),
                                        rhoFastJet = cms.InputTag('kt6PFJetsForRhoCorrection',"rho"),
                                        vertexCollection = cms.InputTag('offlinePrimaryVertices'),
                                        conversionCollection = cms.InputTag('allConversions'),
