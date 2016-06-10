@@ -794,6 +794,9 @@ if(options.type=="ALCARERECO"):
 if (options.electronStream==1):
     process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMetClean')
     process.zNtupleDumper.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
+    process.zNtupleDumper.eleID_loose = cms.string('looseElectronStream')
+    process.zNtupleDumper.eleID_medium = cms.string('mediumElectronStream')
+    process.zNtupleDumper.eleID_tight = cms.string('tightElectronStream')
     process.eleSelectionProducers.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
 
 if(options.type=="ALCARECOSIM"):
