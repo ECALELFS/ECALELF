@@ -67,7 +67,7 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep *CaloCluster*_*particleFlowEGamma*_*EBEEClusters*_*',
     'keep *CaloCluster*_*particleFlowEGamma*_*ESClusters*_*',
     'keep *_hltFixedGridRhoFastjetAllCaloForMuons_*_*', #for electron stream
-    'keep *_hltMet_*_*', #for electron stream
+    'keep *_hltMetClean_*_*', #for electron stream
     'keep *_*ecalMultiFitUncalibRecHit*_*_*',    
     )
 )
