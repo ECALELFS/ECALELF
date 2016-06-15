@@ -34,7 +34,7 @@ outScript.write("\n"+'eval `scram runtime -sh`');
 outScript.write("\n"+'cd -');
 outScript.write("\necho $PWD");
 outScript.write("mkdir EB__");
-outScript.write("\nls");
+outScript.write("\nll");
 
 outScript.write("\necho \"copia1\" ");
 outScript.write("\ncmsStage "+folder+ntupleName+".root ./")
@@ -70,7 +70,7 @@ print command2
 
 fn = "Job_monitoring_"+ntupleName+"/Job_"+"EE";
 outScript = open(fn+".sh","w");
-command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EE --yMIN 0.85 --LUMI 0.8 --dayMin 15-03-2016 --dayMax 06-06-2016"
+command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --evtsPerPoint 5000 --laserMonitoringEP --EBEE EE --yMIN 0.75 --yMAX 1.15 --LUMI 0.8 --dayMin 15-03-2016 --dayMax 06-06-2016"
 print command;
 outScript.write('#!/bin/bash');
 outScript.write("\n"+'cd '+CMSSWDir);
@@ -78,13 +78,13 @@ outScript.write("\n"+'eval `scram runtime -sh`');
 outScript.write("\n"+'cd -');
 outScript.write("\necho $PWD");
 outScript.write("mkdir EE__");
-outScript.write("\nls");
+outScript.write("\nll");
 
 
 outScript.write("\necho \"copia1\" ");
 outScript.write("\ncmsStage "+folder+ntupleName+".root ./")
 outScript.write("\necho \"copia2\" ");
-outScript.write("\ncmsStage "+folder+"extraCalibTree"+ntupleName+".root ./")
+outScript.write("\ncmsStage "+folder+"extraCalibTree-"+ntupleName+".root ./")
 
 outScript.write("\necho \"copia13\" ");
 #                        outScript.write("\ncp -v /afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/* .")
