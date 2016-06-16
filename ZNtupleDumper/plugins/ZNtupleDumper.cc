@@ -293,6 +293,7 @@ private:
 
 	Float_t e3x3SCEle[3];   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
 	Float_t e5x5SCEle[3];   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
+	Float_t efull5x5SCEle[3];   ///< full 5x5
 	Float_t eSeedSCEle[3];
 	Float_t pModeGsfEle[3];  ///< track momentum from Gsf Track (mode)
 	Float_t pAtVtxGsfEle[3]; ///< momentum estimated at the vertex
@@ -308,6 +309,7 @@ private:
 
 	//   Float_t invMass_e3x3;
 	Float_t invMass_e5x5;
+	Float_t invMass_efull5x5;
 	Float_t invMass_rawSC;
 	Float_t invMass_rawSC_must;
 	Float_t invMass_rawSC_esSC;
@@ -1222,6 +1224,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("R9Ele", R9Ele, "R9Ele[3]/F");
 
 	tree->Branch("e5x5SCEle", e5x5SCEle, "e5x5SCEle[3]/F");
+	tree->Branch("efull5x5SCEle", efull5x5SCEle, "efull5x5SCEle[3]/F");
 	//tree->Branch("eSeedSCEle", eSeedSCEle, "eSeedSCEle[3]/F");
 	tree->Branch("pModeGsfEle", pModeGsfEle, "pModeGsfEle[3]/F");
 	tree->Branch("pAtVtxGsfEle", pAtVtxGsfEle, "pAtVtxGsfEle[3]/F");
@@ -1235,6 +1238,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("invMass_SC_pho_regrCorr", &invMass_SC_pho_regrCorr,   "invMass_SC_pho_regrCorr/F");
 	//   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
 	tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
+	tree->Branch("invMass_efull5x5",    &invMass_efull5x5,      "invMass_efull5x5/F");
 	tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
 	tree->Branch("invMass_rawSC_must", &invMass_rawSC_must,   "invMass_rawSC_must/F");
 	tree->Branch("invMass_rawSC_esSC", &invMass_rawSC_esSC,   "invMass_rawSC_esSC/F");
@@ -1436,6 +1440,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(sc, 2);
 
 	energySCEle_corr[index] = electron1.correctedEcalEnergy();
+	efull5x5SCEle[index] = electron1.full5x5_e5x5(); //check this
 
 	if(sc.isNonnull()) {
 		nHitsSCEle[index] = sc->size();
@@ -1863,6 +1868,9 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 
 	invMass = sqrt(2 * electron1.energy() * electron2.energy() * angle);
 	invMass_e5x5   = sqrt(2 * electron1.e5x5() * electron2.e5x5() *
+	                      angle);
+
+	invMass_efull5x5   = sqrt(2 * electron1.full5x5_e5x5() * electron2.full5x5_e5x5() *
 	                      angle);
 
 	invMass_SC = sqrt(2 * energySCEle[0] * energySCEle[1] *
