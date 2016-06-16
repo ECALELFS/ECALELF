@@ -26,6 +26,7 @@ CRABVERSION=2
 CMSSWCONFIG="reco_ALCA.py"
 DATA="--data"
 SPLITBYFILE=0
+USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco
 usage(){
     echo "`basename $0` options"
     echo "---------- provided by parseDatasetFile (all mandatory)"
@@ -80,7 +81,8 @@ do
 	-s|--skim) SKIM=$2 ; shift;;
 	-r|--runrange) RUNRANGE=$2; shift;;
 	--store) STORAGE_ELEMENT=$2; shift;;
-	--remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
+#	--remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
+	--remote_dir) USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco; shift;;
 	--dbs_url)    DBS_URL=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
 	--isMC) echo "[OPTION] Input dataset is MC" ; ISMC="yes" ;;
@@ -203,6 +205,7 @@ fi
 case $DATASETPATH in
     */RAW)
 		ALCATYPE="RAW2DIGI,RECO,"
+		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/8
 		;;
     *SingleElectron*USER)
 		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
@@ -267,6 +270,21 @@ case $TYPE in
 		TYPE=ALCARECO
 		subdir=prod_alcareco
 		;;
+    ElectronStream | ALCARECO)
+                case $SKIM in
+                        ZSkim)
+                                ALCATYPE="${ALCATYPE}ALCA:EcalCalZElectronStream"
+                                ;;
+                        WSkim)
+                                ALCATYPE="${ALCATYPE}ALCA:EcalCalWElectronStream"
+                                EVENTS_PER_JOB=20000; LUMIS_PER_JOB=25
+                                ;;
+                        none) EVENTS_PER_JOB=20000;;
+		esac
+                CUSTOMISE="--process=ALCARECO --customise Calibration/EcalAlCaRecoProducers/customElectronStream.StreamReco"
+                TYPE=ALCARECO
+                subdir=prod_alcareco
+                ;;
     *)
 		echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr
 		exit 1

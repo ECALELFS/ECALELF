@@ -22,6 +22,7 @@ CRABVERSION=2
 FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
+ELECTRONSTREAM=0
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -44,6 +45,7 @@ usage(){
     echo " *** for DATA ***"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root"
+    echo "    --electronStream"
 
     echo "---------- optional common"
     echo "    --doExtraCalibTree"
@@ -77,7 +79,7 @@ expertUsage(){
 #------------------------------ parsing
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,electronStream,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -140,6 +142,7 @@ do
 	    ;;
 	--isMC) isMC=1;;
 	--isParticleGun) isPARTICLEGUN="y"; SKIM=partGun;;
+	--electronStream) echo "[OPTION] run for electron stream"; ELECTRONSTREAM=1;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
 
@@ -433,7 +436,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE electronStream=$ELECTRONSTREAM
 get_edm_output=1
 output_file=${OUTFILES}
 

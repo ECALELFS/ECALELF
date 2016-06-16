@@ -654,8 +654,9 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         process.NtuplePath = cms.Path(process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
         process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO')
-        if (options.electronStream):
-            process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
+        if (options.electronStream): 
+            if (options.isCrab==0):
+                process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     else:
         if(options.doTree==0):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
