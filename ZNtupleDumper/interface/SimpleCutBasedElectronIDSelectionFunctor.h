@@ -139,9 +139,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<electronRef_t>
 public: // interface
 
 
-	enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff};
-
-	//  SimpleCutBasedElectronIDSelectionFunctor(): {}
+	enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff, looseElectronStream, mediumElectronStream, tightElectronStream};
 
 #ifdef shervin
 	// initialize it by inserting directly the cut values in a parameter set
@@ -233,6 +231,9 @@ public: // interface
 		else if (versionStr.CompareTo("medium50nsRun2") == 0) version = medium50nsRun2;
 		else if (versionStr.CompareTo("tight50nsRun2") == 0) version = tight50nsRun2;
 		else if (versionStr.CompareTo("medium25nsRun2Boff") == 0) version = medium25nsRun2Boff;
+		else if (versionStr.CompareTo("looseElectronStream") == 0) version = loose25nsRun2;
+		else if (versionStr.CompareTo("mediumElectronStream") == 0) version = medium25nsRun2;
+		else if (versionStr.CompareTo("tightElectronStream") == 0) version = tight25nsRun2;
 		else {
 			std::cerr << "[ERROR] version type not defined" << std::endl;
 			std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -638,8 +639,95 @@ public: // interface
 			set("relEcalIso_EB",  100., false);
 			set("relEcalIso_EE",  100., false);
 			set("relHcalIso_EB",  100., false);
+			set("relHcalIso_EE",  100., false);		
+		} else if (version_ == looseElectronStream) { //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+			//set("fiducial");
+			set("maxNumberOfExpectedMissingHits_EB", 2);
+			set("maxNumberOfExpectedMissingHits_EE", 1);
+			set("hasMatchedConversion");
+			set("hoe_EB",        0.104);
+			set("hoe_EE",          0.0897);
+			set("deta_EB",       0.0105);
+			set("deta_EE",         0.00814);
+			set("dphi_EB",       0.115);
+			set("dphi_EE",         0.182);
+			set("sihih_EB",      0.0103);
+			set("sihih_EE",        0.0301);
+			set("ooemoop_EB",    100., false);
+			set("ooemoop_EE",      100., false);
+			set("d0vtx_EB",      100.,false);//0.0261);
+			set("d0vtx_EE",        100.,false);//0.118);
+			set("dzvtx_EB",      100.,false);//0.41);
+			set("dzvtx_EE",        100.,false);//0.822);
+			set("pfIso_EB",      0.0893);
+			set("pfIso_EE",        0.121);
+			set("pfIsoLowPt_EB", 0.0893);
+			set("pfIsoLowPt_EE",   0.121);
+			set("relTrackIso_EB", 100., false);
+			set("relTrackIso_EE", 100., false);
+			set("relEcalIso_EB",  100., false);
+			set("relEcalIso_EE",  100., false);
+			set("relHcalIso_EB",  100., false);
 			set("relHcalIso_EE",  100., false);
-		}
+		} else if (version_ == mediumElectronStream) { //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+			//set("fiducial");
+			set("maxNumberOfExpectedMissingHits_EB", 2);
+			set("maxNumberOfExpectedMissingHits_EE", 1);
+			set("hasMatchedConversion");
+			set("hoe_EB",        0.0876);
+			set("hoe_EE",          0.0678);
+			set("deta_EB",       0.0103);
+			set("deta_EE",         0.00733);
+			set("dphi_EB",       0.0336);
+			set("dphi_EE",         0.114);
+			set("sihih_EB",      0.0101);
+			set("sihih_EE",        0.0283);
+			set("ooemoop_EB",    100., false);
+			set("ooemoop_EE",      100., false);
+			set("d0vtx_EB",      100.,false);//0.0118 );
+			set("d0vtx_EE",        100.,false);//0.0739);
+			set("dzvtx_EB",      100.,false);//0.373);
+			set("dzvtx_EE",        100.,false);//0.602);
+			set("pfIso_EB",      0.0766);
+			set("pfIso_EE",        0.0678);
+			set("pfIsoLowPt_EB", 0.0766);
+			set("pfIsoLowPt_EE",   0.0678);
+			set("relTrackIso_EB", 100., false);
+			set("relTrackIso_EE", 100., false);
+			set("relEcalIso_EB",  100., false);
+			set("relEcalIso_EE",  100., false);
+			set("relHcalIso_EB",  100., false);
+			set("relHcalIso_EE",  100., false);
+		} else if (version_ == tightElectronStream) {
+			//set("fiducial");
+			set("maxNumberOfExpectedMissingHits_EB", 2);
+			set("maxNumberOfExpectedMissingHits_EE", 1);
+			set("hasMatchedConversion");
+			set("hoe_EB",        0.0597);
+			set("hoe_EE",          0.0615);
+			set("deta_EB",       0.00926);
+			set("deta_EE",         0.00724);
+			set("dphi_EB",       0.0336);
+			set("dphi_EE",         0.0918);
+			set("sihih_EB",      0.0101);
+			set("sihih_EE",        0.0279);
+			set("ooemoop_EB",    100., false);
+			set("ooemoop_EE",      100., false);
+			set("d0vtx_EB",      100.,false);
+			set("d0vtx_EE",        100.,false);
+			set("dzvtx_EB",      100.,false);
+			set("dzvtx_EE",        100.,false);
+			set("pfIso_EB",      0.0354);
+			set("pfIso_EE",        0.0646);
+			set("pfIsoLowPt_EB", 0.0354);
+			set("pfIsoLowPt_EE",   0.0646);
+			set("relTrackIso_EB", 100., false);
+			set("relTrackIso_EE", 100., false);
+			set("relEcalIso_EB",  100., false);
+			set("relEcalIso_EE",  100., false);
+			set("relHcalIso_EB",  100., false);
+			set("relHcalIso_EE",  100., false);
+                }
 
 	}
 
