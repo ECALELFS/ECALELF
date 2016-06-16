@@ -632,7 +632,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					if(hltName_str.find("WElectronStream")!=std::string::npos)
 					        eventType=WSTREAM;
 					else if(hltName_str.find("ZElectronStream")!=std::string::npos)
-					        eventType=ZEE;
+					        eventType=ZSTREAM;
 					else if(hltName_str.find("WElectron") != std::string::npos)
 						eventType = WENU;
 					else if(hltName_str.find("ZSCElectron") != std::string::npos)
@@ -691,16 +691,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.getByToken(beamSpotToken_, bsHandle);
 	iEvent.getByToken(rhoToken_, rhoHandle);
 
-	iEvent.getByToken(metToken_, metHandle);
 	iEvent.getByToken(recHitCollectionESToken_, ESRechitsHandle);
-	//if(metHandle.isValid()==false) iEvent.getByType(metHandle);
-	reco::PFMET met = metHandle.isValid() ? ((*metHandle))[0] : reco::PFMET(); /// \todo use corrected phi distribution
-	reco::CaloMET caloMet;
 
-	if (caloMetHandle.isValid()==true) {
-	  iEvent.getByToken(caloMetToken_, caloMetHandle); 
-	  caloMet = ((*caloMetHandle))[0]; //get hlt met
+	iEvent.getByToken(metToken_, metHandle);
+	if (caloMetHandle.isValid()) {
+		iEvent.getByToken(caloMetToken_, caloMetHandle); 
 	}
+	reco::MET& met = (eventType == WSTREAM) ? caloMetHandle->at(0) : ((*metHandle))[0];
+
 
 	//Here the HLTBits are filled. TriggerResults
 	TreeSetEventSummaryVar(iEvent);
@@ -809,21 +807,13 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 
 				// MET/MT selection
-				if (eventType == WSTREAM) {
-				  iEvent.getByToken(caloMetToken_, caloMetHandle); 
-				  if (caloMetHandle.isValid()==false) continue;
-			  
-				  if( caloMetHandle->at(0).pt() < 25. ) continue;
-				  if( sqrt( 2.*eleIter1->et()*caloMetHandle->at(0).pt()*(1 -cos(eleIter1->phi()-caloMetHandle->at(0).phi()))) < 50. ) continue;
-				}
-				else {
-				  if(  met.et() < 25. ) continue;
-				  if( sqrt( 2.*eleIter1->et()*met.et() * (1 - cos(eleIter1->phi() - met.phi()))) < 50. ) continue;
-				}
+				if(  met.et() < 25. ) continue;
+				if( sqrt( 2.*eleIter1->et()*met.et() * (1 - cos(eleIter1->phi() - met.phi()))) < 50. ) continue;
+				
 				if( eleIter1->et() < 30) continue;
 
 				doFill = true;
-				if(eventType == UNKNOWN) eventType = WENU;
+				if(eventType == UNKNOWN) eventType = WENU; //after selection it's clear that it's WENU
 				TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
 				TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
@@ -835,31 +825,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					TreeSetEleIDVar(*eleIter1, 0);
 					TreeSetEleIDVar(*eleIter1, -1);
 				}
-				/*			} else if(eventType==WSTREAM) {
-			        if(! eleIter1->electronID("tightElectronStream") ) continue;
-				if (nEle!=1) continue;
-				//if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
-			  
-				iEvent.getByToken(caloMetToken_, caloMetHandle); 
-				if (caloMetHandle.isValid()==false) continue;
-			  
-				// MET/MT selection
-				if( caloMetHandle->at(0).pt() < 25. ) continue;
-				if( sqrt( 2.*eleIter1->et()*caloMetHandle->at(0).pt()*(1 -cos(eleIter1->phi()-caloMetHandle->at(0).phi()))) < 50. ) continue;
-				if( eleIter1->et()<30) continue;
-				doFill = true;
-				if(eventType == UNKNOWN) eventType = WENU;
-				TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
-				TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
-
-				if(doExtraCalibTree) {
-				        TreeSetExtraCalibVar(*eleIter1, 0);
-					TreeSetExtraCalibVar(*eleIter1, -1);
-				}
-				if(doEleIDTree) {
-					TreeSetEleIDVar(*eleIter1, 0);
-					TreeSetEleIDVar(*eleIter1, -1);
-					} */
 			} else { //ZEE or UNKNOWN
 				// take only the fist di-electron pair (highest pt)
 				for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1 + 1;
