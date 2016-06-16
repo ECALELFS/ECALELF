@@ -630,7 +630,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					skipEvent = false;
 					std::string hltName_str(alcaSkimPathNames.triggerName(*alcaSkimPath_itr));
 					if(hltName_str.find("WElectronStream")!=std::string::npos)
-					        eventType=WENU;
+					        eventType=WSTREAM;
 					else if(hltName_str.find("ZElectronStream")!=std::string::npos)
 					        eventType=ZEE;
 					else if(hltName_str.find("WElectron") != std::string::npos)
@@ -804,13 +804,22 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 			if(! elePreselection(*eleIter1)) continue;
 
-			if(eventType == WENU) {
+			if(eventType == WENU || eventType == WSTREAM) {
 				if(! (eleIter1->electronID(eleID_tight)) ) continue;
 				if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
 
 				// MET/MT selection
-				if(  met.et() < 25. ) continue;
-				if( sqrt( 2.*eleIter1->et()*met.et() * (1 - cos(eleIter1->phi() - met.phi()))) < 50. ) continue;
+				if (eventType == WSTREAM) {
+				  iEvent.getByToken(caloMetToken_, caloMetHandle); 
+				  if (caloMetHandle.isValid()==false) continue;
+			  
+				  if( caloMetHandle->at(0).pt() < 25. ) continue;
+				  if( sqrt( 2.*eleIter1->et()*caloMetHandle->at(0).pt()*(1 -cos(eleIter1->phi()-caloMetHandle->at(0).phi()))) < 50. ) continue;
+				}
+				else {
+				  if(  met.et() < 25. ) continue;
+				  if( sqrt( 2.*eleIter1->et()*met.et() * (1 - cos(eleIter1->phi() - met.phi()))) < 50. ) continue;
+				}
 				if( eleIter1->et() < 30) continue;
 
 				doFill = true;
@@ -826,7 +835,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					TreeSetEleIDVar(*eleIter1, 0);
 					TreeSetEleIDVar(*eleIter1, -1);
 				}
-			} else if(eventType==WSTREAM) {
+				/*			} else if(eventType==WSTREAM) {
 			        if(! eleIter1->electronID("tightElectronStream") ) continue;
 				if (nEle!=1) continue;
 				//if( nWP70 != 1 || nWP90 > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
@@ -850,7 +859,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				if(doEleIDTree) {
 					TreeSetEleIDVar(*eleIter1, 0);
 					TreeSetEleIDVar(*eleIter1, -1);
-				}
+					} */
 			} else { //ZEE or UNKNOWN
 				// take only the fist di-electron pair (highest pt)
 				for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1 + 1;
