@@ -694,11 +694,12 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.getByToken(recHitCollectionESToken_, ESRechitsHandle);
 
 	iEvent.getByToken(metToken_, metHandle);
-	if (caloMetHandle.isValid()) {
-		iEvent.getByToken(caloMetToken_, caloMetHandle); 
-	}
-	reco::MET& met = (eventType == WSTREAM) ? caloMetHandle->at(0) : ((*metHandle))[0];
+	iEvent.getByToken(caloMetToken_, caloMetHandle); 
 
+	reco::MET met =  ((*metHandle))[0];
+	if (eventType == WSTREAM) {
+	    met = (*caloMetHandle)[0];
+	  }
 
 	//Here the HLTBits are filled. TriggerResults
 	TreeSetEventSummaryVar(iEvent);
