@@ -247,7 +247,7 @@ W_ELECTRON_ET_CUT_MIN = 30.0
 MT_CUT_MIN = 50.
 
 WenuSelector = cms.EDProducer("CandViewShallowCloneCombiner",
-    decay = cms.string("pfMet PassingVetoId"), # charge coniugate states are implied
+    decay = cms.string("hltMetClean PassingVetoId"), # charge coniugate states are implied
     checkCharge = cms.bool(False),                           
     cut   = cms.string(("daughter(0).pt > %f && daughter(1).pt > %f && "+MT+" > %f") % (MET_CUT_MIN, W_ELECTRON_ET_CUT_MIN, MT_CUT_MIN))
 )
