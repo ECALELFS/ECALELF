@@ -157,6 +157,9 @@ process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Outp
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # reduction of recHits
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
 
+from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *
+from Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff import *
+
 # this module provides:
 # process.seqALCARECOEcalRecalElectron 
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
@@ -320,6 +323,15 @@ if (HLTFilter):
     process.ZEEHltFilter.throw = cms.bool(False)
     process.ZEEHltFilter.HLTPaths = [ "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*"]
     process.filterSeq *= process.ZEEHltFilter
+
+
+
+##for the stream                                                                                    
+process.pathALCARECOEcalCalWElectronStream     = cms.Path(seqALCARECOEcalCalWElectronStream)
+process.pathALCARECOEcalUncalWElectronStream   = cms.Path(seqALCARECOEcalUncalWElectronStream)
+process.pathALCARECOEcalCalZElectronStream     = cms.Path(seqALCARECOEcalCalZElectronStream)
+process.pathALCARECOEcalUncalZElectronStream   = cms.Path(seqALCARECOEcalUncalZElectronStream)
+
 
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.NtupleFilter = copy.deepcopy(hltHighLevel)
