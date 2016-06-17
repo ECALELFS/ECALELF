@@ -18,23 +18,23 @@ RerecoGlobalTag = GlobalTag.clone(
                  ),
         cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
                  tag = cms.string("EcalIntercalibConstants_2016B_v1"),
-                 connect = cms.untracked.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/RunII-IC/Cal_Jun2016/pizero/tags/sqlite/EcalIntercalibConstants_2016B_v1.db")
+                 connect = cms.string("sqlite_file:/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/RunII-IC/Cal_Jun2016/pizero/tags/sqlite/EcalIntercalibConstants_2016B_v1.db")
                  )
         #  ,cms.PSet(record = cms.string("EcalADCToGeVConstantRcd"),
         #          tag = cms.string("EcalADCToGeVConstant_v10_offline"),
-        #          connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_ECAL")
+        #          connect = cms.string("frontier://FrontierProd/CMS_COND_31X_ECAL")
         #         )
         # ,cms.PSet(record = cms.string("EcalLaserAPDPNRatiosRcd"),
         #           tag = cms.string("EcalLaserAPDPNRatios_2011fit_noVPT_nolim_online"),
         #           tag = cms.string("EcalLaserAPDPNRatios_test_20110625"),
         #           tag = cms.string("EcalLaserAPDPNRatios_2011V3_online"),
         #           tag = cms.string("EcalLaserAPDPNRatios_2011mixfit_online"),
-        #          connect = cms.untracked.string("frontier://FrontierPrep/CMS_COND_ECAL")
+        #          connect = cms.string("frontier://FrontierPrep/CMS_COND_ECAL")
         #          )
         # , cms.PSet(
         #     record = cms.string('EcalLaserAlphasRcd'),
         #     tag = cms.string('EcalLaserAlphas_test_prompt'),
-        #     connect = cms.untracked.string('frontier://FrontierProd/CMS_COND_31X_ECAL')
+        #     connect = cms.string('frontier://FrontierProd/CMS_COND_31X_ECAL')
         #    )
         ),
                                )
