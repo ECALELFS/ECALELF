@@ -90,4 +90,3 @@
 257032-257059	/DoubleEG_0T/Run2015D-EcalUncalZElectron-PromptReco-v3/ALCARECO	DoubleEG_0T-ZSkim-Run2015D-Prompt-v3-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2015_newGT_0T_v5
 258159-260737	/DoubleEG_0T/Run2015D-EcalUncalZElectron-PromptReco-v4/ALCARECO	DoubleEG_0T-ZSkim-Run2015D-Prompt-v4-25nsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2015_newGT_0T_v5
 272023-273146	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_prompt
-272023-273146	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_ESmip_v1
