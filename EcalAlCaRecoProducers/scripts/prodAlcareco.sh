@@ -204,7 +204,7 @@ fi
 case $DATASETPATH in
     */RAW)
 		ALCATYPE="RAW2DIGI,RECO,"
-		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/40
+		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/8
 		;;
     *SingleElectron*USER)
 		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
@@ -276,7 +276,7 @@ case $TYPE in
                                 ;;
                         WSkim)
                                 ALCATYPE="${ALCATYPE}ALCA:EcalCalWElectronStream"
-                                EVENTS_PER_JOB=20000; LUMIS_PER_JOB=5
+                                EVENTS_PER_JOB=20000; LUMIS_PER_JOB=25
                                 ;;
                         none) EVENTS_PER_JOB=20000;;
 		esac

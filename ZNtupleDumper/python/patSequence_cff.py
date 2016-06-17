@@ -109,12 +109,12 @@ modPSet =  cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatV
                      photon_config   = cms.PSet( )
                      )
 
+modPSetBis = modPSet.clone(modifierName = cms.string('EleIDModifierFromValueMaps'))
+
 slimmedECALELFElectrons.modifierConfig  = cms.PSet(
     modifications = cms.VPSet(
         modPSet,
-    cms.PSet( modifierName = cms.string('EleIDModifierFromValueMaps'),
-              electron_config = modPSet.electron_config,
-              )                
+        modPSetBis
         )
     )
 

@@ -1,13 +1,7 @@
 #!/bin/bash
-json50ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON_v2.txt
-json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260426_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt
-json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON_Silver.txt
-jsonName=246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.tx
+jsonName=271036_274443-Prompt
 
-json25nsBoff=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/13TeV/Cert_246908-260627_13TeV_PromptReco_Collisions15_ZeroTesla_25ns_JSON.txt
-jsonName=246908-260627-Prompt_ZeroTesla_25ns
-
-json25ns=$json25nsBoff
 
 #CHECK="--check"
 # config/reRecoTags/pulseShapeStudy_Run2015_rereco_v1.py
@@ -21,14 +15,14 @@ json25ns=$json25nsBoff
 #config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
 #config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
 # config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-for tagfile in config/reRecoTags/76X_dataRun2_v19.py
+for tagfile in config/reRecoTags/Cal_Jun2016_*.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in ''  --check
+	for CHECK in --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
@@ -38,11 +32,13 @@ do
 			*)
 				echo 
 ## 			./scripts/RerecoQuick.sh -p RUN2015C50ns -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
-				./scripts/RerecoQuick.sh -p RUN2015CDBoff -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
+#				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
+				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK}
 				;;
 		esac
 	done
 
+	continue
 
 	for CHECK in ''  --check
 	do

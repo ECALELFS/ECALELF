@@ -132,5 +132,6 @@
 256268-256464 /DoubleEG_0T/Run2015C-EcalUncalZElectron-PromptReco-v3/ALCARECO			DoubleEG_0T-ZSkim-Run2015C-Prompt-v3-weightsReco       caf database VALID RUN2015CBoff,RUN2015CDBoff
 #########################
 ################ RUN2016B DATA 
-272023-273146 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v1	caf database	VALID RUN2016B
-273150-274334 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v2	caf database	VALID RUN2016
+272023-273146 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v1	caf database	VALID RUN2016B,CAL_JUN2016
+273150-274334 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v2	caf database	INVALID RUN2016B
+273150-274999 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v2	caf database	VALID RUN2016B,CAL_JUN2016
