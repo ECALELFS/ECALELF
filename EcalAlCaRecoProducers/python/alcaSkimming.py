@@ -508,7 +508,7 @@ process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq *
 process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 
 if(options.doTree>0):
-    process.pathALCARERECOEcalCalElectron+=cms.Sequence(  process.ntupleSeq)
+    process.pathALCARERECOEcalCalElectron+=cms.Sequence(  process.ntupleSeq) # this cannot be done because the json will prevent to save the alcareco files
 
 # ALCARECO
 process.pathALCARECOEcalCalSingleElectron = cms.Path(process.PUDumperSeq * process.filterSeq *

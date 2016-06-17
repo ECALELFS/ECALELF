@@ -1,5 +1,5 @@
 #!/bin/bash
-json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.tx
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt
 jsonName=271036_274443-Prompt
 
 
@@ -32,15 +32,13 @@ do
 			*)
 				echo 
 ## 			./scripts/RerecoQuick.sh -p RUN2015C50ns -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
-#				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
-				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK}
+				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
+#				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} ## have to fix alcaSkimming, jsonFilter filters also the alcarereco events because ntuples produced in the same path!
 				;;
 		esac
 	done
 
-	continue
-
-	for CHECK in ''  --check
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
@@ -48,7 +46,7 @@ do
 				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName  --ntupleOnly  --singleEle  $CHECK
 				;;
 			*)
-				./scripts/RerecoQuick.sh -p RUN2015CDBoff    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
+				./scripts/RerecoQuick.sh -p CAL_JUN2016    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
 				;;
 		esac
 	done
