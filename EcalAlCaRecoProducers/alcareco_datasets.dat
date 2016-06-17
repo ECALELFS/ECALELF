@@ -234,6 +234,6 @@ allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16M
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD DoubleEG-Run2016B-PromptReco-v2-miniAOD caf database VALID RUN2016B
 272023-273146	/DoubleEG/Run2016B-PromptReco-v1/AOD DoubleEG-Run2016B-PromptReco-v1 caf database VALID RUN2016B
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/AOD DoubleEG-Run2016B-PromptReco-v2 caf database VALID RUN2016B
-273157-275125	/AlCaElectron/Run2016B-v2/RAW AlCaElectron-Run2016B-v2 caf database VALID RUN2016B
-273157-275125	/AlCaElectron/Run2016B-v2/RAW AlCaElectron-Run2016B-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016B
+273149-275125	/AlCaElectron/Run2016B-v2/RAW AlCaElectron-Run2016B-v2 caf database VALID RUN2016B
+273149-275125	/AlCaElectron/Run2016B-v2/RAW AlCaElectron-Run2016B-v2 caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016B
 
