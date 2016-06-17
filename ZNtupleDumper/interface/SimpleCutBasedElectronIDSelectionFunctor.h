@@ -639,7 +639,7 @@ public: // interface
 			set("relEcalIso_EB",  100., false);
 			set("relEcalIso_EE",  100., false);
 			set("relHcalIso_EB",  100., false);
-			set("relHcalIso_EE",  100., false);		
+			set("relHcalIso_EE",  100., false);
 		} else if (version_ == looseElectronStream) { //SPRING15. See https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
 			//set("fiducial");
 			set("maxNumberOfExpectedMissingHits_EB", 2);
@@ -655,10 +655,10 @@ public: // interface
 			set("sihih_EE",        0.0301);
 			set("ooemoop_EB",    100., false);
 			set("ooemoop_EE",      100., false);
-			set("d0vtx_EB",      100.,false);//0.0261);
-			set("d0vtx_EE",        100.,false);//0.118);
-			set("dzvtx_EB",      100.,false);//0.41);
-			set("dzvtx_EE",        100.,false);//0.822);
+			set("d0vtx_EB",      100., false); //0.0261);
+			set("d0vtx_EE",        100., false); //0.118);
+			set("dzvtx_EB",      100., false); //0.41);
+			set("dzvtx_EE",        100., false); //0.822);
 			set("pfIso_EB",      0.0893);
 			set("pfIso_EE",        0.121);
 			set("pfIsoLowPt_EB", 0.0893);
@@ -684,10 +684,10 @@ public: // interface
 			set("sihih_EE",        0.0283);
 			set("ooemoop_EB",    100., false);
 			set("ooemoop_EE",      100., false);
-			set("d0vtx_EB",      100.,false);//0.0118 );
-			set("d0vtx_EE",        100.,false);//0.0739);
-			set("dzvtx_EB",      100.,false);//0.373);
-			set("dzvtx_EE",        100.,false);//0.602);
+			set("d0vtx_EB",      100., false); //0.0118 );
+			set("d0vtx_EE",        100., false); //0.0739);
+			set("dzvtx_EB",      100., false); //0.373);
+			set("dzvtx_EE",        100., false); //0.602);
 			set("pfIso_EB",      0.0766);
 			set("pfIso_EE",        0.0678);
 			set("pfIsoLowPt_EB", 0.0766);
@@ -713,10 +713,10 @@ public: // interface
 			set("sihih_EE",        0.0279);
 			set("ooemoop_EB",    100., false);
 			set("ooemoop_EE",      100., false);
-			set("d0vtx_EB",      100.,false);
-			set("d0vtx_EE",        100.,false);
-			set("dzvtx_EB",      100.,false);
-			set("dzvtx_EE",        100.,false);
+			set("d0vtx_EB",      100., false);
+			set("d0vtx_EE",        100., false);
+			set("dzvtx_EB",      100., false);
+			set("dzvtx_EE",        100., false);
 			set("pfIso_EB",      0.0354);
 			set("pfIso_EE",        0.0646);
 			set("pfIsoLowPt_EB", 0.0354);
@@ -727,7 +727,7 @@ public: // interface
 			set("relEcalIso_EE",  100., false);
 			set("relHcalIso_EB",  100., false);
 			set("relHcalIso_EE",  100., false);
-                }
+		}
 
 	}
 
