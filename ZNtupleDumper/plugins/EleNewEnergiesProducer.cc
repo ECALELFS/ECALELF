@@ -144,7 +144,7 @@ private:
 	edm::Handle<reco::ConversionCollection> conversionsHandle;
 
 	//------------------------------ Josh's regression (Hgg)
-//	SCEnergyCorrectorSemiParm mustache_regr_;
+	SCEnergyCorrectorSemiParm mustache_regr_;
 };
 
 //
@@ -172,8 +172,8 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
 	produces< NewEnergyMap >("energySCElePhoVar");
 
 //now do what ever other initialization is needed
-//	edm::ConsumesCollector iC = consumesCollector();
-//	mustache_regr_.setTokens(iConfig.getParameterSet("scEnergyCorrectorSemiParm"),iC);
+	edm::ConsumesCollector iC = consumesCollector();
+	mustache_regr_.setTokens(iConfig.getParameterSet("scEnergyCorrectorSemiParm"),iC);
 }
 
 
@@ -205,7 +205,7 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	iEvent.getByToken(electronsTAG, electronsHandle);
 	iEvent.getByToken(photonsTAG, photonsHandle);
-//	mustache_regr_.setEvent(iEvent);
+	mustache_regr_.setEvent(iEvent);
 
 	std::vector<v_t>  energySC_must(electronsHandle->size(), -999.);
 	std::vector<v_t>  energySC_mustVar(electronsHandle->size(), -999);

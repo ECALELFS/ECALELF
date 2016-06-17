@@ -271,7 +271,7 @@ private:
 	Float_t avgLCSCEle[3];
 
 	Float_t energyMCEle[3];    ///< Electron MC true energy
-	Float_t energyEle[3];      ///< electron.energy()
+	Float_t energyEle[3];      ///< electron.energy(), not changed by rereco
 	Float_t energySCEle[3];    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
 	Float_t energySCEle_must[3];    ///< corrected SuperCluster energy with mustache
 	Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
@@ -289,7 +289,7 @@ private:
 	Float_t rawESEnergyPlane1SCEle[3];  ///< pre-shower rechit energy sum of Plane 1 associated to the electron
 	Float_t rawESEnergyPlane2SCEle[3];  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
 
-	Float_t energySCEle_corr[3];  ///< ecal energy with corrections base on type of electron (see #classificationEle)
+	Float_t energySCEle_corr[3];  ///< ecal energy: not changed by rereco
 
 	Float_t e3x3SCEle[3];   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
 	Float_t e5x5SCEle[3];   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
