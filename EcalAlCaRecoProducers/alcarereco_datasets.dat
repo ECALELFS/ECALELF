@@ -98,3 +98,10 @@
 272023-273146	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_prompt
 272023-273146	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_ref
 273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_IC_piZero_v2
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_IC_piZero_v3
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_ESmip_v1
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_IC_phiSym_v1
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_IC_piZero_v1
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_PulseShapes_v1
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_ref
+273150-274999	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-ZSkim-Run2016B-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Jun2016_prompt

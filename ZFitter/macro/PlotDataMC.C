@@ -11,10 +11,10 @@
 #include <TLegend.h>
 #include <TPaveText.h>
 #include <TStopwatch.h>
-#include "src/ElectronCategory_class.cc"
+#include "../src/ElectronCategory_class.cc"
 #include <iostream>
 #include <fstream>
-#include "src/runDivide_class.cc"
+#include "../src/runDivide_class.cc"
 
 TString GetRunRangeTime(TChain *chain, TString runRange)
 {
@@ -581,7 +581,7 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 }
 
 
-
+#ifdef shervin
 TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_vec, TString branchname, TString binning,
                      TString category,  TString selection,
                      std::vector<TString> dataLabel_vec, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, TString outputPath, TString label4Print,
@@ -1029,6 +1029,7 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	return c;
 
 }
+#endif
 
 std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2, TChain *v3, TChain *v4)
 {
