@@ -220,7 +220,7 @@ process.source = cms.Source("PoolSource",
 
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
-    SkipEvent = cms.untracked.vstring('ProductNotFound'),
+#    SkipEvent = cms.untracked.vstring('ProductNotFound'),
 )
 
 # Other statements
