@@ -3,4 +3,4 @@ s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/n
 s	pileupHist	data/pileupHist_mc.root
 d	pileupHist	data/pileupHist_data.root
 s1	pileup		data/mcPUtrees_madgraph.root
-d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jun2016_IC_piZero_v1/DoubleEG-ZSkim-Run2016B-Prompt-v2/273150-274443/271036_274443-Prompt/unmerged-allRange.root
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jun2016_IC_phiSym_v2/DoubleEG-ZSkim-Run2016B-Prompt-v2/273150-274443/271036_274443-Prompt/unmerged-allRange.root
