@@ -241,7 +241,7 @@ int main(int argc, char **argv)
 	std::string ZPtWeightFile;
 	std::string initFileName;
 	//  bool savePUweightTree;
-	std::string imgFormat = "eps", outDirFitResMC = "test/MC/fitres", outDirFitResData = "test/dato/fitres", outDirImgMC = "test/MC/img", outDirImgData = "test/dato/img", outDirTable = "test/dato/table", selection;
+	std::string imgFormat = "pdf", outDirFitResMC = "test/MC/fitres", outDirFitResData = "test/dato/fitres", outDirImgMC = "test/MC/img", outDirImgData = "test/dato/img", outDirTable = "test/dato/table", selection;
 	TString eleID = "";
 	//std::vector<std::string> signalFiles, bkgFiles, dataFiles;
 	std::string commonCut;
@@ -391,7 +391,7 @@ int main(int argc, char **argv)
 	("initFile", po::value< string >(&initFileName), "Configuration file with init values of fit model")
 	;
 	outputOption.add_options()
-	("imgFormat", po::value<string>(&imgFormat)->default_value("eps"), "")
+	("imgFormat", po::value<string>(&imgFormat)->default_value("pdf"), "")
 	("outDirFitResMC", po::value<string>(&outDirFitResMC), "")
 	("outDirFitResData", po::value<string>(&outDirFitResData), "")
 	("outDirImgMC", po::value<string>(&outDirImgMC), "")

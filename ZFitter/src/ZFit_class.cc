@@ -27,7 +27,7 @@ Description: class that provide flexible and simple way to fit the Zee invariant
 #include <TChainElement.h>
 
 
-#define DEBUG
+//#define DEBUG
 //#define FIT_DEBUG
 //#define NOIMPORT
 //#define NUM_EVENTS 100
@@ -520,7 +520,7 @@ double ZFit_class::GetEffectiveSigma(RooAbsData *dataset, float quant = 0.68)
 
 	// it's up to the function that calls GetEffectiveSigma to delete the stored histogram
 	//	if(invMass_highBinning==NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(),invMass.getBins("plotRange"));
-	if(invMass_highBinning == NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(), 6000);
+	if(invMass_highBinning == NULL) invMass_highBinning = dataset->createHistogram(invMass.GetName(), 60000);
 
 	TH1* h = invMass_highBinning;
 

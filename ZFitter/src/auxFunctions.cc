@@ -31,7 +31,7 @@ std::string energyBranchNameFromInvMassName(std::string invMass_var)
 	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
 	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
 	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
-
+	else if(invMass_var == "invMass_efull5x5") energyBranchName = "efull5x5SCEle";
 	else {
 		std::cerr << "Energy branch name not define for invariant mass branch: " << invMass_var << std::endl;
 		exit(1);
