@@ -1,17 +1,15 @@
 #!/bin/bash
 source script/functions.sh
 #tag_name=""
-commonCut=Et_25-trigger-noPF
-selection=loose
-invMass_var=invMass_SC_regrCorr_ele
+commonCut=Et_25
+selection=loose25nsRun2
+invMass_var=invMass_SC_must_regrCorr_ele
 invMass_min=65
 invMass_max=115
-#invMass_min=45
-#invMass_max=100
 configFile=data/validation/monitoring_2012_53X.dat
 
 runRangesFile=data/runRanges/monitoring.dat
-baseDir=test
+baseDir=test2
 updateOnly="--updateOnly"
 #extraOptions="--forceNewFit"
 #extraOptions="--addBranch iSM --forceNewFit"
@@ -138,22 +136,6 @@ elif  [ -z "${configFile}" -a -n "${TEST}" ];then
     configFile=data/validation/test.dat
 fi
 
-case ${selection} in
-    WP80PU)
-        ;;
-    WP90PU)
-	;;
-    loose)
-	;;
-    medium)
-	;;
-    tight)
-	;;
-    *)
-	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
-        exit 1
-        ;;
-esac
 
 
 
@@ -233,12 +215,7 @@ else
     outDirData=$baseDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
 fi
 
-if [ "${invMass_var}" == "invMass_regrCorr_fra" ];then
-    extraOptions="${extraOptions} --isOdd"
-    outDirMC=$baseDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
-else
-    outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
-fi
+outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
 
 if [ -n "${signalType}" ];then
     case `echo ${signalType} | cut -d '=' -f 2` in
@@ -279,18 +256,18 @@ echo "$outDirMC" > $outDirData/whichMC.txt
 
 if [ -n "$VALIDATION" ];then
     regionFile=data/regions/validation.dat
-if [ -z "${ONLYTABLE}" ];then
-    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
-	${extraOptions} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	--commonCut=${commonCut}  --selection=${selection} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
-	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/validation.log|| exit 1
-fi
-
+	if [ -z "${ONLYTABLE}" ];then
+		./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
+			${extraOptions} \
+			--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+			--commonCut=${commonCut}  --selection=${selection} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
+			--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img ${extraOptions} > ${outDirData}/log/validation.log|| exit 1
+	fi
+	
 
     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
-	>  ${outDirTable}/$PERIOD/monitoring_summary-${invMass_var}-${selection}-${commonCut}.tex || exit 1
+		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
+		>  ${outDirTable}/$PERIOD/monitoring_summary-${invMass_var}-${selection}-${commonCut}.tex || exit 1
 fi
 
 ##################################################
