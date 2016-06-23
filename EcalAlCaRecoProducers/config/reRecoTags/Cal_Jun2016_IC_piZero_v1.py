@@ -4,6 +4,9 @@ import FWCore.ParameterSet.Config as cms
 
 from CondCore.ESSources.CondDBESSource_cfi import * 
 #CondDBConnection.connect = cms.string( 'frontier://FrontierProd/CMS_CONDITIONS' )
+
+#rereco with IC from phiSym, using transport from 2015D to 2016B, valid only for EB! in EE there are dead regions due to ES in 2015D
+
 RerecoGlobalTag = GlobalTag.clone(
                                globaltag = cms.string('80X_dataRun2_Prompt_v8'),
                                #toGet = cms.VPSet( ),   # hook to override or add single payloads

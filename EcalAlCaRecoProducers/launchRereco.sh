@@ -15,14 +15,15 @@ jsonName=271036_274443-Prompt
 #config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
 #config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
 # config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-for tagfile in config/reRecoTags/Cal_Jun2016_*.py
+config/reRecoTags/Cal_Jun2016_IC_phiSym_v{1,2}.py config/reRecoTags/Cal_Jun2016_IC_piZero_v1.py
+for tagfile in config/reRecoTags/Cal_Jun2016_ref_ADCtoGeV.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in --check
+	for CHECK in  --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
@@ -32,13 +33,13 @@ do
 			*)
 				echo 
 ## 			./scripts/RerecoQuick.sh -p RUN2015C50ns -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
-				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
+				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK} 
 #				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} ## have to fix alcaSkimming, jsonFilter filters also the alcarereco events because ntuples produced in the same path!
 				;;
 		esac
 	done
 
-	for CHECK in '' --check
+	for CHECK in --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
