@@ -64,9 +64,17 @@ case $COLUMN in
 	columnName="$ \chi^2.$"
 	;;
     15)
-	columnName="$\sigma_{eff}$"
+	columnName="$\sigma_{eff} 68\%$"
 	;;
+    17)
+	columnName="$\sigma_{eff} 30\%$"
+	;;
+    19)
+	columnName="$\sigma_{eff} 50\%$"
+	;;
+
     *)
+		echo "[ERROR] column not implemented" >> /dev/stderr
 	exit 1
 	;;
 esac

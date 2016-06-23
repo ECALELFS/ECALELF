@@ -14,6 +14,7 @@
 #include "../src/ElectronCategory_class.cc"
 #include <iostream>
 #include <fstream>
+#include<algorithm>
 #include "../src/runDivide_class.cc"
 
 TString GetRunRangeTime(TChain *chain, TString runRange)
@@ -581,7 +582,7 @@ TCanvas *PlotDataMCMC(TChain *data, TChain *mc, TChain *mc2,
 }
 
 
-#ifdef shervin
+
 TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_vec, TString branchname, TString binning,
                      TString category,  TString selection,
                      std::vector<TString> dataLabel_vec, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, TString outputPath, TString label4Print,
@@ -591,11 +592,11 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	watch.Start();
 	//gStyle->SetOptStat(11);//Giuseppe
 
-	int nHist = mc_vec.size();
+	int nHistMC = mc_vec.size();
 	int nHistData = data_vec.size();
 	int colors[4] = {kRed, kGreen, kBlue, kCyan};
 	int fillstyle[4] = {0, 0, 0, 0};
-	if(nHist > 4) return NULL;
+	if(nHistMC > 4) return NULL;
 	TString yLabel;
 
 	TCanvas *c = new TCanvas("c", "", 600, 600);
@@ -639,9 +640,6 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	//   }
 	//   data->SetBranchStatus("invMass_SC_regrCorrSemiParV4_ele", 1);
 	//   data->SetBranchStatus("invMass_SC_regrCorrSemiParV5_ele", 1);
-	if(branchNameData.Contains("energySCEle_regrCorrSemiParV5_pho")) cutter.energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
-	else if(branchNameData.Contains("energySCEle_regrCorrSemiParV5_ele")) cutter.energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
-	else if (branchNameData.Contains("energySCEle")) cutter.energyBranchName = "energySCEle";
 
 	TCut selection_data = "";
 	if(category.Sizeof() > 1) {
@@ -675,106 +673,37 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	}
 
 	std::cout << branchNameData << "\t" << branchNameMC << std::endl;
-	//  return NULL;
 
-
-	// Draw histograms
-	if (array) {
-		if (label4Print == "esEnergyFraction") {
-			//std::cout << "[DEBUG]  data->Draw(\"esEnergySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0])>>data_hist" << binning <<","<< selection_data<< ");" << std::endl;
-			data->Draw("esEnergySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0])>>data_hist" + binning, selection_data);
-			data->Draw("esEnergySCEle[1]/(rawEnergySCEle[1]+esEnergySCEle[1])>>data_hist1" + binning, selection_data);
-		} else {
-
-			data->Draw(branchNameData + "[0]>>data_hist" + binning, selection_data);
-			std::cout << "lc 1 " << std::endl;
-			data->Draw(branchNameData + "[1]>>data_hist1" + binning, selection_data);
-			std::cout << "lc 2 " << std::endl;
-		}
-	} else {
-		data->Draw(branchNameData + ">>data_hist" + binning, selection_data);
-	}
-
-
-	int dataCounter = 0;
 	for(std::vector<TChain *>::const_iterator data_itr = data_vec.begin();
 	        data_itr != data_vec.end();
 	        data_itr++) {
 		TChain *data = *data_itr;
-
-		TString dataHistName;
+		TString dataHistName="d_";
 		dataHistName += data_itr - data_vec.begin();
 		dataHistName += "_hist";
-		//TString selection_MC2 =selection_MC.GetTitle();
-
-
 		data->Draw(branchNameData + ">>" + dataHistName + binning, selection_data);
-		++dataCounter;
+//		mc_vec[0]->Draw(branchNameData + ">>" + dataHistName + binning, selection_data);
 	}
 
-
-
-	int counter = 0;
-	if(nHist > 0) {
-		for(std::vector<TChain *>::const_iterator mc_itr = mc_vec.begin();
-		        mc_itr != mc_vec.end();
-		        mc_itr++) {
-			TChain *mc = *mc_itr;
-			//   mc->SetBranchStatus("*",0);
-			//   for(std::set<TString>::const_iterator itr = branchList.begin();
-			//       itr != branchList.end();
-			//       itr++){
-			//     //std::cout << "[STATUS] Enabling branch: " << *itr << std::endl;
-			//     mc->SetBranchStatus(*itr, 1);
-			//   }
-			//   mc->SetBranchStatus("invMass_SC_regrCorrSemiParV4_ele", 1);
-			//   mc->SetBranchStatus("invMass_SC_regrCorrSemiParV5_ele", 1);
-			//   mc->SetBranchStatus("puWeight",1);
-
-			TString mcHistName;
-			mcHistName += mc_itr - mc_vec.begin();
-			mcHistName += "_hist";
-			TString weights = "(mcGenWeight/fabs(mcGenWeight))";
-			// TString weights= "(1)";
-			TString selection_MC2 = selection_MC.GetTitle();
-
-
-			if(pdfIndex != "") weights += "*(pdfWeights_cteq66[" + pdfIndex + "]/pdfWeights_cteq66[0])";
-			if( counter == 0) {
-				if(usePU) {
-					std::cout << "[INFO] Using Pileup Weights for MC sample " << counter << std::endl;
-					weights += "*puWeight";
-				}
-			} else {
-
-				if(usePU2) {
-					std::cout << "[INFO] Using Pileup Weights for MC sample " << counter << std::endl;
-					weights += "*puWeight";
-				}
-			}
-			if(useR9Weight) weights += "*r9Weight";
-			TString finalCut = "(" + selection_MC2 + ")*" + weights;
-			if (array) {
-				if (label4Print == "esEnergyFraction") {
-					mc->Draw("esEnergySCEle[0]/(rawEnergySCEle[0]+esEnergySCEle[0])>>" + mcHistName + binning, finalCut);
-					mc->Draw("esEnergySCEle[1]/(rawEnergySCEle[1]+esEnergySCEle[1])>>" + mcHistName + "1" + binning, finalCut);
-
-				} else {
-					//TString weights= "(mcGenWeight[0]/fabs(mcGenWeight[0]))";
-					// mc->Draw(branchNameMC+"[0]>>"+mcHistName+binning, selection_MC );//*weights.Data());
-					mc->Draw(branchNameMC + "[0]>>" + mcHistName + binning, finalCut);
-					//  mc->Draw(branchNameMC+"[1]>>"+mcHistName+"1"+binning, selection_MC); // *(weights.Data()) );
-					//  c->Print(mcHistName+binning+".pdf");
-					mc->Draw(branchNameMC + "[1]>>" + mcHistName + "1" + binning, finalCut );
-					//  c->Print(mcHistName+"1"+binning+".pdf");
-				}
-			} else {
-				// mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC );//*weights.Data());
-				mc->Draw(branchNameMC + ">>" + mcHistName + binning, finalCut);
-			}
-			counter++;
-		}
+	for(std::vector<TChain *>::const_iterator mc_itr = mc_vec.begin();
+		mc_itr != mc_vec.end();
+		mc_itr++) {
+		TChain *mc = *mc_itr;
+		
+		TString mcHistName="s_";
+		mcHistName += mc_itr - mc_vec.begin();
+		mcHistName += "_hist";
+		TString weights = "(mcGenWeight/fabs(mcGenWeight))"; // take only the sign
+//			if(pdfIndex != "") weights += "*(pdfWeights_cteq66[" + pdfIndex + "]/pdfWeights_cteq66[0])";
+		if(usePU) weights += "*puWeight";
+		if(useR9Weight) weights += "*r9Weight";
+		selection_MC*=weights;
+//		TString finalCut = "(" + selection_MC + ")*" + weights;
+		std::cout << selection_MC << std::endl;
+		mc->Draw(branchNameMC + ">>" + mcHistName + binning, selection_MC);
+		
 	}
+	
 
 	c->Clear();
 	// pad1->cd();
@@ -786,34 +715,62 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	//   if(dataLabel !="" && mcLabel !="") leg->Draw();
 	//   //c->GetListOfPrimitives()->Add(leg,"");
 
+	double max_value = 0;
 
-	for(int i = 0; i < nHist; i++) {
-		TString mcHistName;
+	for(int i = 0; i < nHistData; ++i) {
+		TString dataHistName="d_";
+		dataHistName += i;
+		dataHistName += "_hist";
+		TH1F *d = (TH1F *) gROOT->FindObject(dataHistName);
+		
+		d->SetStats(0);
+		d->SetTitle("");
+		max_value = 1.2 * std::max( d->GetMaximum(), max_value );
+
+
+		d->SetMarkerStyle(20);
+		d->SetMarkerSize(1);
+		d->SetMarkerColor(colors[i]);
+		d->SetFillStyle(fillstyle[i]);
+		d->SetFillColor(colors[i]);
+		d->SetLineColor(colors[i]);
+		d->SetLineWidth(2);
+
+		if(dataLabel_vec[i] != "") leg->AddEntry(d, dataLabel_vec[i], "lf");
+
+		//         TH1F *sRatio = (TH1F *) s->Clone(mcHistName+"_ratio");
+		//        sRatio->Divide(d);
+		//       if(ratio){
+		//        //  c->cd(2);
+		//         pad2->cd();
+		//        if(i==0) sRatio->Draw();
+		//       else sRatio->Draw("same");
+		//    pad1->cd();
+		//   }
+
+	}
+
+
+
+	TH1F *d = (TH1F *) gROOT->FindObject("d_0_hist");
+	if(d==NULL) return NULL;
+
+	for(int i = 0; i < nHistMC; i++) {
+		TString mcHistName="s_";
 		mcHistName += i;
 		mcHistName += "_hist";
 		TH1F *s = (TH1F *) gROOT->FindObject(mcHistName);
-		if (array) {
-			TString mcHistName1;
-			mcHistName1 += i;
-			mcHistName1 += "_hist1";
-			TH1F *s1 = (TH1F *) gROOT->FindObject(mcHistName1);
-			s1->Sumw2();
-			s->Sumw2();
-			s->Add(s1, 1);
-		}
-
+		
 		s->SetStats(0);
 		s->SetTitle("");
-		if(s == NULL) continue;
+//		if(s == NULL) continue;
 		std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
-		if(d->Integral() == 0 && s->Integral() == 0) {
-			delete c;
-			return NULL;
-		}
+
+
 		if(logy) {
-			s->GetYaxis()->SetRangeUser(0.1, max);
+			s->GetYaxis()->SetRangeUser(0.1, max_value);
 		} else {
-			s->GetYaxis()->SetRangeUser(0, max);
+			s->GetYaxis()->SetRangeUser(0, max_value);
 		}
 		s->GetYaxis()->SetTitle(yLabel);
 		s->GetXaxis()->SetTitle(xLabel);
@@ -825,7 +782,7 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 		s->SetFillColor(colors[i]);
 		s->SetLineColor(colors[i]);
 		s->SetLineWidth(2);
-		if (branchname == "nPV" ) {
+		if (branchname == "nPV" && usePU==false) {
 			s->SetName("pileup");
 			s->SaveAs("tmp/s_PUhist_0.root");
 		}
@@ -833,25 +790,15 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 		//		TCanvas *c2 = new TCanvas("c2","c2",500,500);
 		//		c2->cd();
 		TH1F* s_norm = NULL;
-		//		std::cout << "debug s->entries "<< s->GetEntries() << std::endl;
 		//   s->GetYaxis()->SetRangeUser(0,1.2*s->GetMaximum());
 		//	s->Draw("hist");
-		if(i == 0) {
-			s_norm = (TH1F *)  (s->DrawNormalized("hist L", d->Integral()));
-			std::cout << " drew signal plot (norm) " << std::endl;
-		}
-		// if(i==0) {s_norm = (TH1F *)  (s->DrawNormalized("hist", d->Integral()));s->Draw(); std::cout << " drew signal plot (norm " << std::endl;}
-		else {
-			s_norm = (TH1F *) (s->DrawNormalized("hist same L", d->Integral()));
-			std::cout << " drew signal plot on same" << std::endl;
-		}
-		//   c2->SaveAs("test.pdf");
+		TString draw_option = (i==0) ? "hist " : "hist same ";
+		s_norm = (TH1F *)  (s->DrawNormalized(draw_option, d->Integral()));
+
 		if(logy) {
-			//d_norm->GetYaxis()->SetRangeUser(0.1,max);
-			s_norm->GetYaxis()->SetRangeUser(0.1, max);
+			s_norm->GetYaxis()->SetRangeUser(0.1, max_value);
 		} else {
-			//d_norm->GetYaxis()->SetRangeUser(0,max);
-			s_norm->GetYaxis()->SetRangeUser(0, max);
+			s_norm->GetYaxis()->SetRangeUser(0, max_value);
 		}
 
 		if(mcLabel_vec[i] != "") leg->AddEntry(s, mcLabel_vec[i], "lf");
@@ -869,128 +816,27 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	}
 
 
-	TH1F *d = (TH1F *) gROOT->FindObject("data_hist");
-	if (array) {
-		TH1F *d1 = (TH1F *) gROOT->FindObject("data_hist1");
-		d1->Sumw2();
-		d->Sumw2();
-		d->Add(d1, 1);
-	}
-	if(dataLabel != "") leg->AddEntry(d, dataLabel, "p");
-	d->SetStats(0);
-	d->SetTitle("");
-
-	d->SetMarkerStyle(20);
-	d->SetMarkerSize(1);
-
-	if(d->GetEntries() == 0 || d->Integral() == 0) {
-		d = (TH1F *) gROOT->FindObject("0_hist");
-		d->SetMarkerSize(0);
-	}
 
 	yLabel.Form("Events /(%.2f %s)", d->GetBinWidth(2), yLabelUnit.Data());
 
-	float max = 0; //1.1 * std::max(
-	max = 1.2 * d->GetMaximum();
-	std::cout << "max = " << max << std::endl;
+	std::cout << "max = " << max_value << std::endl;
 	std::cout << "nEvents data: " << d->Integral() << "\t" << d->GetEntries() << std::endl;
 
 
 	d->GetYaxis()->SetTitle(yLabel);
 	d->GetXaxis()->SetTitle(xLabel);
 	if(logy) {
-		max *= 10;
-		d->GetYaxis()->SetRangeUser(0.1, max);
+		max_value *= 10;
+		d->GetYaxis()->SetRangeUser(0.1, max_value);
 		c->SetLogy();
 	} else {
-		d->GetYaxis()->SetRangeUser(0, max);
-	}
-
-	for(int i = 0; i < nHist; i++) {
-		TString mcHistName;
-		mcHistName += i;
-		mcHistName += "_hist";
-		TH1F *s = (TH1F *) gROOT->FindObject(mcHistName);
-		if (array) {
-			TString mcHistName1;
-			mcHistName1 += i;
-			mcHistName1 += "_hist1";
-			TH1F *s1 = (TH1F *) gROOT->FindObject(mcHistName1);
-			s1->Sumw2();
-			s->Sumw2();
-			s->Add(s1, 1);
-		}
-
-		s->SetStats(0);
-		s->SetTitle("");
-		if(s == NULL) continue;
-		std::cout << "nEvents signal: " << s->Integral() << "\t" << s->GetEntries() << std::endl;
-		if(d->Integral() == 0 && s->Integral() == 0) {
-			delete c;
-			return NULL;
-		}
-		if(logy) {
-			s->GetYaxis()->SetRangeUser(0.1, max);
-		} else {
-			s->GetYaxis()->SetRangeUser(0, max);
-		}
-		s->GetYaxis()->SetTitle(yLabel);
-		s->GetXaxis()->SetTitle(xLabel);
-
-		s->SetMarkerStyle(20);
-		s->SetMarkerSize(1);
-		s->SetMarkerColor(colors[i]);
-		s->SetFillStyle(fillstyle[i]);
-		s->SetFillColor(colors[i]);
-		s->SetLineColor(colors[i]);
-		s->SetLineWidth(2);
-		if (branchname == "nPV" ) {
-			s->SetName("pileup");
-			s->SaveAs("tmp/s_PUhist_0.root");
-		}
-		//		pad1->cd();
-		//		TCanvas *c2 = new TCanvas("c2","c2",500,500);
-		//		c2->cd();
-		TH1F* s_norm = NULL;
-		//		std::cout << "debug s->entries "<< s->GetEntries() << std::endl;
-		//   s->GetYaxis()->SetRangeUser(0,1.2*s->GetMaximum());
-		//	s->Draw("hist");
-		if(i == 0) {
-			s_norm = (TH1F *)  (s->DrawNormalized("hist L", d->Integral()));
-			std::cout << " drew signal plot (norm) " << std::endl;
-		}
-		// if(i==0) {s_norm = (TH1F *)  (s->DrawNormalized("hist", d->Integral()));s->Draw(); std::cout << " drew signal plot (norm " << std::endl;}
-		else {
-			s_norm = (TH1F *) (s->DrawNormalized("hist same L", d->Integral()));
-			std::cout << " drew signal plot on same" << std::endl;
-		}
-		//   c2->SaveAs("test.pdf");
-		if(logy) {
-			//d_norm->GetYaxis()->SetRangeUser(0.1,max);
-			s_norm->GetYaxis()->SetRangeUser(0.1, max);
-		} else {
-			//d_norm->GetYaxis()->SetRangeUser(0,max);
-			s_norm->GetYaxis()->SetRangeUser(0, max);
-		}
-
-		if(mcLabel_vec[i] != "") leg->AddEntry(s, mcLabel_vec[i], "lf");
-
-		//         TH1F *sRatio = (TH1F *) s->Clone(mcHistName+"_ratio");
-		//        sRatio->Divide(d);
-		//       if(ratio){
-		//        //  c->cd(2);
-		//         pad2->cd();
-		//        if(i==0) sRatio->Draw();
-		//       else sRatio->Draw("same");
-		//    pad1->cd();
-		//   }
-
+		d->GetYaxis()->SetRangeUser(0, max_value);
 	}
 
 	//       pad1->cd();
 	//TH1F* d_norm = s_norm;
 	//if(d!=s) d_norm = (TH1F *) (d->DrawNormalized("p same", d->Integral()));
-	if(nHist > 0) d->Draw("p same");
+	if(nHistMC > 0) d->Draw("p same");
 	else d->Draw("p");
 	//  d->Draw("ap");
 
@@ -1029,7 +875,7 @@ TCanvas *PlotDataMCs(std::vector<TChain *> data_vec, std::vector<TChain *> mc_ve
 	return c;
 
 }
-#endif
+
 
 std::vector<TChain *> MakeChainVector(TChain *v1, TChain *v2, TChain *v3, TChain *v4)
 {
