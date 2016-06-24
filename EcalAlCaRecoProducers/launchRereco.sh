@@ -2,6 +2,8 @@
 json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt
 jsonName=271036_274443-Prompt
 
+json25ns=/afs/cern.ch/user/s/shervin/scratch1/ECALELF/CMSSW_8_0_8/src/Calibration/EcalAlCaRecoProducers/myjson.json
+jsonName=myJsonTest
 
 #CHECK="--check"
 # config/reRecoTags/pulseShapeStudy_Run2015_rereco_v1.py

@@ -235,6 +235,7 @@ private:
 	Long64_t      eventNumber; ///<
 	Int_t         lumiBlock;   ///< lumi section
 	UInt_t 	runTime;     ///< unix time
+	Int_t   nBX; ///< bunch crossing
 
 	Float_t       mcGenWeight; ///< weight in generator for MC
 
@@ -320,12 +321,11 @@ private:
 	Float_t invMass_mumu;
 	Float_t   etaMCEle[3], phiMCEle[3];
 
-
 #ifdef shervin
 	Float_t invMass_inGsf;
 	Float_t invMass_outGsf;
 	Float_t invMass_SC_etaphiSC;
-	Int_t   nBX;
+
 	Int_t   bxPU[5];   //[nBX]
 	Int_t tagProbe_check;
 	Int_t nBCSCEle[3];
@@ -1156,6 +1156,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
 	tree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
 	tree->Branch("runTime",       &runTime,         "runTime/i");
+	tree->Branch("nBX", &nBX, "nBX/I");
 
 	tree->Branch("mcGenWeight",   &mcGenWeight, "mcGenWeight/F");
 
@@ -1165,7 +1166,7 @@ void ZNtupleDumper::InitNewTree()
 
 	//extraCalibTree->Branch("XRecHitSCEle1", &(XRecHitSCEle[0]));
 
-	//   tree->Branch("nBX", &nBX, "nBX/I");
+
 	//  tree->Branch("nPU", nPU, "nPU[nBX]/I");
 	tree->Branch("nPU", nPU, "nPU[1]/I");
 	//   tree->Branch("bxPU", bxPU, "bxPU[nBX]/I");
@@ -1284,6 +1285,8 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent)
 	runTime = runTime_.unixTime();
 	runNumber = iEvent.id().run();
 	eventNumber = iEvent.id().event();
+	nBX = iEvent.bunchCrossing();
+
 	if( iEvent.isRealData() ) {
 		lumiBlock = iEvent.luminosityBlock();
 	} else {
