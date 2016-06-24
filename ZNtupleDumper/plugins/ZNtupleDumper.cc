@@ -293,7 +293,7 @@ private:
 
 	Float_t e3x3SCEle[3];   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
 	Float_t e5x5SCEle[3];   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
-	Float_t efull5x5SCEle[3];   ///< full 5x5
+	Float_t efull5x5SCEle[3];   ///< full 5x5 from electron object (however it is computed)
 	Float_t eSeedSCEle[3];
 	Float_t pModeGsfEle[3];  ///< track momentum from Gsf Track (mode)
 	Float_t pAtVtxGsfEle[3]; ///< momentum estimated at the vertex
@@ -437,7 +437,6 @@ private:
 	// --------------- selection cuts
 private:
 
-	Long64_t epsilonected;
 
 	//------------------------------
 	// cluster tools
@@ -1867,7 +1866,7 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 
 
 	invMass = sqrt(2 * electron1.energy() * electron2.energy() * angle);
-	invMass_e5x5   = sqrt(2 * electron1.e5x5() * electron2.e5x5() *
+	invMass_e5x5   = sqrt(2 * e5x5SCEle[0] * e5x5SCEle[1] * /// full 5x5
 	                      angle);
 
 	invMass_efull5x5   = sqrt(2 * electron1.full5x5_e5x5() * electron2.full5x5_e5x5() *
