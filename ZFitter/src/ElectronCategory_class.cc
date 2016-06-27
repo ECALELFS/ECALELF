@@ -388,6 +388,34 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       continue;
     }
 
+    //--------------- Inclusive
+    if(string.Contains("Inclusive")){
+      TObjArray *splitted = string.Tokenize("_");
+      if(splitted->GetEntries() < 3){
+	std::cerr << "ERROR: incomplete absEta region definition" << std::endl;
+	continue;
+      } 
+      TObjString *Objstring1 = (TObjString *) splitted->At(1);
+      TObjString *Objstring2 = (TObjString *) splitted->At(2);
+      TString string1 = Objstring1->GetString();
+      TString string2 = Objstring2->GetString();
+
+      TCut cutEle1_1("abs(etaEle_ele1) >= "+string1+" && abs(etaEle_ele1) < 1.442");
+      TCut cutEle1_2("abs(etaEle_ele1) >=  1.566 && abs(etaEle_ele1) <"+string2);
+      TCut cutEle2_1("abs(etaEle_ele2) >= "+string1+" && abs(etaEle_ele2) < 1.442");
+      TCut cutEle2_2("abs(etaEle_ele2) >=  1.566 && abs(etaEle_ele2) <"+string2);
+
+
+      TCut Inclusive_ele1_cut = cutEle1_1 || cutEle1_2 ; //-->note the or in the inclusive scenario
+      TCut Inclusive_ele2_cut = cutEle2_1 || cutEle2_2 ; //-->note the or in the inclusive scenario
+
+      cut_string+=Inclusive_ele1_cut && Inclusive_ele2_cut;
+      cutSet.insert(TString(Inclusive_ele1_cut));
+      cutSet.insert(TString(Inclusive_ele2_cut));
+
+      continue;
+    }
+
 
     //--------------- IETA
     if(string.Contains("absIEta")){
@@ -722,9 +750,44 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
 
 	delete splitted;
 	continue;
-      }
+      } 
+    }
+
+    //--------------- Et cuts per electron (emulate trigger)
+    if(string.Contains("EtLeading_")){
+      TObjArray *splitted = string.Tokenize("_");
+      if(splitted->GetEntries() != 2){
+	std::cerr << "ERROR: incomplete EtLeading region definition" << std::endl;
+	continue;
+      } 
+
+      TObjString *Objstring1 = (TObjString *) splitted->At(1);
+      TString string1 = Objstring1->GetString();
+      TCut cutEle1(""+energyBranchName+"_ele1/cosh(etaSCEle_ele1) >= "+"( "+energyBranchName+"_ele1/cosh(etaSCEle_ele1) >"+energyBranchName+"_ele2/cosh(etaSCEle_ele2) )*"+string1);
+      TCut cutEle2(""+energyBranchName+"_ele2/cosh(etaSCEle_ele2) >= "+"( "+energyBranchName+"_ele2/cosh(etaSCEle_ele2) >"+energyBranchName+"_ele1/cosh(etaSCEle_ele1) )*"+string1);
 	
-      
+      cut_string+=cutEle1 && cutEle2;
+      cutSet.insert(TString(cutEle1 && cutEle2));
+      delete splitted;
+      continue;
+    }
+
+    if(string.Contains("EtSubLeading_")){
+      TObjArray *splitted = string.Tokenize("_");
+      if(splitted->GetEntries() != 2){
+	std::cerr << "ERROR: incomplete EtLeading region definition" << std::endl;
+	continue;
+      } 
+
+      TObjString *Objstring1 = (TObjString *) splitted->At(1);
+      TString string1 = Objstring1->GetString();
+      TCut cutEle1(""+energyBranchName+"_ele1/cosh(etaSCEle_ele1) >= "+"( "+energyBranchName+"_ele1/cosh(etaSCEle_ele1) <"+energyBranchName+"_ele2/cosh(etaSCEle_ele2) )*"+string1);
+      TCut cutEle2(""+energyBranchName+"_ele2/cosh(etaSCEle_ele2) >= "+"( "+energyBranchName+"_ele2/cosh(etaSCEle_ele2) <"+energyBranchName+"_ele1/cosh(etaSCEle_ele1) )*"+string1);
+	
+      cut_string+=cutEle1 && cutEle2;
+      cutSet.insert(TString(cutEle1 && cutEle2));
+      delete splitted;
+      continue;
     }
 
 
