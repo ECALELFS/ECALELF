@@ -253,6 +253,12 @@ case $TYPE in
 		ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
 		;;
 	MINIAODNTUPLE)
+		case $SKIM in 
+			ZSkim)
+				echo "[ERROR `basename $0`] currently no skim possible on miniaod: skim=$SKIM not possible" >> /dev/stderr
+				exit 1
+				;;
+		esac
 		#setUserRemoteDirMiniaod $ORIGIN_REMOTE_DIR_BASE
 		#ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
 		ORIGIN_REMOTE_DIR=${ORIGIN_REMOTE_DIR_BASE}
