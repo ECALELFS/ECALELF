@@ -5,7 +5,7 @@ json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert
 jsonName=DCSONLY
 jsonName=271036-275125_v1
 
-#CHECK=--check
+CHECK=--check
 
 
 
@@ -21,7 +21,7 @@ while [ "1" == "1" ];do
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep  MINIAOD | head -1 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep  MINIAOD | head -2 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
 
-sleep 1s; 
+sleep 10m
 done
 #./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016C | grep  MINIAOD | head -1 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
 #./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016C | grep  MINIAOD | head -2 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}

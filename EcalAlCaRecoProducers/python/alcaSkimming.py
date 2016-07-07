@@ -656,8 +656,6 @@ elif(options.type=='MINIAODNTUPLE'):
     process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
 
 process.zNtupleDumper.foutName=options.secondaryOutput
-# this includes the sequence: patSequence
-# patSequence=cms.Sequence( (eleSelectionProducers  + eleNewEnergiesProducer ) * patElectrons)
 
 if(options.isCrab==1):
     pathPrefix=""
@@ -691,15 +689,16 @@ if(options.type!="MINIAODNTUPLE"):
 
 else:
     print "MINIAOD"
+    process.patSequence.remove(process.patElectrons)
     #configure everything for MINIAOD
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
-    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons")
+    process.eleNewEnergiesProducer.electronCollection =  myEleCollection
     process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
 
 #    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
-    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons")
+    process.eleSelectionProducers.electronCollection =   myEleCollection
     process.eleSelectionProducers.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.eleSelectionProducers.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.eleSelectionProducers.BeamSpotCollection = cms.InputTag('offlineBeamSpot')
@@ -708,7 +707,7 @@ else:
     # load new energies in the slimmedECALELFElectrons process
 #    from Calibration.ZNtupleDumper.miniAODnewEnergies import *
 #    process.slimmedECALELFElectrons.modifierConfig.modifications=electron_energy_modifications
-    process.slimmedECALELFElectrons.src = cms.InputTag("slimmedElectrons")
+    process.slimmedECALELFElectrons.src = myEleCollection
     process.modPSet.electron_config.electronSrc = process.slimmedECALELFElectrons.src
     process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = cms.InputTag("reducedEgamma", "reducedEERecHits")
@@ -720,7 +719,7 @@ else:
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
-#    process.zNtupleDumper.electronCollection = cms.InputTag('slimmedECALELFElectrons')
+
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')
     process.zNtupleDumper.SelectEvents = cms.vstring('NtuplePath')
@@ -728,6 +727,7 @@ else:
     process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
 #    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
+
 
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
