@@ -5,7 +5,7 @@ json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert
 jsonName=DCSONLY
 jsonName=271036-275125_v1
 
-#CHECK=--check
+CHECK=--check
 
 
 

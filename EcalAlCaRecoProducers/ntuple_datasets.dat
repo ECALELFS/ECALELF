@@ -1253,3 +1253,5 @@ allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16M
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD	DoubleEG-Run2016B-ZSkim-Prompt_v2-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE	80X_dataRun2_Prompt_v9	271036-275125_v1
 272023-273146	/DoubleEG/Run2016B-PromptReco-v1/MINIAOD	DoubleEG-Run2016B-noSkim-Prompt_v1-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE	80X_dataRun2_Prompt_v9	271036-275125_v1
 273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD	DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE	80X_dataRun2_Prompt_v9	271036-275125_v1
+272023-273146	/DoubleEG/Run2016B-PromptReco-v1/MINIAOD	DoubleEG-Run2016B-noSkim-Prompt_v1-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE	80X_dataRun2_Prompt_v9	271036-275125_v1
+273150-273730	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD	DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples	MINIAODNTUPLE	80X_dataRun2_Prompt_v9	271036-275125_v1

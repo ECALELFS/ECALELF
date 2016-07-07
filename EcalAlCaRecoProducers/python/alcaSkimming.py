@@ -709,6 +709,7 @@ else:
 #    process.slimmedECALELFElectrons.modifierConfig.modifications=electron_energy_modifications
     process.slimmedECALELFElectrons.src = myEleCollection
     process.modPSet.electron_config.electronSrc = process.slimmedECALELFElectrons.src
+    process.modPSetBis.electron_config.electronSrc = process.slimmedECALELFElectrons.src
     process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = cms.InputTag("reducedEgamma", "reducedEERecHits")
 
