@@ -132,7 +132,19 @@
 256268-256464 /DoubleEG_0T/Run2015C-EcalUncalZElectron-PromptReco-v3/ALCARECO			DoubleEG_0T-ZSkim-Run2015C-Prompt-v3-weightsReco       caf database VALID RUN2015CBoff,RUN2015CDBoff
 #########################
 ################ RUN2016B DATA 
-272023-273146 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v1	caf database	VALID RUN2016B
+272023-273146 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v1/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v1	caf database	INVALID RUN2016B
 273150-274334 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v2	caf database	INVALID RUN2016B
-273150-274443 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v2	caf database	VALID RUN2016B,CAL_JUN2016
-273150-274443 /SingleElectron/Run2016B-EcalUncalWElectron-PromptReco-v2/ALCARECO SingleElectron-WSkim-Run2016B-Prompt-v2	caf database	VALID RUN2016B,CAL_JUN2016
+273150-274443 /DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO DoubleEG-ZSkim-Run2016B-Prompt-v2	caf database	INVALID RUN2016B,CAL_JUN2016
+273150-274443 /SingleElectron/Run2016B-EcalUncalWElectron-PromptReco-v2/ALCARECO SingleElectron-WSkim-Run2016B-Prompt-v2	caf database	INVALID RUN2016B,CAL_JUN2016
+### Data
+272023-273146  /DoubleEG/Run2016B-EcalCalZElectron-PromptReco-v1/ALCARECO DoubleEG-Run2016B-ZSkim-Prompt_v1          caf database VALID RUN2016B,RUN2016BC
+273150-275376  /DoubleEG/Run2016B-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016B-ZSkim-Prompt_v2          caf database VALID RUN2016B,RUN2016BC
+275420-275125  /DoubleEG/Run2016C-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016C-ZSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC
+275126-276244  /DoubleEG/Run2016C-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016C-ZSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC
+276245-276283  /DoubleEG/Run2016C-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016C-ZSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC
+#
+272023-273146  /SingleElectron/Run2016B-EcalCalWElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016B-WSkim-Prompt_v1          caf database VALID RUN2016B,RUN2016BC
+273150-275376  /SingleElectron/Run2016B-EcalCalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016B-WSkim-Prompt_v2          caf database VALID RUN2016B,RUN2016BC
+275420-275125  /SingleElectron/Run2016C-EcalCalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016C-WSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC
+275126-276244  /SingleElectron/Run2016C-EcalCalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016C-WSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC
+276245-276283  /SingleElectron/Run2016C-EcalCalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016C-WSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC
