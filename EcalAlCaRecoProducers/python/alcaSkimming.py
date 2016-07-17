@@ -209,12 +209,12 @@ process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
                             secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
                             skipEvents=cms.untracked.uint32(0),
-                            inputCommands = cms.untracked.vstring( [ 'keep *', 
-                                                                     'drop *_correctedHybridSuperClusters_*_RECO',
+#                            inputCommands = cms.untracked.vstring( [ 'keep *', 
+#                                                                     'drop *_correctedHybridSuperClusters_*_RECO',
 #                                                                     'drop *_correctedMulti5x5SuperClustersWithPreshower_*_RECO',
-                                                                     ]
-                                                                   ),
-                             dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
+#                                                                     ]
+#                                                                   ),
+#                             dropDescendantsOfDroppedBranches=cms.untracked.bool(False),
                             )
 
 
@@ -561,10 +561,10 @@ if(not doTreeOnly):
 
 ############### JSON Filter
 if(options.doTree>0):
+    process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
     if((options.doTreeOnly==0)):
-        # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
-        print "[INFO] Using json file"
-        process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
+         # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
+         print "[INFO] Using json file"
     else:
         if(len(options.jsonFile)>0):
             print "[INFO] Using json file"

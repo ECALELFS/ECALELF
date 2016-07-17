@@ -592,7 +592,6 @@ int main(int argc, char **argv)
 			(tagChainMap[tag])[chainName]->SetTitle(tag);
 		}
 		std::cout << "Adding file: " << tag << "\t" << chainName << "\t" << fileName << std::endl;
-		//std::cout << "[yacine]: " << tag << "\t" << chainName << "\t" << fileName <<"\t"<<tagChainMap[tag])[chainName]->Add(fileName, -1)<< std::endl;
 		if((tagChainMap[tag])[chainName]->Add(fileName, -1) == 0) exit(1);
 #ifdef DEBUG
 		std::cout << "[DEBUG] " << tag << "\t" << chainName << "\t" << fileName << "\t" << (tagChainMap[tag])[chainName]->GetEntries() << std::endl;
@@ -618,22 +617,6 @@ int main(int argc, char **argv)
 	}
 
 
-	///------------------------------ to obtain run ranges
-	if(vm.count("runDivide")) {
-		runDivide_class runDivider;
-		std::cout << "[yacine runDivide] the chain :: " << (tagChainMap["d"])["selected"] << "\t" << nEvents_runDivide << std::endl;
-		std::vector<TString> v = runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
-		runDivider.PrintRunRangeEvents();
-		std::vector<TString> runRanges;
-		if(runRangesFileName != "") runRanges = ReadRegionsFromFile(runRangesFileName);
-		for(std::vector<TString>::const_iterator itr = runRanges.begin();
-		        itr != runRanges.end();
-		        itr++) {
-			std::cout << *itr << "\t" << "-1" << "\t" << runDivider.GetRunRangeTime(*itr) << std::endl;
-		}
-
-		return 0;
-	}
 
 
 
@@ -644,6 +627,7 @@ int main(int argc, char **argv)
 	std::vector<TString> regions = ReadRegionsFromFile(regionsFileName);
 	std::vector<TString> runRanges = ReadRegionsFromFile(runRangesFileName);
 	std::vector<TString> categories;
+
 	for(std::vector<TString>::const_iterator region_itr = regions.begin();
 	        region_itr != regions.end();
 	        region_itr++) {
@@ -761,7 +745,6 @@ int main(int argc, char **argv)
 
 
 	//==============================
-
 	//  if(vm.count("dataPU")==0 && (tagChainMap["s"]).count("pileupHist")==0 && (tagChainMap["s"]).count("pileup")==0){
 	if(vm.count("noPU") == 0 && !vm.count("runToy")) {
 		if(dataPUFileNameVec.empty() && (tagChainMap.count("s") != 0) && (tagChainMap["s"]).count("pileup") == 0) {
@@ -989,6 +972,24 @@ int main(int argc, char **argv)
 		MergeSamples(tagChainMap, regionsFileNameTag, "s");
 		MergeSamples(tagChainMap, regionsFileNameTag, "d");
 	}
+
+	///------------------------------ to obtain run ranges
+	if(vm.count("runDivide")) {
+		runDivide_class runDivider;
+		std::cout << "[yacine runDivide] the chain :: " << (tagChainMap["d"])["selected"] << "\t" << nEvents_runDivide << std::endl;
+		std::vector<TString> v = runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
+		runDivider.PrintRunRangeEvents();
+		std::vector<TString> runRanges;
+		if(runRangesFileName != "") runRanges = ReadRegionsFromFile(runRangesFileName);
+		for(std::vector<TString>::const_iterator itr = runRanges.begin();
+		        itr != runRanges.end();
+		        itr++) {
+			std::cout << *itr << "\t" << "-1" << "\t" << runDivider.GetRunRangeTime(*itr) << std::endl;
+		}
+
+		return 0;
+	}
+
 
 //   Dump(tagChainMap, "s",0);
 //   Dump(tagChainMap, "s",(tagChainMap["s1"])["selected"]->GetEntries());

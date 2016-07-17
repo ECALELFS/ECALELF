@@ -4,7 +4,7 @@ json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert
 #Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt
 
 jsonName=DCSONLY
-jsonName=271036-276384_NoL1T_v2
+jsonName=271036-276384_NoL1T_v4
 
 CHECK=--check
 
@@ -27,7 +27,7 @@ while [ "1" == "1" ];do
 ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016D | grep  MINIAOD | head -1 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
 
 
-sleep 10m
+sleep 1m
 done
 exit 0
 while [ "1" == "1" ];do
