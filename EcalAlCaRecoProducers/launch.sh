@@ -4,7 +4,7 @@ json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert
 #Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt
 
 jsonName=DCSONLY
-jsonName=271036-276384_NoL1T_v1
+jsonName=271036-276384_NoL1T_v2
 
 CHECK=--check
 
@@ -15,9 +15,6 @@ scheduler=caf
 tag_MC=config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py
 tag_Data=config/reRecoTags/80X_dataRun2_Prompt_v9.py
 
-#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep -v MINIAOD | head -1 | tail -1` --type ALCARECO -t ${tag_Data} -s ZSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} #${CHECK}
-#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep -v MINIAOD | head -2 | tail -1` --type ALCARECO -t ${tag_Data} -s ZSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} #${CHECK}
-#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016C | grep -v  MINIAOD | head -2 | tail -1` --type ALCARECO -t ${tag_Data} -s ZSkim --json=${json} --json_name=${jsonName} --scheduler=${scheduler} #${CHECK}
 
 while [ "1" == "1" ];do 
 #./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RUN2016B | grep MINIAOD | head -1 ` --type=MINIAOD -s noSkim  --json=${json} --json_name=${jsonName} ${CHECK}
@@ -32,6 +29,20 @@ while [ "1" == "1" ];do
 
 sleep 10m
 done
+exit 0
+while [ "1" == "1" ];do
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -1| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=${scheduler} ${CHECK}
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -2| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=${scheduler} ${CHECK}
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -3| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=remoteGlidein ${CHECK}
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -4| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=${scheduler} ${CHECK}
+sleep 15m
+done
+exit 0
+
+#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep -v MINIAOD | head -1 | tail -1` --type ALCARECO -t ${tag_Data} -s ZSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} #${CHECK}
+#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep -v MINIAOD | head -2 | tail -1` --type ALCARECO -t ${tag_Data} -s ZSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} #${CHECK}
+#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016C | grep -v  MINIAOD | head -2 | tail -1` --type ALCARECO -t ${tag_Data} -s ZSkim --json=${json} --json_name=${jsonName} --scheduler=${scheduler} #${CHECK}
+
 #
 
 
@@ -45,8 +56,6 @@ done
 
 # done
 
-# ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep -v MINIAODSIM | head -1` --isMC --type ALCARECO -t ${tag_MC} -s ZSkim  --scheduler=${scheduler} 
-# ./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep -v MINIAODSIM | head -2` --isMC --type ALCARECO -t ${tag_MC} -s ZSkim  --scheduler=${scheduler} 
 
 # while [ "1" == "1" ];
 # do

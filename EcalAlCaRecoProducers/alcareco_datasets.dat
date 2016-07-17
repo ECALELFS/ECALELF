@@ -227,15 +227,15 @@ allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16M
 allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJets_amcatnlo-RunIISpring16-miniAODv2 caf database VALID - - 
 #### powheg
 allRange	/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM					ZToEE_NNPDF30-powheg-Spring16-miniAODv1		caf database VALID - -
-#allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM					DYToEE_NNPDF30-powheg-pythia8-miniAODv1		caf database VALID - -
+allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM					DYToEE_NNPDF30-powheg-pythia8-miniAODv1		caf database VALID - -
 ### Data
 272023-273146  /DoubleEG/Run2016B-EcalCalZElectron-PromptReco-v1/ALCARECO  DoubleEG-Run2016B-ZSkim-Prompt_v1          caf database VALID RUN2016B
 #272023-273146 /DoubleEG/Run2016B-PromptReco-v1/AOD                        DoubleEG-Run2016B-ZSkim-Prompt_v1          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016B
 272023-273146  /DoubleEG/Run2016B-PromptReco-v1/MINIAOD                    DoubleEG-Run2016B-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016B
 #
 273150-275376	/DoubleEG/Run2016B-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016B-ZSkim-Prompt_v2          caf database VALID RUN2016B
-#273150-273730 /DoubleEG/Run2016B-PromptReco-v2/AOD                        DoubleEG-Run2016B-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016B
-273150-273730  /DoubleEG/Run2016B-PromptReco-v2/MINIAOD                    DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016B
+#273150-275376 /DoubleEG/Run2016B-PromptReco-v2/AOD                        DoubleEG-Run2016B-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016B
+273150-275376  /DoubleEG/Run2016B-PromptReco-v2/MINIAOD                    DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016B
 #
 275420-276283	/DoubleEG/Run2016C-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016C-ZSkim-Prompt_v2          caf database VALID RUN2016C
 #275420-276283	/DoubleEG/Run2016C-PromptReco-v2/AOD                       DoubleEG-Run2016C-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016C
@@ -244,3 +244,4 @@ allRange	/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16MiniAODv1-PUSpring16_
 276315-276585	/DoubleEG/Run2016D-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016D-ZSkim-Prompt_v2          caf database VALID RUN2016D
 #276315-276585	/DoubleEG/Run2016D-PromptReco-v2/AOD                       DoubleEG-Run2016D-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016D
 276315-276585	/DoubleEG/Run2016D-PromptReco-v2/MINIAOD                   DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
+273150-273730  /DoubleEG/Run2016B-PromptReco-v2/MINIAOD                    DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016B
