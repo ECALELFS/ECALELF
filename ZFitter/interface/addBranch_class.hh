@@ -35,17 +35,17 @@ class addBranch_class
 {
 
 public:
-	addBranch_class(void);
+//	addBranch_class(void);
+	addBranch_class(std::vector<TString> regionList, std::vector<TString> runRanges);
 	~addBranch_class(void);
 
 	/// specify the new branch you want in BranchName
 	TTree *AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop = true, bool isMC = false);
 	TTree* AddBranch_ZPt(TChain* originalTree, TString treename, TString energyBranchName, bool fastLoop = true);
 	EnergyScaleCorrection_class *scaler;
-	TString _commonCut;
-	std::vector<TString> _regionList;
 
 private:
+	std::vector<TString> _regionList, _runRangeList;
 
 	TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop = true, bool isMC = true);
 	TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);

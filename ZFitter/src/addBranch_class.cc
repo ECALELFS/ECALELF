@@ -2,13 +2,29 @@
 #include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
 #include <iostream>
+#include <TString.h>
+#include <TObjArray.h>
 
-//#define DEBUG
+#define DEBUG
 //#define NOFRIEND
 
-addBranch_class::addBranch_class(void):
-	scaler(NULL)
+// addBranch_class::addBranch_class(void):
+// 	scaler(NULL)
+// {
+// }
+
+addBranch_class::addBranch_class(std::vector<TString> regionList, std::vector<TString> runRanges):
+	_regionList(regionList)
 {
+	for(std::vector<TString>::const_iterator runRange_itr = runRanges.begin();
+		runRange_itr != runRanges.end();
+		runRange_itr++) {
+		TString token1, token2;
+		TObjArray *tx = runRange_itr->Tokenize("-");
+		token1 = ((TObjString *)(tx->At(0)))->String();
+		token2 = ((TObjString *)(tx->At(1)))->String();
+		_runRangeList.push_back("runNumber_" + token1 + "_" + token2);
+	}
 }
 
 addBranch_class::~addBranch_class(void)

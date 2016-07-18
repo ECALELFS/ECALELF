@@ -211,7 +211,7 @@ public:
 	{
 		if(dataset != NULL) {
 			std::cerr << "[WARNING] Removing last dataset: " << std::endl;
-			dataset->Print();
+//			dataset->Print();
 			delete dataset;
 		}
 		//nllMin=nllMin_;

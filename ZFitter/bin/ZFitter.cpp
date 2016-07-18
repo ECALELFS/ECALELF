@@ -898,9 +898,7 @@ int main(int argc, char **argv)
 	}
 
 
-	addBranch_class newBrancher;
-	newBrancher._commonCut = commonCut.c_str();
-	newBrancher._regionList = categories;
+	addBranch_class newBrancher(regions, runRanges);
 
 	for( std::vector<string>::const_iterator branch_itr = branchList.begin();
 	        branch_itr != branchList.end();
