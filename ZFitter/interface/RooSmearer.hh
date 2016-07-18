@@ -119,7 +119,8 @@ public:
 	           std::vector<TString> regionList,
 	           std::vector<RooArgSet > params,
 	           RooArgSet parset,
-	           TString energyBranchName = "energySCEle_regrCorr_ele"
+	           TString energyBranchName = "energySCEle_regrCorr_ele",
+			   unsigned int foldingMC=0
 	          );
 
 
@@ -246,6 +247,7 @@ public:
 	unsigned int _nSmearToy;
 private:
 
+	unsigned int _foldingMC;
 	unsigned int _nLLtoy;
 	TRandom3* rgen_;
 	TStopwatch *myClock;
@@ -254,7 +256,7 @@ private:
 	double lastNLLrms;
 	double nllBase;
 	RooRealVar nllVar;
-
+	
 public:
 	bool _isDataSmeared;
 	bool _autoBin;

@@ -3,8 +3,15 @@ s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/n
 s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYJets_amcatnlo-RunIISpring16-miniAODv1/allRange/DYJets_amcatnlo-RunIISpring16-miniAODv1-allRange.root
 s3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYToEE_NNPDF30-powheg-pythia8-miniAODv1/allRange/DYToEE_NNPDF30-powheg-pythia8-miniAODv1-allRange.root
 ################ DATA
-d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016B-noSkim-Prompt_v1-miniAOD/272023-273146/271036-276384_NoL1T_v2/unmerged-allRange.root
-d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD/273150-275376/271036-276384_NoL1T_v2/unmerged-allRange.root
-d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD/275420-276283/271036-276384_NoL1T_v2/unmerged-allRange.root
-d4	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD/276315-276585/271036-276384_NoL1T_v2/unmerged-allRange.root
-
+#d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016B-noSkim-Prompt_v1-miniAOD/272023-273146/271036-276384_NoL1T_v4/unmerged-allRange.root
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD/273150-275376/271036-276384_NoL1T_v4/unmerged-allRange.root
+d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD/275420-276283/271036-276384_NoL1T_v4/unmerged-allRange.root
+d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD/276315-276585/271036-276384_NoL1T_v4/unmerged-allRange.root
+############### 
+d1	smearerCat_scaleStep1 data/smearerCat_scaleStep1_d1-ichep_2016_v1.root
+d2	smearerCat_scaleStep1 data/smearerCat_scaleStep1_d2-ichep_2016_v1.root
+d3	smearerCat_scaleStep1 data/smearerCat_scaleStep1_d3-ichep_2016_v1.root
+#
+s1	smearerCat_scaleStep1 data/smearerCat_scaleStep1_s1-ichep_2016_v1.root
+s2	smearerCat_scaleStep1 data/smearerCat_scaleStep1_s2-ichep_2016_v1.root
+s3	smearerCat_scaleStep1 data/smearerCat_scaleStep1_s3-ichep_2016_v1.root

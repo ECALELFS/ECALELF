@@ -30,7 +30,7 @@ lib/%.o: $(SRCDIR)/%.cc
 
 ###### Main program
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
-$(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp 
+$(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp $(MODULES)
 	cd $(EoPDir) && make
 	@echo "---> Making ZFitter $(COMPILE.exe)"
 	@g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULES_EXT)/libFWCoreParameterSet.so $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \

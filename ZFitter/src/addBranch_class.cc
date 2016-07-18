@@ -344,36 +344,60 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 	//setting the new tree
 	TTree *newtree = new TTree(treename, treename);
 	Int_t  smearerCat[2];
-	Char_t cat1[10];
+	UInt_t smearerCatFolding;
+	Char_t cat1[30],cat2[30];
 	sprintf(cat1, "XX");
+	sprintf(cat2, "XX");
 	newtree->Branch("smearerCat", smearerCat, "smearerCat[2]/I");
+//	newtree->Branch("smearerCatFolding", smearerCatFolding, "smearerCatFolding/i");
 	newtree->Branch("catName", cat1, "catName/C");
-	//  newtree->Branch("catName2", cat2, "catName2/C");
+	newtree->Branch("catName2", cat2, "catName2/C");
 
-	/// \todo disable branches using cutter
+
+	
+
+	///------------------------------ \todo disable branches using cutter
 	originalChain->SetBranchStatus("*", 0);
 
+	std::set<TString> activeBranchList;
+	for(std::vector<TString>::const_iterator region_itr = _regionList.begin();
+	        region_itr != _regionList.end();
+	        region_itr++) {
+		std::set<TString> tmpList = cutter.GetBranchNameNtuple(*region_itr);
+		activeBranchList.insert(tmpList.begin(), tmpList.end());
+		// add also the friend branches!
+	}
+	for(std::vector<TString>::const_iterator region_itr = _runRangeList.begin();
+	        region_itr != _runRangeList.end();
+	        region_itr++) {
+		std::set<TString> tmpList = cutter.GetBranchNameNtuple(*region_itr);
+		activeBranchList.insert(tmpList.begin(), tmpList.end());
+		// add also the friend branches!
+	}
+
+	
+	for(auto activeBranch : activeBranchList){
+		originalChain->SetBranchStatus(activeBranch, 1);
+	}
+	if(    cutter._corrEle == true) originalChain->SetBranchStatus("scaleEle", 1);
+	
+    //------------------------------ Definition of the selectors for the regions
 	std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
 	for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
-	        region_ele1_itr != _regionList.end();
-	        region_ele1_itr++) {
-
-		// \todo activating branches // not efficient in this loop
-		std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr);
-		for(std::set<TString>::const_iterator itr = branchNames.begin();
-		        itr != branchNames.end(); itr++) {
-			originalChain->SetBranchStatus(*itr, 1);
-		}
-		if(    cutter._corrEle == true) originalChain->SetBranchStatus("scaleEle", 1);
-
-
+		region_ele1_itr != _regionList.end();
+		region_ele1_itr++) {
+		
+	
 		for(std::vector<TString>::const_iterator region_ele2_itr = region_ele1_itr;
 		        region_ele2_itr != _regionList.end();
 		        region_ele2_itr++) {
 
 			if(region_ele2_itr == region_ele1_itr) {
 				TString region = *region_ele1_itr;
-				region.ReplaceAll(_commonCut, ""); //remove the common Cut!
+#ifdef DEBUG
+				std::cout << "[DEBUG addBranch] region: " << region << std::endl;
+#endif
+
 				TTreeFormula *selector = new TTreeFormula("selector-" + (region), cutter.GetCut(region + oddString, isMC), originalChain);
 				catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector, NULL));
 				//selector->Print();
@@ -382,8 +406,6 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 			} else {
 				TString region1 = *region_ele1_itr;
 				TString region2 = *region_ele2_itr;
-				region1.ReplaceAll(_commonCut, "");
-				region2.ReplaceAll(_commonCut, "");
 				TTreeFormula *selector1 = new TTreeFormula("selector1-" + region1 + region2,
 				        cutter.GetCut(region1 + oddString, isMC, 1) &&
 				        cutter.GetCut(region2 + oddString, isMC, 2),
@@ -401,6 +423,20 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 		}
 	}
 
+    //--------------- Definition of the selectors for the run ranges
+	std::vector< TTreeFormula* > runSelectors;
+	if(isMC==false){
+		for(auto region : _runRangeList){
+			TTreeFormula *selector = new TTreeFormula("selector-" + (region), cutter.GetCut(region + oddString, isMC), originalChain);
+			runSelectors.push_back(selector);
+			// selector->Print();
+			// std::cout << cutter.GetCut(region+oddString, isMC) << std::endl;
+			// exit(0);
+		}
+	}
+	std::cout << "[DEBUG addBranch] runSelectors size: " << runSelectors.size() << std::endl;
+
+
 
 	Long64_t entries = originalChain->GetEntries();
 	originalChain->LoadTree(originalChain->GetEntryNumber(0));
@@ -409,6 +445,10 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 	std::cout << "[STATUS] Get smearerCat for tree: " << originalChain->GetTitle()
 	          << "\t" << "with " << entries << " entries" << std::endl;
 	std::cerr << "[00%]";
+
+	int runIndexInit = (runSelectors.size() > 0) ? -1 : 0;
+
+	unsigned int catSelectorsSize = catSelectors.size();
 
 	for(Long64_t jentry = 0; jentry < entries; jentry++) {
 		originalChain->GetEntry(jentry);
@@ -421,16 +461,33 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 				catSelector_itr->first->UpdateFormulaLeaves();
 				if(catSelector_itr->second != NULL)       catSelector_itr->second->UpdateFormulaLeaves();
 			}
+			for(std::vector<TTreeFormula*>::const_iterator runSelector_itr = runSelectors.begin();
+				runSelector_itr != runSelectors.end();
+				runSelector_itr++){
+				(*runSelector_itr)->UpdateFormulaLeaves();
+			}
 		}
 
-		int evIndex = -1;
+		int evIndex  = -1;
+		int runIndex = runIndexInit;  // runIndex == -1 only if the event in not in any run range, 0 if no run range is defined or it is the first run range
 		bool _swap = false;
+
+		for( std::vector<TTreeFormula*>::const_iterator runSelector_itr = runSelectors.begin();
+			 runSelector_itr != runSelectors.end();
+			 runSelector_itr++){
+			if((*runSelector_itr)->EvalInstance() == true){
+				runIndex = runSelector_itr - runSelectors.begin();
+				break; // it would be more efficient if the run ranges is assumed to be ordered
+			}
+		}
+
 		for(std::vector< std::pair<TTreeFormula*, TTreeFormula*> >::const_iterator catSelector_itr = catSelectors.begin();
 		        catSelector_itr != catSelectors.end() && evIndex < 0;
 		        catSelector_itr++) {
 			_swap = false;
 			TTreeFormula *sel1 = catSelector_itr->first;
 			TTreeFormula *sel2 = catSelector_itr->second;
+			
 			//if(sel1==NULL) continue; // is it possible?
 			if(sel1->EvalInstance() == false) {
 				if(sel2 == NULL || sel2->EvalInstance() == false) continue;
@@ -443,8 +500,10 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 			evIndex = catSelector_itr - catSelectors.begin();
 		}
 
-		smearerCat[0] = evIndex;
+
+		smearerCat[0] = (evIndex>=0 && runIndex >= 0 ) ? evIndex + runIndex* catSelectorsSize : -1;
 		smearerCat[1] = _swap ? 1 : 0;
+//		smearerCatFolding = (runIndex >=0) ? catSelectorSize : -1;
 		newtree->Fill();
 		if(jentry % (entries / 100) == 0) std::cerr << "\b\b\b\b" << std::setw(2) << jentry / (entries / 100) << "%]";
 	}

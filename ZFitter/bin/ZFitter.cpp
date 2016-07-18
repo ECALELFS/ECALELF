@@ -1111,7 +1111,7 @@ int main(int argc, char **argv)
 	tmpFile->cd();
 	RooSmearer smearer("smearer", (tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL,
 	                   categories,
-	                   args_vec, args, energyBranchName);
+	                   args_vec, args, energyBranchName, regions.size());
 	smearer._isDataSmeared = vm.count("isDataSmeared");
 	if(vm.count("runToy")) smearer.SetPuWeight(false);
 	smearer.SetOnlyDiagonal(vm.count("onlyDiagonal"));
@@ -1141,6 +1141,8 @@ int main(int argc, char **argv)
 		activeBranchList.insert(tmpList.begin(), tmpList.end());
 		// add also the friend branches!
 	}
+	activeBranchList.insert("eleID");
+   activeBranchList.insert("smearerCat");
 
 	if(vm.count("loop")) {
 //     TFile *file = new TFile("evList.root","read");
@@ -1665,7 +1667,7 @@ int main(int argc, char **argv)
 				args.readFromFile(initFileName.c_str());
 			}
 			args.writeToStream(std::cout, kFALSE);
-			smearer.Init(commonCut.c_str(), eleID);
+			smearer.Init(commonCut.c_str(), eleID, 10000);
 		}
 		myClock.Start();
 		smearer.evaluate();

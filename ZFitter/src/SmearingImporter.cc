@@ -6,6 +6,8 @@
 #include <TDirectory.h>
 //#define DEBUG
 #include <TStopwatch.h>
+#include "TECALChain.h"
+
 #define SELECTOR
 #define FIXEDSMEARINGS
 SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut):
@@ -104,6 +106,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	std::vector<double> *pdfWeights = NULL;
 
 	Int_t           smearerCat[2];
+//	UInt_t          smearerCatFolding;
 	bool hasSmearerCat = false;
 
 	// for toy repartition
@@ -177,6 +180,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	if(chain->GetBranch("smearerCat") != NULL) {
 		std::cout << "[STATUS] Getting smearerCat branch for tree: " <<  chain->GetTitle() << std::endl;
 		chain->SetBranchAddress("smearerCat", smearerCat);
+//		chain->SetBranchAddress("smearerCatFolding", smearerCatFolding);
 		hasSmearerCat = true;
 	}
 
@@ -190,46 +194,8 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 		entries = nEvents;
 	}
 	chain->LoadTree(chain->GetEntryNumber(0));
-	Long64_t treenumber = -1;
+//	Long64_t treenumber = -1;
 
-
-	std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
-	if(hasSmearerCat == false) {
-		for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
-		        region_ele1_itr != _regionList.end();
-		        region_ele1_itr++) {
-			for(std::vector<TString>::const_iterator region_ele2_itr = region_ele1_itr;
-			        region_ele2_itr != _regionList.end();
-			        region_ele2_itr++) {
-
-				if(region_ele2_itr == region_ele1_itr) {
-					TString region = *region_ele1_itr;
-					region.ReplaceAll(_commonCut, "");
-					TTreeFormula *selector = new TTreeFormula("selector" + (region), cutter.GetCut(region + oddString, isMC), chain);
-					catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector, NULL));
-					//selector->Print();
-				} else if(!_onlyDiagonal) {
-					TString region1 = *region_ele1_itr;
-					TString region2 = *region_ele2_itr;
-					region1.ReplaceAll(_commonCut, "");
-					region2.ReplaceAll(_commonCut, "");
-					TTreeFormula *selector1 = new TTreeFormula("selector1" + region1 + region2,
-					        cutter.GetCut(region1 + oddString, isMC, 1) &&
-					        cutter.GetCut(region2 + oddString, isMC, 2),
-					        chain);
-					TTreeFormula *selector2 = new TTreeFormula("selector2" + region1 + region2,
-					        cutter.GetCut(region1 + oddString, isMC, 2) &&
-					        cutter.GetCut(region2 + oddString, isMC, 1),
-					        chain);
-					catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector1, selector2));
-					//selector1->Print();
-					//selector2->Print();
-
-				} else catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(NULL, NULL));
-
-			}
-		}
-	}
 
 	for(Long64_t jentry = 0; jentry < entries; jentry++) {
 		Long64_t entryNumber = chain->GetEntryNumber(jentry);
@@ -250,39 +216,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 		// reject events:
 		if(weight > 3) continue;
 
-		if (hasSmearerCat == false && chain->GetTreeNumber() != treenumber) {
-			treenumber = chain->GetTreeNumber();
-			for(std::vector< std::pair<TTreeFormula*, TTreeFormula*> >::const_iterator catSelector_itr = catSelectors.begin();
-			        catSelector_itr != catSelectors.end();
-			        catSelector_itr++) {
-
-				catSelector_itr->first->UpdateFormulaLeaves();
-				if(catSelector_itr->second != NULL)       catSelector_itr->second->UpdateFormulaLeaves();
-			}
-		}
-
 		int evIndex = -1;
 		bool _swap = false;
-		if(!hasSmearerCat) {
-			for(std::vector< std::pair<TTreeFormula*, TTreeFormula*> >::const_iterator catSelector_itr = catSelectors.begin();
-			        catSelector_itr != catSelectors.end();
-			        catSelector_itr++) {
-				_swap = false;
-				TTreeFormula *sel1 = catSelector_itr->first;
-				TTreeFormula *sel2 = catSelector_itr->second;
-				if(sel1 == NULL) continue; // is it possible?
-				if(sel1->EvalInstance() == false) {
-					if(sel2 == NULL || sel2->EvalInstance() == false) continue;
-					else _swap = true;
-				}
+//		evIndex = if(smearerCatFolding>0) ? smearerCat[0]%smearerCatFolding : smearerCat[0];
+		evIndex =  smearerCat[0];
+		_swap = smearerCat[1];
+		if(jentry < 2) std::cout << evIndex << "\t" << _swap << std::endl;
 
-				evIndex = catSelector_itr - catSelectors.begin();
-			}
-		} else {
-			evIndex = smearerCat[0];
-			_swap = smearerCat[1];
-			if(jentry < 2) std::cout << evIndex << "\t" << _swap << std::endl;
-		}
 		if(evIndex < 0) continue; // event in no category
 
 		ZeeEvent event;
@@ -434,6 +374,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	_chain->SetBranchStatus("etaEle", 1);
 	_chain->SetBranchStatus("phiEle", 1);
 	_chain->SetBranchStatus(_energyBranchName, 1);
+	_chain->SetBranchStatus("eleID", 1);
 	if(isToy) _chain->SetBranchStatus("eventNumber", 1);
 	//  std::cout << _chain->GetBranchStatus("seedXSCEle") <<  std::endl;
 	//  std::cout << _chain->GetBranchStatus("etaEle") <<  std::endl;
@@ -455,7 +396,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	if(_chain->GetBranch("ptWeight") != NULL)  _chain->SetBranchStatus("ptWeight", 1);
 	if(_chain->GetBranch("mcGenWeight") != NULL)  _chain->SetBranchStatus("mcGenWeight", 1);
 	if(_chain->GetBranch("smearerCat") != NULL) {
-		//std::cout << "[STATUS] Activating branch smearerCat" << std::endl;
+		std::cout << "[STATUS] Activating branch smearerCat" << std::endl;
 		_chain->SetBranchStatus("smearerCat", 1);
 	}
 
@@ -464,7 +405,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
 	        region_ele1_itr != _regionList.end();
 	        region_ele1_itr++) {
-		std::set<TString> branchNames = cutter.GetBranchNameNtuple(_commonCut + "-" + eleID_ + "-" + *region_ele1_itr);
+		std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr + "- " + _commonCut + "-" + eleID_ );
 		for(std::set<TString>::const_iterator itr = branchNames.begin();
 		        itr != branchNames.end(); itr++) {
 			_chain->SetBranchStatus(*itr, "1");
@@ -477,11 +418,16 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	TEntryList *oldList = _chain->GetEntryList();
 	if(oldList == NULL) {
 		std::cout << "[STATUS] Setting entry list: " << evListName << std::endl;
-		_chain->Draw(">>" + evListName, cutter.GetCut(_commonCut + "-" + eleID_, isMC), "entrylist");
+		std::cout << cutter.GetCut(_commonCut + "-" + eleID_, isMC) << std::endl;
+		_chain->Draw(">>" + evListName, cutter.GetCut(_commonCut + "-" + eleID_, isMC), "entrylist", nEvents);
 		//_chain->Draw(">>"+evListName, "", "entrylist");
 		TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
 		//  elist_all->SetBit(!kCanDelete);
-		_chain->SetEntryList(elist_all);
+//		_chain->SetEntryList(elist_all);
+		TECALChain *chain_ecal = (TECALChain*)_chain;
+		chain_ecal->TECALChain::SetEntryList(elist_all);
+		std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
+		_chain = dynamic_cast<TChain*>(chain_ecal);
 	}
 	for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
 	        region_ele1_itr != _regionList.end();

@@ -27,7 +27,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
                        std::vector<TString> regionList, ///<list of the region names (used for the categorization)
                        std::vector<RooArgSet> params, ///< parameters divided by category (also rooformulavar)
                        RooArgSet parset, ///< list of real variables
-                       TString energyBranchName
+                       TString energyBranchName, unsigned int foldingMC
                       ):
 	RooAbsReal(name, energyBranchName),
 	importer(regionList, energyBranchName),
@@ -36,6 +36,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
 	invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
 	deltaNLLMaxSmearToy(330),
 	_deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(1500), _nSmearToy(20),
+	_foldingMC(foldingMC),
 	nllBase(0),
 	nllVar("nll", "", 0, 1e20),
 	_isDataSmeared(false),
@@ -152,7 +153,12 @@ void RooSmearer::InitCategories(bool mcToy)
 // 	cat.data_events = &(mc_events_cache[index]);
 //       }
 			cat.data_events = &(data_events_cache[index]);
-			cat.mc_events = &(mc_events_cache[index]);
+			cat.mc_events = &(mc_events_cache[index%_foldingMC]); 
+
+			if(cat.data_events->size()==0 || cat.mc_events->size()==0){
+				++index;
+				continue;
+			}
 
 			cat.categoryName1 += *region_ele1_itr;
 			cat.categoryName2 += *region_ele2_itr;
