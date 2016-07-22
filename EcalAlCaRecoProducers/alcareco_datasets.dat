@@ -244,4 +244,3 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_
 276315-276585	/DoubleEG/Run2016D-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016D-ZSkim-Prompt_v2          caf database VALID RUN2016D
 #276315-276585	/DoubleEG/Run2016D-PromptReco-v2/AOD                       DoubleEG-Run2016D-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016D
 276315-276585	/DoubleEG/Run2016D-PromptReco-v2/MINIAOD                   DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
-273150-273730  /DoubleEG/Run2016B-PromptReco-v2/MINIAOD                    DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016B
