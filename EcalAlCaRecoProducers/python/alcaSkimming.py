@@ -180,7 +180,7 @@ process.MessageLogger.cerr = cms.untracked.PSet(
     limit = cms.untracked.int32(10000000)
     ),
     default = cms.untracked.PSet(
-    limit = cms.untracked.int32(10000000)
+    limit = cms.untracked.int32(100)
     ),
     Root_NoDictionary = cms.untracked.PSet(
                  optionalPSet = cms.untracked.bool(True),
@@ -279,6 +279,18 @@ process.MinEleNumberFilter.src = myEleCollection
 process.pfIsoEgamma = cms.Sequence()
 
 ###############################/
+############### JSON Filter
+if(options.doTree>0):
+    process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
+    if((options.doTreeOnly==0)):
+         # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
+         print "[INFO] Using json file"
+    # else:
+    #     if(len(options.jsonFile)>0):
+    #         print "[INFO] Using json file"
+    #         import FWCore.PythonUtilities.LumiList as LumiList
+    #         process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
+
     
 
 ################################# FILTERING EVENTS
@@ -377,7 +389,7 @@ else:
     print "** TrivialConditionRetriver defined"
     process.trivialCond = cms.Sequence( EcalTrivialConditionRetriever )
 
-process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron * process.reducedEcalRecHitsES)
+process.alcarerecoSeq=cms.Sequence( process.trivialCond * process.seqALCARECOEcalRecalElectron) # * process.reducedEcalRecHitsES)
 
 
 
@@ -546,8 +558,7 @@ else:
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
 
-process.NtupleEndPath = cms.EndPath(  process.zNtupleDumper  )
-
+process.NtupleEndPath = cms.EndPath( process.zNtupleDumper  )
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
@@ -558,18 +569,6 @@ if(not doTreeOnly):
         process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
             
 
-
-############### JSON Filter
-if(options.doTree>0):
-    process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
-    if((options.doTreeOnly==0)):
-         # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
-         print "[INFO] Using json file"
-    else:
-        if(len(options.jsonFile)>0):
-            print "[INFO] Using json file"
-            import FWCore.PythonUtilities.LumiList as LumiList
-            process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
 
 
 ############################################################
@@ -622,8 +621,8 @@ if(options.type=='ALCARAW'):
 
 elif(options.type=='ALCARERECO'):
     if(doTreeOnly):
-        process.NtuplePath = cms.Path( process.ntupleSeq)
-        process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
+        process.NtuplePath = cms.Path( process.ntupleSeq * process.zNtupleDumper)
+        process.schedule = cms.Schedule(process.NtuplePath) #, process.NtupleEndPath)
     else:
         if(options.doTree>0):
             process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
@@ -760,6 +759,9 @@ if(options.type=="ALCARERECO"):
         process.ecalLocalRecoSequence.replace(process.ecalMultiFitUncalibRecHit, process.ecalGlobalUncalibRecHit)
         process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
         process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
+        process.zNtupleDumper.uncalibRecHitCollectionEB = process.ecalRecHit.EBuncalibRecHitCollection
+        process.zNtupleDumper.uncalibRecHitCollectionEE = process.ecalRecHit.EEuncalibRecHitCollection
+
     else:
         print "[ERROR] only bunchSpacing of 50 and 25 are implemented"
         exit(1)

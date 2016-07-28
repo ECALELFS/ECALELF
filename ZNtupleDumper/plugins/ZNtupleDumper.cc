@@ -659,7 +659,12 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	        recHitCollectionEEToken_);
 	iEvent.getByToken(ebURHToken_, pEBUncRecHits);
 	iEvent.getByToken(eeURHToken_, pEEUncRecHits);
-
+	// if(pEBUncRecHits.isValid()==false){
+	// 	ebURHToken_ = consumes<EcalUncalibratedRecHitCollection>(edm::InputTag( "ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB"));
+	// 	eeURHToken_ = consumes<EcalUncalibratedRecHitCollection>(edm::InputTag( "ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE"));
+	// 	iEvent.getByToken(ebURHToken_, pEBUncRecHits);
+	// 	iEvent.getByToken(eeURHToken_, pEEUncRecHits);
+	// }
 
 	//------------------------------ electrons
 	if (eventType == ZMMG) {

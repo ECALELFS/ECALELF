@@ -12,7 +12,7 @@ STORAGE_ELEMENT=caf
 #UI_WORKING_DIR=prod_alcarereco
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco
 NTUPLE_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
-LUMIS_PER_JOB=100
+LUMIS_PER_JOB=50
 CREATE=y
 SUBMIT=y
 DOTREE=1
@@ -70,7 +70,7 @@ expertUsage(){
 
 #------------------------------ parsing
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:u: -l help,expertHelp,file_per_job:,nJobs:,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,rereco_remote_dir:,ui_working_dir:,scheduler:,createOnly,submitOnly,check,ntupleCheck,crabVersion:,json:,json_name:,doExtraCalibTree,doEleIDTree,noStandardTree,alcarerecoOnly,ntupleOnly,tutorial,weightsReco -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:u:v -l help,expertHelp,file_per_job:,nJobs:,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,rereco_remote_dir:,ui_working_dir:,scheduler:,createOnly,submitOnly,check,ntupleCheck,crabVersion:,json:,json_name:,doExtraCalibTree,doEleIDTree,noStandardTree,alcarerecoOnly,ntupleOnly,tutorial,weightsReco -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -89,27 +89,27 @@ do
 	-n|--datasetname) DATASETNAME=$2; shift ;;
 	--store) STORAGE_ELEMENT=$2; shift;;
 	--remote_dir) ALCARAW_REMOTE_DIR_BASE=$2; shift;;
- 	-t | --tag) TAGFILE=$2; echo "[OPTION] TAGFILE:$TAGFILE";shift;;
+ 	-t | --tag) TAGFILE=$2; echo "[OPTION `basename $0`] TAGFILE:$TAGFILE";shift;;
 
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) DOEXTRACALIBTREE="--doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
+	--doExtraCalibTree) echo "[OPTION `basename $0`] doing eleIDTree"; DOEXTRACALIBTREE="--doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doEleIDTree) echo "[OPTION `basename $0`] doing eleIDTree"; let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
 	--noStandardTree) EXTRAOPTION="$EXTRAOPTION --noStandardTree"; let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
-	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="$EXTRAOPTION --createOnly";;
-	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="$EXTRAOPTION --submitOnly";;
-	--check)      echo "[OPTION] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
-	--ntupleCheck)      echo "[OPTION] checking ntuple jobs"; unset CREATE; unset SUBMIT; NTUPLECHECK=y; EXTRAOPTION="--check";;
-	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; OUTFILES=""; DOTREE=0;;
-	--weightsReco)    echo "[OPTION] using weights for local reco"; BUNCHSPACING=-1;;
-	--ntupleOnly)     echo "[OPTION] ntupleOnly"; NTUPLEONLY=y;;
+	--createOnly) echo "[OPTION `basename $0`] createOnly"; unset SUBMIT; EXTRAOPTION="$EXTRAOPTION --createOnly";;
+	--submitOnly) echo "[OPTION `basename $0`] submitOnly"; unset CREATE; EXTRAOPTION="$EXTRAOPTION --submitOnly";;
+	--check)      echo "[OPTION `basename $0`] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
+	--ntupleCheck)      echo "[OPTION `basename $0`] checking ntuple jobs"; unset CREATE; unset SUBMIT; NTUPLECHECK=y; EXTRAOPTION="--check";;
+	--alcarerecoOnly) echo "[OPTION `basename $0`] alcarerecoOnly"; OUTFILES=""; DOTREE=0;;
+	--weightsReco)    echo "[OPTION `basename $0`] using weights for local reco"; BUNCHSPACING=-1;;
+	--ntupleOnly)     echo "[OPTION `basename $0`] ntupleOnly"; NTUPLEONLY=y;;
 	--rereco_remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
 	--scheduler) SCHEDULER=$2; shift;;
 	-f|--filelist) FILELIST="$FILELIST $2"; echo ${FILELIST}; shift ;;
 	-s|--skim) SKIM=$2 ; shift;;
 	-u | --ui_working_dir) UI_WORKING_DIR=$2; shift;;
-    --tutorial)   echo "[OPTION] Activating the tutorial mode"; TUTORIAL=y;;
+    --tutorial)   echo "[OPTION `basename $0`] Activating the tutorial mode"; TUTORIAL=y;;
 	    
     (--) shift; break;;
     (-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
@@ -118,10 +118,6 @@ do
     shift
 done
 
-if [ -n "${VERBOSE}" ];then
-	echo "DEBUG ALCARERECO DOEXTRACALIBTREE $DOEXTRACALIBTREE"
-	echo "DEBUG DOTREEE $DOTREE"
-fi
 
 #------------------------------ checking
 if [ -z "$DATASETPATH" ];then 
@@ -189,20 +185,11 @@ if [ -n "${TUTORIAL}" ];then
     /bin/sleep 5s
 fi
 
-if [ -n "${VERBOSE}" ];then
-	echo "[INFO] RUNRAGE=$RUNRANGE"
-	echo "[INFO] DATASETPATH=$DATASETPATH"
-	echo "[INFO] DATASETNAME=$DATASETNAME"
-	echo "[INFO] ALCARAW_REMOTE_DIR_BASE=$ALCARAW_REMOTE_DIR_BASE"
-	echo "[INFO] USER_REMOTE_DIR_BASE=${USER_REMOTE_DIR_BASE:=alcarereco}"
-	echo "[INFO] NTUPLE_REMOTE_DIR_BASE=${NTUPLE_REMOTE_DIR_BASE}"
-#echo "[INFO] TAGFILE=$TAGFILE"
-fi
-###############################
 
+##############################
 #------------------------------
 TAG=`basename $TAGFILE .py`
-JOBNAME="${DATASETNAME}-${TAG}" 
+
 
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
@@ -232,6 +219,13 @@ case $DATASETNAME in
 	*-weightsReco) BUNCHSPACING=-1;;
 esac
 
+case ${BUNCHSPACING} in 
+	-1)
+		DATASETNAME=${DATASETNAME}-weightsReco
+		;;
+esac
+
+JOBNAME="${DATASETNAME}-${TAG}" 
 
 ALCARAW_REMOTE_DIR=$ALCARAW_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${RUNRANGE}
 setUserRemoteDirAlcarereco $USER_REMOTE_DIR_BASE
@@ -242,6 +236,18 @@ if [ -n "${TAG}" ];then NTUPLE_REMOTE_DIR=$NTUPLE_REMOTE_DIR/${TAG}; fi
 NTUPLE_REMOTE_DIR=$NTUPLE_REMOTE_DIR/${DATASETNAME}/${RUNRANGE}
 if [ -n "${JSONNAME}" ];then NTUPLE_REMOTE_DIR=$NTUPLE_REMOTE_DIR/${JSONNAME}; fi
 if [ -n "${EXTRANAME}" ];then NTUPLE_REMOTE_DIR=$NTUPLE_REMOTE_DIR/${EXTRANAME}; fi
+
+if [ -n "${VERBOSE}" ];then
+	echo "[INFO] RUNRAGE=$RUNRANGE"
+	echo "[INFO] DATASETPATH=$DATASETPATH"
+	echo "[INFO] DATASETNAME=$DATASETNAME"
+	echo "[INFO] ALCARAW_REMOTE_DIR_BASE=$ALCARAW_REMOTE_DIR_BASE"
+	echo "[INFO] USER_REMOTE_DIR_BASE=${USER_REMOTE_DIR_BASE:=alcarereco}"
+	echo "[INFO] NTUPLE_REMOTE_DIR_BASE=${NTUPLE_REMOTE_DIR_BASE}"
+	echo "[VERBOSE INFO] BUNCHSPACING=${BUNCHSPACING}"
+#echo "[INFO] TAGFILE=$TAGFILE"
+fi
+###############################
 
 #check if rereco already done
 #if [ -n "${NTUPLE}" ];then DOTREE=1; fi
@@ -477,7 +483,7 @@ elif [ -n "${CREATE}" ];then
 fi
 
 
-OUTFILES=`echo ${OUTFILES} | sed 's|,| |'`
+OUTFILES=`echo ${OUTFILES} | sed 's|,| |g'`
 
 if [ -n "${CHECK}" ];then
 	case ${CRABVERSION} in

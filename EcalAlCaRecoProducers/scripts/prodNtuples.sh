@@ -22,6 +22,7 @@ CRABVERSION=2
 FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
+BUNCHSPACING=0
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -44,6 +45,7 @@ usage(){
     echo " *** for DATA ***"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root"
+	echo "    --weightsReco: using weights for local reco"
 
     echo "---------- optional common"
     echo "    --doExtraCalibTree"
@@ -77,7 +79,7 @@ expertUsage(){
 #------------------------------ parsing
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -127,7 +129,7 @@ do
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
 		    if [ "${isMC}" == "1" ]; then
-			echo "[ERROR] Incompatible options: TYPE=${TYPE} and --isMC" >> /dev/stderr
+			echo "[ERROR `basename $0`] Incompatible options: TYPE=${TYPE} and --isMC" >> /dev/stderr
 			exit 1
 		    fi
 		    ;;
@@ -179,6 +181,7 @@ do
 
  	--file_per_job) echo "[OPTION] file per job: $2"; FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
+	--weightsReco)    echo "[OPTION `basename $0`] using weights for local reco"; BUNCHSPACING=-1;;
 
 	(--) shift; break;;
 	(-*) usage; echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
@@ -218,6 +221,12 @@ if [ -z "$JSONNAME" -a "$isMC" != "1" ];then
     usage >> /dev/stderr
     exit 1
 fi
+
+case $DATASETNAME in
+#	*-50nsReco) BUNCHSPACING=50;;
+#	*-25nsReco) BUNCHSPACING=25;;
+	*-weightsReco) BUNCHSPACING=-1;;
+esac
 
 #Setting the ENERGY variable
 setEnergy $DATASETPATH
@@ -439,7 +448,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE
+pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}
 get_edm_output=1
 output_file=${OUTFILES}
 
@@ -492,7 +501,7 @@ if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
     #echo "crab -c ${UI_WORKING_DIR} -submit"
 fi
 
-OUTFILES=`echo ${OUTFILES} | sed 's|,| |'`
+OUTFILES=`echo ${OUTFILES} | sed 's|,| |g'`
 
 if [ -n "${CHECK}" ];then
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then

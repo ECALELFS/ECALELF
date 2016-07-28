@@ -56,7 +56,7 @@ STORAGE_PATH=`grep 'storage_path=' ${UI_WORKING_DIR}/share/crab.cfg  | sed 's|/s
 NJOBS=`grep 'number_of_jobs='  ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
 #echo $STORAGE_PATH $USER_REMOTE_DIR
 #echo "RUNRANGE=${RUNRANGE:=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`}"
-#RUNRANGE=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
+RUNRANGE=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
 if [ -z "$RUNRANGE" ];then 
     echo "RUNRANGE=${RUNRANGE:=allRange}"
 fi
@@ -64,13 +64,15 @@ DATASETNAME=`echo ${USER_REMOTE_DIR} | sed "s|${RUNRANGE}.*||"`
 DATASETNAME=`basename $DATASETNAME`
 
 #echo "DATASETNAME=${DATASETNAME}"
+#echo ${USER_REMOTE_DIR}
 #crab -c ${UI_WORKING_DIR} -report | grep srmPath | cut -d ' ' -f 6
 
 ## make the list of files in the output directory assuming there are
 ## only unmerged output files from this process 
 case ${USER_REMOTE_DIR} in
     */unmerged)
-	echo "MERGED_REMOTE_DIR=${MERGED_REMOTE_DIR:=`dirname ${USER_REMOTE_DIR}`}"
+	#echo "MERGED_REMOTE_DIR=${MERGED_REMOTE_DIR:=`dirname ${USER_REMOTE_DIR}`}"
+		MERGED_REMOTE_DIR=${MERGED_REMOTE_DIR:=`dirname ${USER_REMOTE_DIR}`}
 	;;
     */UNMERGED)
 	echo "MERGED_REMOTE_DIR=${MERGED_REMOTE_DIR:=`dirname ${USER_REMOTE_DIR}`}"
@@ -86,8 +88,8 @@ esac
 
 if [ "${FILENAME_BASE}" == "PUDumper" ];then
     MERGEDFILE=PUDumper-${DATASETNAME}-${RUNRANGE}.root
-elif [ "`echo ${FILENAME_BASE} | awk '(/extraID/){printf(\"1\")}'`" == "1" ]; then
-    MERGEDFILE=extraID-${DATASETNAME}-${RUNRANGE}.root
+elif [ "`echo ${FILENAME_BASE} | awk '(/eleIDTree/){printf(\"1\")}'`" == "1" ]; then
+    MERGEDFILE=eleIDTree-${DATASETNAME}-${RUNRANGE}.root
 elif [ "`echo ${FILENAME_BASE} | awk '(/extraCalibTree/){printf(\"1\")}'`" == "1" ]; then
     MERGEDFILE=extraCalibTree-${DATASETNAME}-${RUNRANGE}.root
 else
@@ -116,9 +118,15 @@ fi
 #echo "MERGED_REMOTE_DIR=${MERGED_REMOTE_DIR:=${USER_REMOTE_DIR}}"
 rm filelist/ -Rf
 if [ -n "${FILENAME_BASE}" ];then
-    makefilelist.sh -g ${FILENAME_BASE} unmerged ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
+    makefilelist.sh -g ${FILENAME_BASE} ${FILENAME_BASE} ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
 else
+	FILENAME_BASE=unmerged
     makefilelist.sh unmerged ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
+fi
+
+if [ "`wc -l filelist/${FILENAME_BASE}.list`" == "0" ];then
+	echo "[ERROR `basename $0`] file list is empty" >> /dev/stderr
+	exit 1
 fi
 
 if [ ! -d "/tmp/$USER" ];then
@@ -142,7 +150,8 @@ fi
 #     exit 1
 # fi
 
-hadd -f /tmp/$USER/${MERGEDFILE} `cat filelist/unmerged.list` || exit 1
+
+hadd -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
 
 # copy the merged file to the repository
 # dirname is needed to remove "unmerged" subdir from the path
@@ -150,7 +159,7 @@ xrdcp -Nv /tmp/$USER/${MERGEDFILE} ${eosFile} || exit 1
 
 # let's remove the files
 if [ -z "${NOREMOVE}" ];then
-    for file in `cat filelist/unmerged.list`
+    for file in `cat filelist/${FILENAME_BASE}.list`
       do
       file=`echo $file | sed 's|root://eoscms.cern.ch/||'`
       eos.select rm $file
@@ -161,7 +170,7 @@ if [ -z "${NOREMOVE}" ];then
     fi
 fi
 
-rm filelist/unmerged.list
+#rm filelist/${FILENAME_BASE}.list
 
 touch $UI_WORKING_DIR/res/merged_${FILENAME_BASE}
 

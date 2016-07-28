@@ -1,9 +1,9 @@
 #!/bin/bash
-json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt
-jsonName=271036_274443-Prompt
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-275783_13TeV_PromptReco_Collisions16_JSON.txt
+jsonName=271036_275783-Prompt
 
-json25ns=/afs/cern.ch/user/s/shervin/scratch1/ECALELF/CMSSW_8_0_8/src/Calibration/EcalAlCaRecoProducers/myjson.json
-jsonName=myJsonTest
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt
+jsonName=271036_276811-ICHEP
 
 #CHECK="--check"
 # config/reRecoTags/pulseShapeStudy_Run2015_rereco_v1.py
@@ -17,8 +17,9 @@ jsonName=myJsonTest
 #config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
 #config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
 # config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-config/reRecoTags/Cal_Jun2016_IC_phiSym_v{1,2}.py config/reRecoTags/Cal_Jun2016_IC_piZero_v1.py
-for tagfile in config/reRecoTags/Cal_Jun2016_ref_ADCtoGeV.py
+#config/reRecoTags/Cal_Jun2016_IC_phiSym_v{1,2}.py config/reRecoTags/Cal_Jun2016_IC_piZero_v1.py
+#config/reRecoTags/80X_dataRun2_Prompt_v10_PS_v1.py
+for tagfile in  config/reRecoTags/80X_dataRun2_Prompt_v10_PS_v1.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
@@ -34,22 +35,28 @@ do
 				;;
 			*)
 				echo 
-## 			./scripts/RerecoQuick.sh -p RUN2015C50ns -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK}
-				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --alcarerecoOnly --json=$json25ns --json_name="noJSON" ${CHECK} 
-#				./scripts/RerecoQuick.sh -p CAL_JUN2016 -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} ## have to fix alcaSkimming, jsonFilter filters also the alcarereco events because ntuples produced in the same path!
+#				./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
+				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --weightsReco
+				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --weightsReco --singleEle
+#				./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --singleEle
 				;;
 		esac
 	done
 
-	for CHECK in --check
+
+	for CHECK in  --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
-#				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName  --ntupleOnly  --singleEle --weightsReco $CHECK
+2#				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName  --ntupleOnly  --singleEle --weightsReco $CHECK
 				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName  --ntupleOnly  --singleEle  $CHECK
 				;;
 			*)
-				./scripts/RerecoQuick.sh -p CAL_JUN2016    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
+		   		./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly #--doEleIDTree --doExtraCalibTree 
+				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly --doEleIDTree --doExtraCalibTree --weightsReco
+			   #./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly --doEleIDTree --doExtraCalibTree --weightsReco --singleEle
+			   #./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly --doEleIDTree --doExtraCalibTree --singleEle
+#				./scripts/RerecoQuick.sh -p CAL_JUN2016    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
 				;;
 		esac
 	done

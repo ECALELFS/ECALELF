@@ -57,7 +57,7 @@ while [ $# -gt 0 ]
 do
     case $1 in
 	-h|--help) usage; exit 0;;
-	-t | --tag) TAGFILE=$2; echo "[OPTION] TAGFILE:$TAGFILE"; TAG=`basename ${TAGFILE} .py`; shift;;
+	-t | --tag) TAGFILE=$2; echo "[OPTION `basename $0`] TAGFILE:$TAGFILE"; TAG=`basename ${TAGFILE} .py`; shift;;
 	-p | --period) PERIOD=$2; shift;;
 	--tutorial) 
 	    echo "[OPTION] Entering in tutorial mode"
@@ -77,13 +77,13 @@ do
 		    ;;
 	    esac
 	    shift;;
-	--singleEle) echo "[OPTION] singleEle"; SINGLEELE=y;;
-	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
-	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
-	--check)      echo "[OPTION] checking jobs"; CHECK=y; EXTRAOPTION="--check";;
-	--ntupleCheck)      echo "[OPTION] checking nutple jobs"; NUTPLECHECK=y; EXTRAOPTION="--ntupleCheck";;
-	--alcarerecoOnly) echo "[OPTION] alcarerecoOnly"; unset NTUPLE; EXTRAEXTRAOPTION="--alcarerecoOnly";;
-	--ntupleOnly) echo "[OPTION] ntupleOnly"; unset RERECO; fileList=alcarereco_datasets.dat;; #EXTRAEXTRAOPTION="--ntupleOnly";;
+	--singleEle) echo "[OPTION `basename $0`] singleEle"; SINGLEELE=y;;
+	--createOnly) echo "[OPTION `basename $0`] createOnly"; unset SUBMIT; EXTRAOPTION="--createOnly";;
+	--submitOnly) echo "[OPTION `basename $0`] submitOnly"; unset CREATE; EXTRAOPTION="--submitOnly";;
+	--check)      echo "[OPTION `basename $0`] checking jobs"; CHECK=y; EXTRAOPTION="--check";;
+	--ntupleCheck)      echo "[OPTION `basename $0`] checking nutple jobs"; NUTPLECHECK=y; EXTRAOPTION="--ntupleCheck";;
+	--alcarerecoOnly) echo "[OPTION `basename $0`] alcarerecoOnly"; unset NTUPLE; EXTRAEXTRAOPTION="--alcarerecoOnly";;
+	--ntupleOnly) echo "[OPTION `basename $0`] ntupleOnly"; unset RERECO; fileList=alcarereco_datasets.dat;; #EXTRAEXTRAOPTION="--ntupleOnly";;
  	--crabVersion) crabVersion=$2;  shift;;
  	--json) JSONFILE="--json=$2";  shift;;
 	--json_name) JSONNAME="--json_name=$2"; shift;;
@@ -162,23 +162,30 @@ for dataset in $datasets
 #	echo " [INFO] Dataset $dataset"
 	if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
 	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
-	if [ -n "${DOWEIGHTSRECO}" ];then 
-		if [ "`echo $dataset | grep -c weightsReco`" == "0" ]; then continue; fi
-	else
-		if [ "`echo $dataset | grep -c weightsReco`" != "0" ]; then continue; fi
-	fi
+	# if [ -n "${DOWEIGHTSRECO}" ];then 
+	# 	if [ "`echo $dataset | grep -c weightsReco`" == "0" ]; then continue; fi
+	# else
+	# 	if [ "`echo $dataset | grep -c weightsReco`" != "0" ]; then continue; fi
+	# fi
 	echo "============================================================"
 	if [ -n "${RERECO}" ];then
-		./scripts/prodAlcarereco.sh -t ${TAGFILE} \
-			--scheduler=$SCHEDULER ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
-  			${JSONFILE} ${JSONNAME} --crabVersion=${crabVersion}\
-      ${TUTORIAL} $dataset 
+		if [ -n "${DOWEIGHTSRECO}" ];then
+			./scripts/prodAlcarereco.sh  -t ${TAGFILE} \
+				--scheduler=$SCHEDULER --weightsReco --doExtraCalibTree --doEleIDTree ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+  				${JSONFILE} ${JSONNAME} --crabVersion=${crabVersion} \
+				${TUTORIAL} $dataset 
+		else
+			./scripts/prodAlcarereco.sh  -t ${TAGFILE} \
+			--scheduler=$SCHEDULER --doExtraCalibTree --doEleIDTree  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+  				${JSONFILE} ${JSONNAME} --crabVersion=${crabVersion} \
+				${TUTORIAL} $dataset 
+		fi
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
-			--scheduler=$SCHEDULER --file_per_job=10   ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   			${JSONFILE} ${JSONNAME} \
+			--scheduler=$SCHEDULER --file_per_job=5  --extraName=withExtras3  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
 			${TUTORIAL} $dataset 
-
+#			--scheduler=$SCHEDULER --file_per_job=5 --doExtraCalibTree --doEleIDTree  --extraName=withExtras2  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
 	fi
 	
 done
