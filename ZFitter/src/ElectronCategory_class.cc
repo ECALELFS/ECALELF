@@ -975,6 +975,28 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			continue;
 		}
 
+		//--------------- Laser correction seedLCSCEle
+		if(string.Contains("LC")) {
+			TObjArray *splitted = string.Tokenize("_");
+			if(splitted->GetEntries() < 3) {
+				std::cerr << "ERROR: incomplete LC region definition" << std::endl;
+				continue;
+			}
+			TObjString *Objstring1 = (TObjString *) splitted->At(1);
+			TObjString *Objstring2 = (TObjString *) splitted->At(2);
+
+			TString string1 = Objstring1->GetString();
+			TString string2 = Objstring2->GetString();
+
+			TCut cut1("seedLCSCEle >= " + string1);
+			TCut cut2("seedLCSCEle <  " + string2);
+			cut_string += cut1 && cut2;
+			cutSet.insert(TString(cut1));
+			cutSet.insert(TString(cut2));
+			delete splitted;
+			continue;
+		}
+
 
 #ifdef GAP
 		//--------------- Gap
