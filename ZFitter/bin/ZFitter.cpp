@@ -1468,7 +1468,7 @@ int main(int argc, char **argv) {
   //  data->SetBranchStatus("ele1_EOverP",1);
   data->SetBranchStatus("etaSCEle",1);
   data->SetBranchStatus("phiSCEle",1);
-  data->SetBranchStatus("energySCEle",1);
+  data->SetBranchStatus("energySCEle_must",1);
   data->SetBranchStatus("energySCEle_corr",1);
   data->SetBranchStatus("esEnergySCEle",1);
   data->SetBranchStatus("pAtVtxGsfEle",1);
@@ -1485,10 +1485,10 @@ int main(int argc, char **argv) {
   data->SetBranchAddress("etaSCEle", &etaSCEle);
   data->SetBranchAddress("phiSCEle", &phiSCEle);
   if( useRegression < 1 )
-    data->SetBranchAddress("energySCEle", &energySCEle);
+    data->SetBranchAddress("energySCEle_must", &energySCEle);
   else
     data->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
-  data->SetBranchAddress("energySCEle", &energySCEle);
+  //  data->SetBranchAddress("energySCEle_corr", &energySCEle);
   data->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
   data->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
   data->SetBranchAddress("seedXSCEle", &seedXSCEle);
@@ -1505,7 +1505,7 @@ int main(int argc, char **argv) {
   //  mc->SetBranchStatus("ele1_EOverP",1);
   mc->SetBranchStatus("etaSCEle",1);
   mc->SetBranchStatus("phiSCEle",1);
-  mc->SetBranchStatus("energySCEle",1);
+  mc->SetBranchStatus("energySCEle_must",1);
   mc->SetBranchStatus("energySCEle_corr",1);
   mc->SetBranchStatus("esEnergySCEle",1);
   mc->SetBranchStatus("pAtVtxGsfEle",1);
@@ -1522,10 +1522,10 @@ int main(int argc, char **argv) {
   mc->SetBranchAddress("etaSCEle", &etaSCEle);
   mc->SetBranchAddress("phiSCEle", &phiSCEle);
   if( useRegression < 1 )
-    mc->SetBranchAddress("energySCEle", &energySCEle);
+    mc->SetBranchAddress("energySCEle_must", &energySCEle);
   else
     mc->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
-  mc->SetBranchAddress("energySCEle", &energySCEle);
+  //  mc->SetBranchAddress("energySCEle_corr", &energySCEle);
   mc->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
   mc->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
   mc->SetBranchAddress("seedXSCEle", &seedXSCEle);
@@ -1596,12 +1596,28 @@ int main(int argc, char **argv) {
   
   for(int ientry = 0; ientry < mc->GetEntries(); ++ientry)
   {
-    if( (ientry%10000 == 0) ) std::cout << "reading MC entry " << ientry << "\r" << std::endl;//std::flush;
+    if( (ientry%10000 == 0) ) std::cout << "reading MC entry " << ientry <<"/"<<mc->GetEntries()<< "\r" << std::endl;//std::flush;
     mc->GetEntry(ientry);
     
     // selections
     if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
+    if( (strcmp(EBEE.c_str(),"EB_0_1") == 0) && (fabs(etaSCEle[0]) > 1.0)) continue; // inner barrel
+    if( (strcmp(EBEE.c_str(),"EB_1_1479") == 0) && (fabs(etaSCEle[0]) < 1.0 || fabs(etaSCEle[0]) > 1.479) )                     continue; // barrel
     if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_1479_2") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_2_25") == 0) && (fabs(etaSCEle[0]) < 2.0 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEp") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_1479_2") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_25") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_225") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_225_25") == 0) && (etaSCEle[0] < 2.25 || etaSCEle[0]>2.25) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEm") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_1479_2") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_25") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_225") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_225_25") == 0) && (etaSCEle[0] > -2.25 || etaSCEle[0]<-2.5) ) continue; // endcap
 
     if( (absEtaMin != -1.) && (absEtaMax != -1.) )
     {
@@ -1650,7 +1666,23 @@ int main(int argc, char **argv) {
     
     // selections
     if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
+    if( (strcmp(EBEE.c_str(),"EB_0_1") == 0) && (fabs(etaSCEle[0]) > 1.0)) continue; // inner barrel
+    if( (strcmp(EBEE.c_str(),"EB_1_1479") == 0) && (fabs(etaSCEle[0]) < 1.0 || fabs(etaSCEle[0]) > 1.479) )                     continue; // barrel
     if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_1479_2") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_2_25") == 0) && (fabs(etaSCEle[0]) < 2.0 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEp") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_1479_2") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_25") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_225") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_225_25") == 0) && (etaSCEle[0] < 2.25 || etaSCEle[0]>2.25) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEm") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_1479_2") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_25") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_225") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_225_25") == 0) && (etaSCEle[0] > -2.25 || etaSCEle[0]<-2.5) ) continue; // endcap
     
     if( (absEtaMin != -1.) && (absEtaMax != -1.) )
     {
@@ -2428,7 +2460,7 @@ int main(int argc, char **argv) {
   g_c_fit -> Draw("EP,same");
   g_las -> SetLineColor(kAzure-2);
   g_las -> SetLineWidth(2);
-  g_las -> Draw("L,same");
+  //  g_las -> Draw("L,same");
   
   TLegend* legend = new TLegend(0.60,0.78,0.90,0.94);
   legend -> SetLineColor(kWhite);
@@ -2439,7 +2471,7 @@ int main(int argc, char **argv) {
   legend -> SetTextSize(0.04);
   legend -> AddEntry(g_c_fit,"with LM correction","PL");
   legend -> AddEntry(g_fit,  "without LM correction","PL");
-  legend -> AddEntry(g_las,  "1 / LM correction","L");
+  //  legend -> AddEntry(g_las,  "1 / LM correction","L");
   legend -> Draw("same");
   
   char latexBuffer[250];
@@ -2461,7 +2493,7 @@ int main(int argc, char **argv) {
   latex2 -> SetTextSize(0.05);
   latex2 -> Draw("same");
   
-  if( strcmp(EBEE.c_str(),"EB") == 0 )
+  if( strcmp(EBEE.c_str(),"EB") == 0 || strcmp(EBEE.c_str(),"EB_0_1") == 0 || strcmp(EBEE.c_str(),"EB_1_1479") == 0)
     sprintf(latexBuffer,"ECAL Barrel");
   else
     sprintf(latexBuffer,"ECAL Endcap");
@@ -2815,7 +2847,7 @@ int main(int argc, char **argv) {
   //  data->SetBranchStatus("ele1_EOverP",1);
   data->SetBranchStatus("etaSCEle",1);
   data->SetBranchStatus("phiSCEle",1);
-  data->SetBranchStatus("energySCEle",1);
+  data->SetBranchStatus("energySCEle_must",1);
   data->SetBranchStatus("energySCEle_corr",1);
   data->SetBranchStatus("esEnergySCEle",1);
   data->SetBranchStatus("pAtVtxGsfEle",1);
@@ -2832,10 +2864,10 @@ int main(int argc, char **argv) {
   data->SetBranchAddress("etaSCEle", &etaSCEle);
   data->SetBranchAddress("phiSCEle", &phiSCEle);
   if( useRegression < 1 )
-    data->SetBranchAddress("energySCEle", &energySCEle);
+    data->SetBranchAddress("energySCEle_must", &energySCEle);
   else
     data->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
-  data->SetBranchAddress("energySCEle", &energySCEle);
+  //  data->SetBranchAddress("energySCEle", &energySCEle);
   data->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
   data->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
   data->SetBranchAddress("seedXSCEle", &seedXSCEle);
@@ -2852,7 +2884,7 @@ int main(int argc, char **argv) {
   //  mc->SetBranchStatus("ele1_EOverP",1);
   mc->SetBranchStatus("etaSCEle",1);
   mc->SetBranchStatus("phiSCEle",1);
-  mc->SetBranchStatus("energySCEle",1);
+  mc->SetBranchStatus("energySCEle_must",1);
   mc->SetBranchStatus("energySCEle_corr",1);
   mc->SetBranchStatus("esEnergySCEle",1);
   mc->SetBranchStatus("pAtVtxGsfEle",1);
@@ -2869,10 +2901,10 @@ int main(int argc, char **argv) {
   mc->SetBranchAddress("etaSCEle", &etaSCEle);
   mc->SetBranchAddress("phiSCEle", &phiSCEle);
   if( useRegression < 1 )
-    mc->SetBranchAddress("energySCEle", &energySCEle);
+    mc->SetBranchAddress("energySCEle_must", &energySCEle);
   else
     mc->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
-  mc->SetBranchAddress("energySCEle", &energySCEle);
+  //  mc->SetBranchAddress("energySCEle", &energySCEle);
   mc->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
   mc->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
   mc->SetBranchAddress("seedXSCEle", &seedXSCEle);
@@ -2948,7 +2980,23 @@ int main(int argc, char **argv) {
     
     // selections
     if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
+    if( (strcmp(EBEE.c_str(),"EB_0_1") == 0) && (fabs(etaSCEle[0]) > 1.0)) continue; // inner barrel
+    if( (strcmp(EBEE.c_str(),"EB_1_1479") == 0) && (fabs(etaSCEle[0]) < 1.0 || fabs(etaSCEle[0]) > 1.479) )                     continue; // barrel
     if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_1479_2") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_2_25") == 0) && (fabs(etaSCEle[0]) < 2.0 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEp") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_1479_2") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_25") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_225") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_225_25") == 0) && (etaSCEle[0] < 2.25 || etaSCEle[0]>2.25) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEm") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_1479_2") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_25") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_225") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_225_25") == 0) && (etaSCEle[0] > -2.25 || etaSCEle[0]<-2.5) ) continue; // endcap
 
     if( (absEtaMin != -1.) && (absEtaMax != -1.) )
     {
@@ -2995,7 +3043,23 @@ int main(int argc, char **argv) {
     
     // selections
     if( (strcmp(EBEE.c_str(),"EB") == 0) && (fabs(etaSCEle[0]) > 1.479) )                    continue; // barrel
+    if( (strcmp(EBEE.c_str(),"EB_0_1") == 0) && (fabs(etaSCEle[0]) > 1.0)) continue; // inner barrel
+    if( (strcmp(EBEE.c_str(),"EB_1_1479") == 0) && (fabs(etaSCEle[0]) < 1.0 || fabs(etaSCEle[0]) > 1.479) )                     continue; // barrel
     if( (strcmp(EBEE.c_str(),"EE") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_1479_2") == 0) && (fabs(etaSCEle[0]) < 1.479 || fabs(etaSCEle[0])>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EE_2_25") == 0) && (fabs(etaSCEle[0]) < 2.0 || fabs(etaSCEle[0])>2.5) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEp") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_1479_2") == 0) && (etaSCEle[0] < 1.479 || etaSCEle[0]>2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_25") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_2_225") == 0) && (etaSCEle[0] < 2.0 || etaSCEle[0]>2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEp_225_25") == 0) && (etaSCEle[0] < 2.25 || etaSCEle[0]>2.25) ) continue; // endcap
+
+    if( (strcmp(EBEE.c_str(),"EEm") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.5 ) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_1479_2") == 0) && (etaSCEle[0] > -1.479 || etaSCEle[0]<-2.0) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_25") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.5) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_2_225") == 0) && (etaSCEle[0] > -2.0 || etaSCEle[0]<-2.25) ) continue; // endcap
+    if( (strcmp(EBEE.c_str(),"EEm_225_25") == 0) && (etaSCEle[0] > -2.25 || etaSCEle[0]<-2.5) ) continue; // endcap
     
     if( (absEtaMin != -1.) && (absEtaMax != -1.) )
     {
@@ -3662,7 +3726,7 @@ int main(int argc, char **argv) {
   latex2 -> SetTextSize(0.05);
   latex2 -> Draw("same");
   
-  if( strcmp(EBEE.c_str(),"EB") == 0 )
+  if( strcmp(EBEE.c_str(),"EB") == 0 || strcmp(EBEE.c_str(),"EB_0_1") == 0 || strcmp(EBEE.c_str(),"EB_1_1479") == 0)
     sprintf(latexBuffer,"ECAL Barrel");
   else
     sprintf(latexBuffer,"ECAL Endcap");
