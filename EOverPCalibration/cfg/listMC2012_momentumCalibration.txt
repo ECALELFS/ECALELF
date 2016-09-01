@@ -1,6 +1,8 @@
 ##WEIGHTS
-root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v4-weightsReco/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
-root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v3-weightsReco/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
+eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/ntupleEoP/data-DoubleEG-Run2016BCD_ZSkim_12p9fb_weights.root
+
+#root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v4-weightsReco/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
+#root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v3-weightsReco/256584-258158/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root
 
 #MULTIFIT
 #root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Nov2015_PS_v1/DoubleEG-ZSkim-Run2015D-Prompt-v4-25nsReco/258159-260737/246908-260627-Prompt_25ns-v1-full5x5fix-golden_silver/eopBis/unmerged-allRange.root

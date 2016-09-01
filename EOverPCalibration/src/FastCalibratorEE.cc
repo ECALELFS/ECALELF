@@ -238,6 +238,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    if (!(jentry%1000000))std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
 
    if (eventNumber==471368767) continue; //this event needs to be debugged..
+   //   if (runNumber>276243) continue; //LUCATEMP
 
    float pIn, FdiEta;
    ///=== electron tight W or Z only Endcap
@@ -532,6 +533,7 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
         nbytes += nb;
         
 	if (eventNumber==471368767) continue; //this event needs to be debugged..
+	//        if (runNumber>276243) continue; //LUCATEMP
         
         //*********************************
 	// JSON FILE AND DUPLIACTES IN DATA

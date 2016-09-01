@@ -227,6 +227,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
    if (!(jentry%1000000))std::cerr<<"building E/p distribution ----> "<<jentry<<" vs "<<nentries<<std::endl;
 
    float pIn, FdiEta;
+   //   if (runNumber>276243) continue; //LUCATEMP
 
    ///! Tight electron from W or Z only barrel (if chargeEle[1]==-100: event from W)
    
@@ -525,6 +526,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
                      
 	//*********************************
 	// JSON FILE AND DUPLIACTES IN DATA
+	//	if (runNumber>276243) continue; //LUCATEMP
         
 	bool skipEvent = false;
 	/*	if( isMCTruth == 0 )

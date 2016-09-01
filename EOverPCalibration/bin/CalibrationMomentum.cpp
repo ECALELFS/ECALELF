@@ -161,7 +161,7 @@ int main(int argc, char** argv)
   
   //--- weights for MC
   TFile weightsFile (WeightforMC.c_str(),"READ"); 
-  TH1F* hweights = (TH1F*)weightsFile.Get("hweights");
+  TH1F* hweights = (TH1F*)weightsFile.Get("pileup");
   
   float w[100];
   for (int ibin = 1; ibin < hweights->GetNbinsX()+1; ibin++){
