@@ -14,6 +14,7 @@
 <bin file="DrawPrecisionPlotsEB.cpp" name="DrawPrecisionPlotsEB"> </bin>
 <bin file="DrawPrecisionPlotsEE.cpp" name="DrawPrecisionPlotsEE"> </bin>
 <bin file="CompareICSet.cpp" name="CompareICSet"> </bin>
+<bin file="CompareICSet_ratio.cpp" name="CompareICSet_ratio"> </bin>
 <bin file="CalibrationPlots.cpp" name="CalibrationPlots"> </bin>
 <bin file="CalibrationMomentum.cpp" name="CalibrationMomentum"> </bin>
 <bin file="CompareSCalibMCTruth_EB.cpp" name="CompareSCalibMCTruth_EB"> </bin>
