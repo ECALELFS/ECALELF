@@ -126,13 +126,13 @@ do
 		MINIAOD| miniAOD)
 				TYPE=MINIAODNTUPLE
 				if [ "${isMC}" == "1" ]; then 
-					TYPE=MINIAODNTUPLE;
+					TYPE=MINIAODMCNTUPLE;
 				else
 					TYPE=MINIAODNTUPLE
 				fi
 				;;
 			miniAODSIM)
-				TYPE=MINIAODNTUPLE
+				TYPE=MINIAODMCNTUPLE
 				isMC=1
 				;;
 		alcarereco | ALCARERECO)
@@ -271,6 +271,7 @@ case $TYPE in
 	MINIAODNTUPLE)
 		#setUserRemoteDirMiniaod $ORIGIN_REMOTE_DIR_BASE
 		#ORIGIN_REMOTE_DIR=${USER_REMOTE_DIR}
+		ORIGIN_REMOTE_DIR=${ORIGIN_REMOTE_DIR_BASE}
 		;;
 	*)
 #		TAG=""
@@ -331,9 +332,10 @@ USER_REMOTE_DIR=$USER_REMOTE_DIR/unmerged
 #${ENERGY}/
 #${DATASETNAME}/tmp-${DATASETNAME}-${RUNRANGE}
 OUTFILES=`echo $OUTFILES | sed 's|^,||'`
-#echo ${ORIGIN_REMOTE_DIR}
-#echo ${USER_REMOTE_DIR}
-#exit 0
+# echo ${ORIGIN_REMOTE_DIR}
+# echo
+# echo ${USER_REMOTE_DIR}
+# exit 0
 if [ -n "${CREATE}" ];then
 
 case ${ORIGIN_REMOTE_DIR} in
@@ -398,6 +400,17 @@ jobtype=cmssw
 EOF
 case ${ORIGIN_REMOTE_DIR_BASE} in
         database)
+		case $DATASETPATH in
+			*USER)
+				if [ -z ${DBS_URL} ];then
+					DBS_URL=phys03
+				fi
+				;;
+		esac
+		if [ -n "${DBS_URL}" ];then
+			echo "dbs_url=${DBS_URL}" >> ${crabFile}
+		fi
+
 		if [ "$isMC" != "1" ];then
         cat >> ${crabFile} <<EOF
 total_number_of_lumis = -1

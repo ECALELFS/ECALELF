@@ -23,7 +23,7 @@ OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
 OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     # put this if you have a filter
     SelectEvents = cms.untracked.PSet(
-    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalCalZSCElectron')
+    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalCalZSCElectron','pathALCARECOEcalCalZElectronStream', 'pathALCARECOEcalCalWElectronStream')
     ),
     outputCommands = cms.untracked.vstring( 
         'keep uint_bunchSpacingProducer_*_*',
@@ -64,7 +64,10 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     'keep *EcalRecHit*_alCaIsolatedElectrons_*_*',
     'keep EcalRecHitsSorted_reducedEcalRecHitsES_*_*',
     'keep *EcalRecHit*_*ecalPreshowerRecHit*_*EcalRecHitsES*_*',
-
+    'keep *CaloCluster*_*particleFlowEGamma*_*EBEEClusters*_*',
+    'keep *CaloCluster*_*particleFlowEGamma*_*ESClusters*_*',
+    'keep *_hltFixedGridRhoFastjetAllCaloForMuons_*_*', #for electron stream
+    'keep *_hltMet_*_*', #for electron stream
     )
 )
 
@@ -80,6 +83,12 @@ OutALCARECOEcalCalWElectron.SelectEvents = cms.untracked.PSet(
 OutALCARECOEcalCalWElectron_noDrop.SelectEvents = cms.untracked.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')   )
 
+OutALCARECOEcalCalWElectronStream=copy.deepcopy(OutALCARECOEcalCalElectron)
+OutALCARECOEcalCalWElectronStream_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
+OutALCARECOEcalCalWElectronStream.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalWElectronStream')   )
+OutALCARECOEcalCalWElectronStream_noDrop.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalWElectronStream')   )
 
 OutALCARECOEcalCalZElectron=copy.deepcopy(OutALCARECOEcalCalElectron)
 OutALCARECOEcalCalZElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)

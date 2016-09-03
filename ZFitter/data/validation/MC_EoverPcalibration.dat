@@ -7,5 +7,10 @@
 #d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit50ns.root
 #d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_multifit25ns.root
 #d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit25ns.root
-d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_oldweight.root
-d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_oldweight.root
+#d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_oldweight.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_oldweight.root
+
+d     selected 		/afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-allRange.root
+
+s     selected 		/afs/cern.ch/user/l/lbrianza/work/public/ntupleEoP/DYJets_amctnlo-RunIISpring15DR74-Asym25ns-allRange.root
+

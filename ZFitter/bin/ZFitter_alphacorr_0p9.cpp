@@ -1635,7 +1635,7 @@ int main(int argc, char **argv) {
     //std::cout << "p0: " << p0  << "   p1: " << p1 << "   nPU: " << nPU << std::endl;
     
     // fill the template histogram
-    h_template -> Fill( (energySCEle[0]-esEnergySCEle[0])/(pAtVtxGsfEle[0]-esEnergySCEle[0]) / PUCorr );
+    h_template -> Fill( (energySCEle[0]-esEnergySCEle[0])/(pAtVtxGsfEle[0]-esEnergySCEle[0]) / (avgLCSCEle[0]/pow(avgLCSCEle[0],0.9)) / PUCorr );
   }
   
   std::cout << "Reference built for " << EBEE << " - " << h_template->GetEntries() << " events" << std::endl;
@@ -1930,13 +1930,13 @@ int main(int argc, char **argv) {
     
     // PU correction
     float PUCorr = (p0 + p1*nPU);
-    
+
     // fill the histograms
-    (h_EoP[bin]) -> Fill( (energySCEle[0]-esEnergySCEle[0])/(pAtVtxGsfEle[0]-esEnergySCEle[0]) / avgLCSCEle[0] / PUCorr);
-    (h_EoC[bin]) -> Fill( (energySCEle[0]-esEnergySCEle[0])/(pAtVtxGsfEle[0]-esEnergySCEle[0]) / PUCorr );
+    (h_EoP[bin]) -> Fill( (energySCEle[0]-esEnergySCEle[0])/(pAtVtxGsfEle[0]-esEnergySCEle[0]) / pow(avgLCSCEle[0],0.9) / PUCorr);
+    (h_EoC[bin]) -> Fill( (energySCEle[0]-esEnergySCEle[0])/(pAtVtxGsfEle[0]-esEnergySCEle[0]) / (avgLCSCEle[0]/pow(avgLCSCEle[0],0.9)) / PUCorr );
     
-    (h_Las[bin]) -> Fill(avgLCSCEle[0]);
-    (h_Tsp[bin]) -> Fill(1./avgLCSCEle[0]);
+			  (h_Las[bin]) -> Fill(pow(avgLCSCEle[0],0.9));
+			  (h_Tsp[bin]) -> Fill(1./pow(avgLCSCEle[0],0.9));
     
     h_scOccupancy_eta -> Fill(etaSCEle[0]);
     h_scOccupancy_phi -> Fill(phiSCEle[0]);

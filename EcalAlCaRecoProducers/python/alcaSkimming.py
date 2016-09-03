@@ -16,6 +16,11 @@ options.register('isCrab',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "change files path in case of local test: isCrab=0 if you are running it locally with cmsRun")
+options.register('MC',
+                 0, # default Value = falce
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "force MC: isMC=1 if you are running on MC")
 options.register ('type',
                   "ALCARAW",
                   VarParsing.VarParsing.multiplicity.singleton,
@@ -61,7 +66,12 @@ options.register('bunchSpacing',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "50=50ns, 25=25ns,0=multifit auto,-1=weights")
-
+options.register('electronStream',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "bool: isElectronStream=1 true, isElectronStream=0 false")
+                 
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
 options.secondaryOutput="ntuple.root"
@@ -95,7 +105,8 @@ else:
         sys.exit(-1)
     
 
-MC = False  # please specify it if starting from AOD
+MC = options.MC
+#MC = False  # please specify it if starting from AOD
 if(options.type == "ALCARAW"):
     processName = 'ALCASKIM'
 elif(options.type == "ALCARERECO"):
@@ -105,7 +116,7 @@ elif(options.type == "ALCARECOSIM"):
     MC = True
 elif(options.type == "ALCARECO"):
     processName = 'ALCARECO'
-    MC = False
+#    MC = False
 elif(options.type == 'SKIMEFFTEST'):
     processName = 'SKIMEFFTEST'
     MC = True
@@ -155,6 +166,9 @@ process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff'
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_Output_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff') # reduction of recHits
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Output_cff')
+
+from Calibration.EcalAlCaRecoProducers.ALCARECOEcalCalIsolElectron_cff import *
+from Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_cff import *
 
 # this module provides:
 # process.seqALCARECOEcalRecalElectron 
@@ -298,15 +312,26 @@ else:
                 process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
     elif(re.match("CMSSW_7_5_.*",CMSSW_VERSION)):
         if(MC):
-            print "[INFO] Using GT auto:run2_data"
-            process.GlobalTag.globaltag = 'auto:run2_data'
+            print "[INFO] Using GT auto:run2_mc"
+            from Configuration.AlCa.GlobalTag import GlobalTag
+            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
         else:
-            process.GlobalTag.globaltag = 'auto:run2_data'
-            if(options.files==""):
+            print "[INFO] Using GT auto:run2_data"
+            from Configuration.AlCa.GlobalTag import GlobalTag
+            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        if(options.files==""):
                 process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
-    else:
-        print "[ERROR]::Global Tag not set for CMSSW_VERSION: ", CMSSW_VERSION
-        sys.exit(1)
+    else: #assuming a Run2 release
+        if (MC):
+            print "[INFO] Using GT auto:run2_mc"
+            from Configuration.AlCa.GlobalTag import GlobalTag
+            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+        else:
+            print "[INFO] Using GT auto:run2_data"
+            from Configuration.AlCa.GlobalTag import GlobalTag
+            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+        if(options.files==""):
+            process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
 
 if(re.match("CMSSW_7_.*",CMSSW_VERSION)):
     myEleCollection =  cms.InputTag("gedGsfElectrons")
@@ -375,11 +400,22 @@ if (HLTFilter):
     process.ZEEHltFilter.HLTPaths = [ "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*"]
     process.filterSeq *= process.ZEEHltFilter
 
+
+
+##for the stream                                                                                    
+process.pathALCARECOEcalCalWElectronStream     = cms.Path(seqALCARECOEcalCalWElectronStream)
+process.pathALCARECOEcalUncalWElectronStream   = cms.Path(seqALCARECOEcalUncalWElectronStream)
+process.pathALCARECOEcalCalZElectronStream     = cms.Path(seqALCARECOEcalCalZElectronStream)
+process.pathALCARECOEcalUncalZElectronStream   = cms.Path(seqALCARECOEcalUncalZElectronStream)
+
+
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.NtupleFilter = copy.deepcopy(hltHighLevel)
 process.NtupleFilter.throw = cms.bool(False)
 process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
                                   'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
+                                  'pathALCARECOEcalUncalZElectronStream',   'pathALCARECOEcalUncalWElectronStream',
+                                  'pathALCARECOEcalCalZElectronStream',     'pathALCARECOEcalCalWElectronStream',
                                   'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
                                   'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron', ## in case of no skim
                                  ]
@@ -389,6 +425,8 @@ if(options.isPrivate == 0):
 else:
     process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","ALCARECO")
 
+if(options.electronStream == 1):
+    process.NtupleFilter.TriggerResultsTag = cms.InputTag("TriggerResults","","RECO")
 
 process.NtupleFilterSeq = cms.Sequence()
 if(ZSkim):
@@ -396,11 +434,13 @@ if(ZSkim):
   # process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
                                       'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
+                                      'pathALCARECOEcalCalZElectronStream', 'pathALCARECOEcalUncalZElectronStream',
                                       ]
 elif(WSkim):
     process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
     #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
-    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
+    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron',
+                                      'pathALCARECOEcalCalWElectronStream', 'pathALCARECOEcalUncalWElectronStream']
 elif(ZmmgSkim):
     process.NtupleFilterSeq = cms.Sequence(process.ZmmgSkimSeq)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZmmgPhoton', 'pathALCARECOEcalUncalZmmgPhoton' ]
@@ -426,8 +466,7 @@ process.load("RecoEcal.EgammaClusterProducers.reducedRecHitsSequence_cff")
 
 #==============================
 
-    
-    
+        
 try:
     EcalTrivialConditionRetriever
 except NameError:
@@ -459,7 +498,7 @@ if(options.type!="MINIAODNTUPLE"):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
     process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
-    process.ntupleSeq = cms.Sequence(process.jsonFilter *   process.EIsequence)
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.eleNewEnergiesProducer * process.EIsequence)
     
 if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -694,17 +733,17 @@ if(options.doTree>0):
 ##############################
 if(options.skim=='WSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron','pathALCARECOEcalUncalWElectronStream')
         )
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron','pathALCARECOEcalCalWElectronStream')
         )
 elif(options.skim=='ZSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron','pathALCARECOEcalUncalZElectronStream')
         )
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron','pathALCARECOEcalUncalZElectronStream')
         )
 elif(options.skim=='ZmmgSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
@@ -750,6 +789,8 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         process.NtuplePath = cms.Path(process.pdfWeightsSeq * process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
         process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO')
+        if (options.electronStream==1):
+            process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')            
     else:
         if(options.doTree==0):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
@@ -823,11 +864,26 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 if(options.type!="MINIAODNTUPLE"):
     process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+    #configure everything for MINIAOD
+    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("patElectrons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("patPhotons","","@skipCurrentProcess")
+
 else:
-    process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
-    process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
-    process.eleNewEnergiesProducer.recHitCollectionES = cms.InputTag("reducedEgamma", "reducedESRecHits")
+    #configure everything for MINIAOD
+    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
+    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
+    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
+    process.eleNewEnergiesProducer.electronCollection =  cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+
+    # load new energies in the slimmedElectrons process
+    from Calibration.ZNtupleDumper.miniAODnewEnergies import *
+    process.slimmedElectrons.modifierConfig.modifications=electron_energy_modifications
+
     process.zNtupleDumper.useIDforPresel = cms.bool(False)
+    process.zNtupleDumper.recHitCollectionEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
+    process.zNtupleDumper.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
+    process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
@@ -839,8 +895,6 @@ else:
     process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
 
-process.eleNewEnergiesProducer.electronCollection = myEleCollection
-
 if(options.type=="ALCARERECO"):
     recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
     process = EcalRecal(process)
@@ -849,13 +903,13 @@ if(options.type=="ALCARERECO"):
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
-    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
+    #process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
     
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
     process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
-    process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
+    #process.eleNewEnergiesProducer.electronCollection = recalibElectronSrc
 
     if(options.bunchSpacing==25):
         print "bunchSpacing", options.bunchSpacing
@@ -879,8 +933,14 @@ if(options.type=="ALCARERECO"):
         
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
-process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
-process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
+#process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
+#process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
+
+if (options.electronStream==1):
+    process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMet')
+    process.zNtupleDumper.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
+    process.zNtupleDumper.electronStream = cms.bool(True)
+    process.eleSelectionProducers.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
 
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")

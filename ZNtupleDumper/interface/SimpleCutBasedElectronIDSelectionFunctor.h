@@ -126,7 +126,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
 
  public: // interface  
   
-	enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff};
+	enum Version_t { NONE=0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff, tightElectronStream};
   
   //  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
@@ -220,6 +220,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       else if (versionStr.CompareTo("medium50nsRun2")==0) version=medium50nsRun2;
       else if (versionStr.CompareTo("tight50nsRun2")==0) version=tight50nsRun2;
       else if (versionStr.CompareTo("medium25nsRun2Boff")==0) version=medium25nsRun2Boff;
+      else if (versionStr.CompareTo("tightElectronStream")==0) version=tightElectronStream;
       else {
 	std::cerr << "[ERROR] version type not defined" << std::endl;
 	std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -503,7 +504,24 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<reco::GsfElectr
       set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
       set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
     }
-
+    else if (version_ == tightElectronStream) {
+      //set("fiducial");
+      set("maxNumberOfExpectedMissingHits_EB", 2);  set("maxNumberOfExpectedMissingHits_EE", 1);
+      set("hasMatchedConversion");
+      set("hoe_EB",        0.0597);        set("hoe_EE",          0.0615);
+      set("deta_EB",       0.00926);       set("deta_EE",         0.00724);
+      set("dphi_EB",       0.0336);        set("dphi_EE",         0.0918);
+      set("sihih_EB",      0.0101);        set("sihih_EE",        0.0279 );
+      //      set("ooemoop_EB",    0.012,false);   set("ooemoop_EE",      0.00999,false);  
+      set("ooemoop_EB",    100.,false);    set("ooemoop_EE",      100.,false);  
+      set("d0vtx_EB",      100.,false );         set("d0vtx_EE",        100.,false);
+      set("dzvtx_EB",      100.,false);         set("dzvtx_EE",        100.,false);
+      set("pfIso_EB",      0.0354);        set("pfIso_EE",        0.0646);         
+      set("pfIsoLowPt_EB", 0.0354);        set("pfIsoLowPt_EE",   0.0646);         
+      set("relTrackIso_EB", 100.,false);   set("relTrackIso_EE", 100.,false);  
+      set("relEcalIso_EB",  100.,false);   set("relEcalIso_EE",  100.,false);
+      set("relHcalIso_EB",  100.,false);   set("relHcalIso_EE",  100.,false);
+    }
   }
 
 #ifdef shervin

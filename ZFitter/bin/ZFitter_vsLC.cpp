@@ -1308,7 +1308,7 @@ int main(int argc, char **argv) {
  
   if(vm.count("laserMonitoringEP")) {	  
 
-        float timeLapse = 24.; // in hours
+    float timeLapse = 10000000.; // in hours
     //    int t1 = 1267401600;   //  1 Mar 2010
     //int t2 = 1325289600;   // 31 Dec 2011 
     //int  t1 = 1400000000;
@@ -1352,10 +1352,12 @@ int main(int argc, char **argv) {
   
 
 
-  int t1 = dateToInt(dayMin);
-  int t2 = dateToInt(dayMax);
+  //  int t1 = dateToInt(dayMin);
+  //  int t2 = dateToInt(dayMax);
   int t3 = dateToInt(dayZOOM);
-  
+
+  float t1=0.;
+  float t2=10.;
   /*
   if(argc >= 5)
   {
@@ -1695,8 +1697,8 @@ int main(int argc, char **argv) {
       if( (seedYSCEle[0] < IphiMin) || (seedYSCEle[0] > IphiMax) ) continue;
     }
     
-    if( runTime < t1 ) continue;
-    if( runTime > t2 ) continue;
+    if( avgLCSCEle[0] < t1 ) continue;
+    if( avgLCSCEle[0] > t2 ) continue;
     
     if( avgLCSCEle[0] <= 0. ) continue;
     
@@ -1705,7 +1707,7 @@ int main(int argc, char **argv) {
     
     // fill sorter
     Sorter dummy;
-    dummy.time = runTime;
+    dummy.time = avgLCSCEle[0];
     dummy.entry = ientry;
     sortedEntries.push_back(dummy);
     
@@ -1734,6 +1736,7 @@ int main(int argc, char **argv) {
   //  TEventList* evlist = (TEventList*) gDirectory->Get("events");
     
   wideBinEntryMax.push_back(0);  
+  
   for(int iSaved = 0; iSaved < nSavePts; ++iSaved)
   {
     if( iSaved%10000 == 0 ) std::cout << "reading saved entry " << iSaved << "\r" << std::endl;//std::flush;
@@ -1742,17 +1745,17 @@ int main(int argc, char **argv) {
     
     if( iSaved == 0 )
     {
-      timeStampOld = runTime;
+      timeStampOld = avgLCSCEle[0];
       continue;
     }
     
-    if( (runTime-timeStampOld)/3600. > timeLapse )
+    if( (avgLCSCEle[0]-timeStampOld)/3600. > timeLapse )
     {
       ++nWideBins;
       wideBinEntryMax.push_back(iSaved-1);
     }
     
-    timeStampOld = runTime;
+    timeStampOld = avgLCSCEle[0];
   }
   std::cout << std::endl;
   wideBinEntryMax.push_back(nSavePts);
@@ -1915,9 +1918,9 @@ int main(int argc, char **argv) {
     
     Entries[bin] += 1;
     
-    if( iSaved == binEntryMax.at(bin)+1 )   MinTime[bin] = runTime;
-    if( iSaved == binEntryMax.at(bin+1)-1 ) MaxTime[bin] = runTime;
-    AveTime[bin] += runTime;
+    if( iSaved == binEntryMax.at(bin)+1 )   MinTime[bin] = avgLCSCEle[0];
+    if( iSaved == binEntryMax.at(bin+1)-1 ) MaxTime[bin] = avgLCSCEle[0];
+    AveTime[bin] += avgLCSCEle[0];
     
     if( iSaved == binEntryMax.at(bin)+1 )   MinRun[bin] = runNumber;
     if( iSaved == binEntryMax.at(bin+1)-1 ) MaxRun[bin] = runNumber;
@@ -2054,14 +2057,15 @@ int main(int argc, char **argv) {
     if( (h_EoP[i]->GetEntries() > 500) && (fStatus == 0) )
     {
       float date = (float)AveTime[i];
-      float dLow = (float)(AveTime[i]-MinTime[i]); 
-      float dHig = (float)(MaxTime[i]-AveTime[i]);
+      //      float dLow = (float)(AveTime[i]-MinTime[i]); 
+      //float dHig = (float)(MaxTime[i]-AveTime[i]);
       float run = (float)AveRun[i];
       float rLow = (float)(AveRun[i]-MinRun[i]); 
       float rHig = (float)(MaxRun[i]-AveRun[i]);
       
       g_fit -> SetPoint(i,  date , 1./k);
-      g_fit -> SetPointError(i, dLow , dHig, eee/k/k, eee/k/k);
+      //      g_fit -> SetPointError(i, dLow , dHig, eee/k/k, eee/k/k);
+      g_fit -> SetPointError(i, 0. , 0., eee/k/k, eee/k/k);
       
       g_fit_run -> SetPoint(i,  run , 1./k);
       g_fit_run -> SetPointError(i, rLow , rHig, eee/k/k, eee/k/k);
@@ -2132,14 +2136,15 @@ int main(int argc, char **argv) {
     //  if( (h_EoC[i]->GetEntries() > 10) && (fStatus == 0) && (eee > 0.05*h_template->GetRMS()/sqrt(evtsPerPoint)) )
       {
       float date = (float)AveTime[i]; 
-      float dLow = (float)(AveTime[i]-MinTime[i]); 
-      float dHig = (float)(MaxTime[i]-AveTime[i]);
+      //      float dLow = (float)(AveTime[i]-MinTime[i]); 
+      //float dHig = (float)(MaxTime[i]-AveTime[i]);
       float run = (float)AveRun[i];
       float rLow = (float)(AveRun[i]-MinRun[i]); 
       float rHig = (float)(MaxRun[i]-AveRun[i]);
       
       g_c_fit -> SetPoint(i,  date , 1./k);
-      g_c_fit -> SetPointError(i, dLow , dHig , eee/k/k, eee/k/k);
+      //      g_c_fit -> SetPointError(i, dLow , dHig , eee/k/k, eee/k/k);
+      g_c_fit -> SetPointError(i, 0. , 0. , eee/k/k, eee/k/k);
       
       g_c_fit_run -> SetPoint(i,  run , 1./k);
       g_c_fit_run -> SetPointError(i, rLow , rHig, eee/k/k, eee/k/k);
@@ -2427,10 +2432,12 @@ int main(int argc, char **argv) {
   TH1F *hPad = (TH1F*)gPad->DrawFrame(t1,0.9,t2,1.05);
     
   //hPad->GetXaxis()->SetLimits(t3,t2);
-  hPad->GetXaxis()->SetTimeFormat("%d/%m%F1970-01-01 00:00:00");
-  hPad->GetXaxis()->SetTimeDisplay(1);
-  hPad->GetXaxis() -> SetRangeUser(MinTime[0]-43200,MaxTime[nBins-1]+43200);
-  hPad->GetXaxis()->SetTitle("date (day/month)");
+  hPad->GetXaxis()->SetRangeUser(t1,t2);
+  hPad->GetXaxis()->SetTitle("LC value");
+  //  hPad->GetXaxis()->SetTimeFormat("%d/%m%F1970-01-01 00:00:00");
+  //hPad->GetXaxis()->SetTimeDisplay(1);
+  //hPad->GetXaxis() -> SetRangeUser(MinTime[0]-43200,MaxTime[nBins-1]+43200);
+  //hPad->GetXaxis()->SetTitle("date (day/month)");
   //ciao
   //hPad->GetXaxis()->SetLabelSize(0.025);
   
