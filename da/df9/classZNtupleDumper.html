@@ -75,6 +75,10 @@ Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#a2d8cd665f055e49b43261af08e4ad65e">runTime</a></td></tr>
 <tr class="memdesc:a2d8cd665f055e49b43261af08e4ad65e"><td class="mdescLeft">&#160;</td><td class="mdescRight">unix time <br/></td></tr>
 <tr class="separator:a2d8cd665f055e49b43261af08e4ad65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c64b227d1c57037ebb1b85d856e19c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9c64b227d1c57037ebb1b85d856e19c8"></a>
+Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#a9c64b227d1c57037ebb1b85d856e19c8">nBX</a></td></tr>
+<tr class="memdesc:a9c64b227d1c57037ebb1b85d856e19c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">bunch crossing <br/></td></tr>
+<tr class="separator:a9c64b227d1c57037ebb1b85d856e19c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22020944a9e52458e05860ef79b19756"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a22020944a9e52458e05860ef79b19756"></a>
 Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#a22020944a9e52458e05860ef79b19756">mcGenWeight</a></td></tr>
 <tr class="memdesc:a22020944a9e52458e05860ef79b19756"><td class="mdescLeft">&#160;</td><td class="mdescRight">weight in generator for MC <br/></td></tr>
@@ -149,7 +153,7 @@ Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=".
 <tr class="separator:a418ff22e0289a0595a1d95f29c6c3bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fc684a6c9ad6dfa7bce940b481b658f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6fc684a6c9ad6dfa7bce940b481b658f"></a>
 Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#a6fc684a6c9ad6dfa7bce940b481b658f">energyEle</a> [3]</td></tr>
-<tr class="memdesc:a6fc684a6c9ad6dfa7bce940b481b658f"><td class="mdescLeft">&#160;</td><td class="mdescRight">electron.energy() <br/></td></tr>
+<tr class="memdesc:a6fc684a6c9ad6dfa7bce940b481b658f"><td class="mdescLeft">&#160;</td><td class="mdescRight">electron.energy(), not changed by rereco <br/></td></tr>
 <tr class="separator:a6fc684a6c9ad6dfa7bce940b481b658f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9dcfcc5bdf632c96aa8ca3eb7a4563f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa9dcfcc5bdf632c96aa8ca3eb7a4563f"></a>
 Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#aa9dcfcc5bdf632c96aa8ca3eb7a4563f">energySCEle</a> [3]</td></tr>
@@ -205,12 +209,16 @@ Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=".
 <tr class="separator:a63f559102e4736d7cade795ade7c6acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5bedddd2cd82b46776eaaeadb9c826f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5bedddd2cd82b46776eaaeadb9c826f"></a>
 Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#aa5bedddd2cd82b46776eaaeadb9c826f">energySCEle_corr</a> [3]</td></tr>
-<tr class="memdesc:aa5bedddd2cd82b46776eaaeadb9c826f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ecal energy with corrections base on type of electron (see <a class="el" href="../../da/df9/classZNtupleDumper.html#a2639be113d581ee7a96b77dafbe5f011" title="electron classification in GOLD, SHOWERING, etc. ">classificationEle</a>) <br/></td></tr>
+<tr class="memdesc:aa5bedddd2cd82b46776eaaeadb9c826f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ecal energy: not changed by rereco <br/></td></tr>
 <tr class="separator:aa5bedddd2cd82b46776eaaeadb9c826f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4c9c87990372b887fbb32b569ee6f1a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac4c9c87990372b887fbb32b569ee6f1a"></a>
 Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#ac4c9c87990372b887fbb32b569ee6f1a">e5x5SCEle</a> [3]</td></tr>
 <tr class="memdesc:ac4c9c87990372b887fbb32b569ee6f1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">sum of the recHit energy in 5x5 matrix centered at the seed of the SC <br/></td></tr>
 <tr class="separator:ac4c9c87990372b887fbb32b569ee6f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4393b44ecfa5cbb38244f36edb87dde5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4393b44ecfa5cbb38244f36edb87dde5"></a>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#a4393b44ecfa5cbb38244f36edb87dde5">efull5x5SCEle</a> [3]</td></tr>
+<tr class="memdesc:a4393b44ecfa5cbb38244f36edb87dde5"><td class="mdescLeft">&#160;</td><td class="mdescRight">full 5x5 from electron object (however it is computed) <br/></td></tr>
+<tr class="separator:a4393b44ecfa5cbb38244f36edb87dde5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88e894c2223f41f3cd57c6f93da418bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a88e894c2223f41f3cd57c6f93da418bc"></a>
 Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/df9/classZNtupleDumper.html#a88e894c2223f41f3cd57c6f93da418bc">pModeGsfEle</a> [3]</td></tr>
 <tr class="memdesc:a88e894c2223f41f3cd57c6f93da418bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">track momentum from Gsf Track (mode) <br/></td></tr>

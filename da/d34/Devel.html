@@ -41,50 +41,25 @@
 <div class="title">Guide for ECALELF development </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>Check if you have astyle command installed: </p>
-<pre class="fragment">which astyle
-</pre><p>If you don't, please install it from <a href="http://sourceforge.net/projects/astyle/">http://sourceforge.net/projects/astyle/</a> and put it into your $HOME/bin directory</p>
-<p>Then add the following pre-commit hook into your GIT_DIR: </p>
-<pre class="fragment">cd $CMSSW_BASE/src/Calibration
-if [ -d ".git/hooks" ];then
-cat &gt; .git/hooks/pre-commit &lt;&lt;EOF
-#!/bin/sh
-fileList=\`git diff --cached --name-only\`
-
-command="astyle -A3 -t -p  -n" 
-for file in \$fileList
-do
-    case \$file in
-        *.c | *.cc) \$command \$file; git add \$file;;
-        *.h | *.hh) \$command \$file; git add \$file;;
-        *.cpp)      \$command \$file; git add \$file;;
-    esac
-done
-exit 0
-EOF
-else 
-echo "[ERROR] You are not in the main directory of this repository" &gt;&gt; /dev/stderr
-fi
-chmod +x .git/hooks/pre-commit
-</pre><h1><a class="anchor" id="Devel_git"></a>
+<div class="textblock"><h1><a class="anchor" id="Devel_git"></a>
 Setting up the working directory</h1>
 <p>If you downloaded the code following the instructions (* <a href="https://github.com/ECALELFS/ECALELF/blob/master/README.md">Download instructions </a>) you now have a local copy of the ECALELF package.</p>
 <p>In order to be able to make new development you need to setup an ECALELF git repository in your personal gitHub area. The easiest way to do this is to fork the ECALELF repository.</p>
 <ul>
 <li>fork the repository as indicated in "step1" in this <a href="https://help.github.com/articles/fork-a-repo">page </a>.</li>
-<li>set your fork as a new remote repository (only the first time, just to point to the right remote, not ECALELF) <pre class="fragment">git remote add myfork git@github.com:myGitHubUser/ECALELF.git
-git fetch myfork
-</pre></li>
-<li>move to the ECALELF branch you want to start working on (usually the master but can be some different ECALELF branch like devel-700pre12) <pre class="fragment">git checkout master
-</pre></li>
-<li>create a new branch and make it poiting to the ECALELF branch you started from. This way you can keep your development updated with the ECALELF branch. In the example below I'm assuming you are developing from the master <pre class="fragment">git branch myNewBranch 
-git checkout myNewBranch
-git branch --set-upstream-to=origin/master
-</pre></li>
-<li>make your changes (example) <pre class="fragment">emacs test.txt
-git add test.txt
-git commit -m "test"
-</pre></li>
+<li>set your fork as a new remote repository (only the first time, just to point to the right remote, not ECALELF) <div class="fragment"><div class="line">git remote add myfork git@github.com:myGitHubUser/ECALELF.git</div>
+<div class="line">git fetch myfork</div>
+</div><!-- fragment --></li>
+<li>move to the ECALELF branch you want to start working on (usually the master but can be some different ECALELF branch like devel-700pre12) <div class="fragment"><div class="line">git checkout master</div>
+</div><!-- fragment --></li>
+<li>create a new branch and make it poiting to the ECALELF branch you started from. This way you can keep your development updated with the ECALELF branch. In the example below I'm assuming you are developing from the master <div class="fragment"><div class="line">git branch myNewBranch </div>
+<div class="line">git checkout myNewBranch</div>
+<div class="line">git branch --set-upstream-to=origin/master</div>
+</div><!-- fragment --></li>
+<li>make your changes (example) <div class="fragment"><div class="line">emacs test.txt</div>
+<div class="line">git add test.txt</div>
+<div class="line">git commit -m <span class="stringliteral">&quot;test&quot;</span></div>
+</div><!-- fragment --></li>
 <li>now you have committed some changes in your local repository and you need to propage them to your gitHub fork git push myfork myNewBranch</li>
 <li>to keep the code updated (this must point to ECALELF)<ul>
 <li>Before pull, be sure that everithing is committed and in case commit it <div class="fragment"><div class="line">git status -uno </div>
