@@ -1,6 +1,6 @@
 #!/bin/bash
 
-branch=80X-devel-new
+branch=newMaster
 
 checkVERSION(){
     case $CMSSW_VERSION in
@@ -64,14 +64,14 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
-	    git clone -b ${branch} git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	lbrianza|lcorpe)
-	    git clone -b ${branch} git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	*)
             ### if you are not Shervin download this to have some useful scripts
-	    git clone -b ${branch} https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    git clone https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	    cd $myDir/EcalAlCaRecoProducers/
 	    git clone https://github.com/ECALELFS/Utilities.git bin
 	    ;;
