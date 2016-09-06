@@ -75,3 +75,4 @@ EOF
 #}' ${UI_WORKING_DIR}/job/CMSSW.sh
 
 sed -i -f tmp/sedbis.sed ${UI_WORKING_DIR}/job/CMSSW.sh
+sed -i '/file_list=""/ d'  ${UI_WORKING_DIR}/job/CMSSW.sh

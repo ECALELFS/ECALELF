@@ -35,7 +35,7 @@ do
 	done
 
 
-	for CHECK in  '' --check
+	for CHECK in  ''  --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
