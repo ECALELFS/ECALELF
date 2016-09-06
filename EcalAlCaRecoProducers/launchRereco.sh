@@ -5,28 +5,19 @@ jsonName=271036_275783-Prompt
 json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON.txt
 jsonName=271036_276811-ICHEP
 
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279588_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
+jsonName=271036_279588-Prompt
+
 #CHECK="--check"
-# config/reRecoTags/pulseShapeStudy_Run2015_rereco_v1.py
-# 
-#config/reRecoTags/phiSym_materialCorrection_v{2,4,5,6,7,8,9,10}.py
-#config/reRecoTags/preshowerClustering_v{1,2,3}.py config/reRecoTags/phiSym_materialCorrection_ref.py
-#
-#config/reRecoTags/phiSym_materialCorrection_ref.py config/reRecoTags/phiSym_materialCorrection_v{1,2,4,5,6,7,8,9,10}.py config/reRecoTags/Cal_Nov2015_PS_v{1,2,3,4,5}.py 
-# config/reRecoTags/Cal_Nov2015_ICEoP_v{1,2,3,4,5,6,7,8,9,10,11,12}.py
-#
-#config/reRecoTags/Cal_Nov2015_PS_v1_ESmip_v1.py 
-#config/reRecoTags/Cal_Nov2015_ICEoP_v1{4,5,6,7}{,_bis}.py 
-# config/reRecoTags/74X_dataRun2_Prompt_v4.py config/reRecoTags/Cal_Nov2015_ICcomb_v{2,3}.py
-#config/reRecoTags/Cal_Jun2016_IC_phiSym_v{1,2}.py config/reRecoTags/Cal_Jun2016_IC_piZero_v1.py
-#config/reRecoTags/80X_dataRun2_Prompt_v10_PS_v1.py
-for tagfile in  config/reRecoTags/80X_dataRun2_Prompt_v10_PS_v1.py
+
+for tagfile in  config/reRecoTags/80X_dataRun2_Prompt_v11.py config/reRecoTags/Cal_Sep2016_{ADCtoGeV_ped_v1,ref}.py 
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in  --check
+	for CHECK in  '' --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
@@ -35,16 +26,16 @@ do
 				;;
 			*)
 				echo 
-#				./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
+				./scripts/RerecoQuick.sh -p RUN2016CDEFG -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
 				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --weightsReco
 				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --weightsReco --singleEle
-#				./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --singleEle
+		#		./scripts/RerecoQuick.sh -p RUN2016CDEFG -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --singleEle
 				;;
 		esac
 	done
 
-
-	for CHECK in  --check
+continue
+	for CHECK in  '' --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
