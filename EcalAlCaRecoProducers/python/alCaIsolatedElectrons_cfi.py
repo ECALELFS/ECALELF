@@ -8,6 +8,8 @@ alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
                                        minEta_highEtaSC = cms.double(2.4),
                                        ebRecHitsLabel = cms.InputTag("reducedEcalRecHitsEB"), #default
                                        eeRecHitsLabel = cms.InputTag("reducedEcalRecHitsEE"), #default
+                                       uncalibRecHitCollectionEB = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEB"),
+                                       uncalibRecHitCollectionEE = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE"),
 #                                       ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB"), #multifit 50ns
 #                                       eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE"), #multifit 50ns
 #                                       ebRecHitsLabel = cms.InputTag("ecalRecHitGlobal","EcalRecHitsGlobalEB"), #weights
@@ -24,10 +26,10 @@ alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
                                        etaSize = cms.int32(15),
                                        alcaBarrelHitCollection = cms.string('alcaBarrelHits'),
                                        alcaEndcapHitCollection = cms.string('alcaEndcapHits'),
+                                       alcaBarrelUncalibHitCollection = cms.string('alcaBarrelUncalibHits'),
+                                       alcaEndcapUncalibHitCollection = cms.string('alcaEndcapUncalibHits'),
+
 #                                       alcaEndcapHitCollection = cms.string('alCaRecHitsEE'),
-# in sandboxRereco
-#                                       ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB")
-#                                       eeRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEE")
 
 #                                       esRecHitsLabel = cms.InputTag("ecalPreshowerRecHit","EcalRecHitsES"),
 #                                       alcaPreshowerHitCollection = cms.string('alcaPreshowerHits'),
