@@ -759,8 +759,6 @@ if(options.type=="ALCARERECO"):
         process.ecalLocalRecoSequence.replace(process.ecalMultiFitUncalibRecHit, process.ecalGlobalUncalibRecHit)
         process.ecalRecHit.EEuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEE")
         process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
-        process.zNtupleDumper.uncalibRecHitCollectionEB = process.ecalRecHit.EBuncalibRecHitCollection
-        process.zNtupleDumper.uncalibRecHitCollectionEE = process.ecalRecHit.EEuncalibRecHitCollection
         process.alCaIsolatedElectrons.uncalibRecHitCollectionEB = process.ecalRecHit.EBuncalibRecHitCollection
         process.alCaIsolatedElectrons.uncalibRecHitCollectionEE = process.ecalRecHit.EEuncalibRecHitCollection
 
