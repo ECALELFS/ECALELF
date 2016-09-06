@@ -761,10 +761,14 @@ if(options.type=="ALCARERECO"):
         process.ecalRecHit.EBuncalibRecHitCollection = cms.InputTag("ecalGlobalUncalibRecHit","EcalUncalibRecHitsEB")
         process.zNtupleDumper.uncalibRecHitCollectionEB = process.ecalRecHit.EBuncalibRecHitCollection
         process.zNtupleDumper.uncalibRecHitCollectionEE = process.ecalRecHit.EEuncalibRecHitCollection
+        process.alCaIsolatedElectrons.uncalibRecHitCollectionEB = process.ecalRecHit.EBuncalibRecHitCollection
+        process.alCaIsolatedElectrons.uncalibRecHitCollectionEE = process.ecalRecHit.EEuncalibRecHitCollection
 
     else:
         print "[ERROR] only bunchSpacing of 50 and 25 are implemented"
         exit(1)
+    #process.zNtupleDumper.uncalibRecHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", process.alCaIsolatedElectrons.alcaBarrelUncalibHitCollection.value())
+    #process.zNtupleDumper.uncalibRecHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", process.alCaIsolatedElectrons.alcaEndcapUncalibHitCollection.value())
         
 #process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 #process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
