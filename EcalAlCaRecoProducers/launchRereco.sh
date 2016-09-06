@@ -17,7 +17,7 @@ do
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in  '' --check
+	for CHECK in   --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
@@ -26,15 +26,15 @@ do
 				;;
 			*)
 				echo 
-				./scripts/RerecoQuick.sh -p RUN2016CDEFG -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
+				./scripts/RerecoQuick.sh -p CAL_SEP2016 -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
 				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --weightsReco
 				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --weightsReco --singleEle
-		#		./scripts/RerecoQuick.sh -p RUN2016CDEFG -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --singleEle
+		#		./scripts/RerecoQuick.sh -p CAL_SEP2016 -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly --singleEle
 				;;
 		esac
 	done
 
-continue
+
 	for CHECK in  '' --check
 	do
 		case $tagfile in 
@@ -43,11 +43,11 @@ continue
 				./scripts/RerecoQuick.sh -p RUN2015CD    -t $tagfile --json=$json25ns --json_name=$jsonName  --ntupleOnly  --singleEle  $CHECK
 				;;
 			*)
-		   		./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly #--doEleIDTree --doExtraCalibTree 
+#		   		./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly #--doEleIDTree --doExtraCalibTree 
 				#./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly --doEleIDTree --doExtraCalibTree --weightsReco
 			   #./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly --doEleIDTree --doExtraCalibTree --weightsReco --singleEle
 			   #./scripts/RerecoQuick.sh -p RUN2016BCD -t $tagfile  --json=$json25ns --json_name=${jsonName} ${CHECK} --ntupleOnly --doEleIDTree --doExtraCalibTree --singleEle
-#				./scripts/RerecoQuick.sh -p CAL_JUN2016    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
+				./scripts/RerecoQuick.sh -p CAL_SEP2016    -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK
 				;;
 		esac
 	done
