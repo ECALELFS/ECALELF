@@ -62,7 +62,7 @@ setStoragePath(){
 # checking the release
 checkRelease(){
     #$1 = DATASETPATH
-    RELEASE=`DAS.py --query="release dataset=$1"`
+    RELEASE=`das_client --query="release dataset=$1"`
     echo "[INFO] Dataset release: $RELEASE"
     echo "       Actual relase: $CMSSW_VERSION"
 }
