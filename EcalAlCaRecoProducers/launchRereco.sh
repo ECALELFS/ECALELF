@@ -8,13 +8,12 @@ jsonName=271036_276811-ICHEP
 json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279588_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
 jsonName=271036_279588-Prompt
 
-#json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279931_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
-#jsonName=271036_279931-Prompt
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279931_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
+jsonName=271036_279931-Prompt
 
-PERIOD=CAL_SEP2016
-#CHECK="--check"
+PERIOD=CAL_SEP2016_V2
 
-for tagfile in  config/reRecoTags/Cal_Sep2016_PS_{v1,v2}.py 
+for tagfile in  config/reRecoTags/Cal_Sep2016_laser_v3.py config/reRecoTags/Cal_Sep2016_PS_laser_v1.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
@@ -37,7 +36,7 @@ do
 	done
 
 
-	for CHECK in ''  --check
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
