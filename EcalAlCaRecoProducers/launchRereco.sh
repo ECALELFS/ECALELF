@@ -20,7 +20,7 @@ do
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in '' --check
+	for CHECK in  --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2015_PS_v1.py)
