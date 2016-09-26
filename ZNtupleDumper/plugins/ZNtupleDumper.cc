@@ -270,6 +270,7 @@ private:
 	Float_t seedLCSCEle[3];       ///< laser correction of the SC seed crystal
 
 	Float_t avgLCSCEle[3];
+	Float_t alphaSeedSCEle[3]; //alpha of the seed
 
 	Float_t energyMCEle[3];    ///< Electron MC true energy
 	Float_t energyEle[3];      ///< electron.energy(), not changed by rereco
@@ -1200,6 +1201,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("seedLCSCEle",         seedLCSCEle,     "seedLCSCEle[3]/F");
 
 	tree->Branch("avgLCSCEle", avgLCSCEle, "avgLCSCEle[3]/F");
+	tree->Branch("alphaSeedSCEle", alphaSeedSCEle, "alphaSeedSCEle[3]/F");
 
 	tree->Branch("gainEle", gainEle, "gainEle[3]/b");
 
@@ -1489,6 +1491,12 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	classificationEle[index] = electron1.classification();
 
 //	return;//To be fixed
+	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
+	pSetup->get<EcalLaserDbRecord>().get( aSetup );
+
+	EcalLaserAlpha alpha;
+	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
+	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
 
 
 	if(electron1.ecalDrivenSeed() && sc.isNonnull()) {
@@ -1499,6 +1507,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		seedYSCEle[index] = 0;
 		nHitsSCEle[index] = -1;
 		avgLCSCEle[index] = -1.;
+		alphaSeedSCEle[index] = -1.;
 		seedEnergySCEle[index] = -1.;
 		seedLCSCEle[index] = -10;
 		avgLCSCEle[index] = -10;
@@ -1545,6 +1554,16 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 						sumE    += oneHit->energy();
 					}
 					avgLCSCEle[index] = sumLC_E / sumE;
+
+					EcalLaserAlphaMap::const_iterator italpha = laserAlphaMap.find( seedDetId );
+					if ( italpha != laserAlphaMap.end() ) {
+						alpha = (*italpha);
+						alphaSeedSCEle[index] = alpha;
+						//					        std::cout << " ALPHA = " << alpha << std::endl;
+					}
+					//					else {
+					//      edm::LogError("EcalLaserDbService") << "error with laserAlphaMap!" << std::endl;
+					//}
 				}
 
 				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] = 1;
@@ -1602,6 +1621,14 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 
 	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
+	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
+	pSetup->get<EcalLaserDbRecord>().get( aSetup );
+
+	EcalLaserAlpha alpha;
+	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
+	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
+
+
 	DetId seedDetId = electron1.seed()->seed();
 	if(seedDetId.null()) {
 		seedDetId = findSCseed(electron1);
@@ -1637,6 +1664,13 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 			sumE    += hitenergy;
 		}
 		avgLCSCEle[index] = sumLC_E / sumE;
+
+		EcalLaserAlphaMap::const_iterator italpha = laserAlphaMap.find( seedDetId );
+		if ( italpha != laserAlphaMap.end() ) {
+			alpha = (*italpha);
+			alphaSeedSCEle[index] = alpha;
+			//					        std::cout << " ALPHA = " << alpha << std::endl;
+		}
 
 	} else     avgLCSCEle[index] = -10;
 
@@ -1754,6 +1788,16 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 	//assert(recHits!=NULL);
 	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 
+
+	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
+	pSetup->get<EcalLaserDbRecord>().get( aSetup );
+
+	EcalLaserAlpha alpha;
+	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
+	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
+
+
+
 	DetId seedDetId = photon.superCluster()->seed()->seed();
 	if(seedDetId.null()) {
 		//assert(photon.trackerDrivenSeed()); // DEBUG
@@ -1795,6 +1839,13 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 			sumE    += oneHit->energy();
 		}
 		avgLCSCEle[index] = sumLC_E / sumE;
+
+		EcalLaserAlphaMap::const_iterator italpha = laserAlphaMap.find( seedDetId );
+		if ( italpha != laserAlphaMap.end() ) {
+			alpha = (*italpha);
+			alphaSeedSCEle[index] = alpha;
+			//					        std::cout << " ALPHA = " << alpha << std::endl;
+		}
 
 	} else     avgLCSCEle[index] = -10;
 
@@ -1878,7 +1929,7 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	                      angle);
 
 	invMass_efull5x5   = sqrt(2 * electron1.full5x5_e5x5() * electron2.full5x5_e5x5() *
-	                      angle);
+	                          angle);
 
 	invMass_SC = sqrt(2 * energySCEle[0] * energySCEle[1] *
 	                  angle);
