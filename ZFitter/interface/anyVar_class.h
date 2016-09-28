@@ -63,9 +63,11 @@ private:
 	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
 	RooRealVar weight; ///< variable with the total event weight
 
+	TEntryList *commonData, *reducedData;
 
 
-	TChain *ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///
+	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight
 	
 	void FillStat(RooDataSet *dataset); ///< fills the "stats" struct 
@@ -84,15 +86,13 @@ public:
 
 
 
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList);
-
 	double GetEffectiveSigma(RooAbsData *dataset, float quant);
 
 	void PrintStats(std::ostream outScale);
 
 
 
-	TEntryList *commonMC, *commonData, *reducedMC, *reducedData;
+
 };
 
 #endif

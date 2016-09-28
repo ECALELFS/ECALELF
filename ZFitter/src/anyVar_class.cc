@@ -2,7 +2,27 @@
 #include <TTreeFormula.h>
 #include <RooDataSet.h>
 
-TChain *anyVar_class::ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList)
+
+void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList)
+{
+
+	commonCut += "-eleID_" + eleID_;
+	TCut dataCut = cutter.GetCut(commonCut, false);
+	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
+	std::cout << "--------------- Importing data: " << data_chain->GetEntries() << std::endl;
+	//if(data!=NULL) delete data;
+	TChain *data = ImportTree(data_chain, dataCut, branchList);
+	commonData = new TEntryList(*(data->GetEntryList()));
+	//commonData->Print();
+	std::cout << "[INFO] imported " << commonData->GetN() << "\t" << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
+	//data->Print();
+	std::cout << "--------------- IMPORT finished" << std::endl;
+	//  exit(0);
+	return;
+}
+
+
+TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList)
 {
 
 	if(branchList.size() > 0) {
