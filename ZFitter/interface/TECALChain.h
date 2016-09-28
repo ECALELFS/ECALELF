@@ -1,3 +1,6 @@
+#ifndef _TECALCHAIN_H
+#define _TECALCHAIN_H
+
 #include <TChain.h>
 
 class TECALChain : public TChain
@@ -79,3 +82,5 @@ public:
 	}
 };
  
+#endif
+

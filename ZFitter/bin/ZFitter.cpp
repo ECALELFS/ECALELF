@@ -28,6 +28,7 @@ configuration files.
 
 /// @cond SHOW
 /// \code
+#include "../interface/anyVar_class.h"
 #include "../interface/ZFit_class.hh"
 #include "../interface/puWeights_class.hh"
 #include "../interface/r9Weights_class.hh"
