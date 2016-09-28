@@ -53,3 +53,87 @@ TChain *anyVar_class::ImportTree(TChain *chain, TString commonCut, std::set<TStr
 	return chain;
 }
 
+
+
+
+
+RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut)
+{
+	// _branchList is used to make the set branch addresses
+	std::vector<Float_t> branches;
+	for(unsigned int ibranch =0; ibranch< _branchList.size(); ++ibranch){
+		branches.push_back(0);
+		chain->SetBranchAddress(_branchList[ibranch], &branches[ibranch]);
+	}
+	// now the size of branches is the same as _branchList
+
+	Float_t weight_;
+	weight_ = 1;
+	Float_t r9weight_[2] = {1, 1}; //r9weight_[0]=1; r9weight_[1]=1;
+	Float_t pileupWeight_ = 1;
+
+	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
+	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
+
+
+
+	if(chain->GetBranch("puWeight") != NULL) {
+		std::cout << "[STATUS] Adding pileup weight branch from friend" << std::endl;
+		chain->SetBranchAddress("puWeight", &pileupWeight_);
+	}
+
+	if(chain->GetBranch("scaleEle") != NULL) {
+		std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
+		chain->SetBranchAddress("scaleEle", corrEle_);
+	}
+
+	if(chain->GetBranch("smearEle") != NULL && TString(chain->GetTitle()) != "d") {
+		std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
+		//chain->Scan("smearEle");
+		chain->SetBranchAddress("smearEle", smearEle_);
+	}
+
+	if(chain->GetBranch("r9Weight") != NULL) {
+		std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
+		chain->SetBranchAddress("r9Weight", r9weight_);
+	}
+
+	RooDataSet *data = new RooDataSet(chain->GetTitle(), "dataset", Vars);
+
+	Long64_t entries = chain->GetEntryList()->GetN();
+	chain->LoadTree(chain->GetEntryNumber(0));
+	Long64_t treenumber = -1;
+	TTreeFormula *selector = new TTreeFormula("selector", cut, chain);
+
+	std::cout << "___ ENTRIES: " << entries << std::endl;
+	for(Long64_t jentry = 0; jentry < entries; jentry++) {
+		Long64_t entryNumber = chain->GetEntryNumber(jentry);
+		chain->GetEntry(entryNumber);
+		if (chain->GetTreeNumber() != treenumber) {
+			treenumber = chain->GetTreeNumber();
+			selector->UpdateFormulaLeaves();
+		}
+		if(selector->EvalInstance() == false) continue;
+
+		if(jentry < 1)  std::cout << "[DEBUG] PU: " << pileupWeight_
+			                          << std::endl;
+		if(jentry < 1)  std::cout << "[DEBUG] corrEle[0]: " << corrEle_[0] << std::endl;
+		if(jentry < 1)  std::cout << "[DEBUG] corrEle[1]: " << corrEle_[1] << std::endl;
+
+		if(jentry < 1)  std::cout << "[DEBUG] smearEle[0]: " << smearEle_[0] << std::endl;
+		if(jentry < 1)  std::cout << "[DEBUG] smearEle[1]: " << smearEle_[1] << std::endl;
+
+		if(jentry < 1)  std::cout << "[DEBUG] r9weight[0]: " << r9weight_[0] << std::endl;
+		if(jentry < 1)  std::cout << "[DEBUG] r9weight[1]: " << r9weight_[1] << std::endl;
+
+		invMass_ *= sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1]));
+		invMass.setVal(invMass_ );
+		weight.setVal(weight_ * pileupWeight_ * r9weight_[0]*r9weight_[1]);
+		if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
+	}
+	delete selector;
+	data->Print();
+	chain->ResetBranchAddresses();
+
+	return data;
+}
