@@ -1166,6 +1166,8 @@ int main(int argc, char **argv)
 	branchListAny.push_back("R9Ele");
 	anyVar_class anyVar(data, branchListAny);
 	
+	return 3;
+
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {
 ///////// E/P calibration
 
