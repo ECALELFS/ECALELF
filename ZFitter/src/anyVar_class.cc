@@ -57,7 +57,7 @@ TChain *anyVar_class::ImportTree(TChain *chain, TString commonCut, std::set<TStr
 
 
 
-RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut)
+RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 {
 	// _branchList is used to make the set branch addresses
 	std::vector<Float_t> branches;
