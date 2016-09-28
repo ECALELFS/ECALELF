@@ -47,11 +47,20 @@ class anyVar_class
 {
 public:
 
+	
 	anyVar_class(TChain *data_chain_,
 				 std::vector<TString> branchNames
 		);
 
 	~anyVar_class(void);
+
+
+private:
+	TChain *data_chain; // pointer fixed in the constructor
+	std::vector<TString> _branchNames; //fixed in the constructor, these are the branches with the variables to study
+	ElectronCategory_class cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
+
+
 
 
 public:
@@ -64,6 +73,10 @@ public:
 		double curtosis;
 		double sigmaEff30, sigmaEff68, sigmaEff90, sigmaEff95;
 	};
+
+
+
+
 	// options:
 	bool _isDataUnbinned;    // to import in roodatahist
 
@@ -116,9 +129,8 @@ public:
 	//--------------- class settings
 
 private:
-	TChain *data_chain;
 
-	RooRealVar invMass;
+
 	TString energyVar_name;
 	TH1* invMass_highBinning;
 
@@ -171,7 +183,6 @@ private:
 	RooFitResult *FitData(TString region, bool doPlot = true, RooFitResult *fitres_MC = NULL);
 	RooFitResult *FitMC(TString region, bool doPlot = true);
 
-	ElectronCategory_class cutter;
 
 	//  int _signal_pdf_index, _bkg_pdf_index;
 	void SetInitParamsfromRead(RooArgSet* pars);
