@@ -19,7 +19,8 @@ lib/%.o: $(SRCDIR)/%.cc
 	@echo "--> Making $@"
 	@echo "--> Making $(MODULES_EXT)" 
 	echo $(INCLUDE)
-	@$(COMPILE.cc) $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT)
+	if [ "$(SCRAMTOOL)" == "1" ]; then $(COMPILE.cc) $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); \
+	else @$(COMPILE.cc) -DCMSSW $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); fi
 
 -include $(MODULES:.o=.d)
 
@@ -33,8 +34,9 @@ ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 $(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp 
 	cd $(EoPDir) && make
 	@echo "---> Making ZFitter $(COMPILE.exe)"
-	@g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULES_EXT)/libFWCoreParameterSet.so $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
-	-lboost_program_options -lTreePlayer 
+	if [ "$(SCRAMTOOL)" == "1" ]; then g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES)  $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
+	-lboost_program_options -lTreePlayer; else g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULES_EXT)/libFWCoreParameterSet.so $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
+	-lboost_program_options -lTreePlayer ; fi
 
 clean:
 	rm -f $(OBJ_DIR)/*.o

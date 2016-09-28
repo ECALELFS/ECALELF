@@ -7,7 +7,7 @@ ROOT_INCLUDE:=`root-config --incdir`
 SCRAMTOOL=$(shell which scram &>/dev/null || echo 1)
 
 ifeq ($(SCRAMTOOL),1)
-	ROOFIT_LIB="-lRooFit"
+	ROOFIT_LIB=-lRooFit -lRooFitCore
 	ROOSTAT_LIB="-lRooStats"
 	ROOFIT_INCLUDE="./"
 else
@@ -17,6 +17,7 @@ else
 	ROOFIT_LIB += -l$(shell cd $(CMSSW_BASE); scram tool info roofit | grep LIB= | sed 's|LIB=||')
 	ROOFIT_LIBDIR = -L$(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep LIBDIR= | sed 's|LIBDIR=||')
 	ROOFIT_LIB+=$(ROOFIT_LIBDIR)
+	DEFINES=CMSSW
 endif
 ROOSTAT_LIB="-lRooStats"
 

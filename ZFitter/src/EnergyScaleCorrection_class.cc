@@ -1,5 +1,7 @@
 #include "../interface/EnergyScaleCorrection_class.hh"
+#ifdef CMSSW
 #include "FWCore/ParameterSet/interface/FileInPath.h"
+#endif
 #include <RooDataSet.h>
 #include <RooArgSet.h>
 
@@ -155,8 +157,11 @@ void EnergyScaleCorrection_class::ReadFromFile(TString filename)
 	std::cout << "[STATUS] Reading energy scale correction  values from file: " << filename << std::endl;
 
 	//std::ifstream Ccufile(edm::FileInPath(Ccufilename).fullPath().c_str(),std::ios::in);
+#ifdef CMSSW
 	std::ifstream f_in(edm::FileInPath(filename).fullPath().c_str());
-
+#else
+	std::ifstream f_in(filename.Data());
+#endif
 	if(!f_in.good()) {
 		std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
 		exit(1);
@@ -267,7 +272,11 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename)
 	std::cout << "[STATUS] Reading smearing values from file: " << filename << std::endl;
 #endif
 	//edm::FileInPath(Ccufilename).fullPath().c_str(),std::ios::in); .fullPath().c_str()
+#ifdef CMSSW
 	std::ifstream f_in(edm::FileInPath(filename).fullPath().c_str());
+#else
+	std::ifstream f_in(filename.Data());
+#endif
 	if(!f_in.good()) {
 		std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
 		exit(1);
