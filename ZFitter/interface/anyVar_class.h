@@ -60,7 +60,8 @@ private:
 	std::vector<TString> _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
-
+	TChain *ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	
 
 
 public:
