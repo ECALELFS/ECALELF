@@ -68,7 +68,7 @@ private:
 	TChain *ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight
 	
-	void FillStat(RooDataset *dataset); ///< fills the "stats" struct 
+	void FillStat(RooDataSet *dataset); ///< fills the "stats" struct 
 
 
 public:

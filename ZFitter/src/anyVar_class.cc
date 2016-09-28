@@ -1,5 +1,6 @@
 #include "anyVar_class.h"
-
+#include <TTreeFormula.h>
+#include <RooDataSet.h>
 
 TChain *anyVar_class::ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList)
 {
@@ -25,9 +26,7 @@ TChain *anyVar_class::ImportTree(TChain *chain, TString commonCut, std::set<TStr
 	chain->SetBranchStatus("recoFlagsEle", 1);
 	chain->SetBranchStatus("eleID", 1);
 	chain->SetBranchStatus("eventNumber", 1);
-	std::cout << "[STATUS] Enabling branch: " << invMass.GetName() << std::endl;
-	chain->SetBranchStatus(invMass.GetName(), 1);
-	chain->SetBranchStatus("invMass_SC", 1);
+
 	chain->AddBranchToCache("*", kTRUE);
 
 	//std::cout << commonCut << std::endl;
@@ -61,13 +60,13 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 {
 	// _branchList is used to make the set branch addresses
 	std::vector<Float_t> branches;
-	for(unsigned int ibranch =0; ibranch< _branchList.size(); ++ibranch){
+	for(unsigned int ibranch =0; ibranch< _branchNames.size(); ++ibranch){
 		branches.push_back(0);
-		chain->SetBranchAddress(_branchList[ibranch], &branches[ibranch]);
-		RooRealVar *v = new RooRealVar(_branchList[ibranch], "", -1000, 1000);
+		chain->SetBranchAddress(_branchNames[ibranch], &branches[ibranch]);
+		RooRealVar *v = new RooRealVar(_branchNames[ibranch], "", -1000, 1000);
 		Vars.add(*v);
 	}
-	// now the size of branches is the same as _branchList
+	// now the size of branches is the same as _branchNames
 
 	Float_t weight_;
 	weight_ = 1;
@@ -132,7 +131,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 		
 		//loop over the rooargset and fill it with setVal
 		weight.setVal(weight_ * pileupWeight_ * r9weight_[0]*r9weight_[1]);
-		if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
+//		if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
 	}
 	delete selector;
 	data->Print();
