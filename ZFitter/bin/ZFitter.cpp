@@ -1151,6 +1151,8 @@ int main(int argc, char **argv)
 //     Loop((tagChainMap["s1"])["selected"],file);
 		return 0;
 	}
+
+
 	//------------------------------ ZFit_class declare and set the options
 	TChain *data = NULL;
 	TChain *mc = NULL;
@@ -1159,6 +1161,11 @@ int main(int argc, char **argv)
 		mc  = (tagChainMap["s"])["selected"];
 	}
 
+    //------------------------------ anyVar_class declare and set the options
+	std::vector<TString> branchListAny;
+	branchListAny.push_back("R9Ele");
+	anyVar_class anyVar(data, branchListAny);
+	
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {
 ///////// E/P calibration
 

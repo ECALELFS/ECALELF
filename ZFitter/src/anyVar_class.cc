@@ -2,6 +2,16 @@
 #include <TTreeFormula.h>
 #include <RooDataSet.h>
 
+anyVar_class::~anyVar_class(void){}
+
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames):
+	data_chain(data_chain_),
+	_branchNames(branchNames)
+{
+	
+}
+
+
 
 void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList)
 {
