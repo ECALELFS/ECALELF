@@ -64,6 +64,8 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut)
 	for(unsigned int ibranch =0; ibranch< _branchList.size(); ++ibranch){
 		branches.push_back(0);
 		chain->SetBranchAddress(_branchList[ibranch], &branches[ibranch]);
+		RooRealVar *v = new RooRealVar(_branchList[ibranch], "", -1000, 1000);
+		Vars.add(*v);
 	}
 	// now the size of branches is the same as _branchList
 
@@ -74,7 +76,6 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut)
 
 	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
 	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
-
 
 
 	if(chain->GetBranch("puWeight") != NULL) {
@@ -126,8 +127,10 @@ RooDataSet *ZFit_class::TreeToRooDataSet(TChain *chain, TCut cut)
 		if(jentry < 1)  std::cout << "[DEBUG] r9weight[0]: " << r9weight_[0] << std::endl;
 		if(jentry < 1)  std::cout << "[DEBUG] r9weight[1]: " << r9weight_[1] << std::endl;
 
-		invMass_ *= sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1]));
-		invMass.setVal(invMass_ );
+//		invMass_ *= sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1]));
+//		invMass.setVal(invMass_ );
+		
+		//loop over the rooargset and fill it with setVal
 		weight.setVal(weight_ * pileupWeight_ * r9weight_[0]*r9weight_[1]);
 		if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
 	}

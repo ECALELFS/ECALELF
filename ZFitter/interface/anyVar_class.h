@@ -62,8 +62,8 @@ private:
 
 	TChain *ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
 	
-
-
+	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
+	RooRealVar weight; ///< variable with the total event weight
 public:
 	// define a struct saving the infos:
 	struct {
