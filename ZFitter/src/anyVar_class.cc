@@ -100,9 +100,10 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 	std::vector<Float_t> branches;
 	for(unsigned int ibranch = 0; ibranch < _branchNames.size(); ++ibranch) {
 		std::cout << "[DEBUG] " << ibranch << std::endl;
+		branches.push_back(-1);
 		chain->SetBranchAddress(_branchNames[ibranch], &branches[ibranch]);
 		RooRealVar *v = new RooRealVar(_branchNames[ibranch], "", -1000, 1000);
-		Vars.add(*v);
+		Vars.addOwned(*v);
 	}
 	// now the size of branches is the same as _branchNames
 
@@ -174,7 +175,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 		RooLinkedListIter v_itr = Vars.iterator();
 		for(unsigned int i = 0; i < Vars.getSize(); ++i) {
 			RooRealVar *v = (RooRealVar *) v_itr.Next();
-//			v->setVal(branches[i]);
+			v->setVal(branches[i]);
 #ifdef DEBUG
 			v->Print();
 #endif
