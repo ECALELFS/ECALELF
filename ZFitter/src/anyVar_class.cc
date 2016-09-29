@@ -30,7 +30,6 @@ void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& 
 	std::cout << "[INFO] imported " << commonData->GetN() << "\t" << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
 	//data->Print();
 	std::cout << "--------------- IMPORT finished" << std::endl;
-	//  exit(0);
 	return;
 }
 

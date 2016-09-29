@@ -1166,6 +1166,9 @@ int main(int argc, char **argv)
 	branchListAny.push_back("R9Ele");
 	anyVar_class anyVar(mc, branchListAny, cutter);
 	anyVar.Import(commonCut, eleID, activeBranchList);
+	//need to convert the TTree into RooDataset
+	//run on a RooDataset and calculate the stats for all the variables
+	
 	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {
