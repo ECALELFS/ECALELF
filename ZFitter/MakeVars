@@ -1,10 +1,12 @@
+SHELL=/bin/bash
+
 CXXFLAGS=-Wall -pedantic -std=c++11
 
 ROOT_LIB:=`root-config --libs --glibs`
 ROOT_FLAGS:=`root-config --cflags --ldflags`
 ROOT_INCLUDE:=`root-config --incdir`
 
-SCRAMTOOL=$(shell /bin/sh which scram &>/dev/null || echo 1)
+SCRAMTOOL=$(shell which scram &>/dev/null || echo 1)
 
 ifeq ($(SCRAMTOOL),1)
 	ROOFIT_LIB=-lRooFit -lRooFitCore
