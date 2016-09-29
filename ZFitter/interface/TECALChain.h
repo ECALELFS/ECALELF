@@ -80,6 +80,6 @@ public:
 		fEntryList->SetShift(shift);
 	}
 };
- 
+
 #endif
 
