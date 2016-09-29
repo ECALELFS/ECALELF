@@ -175,7 +175,9 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 		for(unsigned int i=0; i < Vars.getSize(); ++i){
 			RooRealVar *v = (RooRealVar *) v_itr.Next();
 //			v->setVal(branches[i]);
+#ifdef DEBUG
 			v->Print();
+#endif
 		}
 
 		data->add(Vars);
