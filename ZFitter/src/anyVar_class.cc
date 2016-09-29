@@ -1,25 +1,31 @@
 #include "anyVar_class.h"
 #include <TTreeFormula.h>
 #include <RooDataSet.h>
+#define DEBUG
 
-anyVar_class::~anyVar_class(void){}
-
-anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames):
-	data_chain(data_chain_),
-	_branchNames(branchNames)
+anyVar_class::~anyVar_class(void)
 {
-	
+	if(data_chain != NULL) delete data_chain;
+
+}
+
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames, ElectronCategory_class& cutter):
+	data_chain(data_chain_),
+	_branchNames(branchNames),
+	_cutter(cutter),
+	weight("weight", "weight", 1, 0, 100)
+{
+
 }
 
 
 
 void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList)
 {
-
 	commonCut += "-eleID_" + eleID_;
-	TCut dataCut = cutter.GetCut(commonCut, false);
+	TCut dataCut = _cutter.GetCut(commonCut, false);
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
-	std::cout << "--------------- Importing data: " << data_chain->GetEntries() << std::endl;
+	std::cout << "--------------- Importing: " << data_chain->GetEntries() << std::endl;
 	//if(data!=NULL) delete data;
 	TChain *data = ImportTree(data_chain, dataCut, branchList);
 	commonData = new TEntryList(*(data->GetEntryList()));
@@ -27,7 +33,6 @@ void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& 
 	std::cout << "[INFO] imported " << commonData->GetN() << "\t" << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
 	//data->Print();
 	std::cout << "--------------- IMPORT finished" << std::endl;
-	//  exit(0);
 	return;
 }
 
@@ -40,11 +45,14 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 		chain->SetBranchStatus("*", 0);
 	}
 
-	for(std::set<TString>::const_iterator itr = branchList.begin();
-	        itr != branchList.end();
-	        itr++) {
-		std::cout << "[STATUS] Enabling branch: " << *itr << std::endl;
-		chain->SetBranchStatus(*itr, 1);
+	for(auto branch : branchList) {
+		std::cout << "[STATUS] Enabling branch: " << branch << std::endl;
+		chain->SetBranchStatus(branch, 1);
+	}
+
+	for(auto branch : _branchNames) {
+		std::cout << "[STATUS] Enabling branch: " << branch << std::endl;
+		chain->SetBranchStatus(branch, 1);
 	}
 	// abilitare la lista dei friend branch
 	if(chain->GetBranch("scaleEle"))  chain->SetBranchStatus("scaleEle", 1);
@@ -90,16 +98,16 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 {
 	// _branchList is used to make the set branch addresses
 	std::vector<Float_t> branches;
-	for(unsigned int ibranch =0; ibranch< _branchNames.size(); ++ibranch){
-		branches.push_back(0);
+	for(unsigned int ibranch = 0; ibranch < _branchNames.size(); ++ibranch) {
+		std::cout << "[DEBUG] " << ibranch << std::endl;
+		branches.push_back(-1);
 		chain->SetBranchAddress(_branchNames[ibranch], &branches[ibranch]);
 		RooRealVar *v = new RooRealVar(_branchNames[ibranch], "", -1000, 1000);
-		Vars.add(*v);
+		Vars.addOwned(*v);
 	}
 	// now the size of branches is the same as _branchNames
 
-	Float_t weight_;
-	weight_ = 1;
+	Float_t weight_ = 1 ;
 	Float_t r9weight_[2] = {1, 1}; //r9weight_[0]=1; r9weight_[1]=1;
 	Float_t pileupWeight_ = 1;
 
@@ -131,6 +139,9 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 	RooDataSet *data = new RooDataSet(chain->GetTitle(), "dataset", Vars);
 
 	Long64_t entries = chain->GetEntryList()->GetN();
+#ifdef DEBUG
+	entries = 10;
+#endif
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = new TTreeFormula("selector", cut, chain);
@@ -158,9 +169,19 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 
 //		invMass_ *= sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1]));
 //		invMass.setVal(invMass_ );
-		
+
 		//loop over the rooargset and fill it with setVal
 		weight.setVal(weight_ * pileupWeight_ * r9weight_[0]*r9weight_[1]);
+		RooLinkedListIter v_itr = Vars.iterator();
+		for(unsigned int i = 0; i < Vars.getSize(); ++i) {
+			RooRealVar *v = (RooRealVar *) v_itr.Next();
+			v->setVal(branches[i]);
+#ifdef DEBUG
+			v->Print();
+#endif
+		}
+
+		data->add(Vars);
 //		if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
 	}
 	delete selector;

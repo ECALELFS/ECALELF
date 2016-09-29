@@ -1164,8 +1164,12 @@ int main(int argc, char **argv)
     //------------------------------ anyVar_class declare and set the options
 	std::vector<TString> branchListAny;
 	branchListAny.push_back("R9Ele");
-	anyVar_class anyVar(data, branchListAny);
-	
+	branchListAny.push_back("e5x5SCEle");
+	anyVar_class anyVar(mc, branchListAny, cutter);
+	anyVar.Import(commonCut, eleID, activeBranchList);
+	//need to convert the TTree into RooDataset
+	//run on a RooDataset and calculate the stats for all the variables
+	anyVar.TreeToRooDataSet(mc, cutter.GetCut("EB", false));
 	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {
