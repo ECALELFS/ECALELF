@@ -2,6 +2,7 @@
 #include <TTreeFormula.h>
 #include <RooDataSet.h>
 #define DEBUG
+#define MAXENTRIES 100
 
 anyVar_class::~anyVar_class(void)
 {
@@ -72,8 +73,11 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	evListName += chain->GetTitle();
 #ifdef DEBUG
 	std::cout << "[DEBUG] commonCut ::" << commonCut << std::endl;
-#endif
+	chain->Draw(">>" + evListName, commonCut, "entrylist", MAXENTRIES);
+#else
 	chain->Draw(">>" + evListName, commonCut, "entrylist");
+#endif
+
 	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
 #ifdef DEBUG
 	std::cout << "[DEBUG] chain ptr :\t" << chain << std::endl;
@@ -140,7 +144,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 
 	Long64_t entries = chain->GetEntryList()->GetN();
 #ifdef DEBUG
-	entries = 10;
+	entries = MAXENTRIES;
 #endif
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
