@@ -2,11 +2,15 @@
 #include <TTreeFormula.h>
 #include <RooDataSet.h>
 
-anyVar_class::~anyVar_class(void){}
+anyVar_class::~anyVar_class(void){
+	if(data_chain!=NULL) delete data_chain;
+	
+}
 
-anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames):
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames, ElectronCategory_class& cutter):
 	data_chain(data_chain_),
-	_branchNames(branchNames)
+	_branchNames(branchNames),
+	_cutter(cutter)
 {
 	
 }
@@ -15,11 +19,10 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames
 
 void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList)
 {
-
 	commonCut += "-eleID_" + eleID_;
-	TCut dataCut = cutter.GetCut(commonCut, false);
+	TCut dataCut = _cutter.GetCut(commonCut, false);
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
-	std::cout << "--------------- Importing data: " << data_chain->GetEntries() << std::endl;
+	std::cout << "--------------- Importing: " << data_chain->GetEntries() << std::endl;
 	//if(data!=NULL) delete data;
 	TChain *data = ImportTree(data_chain, dataCut, branchList);
 	commonData = new TEntryList(*(data->GetEntryList()));
@@ -40,12 +43,15 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 		chain->SetBranchStatus("*", 0);
 	}
 
-	for(std::set<TString>::const_iterator itr = branchList.begin();
-	        itr != branchList.end();
-	        itr++) {
-		std::cout << "[STATUS] Enabling branch: " << *itr << std::endl;
-		chain->SetBranchStatus(*itr, 1);
+	for(auto branch : branchList){
+		std::cout << "[STATUS] Enabling branch: " << branch << std::endl;
+		chain->SetBranchStatus(branch, 1);
 	}
+
+	for(auto branch : _branchNames){
+		std::cout << "[STATUS] Enabling branch: " << branch << std::endl;
+		chain->SetBranchStatus(branch, 1);
+	}		
 	// abilitare la lista dei friend branch
 	if(chain->GetBranch("scaleEle"))  chain->SetBranchStatus("scaleEle", 1);
 	if(chain->GetBranch("smearEle")) chain->SetBranchStatus("smearEle", 1);

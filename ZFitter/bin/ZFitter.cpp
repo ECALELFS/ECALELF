@@ -1164,8 +1164,8 @@ int main(int argc, char **argv)
     //------------------------------ anyVar_class declare and set the options
 	std::vector<TString> branchListAny;
 	branchListAny.push_back("R9Ele");
-	anyVar_class anyVar(data, branchListAny);
-	
+	anyVar_class anyVar(mc, branchListAny, cutter);
+	anyVar.Import(commonCut, eleID, activeBranchList);
 	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {

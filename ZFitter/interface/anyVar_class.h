@@ -49,16 +49,16 @@ public:
 
 	
 	anyVar_class(TChain *data_chain_,
-				 std::vector<TString> branchNames
+				 std::vector<TString> branchNames, ElectronCategory_class& cutter
 		);
 
 	~anyVar_class(void);
-
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
 	std::vector<TString> _branchNames; //fixed in the constructor, these are the branches with the variables to study
-	ElectronCategory_class cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
+	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
 	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
 	RooRealVar weight; ///< variable with the total event weight
@@ -66,7 +66,7 @@ private:
 	TEntryList *commonData, *reducedData;
 
 
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///
+
 	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight
 	

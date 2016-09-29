@@ -52,9 +52,9 @@ public:
 			treename = chainElement->GetName();
 			filename = chainElement->GetTitle();
 			templist = elist->GetEntryList(filename + "/" + treename, filename);
-			std::cout << "[yacine] treename :: " << treename << std::endl;
-			std::cout << "[yacine] filename :: " << filename << std::endl;
-			std::cout << "[yacine] templist :: " << templist << std::endl;
+			/* std::cout << "[yacine] treename :: " << treename << std::endl; */
+			/* std::cout << "[yacine] filename :: " << filename << std::endl; */
+			/* std::cout << "[yacine] templist :: " << templist << std::endl; */
 			if (templist) {
 				listfound++;
 				templist->SetTreeNumber(ie);

@@ -18,7 +18,6 @@ MAKEDEPEND = -MMD  -MT '$@ lib/$*.d'
 lib/%.o: $(SRCDIR)/%.cc
 	@echo "--> Making $@"
 	@echo "--> Making $(MODULES_EXT)" 
-	echo $(INCLUDE)
 	@if [ "$(SCRAMTOOL)" == "1" ]; then $(COMPILE.cc) $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); \
 	else @$(COMPILE.cc) -DCMSSW $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); fi
 
@@ -31,7 +30,7 @@ lib/%.o: $(SRCDIR)/%.cc
 
 ###### Main program
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
-$(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp 
+$(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp $(MODULES)
 	cd $(EoPDir) && make
 	@echo "---> Making ZFitter $(COMPILE.exe)"
 	if [ "$(SCRAMTOOL)" == "1" ]; then g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES)  $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
