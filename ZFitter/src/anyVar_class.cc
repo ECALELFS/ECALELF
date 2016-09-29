@@ -1,6 +1,7 @@
 #include "anyVar_class.h"
 #include <TTreeFormula.h>
 #include <RooDataSet.h>
+#define DEBUG
 
 anyVar_class::~anyVar_class(void){
 	if(data_chain!=NULL) delete data_chain;
@@ -10,7 +11,8 @@ anyVar_class::~anyVar_class(void){
 anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames, ElectronCategory_class& cutter):
 	data_chain(data_chain_),
 	_branchNames(branchNames),
-	_cutter(cutter)
+	_cutter(cutter),
+	weight("weight", "weight", 1, 0, 100)
 {
 	
 }
@@ -96,7 +98,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 	// _branchList is used to make the set branch addresses
 	std::vector<Float_t> branches;
 	for(unsigned int ibranch =0; ibranch< _branchNames.size(); ++ibranch){
-		branches.push_back(0);
+		std::cout << "[DEBUG] " << ibranch << std::endl;
 		chain->SetBranchAddress(_branchNames[ibranch], &branches[ibranch]);
 		RooRealVar *v = new RooRealVar(_branchNames[ibranch], "", -1000, 1000);
 		Vars.add(*v);
@@ -136,6 +138,9 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 	RooDataSet *data = new RooDataSet(chain->GetTitle(), "dataset", Vars);
 
 	Long64_t entries = chain->GetEntryList()->GetN();
+#ifdef DEBUG
+	entries = 10;
+#endif
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = new TTreeFormula("selector", cut, chain);
@@ -166,6 +171,14 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 		
 		//loop over the rooargset and fill it with setVal
 		weight.setVal(weight_ * pileupWeight_ * r9weight_[0]*r9weight_[1]);
+		RooLinkedListIter v_itr = Vars.iterator();
+		for(unsigned int i=0; i < Vars.getSize(); ++i){
+			RooRealVar *v = (RooRealVar *) v_itr.Next();
+//			v->setVal(branches[i]);
+			v->Print();
+		}
+
+		data->add(Vars);
 //		if(invMass_ > invMass.getMin() && invMass_ < invMass.getMax()) data->add(Vars);
 	}
 	delete selector;

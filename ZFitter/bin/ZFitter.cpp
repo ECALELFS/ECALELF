@@ -1168,7 +1168,7 @@ int main(int argc, char **argv)
 	anyVar.Import(commonCut, eleID, activeBranchList);
 	//need to convert the TTree into RooDataset
 	//run on a RooDataset and calculate the stats for all the variables
-	
+	anyVar.TreeToRooDataSet(mc, cutter.GetCut("EB", false));
 	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {

@@ -8,7 +8,6 @@ class TECALChain : public TChain
 public:
 	virtual void SetEntryList(TEntryList *elist)
 	{
-		std::cout << "SetEntryListECAL:: begin setting EntryList" << std::endl;
 		if (fEntryList) {
 			//check, if the chain is the owner of the previous entry list
 			//(it happens, if the previous entry list was created from a user-defined

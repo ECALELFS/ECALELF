@@ -53,7 +53,8 @@ public:
 		);
 
 	~anyVar_class(void);
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
+	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight	
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
@@ -68,7 +69,7 @@ private:
 
 
 	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
-	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight
+
 	
 	void FillStat(RooDataSet *dataset); ///< fills the "stats" struct 
 
