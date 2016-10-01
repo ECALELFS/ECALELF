@@ -6,7 +6,7 @@ process.Options = cms.PSet(
 
     TreeName = cms.string("selected"),
     infileDATA = cms.string("cfg/listDATA_momentumCalibration.txt"),
-    infileMC = cms.string("cfg/listMC2012_momentumCalibration.txt"),
+    infileMC = cms.string("cfg/listDATA_momentumCalibration.txt"),
     WeightforMC = cms.string("pileupDataRun2016B_71p3mb.root"),
     usePUweights = cms.bool(False),
     nPhiBinsEB = cms.int32(360),
