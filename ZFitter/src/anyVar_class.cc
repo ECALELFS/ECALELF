@@ -20,6 +20,12 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 	_cutter(cutter),
         massBranchName_(massBranchName)
 {
+	for(unsigned int ibranch = 0; ibranch < _branchNames.size(); ++ibranch) {
+		RooRealVar * v = new RooRealVar(_branchNames[ibranch].first, "", -10000000000, 10000000000);
+		Vars.addOwned(*v);
+	}
+
+
 }
 
 
@@ -130,7 +136,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 }
 
 
-RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
+RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 {
 	// _branchList is used to make the set branch addresses
 	Float_t branches_Float_t[MAXBRANCHES][3];
@@ -161,17 +167,15 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
                                 assert(0);
                 }
                 vtype.push_back(typ);
-		RooRealVar * v = new RooRealVar(_branchNames[ibranch].first, "", -10000000000, 10000000000);
-		Vars.addOwned(*v);
 	}
-        // MUST COME AFTER ALL THE Branch VARIABLES
-        RooRealVar * idx = new RooRealVar("idx", "", 0, 2);
-        Vars.addOwned(*idx);
-        RooRealVar * mass = new RooRealVar("mass", "", 0, 10000);
-        Vars.addOwned(*mass);
-        RooRealVar * smearMass = new RooRealVar("smearedMass", "", 0, 10000);
-        Vars.addOwned(*smearMass);
-
+	// MUST COME AFTER ALL THE Branch VARIABLES
+	RooRealVar * idx = new RooRealVar("idx", "", 0, 2);
+	Vars.addOwned(*idx);
+	RooRealVar * mass = new RooRealVar("mass", "", 0, 10000);
+	Vars.addOwned(*mass);
+	RooRealVar * smearMass = new RooRealVar("smearedMass", "", 0, 10000);
+	Vars.addOwned(*smearMass);
+	
 	Float_t weight_ = 1 ;
 	Float_t r9weight_[2] = {1, 1}; //r9weight_[0]=1; r9weight_[1]=1;
 	Float_t pileupWeight_ = 1;
@@ -237,6 +241,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 
                 // flatten the ntuple structure
                 for (Int_t j = 0; j < 2; ++j) {
+					if(iEle!=0 && iEle!=j+1) continue;
                         //loop over the rooargset and fill it with setVal
                         weight = weight_ * pileupWeight_ * r9weight_[0]*r9weight_[1];
                         idx->setVal(j);
@@ -293,6 +298,6 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut)
 	delete selector;
 	data->Print();
 	chain->ResetBranchAddresses();
-
+	Vars.Clear();
 	return data;
 }

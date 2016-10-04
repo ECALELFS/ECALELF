@@ -415,6 +415,39 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			continue;
 		}
 
+		//--------------- ETA
+		if(string.Contains("absEtaSC")) {
+			TObjArray *splitted = string.Tokenize("_");
+			if(splitted->GetEntries() < 3) {
+				std::cerr << "ERROR: incomplete absEtaSC region definition" << std::endl;
+				continue;
+			}
+			TObjString *Objstring1 = (TObjString *) splitted->At(1);
+			TObjString *Objstring2 = (TObjString *) splitted->At(2);
+
+			TString string1 = Objstring1->GetString();
+			TString string2 = Objstring2->GetString();
+
+			TCut cutEle1_1("abs(etaSCEle_ele1) >= " + string1);
+			TCut cutEle1_2("abs(etaSCEle_ele1) <  " + string2);
+			TCut cutEle2_1("abs(etaSCEle_ele2) >= " + string1);
+			TCut cutEle2_2("abs(etaSCEle_ele2) <  " + string2);
+
+			TCut absEtaSC_ele1_cut = cutEle1_1 && cutEle1_2;
+			TCut absEtaSC_ele2_cut = cutEle2_1 && cutEle2_2;
+
+			if(string.Contains("SingleEle")) {
+				cut_string += absEtaSC_ele1_cut || absEtaSC_ele2_cut;
+				cutSet.insert(TString(absEtaSC_ele1_cut || absEtaSC_ele2_cut));
+			} else {
+				cut_string += absEtaSC_ele1_cut && absEtaSC_ele2_cut;
+				cutSet.insert(TString(absEtaSC_ele1_cut));
+				cutSet.insert(TString(absEtaSC_ele2_cut));
+			}
+			delete splitted;
+			continue;
+		}
+
 
 		//--------------- IETA
 		if(string.Contains("absIEta")) {

@@ -57,7 +57,7 @@ public:
 
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
-	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight
+	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle=0); ///< returns a RooDataset with selected events and weight
         void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:
