@@ -194,3 +194,17 @@ setGT(){
     SQRTS=$ENERGY
 		}
 
+
+
+checkIfRerecoed(){
+# the STORAGE_ELEMENT is not included in the check because EOS can have two different strings if running using lsf/caf or remoteGlidein
+	STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
+	if [ "`grep ${RUNRANGE} alcarereco_datasets.dat | grep ${DATASETPATH} |grep -e \"${DATASETNAME}[[:space:]]\" | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ | wc -l`" == "0" ]; then 
+		echo "NotRERECOED"
+		return 1; 
+	else 
+		grep ${RUNRANGE} alcarereco_datasets.dat | grep -e "${DATASETNAME}[[:space:]]" | grep ${DATASETPATH} | grep ${STORAGE_ELEMENT} | grep ${USER_REMOTE_DIR_BASE} | grep ${TAG}$ 
+		return 0; 
+	fi
+	#return is true if not-rerecoed
+}

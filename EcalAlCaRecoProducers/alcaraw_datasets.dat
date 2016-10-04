@@ -151,9 +151,9 @@
 273150-275376  /SingleElectron/Run2016B-EcalUncalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016B-WSkim-Prompt_v2          caf database VALID RUN2016B,RUN2016BC,RUN2016BCD,CAL_SEP2016,CAL_SEP2016_V2
 275420-276283  /SingleElectron/Run2016C-EcalUncalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016C-WSkim-Prompt_v2          caf database VALID RUN2016C,RUN2016BC,RUN2016BCD,CAL_SEP2016,CAL_SEP2016_V2
 276315-276811  /SingleElectron/Run2016D-EcalUncalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016D-WSkim-Prompt_v2          caf database VALID RUN2016D,RUN2016BCD,RUN2016CD,CAL_SEP2016,CAL_SEP2016_V2
-276830-277420  /SingleElectron/Run2016E-EcalUncalZElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016E-WSkim-Prompt-v2	       caf database VALID RUN2016E,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
-277820-278808  /SingleElectron/Run2016F-EcalUncalZElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016F-WSkim-Prompt-v1	       caf database VALID RUN2016F,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
-278817-279588  /SingleElectron/Run2016G-EcalUncalZElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016G-WSkim-Prompt-v1	       caf database VALID RUN2016G,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
-279589-279931  /SingleElectron/Run2016G-EcalUncalZElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016G-WSkim-Prompt-v1	       caf database VALID RUN2016G,RUN2016CDEFG,CAL_SEP2016_V2
+276830-277420  /SingleElectron/Run2016E-EcalUncalWElectron-PromptReco-v2/ALCARECO SingleElectron-Run2016E-WSkim-Prompt-v2	       caf database VALID RUN2016E,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
+277820-278808  /SingleElectron/Run2016F-EcalUncalWElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016F-WSkim-Prompt-v1	       caf database VALID RUN2016F,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
+278817-279588  /SingleElectron/Run2016G-EcalUncalWElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016G-WSkim-Prompt-v1	       caf database VALID RUN2016G,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
+279589-279931  /SingleElectron/Run2016G-EcalUncalWElectron-PromptReco-v1/ALCARECO SingleElectron-Run2016G-WSkim-Prompt-v1	       caf database VALID RUN2016G,RUN2016CDEFG,CAL_SEP2016_V2
 #
 #/DoubleEG/Run2016B-EcalUncalZElectron-01Jul2016-v2/ALCARECO

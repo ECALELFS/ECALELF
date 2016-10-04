@@ -159,9 +159,9 @@ for dataset in $datasets
 	
 
 #    echo "=========================================================================================="
-#	echo " [INFO] Dataset $dataset"
 	if [ -z "${SINGLEELE}" -a "`echo $dataset | grep -c SingleElectron`" != "0" ];then continue; fi
 	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
+#	echo " [INFO] Dataset $dataset"
 	# if [ -n "${DOWEIGHTSRECO}" ];then 
 	# 	if [ "`echo $dataset | grep -c weightsReco`" == "0" ]; then continue; fi
 	# else
@@ -183,9 +183,10 @@ for dataset in $datasets
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
   			${JSONFILE} ${JSONNAME} \
-			--scheduler=$SCHEDULER --file_per_job=10  --doExtraCalibTree --doEleIDTree --extraName=withExtras2  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --file_per_job=10  --doExtraCalibTree --doEleIDTree --extraName=withExtras  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
 			${TUTORIAL} $dataset 
 #			--scheduler=$SCHEDULER --file_per_job=5  --extraName=withExtras3  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+
 
 	fi
 	

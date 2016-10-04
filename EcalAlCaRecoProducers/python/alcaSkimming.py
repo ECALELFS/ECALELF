@@ -779,5 +779,6 @@ if(options.type=="ALCARECOSIM"):
 ############################
 ## Dump the output Python ##
 ############################
+#process.ecalRecHit.recoverEBIsolatedChannels = True
 processDumpFile = open('processDump.py', 'w')
 print >> processDumpFile, process.dumpPython()
