@@ -47,23 +47,29 @@ class anyVar_class
 {
 public:
 
+        typedef enum { kInt_t = 1, kUInt_t,  kULong64_t,  kFloat_t,  kArrayTypes = 10,   ///< simple variable types
+                       kAInt_t,    kAUInt_t, kAULong64_t, kAFloat_t, kMaxType } kType;  ///< array types
 
 	anyVar_class(TChain *data_chain_,
-	             std::vector<TString> branchNames, ElectronCategory_class& cutter
+	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
+                     std::string massBranchName = "invMass_SC_must_regrCorr_ele"
 	            );
 
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); ///< returns a RooDataset with selected events and weight
+        void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
-	std::vector<TString> _branchNames; //fixed in the constructor, these are the branches with the variables to study
+	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
 	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
-	RooRealVar weight; ///< variable with the total event weight
 
+        std::string massBranchName_; ///< branch name for the di-object invariant mass
+
+	Double_t weight; ///< variable with the total event weight
 	TEntryList *commonData, *reducedData;
 
 
