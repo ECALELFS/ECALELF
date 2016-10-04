@@ -221,8 +221,9 @@ private:
 private:
 	std::string foutName;
 
-	bool doExtraCalibTree;
-	bool doEleIDTree;
+	bool doExtraCalibTree; ///< bool to activate the dump of the extra calib tree for E/p ICs
+	bool doExtraStudyTree; ///< bool to activate the dump of the extra tree for study with values for single recHits
+	bool doEleIDTree;      ///< bool to activate the dump of the electronID variables in a separate tree
 
 
 	edm::Service<TFileService> fs; //< output file for extra ntuples
@@ -332,31 +333,36 @@ private:
 	Int_t nBCSCEle[3];
 #endif
 
-	//============================== ExtraCalibTree
+	//============================== ExtraCalibTree (for E/p)
 	TFile *extraCalibTreeFile;
 	TTree *extraCalibTree;
 	edm::Timestamp runTime_;
 	Int_t nRecHitsEle[3];
 	Int_t nHitsSCEle[3];
-	std::vector<int> recoFlagRecHitSCEle[3];
 	std::vector<unsigned int>  rawIdRecHitSCEle[3];
-	std::vector<int>        XRecHitSCEle[3];
-	std::vector<int>        YRecHitSCEle[3];
-	std::vector<int>        ZRecHitSCEle[3];
-	std::vector<float> energyRecHitSCEle[3];
-	std::vector<float> fracRecHitSCEle[3];
-	std::vector<float>     LCRecHitSCEle[3];
-	std::vector<float>     ICRecHitSCEle[3];
-	std::vector<float>  AlphaRecHitSCEle[3];
-	std::vector<std::vector<float> > ootAmplisUncalibRecHitSCEle[3];
-	std::vector<float> ampliUncalibRecHitSCEle[3];
-	std::vector<float> ampliErrUncalibRecHitSCEle[3];
-	std::vector<float> pedEUncalibRecHitSCEle[3];
-	std::vector<float> jitterUncalibRecHitSCEle[3];
-	std::vector<float> jitterErrUncalibRecHitSCEle[3];
-	std::vector<float> chi2UncalibRecHitSCEle[3];
-	std::vector<uint32_t> flagsUncalibRecHitSCEle[3];
+	std::vector<int>           XRecHitSCEle[3];
+	std::vector<int>           YRecHitSCEle[3];
+	std::vector<int>           ZRecHitSCEle[3];
+	std::vector<float>         energyRecHitSCEle[3];
+	std::vector<float>         fracRecHitSCEle[3];
+	std::vector<int>           recoFlagRecHitSCEle[3];
 	//==============================
+
+	//============================== ExtraStudyTree
+	TFile *extraStudyTreeFile;
+	TTree *extraStudyTree;
+	std::vector<float>               LCRecHitSCEle[3];
+	std::vector<float>               AlphaRecHitSCEle[3];
+	std::vector<float>               ICRecHitSCEle[3];
+	std::vector<std::vector<float> > ootAmplisUncalibRecHitSCEle[3];
+	std::vector<float>               ampliUncalibRecHitSCEle[3];
+	std::vector<float>               ampliErrUncalibRecHitSCEle[3];
+	std::vector<float>               pedEUncalibRecHitSCEle[3];
+	std::vector<float>               jitterUncalibRecHitSCEle[3];
+	std::vector<float>               jitterErrUncalibRecHitSCEle[3];
+	std::vector<float>               chi2UncalibRecHitSCEle[3];
+	std::vector<uint32_t>            flagsUncalibRecHitSCEle[3];
+
 
 	//============================== check ele-id and iso
 	TFile *eleIDTreeFile;
@@ -514,6 +520,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	SelectEvents(iConfig.getParameter<std::vector<std::string> >("SelectEvents")),
 	foutName(iConfig.getParameter<std::string>("foutName")),
 	doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
+	doExtraStudyTree(iConfig.getParameter<bool>("doExtraStudyTree")),
 	doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
 	doPdfSystTree(false),
 	pdfWeightTAGS(iConfig.getParameter< std::vector<edm::InputTag> >("pdfWeightCollections")),
@@ -781,7 +788,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		//else we have two electrons
 		TreeSetDiElectronVar(*eleIter1, *eleIter2);
 		doFill = true;
-		if(doExtraCalibTree) {
+		if(doExtraCalibTree || doExtraStudyTree) {
 			TreeSetExtraCalibVar(*eleIter1, *eleIter2);
 		}
 		if(doEleIDTree) {
@@ -812,7 +819,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
 				TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
-				if(doExtraCalibTree) {
+				if(doExtraCalibTree || doExtraStudyTree) {
 					TreeSetExtraCalibVar(*eleIter1, 0);
 					TreeSetExtraCalibVar(*eleIter1, -1);
 				}
@@ -854,7 +861,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					if(eventType == UNKNOWN) eventType = ZEE;
 					TreeSetDiElectronVar(*eleIter1, *eleIter2);
 
-					if(doExtraCalibTree) {
+					if(doExtraCalibTree || doExtraStudyTree) {
 						TreeSetExtraCalibVar(*eleIter1, *eleIter2);
 					}
 					if(doEleIDTree) {
@@ -907,7 +914,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 					TreeSetMuMuGammaVar(*phoIter1, *muIter1, *muIter2);
 
-					if(doExtraCalibTree) {
+					if(doExtraCalibTree || doExtraStudyTree) {
 						TreeSetExtraCalibVar(*phoIter1, *muIter1, *muIter2);
 					}
 					if(doEleIDTree) {
@@ -991,7 +998,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		if(HighEtaSC1 != EESuperClustersHandle->end()) {
 			doFill = true;
 			TreeSetDiElectronVar(*PatEle1, *HighEtaSC1);
-			if(doExtraCalibTree) {
+			if(doExtraCalibTree || doExtraStudyTree) {
 				TreeSetExtraCalibVar(*PatEle1, *HighEtaSC1);
 			}
 		}
@@ -999,8 +1006,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 	if(doFill) {
 		tree->Fill();
-		if(doExtraCalibTree)  extraCalibTree->Fill();
+		if(doExtraCalibTree) extraCalibTree->Fill();
 		if(doEleIDTree)      eleIDTree->Fill();
+		if(doExtraStudyTree) extraStudyTree->Fill();
 	}
 	delete clustertools;
 	return;
@@ -1061,6 +1069,20 @@ void ZNtupleDumper::beginJob()
 		InitExtraCalibTree();
 	}
 
+	if(doExtraStudyTree) {
+		extraStudyTreeFile = new TFile("extraStudyTree.root", "recreate");
+		if(extraStudyTreeFile->IsZombie()) {
+			throw cms::Exception("OutputError") <<  "Output tree for extra study not created (Zombie): " << foutName;
+			return;
+		}
+		extraStudyTreeFile->cd();
+
+		extraStudyTree = new TTree("extraStudyTree", "extraStudyTree");
+		extraStudyTree->SetDirectory(extraStudyTreeFile);
+		InitExtraStudyTree();
+	}
+
+
 	if(doEleIDTree) {
 		eleIDTreeFile = new TFile("eleIDTree.root", "recreate");
 		if(eleIDTreeFile->IsZombie()) {
@@ -1098,6 +1120,7 @@ void ZNtupleDumper::endJob()
 		tree->BuildIndex("runNumber", "eventNumber");
 		if(doEleIDTree)       eleIDTree->BuildIndex("runNumber", "eventNumber");
 		if(doExtraCalibTree) extraCalibTree->BuildIndex("runNumber", "eventNumber");
+		if(doExtraStudyTree) extraStudyTree->BuildIndex("runNumber", "eventNumber");
 	}
 	// save the tree into the file
 	tree_file->cd();
@@ -1108,6 +1131,11 @@ void ZNtupleDumper::endJob()
 		extraCalibTreeFile->cd();
 		extraCalibTree->Write();
 		extraCalibTreeFile->Close();
+	}
+	if(doExtraStudyTree) {
+		extraStudyTreeFile->cd();
+		extraStudyTree->Write();
+		extraStudyTreeFile->Close();
 	}
 	if(doEleIDTree) {
 		eleIDTreeFile->cd();
@@ -2160,30 +2188,9 @@ void ZNtupleDumper::InitExtraCalibTree()
 	extraCalibTree->Branch("ZRecHitSCEle2", &(ZRecHitSCEle[1]));
 	extraCalibTree->Branch("energyRecHitSCEle1", &(energyRecHitSCEle[0]));
 	extraCalibTree->Branch("energyRecHitSCEle2", &(energyRecHitSCEle[1]));
+
 	extraCalibTree->Branch("fracRecHitSCEle1", &(fracRecHitSCEle[0]));
 	extraCalibTree->Branch("fracRecHitSCEle2", &(fracRecHitSCEle[1]));
-	extraCalibTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
-	extraCalibTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
-	extraCalibTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
-	extraCalibTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
-	extraCalibTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
-	extraCalibTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
-	extraCalibTree->Branch("ampliErrUncalibRecHitSCEle1", &(ampliErrUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("ampliErrUncalibRecHitSCEle2", &(ampliErrUncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("ampliUncalibRecHitSCEle1", &(ampliUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("ampliUncalibRecHitSCEle2", &(ampliUncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("chi2UncalibRecHitSCEle1", &(chi2UncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("chi2UncalibRecHitSCEle2", &(chi2UncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("flagsUncalibRecHitSCEle1", &(flagsUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("flagsUncalibRecHitSCEle2", &(flagsUncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("jitterErrUncalibRecHitSCEle1", &(jitterErrUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("jitterErrUncalibRecHitSCEle2", &(jitterErrUncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("jitterUncalibRecHitSCEle1", &(jitterUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("jitterUncalibRecHitSCEle2", &(jitterUncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("ootAmplitudesUncalibRecHitSCEle1", &(ootAmplisUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("ootAmplitudesUncalibRecHitSCEle2", &(ootAmplisUncalibRecHitSCEle[1]));
-	extraCalibTree->Branch("pedUncalibRecHitSCEle1", &(pedEUncalibRecHitSCEle[0]));
-	extraCalibTree->Branch("pedUncalibRecHitSCEle2", &(pedEUncalibRecHitSCEle[1]));
 
 	return;
 }
@@ -2349,6 +2356,46 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const pat::Muon& muon1, int index)
 {
 	resetExtraVariables(index);
 	if (index < 0) return;
+	return;
+}
+
+
+//#============================== extra study tree
+void ZNtupleDumper::InitExtraStudyTree()
+{
+
+	//  tree = new TTree("selected",fChain->GetTitle());
+	std::cout << "[STATUS] InitExtraStudyTree" << std::endl;
+	if(extraStudyTree == NULL) return;
+
+	extraStudyTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	extraStudyTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
+	extraStudyTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
+	extraStudyTree->Branch("runTime",       &runTime, "        runTime/i");
+
+	extraStudyTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
+	extraStudyTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
+	extraStudyTree->Branch("AlphaRecHitSCEle1", &(AlphaRecHitSCEle[0]));
+	extraStudyTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
+	extraStudyTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
+	extraStudyTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
+	extraStudyTree->Branch("ampliErrUnstudyRecHitSCEle1", &(ampliErrUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("ampliErrUnstudyRecHitSCEle2", &(ampliErrUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("ampliUnstudyRecHitSCEle1", &(ampliUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("ampliUnstudyRecHitSCEle2", &(ampliUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("chi2UnstudyRecHitSCEle1", &(chi2UnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("chi2UnstudyRecHitSCEle2", &(chi2UnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("flagsUnstudyRecHitSCEle1", &(flagsUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("flagsUnstudyRecHitSCEle2", &(flagsUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("jitterErrUnstudyRecHitSCEle1", &(jitterErrUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("jitterErrUnstudyRecHitSCEle2", &(jitterErrUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("jitterUnstudyRecHitSCEle1", &(jitterUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("jitterUnstudyRecHitSCEle2", &(jitterUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("ootAmplitudesUnstudyRecHitSCEle1", &(ootAmplisUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("ootAmplitudesUnstudyRecHitSCEle2", &(ootAmplisUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("pedUnstudyRecHitSCEle1", &(pedEUnstudyRecHitSCEle[0]));
+	extraStudyTree->Branch("pedUnstudyRecHitSCEle2", &(pedEUnstudyRecHitSCEle[1]));
+
 	return;
 }
 

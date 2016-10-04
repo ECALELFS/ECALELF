@@ -51,6 +51,21 @@ options.register('doTree',
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                  VarParsing.VarParsing.varType.int,          # string, int, or float
                  "doTree=0: no tree; 1: standard tree; 2: onlyExtraTree; 3: standard+extra; 4:only eleID; 5:eleID+standard; 6: eleID+extra; 7: standard+extra+eleID")
+options.register('doEleIDTree',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "0=false")
+options.register('doExtraCalibTree',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "0=false")
+options.register('doExtraStudyTree',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "0=false")
 options.register('doTreeOnly',
                  0, #default value False
                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -117,7 +132,10 @@ else:
     sys.exit(-1)
     
 doTreeOnly=False
-if(options.doTree>0 and options.doTreeOnly==1):
+doAnyTree=False
+if(options.doTree>0 or options.doEleIDTree>0 or options.doExtraCalibTree>0 or options.doExtraStudyTree>0):
+    doAnyTree=True
+if(doAnyTree==True and options.doTreeOnly==1):
     print "doTreeOnly"
     doTreeOnly=True
     processName = processName+'DUMP'
@@ -280,9 +298,9 @@ process.pfIsoEgamma = cms.Sequence()
 
 ###############################/
 ############### JSON Filter
-if(options.doTree>0):
+if(doAnyTree):
     process.jsonFilter.jsonFileName = cms.string(options.jsonFile)
-    if((options.doTreeOnly==0)):
+    if(doAnyTree==False):
          # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
          print "[INFO] Using json file"
     # else:
@@ -410,14 +428,14 @@ else:
     process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
     process.ntupleSeq = cms.Sequence(process.jsonFilter * process.EIsequence * process.patSequence)
     
-if(options.doTree==2 or options.doTree==4 or options.doTree==6 or options.doTree==8):
+if(options.doTree==0):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
-if(options.doTree==2 or options.doTree==3 or options.doTree==6 or options.doTree==7 or options.doTree==10 or options.doTree==11 or options.doTree==14 or options.doTree==15): # it's a bit mask
-    process.zNtupleDumper.doExtraCalibTree=cms.bool(True)
-if(options.doTree==4 or options.doTree==5 or options.doTree==6 or options.doTree==7 or options.doTree==12 or options.doTree==13 or options.doTree==14 or options.doTree==15): # it's a bit mask
+if(options.doEleIDTree>0):
     process.zNtupleDumper.doEleIDTree=cms.bool(True)
-
-
+if(options.doExtraCalibTree>0):
+    process.zNtupleDumper.doExtraCalibTree=cms.bool(True)
+if(options.doExtraStudyTree>0):
+    process.zNtupleDumper.doExtraStudyTree=cms.bool(True)
 
 
 ############################################################
@@ -519,7 +537,7 @@ process.pathALCARECOEcalUncalZmmgPhoton = cms.Path( process.PUDumperSeq *
 # ALCARERECO
 process.pathALCARERECOEcalCalElectron = cms.Path(process.alcarerecoSeq)
 
-if(options.doTree>0):
+if(doAnyTree):
     process.pathALCARERECOEcalCalElectron+=cms.Sequence(  process.ntupleSeq) # this cannot be done because the json will prevent to save the alcareco files
 
 # ALCARECO
@@ -624,7 +642,7 @@ elif(options.type=='ALCARERECO'):
         process.NtuplePath = cms.Path( process.ntupleSeq * process.zNtupleDumper)
         process.schedule = cms.Schedule(process.NtuplePath) #, process.NtupleEndPath)
     else:
-        if(options.doTree>0):
+        if(doAnyTree):
             process.pathALCARERECOEcalCalElectron += process.zNtupleDumper
         process.schedule = cms.Schedule(process.pathALCARERECOEcalCalElectron, process.ALCARERECOoutput_step)
 elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
@@ -633,7 +651,7 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
         process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO')
     else:
-        if(options.doTree==0):
+        if(doAnyTree==False):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
                                             process.pathALCARECOEcalCalZSCElectron, process.pathALCARECOEcalCalZmmgPhoton,
                                             process.ALCARECOoutput_step
