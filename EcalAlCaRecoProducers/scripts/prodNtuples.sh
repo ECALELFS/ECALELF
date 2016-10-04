@@ -11,10 +11,14 @@ UI_WORKING_DIR=prod_ntuples
 USER_REMOTE_DIR_BASE=group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples
 LUMIS_PER_JOBS=100
 EVENTS_PER_JOB=300000
+
+DOTREE=1
 DOEXTRACALIBTREE=0
+DOEXTRASTUDYTREE=0
+DOELEIDTREE=0
 CREATE=y
 SUBMIT=y
-DOTREE=1
+
 SKIM=""
 OUTFILES="ntuple.root"
 crabFile=tmp/ntuple.cfg
@@ -48,8 +52,9 @@ usage(){
 	echo "    --weightsReco: using weights for local reco"
 
     echo "---------- optional common"
-    echo "    --doExtraCalibTree"
-    echo "    --doEleIDTree"
+    echo "    --doExtraCalibTree (needed for E/p calibration)"
+    echo "    --doExtraStudyTree (for extra studies on single rechit quantities)"
+    echo "    --doEleIDTree      (has shower shapes)"
     echo "    --noStandardTree"
     echo "    --createOnly"
     echo "    --submitOnly"
@@ -169,9 +174,10 @@ do
 	#--puWeight) PUWEIGHTFILE=$2; shift;;
 	--extraName) EXTRANAME=$2;shift;;
         #name of the output files is hardcoded in ZNtupleDumper
-	--doExtraCalibTree) echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doEleIDTree) let DOTREE=${DOTREE}+4;OUTFILES="${OUTFILES},eleIDTree.root";;
-	--noStandardTree) let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
+	--doExtraCalibTree) echo "[OPTION] doExtraCalibTree"; DOEXTRACALIBTREE=1; OUTFILES="${OUTFILES},extraCalibTree.root";;
+	--doExtraCalibTree) echo "[OPTION] doExtraStudyTree"; DOEXTRASTUDYTREE=1; OUTFILES="${OUTFILES},extraStudyTree.root";;
+	--doEleIDTree) DOELEIDTREE=1;OUTFILES="${OUTFILES},eleIDTree.root";;
+	--noStandardTree) DOTREE=0; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
 	--check)      
@@ -189,8 +195,6 @@ do
     esac
     shift
 done
-
-#echo "[OPTION] doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";
 
 if [ -z "$DATASETNAME" ];then 
     echo "[ERROR] DATASETNAME not defined" >> /dev/stderr
@@ -448,7 +452,7 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doExtraCalibTree=${DOEXTRACALIBTREE} doExtraStudyTree=${DOEXTRASTUDYTREE} doEleIDTree=${DOELEIDTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}
 get_edm_output=1
 output_file=${OUTFILES}
 
