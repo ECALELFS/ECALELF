@@ -9,7 +9,8 @@
 #include <string>
 
 
-class h2Chain {
+class h2Chain
+{
 public:
 	h2Chain (TString baseName, TString baseTitle,
 	         int nbinsx, double minx, double maxx,
