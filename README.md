@@ -23,15 +23,17 @@ cd Calibration/ZFitter && make && cd -
 ```
 
 If you are using a tcsh shell:
-`cd Calibration && source initCmsEnv.csh`
+`cd Calibration && source initCmsEnvCRAB2.csh`
 
 If you are using a bash shell:
-`cd Calibration && source initCmsEnv.sh`
+`cd Calibration && source initCmsEnvCRAB2.sh`
+
+(CRAB3 is not currently supported)
 
 Every time you enter in a new shell you have to do:
-`source initCmsEnv.csh`
+`source initCmsEnvCRAB2.csh`
 or
-`source initCmsEnv.sh`
+`source initCmsEnvCRAB2.sh`
 
 
 ======
