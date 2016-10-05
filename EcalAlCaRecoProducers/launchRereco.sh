@@ -20,7 +20,7 @@ do
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in '' --check
+	for CHECK in  --check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
@@ -34,12 +34,13 @@ do
 		esac
 	done
 
-	for CHECK in '' --check
+	for CHECK in --check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK --singleEle --weightsReco
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK --singleEle
+#				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK 
 				;;
 			*)
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK 

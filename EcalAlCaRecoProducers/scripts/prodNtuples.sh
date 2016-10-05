@@ -84,7 +84,7 @@ expertUsage(){
 #------------------------------ parsing
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doExtraStudyTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -175,7 +175,7 @@ do
 	--extraName) EXTRANAME=$2;shift;;
         #name of the output files is hardcoded in ZNtupleDumper
 	--doExtraCalibTree) echo "[OPTION] doExtraCalibTree"; DOEXTRACALIBTREE=1; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doExtraCalibTree) echo "[OPTION] doExtraStudyTree"; DOEXTRASTUDYTREE=1; OUTFILES="${OUTFILES},extraStudyTree.root";;
+	--doExtraStudyTree) echo "[OPTION] doExtraStudyTree"; DOEXTRASTUDYTREE=1; OUTFILES="${OUTFILES},extraStudyTree.root";;
 	--doEleIDTree) DOELEIDTREE=1;OUTFILES="${OUTFILES},eleIDTree.root";;
 	--noStandardTree) DOTREE=0; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;

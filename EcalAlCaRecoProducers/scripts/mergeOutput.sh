@@ -92,6 +92,8 @@ elif [ "`echo ${FILENAME_BASE} | awk '(/eleIDTree/){printf(\"1\")}'`" == "1" ]; 
     MERGEDFILE=eleIDTree-${DATASETNAME}-${RUNRANGE}.root
 elif [ "`echo ${FILENAME_BASE} | awk '(/extraCalibTree/){printf(\"1\")}'`" == "1" ]; then
     MERGEDFILE=extraCalibTree-${DATASETNAME}-${RUNRANGE}.root
+elif [ "`echo ${FILENAME_BASE} | awk '(/extraStudyTree/){printf(\"1\")}'`" == "1" ]; then
+    MERGEDFILE=extraStudyTree-${DATASETNAME}-${RUNRANGE}.root
 else
     MERGEDFILE=${DATASETNAME}-${RUNRANGE}.root
 fi
