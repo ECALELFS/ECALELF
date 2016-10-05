@@ -434,9 +434,9 @@ private:
 	void TreeSetExtraCalibVar(const pat::Photon& photon, const pat::Muon& muon1, const pat::Muon& muon2);
 	void TreeSetExtraCalibVar(const std::vector<std::pair<DetId, float> > & hitsFracs, int index, bool isEB);
 
+	void InitExtraStudyTree(void); // the extra study tree uses the method of the extracalibtree
 
 	void InitEleIDTree(void);
-
 	void TreeSetEleIDVar(const pat::Electron& electron1, int index);
 	void TreeSetEleIDVar(const pat::Electron& electron1, const pat::Electron& electron2);
 	void TreeSetEleIDVar(const pat::Photon& photon, const pat::Muon& muon1, const pat::Muon& muon2);
@@ -2379,22 +2379,22 @@ void ZNtupleDumper::InitExtraStudyTree()
 	extraStudyTree->Branch("AlphaRecHitSCEle2", &(AlphaRecHitSCEle[1]));
 	extraStudyTree->Branch("ICRecHitSCEle1", &(ICRecHitSCEle[0]));
 	extraStudyTree->Branch("ICRecHitSCEle2", &(ICRecHitSCEle[1]));
-	extraStudyTree->Branch("ampliErrUnstudyRecHitSCEle1", &(ampliErrUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("ampliErrUnstudyRecHitSCEle2", &(ampliErrUnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("ampliUnstudyRecHitSCEle1", &(ampliUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("ampliUnstudyRecHitSCEle2", &(ampliUnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("chi2UnstudyRecHitSCEle1", &(chi2UnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("chi2UnstudyRecHitSCEle2", &(chi2UnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("flagsUnstudyRecHitSCEle1", &(flagsUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("flagsUnstudyRecHitSCEle2", &(flagsUnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("jitterErrUnstudyRecHitSCEle1", &(jitterErrUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("jitterErrUnstudyRecHitSCEle2", &(jitterErrUnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("jitterUnstudyRecHitSCEle1", &(jitterUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("jitterUnstudyRecHitSCEle2", &(jitterUnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("ootAmplitudesUnstudyRecHitSCEle1", &(ootAmplisUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("ootAmplitudesUnstudyRecHitSCEle2", &(ootAmplisUnstudyRecHitSCEle[1]));
-	extraStudyTree->Branch("pedUnstudyRecHitSCEle1", &(pedEUnstudyRecHitSCEle[0]));
-	extraStudyTree->Branch("pedUnstudyRecHitSCEle2", &(pedEUnstudyRecHitSCEle[1]));
+	extraStudyTree->Branch("ampliErrUncalibRecHitSCEle1", &(ampliErrUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("ampliErrUncalibRecHitSCEle2", &(ampliErrUncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("ampliUncalibRecHitSCEle1", &(ampliUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("ampliUncalibRecHitSCEle2", &(ampliUncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("chi2UncalibRecHitSCEle1", &(chi2UncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("chi2UncalibRecHitSCEle2", &(chi2UncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("flagsUncalibRecHitSCEle1", &(flagsUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("flagsUncalibRecHitSCEle2", &(flagsUncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("jitterErrUncalibRecHitSCEle1", &(jitterErrUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("jitterErrUncalibRecHitSCEle2", &(jitterErrUncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("jitterUncalibRecHitSCEle1", &(jitterUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("jitterUncalibRecHitSCEle2", &(jitterUncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("ootAmplitudesUncalibRecHitSCEle1", &(ootAmplisUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("ootAmplitudesUncalibRecHitSCEle2", &(ootAmplisUncalibRecHitSCEle[1]));
+	extraStudyTree->Branch("pedUncalibRecHitSCEle1", &(pedEUncalibRecHitSCEle[0]));
+	extraStudyTree->Branch("pedUncalibRecHitSCEle2", &(pedEUncalibRecHitSCEle[1]));
 
 	return;
 }
