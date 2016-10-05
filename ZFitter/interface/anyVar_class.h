@@ -72,6 +72,7 @@ private:
 	Double_t weight; ///< variable with the total event weight
 	TEntryList *commonData, *reducedData;
 
+        RooRealVar * idx, * mass, * smearMass;
 
 
 	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input

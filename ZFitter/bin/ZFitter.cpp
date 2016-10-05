@@ -1185,14 +1185,15 @@ int main(int argc, char **argv)
         // this flattens the event structure, all electrons are merged,
         // look at the `idx' RooRealVar to know the index in the
         // original array (can be 0, 1, 2)
-	RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_0_1", false, 1), 1);
+	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
+	RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, TCut(), 1);
 	ds1->SetName("ds1");
 	ds1->SetTitle("ds1");
-	RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_0_1", false, 2), 2);
+	RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
 	ds2->SetName("ds2");
 	ds2->SetTitle("ds2");
-	RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
-	ds3->SetTitle("ds3");
+	//RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
+	//ds3->SetTitle("ds3");
 	RooDataSet * ds = ds1;
 	ds->append(*ds2);
 	
@@ -1200,7 +1201,7 @@ int main(int argc, char **argv)
 	ds->Print();
 	ds1->Print();
 	ds2->Print();
-	ds3->Print();
+	//ds3->Print();
         //ds->write("dataset.dat");
         TFile * fout = TFile::Open("roodataset.root", "recreate");
         fout->cd();

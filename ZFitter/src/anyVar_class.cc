@@ -24,6 +24,12 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 		RooRealVar * v = new RooRealVar(_branchNames[ibranch].first, "", -10000000000, 10000000000);
 		Vars.addOwned(*v);
 	}
+	idx = new RooRealVar("idx", "", 0, 2);
+	Vars.addOwned(*idx);
+	mass = new RooRealVar("mass", "", 0, 10000);
+	Vars.addOwned(*mass);
+	smearMass = new RooRealVar("smearedMass", "", 0, 10000);
+	Vars.addOwned(*smearMass);
 
 
 }
@@ -168,13 +174,13 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
                 }
                 vtype.push_back(typ);
 	}
-	// MUST COME AFTER ALL THE Branch VARIABLES
-	RooRealVar * idx = new RooRealVar("idx", "", 0, 2);
-	Vars.addOwned(*idx);
-	RooRealVar * mass = new RooRealVar("mass", "", 0, 10000);
-	Vars.addOwned(*mass);
-	RooRealVar * smearMass = new RooRealVar("smearedMass", "", 0, 10000);
-	Vars.addOwned(*smearMass);
+	////// MUST COME AFTER ALL THE Branch VARIABLES
+	////RooRealVar * idx = new RooRealVar("idx", "", 0, 2);
+	////Vars.addOwned(*idx);
+	////RooRealVar * mass = new RooRealVar("mass", "", 0, 10000);
+	////Vars.addOwned(*mass);
+	////RooRealVar * smearMass = new RooRealVar("smearedMass", "", 0, 10000);
+	////Vars.addOwned(*smearMass);
 	
 	Float_t weight_ = 1 ;
 	Float_t r9weight_[2] = {1, 1}; //r9weight_[0]=1; r9weight_[1]=1;
