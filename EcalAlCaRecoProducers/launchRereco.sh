@@ -12,15 +12,16 @@ json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/
 jsonName=271036_279931-Cal_Sep2016
 
 PERIOD=CAL_SEP2016_V2
+PERIOD=RUN2016C
 
-for tagfile in  config/reRecoTags/Cal_Sep2016_final_v3.py 
+for tagfile in  config/reRecoTags/Cal_Oct2016_pedTest_v{0,1,2,3,4,5,6,7,8,9,10,11,12}.py 
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in  --check
+	for CHECK in --check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
@@ -34,7 +35,7 @@ do
 		esac
 	done
 
-	for CHECK in --check
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
