@@ -91,7 +91,8 @@ private:
 
 	void AddMiniRecHitCollection(const reco::SuperCluster& sc,
 	                             std::set<DetId>& reducedRecHitMap,
-	                             const CaloTopology *caloTopology
+	                             const CaloTopology *caloTopology,
+	                             std::set<DetId>& reducedESRecHitMap
 	                            );
 
 

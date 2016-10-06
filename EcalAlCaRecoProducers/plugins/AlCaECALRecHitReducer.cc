@@ -25,10 +25,10 @@ AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig)
 
 	ebRecHitsToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter< edm::InputTag > ("ebRecHitsLabel"));
 	eeRecHitsToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter< edm::InputTag > ("eeRecHitsLabel"));
+	esRecHitsToken_ = consumes<ESRecHitCollection>(  iConfig.getParameter< edm::InputTag > ("esRecHitsLabel"));
 	ebUncalibRecHitsToken_ = consumes<EcalUncalibratedRecHitCollection>(iConfig.getParameter< edm::InputTag > ("uncalibRecHitCollectionEB"));
 	eeUncalibRecHitsToken_ = consumes<EcalUncalibratedRecHitCollection>(iConfig.getParameter< edm::InputTag > ("uncalibRecHitCollectionEE"));
 
-	//  esRecHitsLabel_ = iConfig.getParameter< edm::InputTag > ("esRecHitsLabel");
 
 	std::vector<edm::InputTag> srcLabels = iConfig.getParameter< std::vector<edm::InputTag> >("srcLabels");
 	for ( auto inputTag = srcLabels.begin(); inputTag != srcLabels.end(); ++inputTag) {
@@ -43,11 +43,11 @@ AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig)
 
 	alcaBarrelHitsCollection_  = iConfig.getParameter<std::string>("alcaBarrelHitCollection");
 	alcaEndcapHitsCollection_  = iConfig.getParameter<std::string>("alcaEndcapHitCollection");
+	alcaPreshowerHitsCollection_ = iConfig.getParameter<std::string>("alcaPreshowerHitCollection");
 	alcaBarrelUncalibHitsCollection_ = iConfig.getParameter<std::string>("alcaBarrelUncalibHitCollection");
 	alcaEndcapUncalibHitsCollection_ = iConfig.getParameter<std::string>("alcaEndcapUncalibHitCollection");
 	alcaCaloClusterCollection_ = iConfig.getParameter<std::string>("alcaCaloClusterCollection");
 
-	//  alcaPreshowerHitsCollection_ = iConfig.getParameter<std::string>("alcaPreshowerHitCollection");
 
 	etaSize_ = iConfig.getParameter<int> ("etaSize");
 	phiSize_ = iConfig.getParameter<int> ("phiSize");
@@ -61,11 +61,12 @@ AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig)
 	//register your products
 	produces< EBRecHitCollection > (alcaBarrelHitsCollection_) ;
 	produces< EERecHitCollection > (alcaEndcapHitsCollection_) ;
+	produces< ESRecHitCollection > (alcaPreshowerHitsCollection_) ;
 	produces< EBUncalibratedRecHitCollection > (alcaBarrelUncalibHitsCollection_) ;
 	produces< EEUncalibratedRecHitCollection > (alcaEndcapUncalibHitsCollection_) ;
-	
+
 	produces< reco::CaloClusterCollection > (alcaCaloClusterCollection_) ;
-	//  produces< ESRecHitCollection > (alcaPreshowerHitsCollection_) ;
+
 }
 
 
@@ -113,13 +114,12 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	const EEUncalibratedRecHitCollection *endcapUncalibHitsCollection = endcapUncalibRecHitsHandle.product () ;
 
 
-	//   // get ES RecHits
-	//   Handle<ESRecHitCollection> preshowerRecHitsHandle;
-	//   iEvent.getByToken(esRecHitsToken_,preshowerRecHitsHandle);
-
-	//   const ESRecHitCollection * preshowerHitsCollection = 0 ;
+	// get ES RecHits
+	Handle<ESRecHitCollection> preshowerRecHitsHandle;
+	iEvent.getByToken(esRecHitsToken_, preshowerRecHitsHandle);
+	const ESRecHitCollection * preshowerHitsCollection  = preshowerRecHitsHandle.product () ;
 	//   if (preshowerIsFull)
-	//     preshowerHitsCollection = preshowerRecHitsHandle.product () ;
+	//
 
 	//   // make a vector to store the used ES rechits:
 	//   set<ESDetId> used_strips;
@@ -132,15 +132,13 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	//Create empty output collections
 	std::auto_ptr< EBRecHitCollection > miniEBRecHitCollection (new EBRecHitCollection) ;
 	std::auto_ptr< EERecHitCollection > miniEERecHitCollection (new EERecHitCollection) ;
+	std::auto_ptr< ESRecHitCollection > miniESRecHitCollection (new ESRecHitCollection) ;
 	std::auto_ptr< EBUncalibratedRecHitCollection > miniEBUncalibRecHitCollection (new EBUncalibratedRecHitCollection) ;
 	std::auto_ptr< EEUncalibratedRecHitCollection > miniEEUncalibRecHitCollection (new EEUncalibratedRecHitCollection) ;
 
-	//  std::auto_ptr< ESRecHitCollection > miniESRecHitCollection (new ESRecHitCollection) ;
-
 	std::set<DetId> reducedRecHit_EBmap;
 	std::set<DetId> reducedRecHit_EEmap;
-	std::set<DetId> reducedUncalibRecHit_EBmap;
-	std::set<DetId> reducedUncalibRecHit_EEmap;
+	std::set<DetId> reducedRecHit_ESmap;
 
 	//  std::set< edm::Ref<reco::CaloCluster> > reducedCaloClusters_map;
 
@@ -183,11 +181,9 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 				// injected into the EE collection rather than the EB collection.
 				// Checking teh subdetID should be safe, make sure to propagate to full CMSSW
 				// FIXME
-				AddMiniRecHitCollection(sc, reducedRecHit_EBmap, caloTopology);
-				AddMiniRecHitCollection(sc, reducedUncalibRecHit_EBmap, caloTopology);
+				AddMiniRecHitCollection(sc, reducedRecHit_EBmap, caloTopology, reducedRecHit_ESmap);
 			} else { // endcap
-				AddMiniRecHitCollection(sc, reducedRecHit_EEmap, caloTopology);
-				AddMiniRecHitCollection(sc, reducedUncalibRecHit_EEmap, caloTopology);
+				AddMiniRecHitCollection(sc, reducedRecHit_EEmap, caloTopology, reducedRecHit_ESmap);
 			} // end of endcap
 
 			reco::CaloCluster_iterator it = sc.clustersBegin();
@@ -206,8 +202,7 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	        SC_iter != EESCHandle->end();
 	        SC_iter++) {
 		if(fabs(SC_iter->eta()) < minEta_highEtaSC_) continue;
-		AddMiniRecHitCollection(*SC_iter, reducedRecHit_EEmap, caloTopology);
-		AddMiniRecHitCollection(*SC_iter, reducedUncalibRecHit_EEmap, caloTopology);
+		AddMiniRecHitCollection(*SC_iter, reducedRecHit_EEmap, caloTopology, reducedRecHit_ESmap);
 
 		const reco::SuperCluster& sc = *(SC_iter);
 		reco::CaloCluster_iterator it = sc.clustersBegin();
@@ -224,40 +219,37 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	        itr != reducedRecHit_EBmap.end(); itr++) {
 		if (barrelHitsCollection->find(*itr) != barrelHitsCollection->end())
 			miniEBRecHitCollection->push_back(*(barrelHitsCollection->find(*itr)));
+		if (barrelUncalibHitsCollection->find(*itr) != barrelUncalibHitsCollection->end())
+			miniEBUncalibRecHitCollection->push_back(*(barrelUncalibHitsCollection->find(*itr)));
 	}
 
 	for(std::set<DetId>::const_iterator itr = reducedRecHit_EEmap.begin();
 	        itr != reducedRecHit_EEmap.end(); itr++) {
 		if (endcapHitsCollection->find(*itr) != endcapHitsCollection->end())
 			miniEERecHitCollection->push_back(*(endcapHitsCollection->find(*itr)));
-	}
-
-	for(std::set<DetId>::const_iterator itr = reducedUncalibRecHit_EBmap.begin();
-	        itr != reducedUncalibRecHit_EBmap.end(); itr++) {
-		if (barrelUncalibHitsCollection->find(*itr) != barrelUncalibHitsCollection->end())
-			miniEBUncalibRecHitCollection->push_back(*(barrelUncalibHitsCollection->find(*itr)));
-	}
-
-	for(std::set<DetId>::const_iterator itr = reducedUncalibRecHit_EEmap.begin();
-	        itr != reducedUncalibRecHit_EEmap.end(); itr++) {
 		if (endcapUncalibHitsCollection->find(*itr) != endcapUncalibHitsCollection->end())
 			miniEEUncalibRecHitCollection->push_back(*(endcapUncalibHitsCollection->find(*itr)));
 	}
 
+	for(std::set<DetId>::const_iterator itr = reducedRecHit_ESmap.begin();
+	        itr != reducedRecHit_ESmap.end(); itr++) {
+		if (preshowerHitsCollection->find(*itr) != preshowerHitsCollection->end())
+			miniESRecHitCollection->push_back(*(preshowerHitsCollection->find(*itr)));
+	}
 
 	//--------------------------------------- Put selected information in the event
 	iEvent.put( miniEBRecHitCollection, alcaBarrelHitsCollection_ );
-	iEvent.put( miniEERecHitCollection, alcaEndcapHitsCollection_ );
 	iEvent.put( miniEBUncalibRecHitCollection, alcaBarrelUncalibHitsCollection_ );
+	iEvent.put( miniEERecHitCollection, alcaEndcapHitsCollection_ );
 	iEvent.put( miniEEUncalibRecHitCollection, alcaEndcapUncalibHitsCollection_ );
+	iEvent.put( miniESRecHitCollection, alcaPreshowerHitsCollection_ );
 
-	//  iEvent.put( miniESRecHitCollection,alcaPreshowerHitsCollection_ );
 	iEvent.put( reducedCaloClusterCollection, alcaCaloClusterCollection_);
 }
 
 void AlCaECALRecHitReducer::AddMiniRecHitCollection(const reco::SuperCluster& sc,
         std::set<DetId>& reducedRecHitMap,
-        const CaloTopology *caloTopology
+        const CaloTopology *caloTopology, std::set<DetId>& reducedESRecHitMap
                                                    )
 {
 	DetId seed = (sc.seed()->seed());
@@ -277,6 +269,16 @@ void AlCaECALRecHitReducer::AddMiniRecHitCollection(const reco::SuperCluster& sc
 	        scHit_itr != scHits.end(); scHit_itr++) {
 		// the map fills just one time (avoiding double insert of recHits)
 		reducedRecHitMap.insert(scHit_itr->first);
+	}
+
+	if (sc.preshowerClusters().isAvailable()) {
+//		std::cout << "[DEBUG] Preshower available!" << std::endl;
+		for(auto iES = sc.preshowerClustersBegin(); iES != sc.preshowerClustersEnd(); ++iES) {
+			const std::vector< std::pair<DetId, float> >& hits = (*iES)->hitsAndFractions();
+			for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
+				reducedESRecHitMap.insert(rh->first);
+			}
+		}
 	}
 
 

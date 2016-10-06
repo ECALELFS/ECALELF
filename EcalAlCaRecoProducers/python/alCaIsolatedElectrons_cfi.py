@@ -8,6 +8,7 @@ alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
                                        minEta_highEtaSC = cms.double(2.4),
                                        ebRecHitsLabel = cms.InputTag("reducedEcalRecHitsEB"), #default
                                        eeRecHitsLabel = cms.InputTag("reducedEcalRecHitsEE"), #default
+                                       esRecHitsLabel = cms.InputTag("ecalPreshowerRecHit","EcalRecHitsES"),
                                        uncalibRecHitCollectionEB = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEB"),
                                        uncalibRecHitCollectionEE = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE"),
 #                                       ebRecHitsLabel = cms.InputTag("ecalRecHit","EcalRecHitsEB"), #multifit 50ns
@@ -20,6 +21,7 @@ alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
 #                                       eeRecHitsLabel = cms.InputTag("ecalMultiFitUncalibRecHit","EcalUncalibRecHitsEE"),
 #                                       ebRecHitsLabel = cms.InputTag("ecalRecHit", "EcalRecHitsEB"),
 #                                       eeRecHitsLabel = cms.InputTag("ecalRecHit", "EcalRecHitsEE"),
+
                                        alcaCaloClusterCollection = cms.string('alcaCaloCluster'),
 #                                       isUncalib = cms.bool(False),
                                        phiSize = cms.int32(61),
@@ -28,11 +30,7 @@ alCaIsolatedElectrons = cms.EDProducer("AlCaECALRecHitReducer",
                                        alcaEndcapHitCollection = cms.string('alcaEndcapHits'),
                                        alcaBarrelUncalibHitCollection = cms.string('alcaBarrelUncalibHits'),
                                        alcaEndcapUncalibHitCollection = cms.string('alcaEndcapUncalibHits'),
-
-#                                       alcaEndcapHitCollection = cms.string('alCaRecHitsEE'),
-
-#                                       esRecHitsLabel = cms.InputTag("ecalPreshowerRecHit","EcalRecHitsES"),
-#                                       alcaPreshowerHitCollection = cms.string('alcaPreshowerHits'),
+                                       alcaPreshowerHitCollection = cms.string('alcaPreshowerHits'),
 #                                       esNstrips = cms.int32(20),
 #                                       esNcolumns = cms.int32(1)                                       
                                        )
