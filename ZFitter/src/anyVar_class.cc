@@ -320,6 +320,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 
 void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cut_ele1, TCut cut_ele2)
 {
+	std::cout << "EE" << std::endl;
 	Long64_t entries = chain->GetEntryList()->GetN();
 
 	statsCollection stats_vec;
@@ -378,7 +379,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 	          << "\t" << "with " << entries << " entries" << std::endl;
 	std::cerr << "[ 00%]";
 
-	TEntryList exclusiveEventList(*chain->GetEntryList());
+	TEntryList *exclusiveEventList = new TEntryList(*chain->GetEntryList());
 
 	for(Long64_t jentry = 0; jentry < entries; ++jentry) {
 		Long64_t entryNumber = chain->GetEntryNumber(jentry);
@@ -391,7 +392,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 			if(selector_ele2 != NULL) selector_ele2->UpdateFormulaLeaves();
 		}
 
-		std::array<bool, NELE> passing_ele = {false, false, false};
+		std::array<bool, NELE> passing_ele = {false, false, true};
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 
@@ -420,7 +421,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 				stats_vec[i].add(branches_Float_t[i][iele]);
 			}
 		}
-		if(bothPassing) exclusiveEventList.Remove(entryNumber);
+		if(bothPassing) exclusiveEventList->Remove(entryNumber);
 	}
 	fprintf(stderr, "\n");
 	TT.Stop();
@@ -430,11 +431,13 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 	delete selector_ele2;
 	chain->ResetBranchAddresses();
 	std::cout << "Original number of entries: " << chain->GetEntryList()->GetN() << std::endl;
-	if(_exclusiveCategories && exclusiveEventList.GetN()!= chain->GetEntryList()->GetN()){
+	if(_exclusiveCategories && exclusiveEventList->GetN()!= chain->GetEntryList()->GetN()){
+		delete chain->GetEntryList();
 		TECALChain *chain_ecal = (TECALChain*)chain;
-		chain_ecal->TECALChain::SetEntryList(&exclusiveEventList);
+		chain_ecal->TECALChain::SetEntryList(exclusiveEventList);
 		chain = dynamic_cast<TChain*>(chain_ecal);
 		std::cout << "New number of entries: " <<  chain->GetEntryList()->GetN() << std::endl;
+
 	}
 
 	std::ofstream fstat(region+".dat");

@@ -977,7 +977,6 @@ int main(int argc, char **argv)
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
 		runDivide_class runDivider;
-		std::cout << "[yacine runDivide] the chain :: " << (tagChainMap["d"])["selected"] << "\t" << nEvents_runDivide << std::endl;
 		std::vector<TString> v = runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		std::vector<TString> runRanges;
@@ -1178,7 +1177,7 @@ int main(int argc, char **argv)
 	//branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-	anyVar_class anyVar(mc, branchListAny, cutter);
+	anyVar_class anyVar(data, branchListAny, cutter);
 	anyVar._exclusiveCategories=true;
 	anyVar.Import(commonCut, eleID, activeBranchList);
 	//need to convert the TTree into RooDataset
@@ -1190,7 +1189,7 @@ int main(int argc, char **argv)
 	for(auto& region : categories){
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-		anyVar.TreeAnalyzeShervin(mc, region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
+		anyVar.TreeAnalyzeShervin(data, region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
 	}
 	
 	return 0;
