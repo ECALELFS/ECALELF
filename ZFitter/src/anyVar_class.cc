@@ -85,8 +85,9 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	chain->SetBranchStatus("eleID", 1);
 //	chain->SetBranchStatus("eventNumber", 1);
 
-	chain->SetCacheSize(50000000);
-
+	chain->SetCacheSize(5000000000);
+	TStopwatch ts;
+	ts.Start();
 	//std::cout << commonCut << std::endl;
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
@@ -94,8 +95,8 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	std::cout << "[DEBUG] commonCut ::" << commonCut << std::endl;
 	chain->Draw(">>" + evListName, commonCut, "entrylist", MAXENTRIES);
 #else
-	chain->Draw(">>" + evListName, commonCut, "entrylist", MAXENTRIES);
-//	chain->Draw(">>" + evListName, commonCut, "entrylist");
+//	chain->Draw(">>" + evListName, commonCut, "entrylist", MAXENTRIES);
+	chain->Draw(">>" + evListName, commonCut, "entrylist");
 #endif
 
 	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
@@ -111,6 +112,8 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	std::cout << "[DEBUG] new chain ptr :\t" << chain_ecal << std::endl;
 	std::cout << "[DEBUG]     chain ptr :\t" << chain      << std::endl;
 #endif
+	ts.Stop();
+	ts.Print();
 	return chain;
 }
 
