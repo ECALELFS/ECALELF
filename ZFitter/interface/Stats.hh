@@ -61,6 +61,7 @@ public:
 
 	float median(void) const
 	{
+		if(_n == 0) return 0;
 		size_t i = _n / 2;
 		if(_n % 2 == 1) return _values[i];
 		else return 0.5 * (_values[i - 1] + _values[i]);

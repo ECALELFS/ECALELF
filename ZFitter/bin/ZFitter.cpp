@@ -1188,6 +1188,8 @@ int main(int argc, char **argv)
 	// original array (can be 0, 1, 2)
 	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
 	for(auto& region : categories){
+		std::cout << "------------------------------------------------------------" << std::endl;
+		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
 		anyVar.TreeAnalyzeShervin(mc, cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
 	}
 	

@@ -374,7 +374,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, TCut cut_ele1, TCut cut_ele
 	TTreeFormula *selector_ele1 = (cut_ele1 != "") ? new TTreeFormula("selector_ele1", cut_ele1, chain) : NULL;
 	TTreeFormula *selector_ele2 = (cut_ele2 != "") ? new TTreeFormula("selector_ele2", cut_ele2, chain) : NULL;
 
-	std::cout << "[STATUS] anyVar processing: "
+	std::cout << "[STATUS] anyVar processing: categories " 
 	          << "\t" << "with " << entries << " entries" << std::endl;
 	std::cerr << "[ 00%]";
 
@@ -427,7 +427,11 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, TCut cut_ele1, TCut cut_ele
 	delete selector_ele1;
 	delete selector_ele2;
 	chain->ResetBranchAddresses();
-	if(_exclusiveCategories) chain->GetEntryList()->Subtract(&exclusiveEventList);
+	std::cout << "Original number of entries: " << chain->GetEntryList()->GetN();
+	if(_exclusiveCategories){
+		chain->GetEntryList()->Subtract(&exclusiveEventList);
+		std::cout << "New number of entries: " <<  chain->GetEntryList()->GetN();
+	}
 
 	for(auto& s : stats_vec) {
 		s.sort();

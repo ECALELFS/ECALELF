@@ -65,6 +65,10 @@ float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e
 
 std::ostream& operator<<(std::ostream& os, const stats s)
 {
-	os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median(); // << "\t" << s.recursive_effective_mode() ;
+	if(s.n()==0){
+		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-"; // << "\t" << s.recursive_effective_mode() ;
+	} else {
+		os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median(); // << "\t" << s.recursive_effective_mode() ;
+	}
 	return os;
 }
