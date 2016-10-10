@@ -139,6 +139,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
         }
         outree->Print();
         outree->AutoSave();
+        outFile->Close();
 }
 
 
