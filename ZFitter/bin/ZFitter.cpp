@@ -1161,72 +1161,74 @@ int main(int argc, char **argv)
 		mc  = (tagChainMap["s"])["selected"];
 	}
 
-    //------------------------------ anyVar_class declare and set the options
+	//------------------------------ anyVar_class declare and set the options
 	std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
-        // first all the single variables
-	branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
-	branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
-	branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-        branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
-        // then all the array variables
+	// first all the single variables
+	// branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
+	// branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
+	// branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
+	// branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
+	// branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
+	// branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
+	// branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
+	// then all the array variables
 	branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
+	//branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
 	anyVar_class anyVar(mc, branchListAny, cutter);
+	anyVar._exclusiveCategories=true;
 	anyVar.Import(commonCut, eleID, activeBranchList);
 	//need to convert the TTree into RooDataset
 	//run on a RooDataset and calculate the stats for all the variables
-        // this flattens the event structure, all electrons are merged,
-        // look at the `idx' RooRealVar to know the index in the
-        // original array (can be 0, 1, 2)
+	// this flattens the event structure, all electrons are merged,
+	// look at the `idx' RooRealVar to know the index in the
+	// original array (can be 0, 1, 2)
 	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
-	RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, TCut(), 1);
-	ds1->SetName("ds1");
-	ds1->SetTitle("ds1");
+	for(auto& region : categories){
+		anyVar.TreeAnalyzeShervin(mc, cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
+	}
+	
+	return 0;
 	RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
 	ds2->SetName("ds2");
 	ds2->SetTitle("ds2");
 	//RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
 	//ds3->SetTitle("ds3");
-	RooDataSet * ds = ds1;
+	RooDataSet * ds = ds2;
 	ds->append(*ds2);
-	
-	
+
+
 	ds->Print();
-	ds1->Print();
 	ds2->Print();
 	//ds3->Print();
-        //ds->write("dataset.dat");
-        TFile * fout = TFile::Open("roodataset.root", "recreate");
-        fout->cd();
-        ds->Write("ds");
+	//ds->write("dataset.dat");
+	TFile * fout = TFile::Open("roodataset.root", "recreate");
+	fout->cd();
+	ds->Write("ds");
 
-        /*
-        // write an ASCII roodataset with specified format
-        // Open file for writing 
-        char foutname[] = "dataset2.dat";
-        ofstream ofs(foutname) ;
-        //ofs << std::fixed << std::setprecision(4); // << std::defaultfloat;
-        ofs << ofs.precision(10);
-        if (ofs.fail()) {
-                std::cerr << "RooDataSet::write(" << ds->GetName() << ") cannot create file " << foutname << endl ;
-        } else {
-                // Write all lines as arglist in compact mode
-                std::cout << "RooDataSet::write(" << ds->GetName() << ") writing ASCII file " << foutname << endl ;
-                Int_t i ;
-                for (i=0 ; i<ds->numEntries() ; i++) {
-                        RooArgList list(*ds->get(i),"line") ;
-                        list.writeToStream(ofs,kTRUE) ;
-                }
-        }
-        */
-        fout->Close();
+	/*
+	// write an ASCII roodataset with specified format
+	// Open file for writing
+	char foutname[] = "dataset2.dat";
+	ofstream ofs(foutname) ;
+	//ofs << std::fixed << std::setprecision(4); // << std::defaultfloat;
+	ofs << ofs.precision(10);
+	if (ofs.fail()) {
+	        std::cerr << "RooDataSet::write(" << ds->GetName() << ") cannot create file " << foutname << endl ;
+	} else {
+	        // Write all lines as arglist in compact mode
+	        std::cout << "RooDataSet::write(" << ds->GetName() << ") writing ASCII file " << foutname << endl ;
+	        Int_t i ;
+	        for (i=0 ; i<ds->numEntries() ; i++) {
+	                RooArgList list(*ds->get(i),"line") ;
+	                list.writeToStream(ofs,kTRUE) ;
+	        }
+	}
+	*/
+	fout->Close();
 
 	//anyVar.TreeToTree(mc, cutter.GetCut("EB", false));
 	return 3;

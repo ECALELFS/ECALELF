@@ -218,6 +218,9 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
 	TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
 
+	TCut isEle_ele1_cut = "chargeEle_ele1 == 1 || chargeEle_ele1 == -1";
+	TCut isEle_ele2_cut = "chargeEle_ele2 == 1 || chargeEle_ele2 == -1";
+	TCut isEle_cut = isEle_ele1_cut && isEle_ele2_cut;
 
 	/*
 	  se region contiene runNumber:
@@ -242,6 +245,12 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 #endif
 
 		if(string.CompareTo("all") == 0) {
+			continue;
+		}
+
+		if(string.CompareTo("isEle") == 0) {
+			cut_string += isEle_cut;
+			cutSet.insert(TString(isEle_cut));
 			continue;
 		}
 
@@ -383,7 +392,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 
 
 		//--------------- ETA
-		if(string.Contains("absEta")) {
+		if(string.Contains("absEta") && !string.Contains("absEtaSC")) {
 			TObjArray *splitted = string.Tokenize("_");
 			if(splitted->GetEntries() < 3) {
 				std::cerr << "ERROR: incomplete absEta region definition" << std::endl;

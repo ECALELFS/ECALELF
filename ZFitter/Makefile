@@ -17,7 +17,6 @@ MAKEDEPEND = -MMD  -MT '$@ lib/$*.d'
 ### Generate also a .d file with prerequisites
 lib/%.o: $(SRCDIR)/%.cc
 	@echo "--> Making $@"
-	@echo "--> Making $(MODULES_EXT)" 
 	@if [ "$(SCRAMTOOL)" == "1" ]; then $(COMPILE.cc) $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); \
 	else $(COMPILE.cc) -DCMSSW $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); fi
 

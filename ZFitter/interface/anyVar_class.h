@@ -39,7 +39,7 @@
 #include "ElectronCategory_class.hh"
 
 //#include <functions.h>
-
+#define NELE 3
 
 
 #include "TECALChain.h"
@@ -47,18 +47,20 @@ class anyVar_class
 {
 public:
 
-        typedef enum { kInt_t = 1, kUInt_t,  kULong64_t,  kFloat_t,  kArrayTypes = 10,   ///< simple variable types
-                       kAInt_t,    kAUInt_t, kAULong64_t, kAFloat_t, kMaxType } kType;  ///< array types
+	typedef enum { kInt_t = 1, kUInt_t,  kULong64_t,  kFloat_t,  kArrayTypes = 10,   ///< simple variable types
+	               kAInt_t,    kAUInt_t, kAULong64_t, kAFloat_t, kMaxType
+	             } kType;  ///< array types
 
 	anyVar_class(TChain *data_chain_,
 	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
-                     std::string massBranchName = "invMass_SC_must_regrCorr_ele"
+	             std::string massBranchName = "invMass_SC_must_regrCorr_ele"
 	            );
 
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
-	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle=0); ///< returns a RooDataset with selected events and weight
-        void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
+	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
+	void TreeAnalyzeShervin(TChain *chain, TCut cut_ele1, TCut cut_ele2); ///<
+	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
@@ -67,12 +69,12 @@ private:
 
 	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
 
-        std::string massBranchName_; ///< branch name for the di-object invariant mass
+	std::string massBranchName_; ///< branch name for the di-object invariant mass
 
 	Double_t weight; ///< variable with the total event weight
 	TEntryList *commonData, *reducedData;
 
-        RooRealVar * idx, * mass, * smearMass;
+	RooRealVar * idx, * mass, * smearMass;
 
 
 	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
@@ -83,21 +85,13 @@ private:
 
 public:
 	// define a struct saving the infos:
-	struct stats {
-		double mode;
-		double mean;
-		double stdDev;
-		double skewness;
-		double curtosis;
-		double sigmaEff30, sigmaEff68, sigmaEff90, sigmaEff95;
-	};
 
 
 
 	double GetEffectiveSigma(RooAbsData *dataset, float quant);
 
 	void PrintStats(std::ostream outScale);
-
+	bool _exclusiveCategories;
 
 
 
