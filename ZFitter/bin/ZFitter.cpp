@@ -1190,7 +1190,7 @@ int main(int argc, char **argv)
 	for(auto& region : categories){
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-		anyVar.TreeAnalyzeShervin(mc, cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
+		anyVar.TreeAnalyzeShervin(mc, region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
 	}
 	
 	return 0;

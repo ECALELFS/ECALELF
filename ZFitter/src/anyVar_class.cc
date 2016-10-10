@@ -318,7 +318,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 	return data;
 }
 
-void anyVar_class::TreeAnalyzeShervin(TChain *chain, TCut cut_ele1, TCut cut_ele2)
+void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cut_ele1, TCut cut_ele2)
 {
 	Long64_t entries = chain->GetEntryList()->GetN();
 
@@ -427,15 +427,18 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, TCut cut_ele1, TCut cut_ele
 	delete selector_ele1;
 	delete selector_ele2;
 	chain->ResetBranchAddresses();
-	std::cout << "Original number of entries: " << chain->GetEntryList()->GetN();
+	std::cout << "Original number of entries: " << chain->GetEntryList()->GetN() << std::endl;
 	if(_exclusiveCategories){
-		chain->GetEntryList()->Subtract(&exclusiveEventList);
-		std::cout << "New number of entries: " <<  chain->GetEntryList()->GetN();
+		TECALChain *chain_ecal = (TECALChain*)chain;
+		chain_ecal->TECALChain::SetEntryList(&exclusiveEventList);
+		chain = dynamic_cast<TChain*>(chain_ecal);
+		std::cout << "New number of entries: " <<  chain->GetEntryList()->GetN() << std::endl;
 	}
 
+	std::ofstream fstat(region+".dat");
 	for(auto& s : stats_vec) {
 		s.sort();
-		std::cout << "[DEBUG STATS] " << s << std::endl;
+		fstat << "[DEBUG STATS] " << s << std::endl;
 	}
 	stats_vec.dump("testfile.dat");
 	return;
