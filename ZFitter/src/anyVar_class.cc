@@ -395,7 +395,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 
-		exclusiveEventList.Remove(entryNumber);
+
 		if(jentry < 1) {
 			std::cout << "[DEBUG] PU: " << pileupWeight_ << std::endl;
 			std::cout << "[DEBUG] corrEle[0]: " << corrEle_[0] << std::endl;
@@ -410,8 +410,9 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		// weight = weight_ * pileupWeight_ * r9weight_[0] * r9weight_[1];
 		// mass->setVal(mll);
 		// smearMass->setVal(mll * sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1])));
-
+		bool bothPassing=true;
 		for(size_t iele = 0; iele < passing_ele.size(); ++iele) {
+			bothPassing = bothPassing && passing_ele[iele];
 			if(passing_ele[iele] == false) continue;
 			//loop over the rooargset and fill it with setVal
 
@@ -419,6 +420,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 				stats_vec[i].add(branches_Float_t[i][iele]);
 			}
 		}
+		if(bothPassing) exclusiveEventList.Remove(entryNumber);
 	}
 	fprintf(stderr, "\n");
 	TT.Stop();
@@ -428,7 +430,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 	delete selector_ele2;
 	chain->ResetBranchAddresses();
 	std::cout << "Original number of entries: " << chain->GetEntryList()->GetN() << std::endl;
-	if(_exclusiveCategories){
+	if(_exclusiveCategories && exclusiveEventList.GetN()!= chain->GetEntryList()->GetN()){
 		TECALChain *chain_ecal = (TECALChain*)chain;
 		chain_ecal->TECALChain::SetEntryList(&exclusiveEventList);
 		chain = dynamic_cast<TChain*>(chain_ecal);
