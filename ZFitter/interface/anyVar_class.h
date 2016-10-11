@@ -61,11 +61,13 @@ public:
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
-	void TreeAnalyzeShervin(TChain *chain, std::string region, TCut cut_ele1, TCut cut_ele2); ///<
+	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2); ///<
 	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
+	TTree *reduced_data;
+	TDirectory dir;
 	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
