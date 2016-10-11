@@ -484,7 +484,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	if(_exclusiveCategories && exclusiveEventList->GetN() != chain_ecal->GetEntryList()->GetN()) {
 		//delete chain_ecal->GetEntryList();
 		//chain_ecal->TECALChain::SetEntryList(exclusiveEventList);
-		chain_ecal->SetEntryList(exclusiveEventList);
+		//chain_ecal->TECALTree::SetEntryList(exclusiveEventList);
 		std::cout << "New number of entries: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
 
 	}
