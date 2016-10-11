@@ -380,7 +380,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 	TTreeFormula *selector_ele1 = (cut_ele1 != "") ? new TTreeFormula("selector_ele1", cut_ele1, chain_ecal) : NULL;
 	TTreeFormula *selector_ele2 = (cut_ele2 != "") ? new TTreeFormula("selector_ele2", cut_ele2, chain_ecal) : NULL;
 
-	std::cout << "[STATUS] anyVar processing: categories " 
+	std::cout << "[STATUS] anyVar processing: categories "
 	          << "\t" << "with " << entries << " entries" << std::endl;
 	std::cerr << "[ 00%]";
 
@@ -397,7 +397,8 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 			if(selector_ele2 != NULL) selector_ele2->UpdateFormulaLeaves();
 		}
 
-		std::array<bool, NELE> passing_ele = {false, false, true};
+		std::array<bool, NELE> passing_ele;
+		passing_ele.fill(false);
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 
@@ -416,7 +417,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		// weight = weight_ * pileupWeight_ * r9weight_[0] * r9weight_[1];
 		// mass->setVal(mll);
 		// smearMass->setVal(mll * sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1])));
-		bool bothPassing=true;
+		bool bothPassing = true;
 		for(size_t iele = 0; iele < passing_ele.size(); ++iele) {
 			bothPassing = bothPassing && passing_ele[iele];
 			if(passing_ele[iele] == false) continue;
@@ -424,30 +425,36 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 
 			for(size_t i = 0; i < _branchNames.size(); ++i) {
 				stats_vec[i].add(branches_Float_t[i][iele]);
+#ifdef DEBUG
+				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
+#endif
 			}
 		}
 		if(bothPassing) exclusiveEventList->Remove(entryNumber);
 	}
 	fprintf(stderr, "\n");
 	TT.Stop();
+	std::cout << "[INFO] Running over events: ";
 	TT.Print();
 
 	delete selector_ele1;
 	delete selector_ele2;
 	chain_ecal->ResetBranchAddresses();
 	std::cout << "Original number of entries: " << chain_ecal->GetEntryList()->GetN() << std::endl;
-	if(_exclusiveCategories && exclusiveEventList->GetN()!= chain_ecal->GetEntryList()->GetN()){
+	if(_exclusiveCategories && exclusiveEventList->GetN() != chain_ecal->GetEntryList()->GetN()) {
 		//delete chain_ecal->GetEntryList();
 		chain_ecal->TECALChain::SetEntryList(exclusiveEventList);
 		std::cout << "New number of entries: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
 
 	}
 
-	std::ofstream fstat(region+".dat");
+	std::ofstream fstat(region + ".dat");
 	for(auto& s : stats_vec) {
+		std::cout << "Start sorting " << s.name() << std::endl;
 		s.sort();
 		fstat << "[DEBUG STATS] " << s << std::endl;
 	}
+	std::cout << "[INFO] Region fully processed" << std::endl;
 //	stats_vec.dump("testfile.dat");
 	return;
 }

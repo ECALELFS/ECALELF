@@ -39,7 +39,7 @@
 #include "ElectronCategory_class.hh"
 
 //#include <functions.h>
-#define NELE 3
+#define NELE 2
 
 
 #include "TECALChain.h"

@@ -1171,12 +1171,12 @@ int main(int argc, char **argv)
 	// branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
 	// branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
 	// then all the array variables
-	branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
+	//branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
+	//branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
 	//branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+	//branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
 	anyVar_class anyVar(data, branchListAny, cutter);
 	anyVar._exclusiveCategories=true;
 	anyVar.Import(commonCut, eleID, activeBranchList);

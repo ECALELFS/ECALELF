@@ -71,9 +71,10 @@ public:
 	void add(float); ///< add one entry to the list of values
 	inline void sort(void)
 	{
-		TStopwatch ts; ts.Start();
+		TStopwatch ts;
+		ts.Start();
 		if(_isSorted == false) std::sort(_values.begin(), _values.end());
-		_isSorted=true;
+		_isSorted = true;
 		ts.Stop();
 		ts.Print();
 	};
