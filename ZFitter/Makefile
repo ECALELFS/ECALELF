@@ -40,5 +40,6 @@ clean:
 	rm -f $(OBJ_DIR)/*.o
 	rm -f $(OBJ_DIR)/*.d
 	rm -f $(BUILDDIR)/*.exe
+	cd $(EoPDir); make clean
 
 

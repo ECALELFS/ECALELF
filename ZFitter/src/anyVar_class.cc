@@ -46,6 +46,9 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 		_stats_vec.push_back(s);
 	}
 
+	_statfiles.push_back(std::ofstream(massBranchName+".dat"));
+	stats s(massBranchName, entries);
+	_stats_vec.push_back(s);
 }
 
 
@@ -378,6 +381,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 	}
 
 	chain_ecal->SetBranchAddress(massBranchName_.c_str(), &mll);
+	chain_ecal->SetBranchStatus(massBranchName_.c_str(), 1);
 
 	TStopwatch TT;
 	TT.Start();
@@ -408,8 +412,9 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 
-#ifdef DEBUG
+//#ifdef DEBUG
 		if(jentry < 1) {
+			std::cout << "[DEBUG] invMass: " << mll << std::endl;
 			std::cout << "[DEBUG] PU: " << pileupWeight_ << std::endl;
 			std::cout << "[DEBUG] corrEle[0]: " << corrEle_[0] << std::endl;
 			std::cout << "[DEBUG] corrEle[1]: " << corrEle_[1] << std::endl;
@@ -418,7 +423,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 			std::cout << "[DEBUG] r9weight[0]: " << r9weight_[0] << std::endl;
 			std::cout << "[DEBUG] r9weight[1]: " << r9weight_[1] << std::endl;
 		}
-#endif
+//#endif
 
 		// weight = weight_ * pileupWeight_ * r9weight_[0] * r9weight_[1];
 		// mass->setVal(mll);
@@ -434,7 +439,9 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
 #endif
 			}
+		
 		}
+		if(bothPassing) 	_stats_vec[nBranches].add(mll);
 		if(_exclusiveCategories && bothPassing) exclusiveEventList->Remove(entryNumber); // remove the event 
 	}
 	fprintf(stderr, "\n");
