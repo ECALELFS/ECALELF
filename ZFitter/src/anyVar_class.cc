@@ -3,7 +3,6 @@
 #include <TObject.h>
 #include <TFriendElement.h>
 #include <RooDataSet.h>
-#include "Stats.hh"
 #include <TStopwatch.h>
 //#define DEBUG
 #define MAXENTRIES 10000
@@ -13,7 +12,9 @@
 anyVar_class::~anyVar_class(void)
 {
 //	if(data_chain != NULL) data_chain->Print();
-
+	for(auto& f : _statfiles){
+		f.close();
+	}
 }
 
 anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName):
@@ -34,6 +35,17 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 	Vars.addOwned(*smearMass);
 
 
+
+	Long64_t entries = data_chain->GetEntries();	
+	for(auto& branch : branchNames){
+		TString& bname = branch.first;
+
+		_statfiles.push_back(std::ofstream(bname+".dat"));
+
+		stats s(bname.Data(), entries);
+		_stats_vec.push_back(s);
+	}
+
 }
 
 
@@ -46,9 +58,7 @@ void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& 
 	std::cout << "--------------- Importing: " << data_chain->GetEntries() << std::endl;
 	//if(data!=NULL) delete data;
 	TChain *data = ImportTree(data_chain, dataCut, branchList);
-	commonData = new TEntryList(*(data->GetEntryList()));
-	//commonData->Print();
-	std::cout << "[INFO] imported " << commonData->GetN() << "\t" << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
+	std::cout << "[INFO] imported "  << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
 	//data->Print();
 	std::cout << "--------------- IMPORT finished" << std::endl;
 	return;
@@ -323,22 +333,18 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 
 void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cut_ele1, TCut cut_ele2)
 {
+	_stats_vec.reset();
 	TECALChain *chain_ecal = (TECALChain*)chain;
 
-	std::cout << "EE" << std::endl;
 	Long64_t entries = chain_ecal->GetEntryList()->GetN();
-
-	statsCollection stats_vec;
+	size_t nBranches = _branchNames.size();
 
 	// _branchList is used to make the set branch addresses
 	Float_t branches_Float_t[MAXBRANCHES][3];
-	//branches.resize(_branchNames.size());
-	for(unsigned int ibranch = 0; ibranch < _branchNames.size(); ++ibranch) {
+	for(unsigned int ibranch = 0; ibranch < nBranches; ++ibranch) {
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
-		TString name = _branchNames[ibranch].first;
-		chain_ecal->SetBranchAddress(_branchNames[ibranch].first, &branches_Float_t[ibranch]);
-		stats s(name.Data(), entries);
-		stats_vec.push_back(s);
+		TString& bname = _branchNames[ibranch].first;
+		chain_ecal->SetBranchAddress(bname, &branches_Float_t[ibranch]);
 	}
 
 	Float_t weight_ = 1 ;
@@ -419,18 +425,17 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		// smearMass->setVal(mll * sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1])));
 		bool bothPassing = true;
 		for(size_t iele = 0; iele < passing_ele.size(); ++iele) {
-			bothPassing = bothPassing && passing_ele[iele];
-			if(passing_ele[iele] == false) continue;
-			//loop over the rooargset and fill it with setVal
+			bothPassing = bothPassing && passing_ele[iele]; //if all electrons are satisfying this category, the event is removed from the list
+			if(passing_ele[iele] == false) continue; // fill only the with the electron passing the selection
 
-			for(size_t i = 0; i < _branchNames.size(); ++i) {
-				stats_vec[i].add(branches_Float_t[i][iele]);
+			for(size_t i = 0; i < nBranches; ++i) {
+				_stats_vec[i].add(branches_Float_t[i][iele]);
 #ifdef DEBUG
 				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
 #endif
 			}
 		}
-		if(bothPassing) exclusiveEventList->Remove(entryNumber);
+		if(_exclusiveCategories && bothPassing) exclusiveEventList->Remove(entryNumber); // remove the event 
 	}
 	fprintf(stderr, "\n");
 	TT.Stop();
@@ -448,13 +453,14 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 
 	}
 
-	std::ofstream fstat(region + ".dat");
-	for(auto& s : stats_vec) {
+	
+	for(size_t i=0; i < _stats_vec.size(); ++i) {
+		auto& s = _stats_vec[i];
 		std::cout << "Start sorting " << s.name() << std::endl;
 		s.sort();
-		fstat << "[DEBUG STATS] " << s << std::endl;
+		_statfiles[i] << region << "\t" << s << std::endl;
 	}
 	std::cout << "[INFO] Region fully processed" << std::endl;
-//	stats_vec.dump("testfile.dat");
+//	_stats_vec.dump("testfile.dat");
 	return;
 }

@@ -25,6 +25,13 @@ public:
 
 	~stats(void) {};
 
+	inline void clear(){
+		_values.clear();
+		_n=0;
+		_sum=0.;
+		_sum2=0.;
+	};
+
 	inline std::string name(void) const
 	{
 		return _name;
@@ -114,6 +121,16 @@ public:
 	stats_coll_t::iterator end()
 	{
 		return _stats_coll.end();
+	};
+
+	size_t size(){
+		return _stats_coll.size();
+	};
+
+	void reset(){
+		for(auto& s : _stats_coll){
+			s.clear();
+		}
 	};
 
 	size_t nEvents()

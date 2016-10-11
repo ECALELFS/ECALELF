@@ -35,6 +35,8 @@
 #include <TEntryList.h>
 #include <TChainElement.h>
 
+#include "Stats.hh"
+
 //*********************************
 #include "ElectronCategory_class.hh"
 
@@ -67,12 +69,15 @@ private:
 	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
+	std::vector<std::ofstream> _statfiles; ///< one file for each branch, here the stats are saved
+	statsCollection _stats_vec;
+
+
 	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
 
 	std::string massBranchName_; ///< branch name for the di-object invariant mass
 
 	Double_t weight; ///< variable with the total event weight
-	TEntryList *commonData, *reducedData;
 
 	RooRealVar * idx, * mass, * smearMass;
 
