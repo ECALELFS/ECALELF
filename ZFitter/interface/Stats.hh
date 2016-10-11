@@ -6,6 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <algorithm>
+#include <TStopwatch.h>
 
 #define MAXSIZE 100000000
 
@@ -70,7 +71,11 @@ public:
 	void add(float); ///< add one entry to the list of values
 	inline void sort(void)
 	{
+		TStopwatch ts; ts.Start();
 		if(_isSorted == false) std::sort(_values.begin(), _values.end());
+		_isSorted=true;
+		ts.Stop();
+		ts.Print();
 	};
 	friend std::ostream& operator<<(std::ostream& os, const stats s);
 

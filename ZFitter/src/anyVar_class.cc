@@ -323,8 +323,10 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 
 void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cut_ele1, TCut cut_ele2)
 {
+	TECALChain *chain_ecal = (TECALChain*)chain;
+
 	std::cout << "EE" << std::endl;
-	Long64_t entries = chain->GetEntryList()->GetN();
+	Long64_t entries = chain_ecal->GetEntryList()->GetN();
 
 	statsCollection stats_vec;
 
@@ -334,7 +336,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 	for(unsigned int ibranch = 0; ibranch < _branchNames.size(); ++ibranch) {
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
 		TString name = _branchNames[ibranch].first;
-		chain->SetBranchAddress(_branchNames[ibranch].first, &branches_Float_t[ibranch]);
+		chain_ecal->SetBranchAddress(_branchNames[ibranch].first, &branches_Float_t[ibranch]);
 		stats s(name.Data(), entries);
 		stats_vec.push_back(s);
 	}
@@ -348,49 +350,49 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 
 	Float_t mll;
 
-	if(chain->GetBranch("puWeight") != NULL) {
+	if(chain_ecal->GetBranch("puWeight") != NULL) {
 		std::cout << "[STATUS] Adding pileup weight branch from friend" << std::endl;
-		chain->SetBranchAddress("puWeight", &pileupWeight_);
+		chain_ecal->SetBranchAddress("puWeight", &pileupWeight_);
 	}
 
-	if(chain->GetBranch("scaleEle") != NULL) {
+	if(chain_ecal->GetBranch("scaleEle") != NULL) {
 		std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
-		chain->SetBranchAddress("scaleEle", corrEle_);
+		chain_ecal->SetBranchAddress("scaleEle", corrEle_);
 	}
 
-	if(chain->GetBranch("smearEle") != NULL && TString(chain->GetTitle()) != "d") {
+	if(chain_ecal->GetBranch("smearEle") != NULL && TString(chain_ecal->GetTitle()) != "d") {
 		std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
-		//chain->Scan("smearEle");
-		chain->SetBranchAddress("smearEle", smearEle_);
+		//chain_ecal->Scan("smearEle");
+		chain_ecal->SetBranchAddress("smearEle", smearEle_);
 	}
 
-	if(chain->GetBranch("r9Weight") != NULL) {
+	if(chain_ecal->GetBranch("r9Weight") != NULL) {
 		std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
-		chain->SetBranchAddress("r9Weight", r9weight_);
+		chain_ecal->SetBranchAddress("r9Weight", r9weight_);
 	}
 
-	chain->SetBranchAddress(massBranchName_.c_str(), &mll);
+	chain_ecal->SetBranchAddress(massBranchName_.c_str(), &mll);
 
 	TStopwatch TT;
 	TT.Start();
-	chain->LoadTree(chain->GetEntryNumber(0));
+	chain_ecal->LoadTree(chain_ecal->GetEntryNumber(0));
 	Long64_t treenumber = -1;
-	TTreeFormula *selector_ele1 = (cut_ele1 != "") ? new TTreeFormula("selector_ele1", cut_ele1, chain) : NULL;
-	TTreeFormula *selector_ele2 = (cut_ele2 != "") ? new TTreeFormula("selector_ele2", cut_ele2, chain) : NULL;
+	TTreeFormula *selector_ele1 = (cut_ele1 != "") ? new TTreeFormula("selector_ele1", cut_ele1, chain_ecal) : NULL;
+	TTreeFormula *selector_ele2 = (cut_ele2 != "") ? new TTreeFormula("selector_ele2", cut_ele2, chain_ecal) : NULL;
 
 	std::cout << "[STATUS] anyVar processing: categories " 
 	          << "\t" << "with " << entries << " entries" << std::endl;
 	std::cerr << "[ 00%]";
 
-	TEntryList *exclusiveEventList = new TEntryList(*chain->GetEntryList());
+	TEntryList *exclusiveEventList = new TEntryList(*chain_ecal->GetEntryList());
 
 	for(Long64_t jentry = 0; jentry < entries; ++jentry) {
-		Long64_t entryNumber = chain->GetEntryNumber(jentry);
-		chain->GetEntry(entryNumber);
+		Long64_t entryNumber = chain_ecal->GetEntryNumber(jentry);
+		chain_ecal->GetEntry(entryNumber);
 		if(jentry % (entries / 100) == 0) std::cerr << "\b\b\b\b\b\b[" << std::setw(3) << jentry / (entries / 100) << "%]";
 
-		if (chain->GetTreeNumber() != treenumber) {
-			treenumber = chain->GetTreeNumber();
+		if (chain_ecal->GetTreeNumber() != treenumber) {
+			treenumber = chain_ecal->GetTreeNumber();
 			if(selector_ele1 != NULL) selector_ele1->UpdateFormulaLeaves();
 			if(selector_ele2 != NULL) selector_ele2->UpdateFormulaLeaves();
 		}
@@ -432,14 +434,12 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 
 	delete selector_ele1;
 	delete selector_ele2;
-	chain->ResetBranchAddresses();
-	std::cout << "Original number of entries: " << chain->GetEntryList()->GetN() << std::endl;
-	if(_exclusiveCategories && exclusiveEventList->GetN()!= chain->GetEntryList()->GetN()){
-		delete chain->GetEntryList();
-		TECALChain *chain_ecal = (TECALChain*)chain;
+	chain_ecal->ResetBranchAddresses();
+	std::cout << "Original number of entries: " << chain_ecal->GetEntryList()->GetN() << std::endl;
+	if(_exclusiveCategories && exclusiveEventList->GetN()!= chain_ecal->GetEntryList()->GetN()){
+		//delete chain_ecal->GetEntryList();
 		chain_ecal->TECALChain::SetEntryList(exclusiveEventList);
-		chain = dynamic_cast<TChain*>(chain_ecal);
-		std::cout << "New number of entries: " <<  chain->GetEntryList()->GetN() << std::endl;
+		std::cout << "New number of entries: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
 
 	}
 
@@ -448,6 +448,6 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		s.sort();
 		fstat << "[DEBUG STATS] " << s << std::endl;
 	}
-	stats_vec.dump("testfile.dat");
+//	stats_vec.dump("testfile.dat");
 	return;
 }
