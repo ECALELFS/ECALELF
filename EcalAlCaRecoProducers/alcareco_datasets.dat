@@ -244,3 +244,11 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_
 276315-276585	/DoubleEG/Run2016D-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016D-ZSkim-Prompt_v2          caf database VALID RUN2016D
 #276315-276585	/DoubleEG/Run2016D-PromptReco-v2/AOD                       DoubleEG-Run2016D-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016D
 276315-276585	/DoubleEG/Run2016D-PromptReco-v2/MINIAOD                   DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
+
+# with new laser correction, new prompt tag v10
+275657-276283	 /DoubleEG/Run2016C-PromptReco-v2/MINIAOD	DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016C
+276315-276811	 /DoubleEG/Run2016D-PromptReco-v2/MINIAOD	DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
+276831-277420	 /DoubleEG/Run2016E-PromptReco-v2/MINIAOD	DoubleEG-Run2016E-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016E
+277981-278808	 /DoubleEG/Run2016F-PromptReco-v1/MINIAOD       DoubleEG-Run2016F-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016F
+278820-279588	 /DoubleEG/Run2016G-PromptReco-v1/MINIAOD       DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016G
+279653-280385	 /DoubleEG/Run2016G-PromptReco-v1/MINIAOD       DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016G
