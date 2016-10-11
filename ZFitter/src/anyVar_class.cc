@@ -402,7 +402,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 
-
+#ifdef DEBUG
 		if(jentry < 1) {
 			std::cout << "[DEBUG] PU: " << pileupWeight_ << std::endl;
 			std::cout << "[DEBUG] corrEle[0]: " << corrEle_[0] << std::endl;
@@ -412,7 +412,7 @@ void anyVar_class::TreeAnalyzeShervin(TChain *chain, std::string region, TCut cu
 			std::cout << "[DEBUG] r9weight[0]: " << r9weight_[0] << std::endl;
 			std::cout << "[DEBUG] r9weight[1]: " << r9weight_[1] << std::endl;
 		}
-
+#endif
 
 		// weight = weight_ * pileupWeight_ * r9weight_[0] * r9weight_[1];
 		// mass->setVal(mll);
