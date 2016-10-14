@@ -1160,9 +1160,9 @@ int main(int argc, char **argv)
 		mc  = (tagChainMap["s"])["selected"];
 	}
 
-#ifdef dump_root_tree
 	//------------------------------ anyVar_class declare and set the options
 	std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
+#ifdef dump_root_tree
 	// first all the single variables
 	branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
 	branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
@@ -1178,7 +1178,7 @@ int main(int argc, char **argv)
 	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-#endif
+#else
 	anyVar_class anyVar(data, branchListAny, cutter);
 	anyVar._exclusiveCategories=true;
 	anyVar.Import(commonCut, eleID, activeBranchList);
@@ -1211,6 +1211,7 @@ int main(int argc, char **argv)
 	TFile * fout = TFile::Open("roodataset.root", "recreate");
 	fout->cd();
 	ds->Write("ds");
+#endif
 
 	/*
 	// write an ASCII roodataset with specified format
