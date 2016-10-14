@@ -1160,23 +1160,25 @@ int main(int argc, char **argv)
 		mc  = (tagChainMap["s"])["selected"];
 	}
 
+#ifdef dump_root_tree
 	//------------------------------ anyVar_class declare and set the options
 	std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
 	// first all the single variables
-	// branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
-	// branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
-	// branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
+	branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
+	branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
+	branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
 	// then all the array variables
-	//branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
-	//branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
-	//branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
+	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+#endif
 	anyVar_class anyVar(data, branchListAny, cutter);
 	anyVar._exclusiveCategories=true;
 	anyVar.Import(commonCut, eleID, activeBranchList);
@@ -1229,9 +1231,10 @@ int main(int argc, char **argv)
 	        }
 	}
 	*/
+#ifdef dump_root_tree
 	fout->Close();
-
-	//anyVar.TreeToTree(mc, cutter.GetCut("EB", false));
+	anyVar.TreeToTree(data, TCut("1"));
+#endif
 	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {
