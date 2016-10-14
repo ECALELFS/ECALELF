@@ -1,0 +1,15 @@
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DoubleEG-Run2016B-PromptReco-v1-miniAOD/272023-273146/DCSONLY/unmerged-allRange.root
+d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DoubleEG-Run2016B-PromptReco-v2-miniAOD/273150-273730/DCSONLY/unmerged-allRange.root
+
+s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DYJets_madgraph-RunIISpring16-miniAOD/allRange/DYJets_madgraph-RunIISpring16-miniAOD-allRange.root
+
+
+d pileupHist data/puHistos/pu_data_May2016_DCSJson.root
+s pileupHist data/puHistos/pu_MC_May2016_DCSJson.root
+s1 pileup data/puTree/s1_May2016_DCSJson.root
+s1 smearerCat_scaleStep2smearing_1 friends/smearerCat/smearerCat_scaleStep2smearing_1_s1-May2016_DCSJson.root
+d1 smearerCat_scaleStep2smearing_1 friends/smearerCat/smearerCat_scaleStep2smearing_1_d1-May2016_DCSJson.root
+d2 smearerCat_scaleStep2smearing_1 friends/smearerCat/smearerCat_scaleStep2smearing_1_d2-May2016_DCSJson.root
+s1 smearerCat_scaleStep2smearing_2 friends/smearerCat/smearerCat_scaleStep2smearing_2_s1-May2016_DCSJson.root
+d1 smearerCat_scaleStep2smearing_2 friends/smearerCat/smearerCat_scaleStep2smearing_2_d1-May2016_DCSJson.root
+d2 smearerCat_scaleStep2smearing_2 friends/smearerCat/smearerCat_scaleStep2smearing_2_d2-May2016_DCSJson.root
