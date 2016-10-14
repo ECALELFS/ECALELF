@@ -17,7 +17,7 @@ anyVar_class::~anyVar_class(void)
 	}
 }
 
-anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName):
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes):
 	data_chain(data_chain_),
 	dir(),
 	_branchNames(branchNames),
@@ -41,13 +41,13 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 	for(auto& branch : branchNames){
 		TString& bname = branch.first;
 
-		_statfiles.push_back(std::ofstream(bname+".dat"));
+		_statfiles.push_back(std::ofstream(outDirFitRes+bname+".dat"));
 
 		stats s(bname.Data(), entries);
 		_stats_vec.push_back(s);
 	}
 
-	_statfiles.push_back(std::ofstream(massBranchName+".dat"));
+	_statfiles.push_back(std::ofstream(outDirFitRes+massBranchName+".dat"));
 	stats s(massBranchName, entries);
 	_stats_vec.push_back(s);
 }
@@ -142,10 +142,23 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	TStopwatch ts;
 	ts.Start();
 //	TFile * outFile = TFile::Open("dataset.root", "recreate");
-	{
-		reduced_data  =  chain->CloneTree(0,"fast");
-		reduced_data->SetDirectory(&dir);
-
+	reduced_data  =  chain->CloneTree(0,"fast");
+	reduced_data->SetDirectory(&dir);
+	TList *friends = chain->GetListOfFriends();
+	std::vector<TTree *> friendTreesCopy;
+	if(friends != NULL){
+		TIter newfriend_itr(friends);
+		for(TFriendElement *friendElement = (TFriendElement*) newfriend_itr.Next();
+			friendElement != NULL; friendElement = (TFriendElement*) newfriend_itr.Next()) {
+			TString treeName = friendElement->GetTreeName();
+			TTree *tree = friendElement->GetTree();
+			TTree *clonetree = tree->CloneTree(0,"fast");
+			friendTreesCopy.push_back(clonetree);
+		}
+		
+	}
+//		reduced_data->Show(0);
+	
 	// add branches in friends
 	/////TIter next(chain->GetListOfFriends());
 	/////TObject * obj;
@@ -167,10 +180,17 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 		}
 		if(selector!=NULL && selector->EvalInstance() == false) continue;
 		reduced_data->Fill();
+		for(auto& friendTree : friendTreesCopy){
+			friendTree->Fill(); //				friendTree->Show(0);
+		}
+//		
 	}
+	for(auto& friendTree : friendTreesCopy){
+		reduced_data->AddFriend(friendTree);
+	}
+
 //	outree->Print();
 //	outree->AutoSave();
-	}
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
 	evListName += "_red";
@@ -182,6 +202,10 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	// assert(elist!=NULL);
 	reduced_data->SetEntryList(elist);
 	reduced_data->Print();
+	for(auto& friendTree : friendTreesCopy){
+		friendTree->Print(); //				friendTree->Show(0);
+	}
+
 	// assert(reduced_data->GetEntryList()!=NULL);
 	reduced_data->GetEntryList()->Print();
 	
@@ -363,7 +387,7 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 	return data;
 }
 
-void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2)
+void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale, float smearing)
 {
 	_stats_vec.reset();
 	TECALChain *chain_ecal = (TECALChain *)reduced_data;
@@ -440,7 +464,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 
-//#ifdef DEBUG
+#ifdef DEBUG
 		if(jentry < 1) {
 			std::cout << "[DEBUG] invMass: " << mll << std::endl;
 			std::cout << "[DEBUG] PU: " << pileupWeight_ << std::endl;
@@ -450,25 +474,28 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 			std::cout << "[DEBUG] smearEle[1]: " << smearEle_[1] << std::endl;
 			std::cout << "[DEBUG] r9weight[0]: " << r9weight_[0] << std::endl;
 			std::cout << "[DEBUG] r9weight[1]: " << r9weight_[1] << std::endl;
+			chain_ecal->Show(0);
 		}
-//#endif
+#endif
 
 		// weight = weight_ * pileupWeight_ * r9weight_[0] * r9weight_[1];
 		// mass->setVal(mll);
 		// smearMass->setVal(mll * sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1])));
+
 		bool bothPassing = true;
 		for(size_t iele = 0; iele < passing_ele.size(); ++iele) {
 			bothPassing = bothPassing && passing_ele[iele]; //if all electrons are satisfying this category, the event is removed from the list
 			if(passing_ele[iele] == false) continue; // fill only the with the electron passing the selection
 
 			for(size_t i = 0; i < nBranches; ++i) {
-				_stats_vec[i].add(branches_Float_t[i][iele]);
+				_stats_vec[i].add(branches_Float_t[i][iele]*scale);
 #ifdef DEBUG
 				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
 #endif
 			}
 		
 		}
+		mll*=scale;
 		if(bothPassing && mll>60. && mll<120) 	_stats_vec[nBranches].add(mll);
 		if(_exclusiveCategories && bothPassing) exclusiveEventList->Remove(entryNumber); // remove the event 
 	}

@@ -43,6 +43,21 @@
 //#include <functions.h>
 #define NELE 2
 
+/** \class anyVar_class anyVar_class anyVar_class
+	\brief class for estimation of basic quantities for any Float_t branch in the tree
+
+\section How to test linearity
+for scale in 0.98 0.99 0.995 1 1.005 1.01 1.02 ; do mkdir -p scale_${scale}; ./bin/ZFitter.exe -f data/validation/test_ss.dat --regionsFile=data/regions/validation.dat  --noPU --commonCut="Et_25" --outDirFitResData=scale_${scale}/ --scale=$scale > scale_${scale}/scale.log; done
+
+fish for scale in scale_*; set scale (echo $scale | sed 's|scale_||') ; echo -ne "$scale\t"; grep EB-gold scale_{$scale}/invMass*.dat; end > p.dat
+gnuplot 
+f(x) = m * x + q
+p 'p.dat' u ($1-1):($7) w lp
+fit f(x) 'p.dat' u ($1-1):($7) via m,q 
+rep f(x)
+print m/q
+*/
+
 
 #include "TECALChain.h"
 class anyVar_class
@@ -55,13 +70,14 @@ public:
 
 	anyVar_class(TChain *data_chain_,
 	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
-	             std::string massBranchName = "invMass_SC_must_regrCorr_ele"
+	             std::string massBranchName,
+				 std::string outDirFitRes
 	            );
 
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
-	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2); ///<
+	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale=1., float smearing=0.); ///<
 	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:

@@ -23,20 +23,34 @@ void stats::add(const float val)
 }
 
 
-float stats::eff_sigma(float q) const
+std::pair<size_t, size_t> stats::eff_sigma_interval(float q) const
 {
-	if (_n < 2) return 0;
+	if (_n < 2) return std::make_pair(0,0);
 	size_t s = floor(q * _n);
 	float d_min = _values[s] - _values[0];
+	std::pair<size_t, size_t> interval(0, s);
 	for (size_t i = s; i < _n; ++i) {
 		float d = _values[i] - _values[i - s];
-		if (d < d_min) d_min = d;
+		if (d < d_min){
+			d_min = d;
+			interval.first=i-s;
+			interval.second=i;
+		}
 	}
-	return d_min / 2.;
+	return interval;
 }
 
+float stats::mean(size_t imin, size_t imax) const
+{
+	double sum=0;
+	unsigned int n=0;
 
-
+	for(size_t i = imin; i < imax; ++i){
+		sum+=_values[i];
+		n++;
+	}
+	return sum/n;
+}
 
 float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e) const
 {
@@ -68,7 +82,9 @@ std::ostream& operator<<(std::ostream& os, const stats s)
 	if(s.n() == 0) {
 		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-" << "\t" << "-";
 	} else {
-		os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median() << "\t" << s.eff_sigma(); // << "\t" << s.recursive_effective_mode() ;
+		std::pair<size_t, size_t> interval = s.eff_sigma_interval();
+		std::pair<size_t, size_t> interval03 = s.eff_sigma_interval(0.3);
+		os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median() << "\t" << s.eff_sigma(interval) << "\t" << s.eff_sigma(interval03) <<"\t" << s.mean(interval.first, interval.second) << "\t" << s.mean(interval03.first, interval03.second); // << "\t" << s.recursive_effective_mode() ;
 	}
 	return os;
 }

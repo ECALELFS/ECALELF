@@ -264,7 +264,7 @@ int main(int argc, char **argv)
 	int pdfSystWeightIndex = -1;
 	std::string minimType;
 	std::vector<std::string> branchList;
-
+	float scale;
 //options for E/p
 	std::string jsonFileName;
 	std::string miscalibMap;
@@ -344,6 +344,7 @@ int main(int argc, char **argv)
 	("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25), "Smearing binning")
 	("isOddMC", "Activate if use only odd events in MC")
 	("isOddData", "Activate if use only odd events in data")
+		("scale", po::value<float>(&scale)->default_value(1.), "scale shift for tests")	
 	//
 	("readDirect", "") //read correction directly from config file instead of passing as a command line arg
 	//("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
@@ -1176,9 +1177,10 @@ int main(int argc, char **argv)
 	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
 	//branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-	anyVar_class anyVar(data, branchListAny, cutter);
-	anyVar._exclusiveCategories=true;
+	//branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+	anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData);
+	anyVar._exclusiveCategories=false;
+
 	anyVar.Import(commonCut, eleID, activeBranchList);
 	//need to convert the TTree into RooDataset
 	//run on a RooDataset and calculate the stats for all the variables
@@ -1189,7 +1191,7 @@ int main(int argc, char **argv)
 	for(auto& region : categories){
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-		anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
+		anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
 	}
 	
 	return 0;

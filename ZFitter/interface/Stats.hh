@@ -49,6 +49,8 @@ public:
 		return _sum / _n;
 	}; ///< returns the mean
 
+	float mean(size_t imin, size_t imax) const; ///< returns the mean in an interval
+
 	inline float stdDev(void) const
 	{
 		if(_n == 0) return 0;
@@ -56,10 +58,21 @@ public:
 		return sqrt(_sum2 / _n - m * m);
 	}; ///< returns the standard devation
 
+	std::pair<size_t, size_t> eff_sigma_interval(float q = 0.68269) const;
+
 
 	/// returns the half width of the smallest interval containing a fraction q of the events
-	float eff_sigma(float q = 0.68269) const;
+	inline float eff_sigma(float q = 0.68269) const
+		{
+			std::pair<size_t, size_t> interval = eff_sigma_interval(q);
+			return eff_sigma(interval);
+		};
 
+	inline float eff_sigma(std::pair<size_t, size_t> interval) const
+		{
+			if(interval.first==interval.second) return -1;
+			return (_values[interval.second]-_values[interval.first])/2.;
+		};
 
 	/// returns the MPV of the distribution
 	float recursive_effective_mode(size_t imin, size_t imax, float q = 0.25, float e = 1e-05) const;
