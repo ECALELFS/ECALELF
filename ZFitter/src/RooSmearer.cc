@@ -204,59 +204,109 @@ void RooSmearer::InitCategories(bool mcToy)
 			cat.smearHist_data->Sumw2();
 			SetHisto(*(cat.mc_events), cat.hist_mc);
 			SetHisto(*(cat.data_events), cat.hist_data);
+			if(_isDataSmeared) {
+				if(cat.data_events->size() != 0) {
+					std::cout << "[INFO toyMC]: In the runToy scenario you want to apply scale/sigma to your data" << std::endl;
+					SetSmearedHisto(*(cat.data_events),
+					                cat.pars1, cat.pars2,
+					                cat.categoryName1, cat.categoryName2, 1,
+					                cat.smearHist_data);
+				}
+			}
 
 			//------------------------------ deactivating category
 			cat.active = true;
+
+			//Just print out the category index
+			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
+				std::cout << "[INFO on index] Diagonal Category: " << ZeeCategories.size()
+				          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+				          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+			} else { //not diagonal category
+				std::cout << "[INFO on index] Off-Diag Category: " << ZeeCategories.size()
+				          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+				          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+			}
+
+			//DEACTIVATION STRATEGY TO BE TWEAKED (COMMENTED FOR THE MOMENT)
+			//unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
+//      unsigned int deactiveMinEvents = 1; //_deactive_minEventsDiag;
+			//if(cat.categoryIndex1 != cat.categoryIndex2) // not diagonal category
+//	//deactiveMinEvents=1500; //_deactive_minEventsOffDiag;
+//	deactiveMinEvents=1; //_deactive_minEventsOffDiag;
+			//if(cat.hist_mc->Integral() < deactiveMinEvents){
+			//      if(cat.hist_data->Integral() < deactiveMinEvents){
+			//std::cout << "[INFO] Category: " << ZeeCategories.size()
+			//	  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+			//	  << " has been deactivated: events in data less "<<deactiveMinEvents<<std::endl;
+//	if(cat.categoryIndex1 != cat.categoryIndex2) std::cout << _deactive_minEventsOffDiag << ")";
+//	else std::cout << _deactive_minEventsDiag << ")";
+//	std::cout << " nEvents mc invMass: " << cat.hist_mc->Integral()
+			//<< std::endl;
+			//cat.active=false;
+			//}
+
 			unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
-			if(cat.categoryIndex1 != cat.categoryIndex2) // not diagonal category
-				deactiveMinEvents = 1500; //_deactive_minEventsOffDiag;
-			if(cat.hist_mc->Integral() < deactiveMinEvents) {
-				std::cout << "[INFO] Category: " << ZeeCategories.size()
-				          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-				          << " has been deactivated (nEvents < ";
-				if(cat.categoryIndex1 != cat.categoryIndex2) std::cout << _deactive_minEventsOffDiag << ")";
-				else std::cout << _deactive_minEventsDiag << ")";
-				std::cout << " nEvents mc invMass: " << cat.hist_mc->Integral()
-				          << std::endl;
-				cat.active = false;
+			unsigned int deactiveMinEvents_off = 2000; //_deactive_minEvents_offDiag;
+			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
+				if(cat.hist_data->Integral() < deactiveMinEvents) {
+					std::cout << "[INFO] Diagonal Category: " << ZeeCategories.size()
+					          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+					          << " has been deactivated: events in data less " << deactiveMinEvents
+					          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+					cat.active = false;
+				}
+			} else { //not diagonal category
+				if(cat.hist_data->Integral() < deactiveMinEvents_off) {
+					std::cout << "[INFO] Off-Diag Category: " << ZeeCategories.size()
+					          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+					          << " has been deactivated: events in data less " << deactiveMinEvents_off
+					          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+					cat.active = false;
+				}
 			}
-			float max = cat.hist_mc->GetMaximum();
-			float left = cat.hist_mc->GetBinContent(1);
-			float right = cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
-			if((right - left) / max > 0.2 || (left - right) / max > 0.4) {
-				cat.active = false;
-				std::cout << "[INFO] Category: " << ZeeCategories.size()
-				          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-				          << " has been deactivated for high sholder: " << right << " " << left << " " << max
-				          << std::endl;
-			}
+
+			//Shoulder
+//      float max=cat.hist_mc->GetMaximum();
+//      float left=cat.hist_mc->GetBinContent(1);
+//      float right=cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
+//      if((right - left)/max > 0.2 || (left - right)/max > 0.4){
+//	cat.active=false;
+//	std::cout << "[INFO] Category: " << ZeeCategories.size()
+//		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+//		  << " has been deactivated for high sholder: " << right << " " << left << " " << max
+//		  << std::endl;
+//      }
+
 			//------------------------------
 			if (_autoBin) {
 				//SetAutoBin(cat,cat.invMass_min-20,cat.invMass_max+20);
 				AutoNBins(cat);
 			}
 			cat.nSmearToy = _nSmearToy;
+			std::cout << "number of smear toy: " << _nSmearToy << std::endl;
 			if(smearscan || (cat.active && _autoNsmear)) AutoNSmear(cat);
 
 
 
 			cat.nLLtoy = 1;
 			cat.nll = 0;
-			std::cout << "[INFO] Category: " << ZeeCategories.size()
-			          << "\t" << cat.categoryName1 << "\t" << cat.categoryName2
-			          << "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
-			          << "\t" << cat.nSmearToy
-			          << "\t" << cat.nLLtoy
-			          << "\t" << cat.nBins
-			          << "\t" << cat.mc_events->size()
-			          << "\t" << cat.data_events->size()
-			          << "\t" << cat.hist_mc->Integral()
-			          << "\t" << cat.hist_data->Integral()
-			          << "\t" << cat.active
-			          << "\t" << right
-			          << "\t" << left
-			          << "\t" << max
-			          << std::endl;
+			//DEACTIVATION STRATEGY TO BE TWEAKED
+//      std::cout << "[INFO] Category: " << ZeeCategories.size()
+//		<< "\t" << cat.categoryName1 << "\t" << cat.categoryName2
+//		<< "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
+//		<< "\t" << cat.nSmearToy
+//		<< "\t" << cat.nLLtoy
+//		<< "\t" << cat.nBins
+//		<< "\t" << cat.mc_events->size()
+//		<< "\t" << cat.data_events->size()
+//		<< "\t" << cat.hist_mc->Integral()
+//		<< "\t" << cat.hist_data->Integral()
+//		<< "\t" << cat.active
+//		<< "\t" << right
+//		<< "\t" << left
+//		<< "\t" << max
+//		<< std::endl;
 
 			ZeeCategories.push_back(cat);
 
@@ -496,20 +546,30 @@ double RooSmearer::getLogLikelihood(TH1F* data, TH1F* prob) const
 
 #endif
 
-		if(prob->GetBinContent(ibin) != 0) {
-
+		//original version
+//      if(prob->GetBinContent(ibin)!=0){
+//
+//	double weight= 	(data->GetBinContent(ibin)>0) ? data->GetBinError(ibin) * data->GetBinError(ibin) / data->GetBinContent(ibin) : 1;
+//	//	std::cout << "weight = " << weight << std::endl;
+//#ifdef POISSON_LIKELIHOOD
+//	//Poisson likelihood
+//	logL+=  weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)) - prob->GetBinContent(ibin));
+//#else
+		// Binomial likelihood
+		if(prob->GetBinContent(ibin) > 0) {
 			double weight = 	(data->GetBinContent(ibin) > 0) ? data->GetBinError(ibin) * data->GetBinError(ibin) / data->GetBinContent(ibin) : 1;
-
-			//	std::cout << "weight = " << weight << std::endl;
-#ifdef POISSON_LIKELIHOOD
-			//Poisson likelihood
-
-			logL +=  weight * (data->GetBinContent(ibin) * ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)) - prob->GetBinContent(ibin));
-#else
-			// Binomial likelihood
 			logL += weight * (data->GetBinContent(ibin) * ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)) + (data->Integral() - data->GetBinContent(ibin)) * ROOT::Math::Util::EvalLog(1 - prob->GetBinContent(ibin)));
-#endif
 		}
+		//#endif
+		//	}
+
+		//Multinomial
+		//if(prob->GetBinContent(ibin)>0){
+		//double weight= 	(data->GetBinContent(ibin)>0) ? data->GetBinError(ibin) * data->GetBinError(ibin) / data->GetBinContent(ibin) : 1;
+		//double weight=1;
+		//logL+= weight * (data->GetBinContent(ibin)* ROOT::Math::Util::EvalLog(prob->GetBinContent(ibin)));
+		//}
+
 #ifdef DEBUG
 		else {
 			std::cout << "MC ibin = 0: "
@@ -709,7 +769,7 @@ void RooSmearer::AutoNBins(ZeeCategory& category)
 		std::cout << "[INFO] Category: " << category.categoryName1 << " " << category.categoryName2 << "\t binning increased to: "  <<     category.nBins * 2 << std::endl;
 		category.nBins *= 2;
 		ResetBinning(category);
-	} else   if(category.hist_mc->Integral() < 5000) {
+	} else   if(category.hist_mc->Integral() < 2500) { //5000
 		std::cout << "[INFO] Category: " << category.categoryName1 << " " << category.categoryName2 << "\t binning reduced to: "  <<     category.nBins / 2 << std::endl;
 		category.nBins /= 2;
 		ResetBinning(category);
@@ -717,6 +777,13 @@ void RooSmearer::AutoNBins(ZeeCategory& category)
 
 	SetHisto(*(category.mc_events),   category.hist_mc);
 	SetHisto(*(category.data_events), category.hist_data);
+	if(_isDataSmeared) {
+		std::cout << "[INFO toyMC]: Rebinning SmearHist Data" << std::endl;
+		SetSmearedHisto(*(category.data_events),
+		                category.pars1, category.pars2,
+		                category.categoryName1, category.categoryName2, 1,
+		                category.smearHist_data);
+	}
 
 	return;
 	//------------------------------ rescale mc histograms
@@ -1035,6 +1102,7 @@ void RooSmearer::SetNSmear(unsigned int n_smear, unsigned int nlltoy)
 void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool mcToy, bool externToy, TString initFile)
 {
 	if(mcToy) _isDataSmeared = !externToy; //mcToy;
+	std::cout << "[INFO} in RooSmearer::Init: _isDataSmeared is" << _isDataSmeared << std::endl;
 	if(initFile.Sizeof() > 1) {
 		std::cout << "[INFO] Truth values for toys initialized to " << std::endl;
 		//truthSet->readFromFile(initFile);
