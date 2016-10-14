@@ -76,6 +76,11 @@ options.register('bunchSpacing',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "50=50ns, 25=25ns,0=multifit auto,-1=weights")
+options.register('electronStream',
+                 0, #default value False
+                 VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                 VarParsing.VarParsing.varType.int,          # string, int, or float
+                 "bool: isElectronStream=1 true, isElectronStream=0 false")
 
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
@@ -346,11 +351,19 @@ if (HLTFilter):
     process.ZEEHltFilter.HLTPaths = [ "HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_*"]
     process.filterSeq *= process.ZEEHltFilter
 
+##for the stream                                                                                    
+process.pathALCARECOEcalCalWElectronStream     = cms.Path(seqALCARECOEcalCalWElectronStream)
+process.pathALCARECOEcalUncalWElectronStream   = cms.Path(seqALCARECOEcalUncalWElectronStream)
+process.pathALCARECOEcalCalZElectronStream     = cms.Path(seqALCARECOEcalCalZElectronStream)
+process.pathALCARECOEcalUncalZElectronStream   = cms.Path(seqALCARECOEcalUncalZElectronStream)
+
 from HLTrigger.HLTfilters.hltHighLevel_cfi import *
 process.NtupleFilter = copy.deepcopy(hltHighLevel)
 process.NtupleFilter.throw = cms.bool(False)
 process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalUncalZElectron',   'pathALCARECOEcalUncalWElectron',
                                   'pathALCARECOEcalCalZElectron',     'pathALCARECOEcalCalWElectron',
+                                  'pathALCARECOEcalUncalZElectronStream',   'pathALCARECOEcalUncalWElectronStream',
+                                  'pathALCARECOEcalCalZElectronStream',     'pathALCARECOEcalCalWElectronStream',
                                   'pathALCARECOEcalUncalZSCElectron', 'pathALCARECOEcalCalZSCElectron',
                                   'pathALCARECOEcalUncalSingleElectron', 'pathALCARECOEcalCalSingleElectron', ## in case of no skim
                                  ]
@@ -367,11 +380,13 @@ if(ZSkim):
   # process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZElectron', 'pathALCARECOEcalUncalZElectron',
                                       'pathALCARECOEcalCalZSCElectron', 'pathALCARECOEcalUncalZSCElectron',
+                                      'pathALCARECOEcalCalZElectronStream', 'pathALCARECOEcalUncalZElectronStream',
                                       ]
 elif(WSkim):
     process.NtupleFilterSeq = cms.Sequence(process.WZFilter)
     #    process.NtupleFilterSeq= cms.Sequence(process.NtupleFilter)
-    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron' ]
+    process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalUncalWElectron',
+                                      'pathALCARECOEcalCalWElectronStream', 'pathALCARECOEcalUncalWElectronStream']
 elif(ZmmgSkim):
     process.NtupleFilterSeq = cms.Sequence(process.ZmmgSkimSeq)
     process.NtupleFilter.HLTPaths = [ 'pathALCARECOEcalCalZmmgPhoton', 'pathALCARECOEcalUncalZmmgPhoton' ]
@@ -594,17 +609,17 @@ if(not doTreeOnly):
 ##############################
 if(options.skim=='WSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalUncalWElectron','pathALCARECOEcalUncalWElectronStream')
         )
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron','pathALCARECOEcalCalWElectronStream')
         )
 elif(options.skim=='ZSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalUncalZElectron', 'pathALCARECOEcalUncalZSCElectron','pathALCARECOEcalUncalZElectronStream')
         )
     process.outputALCARECO.SelectEvents = cms.untracked.PSet(
-        SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron')
+        SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron','pathALCARECOEcalUncalZElectronStream')
         )
 elif(options.skim=='ZmmgSkim'):
     process.outputALCARAW.SelectEvents = cms.untracked.PSet(
@@ -650,6 +665,9 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
         process.NtuplePath = cms.Path(process.ntupleSeq)
         process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
         process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::ALCARECO')
+        if (options.electronStream): 
+            if (options.isCrab==0):
+                process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO')
     else:
         if(doAnyTree==False):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
@@ -790,6 +808,13 @@ process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProdu
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
+if (options.electronStream==1):
+    process.zNtupleDumper.caloMetCollection = cms.InputTag('hltMetClean')
+    process.zNtupleDumper.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
+    process.zNtupleDumper.eleID_loose = cms.string('looseElectronStream')
+    process.zNtupleDumper.eleID_medium = cms.string('mediumElectronStream')
+    process.zNtupleDumper.eleID_tight = cms.string('tightElectronStream')
+    process.eleSelectionProducers.rhoFastJet = cms.InputTag('hltFixedGridRhoFastjetAllCaloForMuons')
 
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")

@@ -44,3 +44,6 @@ prod_alcarereco
 *.png
 *.eps
 *.pdf
+
+LSF*
+ZFitter/output*

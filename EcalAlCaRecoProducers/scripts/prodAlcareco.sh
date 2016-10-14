@@ -203,6 +203,7 @@ fi
 case $DATASETPATH in
     */RAW)
 		ALCATYPE="RAW2DIGI,RECO,"
+		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/8
 		;;
     *SingleElectron*USER)
 		let LUMIS_PER_JOBS=${LUMIS_PER_JOBS}/4
@@ -267,6 +268,21 @@ case $TYPE in
 		TYPE=ALCARECO
 		subdir=prod_alcareco
 		;;
+    ElectronStream | ALCARECO)
+                case $SKIM in
+                        ZSkim)
+                                ALCATYPE="${ALCATYPE}ALCA:EcalCalZElectronStream"
+                                ;;
+                        WSkim)
+                                ALCATYPE="${ALCATYPE}ALCA:EcalCalWElectronStream"
+                                EVENTS_PER_JOB=20000; LUMIS_PER_JOB=25
+                                ;;
+                        none) EVENTS_PER_JOB=20000;;
+		esac
+                CUSTOMISE="--process=ALCARECO --customise Calibration/EcalAlCaRecoProducers/customElectronStream.StreamReco"
+                TYPE=ALCARECO
+                subdir=prod_alcareco
+                ;;
     *)
 		echo "[ERROR] No TYPE defined. If you want to use ALCARECOSIM, use ALCARECO and option --isMC" >> /dev/stderr
 		exit 1
