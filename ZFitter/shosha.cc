@@ -14,11 +14,6 @@
 
 #include "interface/Stats.hh"
 
-#include "RooArgList.h"
-#include "RooDataSet.h"
-#include "RooPlot.h"
-#include "RooRealVar.h"
-
 typedef enum { kEffSigma, kHSM, kREM, kMedian } Estimator;
 typedef enum { kMass = 0, kTime, kR9, kSigmaieie, kVars } Variable;
 
@@ -132,24 +127,6 @@ float recursive_effective_mode(std::vector<float> & v, size_t imin, size_t imax,
                 }
         }
         return recursive_effective_mode(v, im, iM, q, e);
-}
-
-
-void dump_and_sort(std::vector<std::vector<float>> & vv, RooAbsData & ds, const std::vector<std::string> & vars)
-{
-        for (auto var : vars) {
-                vv.push_back(std::vector<float>());
-        }
-        for (Int_t i = 0 ; i < ds.numEntries() ; ++i) {
-                const RooArgSet * as = ds.get(i);
-                int cnt = 0;
-		for (auto & var : vars) {
-                        vv[cnt++].push_back(as->getRealValue(var.c_str()));
-                }
-        }
-        for (auto & v : vv) {
-                std::sort(v.begin(), v.end());
-        }
 }
 
 
@@ -365,31 +342,6 @@ int main()
                 }
                 ++cnt;
         }
-
-        //entries.resize(it - entries.begin());
-        //ds->fillHistogram((TH1F*)h_r9->Clone(("h_r9_" + e.first + "_" + r.first).c_str()), RooArgList(r9), r.second + e.second);
-        ////RooAbsData * dsred = ds->reduce(r.second + e.second + generic);
-        ////dsred->fillHistogram((TH1F*)h_r9->Clone(("h_R9_" + e.first + "_" + r.first).c_str()), RooArgList(r9));
-        ////dsred->fillHistogram((TH1F*)h_mass->Clone(("h_mass_" + e.first + "_" + r.first).c_str()), RooArgList(mass));
-        ////std::cout << " " << dsred->sumEntries()  << " " << std::fixed << dsred->mean(runTime);
-        ////std::vector<std::vector<float>> vv;
-        ////dump_and_sort(vv, *dsred, vars);
-        ////vres = collect(vv, kEffSigma);
-        ////std::cout << " effsigma";
-        ////print_vector(vres);
-        ////vres = collect(vv, kHSM);
-        ////std::cout << " HSM";
-        ////print_vector(vres);
-        ////vres = collect(vv, kREM);
-        ////std::cout << " REM";
-        ////print_vector(vres);
-        ////vres = collect(vv, kMedian);
-        ////std::cout << " median";
-        ////print_vector(vres);
-        std::cout << "\n";
-        ////delete dsred;
-        //std::cout << "[INFO] " << r.first << eta.first << " selected " << selected << " event(s) out of " << nentries << "\n";
-
         fout->Write();
         return 0;
 }
