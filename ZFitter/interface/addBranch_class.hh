@@ -40,6 +40,7 @@ public:
 
 	/// specify the new branch you want in BranchName
 	TTree *AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop = true, bool isMC = false);
+	TTree* AddBranch_R9Eleprime(TChain* originalTree, TString treename, bool isMC);
 	TTree* AddBranch_ZPt(TChain* originalTree, TString treename, TString energyBranchName, bool fastLoop = true);
 	EnergyScaleCorrection_class *scaler;
 	TString _commonCut;
