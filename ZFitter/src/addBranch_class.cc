@@ -1,6 +1,7 @@
 #include "../interface/addBranch_class.hh"
 #include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
+#include <TLorentzVector.h>
 #include <iostream>
 
 //#define DEBUG
@@ -24,9 +25,76 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 	if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
 	if(BranchName.CompareTo("iSM") == 0)       return AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
 	if(BranchName.CompareTo("smearerCat") == 0)       return AddBranch_smearerCat(originalChain, treename, isMC);
+	if(BranchName.CompareTo("R9Eleprime") == 0)       return AddBranch_R9Eleprime(originalChain, treename, isMC); //after r9 transformation
 	if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_", ""), fastLoop);
 	std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
 	return NULL;
+}
+
+TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString treename, bool isMC)
+{
+	//to have a branch with r9prime
+	//From the original tree take R9 and eta
+	Float_t         R9Ele[3];
+	Float_t         etaEle[3];
+
+	originalChain->SetBranchStatus("*", 0);
+	originalChain->SetBranchStatus("etaEle", 1);
+	originalChain->SetBranchStatus("R9Ele", 1);
+	originalChain->SetBranchAddress("etaEle", etaEle);
+	originalChain->SetBranchAddress("R9Ele", R9Ele);
+
+	//2015
+//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
+//  //root file with r9 transformation:
+//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
+//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
+
+	//2016
+	TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
+	//root file with r9 transformation for 2016 MC:
+	TGraph* gR9EB = (TGraph*) f->Get("TGraphtransffull5x5R9EB");
+	TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
+	f->Close();
+
+	TTree* newtree = new TTree(treename, treename);
+	Float_t R9Eleprime[3];
+	newtree->Branch("R9Eleprime", R9Eleprime, "R9Eleprime[3]/F");
+
+	Long64_t nentries = originalChain->GetEntries();
+	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+		originalChain->GetEntry(ientry);
+		if(isMC) {
+			//electron 0
+			if(abs(etaEle[0]) < 1.4442) { //barrel
+				R9Eleprime[0] = gR9EB->Eval(R9Ele[0]);
+			} else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5) { //endcap
+				R9Eleprime[0] = gR9EE->Eval(R9Ele[0]);;
+			} else {
+				R9Eleprime[0] = R9Ele[0];
+			}
+
+			//electron 1
+			if(abs(etaEle[1]) < 1.4442) { //barrel
+				R9Eleprime[1] = gR9EB->Eval(R9Ele[1]);
+			} else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5) { //endcap
+				R9Eleprime[1] = gR9EE->Eval(R9Ele[1]);;
+			} else {
+				R9Eleprime[1] = R9Ele[1];
+			}
+		} else { //no transformation needed for data
+			//std::cout<<"R9 in data is not transformed ->R9Eleprime==R9Ele"<<std::endl;
+			R9Eleprime[0] = R9Ele[0];
+			R9Eleprime[1] = R9Ele[1];
+		}
+
+		R9Eleprime[2] = -999; //not used the third electron
+		newtree->Fill();
+	}
+
+	originalChain->SetBranchStatus("*", 1);
+	originalChain->ResetBranchAddresses();
+	return newtree;
 }
 
 TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, TString energyBranchName, bool fastLoop)
@@ -40,7 +108,8 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 	Float_t         etaEle[2];
 	Float_t         energyEle[2];
 	Float_t         corrEle[2] = {1., 1.};
-	Float_t         ZPt;
+	Float_t         ZPt, ZPta;
+	TLorentzVector ele1, ele2;
 
 	originalChain->SetBranchAddress("etaEle", etaEle);
 	originalChain->SetBranchAddress("phiEle", phiEle);
@@ -67,8 +136,15 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 		float regrCorr_fra_pt0 = sqrt(((energyEle[0] * energyEle[0]) - mass * mass) / (1 + sinh(etaEle[0]) * sinh(etaEle[0])));
 		float regrCorr_fra_pt1 = sqrt(((energyEle[1] * energyEle[1]) - mass * mass) / (1 + sinh(etaEle[1]) * sinh(etaEle[1])));
 		ZPt =
-		    sqrt(pow(regrCorr_fra_pt0 * sin(phiEle[0]) + regrCorr_fra_pt1 * sin(phiEle[1]), 2) + pow(regrCorr_fra_pt0 * cos(phiEle[0]) + regrCorr_fra_pt1 * cos(phiEle[1]), 2));
+		    TMath::Sqrt(pow(regrCorr_fra_pt0 * TMath::Sin(phiEle[0]) + regrCorr_fra_pt1 * TMath::Sin(phiEle[1]), 2) + pow(regrCorr_fra_pt0 * TMath::Cos(phiEle[0]) + regrCorr_fra_pt1 * TMath::Cos(phiEle[1]), 2));
 
+		ele1.SetPtEtaPhiE(energyEle[0] / cosh(etaEle[0]), etaEle[0], phiEle[0], energyEle[0]);
+		ele2.SetPtEtaPhiE(energyEle[1] / cosh(etaEle[1]), etaEle[1], phiEle[1], energyEle[1]);
+		ZPta = (ele1 + ele2).Pt();
+		if(fabs(ZPt - ZPta) > 0.001) {
+			std::cerr << "[ERROR] ZPt not well calculated" << ZPt << "\t" << ZPta << std::endl;
+			exit(1);
+		}
 
 		newtree->Fill();
 	}
@@ -81,8 +157,6 @@ TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, T
 
 TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassSigmaName, bool fastLoop, bool isMC)
 {
-/// does not compile
-#ifdef shervin
 	if(scaler == NULL) {
 		std::cerr << "[ERROR] EnergyScaleCorrection class not initialized" << std::endl;
 		exit(1);
@@ -239,9 +313,6 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 	if(fastLoop)   originalChain->SetBranchStatus("*", 1);
 	originalChain->ResetBranchAddresses();
 	return newtree;
-#else
-	return NULL;
-#endif
 }
 
 
@@ -336,6 +407,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 
 	/// \todo disable branches using cutter
 	originalChain->SetBranchStatus("*", 0);
+	//originalChain->SetBranchStatus("R9Eleprime",1);
 
 	std::vector< std::pair<TTreeFormula*, TTreeFormula*> > catSelectors;
 	for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
@@ -346,6 +418,8 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 		std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr);
 		for(std::set<TString>::const_iterator itr = branchNames.begin();
 		        itr != branchNames.end(); itr++) {
+			std::cout << "Activating branches in addBranch_class.cc" << std::endl;
+			std::cout << "Branch is " << *itr << std::endl;
 			originalChain->SetBranchStatus(*itr, 1);
 		}
 		if(    cutter._corrEle == true) originalChain->SetBranchStatus("scaleEle", 1);
@@ -361,7 +435,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 				TTreeFormula *selector = new TTreeFormula("selector-" + (region), cutter.GetCut(region + oddString, isMC), originalChain);
 				catSelectors.push_back(std::pair<TTreeFormula*, TTreeFormula*>(selector, NULL));
 				//selector->Print();
-				//std::cout << cutter.GetCut(region+oddString, isMC) << std::endl;
+				std::cout << cutter.GetCut(region + oddString, isMC) << std::endl;
 				//exit(0);
 			} else {
 				TString region1 = *region_ele1_itr;
