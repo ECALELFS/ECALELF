@@ -1,0 +1,10 @@
+{
+  data->Draw("R9Eleprime[0]>>data_hist(100,0,1)");
+  signalA->Draw("R9Eleprime[0]>>MCprime_hist(100,0,1)");
+  signalA->Draw("R9Ele[0]>>MC_hist(100,0,1)");
+  MC_hist->SetLineColor(kGreen);
+  MCprime_hist->SetLineColor(kRed);
+  data_hist->DrawNormalized();
+  MCprime_hist->DrawNormalized("same");
+  MC_hist->DrawNormalized("same");
+}
