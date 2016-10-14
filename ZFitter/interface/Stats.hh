@@ -46,17 +46,17 @@ public:
 	}; ///< returns the number of values
 
 
-	inline float mean(void) const
+	inline double mean(void) const
 	{
 		if(_n == 0) return 0;
 		return _sum / _n;
 	}; ///< returns the mean
 
 
-	inline float stdDev(void) const
+	inline double stdDev(void) const
 	{
 		if(_n == 0) return 0;
-		float m = mean();
+		double m = mean();
 		return sqrt(_sum2 / _n - m * m);
 	}; ///< returns the standard devation
 
@@ -82,7 +82,9 @@ public:
 	};
 
 
-	void add(float); ///< add one entry to the list of values
+	void add(double); ///< add one entry to the list of values
+
+
 	inline void sort(void)
 	{
 		TStopwatch ts;

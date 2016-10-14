@@ -13,7 +13,7 @@ stats::stats(const std::vector<float>& v):
 	_isSorted = true;
 }
 
-void stats::add(const float val)
+void stats::add(const double val)
 {
 	//_isSorted = false;
 	_values.push_back(val);
