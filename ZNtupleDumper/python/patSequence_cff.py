@@ -53,6 +53,7 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 #     loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
 #     medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
 #     tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
+#     tightElectronStream      = cms.InputTag("eleSelectionProducers", "tightElectronStream")
 #     )
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')
@@ -101,6 +102,9 @@ modPSet =  cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatV
         loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
         medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
         tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
+        looseElectronStream       = cms.InputTag("eleSelectionProducers", "looseElectronStream"),
+        mediumElectronStream       = cms.InputTag("eleSelectionProducers", "mediumElectronStream"),
+        tightElectronStream       = cms.InputTag("eleSelectionProducers", "tightElectronStream"),
         ),
                      photon_config   = cms.PSet( )
                      )
