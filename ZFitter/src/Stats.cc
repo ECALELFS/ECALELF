@@ -23,8 +23,9 @@ void stats::add(const double val)
 }
 
 
-float stats::eff_sigma(float q) const
+float stats::eff_sigma(float q)
 {
+        if(!_isSorted) sort();
 	if (_n < 2) return 0;
 	size_t s = floor(q * _n);
 	float d_min = _values[s] - _values[0];
@@ -38,7 +39,7 @@ float stats::eff_sigma(float q) const
 
 
 
-float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e) const
+float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e)
 {
 	size_t n = imax - imin;
 	if (imax == imin) return _values[imin]; // no element left
@@ -62,8 +63,13 @@ float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e
 }
 
 
+void stats::fillHisto(TH1 * h)
+{
+        for (auto & v : _values) h->Fill(v);
+}
 
-std::ostream& operator<<(std::ostream& os, const stats s)
+
+std::ostream& operator<<(std::ostream& os, stats & s)
 {
 	if(s.n() == 0) {
 		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-" << "\t" << "-";
