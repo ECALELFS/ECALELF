@@ -23,7 +23,7 @@ OutALCARECOEcalCalElectron_specific = cms.untracked.vstring(
 OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     # put this if you have a filter
     SelectEvents = cms.untracked.PSet(
-    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalCalZSCElectron')
+    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalWElectron', 'pathALCARECOEcalCalZSCElectron','pathALCARECOEcalCalZElectronStream', 'pathALCARECOEcalCalWElectronStream')
     ),
     outputCommands = cms.untracked.vstring( 
         'keep uint_bunchSpacingProducer_*_*',
@@ -63,6 +63,8 @@ OutALCARECOEcalCalElectron_noDrop = cms.PSet(
     # pfisolation CMSSW_5_3_X
     'keep *EcalRecHit*_alCaIsolatedElectrons_*_*',
     'keep EcalRecHitsSorted_reducedEcalRecHitsES_*_*',
+    'keep *_hltFixedGridRhoFastjetAllCaloForMuons_*_*', #for electron stream
+    'keep *_hltMetClean_*_*', #for electron stream
     )
 )
 
@@ -78,6 +80,12 @@ OutALCARECOEcalCalWElectron.SelectEvents = cms.untracked.PSet(
 OutALCARECOEcalCalWElectron_noDrop.SelectEvents = cms.untracked.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalCalWElectron')   )
 
+OutALCARECOEcalCalWElectronStream=copy.deepcopy(OutALCARECOEcalCalElectron)
+OutALCARECOEcalCalWElectronStream_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
+OutALCARECOEcalCalWElectronStream.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalWElectronStream')   )
+OutALCARECOEcalCalWElectronStream_noDrop.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalWElectronStream')   )
 
 OutALCARECOEcalCalZElectron=copy.deepcopy(OutALCARECOEcalCalElectron)
 OutALCARECOEcalCalZElectron_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
@@ -87,5 +95,11 @@ OutALCARECOEcalCalZElectron.SelectEvents =  cms.untracked.PSet(
 OutALCARECOEcalCalZElectron_noDrop.SelectEvents =  cms.untracked.PSet(
     SelectEvents = cms.vstring('pathALCARECOEcalCalZElectron', 'pathALCARECOEcalCalZSCElectron')    )
 
+OutALCARECOEcalCalZElectronStream=copy.deepcopy(OutALCARECOEcalCalElectron)
+OutALCARECOEcalCalZElectronStream_noDrop=copy.deepcopy(OutALCARECOEcalCalElectron_noDrop)
+OutALCARECOEcalCalZElectronStream.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectronStream')   )
+OutALCARECOEcalCalZElectronStream_noDrop.SelectEvents = cms.untracked.PSet(
+    SelectEvents = cms.vstring('pathALCARECOEcalCalZElectronStream')   )
 
 

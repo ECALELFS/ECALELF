@@ -27,6 +27,7 @@ FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
 BUNCHSPACING=0
+ELECTRONSTREAM=0
 
 usage(){
     echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
@@ -50,6 +51,7 @@ usage(){
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root"
 	echo "    --weightsReco: using weights for local reco"
+    echo "    --electronStream"
 
     echo "---------- optional common"
     echo "    --doExtraCalibTree (needed for E/p calibration)"
@@ -84,7 +86,7 @@ expertUsage(){
 #------------------------------ parsing
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doExtraStudyTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doExtraStudyTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco,electronStream, -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -147,6 +149,7 @@ do
 	    ;;
 	--isMC) isMC=1;;
 	--isParticleGun) isPARTICLEGUN="y"; SKIM=partGun;;
+	--electronStream) echo "[OPTION] run for electron stream"; ELECTRONSTREAM=1;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
 
@@ -184,7 +187,7 @@ do
 			#echo "[OPTION] checking jobs"; 
 			CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
 	--isPrivate)      echo "[OPTION] private dataset"; ISPRIVATE=1;;
-
+	
  	--file_per_job) echo "[OPTION] file per job: $2"; FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 	--weightsReco)    echo "[OPTION `basename $0`] using weights for local reco"; BUNCHSPACING=-1;;
