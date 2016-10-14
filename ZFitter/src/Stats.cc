@@ -23,7 +23,7 @@ void stats::add(const double val)
 }
 
 
-float stats::eff_sigma(float q)
+float stats::eff_sigma(float q) const
 {
 	if (_n < 2) return 0;
 	size_t s = floor(q * _n);
@@ -66,9 +66,9 @@ float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e
 std::ostream& operator<<(std::ostream& os, const stats s)
 {
 	if(s.n() == 0) {
-		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-" << "\t"; // << "-";
+		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-" << "\t" << "-";
 	} else {
-		os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median(); // << "\t" << s.recursive_effective_mode() ;
+		os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median() << "\t" << s.eff_sigma(); // << "\t" << s.recursive_effective_mode() ;
 	}
 	return os;
 }

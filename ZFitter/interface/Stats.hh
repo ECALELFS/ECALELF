@@ -31,6 +31,7 @@ public:
 		_n=0;
 		_sum=0.;
 		_sum2=0.;
+		_isSorted=false;
 	};
 
 
@@ -62,7 +63,7 @@ public:
 
 
 	/// returns the half width of the smallest interval containing a fraction q of the events
-	float eff_sigma(float q = 0.68269);
+	float eff_sigma(float q = 0.68269) const;
 
 
 	/// returns the MPV of the distribution
@@ -87,9 +88,10 @@ public:
 
 	inline void sort(void)
 	{
+		if(_isSorted) return;
 		TStopwatch ts;
 		ts.Start();
-		if(_isSorted == false) std::sort(_values.begin(), _values.end());
+		std::sort(_values.begin(), _values.end());
 		_isSorted = true;
 		ts.Stop();
 		ts.Print();
