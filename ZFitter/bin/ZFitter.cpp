@@ -77,6 +77,8 @@ configuration files.
 //#define DEBUG
 #define smooth
 
+#define dump_root_tree 1
+
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
 //using namespace std;
@@ -1178,7 +1180,7 @@ int main(int argc, char **argv)
 	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-#else
+#endif
 	anyVar_class anyVar(data, branchListAny, cutter);
 	anyVar._exclusiveCategories=true;
 	anyVar.Import(commonCut, eleID, activeBranchList);
@@ -1188,30 +1190,30 @@ int main(int argc, char **argv)
 	// look at the `idx' RooRealVar to know the index in the
 	// original array (can be 0, 1, 2)
 	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
+#ifndef dump_root_tree
 	for(auto& region : categories){
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
 		anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
 	}
-	
 	return 0;
-	RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
-	ds2->SetName("ds2");
-	ds2->SetTitle("ds2");
-	//RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
-	//ds3->SetTitle("ds3");
-	RooDataSet * ds = ds2;
-	ds->append(*ds2);
+#endif
+	///RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
+	///ds2->SetName("ds2");
+	///ds2->SetTitle("ds2");
+	/////RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
+	/////ds3->SetTitle("ds3");
+	///RooDataSet * ds = ds2;
+	///ds->append(*ds2);
 
 
-	ds->Print();
-	ds2->Print();
-	//ds3->Print();
-	//ds->write("dataset.dat");
+	///ds->Print();
+	///ds2->Print();
+	/////ds3->Print();
+	/////ds->write("dataset.dat");
 	TFile * fout = TFile::Open("roodataset.root", "recreate");
 	fout->cd();
-	ds->Write("ds");
-#endif
+	///ds->Write("ds");
 
 	/*
 	// write an ASCII roodataset with specified format

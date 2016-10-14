@@ -9,6 +9,7 @@
 #define MAXENTRIES 10000
 #define MAXBRANCHES  20
 
+#define dump_root_tree 1
 
 anyVar_class::~anyVar_class(void)
 {
@@ -131,7 +132,9 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	ts.Stop();
 	ts.Print();
 
+#ifndef dump_root_tree
 	TreeToTreeShervin(chain, "");
+#endif
 	return chain;
 }
 

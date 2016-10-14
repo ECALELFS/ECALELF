@@ -63,6 +63,7 @@ public:
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
 	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2); ///<
 	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
+	void TreeToTreeShervin(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
