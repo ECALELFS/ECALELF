@@ -5,7 +5,7 @@
 #source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 case $USER in
-    hengne|heli)
+    hengne|heli|gfasanel)
 	voms-proxy-init -voms cms -hours 192 -valid 192:00
 	;;
     *)

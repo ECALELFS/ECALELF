@@ -110,7 +110,7 @@ case $yVar in
 		;;
 	esac
 	yMin=1
-	yMax=2
+	yMax=4
 	;;
     chi2)
 	columns=11-13
@@ -180,12 +180,12 @@ fi
 cat > tmp/stability_macro.C <<EOF
 
 {
-  gROOT->ProcessLine(".L src/setTDRStyle.C+");
+  //gROOT->ProcessLine(".L src/setTDRStyle.C+");
   gROOT->ProcessLine(".L macro/stability.C+");
 
-  setTDRStyle();
-  tdrStyle->SetOptTitle(0);
-   gROOT->SetStyle("tdrStyle");  
+  //setTDRStyle();
+  //tdrStyle->SetOptTitle(0);
+  //gROOT->SetStyle("tdrStyle");  
   TCanvas *c;
 
 std::vector<TString> filenameList;
