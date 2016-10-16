@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -8,13 +9,61 @@
 #include "TEnv.h"
 #include "TFile.h"
 #include "TH1F.h"
+#include "TTree.h"
+#include "TTreeFormula.h"
 
-#include "RooArgList.h"
-#include "RooDataSet.h"
-#include "RooPlot.h"
-#include "RooRealVar.h"
+#include "interface/Stats.hh"
 
 typedef enum { kEffSigma, kHSM, kREM, kMedian } Estimator;
+typedef enum { kMass = 0, kTime, kR9, kSigmaieie, kVars } Variable;
+
+typedef struct {
+        Int_t   run;
+        UInt_t  time;
+        Float_t mass;
+        Float_t r9[3];
+        Float_t etaSC[3];
+} Event;
+Event e;
+
+std::vector<std::string> brlist;
+
+typedef struct {
+        std::vector<size_t>      run_boundaries;;
+        std::vector<std::string> run_names;
+        std::vector<size_t>      eta_boundaries;;
+        std::vector<std::string> eta_names;
+} Categories;
+Categories c;
+
+
+void enable_branches(TTree * t)
+{
+        t->SetBranchStatus("*", 0);
+        for (auto s : brlist) {
+                fprintf(stdout, "enabling branch `%s'\n", s.c_str());
+                t->SetBranchStatus(s.c_str(), 1);
+                //t->AddBranchToCache(s, 1);
+        }
+}
+
+
+void set_branches(TTree * t)
+{
+        t->SetBranchAddress("runNumber", &e.run);
+        brlist.push_back("runNumber");
+        t->SetBranchAddress("runTime", &e.time);
+        brlist.push_back("runTime");
+        t->SetBranchAddress("invMass_SC_must_regrCorr_ele", &e.mass);
+        brlist.push_back("invMass_SC_must_regrCorr_ele");
+        t->SetAlias("mass", "invMass_SC_must_regrCorr_ele");
+        t->SetBranchAddress("R9Ele", e.r9);
+        brlist.push_back("R9Ele");
+        t->SetBranchAddress("etaSCEle", e.etaSC);
+        brlist.push_back("etaSCEle");
+        //t->SetCacheSize(5000000000);
+        enable_branches(t);
+}
 
 
 float eff_sigma(std::vector<float> & v, float q = 0.68269)
@@ -81,24 +130,6 @@ float recursive_effective_mode(std::vector<float> & v, size_t imin, size_t imax,
 }
 
 
-void dump_and_sort(std::vector<std::vector<float>> & vv, RooAbsData & ds, const std::vector<std::string> & vars)
-{
-        for (auto var : vars) {
-                vv.push_back(std::vector<float>());
-        }
-        for (Int_t i = 0 ; i < ds.numEntries() ; ++i) {
-                const RooArgSet * as = ds.get(i);
-                int cnt = 0;
-		for (auto & var : vars) {
-                        vv[cnt++].push_back(as->getRealValue(var.c_str()));
-                }
-        }
-        for (auto & v : vv) {
-                std::sort(v.begin(), v.end());
-        }
-}
-
-
 std::vector<float> collect(std::vector<std::vector<float> > vv, Estimator est)
 {
         std::vector<float> res;
@@ -125,39 +156,31 @@ std::vector<float> collect(std::vector<std::vector<float> > vv, Estimator est)
 }
 
 
-void define_selections_eta(std::map<std::string, TCut> & sel)
+std::map<size_t, size_t> get_meta_data(TTree * t)
 {
-        sel["EB"]            = TCut("fabs(etaSCEle) < 1.48");
-        sel["EE"]            = TCut("fabs(etaSCEle) > 1.56 && fabs(etaSCEle) < 2.5");
-        //sel["EENoTk"]        = TCut("fabs(etaSCEle) > 1.56"); // commented to save time
-        sel["mod1"]          = TCut("fabs(etaSCEle) <= 0.45");
-        sel["mod2"]          = TCut("fabs(etaSCEle) > 0.45 && fabs(etaSCEle) <= 0.79");
-        sel["mod3"]          = TCut("fabs(etaSCEle) > 0.79 && fabs(etaSCEle) <= 1.14");
-        sel["mod4"]          = TCut("fabs(etaSCEle) > 1.14 && fabs(etaSCEle) <= 1.48");
-        sel["EELE"]          = sel["EE"] + TCut("fabs(etaSCEle) < 2");
-        sel["EEHE"]          = sel["EE"] + TCut("fabs(etaSCEle) >= 2");
-}
-
-
-std::map<size_t, size_t> get_meta_data(RooDataSet & ds)
-{
+        fprintf(stdout, "[get_meta_data] starting\n");
         std::map<size_t, size_t> runs;
-        for (Int_t i = 0 ; i < ds.numEntries() ; ++i) {
-                const RooArgSet * as = ds.get(i);
-                int cnt = 0;
-                runs[as->getRealValue("runNumber")] += 1;
+        t->SetBranchStatus("*", 0);
+        t->SetBranchStatus("runNumber", 1);
+        size_t nentries = t->GetEntries();
+        for (size_t ien = 0; ien < nentries; ++ien) {
+                t->GetEntry(ien);
+                runs[e.run] += 1;
+                //fprintf(stderr, "--> %lu\n", e.run);
         }
-        //for (auto & r : runs) {
-        //        std::cout << "Run " << r.first << " has " << r.second << " event(s).\n";
-        //}
+        enable_branches(t);
+        fprintf(stdout, "[get_meta_data] done: found %lu run(s).\n", runs.size());
         return runs;
 }
 
 
-void define_selections_run(const std::map<size_t, size_t> & run_md, std::map<std::string, TCut> & sel_runs)
+void define_categories_run(const std::map<size_t, size_t> & run_md, std::map<std::string, std::pair<size_t, size_t> > & sel_runs)
 {
+        fprintf(stdout, "[define_categories_run] starting\n");
         std::vector<size_t> runs;
+        if (run_md.size() == 0) return;
         size_t cnt = 0, event_limit = 500000;
+        runs.push_back(run_md.begin()->first);
         for (auto & r : run_md) {
                 cnt += r.second;
                 if (cnt > event_limit) {
@@ -165,14 +188,27 @@ void define_selections_run(const std::map<size_t, size_t> & run_md, std::map<std
                         runs.push_back(r.first);
                 }
         }
-        char name[64], sel[256];
-        sprintf(name, "%lld_%lld", runs[0], runs[runs.size() - 1]);
-        sprintf(sel, "runNumber >= %lld && runNumber < %lld", runs[0], runs[runs.size() - 1]);
-        sel_runs[name] = TCut(sel);
+        char name[64];
+        sprintf(name, "%lu_%lu", runs[0], runs[runs.size() - 1]);
+        sel_runs[name] = std::make_pair(runs[0], runs[runs.size() - 1]);
         for (size_t s = 0; s < runs.size() - 2; ++s) {
-                sprintf(name, "%lld_%lld", runs[s], runs[s + 1]);
-                sprintf(sel, "runNumber >= %lld && runNumber < %lld", runs[s], runs[s + 1]);
-                sel_runs[name] = TCut(sel);
+                sprintf(name, "%lu_%lu", runs[s], runs[s + 1]);
+                sel_runs[name] = std::make_pair(runs[s], runs[s + 1]);
+                fprintf(stderr, "new category: %s  lower bound: %lu\n", name, runs[s]);
+                c.run_names.push_back(name);
+                c.run_boundaries.push_back(runs[s]);
+        }
+        //c.run_boundaries.push_back(runs[runs.size() - 1] + 1);
+        //sprintf(name, "%lu_%lu", runs[runs.size() - 2], runs[runs.size() - 1]);
+        //c.run_names.push_back(name);
+        fprintf(stdout, "[define_categories_run] done\n");
+}
+
+
+void print_categories()
+{
+        for (size_t i = 0; i < c.run_names.size(); ++i) {
+                fprintf(stdout, "%s --> %lu\n", c.run_names[i].c_str(), c.run_boundaries[i]);
         }
 }
 
@@ -185,66 +221,127 @@ void print_vector(std::vector<float> & v, std::ostream & os = std::cout)
 }
 
 
+bool select_run(std::pair<size_t, size_t> runs)
+{
+        return (size_t)e.run >= runs.first && (size_t)e.run < runs.second;
+}
+
+
+std::string category_run()
+{
+        auto it = std::upper_bound(c.run_boundaries.begin(), c.run_boundaries.end(), e.run);
+        if (it != c.run_boundaries.end()) {
+                return c.run_names[it - c.run_boundaries.begin() - 1];
+        } else {
+                return c.run_names[c.run_names.size() - 1];
+        }
+        return "";
+}
+
+
+std::vector<std::string> electron_category(int idx)
+{
+        std::vector<std::string> crun; 
+        char tmp[32];
+        sprintf(tmp, "%lu_%lu", c.run_boundaries[0], c.run_boundaries[c.run_boundaries.size() - 1]);
+        crun.push_back(tmp);
+        std::string r =  category_run();
+        if (r != "") crun.push_back(r);
+        std::vector<std::string> ceta;
+        float eta = fabs(e.etaSC[idx]);
+        if (eta < 1.48)                     ceta.push_back("EB");
+        else if (eta > 1.56 && eta < 2.5)   ceta.push_back("EE");
+        if (0);
+        else if (eta <= 0.45)               ceta.push_back("mod1");
+        else if (eta > 0.45 && eta <= 0.79) ceta.push_back("mod2");
+        else if (eta > 0.79 && eta <= 1.14) ceta.push_back("mod3");
+        else if (eta > 1.14 && eta <= 1.48) ceta.push_back("mod4");
+        std::vector<std::string> res;
+        for (auto & r : crun) {
+                for (auto & e : ceta) {
+                        res.push_back(r + "_" + e);
+                }
+        }
+        return res;
+}
+
+
 int main()
 {
-        TFile * fin = TFile::Open("roodataset.root");
-        RooDataSet * ds = (RooDataSet*)fin->Get("ds");
+        fprintf(stderr, "starting...\n");
+        TFile * fin = TFile::Open("dataset.root");
+        TTree * t = (TTree*)fin->Get("selected");
         //std::cout << fin << " " << ds << "\n";
+        
+        set_branches(t);
 
-        std::map<size_t, size_t> runs_meta_data = get_meta_data(*ds);
+        std::map<size_t, size_t> runs_meta_data = get_meta_data(t);
 
-        std::map<std::string, TCut> selections_runs;
-        define_selections_run(runs_meta_data, selections_runs);
+        std::map<std::string, std::pair<size_t, size_t> > selections_runs;
+        define_categories_run(runs_meta_data, selections_runs);
 
-        RooRealVar r9("R9Ele", "R9Ele", 0.8, 1.2);
-        RooRealVar mass("mass", "mass", 50, 150);
-        RooRealVar runTime("runTime", "runTime", 0, 100000000);
+        //std::map<std::string, TCut> selections_eta;
+        //define_selections_eta(selections_eta);
 
-        std::map<std::string, TCut> selections_eta;
-        define_selections_eta(selections_eta);
-
-        TH1F * h_r9 = new TH1F("hr9", "R9", 200, 0.8, 1.0);
-        TH1F * h_mass = new TH1F("hmass", "mass", 300, 60., 120.);
+        std::vector<std::unique_ptr<TH1F> > histos(kVars);
+        histos[kR9]   = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 200, 0.8, 1.0));
+        histos[kMass] = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
+        //std::vector<TH1F *> histos(kVars);
+        //histos[kR9]   = new TH1F("hr9", "R9", 200, 0.8, 1.0);
+        //histos[kMass] = new TH1F("hmass", "mass", 300, 60., 120.);
 
         TFile * fout = TFile::Open("histos.root", "recreate");
 
-        std::vector<std::string> vars = {"R9Ele", "sigmaIEtaIEtaSCEle", "mass"};
+        std::vector<std::string> vars(kVars);
+        vars[kR9]        = "r9";
+        vars[kSigmaieie] = "sigmaieie";
+        vars[kMass]      = "mass";
+        vars[kTime]      = "time";
 
         // print header
         std::cout << "#selection  n_evt  average_runTime  <quantity";
         for (auto & v : vars) std::cout << " " << v;
         std::cout << "> ...\n";
 
-        TCut generic("mass > 70 && mass < 110");
-
-        std::vector<float> vres;
-        for (auto & r : selections_runs) {
-                for (auto & e : selections_eta) {
-                        std::cout << e.first << "-" << r.first;
-                        //ds->fillHistogram((TH1F*)h_r9->Clone(("h_r9_" + e.first + "_" + r.first).c_str()), RooArgList(r9), r.second + e.second);
-                        RooAbsData * dsred = ds->reduce(r.second + e.second + generic);
-                        dsred->fillHistogram((TH1F*)h_r9->Clone(("h_R9_" + e.first + "_" + r.first).c_str()), RooArgList(r9));
-                        dsred->fillHistogram((TH1F*)h_mass->Clone(("h_mass_" + e.first + "_" + r.first).c_str()), RooArgList(mass));
-                        std::cout << " " << dsred->sumEntries()  << " " << std::fixed << dsred->mean(runTime);
-                        std::vector<std::vector<float>> vv;
-                        dump_and_sort(vv, *dsred, vars);
-                        vres = collect(vv, kEffSigma);
-                        std::cout << " effsigma";
-                        print_vector(vres);
-                        vres = collect(vv, kHSM);
-                        std::cout << " HSM";
-                        print_vector(vres);
-                        vres = collect(vv, kREM);
-                        std::cout << " REM";
-                        print_vector(vres);
-                        vres = collect(vv, kMedian);
-                        std::cout << " median";
-                        print_vector(vres);
-                        std::cout << "\n";
-                        delete dsred;
+        std::vector<size_t> v;
+        //std::cout << eta.first << "-" << r.first;
+        //TTreeFormula * selector = new TTreeFormula("selector", r.second + eta.second + generic, t);
+        //std::cout << "\n" << selector->GetTitle() << "\n";
+        Long64_t selected = 0;
+        std::vector<std::map<std::string, stats> > data(kVars);
+        for (size_t v = 0; v < kVars; ++v) {
+                data[v] = std::map<std::string, stats>();
+        }
+        size_t nentries = t->GetEntries();
+        for (size_t ien = 0; ien < nentries && ien < 10000; ++ien) {
+                t->GetEntry(ien);
+                if (ien % 1237 == 0) fprintf(stderr, " Processed events: %lu (%.2f%%)  run=%d  r9=%f\r", ien, (Float_t)ien / nentries * 100, e.run, e.r9[0]);
+                if (!(e.mass >= 70 && e.mass <= 100)) continue;
+                //if (!select_run(r.second)) continue;
+                data[kMass][category_run()].add(e.mass);
+                data[kTime][category_run()].add(e.time);
+                std::vector<std::string> cat;
+                for (int jel = 0; jel < 2; ++jel) {
+                        cat = electron_category(jel);
+                        for (auto & s : cat) {
+                                //fprintf(stderr, "--> %lu %f --> %s\n", (size_t)e.run, e.etaSC[jel], s.c_str());
+                                data[kR9][s].add(e.r9[jel]);
+                                //data["sigmaieie"][s].add(e.sigmaIEtaIEtaSCEle[jel]);
+                        }
                 }
         }
+        fprintf(stderr, "\ndata categorized\n");
 
+        size_t cnt = 0;
+        for (auto & var : data) {
+                for (auto & cat : var) {
+                        auto & s = cat.second;
+                        if (histos[cnt] != 0) TH1F * h = (TH1F*)histos[cnt]->Clone((vars[cnt] + "_" + cat.first).c_str());
+                        //s.fillHisto(h);
+                        fprintf(stderr, "--> %s %s  %lu  %f %f\n", vars[cnt].c_str(), cat.first.c_str(), s.n(), s.mean(), s.stdDev());
+                }
+                ++cnt;
+        }
         fout->Write();
         return 0;
 }

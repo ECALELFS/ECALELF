@@ -77,6 +77,8 @@ configuration files.
 //#define DEBUG
 #define smooth
 
+#define dump_root_tree 1
+
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
 //using namespace std;
@@ -344,7 +346,7 @@ int main(int argc, char **argv)
 	("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25), "Smearing binning")
 	("isOddMC", "Activate if use only odd events in MC")
 	("isOddData", "Activate if use only odd events in data")
-		("scale", po::value<float>(&scale)->default_value(1.), "scale shift for tests")	
+	("scale", po::value<float>(&scale)->default_value(1.), "scale shift for tests")
 	//
 	("readDirect", "") //read correction directly from config file instead of passing as a command line arg
 	//("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
@@ -1163,23 +1165,25 @@ int main(int argc, char **argv)
 
 	//------------------------------ anyVar_class declare and set the options
 	std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
+#ifdef dump_root_tree
 	// first all the single variables
-	// branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
-	// branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
-	// branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-	// branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
+	branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
+	branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
+	branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
 	// then all the array variables
-	//branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
-	//branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
 	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
-	//branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
+	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
-	//branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+#endif
 	anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData);
-	anyVar._exclusiveCategories=false;
+	anyVar._exclusiveCategories = false;
 
 	anyVar.Import(commonCut, eleID, activeBranchList);
 	//need to convert the TTree into RooDataset
@@ -1188,29 +1192,30 @@ int main(int argc, char **argv)
 	// look at the `idx' RooRealVar to know the index in the
 	// original array (can be 0, 1, 2)
 	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
-	for(auto& region : categories){
+#ifndef dump_root_tree
+	for(auto& region : categories) {
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
 		anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
 	}
-	
 	return 0;
-	RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
-	ds2->SetName("ds2");
-	ds2->SetTitle("ds2");
-	//RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
-	//ds3->SetTitle("ds3");
-	RooDataSet * ds = ds2;
-	ds->append(*ds2);
+#endif
+	///RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
+	///ds2->SetName("ds2");
+	///ds2->SetTitle("ds2");
+	/////RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
+	/////ds3->SetTitle("ds3");
+	///RooDataSet * ds = ds2;
+	///ds->append(*ds2);
 
 
-	ds->Print();
-	ds2->Print();
-	//ds3->Print();
-	//ds->write("dataset.dat");
+	///ds->Print();
+	///ds2->Print();
+	/////ds3->Print();
+	/////ds->write("dataset.dat");
 	TFile * fout = TFile::Open("roodataset.root", "recreate");
 	fout->cd();
-	ds->Write("ds");
+	///ds->Write("ds");
 
 	/*
 	// write an ASCII roodataset with specified format
@@ -1231,9 +1236,10 @@ int main(int argc, char **argv)
 	        }
 	}
 	*/
+#ifdef dump_root_tree
 	fout->Close();
-
-	//anyVar.TreeToTree(mc, cutter.GetCut("EB", false));
+	anyVar.TreeToTree(data, TCut("1"));
+#endif
 	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {

@@ -1,6 +1,7 @@
 #include "anyVar_class.h"
 #include <TTreeFormula.h>
 #include <TObject.h>
+#include <TBranchElement.h>
 #include <TFriendElement.h>
 #include <RooDataSet.h>
 #include <TStopwatch.h>
@@ -8,6 +9,7 @@
 #define MAXENTRIES 10000
 #define MAXBRANCHES  20
 
+#define dump_root_tree 1
 
 anyVar_class::~anyVar_class(void)
 {
@@ -130,13 +132,15 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	ts.Stop();
 	ts.Print();
 
-	TreeToTree(chain, "");
+#ifndef dump_root_tree
+	TreeToTreeShervin(chain, "");
+#endif
 	return chain;
 }
 
 
 
-void anyVar_class::TreeToTree(TChain *chain, TCut cut)
+void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut)
 {
 	std::cout << "[INFO] Start copying the tree in memory" << std::endl;
 	TStopwatch ts;
@@ -213,6 +217,110 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	ts.Stop();
 	std::cout << "Copy tree done: ";
 	ts.Print();
+}
+
+
+void anyVar_class::TreeToTree(TChain *chain, TCut cut)
+{
+	// _branchList is used to make the set branch addresses
+	Float_t branches_Float_t[MAXBRANCHES][3];
+	Int_t branches_Int_t[MAXBRANCHES][3];
+	UInt_t branches_UInt_t[MAXBRANCHES][3];
+	ULong64_t branches_ULong64_t[MAXBRANCHES][3];
+	//branches.resize(_branchNames.size());
+	std::vector<kType> vtype;
+	for(unsigned int ibranch = 0; ibranch < _branchNames.size(); ++ibranch) {
+		TString name = _branchNames[ibranch].first;
+		kType typ = (kType)(_branchNames[ibranch].second % kArrayTypes);
+		switch (typ) {
+		case kInt_t:
+			chain->SetBranchAddress(_branchNames[ibranch].first, &branches_Int_t[ibranch]);
+			break;
+		case kFloat_t:
+			chain->SetBranchAddress(_branchNames[ibranch].first, &branches_Float_t[ibranch]);
+			break;
+		case kUInt_t:
+			chain->SetBranchAddress(_branchNames[ibranch].first, &branches_UInt_t[ibranch]);
+			break;
+		case kULong64_t:
+			chain->SetBranchAddress(_branchNames[ibranch].first, &branches_ULong64_t[ibranch]);
+			break;
+		default:
+			std::cerr << "[ERROR] branch `" << name << "' has type `" << typ << "': not supported, adjust your branch types in ZFitter and try again\n";
+			assert(0);
+		}
+		vtype.push_back(typ);
+	}
+
+	Float_t weight_ = 1 ;
+	Float_t r9weight_[2] = {1, 1}; //r9weight_[0]=1; r9weight_[1]=1;
+	Float_t pileupWeight_ = 1;
+
+	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
+	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
+
+	Float_t mll;
+
+	if(chain->GetBranch("puWeight") != NULL) {
+		std::cout << "[STATUS] Adding pileup weight branch from friend" << std::endl;
+		chain->SetBranchAddress("puWeight", &pileupWeight_);
+	}
+
+	if(chain->GetBranch("scaleEle") != NULL) {
+		std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
+		chain->SetBranchAddress("scaleEle", corrEle_);
+	}
+
+	if(chain->GetBranch("smearEle") != NULL && TString(chain->GetTitle()) != "d") {
+		std::cout << "[STATUS] Adding electron energy smearing branch from friend" << std::endl;
+		//chain->Scan("smearEle");
+		chain->SetBranchAddress("smearEle", smearEle_);
+	}
+
+	if(chain->GetBranch("r9Weight") != NULL) {
+		std::cout << "[STATUS] Adding electron energy correction branch from friend" << std::endl;
+		chain->SetBranchAddress("r9Weight", r9weight_);
+	}
+	TFile * outFile = TFile::Open("dataset.root", "recreate");
+	TTree * outree = chain->CloneTree(0);
+        //chain->GetEntry(0);
+	// add branches of friends
+	TIter next(chain->GetListOfFriends());
+	TObject * obj;
+	while ((obj = next())) {
+	        std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
+	        TTree * t = ((TFriendElement *)obj)->GetTree();
+                TObjArray * branches = t->GetListOfBranches();
+                Int_t nb = branches->GetEntriesFast();
+                for (Int_t i = 0; i < nb; ++i) {
+                        TBranch * br = chain->GetBranch(branches->At(i)->GetName());
+                        TString title = br->GetTitle();
+                        if (chain->GetBranchStatus(br->GetName())) {
+                                outree->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+                        }
+                }
+	}
+        //outree->Reset();
+	Long64_t nentries = chain->GetEntryList()->GetN();
+	chain->LoadTree(chain->GetEntryNumber(0));
+	Long64_t treenumber = -1;
+	TTreeFormula *selector = new TTreeFormula("selector", cut, chain);
+        Long64_t selected = 0;
+	for (Long64_t i = 0; i < nentries; ++i) {
+		Long64_t ientry = chain->GetEntryNumber(i);
+		chain->GetEntry(ientry);
+		if (ientry % 1237 == 0) fprintf(stderr, " Processed events: %lld (%.2f%%)\r", ientry, (Float_t)ientry / nentries * 100);
+		if (chain->GetTreeNumber() != treenumber) {
+			treenumber = chain->GetTreeNumber();
+			selector->UpdateFormulaLeaves();
+		}
+		if(selector->EvalInstance() == false) continue;
+                ++selected;
+		outree->Fill();
+	}
+        std::cout << "[INFO] selected " << selected << " event(s) out of " << nentries << "\n";
+	outree->Print();
+	outree->AutoSave();
 }
 
 
@@ -527,6 +635,3 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 //	_stats_vec.dump("testfile.dat");
 	return;
 }
-
-
-
