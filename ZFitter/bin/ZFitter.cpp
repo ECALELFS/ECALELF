@@ -1184,19 +1184,20 @@ int main(int argc, char **argv)
 #endif
 	anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData);
 	anyVar._exclusiveCategories = false;
-
-	anyVar.Import(commonCut, eleID, activeBranchList);
-	//need to convert the TTree into RooDataset
-	//run on a RooDataset and calculate the stats for all the variables
-	// this flattens the event structure, all electrons are merged,
-	// look at the `idx' RooRealVar to know the index in the
-	// original array (can be 0, 1, 2)
-	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
+	for(unsigned int moduloIndex = 0; moduloIndex < 10; ++moduloIndex) {
+		anyVar.Import(commonCut, eleID, activeBranchList, 10, moduloIndex);
+		std::string dir = outDirFitResData;
+		if(dir.rfind("/") != std::string::npos) dir.erase(dir.rfind("/"));
+		dir += "-modulo_" + std::to_string(moduloIndex) + "/";
+		anyVar.SetOutDirName(dir);
+		std::cout << "[INFO] setting new output dir: " << dir << std::endl;
+		continue;
 #ifndef dump_root_tree
-	for(auto& region : categories) {
-		std::cout << "------------------------------------------------------------" << std::endl;
-		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-		anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+		for(auto& region : categories) {
+			std::cout << "------------------------------------------------------------" << std::endl;
+			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
+			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+		}
 	}
 	return 0;
 #endif

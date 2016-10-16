@@ -50,10 +50,10 @@
 for scale in 0.98 0.99 0.995 1 1.005 1.01 1.02 ; do mkdir -p scale_${scale}; ./bin/ZFitter.exe -f data/validation/test_ss.dat --regionsFile=data/regions/validation.dat  --noPU --commonCut="Et_25" --outDirFitResData=scale_${scale}/ --scale=$scale > scale_${scale}/scale.log; done
 
 fish for scale in scale_*; set scale (echo $scale | sed 's|scale_||') ; echo -ne "$scale\t"; grep EB-gold scale_{$scale}/invMass*.dat; end > p.dat
-gnuplot 
+gnuplot
 f(x) = m * x + q
 p 'p.dat' u ($1-1):($7) w lp
-fit f(x) 'p.dat' u ($1-1):($7) via m,q 
+fit f(x) 'p.dat' u ($1-1):($7) via m,q
 rep f(x)
 print m/q
 */
@@ -71,15 +71,15 @@ public:
 	anyVar_class(TChain *data_chain_,
 	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
 	             std::string massBranchName,
-				 std::string outDirFitRes
+	             std::string outDirFitRes
 	            );
 
 	~anyVar_class(void);
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< to be called in the main
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
-	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale=1., float smearing=0.); ///<
+	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
+	void SetOutDirName(std::string dirname);
 	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
-	void TreeToTreeShervin(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 private:
 	TChain *data_chain; // pointer fixed in the constructor
@@ -101,7 +101,8 @@ private:
 	RooRealVar * idx, * mass, * smearMass;
 
 
-	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	void TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< skim the input TChain with selected events, copying only active branches
 
 
 	void FillStat(RooDataSet *dataset); ///< fills the "stats" struct
