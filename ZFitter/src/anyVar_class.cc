@@ -15,7 +15,8 @@ anyVar_class::~anyVar_class(void)
 {
 //	if(data_chain != NULL) data_chain->Print();
 	for(auto& f : _statfiles){
-		f.close();
+		f->close();
+		delete f;
 	}
 }
 
@@ -42,14 +43,13 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 	Long64_t entries = data_chain->GetEntries();	
 	for(auto& branch : branchNames){
 		TString& bname = branch.first;
-
-		_statfiles.push_back(std::ofstream(outDirFitRes+bname+".dat"));
+		_statfiles.push_back(new std::ofstream(outDirFitRes+bname+".dat"));
 
 		stats s(bname.Data(), entries);
 		_stats_vec.push_back(s);
 	}
 
-	_statfiles.push_back(std::ofstream(outDirFitRes+massBranchName+".dat"));
+	_statfiles.push_back(new std::ofstream(outDirFitRes+massBranchName+".dat"));
 	stats s(massBranchName, entries);
 	_stats_vec.push_back(s);
 }
@@ -629,7 +629,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		auto& s = _stats_vec[i];
 		std::cout << "Start sorting " << s.name() << std::endl;
 		s.sort();
-		_statfiles[i] << region << "\t" << s << std::endl;
+		*(_statfiles[i]) << region << "\t" << s << std::endl;
 	}
 	std::cout << "[INFO] Region fully processed" << std::endl;
 //	_stats_vec.dump("testfile.dat");

@@ -88,7 +88,7 @@ private:
 	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
-	std::vector<std::ofstream> _statfiles; ///< one file for each branch, here the stats are saved
+	std::vector<std::ofstream *> _statfiles; ///< one file for each branch, here the stats are saved
 	statsCollection _stats_vec;
 
 

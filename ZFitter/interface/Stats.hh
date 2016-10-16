@@ -135,7 +135,7 @@ class statsCollection
 	typedef std::vector<stats> stats_coll_t;
 	stats_coll_t _stats_coll;
 public:
-	void push_back(stats s)
+	void push_back(stats& s)
 	{
 		_stats_coll.push_back(s);
 	};
