@@ -1180,20 +1180,20 @@ int main(int argc, char **argv)
 	//branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
 	anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData);
 	anyVar._exclusiveCategories=false;
-
-	anyVar.Import(commonCut, eleID, activeBranchList);
-	//need to convert the TTree into RooDataset
-	//run on a RooDataset and calculate the stats for all the variables
-	// this flattens the event structure, all electrons are merged,
-	// look at the `idx' RooRealVar to know the index in the
-	// original array (can be 0, 1, 2)
-	//RooDataSet * ds1 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("", false, 1), 1);
-	for(auto& region : categories){
-		std::cout << "------------------------------------------------------------" << std::endl;
-		std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-		anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+	for(unsigned int moduloIndex=0; moduloIndex<10; ++moduloIndex){
+		anyVar.Import(commonCut, eleID, activeBranchList, 10, moduloIndex);
+		std::string dir=outDirFitResData;
+		if(dir.rfind("/")!= std::string::npos) dir.erase(dir.rfind("/"));
+		dir+="-modulo_"+std::to_string(moduloIndex)+"/";
+		anyVar.SetOutDirName(dir);
+		std::cout << "[INFO] setting new output dir: " << dir << std::endl;
+		continue;
+		for(auto& region : categories){
+			std::cout << "------------------------------------------------------------" << std::endl;
+			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
+			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+		}
 	}
-	
 	return 0;
 	RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
 	ds2->SetName("ds2");

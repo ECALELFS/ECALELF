@@ -75,11 +75,10 @@ public:
 	            );
 
 	~anyVar_class(void);
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList); ///< to be called in the main
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo=0, unsigned int moduloIndex=0); ///< to be called in the main
 	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
 	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale=1., float smearing=0.); ///<
-	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
-
+	void SetOutDirName(std::string dirname);
 private:
 	TChain *data_chain; // pointer fixed in the constructor
 	TTree *reduced_data;
@@ -100,7 +99,8 @@ private:
 	RooRealVar * idx, * mass, * smearMass;
 
 
-	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	void TreeToTree(TChain *chain, TCut cut, unsigned int modulo=0, unsigned int moduloIndex=0); ///< skim the input TChain with selected events, copying only active branches
 
 
 	void FillStat(RooDataSet *dataset); ///< fills the "stats" struct

@@ -38,7 +38,7 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 
 
 	Long64_t entries = data_chain->GetEntries();	
-	for(auto& branch : branchNames){
+	for(auto& branch : _branchNames){
 		TString& bname = branch.first;
 
 		_statfiles.push_back(std::ofstream(outDirFitRes+bname+".dat"));
@@ -52,16 +52,23 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 	_stats_vec.push_back(s);
 }
 
+void anyVar_class::SetOutDirName(std::string dirname)
+{
+	_statfiles.clear();
+	for(auto& branch : _branchNames){
+		TString& bname = branch.first;
+		_statfiles.push_back(std::ofstream(dirname+bname+".dat"));
+	}
+}
 
-
-void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList)
+void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex)
 {
 	commonCut += "-eleID_" + eleID_;
 	TCut dataCut = _cutter.GetCut(commonCut, false);
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
 	std::cout << "--------------- Importing: " << data_chain->GetEntries() << std::endl;
 	//if(data!=NULL) delete data;
-	TChain *data = ImportTree(data_chain, dataCut, branchList);
+	TChain *data = ImportTree(data_chain, dataCut, branchList, modulo, moduloIndex);
 	std::cout << "[INFO] imported "  << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
 	//data->Print();
 	std::cout << "--------------- IMPORT finished" << std::endl;
@@ -69,7 +76,7 @@ void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& 
 }
 
 
-TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList)
+TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex)
 {
 
 	if(branchList.size() > 0) {
@@ -103,7 +110,7 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	//chain->SetCacheSize(5000000000);
 	TStopwatch ts;
 	ts.Start();
-	//std::cout << commonCut << std::endl;
+	chain->SetEntryList(NULL); // remove any prior entry list
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
 #ifdef DEBUG
@@ -130,13 +137,13 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	ts.Stop();
 	ts.Print();
 
-	TreeToTree(chain, "");
+	TreeToTree(chain, "", modulo, moduloIndex);
 	return chain;
 }
 
 
 
-void anyVar_class::TreeToTree(TChain *chain, TCut cut)
+void anyVar_class::TreeToTree(TChain *chain, TCut cut, unsigned int modulo, unsigned int moduloIndex)
 {
 	std::cout << "[INFO] Start copying the tree in memory" << std::endl;
 	TStopwatch ts;
@@ -172,6 +179,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
 	for (Long64_t i = 0; i < nentries; ++i) {
+		if(modulo!=0 && i%modulo!=moduloIndex) continue;
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
