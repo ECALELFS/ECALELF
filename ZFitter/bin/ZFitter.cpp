@@ -1198,9 +1198,10 @@ int main(int argc, char **argv)
 			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
 			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
 		}
+#endif
 	}
 	return 0;
-#endif
+
 	///RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
 	///ds2->SetName("ds2");
 	///ds2->SetTitle("ds2");
