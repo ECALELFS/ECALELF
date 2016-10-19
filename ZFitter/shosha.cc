@@ -19,7 +19,7 @@ typedef enum { kMass = 0, kTime, kR9, kSigmaieie, kVars } Variable;
 
 typedef struct {
         Int_t   run;
-        UInt_t  time;
+        UInt_t  ts;
         Float_t mass;
         Float_t r9[3];
         Float_t etaSC[3];
@@ -52,7 +52,7 @@ void set_branches(TTree * t)
 {
         t->SetBranchAddress("runNumber", &e.run);
         brlist.push_back("runNumber");
-        t->SetBranchAddress("runTime", &e.time);
+        t->SetBranchAddress("runTime", &e.ts);
         brlist.push_back("runTime");
         t->SetBranchAddress("invMass_SC_must_regrCorr_ele", &e.mass);
         brlist.push_back("invMass_SC_must_regrCorr_ele");
@@ -166,7 +166,7 @@ std::map<size_t, size_t> get_meta_data(TTree * t)
         for (size_t ien = 0; ien < nentries; ++ien) {
                 t->GetEntry(ien);
                 runs[e.run] += 1;
-                //fprintf(stderr, "--> %lu\n", e.run);
+                fprintf(stderr, "--> %d\n", e.run);
         }
         enable_branches(t);
         fprintf(stdout, "[get_meta_data] done: found %lu run(s).\n", runs.size());
@@ -194,7 +194,7 @@ void define_categories_run(const std::map<size_t, size_t> & run_md, std::map<std
         for (size_t s = 0; s < runs.size() - 2; ++s) {
                 sprintf(name, "%lu_%lu", runs[s], runs[s + 1]);
                 sel_runs[name] = std::make_pair(runs[s], runs[s + 1]);
-                fprintf(stderr, "new category: %s  lower bound: %lu\n", name, runs[s]);
+                fprintf(stderr, "new run category: %s  lower bound: %lu\n", name, runs[s]);
                 c.run_names.push_back(name);
                 c.run_boundaries.push_back(runs[s]);
         }
@@ -269,7 +269,7 @@ std::vector<std::string> electron_category(int idx)
 int main()
 {
         fprintf(stderr, "starting...\n");
-        TFile * fin = TFile::Open("dataset.root");
+        TFile * fin = TFile::Open("dataset_full.root");
         TTree * t = (TTree*)fin->Get("selected");
         //std::cout << fin << " " << ds << "\n";
         
@@ -319,7 +319,7 @@ int main()
                 if (!(e.mass >= 70 && e.mass <= 100)) continue;
                 //if (!select_run(r.second)) continue;
                 data[kMass][category_run()].add(e.mass);
-                data[kTime][category_run()].add(e.time);
+                data[kTime][category_run()].add(e.ts);
                 std::vector<std::string> cat;
                 for (int jel = 0; jel < 2; ++jel) {
                         cat = electron_category(jel);
