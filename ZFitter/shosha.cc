@@ -181,13 +181,16 @@ void define_categories_run(const std::map<size_t, size_t> & run_md, std::map<std
         if (run_md.size() == 0) return;
         size_t cnt = 0, event_limit = 500000;
         runs.push_back(run_md.begin()->first);
+        size_t r_last = 0;
         for (auto & r : run_md) {
                 cnt += r.second;
                 if (cnt > event_limit) {
                         cnt = 0;
                         runs.push_back(r.first);
                 }
+                r_last = r.first;
         }
+        runs.push_back(r_last);
         char name[64];
         sprintf(name, "%lu_%lu", runs[0], runs[runs.size() - 1]);
         sel_runs[name] = std::make_pair(runs[0], runs[runs.size() - 1]);
@@ -239,7 +242,15 @@ std::string category_run()
 }
 
 
-std::vector<std::string> electron_category(int idx)
+bool isEB(float eta)   { return fabs(eta) < 1.48; }
+bool isEE(float eta)   { return fabs(eta) > 1.56 && fabs(eta) < 2.5; }
+bool isMod1(float eta) { return fabs(eta) <= 0.45; }
+bool isMod2(float eta) { return fabs(eta) > 0.45 && fabs(eta) <= 0.79; }
+bool isMod3(float eta) { return fabs(eta) > 0.79 && fabs(eta) <= 1.14; }
+bool isMod4(float eta) { return fabs(eta) > 1.14 && fabs(eta) <= 1.48; }
+
+
+std::vector<std::string> category_electron(int idx)
 {
         std::vector<std::string> crun; 
         char tmp[32];
@@ -249,13 +260,13 @@ std::vector<std::string> electron_category(int idx)
         if (r != "") crun.push_back(r);
         std::vector<std::string> ceta;
         float eta = fabs(e.etaSC[idx]);
-        if (eta < 1.48)                     ceta.push_back("EB");
-        else if (eta > 1.56 && eta < 2.5)   ceta.push_back("EE");
+        if (isEB(eta))      ceta.push_back("EB");
+        else if (isEE(eta)) ceta.push_back("EE");
         if (0);
-        else if (eta <= 0.45)               ceta.push_back("mod1");
-        else if (eta > 0.45 && eta <= 0.79) ceta.push_back("mod2");
-        else if (eta > 0.79 && eta <= 1.14) ceta.push_back("mod3");
-        else if (eta > 1.14 && eta <= 1.48) ceta.push_back("mod4");
+        else if (isMod1(eta)) ceta.push_back("mod1");
+        else if (isMod2(eta)) ceta.push_back("mod2");
+        else if (isMod2(eta)) ceta.push_back("mod3");
+        else if (isMod2(eta)) ceta.push_back("mod4");
         std::vector<std::string> res;
         for (auto & r : crun) {
                 for (auto & e : ceta) {
@@ -266,10 +277,21 @@ std::vector<std::string> electron_category(int idx)
 }
 
 
+std::vector<std::string> category_dielectron()
+{
+        std::vector<std::string> res;
+        res.push_back("inclusive");
+        if (isEB(e.etaSC[0]) && isEB(e.etaSC[1])) res.push_back("EB_EB");
+        else                                      res.push_back("notEB_notEB");
+        if (isEE(e.etaSC[0]) && isEE(e.etaSC[1])) res.push_back("EE_EE");
+        return res;
+}
+
+
 int main()
 {
         fprintf(stderr, "starting...\n");
-        TFile * fin = TFile::Open("dataset.root");
+        TFile * fin = TFile::Open("dataset_full.root");
         TTree * t = (TTree*)fin->Get("selected");
         //std::cout << fin << " " << ds << "\n";
         
@@ -280,15 +302,9 @@ int main()
         std::map<std::string, std::pair<size_t, size_t> > selections_runs;
         define_categories_run(runs_meta_data, selections_runs);
 
-        //std::map<std::string, TCut> selections_eta;
-        //define_selections_eta(selections_eta);
-
         std::vector<std::unique_ptr<TH1F> > histos(kVars);
         histos[kR9]   = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 200, 0.8, 1.0));
         histos[kMass] = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
-        //std::vector<TH1F *> histos(kVars);
-        //histos[kR9]   = new TH1F("hr9", "R9", 200, 0.8, 1.0);
-        //histos[kMass] = new TH1F("hmass", "mass", 300, 60., 120.);
 
         TFile * fout = TFile::Open("histos.root", "recreate");
 
@@ -298,31 +314,26 @@ int main()
         vars[kMass]      = "mass";
         vars[kTime]      = "time";
 
-        // print header
-        std::cout << "#selection  n_evt  average_runTime  <quantity";
-        for (auto & v : vars) std::cout << " " << v;
-        std::cout << "> ...\n";
-
-        std::vector<size_t> v;
-        //std::cout << eta.first << "-" << r.first;
-        //TTreeFormula * selector = new TTreeFormula("selector", r.second + eta.second + generic, t);
-        //std::cout << "\n" << selector->GetTitle() << "\n";
-        Long64_t selected = 0;
         std::vector<std::map<std::string, stats> > data(kVars);
         for (size_t v = 0; v < kVars; ++v) {
                 data[v] = std::map<std::string, stats>();
         }
         size_t nentries = t->GetEntries();
-        for (size_t ien = 0; ien < nentries && ien < 10000; ++ien) {
+        char tmp[32];
+        sprintf(tmp, "%lu_%lu", runs_meta_data.begin()->first, runs_meta_data.rbegin()->first);
+        std::string run_range(tmp);
+        for (size_t ien = 0; ien < nentries; ++ien) {
                 t->GetEntry(ien);
-                if (ien % 1237 == 0) fprintf(stderr, " Processed events: %lu (%.2f%%)  run=%d  r9=%f\r", ien, (Float_t)ien / nentries * 100, e.run, e.r9[0]);
+                if (ien % 12347 == 0) fprintf(stderr, " Processed events: %lu (%.2f%%)  run=%d  mass=%f\r", ien, (Float_t)ien / nentries * 100, e.run, e.mass);
                 if (!(e.mass >= 70 && e.mass <= 100)) continue;
-                //if (!select_run(r.second)) continue;
-                data[kMass][category_run()].add(e.mass);
+                for (auto & c : category_dielectron()) {
+                        data[kMass][run_range + "_" + c].add(e.mass);
+                        data[kMass][category_run() + "_" + c].add(e.mass);
+                }
                 data[kTime][category_run()].add(e.time);
                 std::vector<std::string> cat;
                 for (int jel = 0; jel < 2; ++jel) {
-                        cat = electron_category(jel);
+                        cat = category_electron(jel);
                         for (auto & s : cat) {
                                 //fprintf(stderr, "--> %lu %f --> %s\n", (size_t)e.run, e.etaSC[jel], s.c_str());
                                 data[kR9][s].add(e.r9[jel]);
@@ -333,15 +344,20 @@ int main()
         fprintf(stderr, "\ndata categorized\n");
 
         size_t cnt = 0;
+        FILE * fd = fopen("output.dat", "w");
         for (auto & var : data) {
                 for (auto & cat : var) {
                         auto & s = cat.second;
-                        if (histos[cnt] != 0) TH1F * h = (TH1F*)histos[cnt]->Clone((vars[cnt] + "_" + cat.first).c_str());
-                        //s.fillHisto(h);
-                        fprintf(stderr, "--> %s %s  %lu  %f %f\n", vars[cnt].c_str(), cat.first.c_str(), s.n(), s.mean(), s.stdDev());
+                        if (histos[cnt] != 0) {
+                                TH1F * h = (TH1F*)histos[cnt]->Clone((vars[cnt] + "_" + cat.first).c_str());
+                                s.fillHisto(h);
+                        }
+                        fprintf(stdout, "computing variables for category %s %s\n", vars[cnt].c_str(), cat.first.c_str());
+                        fprintf(fd, "%s_%s  %lu  %f %f %f %f %f\n", vars[cnt].c_str(), cat.first.c_str(), s.n(), s.mean(), s.stdDev(), s.eff_sigma(), s.median(), s.eff_mean(0.68269 / 2.));
                 }
                 ++cnt;
         }
+        fclose(fd);
         fout->Write();
         return 0;
 }
