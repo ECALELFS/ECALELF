@@ -94,7 +94,7 @@ void stats::fillHisto(TH1 * h)
 }
 
 
-std::ostream& operator<<(std::ostream& os, stats & s)
+std::ostream & operator<<(std::ostream& os, stats s)
 {
 	if(s.n() == 0) {
 		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-" << "\t" << "-";
