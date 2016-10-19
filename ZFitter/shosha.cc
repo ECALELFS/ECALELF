@@ -1,3 +1,5 @@
+// compile with:
+//   g++ -Wall shosha.cc -O2 `root-config --libs --cflags` -Iinterface src/Stats.cc && time stdbuf -o 0 ./a.out
 #include <iostream>
 #include <map>
 #include <memory>
@@ -166,7 +168,6 @@ std::map<size_t, size_t> get_meta_data(TTree * t)
         for (size_t ien = 0; ien < nentries; ++ien) {
                 t->GetEntry(ien);
                 runs[e.run] += 1;
-                fprintf(stderr, "--> %d\n", e.run);
         }
         enable_branches(t);
         fprintf(stdout, "[get_meta_data] done: found %lu run(s).\n", runs.size());
@@ -330,7 +331,7 @@ int main()
                         data[kMass][run_range + "_" + c].add(e.mass);
                         data[kMass][category_run() + "_" + c].add(e.mass);
                 }
-                data[kTime][category_run()].add(e.time);
+                data[kTime][category_run()].add(e.ts);
                 std::vector<std::string> cat;
                 for (int jel = 0; jel < 2; ++jel) {
                         cat = category_electron(jel);
