@@ -67,6 +67,14 @@ public:
 	float eff_sigma(float q = 0.68269);
 
 
+        /// returns the vector indices of the smallest interval containing a fraction q of the events
+        std::pair<size_t, size_t> eff_sigma_indices(float q);
+
+
+        /// returns the mean computed for events falling in the smallest interval containing a fraction q of them
+	float eff_mean(float q = 0.68269);
+
+
 	/// returns the MPV of the distribution
 	float recursive_effective_mode(size_t imin, size_t imax, float q = 0.25, float e = 1e-05);
 	inline float recursive_effective_mode(float q = 0.25, float e = 1e-05)
@@ -93,12 +101,12 @@ public:
 	inline void sort(void)
 	{
 		if(_isSorted) return;
-		TStopwatch ts;
-		ts.Start();
+		//TStopwatch ts;
+		//ts.Start();
 		std::sort(_values.begin(), _values.end());
 		_isSorted = true;
-		ts.Stop();
-		ts.Print();
+		//ts.Stop();
+		//ts.Print();
 	};
 
 

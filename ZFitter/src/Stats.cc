@@ -15,7 +15,6 @@ stats::stats(const std::vector<float>& v):
 
 void stats::add(const double val)
 {
-	//_isSorted = false;
 	_values.push_back(val);
 	++_n;
 	_sum += val;
@@ -37,6 +36,32 @@ float stats::eff_sigma(float q)
 }
 
 
+std::pair<size_t, size_t> stats::eff_sigma_indices(float q)
+{
+        if(!_isSorted) sort();
+	if (_n < 2) return std::make_pair(0, 1);
+	size_t s = floor(q * _n);
+	float d_min = _values[s] - _values[0];
+        size_t imin = 0, imax = 0;
+	for (size_t i = s; i < _n; ++i) {
+		float d = _values[i] - _values[i - s];
+		if (d < d_min) {
+                        d_min = d;
+                        imin = i - s;
+                        imax = i;
+                }
+	}
+	return std::make_pair(imin, imax);
+}
+
+
+float stats::eff_mean(float q)
+{
+        std::pair<size_t, size_t> idx = eff_sigma_indices(q);
+        double m = 0;
+        for (size_t i = idx.first; i <= idx.second; ++i) m += _values[i];
+        return m / (idx.second - idx.first + 1);
+}
 
 
 float stats::recursive_effective_mode(size_t imin, size_t imax, float q, float e)
