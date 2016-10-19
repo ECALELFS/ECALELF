@@ -6,6 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <algorithm>
+#include <TH1.h>
 #include <TStopwatch.h>
 
 #define MAXSIZE 10000
@@ -63,19 +64,29 @@ public:
 
 
 	/// returns the half width of the smallest interval containing a fraction q of the events
-	float eff_sigma(float q = 0.68269) const;
+	float eff_sigma(float q = 0.68269);
+
+
+        /// returns the vector indices of the smallest interval containing a fraction q of the events
+        std::pair<size_t, size_t> eff_sigma_indices(float q);
+
+
+        /// returns the mean computed for events falling in the smallest interval containing a fraction q of them
+	float eff_mean(float q = 0.68269);
 
 
 	/// returns the MPV of the distribution
-	float recursive_effective_mode(size_t imin, size_t imax, float q = 0.25, float e = 1e-05) const;
-	inline float recursive_effective_mode(float q = 0.25, float e = 1e-05) const
+	float recursive_effective_mode(size_t imin, size_t imax, float q = 0.25, float e = 1e-05);
+	inline float recursive_effective_mode(float q = 0.25, float e = 1e-05)
 	{
+		if(!_isSorted) sort();
 		return recursive_effective_mode(0, _n - 1, q, e);
 	};
 
 
-	float median(void) const
+	float median(void)
 	{
+		if(!_isSorted) sort();
 		if(_n == 0) return 0;
 		size_t i = _n / 2;
 		if(_n % 2 == 1) return _values[i];
@@ -85,16 +96,17 @@ public:
 
 	void add(double); ///< add one entry to the list of values
 
+        void fillHisto(TH1 * h);
 
 	inline void sort(void)
 	{
 		if(_isSorted) return;
-		TStopwatch ts;
-		ts.Start();
+		//TStopwatch ts;
+		//ts.Start();
 		std::sort(_values.begin(), _values.end());
 		_isSorted = true;
-		ts.Stop();
-		ts.Print();
+		//ts.Stop();
+		//ts.Print();
 	};
 
 
