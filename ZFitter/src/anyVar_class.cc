@@ -262,6 +262,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	while ((obj = next())) {
 	        std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
 	        TTree * t = ((TFriendElement *)obj)->GetTree();
+                outree->RemoveFriend(t);
                 TObjArray * branches = t->GetListOfBranches();
                 Int_t nb = branches->GetEntriesFast();
                 for (Int_t i = 0; i < nb; ++i) {
