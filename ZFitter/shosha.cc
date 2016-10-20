@@ -7,12 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "TCut.h"
-#include "TEnv.h"
 #include "TFile.h"
 #include "TH1F.h"
 #include "TTree.h"
-#include "TTreeFormula.h"
 
 #include "interface/Stats.hh"
 
@@ -266,8 +263,8 @@ std::vector<std::string> category_electron(int idx)
         if (0);
         else if (isMod1(eta)) ceta.push_back("mod1");
         else if (isMod2(eta)) ceta.push_back("mod2");
-        else if (isMod2(eta)) ceta.push_back("mod3");
-        else if (isMod2(eta)) ceta.push_back("mod4");
+        else if (isMod3(eta)) ceta.push_back("mod3");
+        else if (isMod4(eta)) ceta.push_back("mod4");
         std::vector<std::string> res;
         for (auto & r : crun) {
                 for (auto & e : ceta) {
@@ -345,8 +342,10 @@ int main()
         fprintf(stderr, "\ndata categorized\n");
 
         size_t cnt = 0;
-        FILE * fd = fopen("output.dat", "w");
         for (auto & var : data) {
+                char tmp[128];
+                sprintf(tmp, "output_%s.dat", vars[cnt].c_str());
+                FILE * fd = fopen(tmp, "w");
                 for (auto & cat : var) {
                         auto & s = cat.second;
                         if (histos[cnt] != 0) {
@@ -356,9 +355,9 @@ int main()
                         fprintf(stdout, "computing variables for category %s %s\n", vars[cnt].c_str(), cat.first.c_str());
                         fprintf(fd, "%s_%s  %lu  %f %f %f %f %f\n", vars[cnt].c_str(), cat.first.c_str(), s.n(), s.mean(), s.stdDev(), s.eff_sigma(), s.median(), s.eff_mean(0.68269 / 2.));
                 }
+                fclose(fd);
                 ++cnt;
         }
-        fclose(fd);
         fout->Write();
         return 0;
 }
