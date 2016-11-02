@@ -9,7 +9,7 @@
 #define MAXENTRIES 10000
 #define MAXBRANCHES  20
 
-#define dump_root_tree 1
+//#define dump_root_tree 1
 
 anyVar_class::~anyVar_class(void)
 {
