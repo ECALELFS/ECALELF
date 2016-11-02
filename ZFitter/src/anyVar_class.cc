@@ -38,13 +38,13 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 	Long64_t entries = data_chain->GetEntries();
 	for(auto& branch : _branchNames) {
 		TString& bname = branch.first;
-		_statfiles.push_back(new std::ofstream(outDirFitRes + bname + ".dat"));
+		_statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat"));
 
 		stats s(bname.Data(), entries);
 		_stats_vec.push_back(s);
 	}
 
-	_statfiles.push_back(new std::ofstream(outDirFitRes + massBranchName + ".dat"));
+	_statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName + ".dat"));
 	stats s(massBranchName, entries);
 	_stats_vec.push_back(s);
 }
@@ -54,7 +54,7 @@ void anyVar_class::SetOutDirName(std::string dirname)
 	_statfiles.clear(); ///momory leak?
 	for(auto& branch : _branchNames) {
 		TString& bname = branch.first;
-		_statfiles.push_back(new std::ofstream(dirname + bname + ".dat"));
+		_statfiles.emplace_back(new std::ofstream(dirname + bname + ".dat"));
 	}
 }
 
