@@ -13,11 +13,6 @@
 
 anyVar_class::~anyVar_class(void)
 {
-//	if(data_chain != NULL) data_chain->Print();
-	for(auto& f : _statfiles) {
-		f->close();
-		delete f;
-	}
 }
 
 anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes):
@@ -157,11 +152,10 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	reduced_data->SetDirectory(&dir);
 	TList *friends = chain->GetListOfFriends();
 	std::vector<TTree *> friendTreesCopy;
-	if(friends != NULL)
-	{
+	if(friends != NULL) {
 		TIter newfriend_itr(friends);
 		for(TFriendElement *friendElement = (TFriendElement*) newfriend_itr.Next();
-		friendElement != NULL; friendElement = (TFriendElement*) newfriend_itr.Next()) {
+		        friendElement != NULL; friendElement = (TFriendElement*) newfriend_itr.Next()) {
 			TString treeName = friendElement->GetTreeName();
 			TTree *tree = friendElement->GetTree();
 			TTree *clonetree = tree->CloneTree(0, "fast");
@@ -183,8 +177,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
-	for (Long64_t i = 0; i < nentries; ++i)
-	{
+	for (Long64_t i = 0; i < nentries; ++i) {
 		if(modulo != 0 && i % modulo != moduloIndex) continue;
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
@@ -199,8 +192,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		}
 //
 	}
-	for(auto& friendTree : friendTreesCopy)
-	{
+	for(auto& friendTree : friendTreesCopy) {
 		reduced_data->AddFriend(friendTree);
 	}
 
@@ -217,8 +209,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	// assert(elist!=NULL);
 	reduced_data->SetEntryList(elist);
 	reduced_data->Print();
-	for(auto& friendTree : friendTreesCopy)
-	{
+	for(auto& friendTree : friendTreesCopy) {
 		friendTree->Print(); //				friendTree->Show(0);
 	}
 
@@ -302,6 +293,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	while ((obj = next())) {
 		std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
 		TTree * t = ((TFriendElement *)obj)->GetTree();
+		outree->RemoveFriend(t);
 		TObjArray * branches = t->GetListOfBranches();
 		Int_t nb = branches->GetEntriesFast();
 		for (Int_t i = 0; i < nb; ++i) {

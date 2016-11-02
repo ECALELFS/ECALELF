@@ -6,6 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <algorithm>
+#include <TH1.h>
 #include <TStopwatch.h>
 
 #define MAXSIZE 10000
@@ -34,6 +35,7 @@ public:
 		_sum2 = 0.;
 		_isSorted = false;
 	};
+
 
 	inline std::string name(void) const
 	{
@@ -97,16 +99,17 @@ public:
 
 	void add(double); ///< add one entry to the list of values
 
+	void fillHisto(TH1 * h);
 
 	inline void sort(void)
 	{
 		if(_isSorted) return;
-		TStopwatch ts;
-		ts.Start();
+		//TStopwatch ts;
+		//ts.Start();
 		std::sort(_values.begin(), _values.end());
 		_isSorted = true;
-		ts.Stop();
-		ts.Print();
+		//ts.Stop();
+		//ts.Print();
 	};
 
 
