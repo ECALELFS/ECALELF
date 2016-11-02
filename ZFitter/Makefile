@@ -20,7 +20,7 @@ lib/%.o: $(SRCDIR)/%.cc
 	@echo "--> Making $(MODULES_EXT)" 
 	echo $(INCLUDE)
 	if [ "$(SCRAMTOOL)" == "1" ]; then $(COMPILE.cc) $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); \
-	else @$(COMPILE.cc) -DCMSSW $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); fi
+	else $(COMPILE.cc) -DCMSSW $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< -L$(MODULES_EXT); fi
 
 -include $(MODULES:.o=.d)
 
