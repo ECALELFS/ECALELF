@@ -1,0 +1,44 @@
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD/273150-275376/271036-276384_NoL1T_v3/unmerged-allRange.root
+d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD/275420-276283/271036-276384_NoL1T_v2/unmerged-allRange.root
+d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD/276315-276811/271036-276811_NoL1T_ICHEP/unmerged-allRange.root
+
+s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYToEE_NNPDF30-powheg-pythia8/allRange/RunII-2016/DYToEE_NNPDF30-powheg-pythia8-allRange.root
+s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DYJets_madgraph-RunIISpring16-miniAOD/allRange/DYJets_madgraph-RunIISpring16-miniAOD-allRange.root
+
+
+s1 R9Eleprime friends/others/R9Eleprime_s1-20July_Golden_ICHEP.root
+s2 R9Eleprime friends/others/R9Eleprime_s2-20July_Golden_ICHEP.root
+d1 R9Eleprime friends/others/R9Eleprime_d1-20July_Golden_ICHEP.root
+d2 R9Eleprime friends/others/R9Eleprime_d2-20July_Golden_ICHEP.root
+d3 R9Eleprime friends/others/R9Eleprime_d3-20July_Golden_ICHEP.root
+d pileupHist data/puHistos/pu_data_20July_Golden_ICHEP.root
+s pileupHist data/puHistos/pu_MC_20July_Golden_ICHEP.root
+s1 pileup data/puTree/s1_20July_Golden_ICHEP.root
+s2 pileup data/puTree/s2_20July_Golden_ICHEP.root
+s1 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_s1-20July_Golden_ICHEP.root
+s2 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_s2-20July_Golden_ICHEP.root
+d1 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_d1-20July_Golden_ICHEP.root
+d2 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_d2-20July_Golden_ICHEP.root
+d3 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_d3-20July_Golden_ICHEP.root
+s1 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_s1-20July_Golden_ICHEP.root
+s2 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_s2-20July_Golden_ICHEP.root
+d1 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_d1-20July_Golden_ICHEP.root
+d2 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_d2-20July_Golden_ICHEP.root
+d3 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_d3-20July_Golden_ICHEP.root
+d1 scaleEle_80_ICHEP friends/others/scaleEle_80_ICHEP_d1-20July_Golden_ICHEP.root
+d2 scaleEle_80_ICHEP friends/others/scaleEle_80_ICHEP_d2-20July_Golden_ICHEP.root
+d3 scaleEle_80_ICHEP friends/others/scaleEle_80_ICHEP_d3-20July_Golden_ICHEP.root
+d1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d1-20July_Golden_ICHEP.root
+d1	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d1-20July_Golden_ICHEP.root
+d2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d2-20July_Golden_ICHEP.root
+d2	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d2-20July_Golden_ICHEP.root
+d3	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_d3-20July_Golden_ICHEP.root
+d3	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_d3-20July_Golden_ICHEP.root
+s1	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s1-20July_Golden_ICHEP.root
+s1	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s1-20July_Golden_ICHEP.root
+s2	smearerCat_scaleStep2smearing_9	data/smearerCat/smearerCat_scaleStep2smearing_9_s2-20July_Golden_ICHEP.root
+s2	smearerCat_scaleStep2smearing_10	data/smearerCat/smearerCat_scaleStep2smearing_10_s2-20July_Golden_ICHEP.root
+d1	scaleEle_HggRunEtaR9	test/dato/20July_Golden_ICHEP/loose/invMass_SC_pho_regrCorr/step2/scaleEle_HggRunEtaR9_d1-20July_Golden_ICHEP.root
+d2	scaleEle_HggRunEtaR9	test/dato/20July_Golden_ICHEP/loose/invMass_SC_pho_regrCorr/step2/scaleEle_HggRunEtaR9_d2-20July_Golden_ICHEP.root
+d3	scaleEle_HggRunEtaR9	test/dato/20July_Golden_ICHEP/loose/invMass_SC_pho_regrCorr/step2/scaleEle_HggRunEtaR9_d3-20July_Golden_ICHEP.root
+
