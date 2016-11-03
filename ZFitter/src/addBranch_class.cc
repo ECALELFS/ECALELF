@@ -2,6 +2,7 @@
 #include "../interface/ElectronCategory_class.hh"
 #include <TTreeFormula.h>
 #include <TLorentzVector.h>
+#include <TGraph.h>
 #include <iostream>
 
 //#define DEBUG
@@ -280,12 +281,12 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 			          << etaSCEle_[1] << "\t" << R9Ele_[1] << "\t" << etaEle[1] << "\t" << smearEle_[1] << "\t" << sigmaEnergyEle[1] << "\t" << corrEle[1] << std::endl;
 			exit(1);
 		}
-		if(isMC) invMass *= sqrt(
-			                        scaler->getSmearing(runNumber, energyEle[0], fabs(etaSCEle_[0]) < 1.4442,
-			                                R9Ele_[0], etaSCEle_[0])
+		if(isMC) invMass *= sqrt(///\todo it should not be getSmearingSigma, but getSmearing with already the Gaussian. to be implemented into EnergyScaleCorrection_class.cc
+			                        scaler->getSmearingSigma(runNumber, energyEle[0], fabs(etaSCEle_[0]) < 1.4442,
+															 R9Ele_[0], etaSCEle_[0], 0, 0)
 			                        *
-			                        scaler->getSmearing(runNumber, energyEle[1], fabs(etaSCEle_[1]) < 1.4442,
-			                                R9Ele_[1], etaSCEle_[1])
+			                        scaler->getSmearingSigma(runNumber, energyEle[1], fabs(etaSCEle_[1]) < 1.4442,
+															 R9Ele_[1], etaSCEle_[1], 0, 0)
 			                    );
 
 		invMass *= sqrt(corrEle[0] * corrEle[1]);

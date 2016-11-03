@@ -216,7 +216,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	//  EB+ : 2, 4, 5, 8, 11
 	//   (17:58:27) Riccardo Paramatti: EB- : 7, 9, 10, 16, 17
 	TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
-	TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
+	TCut fiducial_cut = "eleID_ele1%2==1 && eleID_ele2%2==1";
 
 
 	/*
@@ -767,8 +767,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			else if(string1=="tight50nsRun2") string1="7168";
 			*/
 
-			TCut cutEle1("(eleID[0] & " + string1 + ")==" + string1);
-			TCut cutEle2("(eleID[1] & " + string1 + ")==" + string1);
+			TCut cutEle1("(eleID_ele1 & " + string1 + ")==" + string1);
+			TCut cutEle2("(eleID_ele2 & " + string1 + ")==" + string1);
 
 			cut_string += cutEle1 && cutEle2;
 			cutSet.insert(TString(cutEle1 && cutEle2));
