@@ -31,6 +31,7 @@
     <ul class="tablist">
       <li><a href="../../index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="../../pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="../../modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="../../annotated.html"><span>Classes</span></a></li>
       <li><a href="../../files.html"><span>Files</span></a></li>
     </ul>
@@ -256,6 +257,43 @@ edm::InputTag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a1279a3a357a317415fae76ca716cd84b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EcalEleCalibLooper::endOfJob </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>LP endOfJob writes the coefficients in the xml format and exits </p>
+
+<p>References <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aaaeb544aae7d8e35b25b141737c19aad">m_barrelMap</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aaff9664912fa8373d901e003e87bb706"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void EcalEleCalibLooper::startingNewLoop </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>ciclo</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>startingNewLoop empties the map of the calibBlock so that it can be filled </p>
+
+<p>References <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a41470e9eabd15060846d9f1e6b88a8be">m_EcalCalibBlocks</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a38a13d928f42415e2a166a6cfbf50eb6"></a>
 <div class="memitem">
 <div class="memproto">
@@ -282,24 +320,6 @@ edm::InputTag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>duringLoop return the status Kcontinue, fills the calibBlock with the recHits </p>
 
 <p>References <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a5bccd5a63d785ba20f674f5107fae732">m_barrelAlCa</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aaaeb544aae7d8e35b25b141737c19aad">m_barrelMap</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a41470e9eabd15060846d9f1e6b88a8be">m_EcalCalibBlocks</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aff6a417aba9bc02fadf985de6ba4f632">m_ElectronLabel</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a5ca04d9533b671699d7891bffbdb8704">m_endcapAlCa</a>, and <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a9a0a3d15eebf27a682dd0555a2e665db">m_maxSelectedNumPerXtal</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a1279a3a357a317415fae76ca716cd84b"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void EcalEleCalibLooper::endOfJob </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>LP endOfJob writes the coefficients in the xml format and exits </p>
-
-<p>References <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aaaeb544aae7d8e35b25b141737c19aad">m_barrelMap</a>.</p>
 
 </div>
 </div>
@@ -332,51 +352,7 @@ edm::InputTag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 </div>
 </div>
-<a class="anchor" id="aaff9664912fa8373d901e003e87bb706"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void EcalEleCalibLooper::startingNewLoop </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>ciclo</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>startingNewLoop empties the map of the calibBlock so that it can be filled </p>
-
-<p>References <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a41470e9eabd15060846d9f1e6b88a8be">m_EcalCalibBlocks</a>.</p>
-
-</div>
-</div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a class="anchor" id="a3cc3378dd797914e730fd0c01670067b"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int EcalEleCalibLooper::m_etaStart</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>phi size of the additive border to the sub-matrix </p>
-<p>eta start of the region of interest </p>
-
-<p>Referenced by <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a670df9737baf82634fef77a654534c29">EBregionCheck()</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aca542481f906cb1252ea6c921ffde2ab">EBRegionId()</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a7b0beb07dc8b50659f30d027ff6e8d9e">EBregionsNum()</a>, and <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#ab7fd3470ad700b420db28eedeb48a8e9">EcalEleCalibLooper()</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="ae2d685626c9a939a4705cfb75b05bdc4"></a>
 <div class="memitem">
 <div class="memproto">
@@ -399,6 +375,31 @@ edm::InputTag&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>phi size of the sub-matrix </p>
 
 <p>Referenced by <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aca542481f906cb1252ea6c921ffde2ab">EBRegionId()</a>, and <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a7b0beb07dc8b50659f30d027ff6e8d9e">EBregionsNum()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3cc3378dd797914e730fd0c01670067b"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int EcalEleCalibLooper::m_etaStart</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>phi size of the additive border to the sub-matrix </p>
+<p>eta start of the region of interest </p>
+
+<p>Referenced by <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a670df9737baf82634fef77a654534c29">EBregionCheck()</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#aca542481f906cb1252ea6c921ffde2ab">EBRegionId()</a>, <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#a7b0beb07dc8b50659f30d027ff6e8d9e">EBregionsNum()</a>, and <a class="el" href="../../d4/d1f/classEcalEleCalibLooper.html#ab7fd3470ad700b420db28eedeb48a8e9">EcalEleCalibLooper()</a>.</p>
 
 </div>
 </div>

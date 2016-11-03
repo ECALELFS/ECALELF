@@ -31,6 +31,7 @@
     <ul class="tablist">
       <li><a href="../../index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="../../pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="../../modules.html"><span>Modules</span></a></li>
       <li><a href="../../annotated.html"><span>Classes</span></a></li>
       <li class="current"><a href="../../files.html"><span>Files</span></a></li>
     </ul>
@@ -105,48 +106,6 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="a33d5d5d76d605ae33e214c807c9af685"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MergeSamples </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#a6f9583393b23a18bc849a3eb79ad7cbf">tag_chain_map_t</a> &amp;&#160;</td>
-          <td class="paramname"><em>tagChainMap</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TString&#160;</td>
-          <td class="paramname"><em>regionsFileNameTag</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">TString&#160;</td>
-          <td class="paramname"><em>tag</em> = <code>&quot;s&quot;</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">tagChainMap</td><td>map of all the tags declared in the validation config file </td></tr>
-    <tr><td class="paramname">tag</td><td>name of the new <b>tag</b> created by the function, all the existent tags with name starting with b tag are merged in the new <b>tag</b> </td></tr>
-  </table>
-  </dd>
-</dl>
-<p>A new tagChain with name=tag is added to the tagChainMap. All the tagChains with tag starting with <b>tag</b> are merged After the merging the friend list is updated by <a class="el" href="../../dd/d99/ZFitter_8cpp.html#ab261933d4574093641b5230946b64419">UpdateFriends</a> </p>
-
-<p>References <a class="el" href="../../dd/d99/ZFitter_8cpp.html#ab261933d4574093641b5230946b64419">UpdateFriends()</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a3418887949585582ce964878c05afb0f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -197,6 +156,48 @@ Functions</h2></td></tr>
 <p>This function should be run when new chains or files are added to the tagChainMap. </p>
 
 <p>Referenced by <a class="el" href="../../dd/d99/ZFitter_8cpp.html#a33d5d5d76d605ae33e214c807c9af685">MergeSamples()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a33d5d5d76d605ae33e214c807c9af685"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MergeSamples </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#a6f9583393b23a18bc849a3eb79ad7cbf">tag_chain_map_t</a> &amp;&#160;</td>
+          <td class="paramname"><em>tagChainMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TString&#160;</td>
+          <td class="paramname"><em>regionsFileNameTag</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">TString&#160;</td>
+          <td class="paramname"><em>tag</em> = <code>&quot;s&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tagChainMap</td><td>map of all the tags declared in the validation config file </td></tr>
+    <tr><td class="paramname">tag</td><td>name of the new <b>tag</b> created by the function, all the existent tags with name starting with b tag are merged in the new <b>tag</b> </td></tr>
+  </table>
+  </dd>
+</dl>
+<p>A new tagChain with name=tag is added to the tagChainMap. All the tagChains with tag starting with <b>tag</b> are merged After the merging the friend list is updated by <a class="el" href="../../dd/d99/ZFitter_8cpp.html#ab261933d4574093641b5230946b64419">UpdateFriends</a> </p>
+
+<p>References <a class="el" href="../../dd/d99/ZFitter_8cpp.html#ab261933d4574093641b5230946b64419">UpdateFriends()</a>.</p>
 
 </div>
 </div>

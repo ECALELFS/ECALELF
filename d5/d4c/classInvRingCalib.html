@@ -31,6 +31,7 @@
     <ul class="tablist">
       <li><a href="../../index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="../../pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="../../modules.html"><span>Modules</span></a></li>
       <li class="current"><a href="../../annotated.html"><span>Classes</span></a></li>
       <li><a href="../../files.html"><span>Files</span></a></li>
     </ul>
@@ -243,7 +244,7 @@ std::map&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a29806894a72acb4b8146db4546a6423a"></a>
+<a class="anchor" id="accaa12db871b029ff2d6761fd51931b4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -251,26 +252,25 @@ std::map&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int InvRingCalib::EBRegId </td>
+          <td class="memname">int InvRingCalib::EERegionNum </td>
           <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>ieta</em></td><td>)</td>
-          <td></td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Gives back in which region you are: </p>
-<p>gives the region Id given ieta </p>
+<p>The number of regions in EE. </p>
+<p>Number of Regions in EE. </p>
 
-<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a7314244434c688034bf71f2e161035bb">m_etaEnd</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5e5bfa85f4d3aa889524d85f2a93fe3b">m_Reg</a>.</p>
+<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5cf4f349ac3b4f159d4eb76ff629b462">m_etaWidth</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a247d73fcf1e57681f7354becb2c957f9">m_startRing</a>.</p>
 
-<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#aec760c83e3453673fdb5d003a1d42817">EBRegionDef()</a>.</p>
+<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#a144c17bf33cfba04a7683e56fa363424">EERegionDef()</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a43de31af36d9e4926707e80f86233f93">InvRingCalib()</a>.</p>
 
 </div>
 </div>
@@ -299,97 +299,6 @@ std::map&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 <p>number of Ring in EB </p>
 
 <p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a7314244434c688034bf71f2e161035bb">m_etaEnd</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#ae029ff4851605b53dad76c2df260954b">m_etaStart</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5cf4f349ac3b4f159d4eb76ff629b462">m_etaWidth</a>.</p>
-
-<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#a144c17bf33cfba04a7683e56fa363424">EERegionDef()</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a43de31af36d9e4926707e80f86233f93">InvRingCalib()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac3118354fda04c2fb43ca17dcbcd0348"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int InvRingCalib::EERegId </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>gives back in which region of the endcap you are. </p>
-<p>Gives the Id of the region given the id of the xtal. </p>
-
-<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a46b1bdb8c1083e9d889df952b3d49083">m_EEZone</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5cf4f349ac3b4f159d4eb76ff629b462">m_etaWidth</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#a784c39c6b57a2a0af4d7f6b69c8f143f">m_RinginRegion</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a247d73fcf1e57681f7354becb2c957f9">m_startRing</a>.</p>
-
-<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#a144c17bf33cfba04a7683e56fa363424">EERegionDef()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a144c17bf33cfba04a7683e56fa363424"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void InvRingCalib::EERegionDef </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Defines the regions in the endcap. </p>
-<p>Loops over all the endcap xtals and sets for each xtal the value of the region the xtal is in, and the ringNumber inside the region </p>
-
-<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a7e8c7ef7bd4e75743681cf6bf1e43c96">EBRegionNum()</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#ac3118354fda04c2fb43ca17dcbcd0348">EERegId()</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#accaa12db871b029ff2d6761fd51931b4">EERegionNum()</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#af6c08f22de15c0abf8d3ff4e2f66b4e2">m_xtalRegionId</a>.</p>
-
-<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#aeb97b61cb1d46e0f8411c6a542c0222a">duringLoop()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="accaa12db871b029ff2d6761fd51931b4"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int InvRingCalib::EERegionNum </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>The number of regions in EE. </p>
-<p>Number of Regions in EE. </p>
-
-<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5cf4f349ac3b4f159d4eb76ff629b462">m_etaWidth</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a247d73fcf1e57681f7354becb2c957f9">m_startRing</a>.</p>
 
 <p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#a144c17bf33cfba04a7683e56fa363424">EERegionDef()</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a43de31af36d9e4926707e80f86233f93">InvRingCalib()</a>.</p>
 
@@ -426,6 +335,36 @@ std::map&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 
 </div>
 </div>
+<a class="anchor" id="a144c17bf33cfba04a7683e56fa363424"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void InvRingCalib::EERegionDef </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Defines the regions in the endcap. </p>
+<p>Loops over all the endcap xtals and sets for each xtal the value of the region the xtal is in, and the ringNumber inside the region </p>
+
+<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a7e8c7ef7bd4e75743681cf6bf1e43c96">EBRegionNum()</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#ac3118354fda04c2fb43ca17dcbcd0348">EERegId()</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#accaa12db871b029ff2d6761fd51931b4">EERegionNum()</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#af6c08f22de15c0abf8d3ff4e2f66b4e2">m_xtalRegionId</a>.</p>
+
+<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#aeb97b61cb1d46e0f8411c6a542c0222a">duringLoop()</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a40290548b36f2a3836e63580f23eb362"></a>
 <div class="memitem">
 <div class="memproto">
@@ -453,6 +392,68 @@ std::map&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a
 <p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a7314244434c688034bf71f2e161035bb">m_etaEnd</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#ae029ff4851605b53dad76c2df260954b">m_etaStart</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5cf4f349ac3b4f159d4eb76ff629b462">m_etaWidth</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5e5bfa85f4d3aa889524d85f2a93fe3b">m_Reg</a>.</p>
 
 <p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#aec760c83e3453673fdb5d003a1d42817">EBRegionDef()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a29806894a72acb4b8146db4546a6423a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int InvRingCalib::EBRegId </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>ieta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gives back in which region you are: </p>
+<p>gives the region Id given ieta </p>
+
+<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a7314244434c688034bf71f2e161035bb">m_etaEnd</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5e5bfa85f4d3aa889524d85f2a93fe3b">m_Reg</a>.</p>
+
+<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#aec760c83e3453673fdb5d003a1d42817">EBRegionDef()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac3118354fda04c2fb43ca17dcbcd0348"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int InvRingCalib::EERegId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>gives back in which region of the endcap you are. </p>
+<p>Gives the Id of the region given the id of the xtal. </p>
+
+<p>References <a class="el" href="../../d5/d4c/classInvRingCalib.html#a46b1bdb8c1083e9d889df952b3d49083">m_EEZone</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#a5cf4f349ac3b4f159d4eb76ff629b462">m_etaWidth</a>, <a class="el" href="../../d5/d4c/classInvRingCalib.html#a784c39c6b57a2a0af4d7f6b69c8f143f">m_RinginRegion</a>, and <a class="el" href="../../d5/d4c/classInvRingCalib.html#a247d73fcf1e57681f7354becb2c957f9">m_startRing</a>.</p>
+
+<p>Referenced by <a class="el" href="../../d5/d4c/classInvRingCalib.html#a144c17bf33cfba04a7683e56fa363424">EERegionDef()</a>.</p>
 
 </div>
 </div>
