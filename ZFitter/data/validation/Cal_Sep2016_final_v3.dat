@@ -8,6 +8,8 @@ d7  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecale
 
 s1  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/80X_mcRun2_asymptotic_2016_v3/DYJets_madgraph-RunIISpring16/allRange/DYJets_madgraph-RunIISpring16-allRange.root
 
-d pileupHist data/puHistos/pu_data_Cal_Sep2016_final_v3.root
-s pileupHist data/puHistos/pu_MC_Cal_Sep2016_final_v3.root
-s1 pileup data/puTree/s1_Cal_Sep2016_final_v3.root
+#d pileupHist data/puHistos/pu_data_Cal_Sep2016_final_v3.root
+#s pileupHist data/puHistos/pu_MC_Cal_Sep2016_final_v3.root
+#s1 pileup data/puTree/s1_Cal_Sep2016_final_v3.root
+
+s
