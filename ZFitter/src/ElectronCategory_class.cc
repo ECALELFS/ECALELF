@@ -744,36 +744,27 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 
 		//--------------- eleID
 		if(string.Contains("eleID_")) {
-			TObjArray *splitted = string.Tokenize("_");
-			if(splitted->GetEntries() < 2) {
-				std::cerr << "ERROR: incomplete eleID region definition" << std::endl;
-				continue;
-			}
-			TObjString *Objstring1 = (TObjString *) splitted->At(1);
-
-			TString string1 = Objstring1->GetString();
-			string1.Form("%d", eleID_map.eleIDmap[string1.Data()]);
-			/*
-			if(string1=="loose") string1="2";
-			else if(string1=="medium") string1="6";
-			else if(string1=="tight") string1="14";
-			else if(string1=="WP90PU") string1="16";
-			else if(string1=="WP80PU") string1="48";
-			else if(string1=="loose25nsRun2") string1="128";
-			else if(string1=="medium25nsRun2") string1="384";
-			else if(string1=="tight25nsRun2") string1="896";
-			else if(string1=="loose50nsRun2") string1="1024";
-			else if(string1=="medium50nsRun2") string1="3072";
-			else if(string1=="tight50nsRun2") string1="7168";
-			*/
-
-			TCut cutEle1("(eleID_ele1 & " + string1 + ")==" + string1);
-			TCut cutEle2("(eleID_ele2 & " + string1 + ")==" + string1);
-
-			cut_string += cutEle1 && cutEle2;
-			cutSet.insert(TString(cutEle1 && cutEle2));
-			delete splitted;
-			continue;
+		  //The eleID names are like: cutBasedElectronID-Spring15-25ns-V1-standalone-loose
+		  //But GetCut uses "-" to parse the category name
+		  //The solution is to use | instead of - when you call the category name
+		  //and then change on the fly | in -
+		  TObjArray *splitted = string.Tokenize("_");
+		  if(splitted->GetEntries() < 2) {
+		    std::cerr << "ERROR: incomplete eleID region definition" << std::endl;
+		    continue;
+		  }
+		  TObjString *Objstring1 = (TObjString *) splitted->At(1);
+		  TString string1 = Objstring1->GetString();
+		  string1.ReplaceAll("|","-");
+		  string1.Form("%d", eleID_map.eleIDmap[string1.Data()]);
+		  
+		  TCut cutEle1("(eleID_ele1 & " + string1 + ")==" + string1);
+		  TCut cutEle2("(eleID_ele2 & " + string1 + ")==" + string1);
+		  
+		  cut_string += cutEle1 && cutEle2;
+		  cutSet.insert(TString(cutEle1 && cutEle2));
+		  delete splitted;
+		  continue;
 		}
 
 		//--------------- iSM
