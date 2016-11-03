@@ -132,6 +132,9 @@
 #include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
+#define initFloat {-999.,-999.,-999.}
+#define initInt   {0,0,0}
+
 //#define DEBUG
 
 ////////////////////////////////////////////////
@@ -251,59 +254,59 @@ private:
 	Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
 
 	// selection
-	UInt_t eleID[3];        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+	UInt_t eleID[3]=initInt;        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
-	Int_t  chargeEle[3]; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon
-	Float_t etaSCEle[3], phiSCEle[3]; ///< phi of the SC
-	Float_t   etaEle[3],   phiEle[3]; ///< phi of the electron (electron object)
+	Int_t  chargeEle[3]={-100,-100,-100}; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon
+	Float_t etaSCEle[3]=initFloat, phiSCEle[3]=initFloat; ///< phi of the SC
+	Float_t   etaEle[3]=initFloat, phiEle[3]  =initFloat; ///< phi of the electron (electron object)
 
-	Int_t recoFlagsEle[3];           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
+	Int_t recoFlagsEle[3]=initInt;           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
 
-	Float_t PtEle[3];
-	Int_t   classificationEle[3];   ///< electron classification in GOLD, SHOWERING, etc.
+	Float_t PtEle[3]=initFloat;
+	Int_t   classificationEle[3]=initInt;   ///< electron classification in GOLD, SHOWERING, etc.
 
-	Float_t fbremEle[3];
+	Float_t fbremEle[3]=initFloat;
 
-	Float_t seedXSCEle[3];        ///< ieta(ix) of the SC seed in EB(EE)
-	Float_t seedYSCEle[3];        ///< iphi(iy) of the SC seed in EB(EE)
-	Float_t seedEnergySCEle[3];   ///< energy of the SC seed
-	UChar_t gainEle[3];           ///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
-	Float_t seedLCSCEle[3];       ///< laser correction of the SC seed crystal
+	Float_t seedXSCEle[3]=initFloat;        ///< ieta(ix) of the SC seed in EB(EE)
+	Float_t seedYSCEle[3]=initFloat;        ///< iphi(iy) of the SC seed in EB(EE)
+	Float_t seedEnergySCEle[3]=initFloat;   ///< energy of the SC seed
+	UChar_t gainEle[3]=initInt;           ///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
+	Float_t seedLCSCEle[3]=initFloat;       ///< laser correction of the SC seed crystal
 
-	Float_t avgLCSCEle[3];
-	Float_t alphaSeedSCEle[3]; //alpha of the seed
+	Float_t avgLCSCEle[3]=initFloat;
+	Float_t alphaSeedSCEle[3]=initFloat; //alpha of the seed
 
-	Float_t energyMCEle[3];    ///< Electron MC true energy
-	Float_t energyEle[3];      ///< electron.energy(), not changed by rereco
-	Float_t energySCEle[3];    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
-	Float_t energySCEle_must[3];    ///< corrected SuperCluster energy with mustache
-	Float_t rawEnergySCEle[3]; ///< SC energy without cluster corrections
-	Float_t rawEnergySCEle_must[3]; ///< SC mustach energy without cluster corrections
+	Float_t energyMCEle[3]=initFloat;    ///< Electron MC true energy
+	Float_t energyEle[3]=initFloat;      ///< electron.energy(), not changed by rereco
+	Float_t energySCEle[3]=initFloat;    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
+	Float_t energySCEle_must[3]=initFloat;    ///< corrected SuperCluster energy with mustache
+	Float_t rawEnergySCEle[3]=initFloat; ///< SC energy without cluster corrections
+	Float_t rawEnergySCEle_must[3]=initFloat; ///< SC mustach energy without cluster corrections
 
-	Float_t energySCEle_must_regrCorr_ele[3]; ///< mustache SC energy derived with regression (offline tool)
-	Float_t energySigmaSCEle_must_regrCorr_ele[3]; ///< mustache SC energy resolution derived with regression (offline tool)
+	Float_t energySCEle_must_regrCorr_ele[3]=initFloat; ///< mustache SC energy derived with regression (offline tool)
+	Float_t energySigmaSCEle_must_regrCorr_ele[3]=initFloat; ///< mustache SC energy resolution derived with regression (offline tool)
 
-	Float_t energySCEle_pho_regrCorr[3]; ///< mustache SC energy derived with regression (offline tool)
-	Float_t energySigmaSCEle_pho_regrCorr[3]; ///< mustache SC energy resolution derived with regression (offline tool)
+	Float_t energySCEle_pho_regrCorr[3]=initFloat; ///< mustache SC energy derived with regression (offline tool)
+	Float_t energySigmaSCEle_pho_regrCorr[3]=initFloat; ///< mustache SC energy resolution derived with regression (offline tool)
 
-	Float_t esEnergySCEle[3];  ///< pre-shower energy associated to the electron
-	Float_t esEnergyPlane1SCEle[3]; ///< energy associate to the electron in the first plane of ES
-	Float_t esEnergyPlane2SCEle[3]; ///< energy associate to the electron in the second plane of ES
-	Float_t rawESEnergyPlane1SCEle[3];  ///< pre-shower rechit energy sum of Plane 1 associated to the electron
-	Float_t rawESEnergyPlane2SCEle[3];  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
+	Float_t esEnergySCEle[3]=initFloat;  ///< pre-shower energy associated to the electron
+	Float_t esEnergyPlane1SCEle[3]=initFloat; ///< energy associate to the electron in the first plane of ES
+	Float_t esEnergyPlane2SCEle[3]=initFloat; ///< energy associate to the electron in the second plane of ES
+	Float_t rawESEnergyPlane1SCEle[3]=initFloat;  ///< pre-shower rechit energy sum of Plane 1 associated to the electron
+	Float_t rawESEnergyPlane2SCEle[3]=initFloat;  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
 
-	Float_t energySCEle_corr[3];  ///< ecal energy: not changed by rereco
+	Float_t energySCEle_corr[3]=initFloat;  ///< ecal energy: not changed by rereco
 
-	Float_t e3x3SCEle[3];   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
-	Float_t e5x5SCEle[3];   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
-	Float_t efull5x5SCEle[3];   ///< full 5x5 from electron object (however it is computed)
-	Float_t eSeedSCEle[3];
-	Float_t pModeGsfEle[3];  ///< track momentum from Gsf Track (mode)
-	Float_t pAtVtxGsfEle[3]; ///< momentum estimated at the vertex
-	Float_t trackMomentumErrorEle[3]; ///< track momentum error from standard electron method
-	Float_t pNormalizedChi2Ele[3];  ///< track normalized chi2 of the fit (GSF)
+	Float_t e3x3SCEle[3]=initFloat;   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
+	Float_t e5x5SCEle[3]=initFloat;   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
+	Float_t efull5x5SCEle[3]=initFloat;   ///< full 5x5 from electron object (however it is computed)
+	Float_t eSeedSCEle[3]=initFloat;
+	Float_t pModeGsfEle[3]=initFloat;  ///< track momentum from Gsf Track (mode)
+	Float_t pAtVtxGsfEle[3]=initFloat; ///< momentum estimated at the vertex
+	Float_t trackMomentumErrorEle[3]=initFloat; ///< track momentum error from standard electron method
+	Float_t pNormalizedChi2Ele[3]=initFloat;  ///< track normalized chi2 of the fit (GSF)
 
-	Float_t R9Ele[3];      ///< e3x3/rawEnergySCEle
+	Float_t R9Ele[3]=initFloat;      ///< e3x3/rawEnergySCEle
 	Float_t invMass;
 	Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too!
 	Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
@@ -321,7 +324,7 @@ private:
 
 	Float_t invMass_MC;
 	Float_t invMass_mumu;
-	Float_t   etaMCEle[3], phiMCEle[3];
+	Float_t   etaMCEle[3], phiMCEle[3]=initFloat;
 
 #ifdef shervin
 	Float_t invMass_inGsf;
