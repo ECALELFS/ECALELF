@@ -10,7 +10,6 @@ Description: class that provide flexible and simple way to fit the Zee invariant
  */
 
 #include "../interface/ZFit_class.hh"
-#include "../interface/ZFit_class.hh"
 #include <TList.h>
 #include <TObject.h>
 #include <TFriendElement.h>
