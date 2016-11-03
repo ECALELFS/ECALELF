@@ -630,7 +630,7 @@ Int_t FindMin1D(RooRealVar *var, Double_t *X, Int_t N, Int_t iMinStart, Double_t
 		if(var2 != NULL) std::cout << "[FindMin1D] "  << std::setprecision(4) <<  "\t" << var->getVal() << "\t" << var2->getVal() << "\t" <<
 			                           chi2 - chi2init << "\t" << locmin - chi2init << "\t" << min - chi2init << std::endl;
 		else std::cout  << std::setprecision(4) << "[DEBUG] " <<  "\t" << iStep << "\t" << var->getVal() << "\t" << chi2 - chi2init << "\t" << locmin - chi2init << "\t" << min - chi2init << "\tchi2= " <<  chi2 << std::endl;
-#endif debug_fit
+#endif
 		if(chi2 <= locmin) { //local minimum
 			iLocMin = i;
 			locmin = chi2;
