@@ -1,33 +1,26 @@
 /**
  * \page DATAFORMATS Dataformats
 
- The calibration in 2012 with electrons (single and double electron
-samples) will be performed using the alcareco data format that
+ The calibration  with electrons (single and double electron
+samples) is performed using the alcareco data format that
 contains only relevant collections for the ECAL calibration with
 electrons. 
 
-If you have not followed the instructions in the Calibration/README
-file please do it.
+ - \b EcalUncalElectron (ALCARAW): Special data format for rereco purpose
+	- officially produced starting from CMSSW_8_0_X release
+ - \b EcalCalElectron (ALCARECO): Reduced format for RECO data
+    - can be produced from ALCARAW (\b default and \b recommended!)
 
-
-ALCARECO and ALCARAW private production logic.
-
-\subsection dataformats Data formats
- - EcalUncalElectron (ALCARAW): Special data format for rereco purpose
-	- in CMSSW from the 7_X_X release
-	- no official ALCARAW have been produced so far
-        - Actually produced privately starting from RAW-RECO Z and W
-          skims 
- - EcalCalElectron (ALCARECO): Reduced format for RECO data
-	- can be produced starting from RECO or AOD standard formats
 	- this is the stardard format after rereco of data using
-          ECALELF (starting from ALCARAW)  
-	- Now in CMSSW and produced centrally with a ZW skim applied
-          (WP90 selection) 
-          -> the ALCARECO format has been updated, the CMSSW version 
-             is deprecated
-	- can be produced also privately starting from RAW-RECO Z and
-          W skims 
+      ECALELF (starting from ALCARAW)  
+
+	- can be produced starting from RECO or AOD formats
+ - \b MINIAOD (for monitoring, scales & smearings)
+
+*/
+
+/** \page CONFIGFILES Config files
+ALCARECO and ALCARAW private production logic.
 
 \subsection bookKeeping Files for book keeping: used to create, submit and book-keep the
      production 
