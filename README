@@ -1,12 +1,11 @@
 /** 
-* \mainpage 
-* \author Shervin Nourbakhsh
-*
-* \par Documentation
-* The documentation of this packaged is provided in these pages extracted with doxygen from the source code and several txt files contained in the package itself.
+\mainpage 
+\author Shervin Nourbakhsh
+\tableofcontents
 
-The code in this package takes the name of ECALELF 
-(Ecal CALibration with ELectrons Framework) 
+\section DOC Documentation
+
+The documentation of this packaged is provided in these pages extracted with doxygen from the source code and several txt files contained in the package itself.
 
 Informations for the implementation or re-implementation can be
 obtained looking the the various header files that will be completed
@@ -17,17 +16,16 @@ If you have doxygen, you can run the command
 from the Calibration/ directory and you can navigate instructions and code locally with
 \verbatim firefox doc/doxygen/fulldoc/html/index.html \endverbatim
 
+\section START Getting Started
+\subpage preReq
 
-*
-* \ref preReq
-*
-* \ref page1
-*
-* <A HREF="https://github.com/ECALELFS/ECALELF/blob/newMaster/README.md"> Download instructions </A>
-*
-*
-* Working with ntuples: \ref page4
-*
+\ref page1
+
+<A HREF="https://github.com/ECALELFS/ECALELF/blob/newMaster/README.md"> Download instructions </A>
+
+
+\subpage WORKNTUPLES
+
 ### Instructions for ECAL validator:
  - \ref DATAFORMATS
  - \ref pFindInfos 

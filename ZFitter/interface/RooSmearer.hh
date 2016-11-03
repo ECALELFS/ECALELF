@@ -90,6 +90,12 @@ public:
 // their definition and dependencies (can be  RooRealVar or
 // RooFormulaVar)
 
+/** \class RooSmearer
+ * \brief Minimize NLL to get energy scale and smearings
+ * \author Paolo Meridiani and Shervin Nourbakhsh
+ * From an original idea of Paolo Meridiani
+ */
+
 class RooSmearer: public RooAbsReal
 {
 
