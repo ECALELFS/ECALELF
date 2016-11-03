@@ -1,11 +1,21 @@
 #include "../interface/SmearingImporter.hh"
 #include "../interface/BW_CB_pdf_class.hh"
-
+#include "../interface/ZFit_class.hh"
 #include <TTreeFormula.h>
 #include <TRandom3.h>
 #include <TDirectory.h>
-//#define DEBUG
 #include <TStopwatch.h>
+#include <TList.h>
+#include <TObject.h>
+#include <TFriendElement.h>
+#include <TEntryList.h>
+#include <fstream>
+#include <TTreeFormula.h>
+#include <TObjArray.h>
+#include <TChainElement.h>
+//#define DEBUG
+
+
 #define SELECTOR
 #define FIXEDSMEARINGS
 SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut):
@@ -479,10 +489,12 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	if(oldList == NULL) {
 		std::cout << "[STATUS] In SmearingImporter.cc, Setting entry list: " << evListName << std::endl;
 		_chain->Draw(">>" + evListName, cutter.GetCut(_commonCut + "-" + eleID_, isMC), "entrylist");
-		//_chain->Draw(">>"+evListName, "", "entrylist");
 		TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
-		//  elist_all->SetBit(!kCanDelete);
-		_chain->SetEntryList(elist_all);
+		TECALChain *chain_ecal = (TECALChain*)_chain;
+		chain_ecal->TECALChain::SetEntryList(elist_all);
+		assert(elist_all != NULL);
+		std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
+		_chain = dynamic_cast<TChain*>(chain_ecal);
 	}
 	for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
 	        region_ele1_itr != _regionList.end();
