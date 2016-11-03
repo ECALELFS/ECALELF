@@ -1,7 +1,9 @@
 /**
 * \page pudumper  Generating PUDumper.root files
 
-The PUDumper.root file is needed in order to generate a distribution of the number of vertices in MC. This is needed because the PU distribution in Data does nto match and so the MC needs to be corrected. So info from the PUDumper is fed to the ZFitter executable via the -f option config.
+The PUDumper.root file is needed in order to generate a distribution of the number of vertices in MC. 
+This is needed because the PU distribution in Data does not match and so the MC needs to be corrected. 
+So info from the PUDumper is fed to the ZFitter executable via the -f option config.
 
 The PUDumper.root file is automatically generated when producing ALCARECOSIM with the test/alcaSkimming CMSSW config.
 Unfortunately, at the moment, the cmsDriver setup does not allow for this.
