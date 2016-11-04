@@ -127,6 +127,12 @@ public:
 	}
 };
 
+/**
+   \class ZFit_class
+   \brief Class for fitting the Z lineshape from any RooAbsData 
+   \author Shervin Nourbakhsh
+*/
+
 class ZFit_class
 {
 public:
