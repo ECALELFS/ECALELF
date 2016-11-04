@@ -39,7 +39,6 @@
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="../../annotated.html"><span>Class&#160;List</span></a></li>
-      <li><a href="../../hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
       <li><a href="../../functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
@@ -71,29 +70,37 @@ std::set&lt; TString &gt;&#160;</td><td class="memItemRight" valign="bottom"><a 
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Di-electron events are selected using a short special syntax defined in this class. </p>
-<p>Parser of category class provides a TCut one di-electron category is difined by a series of cuts to be applied to both electrons</p>
-<p>Syntax:</p>
-<ul>
+<p>One di-electron category is difined by a series of cuts to be applied to both electrons</p>
+<dl class="section user"><dt>Syntax:</dt><dd><ul>
 <li>'-' is the cut separator <br/>
  es. &lt;cut1&gt;-&lt;cut2&gt;-&lt;cut3&gt; <br/>
  es. EB-absEta_0_1-gold: <br/>
- three cuts are applied: EB -&gt; no parameters, absEta_0_1 -&gt; two parameters 0 and 1 (parameters are separated by _, gold -&gt; no parameters</li>
+ three cuts are applied:<ul>
+<li>EB -&gt; no parameters,</li>
+<li>absEta_0_1 -&gt; two parameters 0 and 1 (parameters are separated by _,</li>
+<li>gold -&gt; no parameters</li>
 </ul>
-<p>List of possible cuts without parameter: EB EE EB_EE EBp (EB+) EBm (EB-) EE EEp EEm RefReg</p>
-<p>List of possible cuts with 1 parameter: Et_X: Et_ eleID_X: eleID == X</p>
-<p>List of possible cuts with 2 parameters: <br/>
+</li>
+<li>List of possible cuts without parameter: EB EE EB_EE EBp (EB+) EBm (EB-) EE EEp EEm RefReg</li>
+<li>List of possible cuts with 1 parameter:<ul>
+<li>Et_X: Et_</li>
+<li>eleID_X: eleID == X</li>
+</ul>
+</li>
+<li>List of possible cuts with 2 parameters: <br/>
  <b> ATTENTION! Same syntax but different meaning! </b> <br/>
-</p>
 <ul>
-<li>runNumber_X_Y: X &lt;= runNumber &lt;= Y</li>
-<li>IEta_X_Y: X &lt;= ieta (or iX) &lt;= Y</li>
-<li>absIEta_X_Y: X &lt;= abs(ieta) &lt;= Y</li>
-<li>distIEta_X_Y: X-Y &lt;= ieta &lt;= X+Y</li>
-<li>absEta_X_Y: X &lt;= |eta| &lt; Y</li>
-<li>energySC_X_Y: X &lt;= energySCEle &lt; Y</li>
-<li>nPV_X_Y: X &lt;= nPV &lt; Y</li>
+<li><b>runNumber_X_Y:</b> X &lt;= runNumber &lt;= Y</li>
+<li><b>IEta_X_Y:</b> X &lt;= ieta (or iX) &lt;= Y</li>
+<li><b>absIEta_X_Y:</b> X &lt;= abs(ieta) &lt;= Y</li>
+<li><b>distIEta_X_Y:</b> X-Y &lt;= ieta &lt;= X+Y</li>
+<li><b>absEta_X_Y:</b> X &lt;= |eta| &lt; Y</li>
+<li><b>energySC_X_Y:</b> X &lt;= energySCEle &lt; Y</li>
+<li><b>nPV_X_Y:</b> X &lt;= nPV &lt; Y </li>
 </ul>
-<p>Description: </p>
+</li>
+</ul>
+</dd></dl>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>ZFitter/interface/ElectronCategory_class.hh</li>
 <li>ZFitter/src/ElectronCategory_class.cc</li>

@@ -46,16 +46,51 @@
 <div class="title">Config files syntax and generation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>In order to work with ECALELF ntuples you should move to the Calibration/ZFitter directory. Now on the paths are relative to the Calibration/ZFitter directory.</p>
+<div class="textblock"><p>Di-electron events are selected using a short special syntax defined in this class.</p>
+<p>In order to work with ECALELF ntuples you should move to the Calibration/ZFitter directory. Now on the paths are relative to the Calibration/ZFitter directory.</p>
 <p>There are three important directories where the proper .dat files should be put:</p>
 <ul>
-<li><p class="startli">data/validation/ <br/>
- For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation: ./data/validation/rereco/rerecoGroupName/ where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test for example: you can use ./data/validation/rereco/Cal_Dic2013/ or ./data/validation/rereco/ungrouped/ this way the fit results will be put under the subdirectory rerecoGroupName and you will be able to move or remove it when the set of validations has finished. <br/>
- The logic of the validation .dat files is reported below in a dedicated section.</p>
-<p class="startli">For standard validations you can use the data/regions/validation.dat that is set in the scripts as the default one.</p>
+<li><b>data/validation/</b> <br/>
+ For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation: ./data/validation/rereco/rerecoGroupName/ where <b>rerecoGroupName</b> is a name that you assign to a group of rerecoes that you want to test for example: you can use ./data/validation/rereco/Cal_Dic2013/ or ./data/validation/rereco/ungrouped/ this way the fit results will be put under the subdirectory rerecoGroupName and you will be able to move or remove it when the set of validations has finished. <br/>
+ The logic of the validation .dat files is reported below in a dedicated section: <a class="el" href="../../d8/d25/ZFitterConfigFiles.html#validationConfig">Validation config files</a>.</li>
+<li><b>data/regions/</b> <br/>
+ the fits are done in categories, the conditions that the electrons have to fulfil are defined in .dat files in this directory. In each .dat file, a set of categories are defined, one category for each line: see <a class="el" href="../../d5/d11/classElectronCategory__class.html" title="Di-electron events are selected using a short special syntax defined in this class. ">ElectronCategory_class</a> for more information about the syntax <hr/>
+ One di-electron category is difined by a series of cuts to be applied to both electrons</li>
+</ul>
+<dl class="section user"><dt>Syntax:</dt><dd><ul>
+<li>'-' is the cut separator <br/>
+ es. &lt;cut1&gt;-&lt;cut2&gt;-&lt;cut3&gt; <br/>
+ es. EB-absEta_0_1-gold: <br/>
+ three cuts are applied:<ul>
+<li>EB -&gt; no parameters,</li>
+<li>absEta_0_1 -&gt; two parameters 0 and 1 (parameters are separated by _,</li>
+<li>gold -&gt; no parameters</li>
+</ul>
 </li>
-<li>data/regions/ the fits are done in categories, the conditions that the electrons have to fulfil are defined in .dat files in this directory. In each .dat file, a set of categories are defined, one category for each line: see <a class="el" href="../../d5/d11/classElectronCategory__class.html" title="Di-electron events are selected using a short special syntax defined in this class. ">ElectronCategory_class</a> for more information about the syntax</li>
-<li><p class="startli">data/runRanges/ contains files that define a set of run ranges in order to perform the fits for the stability plots. The default one to be used is data/runRanges/monitoring.dat</p>
+<li>List of possible cuts without parameter: EB EE EB_EE EBp (EB+) EBm (EB-) EE EEp EEm RefReg</li>
+<li>List of possible cuts with 1 parameter:<ul>
+<li>Et_X: Et_</li>
+<li>eleID_X: eleID == X</li>
+</ul>
+</li>
+<li>List of possible cuts with 2 parameters: <br/>
+ <b> ATTENTION! Same syntax but different meaning! </b> <br/>
+<ul>
+<li><b>runNumber_X_Y:</b> X &lt;= runNumber &lt;= Y</li>
+<li><b>IEta_X_Y:</b> X &lt;= ieta (or iX) &lt;= Y</li>
+<li><b>absIEta_X_Y:</b> X &lt;= abs(ieta) &lt;= Y</li>
+<li><b>distIEta_X_Y:</b> X-Y &lt;= ieta &lt;= X+Y</li>
+<li><b>absEta_X_Y:</b> X &lt;= |eta| &lt; Y</li>
+<li><b>energySC_X_Y:</b> X &lt;= energySCEle &lt; Y</li>
+<li><b>nPV_X_Y:</b> X &lt;= nPV &lt; Y <hr/>
+ For standard validations you can use the data/regions/validation.dat that is set in the scripts as the default one.</li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+<ul>
+<li><p class="startli"><b>data/runRanges/</b> <br/>
+ contains files that define a set of run ranges in order to perform the fits for the stability plots. The default one to be used is data/runRanges/monitoring.dat</p>
 <p class="startli">The syntax is the following: </p>
 <pre class="fragment">  #runMin-runMax nEvents        timeStampMin-timeStampMax
   190645-190781 28734           1333819264-1333983242
@@ -92,17 +127,7 @@ How to produce ntuples with pileup weights</h2>
 <div class="fragment"><div class="line">/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ </div>
 </div><!-- fragment --><p>The tree name of the pileup weight files is <b>pileup:</b> </p>
 <div class="fragment"><div class="line">s1    pileup    /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root</div>
-</div><!-- fragment --><h2><a class="anchor" id="scaleSmearing"></a>
-Energy scale and smearing corrections</h2>
-<p>Energy scale and smearings can be applied to the already existing ntuples. One can have different sets of energy scales and smearings, depending on</p>
-<ul>
-<li>the particular energy used for the invariant mass,</li>
-<li>the particular algorithm</li>
-<li>the number of steps in iterative procedure</li>
-</ul>
-<p>For more details see the section dedicated to the energy scale and smearing derivation.</p>
-<p>Each set of energy scale and smearing corrections is defined by a "type" name. You can add all the wanted set of scale and smearing correction files to the same validation config file, but only the one specified by the &ndash;corrEleType and &ndash;smearEleType options are used. The name of the trees of the corrections are defined as follows: &lt;basename&gt;_&lt;type&gt;, where &lt;basename&gt; is scaleEle for energy scale corrections and smearEle for energy smearings. This way you don't need to modify your validation config file each time you want to run with a different set of corrections, you just need to pass the appropriate type name at the command line.</p>
-<h1><a class="anchor" id="runDivide"></a>
+</div><!-- fragment --><h1><a class="anchor" id="runDivide"></a>
 How to produce runRanges .dat files</h1>
 <p>The idea is to produce a file with the run ranges with 100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
 <p>The run ranges:</p>

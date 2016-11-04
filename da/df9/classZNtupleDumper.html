@@ -39,7 +39,6 @@
   <div id="navrow2" class="tabs2">
     <ul class="tablist">
       <li><a href="../../annotated.html"><span>Class&#160;List</span></a></li>
-      <li><a href="../../hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
       <li><a href="../../functions.html"><span>Class&#160;Members</span></a></li>
     </ul>
   </div>
@@ -117,7 +116,7 @@ Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 <tr class="memdesc:ga365734917790d529747c5cc7b865f844"><td class="mdescLeft">&#160;</td><td class="mdescRight">nVtx <br/></td></tr>
 <tr class="separator:ga365734917790d529747c5cc7b865f844"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaab88f2d0ce091820c51407300305afb7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaab88f2d0ce091820c51407300305afb7"></a>
-UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaab88f2d0ce091820c51407300305afb7">eleID</a> [3] =initInt</td></tr>
+UInt_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaab88f2d0ce091820c51407300305afb7">eleID</a> [3] = {0,0,0}</td></tr>
 <tr class="memdesc:gaab88f2d0ce091820c51407300305afb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from <a href="https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points">https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points</a> <br/></td></tr>
 <tr class="separator:gaab88f2d0ce091820c51407300305afb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8e72c7d2a775dfea7ca3cd8a8e54a52c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8e72c7d2a775dfea7ca3cd8a8e54a52c"></a>
@@ -125,131 +124,131 @@ Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../
 <tr class="memdesc:ga8e72c7d2a775dfea7ca3cd8a8e54a52c"><td class="mdescLeft">&#160;</td><td class="mdescRight">-100: no electron, 0: SC or photon, -1 or +1:electron or muon <br/></td></tr>
 <tr class="separator:ga8e72c7d2a775dfea7ca3cd8a8e54a52c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9b63e2881edae1e480212a65e463e80f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9b63e2881edae1e480212a65e463e80f"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga9b63e2881edae1e480212a65e463e80f">phiSCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga9b63e2881edae1e480212a65e463e80f">phiSCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga9b63e2881edae1e480212a65e463e80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">phi of the SC <br/></td></tr>
 <tr class="separator:ga9b63e2881edae1e480212a65e463e80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga08643d3827ac09315f027f6db400b2ae"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga08643d3827ac09315f027f6db400b2ae"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga08643d3827ac09315f027f6db400b2ae">phiEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga08643d3827ac09315f027f6db400b2ae">phiEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga08643d3827ac09315f027f6db400b2ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">phi of the electron (electron object) <br/></td></tr>
 <tr class="separator:ga08643d3827ac09315f027f6db400b2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafe59dc2bc2988e2c86e65aa348df5427"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafe59dc2bc2988e2c86e65aa348df5427"></a>
-Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gafe59dc2bc2988e2c86e65aa348df5427">recoFlagsEle</a> [3] =initInt</td></tr>
+Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gafe59dc2bc2988e2c86e65aa348df5427">recoFlagsEle</a> [3] = {0,0,0}</td></tr>
 <tr class="memdesc:gafe59dc2bc2988e2c86e65aa348df5427"><td class="mdescLeft">&#160;</td><td class="mdescRight">1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven <br/></td></tr>
 <tr class="separator:gafe59dc2bc2988e2c86e65aa348df5427"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2639be113d581ee7a96b77dafbe5f011"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2639be113d581ee7a96b77dafbe5f011"></a>
-Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga2639be113d581ee7a96b77dafbe5f011">classificationEle</a> [3] =initInt</td></tr>
+Int_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga2639be113d581ee7a96b77dafbe5f011">classificationEle</a> [3] = {0,0,0}</td></tr>
 <tr class="memdesc:ga2639be113d581ee7a96b77dafbe5f011"><td class="mdescLeft">&#160;</td><td class="mdescRight">electron classification in GOLD, SHOWERING, etc. <br/></td></tr>
 <tr class="separator:ga2639be113d581ee7a96b77dafbe5f011"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8d7d9d6b4302755a5e15fef4cf51354a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8d7d9d6b4302755a5e15fef4cf51354a"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga8d7d9d6b4302755a5e15fef4cf51354a">seedXSCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga8d7d9d6b4302755a5e15fef4cf51354a">seedXSCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga8d7d9d6b4302755a5e15fef4cf51354a"><td class="mdescLeft">&#160;</td><td class="mdescRight">ieta(ix) of the SC seed in EB(EE) <br/></td></tr>
 <tr class="separator:ga8d7d9d6b4302755a5e15fef4cf51354a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad5c9cd51cb950df4ef0564e9e103d311"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad5c9cd51cb950df4ef0564e9e103d311"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gad5c9cd51cb950df4ef0564e9e103d311">seedYSCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gad5c9cd51cb950df4ef0564e9e103d311">seedYSCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gad5c9cd51cb950df4ef0564e9e103d311"><td class="mdescLeft">&#160;</td><td class="mdescRight">iphi(iy) of the SC seed in EB(EE) <br/></td></tr>
 <tr class="separator:gad5c9cd51cb950df4ef0564e9e103d311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2f367ea148d005fb979d19992d18911b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2f367ea148d005fb979d19992d18911b"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga2f367ea148d005fb979d19992d18911b">seedEnergySCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga2f367ea148d005fb979d19992d18911b">seedEnergySCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga2f367ea148d005fb979d19992d18911b"><td class="mdescLeft">&#160;</td><td class="mdescRight">energy of the SC seed <br/></td></tr>
 <tr class="separator:ga2f367ea148d005fb979d19992d18911b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7c8900b0718a2a00cc6a1a454bb422e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7c8900b0718a2a00cc6a1a454bb422e9"></a>
-UChar_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga7c8900b0718a2a00cc6a1a454bb422e9">gainEle</a> [3] =initInt</td></tr>
+UChar_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga7c8900b0718a2a00cc6a1a454bb422e9">gainEle</a> [3] = {0,0,0}</td></tr>
 <tr class="memdesc:ga7c8900b0718a2a00cc6a1a454bb422e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC. <br/></td></tr>
 <tr class="separator:ga7c8900b0718a2a00cc6a1a454bb422e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad82f5ec7ddb1263294101ca1aea6c968"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad82f5ec7ddb1263294101ca1aea6c968"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gad82f5ec7ddb1263294101ca1aea6c968">seedLCSCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gad82f5ec7ddb1263294101ca1aea6c968">seedLCSCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gad82f5ec7ddb1263294101ca1aea6c968"><td class="mdescLeft">&#160;</td><td class="mdescRight">laser correction of the SC seed crystal <br/></td></tr>
 <tr class="separator:gad82f5ec7ddb1263294101ca1aea6c968"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga418ff22e0289a0595a1d95f29c6c3bc1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga418ff22e0289a0595a1d95f29c6c3bc1"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga418ff22e0289a0595a1d95f29c6c3bc1">energyMCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga418ff22e0289a0595a1d95f29c6c3bc1">energyMCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga418ff22e0289a0595a1d95f29c6c3bc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Electron MC true energy. <br/></td></tr>
 <tr class="separator:ga418ff22e0289a0595a1d95f29c6c3bc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6fc684a6c9ad6dfa7bce940b481b658f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6fc684a6c9ad6dfa7bce940b481b658f"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga6fc684a6c9ad6dfa7bce940b481b658f">energyEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga6fc684a6c9ad6dfa7bce940b481b658f">energyEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga6fc684a6c9ad6dfa7bce940b481b658f"><td class="mdescLeft">&#160;</td><td class="mdescRight">electron.energy(), not changed by rereco <br/></td></tr>
 <tr class="separator:ga6fc684a6c9ad6dfa7bce940b481b658f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa9dcfcc5bdf632c96aa8ca3eb7a4563f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa9dcfcc5bdf632c96aa8ca3eb7a4563f"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaa9dcfcc5bdf632c96aa8ca3eb7a4563f">energySCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaa9dcfcc5bdf632c96aa8ca3eb7a4563f">energySCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gaa9dcfcc5bdf632c96aa8ca3eb7a4563f"><td class="mdescLeft">&#160;</td><td class="mdescRight">corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too! <br/></td></tr>
 <tr class="separator:gaa9dcfcc5bdf632c96aa8ca3eb7a4563f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf94422f248ec115e53be83053c6e3047"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf94422f248ec115e53be83053c6e3047"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaf94422f248ec115e53be83053c6e3047">energySCEle_must</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaf94422f248ec115e53be83053c6e3047">energySCEle_must</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gaf94422f248ec115e53be83053c6e3047"><td class="mdescLeft">&#160;</td><td class="mdescRight">corrected SuperCluster energy with mustache <br/></td></tr>
 <tr class="separator:gaf94422f248ec115e53be83053c6e3047"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4163ff953065c630c9ea64d001387a70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4163ff953065c630c9ea64d001387a70"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga4163ff953065c630c9ea64d001387a70">rawEnergySCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga4163ff953065c630c9ea64d001387a70">rawEnergySCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga4163ff953065c630c9ea64d001387a70"><td class="mdescLeft">&#160;</td><td class="mdescRight">SC energy without cluster corrections. <br/></td></tr>
 <tr class="separator:ga4163ff953065c630c9ea64d001387a70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga76eeb81044cdc39095ff76ee60391429"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga76eeb81044cdc39095ff76ee60391429"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga76eeb81044cdc39095ff76ee60391429">rawEnergySCEle_must</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga76eeb81044cdc39095ff76ee60391429">rawEnergySCEle_must</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga76eeb81044cdc39095ff76ee60391429"><td class="mdescLeft">&#160;</td><td class="mdescRight">SC mustach energy without cluster corrections. <br/></td></tr>
 <tr class="separator:ga76eeb81044cdc39095ff76ee60391429"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6c421f46b8eaab4f0d831427c2b3f601"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6c421f46b8eaab4f0d831427c2b3f601"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga6c421f46b8eaab4f0d831427c2b3f601">energySCEle_must_regrCorr_ele</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga6c421f46b8eaab4f0d831427c2b3f601">energySCEle_must_regrCorr_ele</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga6c421f46b8eaab4f0d831427c2b3f601"><td class="mdescLeft">&#160;</td><td class="mdescRight">mustache SC energy derived with regression (offline tool) <br/></td></tr>
 <tr class="separator:ga6c421f46b8eaab4f0d831427c2b3f601"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga188bd8388af4b2a6019fe390983fc580"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga188bd8388af4b2a6019fe390983fc580"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga188bd8388af4b2a6019fe390983fc580">energySigmaSCEle_must_regrCorr_ele</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga188bd8388af4b2a6019fe390983fc580">energySigmaSCEle_must_regrCorr_ele</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga188bd8388af4b2a6019fe390983fc580"><td class="mdescLeft">&#160;</td><td class="mdescRight">mustache SC energy resolution derived with regression (offline tool) <br/></td></tr>
 <tr class="separator:ga188bd8388af4b2a6019fe390983fc580"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3b40620bba56e28c6cee7cd18b208eba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3b40620bba56e28c6cee7cd18b208eba"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga3b40620bba56e28c6cee7cd18b208eba">energySCEle_pho_regrCorr</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga3b40620bba56e28c6cee7cd18b208eba">energySCEle_pho_regrCorr</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga3b40620bba56e28c6cee7cd18b208eba"><td class="mdescLeft">&#160;</td><td class="mdescRight">mustache SC energy derived with regression (offline tool) <br/></td></tr>
 <tr class="separator:ga3b40620bba56e28c6cee7cd18b208eba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac43407b751b626e2b37314fb50328c49"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac43407b751b626e2b37314fb50328c49"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gac43407b751b626e2b37314fb50328c49">energySigmaSCEle_pho_regrCorr</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gac43407b751b626e2b37314fb50328c49">energySigmaSCEle_pho_regrCorr</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gac43407b751b626e2b37314fb50328c49"><td class="mdescLeft">&#160;</td><td class="mdescRight">mustache SC energy resolution derived with regression (offline tool) <br/></td></tr>
 <tr class="separator:gac43407b751b626e2b37314fb50328c49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1ad4fa824fc6d4ef957281f974439494"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga1ad4fa824fc6d4ef957281f974439494"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga1ad4fa824fc6d4ef957281f974439494">esEnergySCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga1ad4fa824fc6d4ef957281f974439494">esEnergySCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga1ad4fa824fc6d4ef957281f974439494"><td class="mdescLeft">&#160;</td><td class="mdescRight">pre-shower energy associated to the electron <br/></td></tr>
 <tr class="separator:ga1ad4fa824fc6d4ef957281f974439494"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga770b8e744fd1e8f16c9b88dd2ef43942"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga770b8e744fd1e8f16c9b88dd2ef43942"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga770b8e744fd1e8f16c9b88dd2ef43942">esEnergyPlane1SCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga770b8e744fd1e8f16c9b88dd2ef43942">esEnergyPlane1SCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga770b8e744fd1e8f16c9b88dd2ef43942"><td class="mdescLeft">&#160;</td><td class="mdescRight">energy associate to the electron in the first plane of ES <br/></td></tr>
 <tr class="separator:ga770b8e744fd1e8f16c9b88dd2ef43942"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9014bd4a6e5f4957978445379b5b6956"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9014bd4a6e5f4957978445379b5b6956"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga9014bd4a6e5f4957978445379b5b6956">esEnergyPlane2SCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga9014bd4a6e5f4957978445379b5b6956">esEnergyPlane2SCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga9014bd4a6e5f4957978445379b5b6956"><td class="mdescLeft">&#160;</td><td class="mdescRight">energy associate to the electron in the second plane of ES <br/></td></tr>
 <tr class="separator:ga9014bd4a6e5f4957978445379b5b6956"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadb44e4b2a0a9e9e0836545d0b38e7efc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadb44e4b2a0a9e9e0836545d0b38e7efc"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gadb44e4b2a0a9e9e0836545d0b38e7efc">rawESEnergyPlane1SCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gadb44e4b2a0a9e9e0836545d0b38e7efc">rawESEnergyPlane1SCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gadb44e4b2a0a9e9e0836545d0b38e7efc"><td class="mdescLeft">&#160;</td><td class="mdescRight">pre-shower rechit energy sum of Plane 1 associated to the electron <br/></td></tr>
 <tr class="separator:gadb44e4b2a0a9e9e0836545d0b38e7efc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga63f559102e4736d7cade795ade7c6acb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga63f559102e4736d7cade795ade7c6acb"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga63f559102e4736d7cade795ade7c6acb">rawESEnergyPlane2SCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga63f559102e4736d7cade795ade7c6acb">rawESEnergyPlane2SCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga63f559102e4736d7cade795ade7c6acb"><td class="mdescLeft">&#160;</td><td class="mdescRight">pre-shower recHit energy sum of Plane 2 associated to the electron <br/></td></tr>
 <tr class="separator:ga63f559102e4736d7cade795ade7c6acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa5bedddd2cd82b46776eaaeadb9c826f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaa5bedddd2cd82b46776eaaeadb9c826f"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaa5bedddd2cd82b46776eaaeadb9c826f">energySCEle_corr</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaa5bedddd2cd82b46776eaaeadb9c826f">energySCEle_corr</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gaa5bedddd2cd82b46776eaaeadb9c826f"><td class="mdescLeft">&#160;</td><td class="mdescRight">ecal energy: not changed by rereco <br/></td></tr>
 <tr class="separator:gaa5bedddd2cd82b46776eaaeadb9c826f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac4c9c87990372b887fbb32b569ee6f1a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gac4c9c87990372b887fbb32b569ee6f1a"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gac4c9c87990372b887fbb32b569ee6f1a">e5x5SCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gac4c9c87990372b887fbb32b569ee6f1a">e5x5SCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gac4c9c87990372b887fbb32b569ee6f1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">sum of the recHit energy in 5x5 matrix centered at the seed of the SC <br/></td></tr>
 <tr class="separator:gac4c9c87990372b887fbb32b569ee6f1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4393b44ecfa5cbb38244f36edb87dde5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga4393b44ecfa5cbb38244f36edb87dde5"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga4393b44ecfa5cbb38244f36edb87dde5">efull5x5SCEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga4393b44ecfa5cbb38244f36edb87dde5">efull5x5SCEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga4393b44ecfa5cbb38244f36edb87dde5"><td class="mdescLeft">&#160;</td><td class="mdescRight">full 5x5 from electron object (however it is computed) <br/></td></tr>
 <tr class="separator:ga4393b44ecfa5cbb38244f36edb87dde5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga88e894c2223f41f3cd57c6f93da418bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga88e894c2223f41f3cd57c6f93da418bc"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga88e894c2223f41f3cd57c6f93da418bc">pModeGsfEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga88e894c2223f41f3cd57c6f93da418bc">pModeGsfEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga88e894c2223f41f3cd57c6f93da418bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">track momentum from Gsf Track (mode) <br/></td></tr>
 <tr class="separator:ga88e894c2223f41f3cd57c6f93da418bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf8c89c74608cb20b1fb49762d763add8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf8c89c74608cb20b1fb49762d763add8"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaf8c89c74608cb20b1fb49762d763add8">pAtVtxGsfEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaf8c89c74608cb20b1fb49762d763add8">pAtVtxGsfEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gaf8c89c74608cb20b1fb49762d763add8"><td class="mdescLeft">&#160;</td><td class="mdescRight">momentum estimated at the vertex <br/></td></tr>
 <tr class="separator:gaf8c89c74608cb20b1fb49762d763add8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c9050f82cc968ee60c8333d56870509"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga2c9050f82cc968ee60c8333d56870509"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga2c9050f82cc968ee60c8333d56870509">trackMomentumErrorEle</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#ga2c9050f82cc968ee60c8333d56870509">trackMomentumErrorEle</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:ga2c9050f82cc968ee60c8333d56870509"><td class="mdescLeft">&#160;</td><td class="mdescRight">track momentum error from standard electron method <br/></td></tr>
 <tr class="separator:ga2c9050f82cc968ee60c8333d56870509"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaf013632b555c1036d59fd418259b47c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaaf013632b555c1036d59fd418259b47c"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaaf013632b555c1036d59fd418259b47c">pNormalizedChi2Ele</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gaaf013632b555c1036d59fd418259b47c">pNormalizedChi2Ele</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gaaf013632b555c1036d59fd418259b47c"><td class="mdescLeft">&#160;</td><td class="mdescRight">track normalized chi2 of the fit (GSF) <br/></td></tr>
 <tr class="separator:gaaf013632b555c1036d59fd418259b47c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadfce60379637714808c05b0d14809dde"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gadfce60379637714808c05b0d14809dde"></a>
-Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gadfce60379637714808c05b0d14809dde">R9Ele</a> [3] =initFloat</td></tr>
+Float_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d76/group__BRANCHES.html#gadfce60379637714808c05b0d14809dde">R9Ele</a> [3] = {-999.,-999.,-999.}</td></tr>
 <tr class="memdesc:gadfce60379637714808c05b0d14809dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">e3x3/rawEnergySCEle <br/></td></tr>
 <tr class="separator:gadfce60379637714808c05b0d14809dde"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga958ea12846dfbcfdfecba19afd10e3c6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga958ea12846dfbcfdfecba19afd10e3c6"></a>
