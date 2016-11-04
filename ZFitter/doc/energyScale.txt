@@ -103,6 +103,31 @@ Quick view at the likelihood profiles:
 \endverbatim
 Now have a look at the likelihoods in test/dato/fitres/outProfile-scaleStep2smearing_1-Et_25.root
 
+#\subsubsection _run dependent scale monitoring):
 
+\subsection _TUTORIAL Tutoriale
+Fit data an MC mass distributions with a Breit-Wigner function convoluted with a crystal ball.
+
+Have a look at the region file data/regions/scaleStep1.dat (there is no r9 requirement here, only eta)
+and the run range division in data/runRanges/run_range_for_tutorial.dat (there is only a run period here, for simplicity)
+\verbatim
+./bin/ZFitter.exe -f data/validation/ICHEP_dataset_13_invfb.dat --regionsFile data/regions/scaleStep1.dat  --runRangesFile data/runRanges/run_range_for_tutorial.dat --invMass_var invMass_SC_corr
+\endverbatim
+
+Have a look at your mass spectra you just fitted
+\verbatim
+ls -rthl test/dato/fitres/
+ls -rthl test/MC/fitres/
+display test/dato/img/EB-absEta_0_1-runNumber_273158_273160-Et_25.pdf
+display test/MC/img/EB-absEta_0_1-Et_25.pdf
+
+Produce a latex table with the results of the fit
+ ./script/makeTable.sh --regionsFile data/regions/scaleStep1.dat  --runRangesFile data/runRanges/run_range_for_tutorial.dat --outDirFitResMC=test/MC/fitres --outDirFitResData=test/dato/fitres --commonCut=Et_25 > test/dato/fitres/step1_ICHEP_dataset_13_invfb.tex
+
+Produce a dat file with the scale shift
+./script/tex2txt.sh test/dato/fitres/step1_ICHEP_dataset_13_invfb.tex | awk -F "\t" -f awk/recalibOutput.awk |grep -v '^%' > test/dato/fitres/step1_ICHEP_dataset_13_invfb.dat
+
+Produce a summary plot with the scale shift behaviour over time:
+./script/stability.sh -t  test/dato/fitres/step1_ICHEP_dataset_13_invfb.tex --outDirImgData test/dato/img/ -x runNumber -y peak
 
 */
