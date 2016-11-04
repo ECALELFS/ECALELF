@@ -1,21 +1,19 @@
 #ifndef BW_CB_pdf_hh
 #define BW_CB_pdf_hh
 
-/// Breit-Wigner convoluted with Crystal Ball function PDF
 
 /**\class BW_CB_pdf_class BW_CB_pdf_class.cc Calibration/ZFitter/interface/BW_CB_pdf_class.hh
+   \brief Breit-Wigner convoluted with Crystal Ball function PDF
+   \author Shervin Nourbakhsh
+
+   \detail
 	Class providing a RooPdf correspoding to the convolution of a
 	Breit-Wigner and Crystal Ball
-
 */
 
 /* \todo
  */
 
-/****************************************************************************
- * class defining a Breit-Wigner convoluted with a Crystal Ball function
- *
- */
 
 
 // roofit headers

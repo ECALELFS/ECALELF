@@ -1,7 +1,7 @@
 /**
-* \page NtupleStructure Ntuple content and logic of use
-*
-* 
+\page NtupleStructure Ntuple content and logic of use
+\defgroup BRANCHES
+ 
 ECALELF ntuples are produced by the ZNtupleDumper class. Follow the
 link to see the branches that are implemented. 
 
