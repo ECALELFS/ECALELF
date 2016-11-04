@@ -5,7 +5,7 @@
 //
 /// Zee and E/p ntuple dumper from patElectrons
 /**\class ZNtupleDumper ZNtupleDumper.cc Calibration/ZNtupleDumper/src/ZNtupleDumper.cc
- *
+ * \author Shervin Nourbakhsh
  * Description: Zee and E/p ntuple dumper from patElectrons
  *
  * \todo
@@ -234,7 +234,10 @@ private:
 
 	// ntuple members, private to make them visible in doxygen
 private:
-
+	/**	
+		\addtogroup BRANCHES
+		@{
+	 */ 
 	Int_t     	runNumber;   ///<
 	Long64_t      eventNumber; ///<
 	Int_t         lumiBlock;   ///< lumi section
@@ -411,7 +414,9 @@ private:
 
 	void InitPdfSystTree(void);
 	void TreeSetPdfSystVar(const edm::Event& iEvent);
-
+/**
+ @}
+*/
 	//==============================
 private:
 	TFile *tree_file;
