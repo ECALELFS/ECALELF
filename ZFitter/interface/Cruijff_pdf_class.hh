@@ -1,19 +1,13 @@
 #ifndef Cruijff_pdf_hh
 #define Cruijff_pdf_hh
 
-/// Cruijff function
 
 /**\class Cruijff_pdf_class Cruijff_pdf_class.cc Calibration/ZFitter/interface/Cruijff_pdf_class.hh
-	Class providing a RooPdf corresponding to a Cruijff function
-        (Gaussian with exponential tails)
+   \brief Class providing a RooPdf corresponding to a Cruijff function (Gaussian with exponential tails)
+   \author Shervin Nourbakhsh
 */
 
 /* \todo
- */
-
-/****************************************************************************
- * class defining a Breit-Wigner convoluted with a Crystal Ball function
- *
  */
 
 

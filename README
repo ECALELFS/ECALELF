@@ -19,12 +19,18 @@ from the Calibration/ directory and you can navigate instructions and code local
 \section START Getting Started
 \subpage preReq
 
-\ref page1
+\subpage INTRODUCTION
 
 <A HREF="https://github.com/ECALELFS/ECALELF/blob/newMaster/README.md"> Download instructions </A>
 
 
 \subpage WORKNTUPLES
+
+\section Energy scales and smearings
+\subpage SCALESSMEARINGS
+
+
+\section ECALELF rereco and validations
 
 ### Instructions for ECAL validator:
  - \ref DATAFORMATS
