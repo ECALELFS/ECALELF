@@ -1,3 +1,6 @@
+#ifndef _TECALCHAIN_H
+#define _TECALCHAIN_H
+
 #include <TChain.h>
 
 class TECALChain : public TChain
@@ -5,7 +8,6 @@ class TECALChain : public TChain
 public:
 	virtual void SetEntryList(TEntryList *elist)
 	{
-		std::cout << "SetEntryListECAL:: begin setting EntryList" << std::endl;
 		if (fEntryList) {
 			//check, if the chain is the owner of the previous entry list
 			//(it happens, if the previous entry list was created from a user-defined
@@ -49,9 +51,9 @@ public:
 			treename = chainElement->GetName();
 			filename = chainElement->GetTitle();
 			templist = elist->GetEntryList(filename + "/" + treename, filename);
-			std::cout << "[yacine] treename :: " << treename << std::endl;
-			std::cout << "[yacine] filename :: " << filename << std::endl;
-			std::cout << "[yacine] templist :: " << templist << std::endl;
+			/* std::cout << "[yacine] treename :: " << treename << std::endl; */
+			/* std::cout << "[yacine] filename :: " << filename << std::endl; */
+			/* std::cout << "[yacine] templist :: " << templist << std::endl; */
 			if (templist) {
 				listfound++;
 				templist->SetTreeNumber(ie);
@@ -78,4 +80,6 @@ public:
 		fEntryList->SetShift(shift);
 	}
 };
- 
+
+#endif
+

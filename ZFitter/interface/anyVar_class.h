@@ -35,11 +35,28 @@
 #include <TEntryList.h>
 #include <TChainElement.h>
 
+#include "Stats.hh"
+
 //*********************************
 #include "ElectronCategory_class.hh"
 
 //#include <functions.h>
+#define NELE 2
 
+/** \class anyVar_class anyVar_class anyVar_class
+	\brief class for estimation of basic quantities for any Float_t branch in the tree
+
+\section How to test linearity
+for scale in 0.98 0.99 0.995 1 1.005 1.01 1.02 ; do mkdir -p scale_${scale}; ./bin/ZFitter.exe -f data/validation/test_ss.dat --regionsFile=data/regions/validation.dat  --noPU --commonCut="Et_25" --outDirFitResData=scale_${scale}/ --scale=$scale > scale_${scale}/scale.log; done
+
+fish for scale in scale_*; set scale (echo $scale | sed 's|scale_||') ; echo -ne "$scale\t"; grep EB-gold scale_{$scale}/invMass*.dat; end > p.dat
+gnuplot
+f(x) = m * x + q
+p 'p.dat' u ($1-1):($7) w lp
+fit f(x) 'p.dat' u ($1-1):($7) via m,q
+rep f(x)
+print m/q
+*/
 
 
 #include "TECALChain.h"
@@ -47,137 +64,63 @@ class anyVar_class
 {
 public:
 
+	typedef enum { kInt_t = 1, kUInt_t,  kULong64_t,  kFloat_t,  kArrayTypes = 10,   ///< simple variable types
+	               kAInt_t,    kAUInt_t, kAULong64_t, kAFloat_t, kMaxType
+	             } kType;  ///< array types
+
 	anyVar_class(TChain *data_chain_,
-				 std::vector<TString> branchNames
-		);
+	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
+	             std::string massBranchName,
+	             std::string outDirFitRes
+	            );
 
 	~anyVar_class(void);
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< to be called in the main
+	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); ///< returns a RooDataset with selected events and weight
+	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
+	void SetOutDirName(std::string dirname);
+	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
+	void TreeToTreeShervin(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
+
+private:
+	TChain *data_chain; // pointer fixed in the constructor
+	TTree *reduced_data;
+	TDirectory dir;
+	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
+	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
+
+	std::vector<std::unique_ptr<std::ofstream> > _statfiles; ///< one file for each branch, here the stats are saved
+	statsCollection _stats_vec;
+
+
+	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
+
+	std::string massBranchName_; ///< branch name for the di-object invariant mass
+
+	Double_t weight; ///< variable with the total event weight
+
+	RooRealVar * idx, * mass, * smearMass;
+
+
+	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	void TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< skim the input TChain with selected events, copying only active branches
+
+
+	void FillStat(RooDataSet *dataset); ///< fills the "stats" struct
 
 
 public:
 	// define a struct saving the infos:
-	struct {
-		double mode;
-		double mean;
-		double stdDev;
-		double skewness;
-		double curtosis;
-		double sigmaEff30, sigmaEff68, sigmaEff90, sigmaEff95;
-	};
-	// options:
-	bool _isDataUnbinned;    // to import in roodatahist
 
 
-	TString imgFormat; // eps
-	TString outDirFitResData;
-	TString outDirImgData;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-public:
-
-	TString GetDir(void);
-
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList);
 
 	double GetEffectiveSigma(RooAbsData *dataset, float quant);
 
-	// this method makes the fit on data and MC
-	void Fit(TString region = "", bool doPlot = true);
-	void Fit(TH1F *hist, bool isMC = true);
-
-	void FitToy(TString region, int nToys, int nEvents = 10000, bool doPlot = true);
-
-
-	void SaveFitPlot(TString fileName, bool isMC = true);
-	void PlotInvMass(TString region);
-	void PrintScale(std::ostream outScale);
-	void PrintRes(std::ostream outRes);
+	void PrintStats(std::ostream outScale);
+	bool _exclusiveCategories;
 
 
 
-	//--------------- class settings
-
-private:
-	TChain *data_chain;
-
-	RooRealVar invMass;
-	TString energyVar_name;
-	TH1* invMass_highBinning;
-
-
-	//public:
-	//to be private, public just for testing
-	RooPlot *plot_data;
-	RooPlot *plot_MC;
-	float chi2_data, chi2_MC;
-	float sigmaeff_data, sigmaeff_MC;
-	std::map< float, float> sigmaeff_data_map, sigmaeff_MC_map;
-private:
-	//-------------------- Pointers to the objects
-	//--------------- Z parameters to be declared depending on the signal pdf
-	//  RooRealVar& Z_deltaM; // parametri da prendere dai fit
-	//  RooRealVar& Z_width;  // parametri da prendere dai fit
-
-
-	RooArgSet* params;
-
-	TChain *data;
-	TChain *signal;
-
-
-
-
-	std::vector<TString> region_map;
-	std::vector<std::pair<double, double> > deltaM_data_map;
-	std::vector<std::pair<double, double> > width_data_map;
-
-	std::vector<std::pair<double, double> > deltaM_MC_map;
-	std::vector<std::pair<double, double> > width_MC_map;
-
-	TChain *ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList);
-	RooDataSet *TreeToRooDataSet(TChain *chain, TEntryList *entryList); // import only invMass and weight
-	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut); // import only invMass and weight
-	//  RooDataSet *ImportTree(TChain *chain, int eleID, bool odd=false);
-	RooDataHist *ImportHist(TH1F *hist);
-
-	TCut GetCut(TString region, bool RooFit = true);
-	RooAbsData *ReduceDataset(TChain *data, TString region, bool isMC, bool isUnbinned);
-	void SetFitPar(RooFitResult *fitres_MC = NULL);
-	void PlotFit(RooAbsData *signal_red, RooAbsData *data_red);
-	void PlotFit(RooAbsData *data_red, bool isMC = true);
-
-	void SaveFitRes(RooFitResult *fitres, TString fileName, float chi2, double nEvents, std::map<float, float> sigmaeff);
-
-	//  std::map<TString, TH1F *> MakeHistMap(const chain_map_t& map, TString region);
-
-	RooFitResult *FitData(TString region, bool doPlot = true, RooFitResult *fitres_MC = NULL);
-	RooFitResult *FitMC(TString region, bool doPlot = true);
-
-	ElectronCategory_class cutter;
-
-	//  int _signal_pdf_index, _bkg_pdf_index;
-	void SetInitParamsfromRead(RooArgSet* pars);
-	TTree* InitTree();
-
-	TEntryList *commonMC, *commonData, *reducedMC, *reducedData;
 };
 
 #endif

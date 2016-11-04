@@ -31,6 +31,7 @@ configuration files.
 
 /// @cond SHOW
 /// \code
+#include "../interface/anyVar_class.h"
 #include "../interface/ZFit_class.hh"
 #include "../interface/puWeights_class.hh"
 #include "../interface/r9Weights_class.hh"
@@ -78,6 +79,8 @@ configuration files.
 
 //#define DEBUG
 #define smooth
+
+//#define dump_root_tree 1
 
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
@@ -268,7 +271,7 @@ int main(int argc, char **argv)
 	int pdfSystWeightIndex = -1;
 	std::string minimType;
 	std::vector<std::string> branchList;
-
+	float scale;
 //options for E/p
 	std::string jsonFileName;
 	std::string miscalibMap;
@@ -350,6 +353,7 @@ int main(int argc, char **argv)
 	("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25), "Smearing binning")
 	("isOddMC", "Activate if use only odd events in MC")
 	("isOddData", "Activate if use only odd events in data")
+	("scale", po::value<float>(&scale)->default_value(1.), "scale shift for tests")
 	//
 	("readDirect", "") //read correction directly from config file instead of passing as a command line arg
 	//("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
@@ -983,7 +987,6 @@ int main(int argc, char **argv)
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
 		runDivide_class runDivider;
-		std::cout << "[yacine runDivide] the chain :: " << (tagChainMap["d"])["selected"] << "\t" << nEvents_runDivide << std::endl;
 		std::vector<TString> v = runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		std::vector<TString> runRanges;
@@ -1157,6 +1160,8 @@ int main(int argc, char **argv)
 //     Loop((tagChainMap["s1"])["selected"],file);
 		return 0;
 	}
+
+
 	//------------------------------ ZFit_class declare and set the options
 	TChain *data = NULL;
 	TChain *mc = NULL;
@@ -1164,6 +1169,87 @@ int main(int argc, char **argv)
 		data = (tagChainMap["d"])["selected"];
 		mc  = (tagChainMap["s"])["selected"];
 	}
+
+	//------------------------------ anyVar_class declare and set the options
+	std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
+#ifdef dump_root_tree
+	// first all the single variables
+	branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
+	branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
+	branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
+	branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
+	// then all the array variables
+	branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
+	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
+	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+#endif
+	anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData);
+	anyVar._exclusiveCategories = false;
+	for(unsigned int moduloIndex = 0; moduloIndex < 10; ++moduloIndex) {
+		anyVar.Import(commonCut, eleID, activeBranchList, 10, moduloIndex);
+		std::string dir = outDirFitResData;
+		if(dir.rfind("/") != std::string::npos) dir.erase(dir.rfind("/"));
+		dir += "-modulo_" + std::to_string(moduloIndex) + "/";
+		anyVar.SetOutDirName(dir);
+		std::cout << "[INFO] setting new output dir: " << dir << std::endl;
+		continue;
+#ifndef dump_root_tree
+		for(auto& region : categories) {
+			std::cout << "------------------------------------------------------------" << std::endl;
+			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
+			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+		}
+#endif
+	}
+	return 0;
+
+	///RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
+	///ds2->SetName("ds2");
+	///ds2->SetTitle("ds2");
+	/////RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
+	/////ds3->SetTitle("ds3");
+	///RooDataSet * ds = ds2;
+	///ds->append(*ds2);
+
+
+	///ds->Print();
+	///ds2->Print();
+	/////ds3->Print();
+	/////ds->write("dataset.dat");
+	TFile * fout = TFile::Open("roodataset.root", "recreate");
+	fout->cd();
+	///ds->Write("ds");
+
+	/*
+	// write an ASCII roodataset with specified format
+	// Open file for writing
+	char foutname[] = "dataset2.dat";
+	ofstream ofs(foutname) ;
+	//ofs << std::fixed << std::setprecision(4); // << std::defaultfloat;
+	ofs << ofs.precision(10);
+	if (ofs.fail()) {
+	        std::cerr << "RooDataSet::write(" << ds->GetName() << ") cannot create file " << foutname << endl ;
+	} else {
+	        // Write all lines as arglist in compact mode
+	        std::cout << "RooDataSet::write(" << ds->GetName() << ") writing ASCII file " << foutname << endl ;
+	        Int_t i ;
+	        for (i=0 ; i<ds->numEntries() ; i++) {
+	                RooArgList list(*ds->get(i),"line") ;
+	                list.writeToStream(ofs,kTRUE) ;
+	        }
+	}
+	*/
+#ifdef dump_root_tree
+	fout->Close();
+	anyVar.TreeToTree(data, TCut("1"));
+#endif
+	return 3;
 
 	if(vm.count("EOverPCalib") && vm.count("doEB")) {
 ///////// E/P calibration
