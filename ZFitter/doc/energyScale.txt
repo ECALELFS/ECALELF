@@ -48,7 +48,7 @@ This way you don't need to modify your validation config file each
 time you want to run with a different set of corrections, you just
 need to pass the appropriate type name at the command line.
 
-\subsection _TUTORIAL Tutorial
+\section _TUTORIAL Tutorial
 
 From Calibration/
 \verbatim
@@ -104,7 +104,7 @@ Quick view at the likelihood profiles:
 Now have a look at the likelihoods in test/dato/fitres/outProfile-scaleStep2smearing_1-Et_25.root
 
 
-\subsection _TUTORIAL STEP1: run dependent scale monitoring
+\subsection TIME_DEP STEP1: time*eta dependent scale monitoring 
 Fit data an MC mass distributions with a Breit-Wigner function convoluted with a crystal ball.
 
 Have a look at the region file data/regions/scaleStep1.dat (there is no r9 requirement here, only eta)
