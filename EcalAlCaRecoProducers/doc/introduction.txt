@@ -1,6 +1,6 @@
 /**
 \tableofcontents
-\page page1 Introduction
+\page INTRODUCTION Introduction
 
 
 ############################################################
@@ -17,6 +17,9 @@ The code in this package takes the name of ECALELF
 
 
 \section DATAFORMAT Dataformats
+@includedoc README
+
+
  The calibration  with electrons (single and double electron
 samples) is performed using the alcareco data format that
 contains only relevant collections for the ECAL calibration with
