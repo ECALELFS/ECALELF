@@ -305,6 +305,7 @@ int main(int argc, char **argv)
 	po::options_description inputOption("Input options");
 	po::options_description fitterOption("Z fitter options");
 	po::options_description smearerOption("Z smearer options");
+	po::options_description anyVarOption("anyVar options");
 	po::options_description toyOption("toyMC options");
 	po::options_description EoverPOption("EoverP options");
 
@@ -344,8 +345,8 @@ int main(int argc, char **argv)
 	("saveRootMacro", "")
 	//
 	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID|Spring15|25ns|V1|standalone|loose"), "")
-	  //Note for users: whenever the eleID selection name has a "-" put a "|" instead here
-	  //This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
+	//Note for users: whenever the eleID selection name has a "-" put a "|" instead here
+	//This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
 	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
@@ -370,11 +371,12 @@ int main(int argc, char **argv)
 	//  smearOption.add_options()
 	;
 	fitterOption.add_options()
+	("zFit", "call the ZFit_class")
 	("fit_type_value", po::value<int>(&fit_type_value)->default_value(1), "0=floating tails, 1=fixed tails")
 	("signal_type_value", po::value<int>(&signal_type_value)->default_value(0), "0=BW+CB, 1=Cruijff")
 	("forceNewFit", "refit MC also if fit exists")
 	("updateOnly",  "do not fit data if fit exists")
-	;;
+	;
 	smearerOption.add_options()
 	("smearerFit",  "call the smearing")
 	("smearerType", po::value<string>(&minimType)->default_value("profile"), "minimization algo")
@@ -394,6 +396,9 @@ int main(int argc, char **argv)
 	("smearingEt", "alpha term depend on sqrt(Et) and not on sqrt(E)")
 	("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(0), "")
 	("pdfSystWeightIndex", po::value<int>(&pdfSystWeightIndex)->default_value(-1), "Index of the weight to be used")
+	;
+	anyVarOption.add_options()
+	("anyVar", "call the anyVar_class")
 	;
 	inputOption.add_options()
 	("chainFileList,f", po::value< string >(&chainFileListName), "Configuration file with input file list")
@@ -450,10 +455,10 @@ int main(int argc, char **argv)
 	desc.add(inputOption);
 	desc.add(outputOption);
 	desc.add(fitterOption);
+	desc.add(anyVarOption);
 	desc.add(smearerOption);
 	desc.add(toyOption);
 	desc.add(EoverPOption);
-
 	po::variables_map vm;
 	//
 	// po::store(po::parse_command_line(argc, argv, smearOption), vm);
@@ -1031,115 +1036,12 @@ int main(int argc, char **argv)
 	eleID += selection.c_str();
 	eleID.ReplaceAll("_", "");
 
-	//------------------------------ RooSmearer
-	RooArgSet args;
-	std::vector<RooArgSet> args_vec;
-
-	for(std::vector<TString>::const_iterator region_itr = categories.begin();
-	        region_itr != categories.end();
-	        region_itr++) {
-		RooRealVar *scale_ = new RooRealVar("scale_" + *region_itr, "scale_" + *region_itr, 1.0, 0.95, 1.05, "GeV"); //0.9,1.1,"GeV")
-		scale_->setError(0.005); // 1%
-		//    scale_->setConstant();
-		//    scale_->setBinning(RooBinning(
-		args.add(*scale_);
-
-		TString varName = *region_itr;
-		TPRegexp reg("Et_[0-9]*_[0-9]*");
-		reg.Substitute(varName, "");
-		TPRegexp reg2("energySC_[0-9]*_[0-9]*");
-		reg2.Substitute(varName, "");
-		varName.ReplaceAll("--", "-");
-		if(varName.First("-") == 0) varName.Remove(0, 1);
-
-		//RooRealVar *const_term_ = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+*region_itr, 0.01, 0.0005, 0.05);
-		RooAbsReal *const_term_ = NULL;
-		RooRealVar *const_term_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("constTerm_" + varName);
-		if(const_term_v == NULL) {
-			if(vm.count("constTermFix") == 0) const_term_v = new RooRealVar("constTerm_" + *region_itr, "constTerm_" + varName, 0.00, 0.000, 0.05);
-			else const_term_v = new RooRealVar("constTerm_" + varName, "constTerm_" + varName, 0.00, 0.000, 0.02);
-			const_term_v->setError(0.03); // 1%
-			//const_term_v->setConstant(true);
-			args.add(*const_term_v);
-		}
-		if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) ) && vm.count("constTermFix") == 1) {
-			const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
-			const_term_v->setConstant(false);
-		} else const_term_ = const_term_v;
-
-
-
-		RooAbsReal *alpha_ = NULL;
-		RooRealVar *alpha_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("alpha_" + varName);
-		if(alpha_v == NULL) {
-			alpha_v = new RooRealVar("alpha_" + varName, "alpha_" + varName, 0.0, 0., 0.20);
-			alpha_v->setError(0.01);
-			alpha_v->setConstant(true);
-			//alpha_v->Print();
-			if(!vm.count("alphaGoldFix") || !region_itr->Contains("absEta_1_1.4442-gold")) {
-				args.add(*alpha_v);
-			}
-		}
-		if(reg.MatchB(*region_itr) && vm.count("constTermFix") == 1) {
-			if(vm.count("alphaGoldFix") && region_itr->Contains("absEta_1_1.4442-gold")) {
-				std::cout << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
-				std::cerr << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
-				TString lowRegionVarName = varName;
-				lowRegionVarName.ReplaceAll("absEta_1_1.4442", "absEta_0_1");
-				alpha_v = (RooRealVar *)args.find("alpha_" + lowRegionVarName);
-				alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + lowRegionVarName, "@0", *alpha_v);
-			} else {
-				alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + varName, "@0", *alpha_v);
-			}
-			alpha_v->setConstant(false);
-		} else alpha_ = alpha_v;
-
-		args_vec.push_back(RooArgSet(*scale_, *alpha_, *const_term_));
+	TChain *data = NULL;
+	TChain *mc = NULL;
+	if(!vm.count("smearerFit")) {
+		data = (tagChainMap["d"])["selected"];
+		mc  = (tagChainMap["s"])["selected"];
 	}
-
-	if(vm.count("onlyScale")) {
-		TIterator *it1 = NULL;
-		it1 = args.createIterator();
-		for(RooRealVar *var = (RooRealVar *) it1->Next(); var != NULL;
-		        var = (RooRealVar *) it1->Next()) {
-			TString name(var->GetName());
-			if(name.Contains("scale")) continue;
-			var->setConstant(true);
-		}
-	}
-
-	args.sort(kFALSE);
-	if(vm.count("smearerFit")) {
-		std::cout << "------------------------------ smearer parameters" << std::endl;
-		args.writeToStream(std::cout, kFALSE);
-	}
-
-	TRandom3 g(0);
-	Long64_t randomInt = g.Integer(1000000);
-	TString filename = "tmp/tmpFile-";
-	filename += randomInt;
-	filename += ".root";
-	TFile *tmpFile = new TFile(filename, "recreate");
-	tmpFile->cd();
-	RooSmearer smearer("smearer", (tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL,
-	                   categories,
-	                   args_vec, args, energyBranchName);
-	smearer._isDataSmeared = vm.count("isDataSmeared");
-	if(vm.count("runToy")) smearer.SetPuWeight(false);
-	smearer.SetOnlyDiagonal(vm.count("onlyDiagonal"));
-	smearer._autoBin = vm.count("autoBin");
-	smearer._autoNsmear = vm.count("autoNsmear");
-	smearer.smearscan = vm.count("smearscan");
-	//smearer.nEventsMinDiag = nEventsMinDiag;
-	smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
-	smearer.SetSmearingEt(vm.count("smearingEt"));
-	smearer.SetR9Weight(vm.count("useR9weight"));
-	smearer.SetPdfSystWeight(pdfSystWeightIndex);
-	smearer.SetZPtWeight(vm.count("useZPtweight"));
-	smearer.SetFsrWeight(vm.count("useFSRweight"));
-	smearer.SetWeakWeight(vm.count("useWEAKweight"));
-
-	if(nSmearToy > 0) smearer._nSmearToy = nSmearToy;
 
 
 	//------------------------------ Take the list of branches needed for the defined categories
@@ -1154,575 +1056,35 @@ int main(int argc, char **argv)
 		// add also the friend branches!
 	}
 
-	if(vm.count("loop")) {
-//     TFile *file = new TFile("evList.root","read");
 
-//     Loop((tagChainMap["s1"])["selected"],file);
-		return 0;
-	}
+	if(vm.count("zFit")) {
 
+		ZFit_class fitter( data, mc, NULL,
+		                   invMass_var.c_str(), invMass_min, invMass_max, invMass_binWidth);
 
-	//------------------------------ ZFit_class declare and set the options
-	TChain *data = NULL;
-	TChain *mc = NULL;
-	if(!vm.count("smearerFit")) {
-		data = (tagChainMap["d"])["selected"];
-		mc  = (tagChainMap["s"])["selected"];
-	}
+		fitter._oddMC = vm.count("isOddMC");
+		fitter._oddData = vm.count("isOddData");
 
-	//------------------------------ anyVar_class declare and set the options
-	std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
-#ifdef dump_root_tree
-	// first all the single variables
-	branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
-	branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
-	branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-	branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
-	// then all the array variables
-	branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
-	branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
-	branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-#endif
-	anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData);
-	anyVar._exclusiveCategories = false;
-	for(unsigned int moduloIndex = 0; moduloIndex < 10; ++moduloIndex) {
-		anyVar.Import(commonCut, eleID, activeBranchList, 10, moduloIndex);
-		std::string dir = outDirFitResData;
-		if(dir.rfind("/") != std::string::npos) dir.erase(dir.rfind("/"));
-		dir += "-modulo_" + std::to_string(moduloIndex) + "/";
-		anyVar.SetOutDirName(dir);
-		std::cout << "[INFO] setting new output dir: " << dir << std::endl;
-		continue;
-#ifndef dump_root_tree
-		for(auto& region : categories) {
-			std::cout << "------------------------------------------------------------" << std::endl;
-			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
-		}
-#endif
-	}
-	return 0;
-
-	///RooDataSet * ds2 = anyVar.TreeToRooDataSet(mc, TCut(), 2);
-	///ds2->SetName("ds2");
-	///ds2->SetTitle("ds2");
-	/////RooDataSet * ds3 = anyVar.TreeToRooDataSet(mc, cutter.GetCut("absEtaSC_2_2.5", false, 1), 1);
-	/////ds3->SetTitle("ds3");
-	///RooDataSet * ds = ds2;
-	///ds->append(*ds2);
-
-
-	///ds->Print();
-	///ds2->Print();
-	/////ds3->Print();
-	/////ds->write("dataset.dat");
-	TFile * fout = TFile::Open("roodataset.root", "recreate");
-	fout->cd();
-	///ds->Write("ds");
-
-	/*
-	// write an ASCII roodataset with specified format
-	// Open file for writing
-	char foutname[] = "dataset2.dat";
-	ofstream ofs(foutname) ;
-	//ofs << std::fixed << std::setprecision(4); // << std::defaultfloat;
-	ofs << ofs.precision(10);
-	if (ofs.fail()) {
-	        std::cerr << "RooDataSet::write(" << ds->GetName() << ") cannot create file " << foutname << endl ;
-	} else {
-	        // Write all lines as arglist in compact mode
-	        std::cout << "RooDataSet::write(" << ds->GetName() << ") writing ASCII file " << foutname << endl ;
-	        Int_t i ;
-	        for (i=0 ; i<ds->numEntries() ; i++) {
-	                RooArgList list(*ds->get(i),"line") ;
-	                list.writeToStream(ofs,kTRUE) ;
-	        }
-	}
-	*/
-#ifdef dump_root_tree
-	fout->Close();
-	anyVar.TreeToTree(data, TCut("1"));
-#endif
-	return 3;
-
-	if(vm.count("EOverPCalib") && vm.count("doEB")) {
-///////// E/P calibration
-
-		std::cout << "---- START E/P CALIBRATION: BARREL ----" << std::endl;
-		/// open ntupla of data or MC
-// TChain * tree = new TChain (inputTree.c_str());
-// FillChain(*tree,inputList);
-		int nRegionsEB = GetNRegionsEB(typeEB);
-
-		std::map<int, std::vector<std::pair<int, int> > > jsonMap;
-		jsonMap = readJSONFile(jsonFileName);
-		std::cout << "JSON file: " << jsonFileName << std::endl;
-
-		std::cout << "Output Directory: " << outputPath << std::endl;
-		system(("mkdir -p " + outputPath).c_str());
-
-		/// open calibration momentum graph
-		TFile* momentumscale = new TFile((inputMomentumScale + "_" + typeEB + "_" + typeEE + ".root").c_str());
-		std::vector<TGraphErrors*> g_EoC_EB;
-
-		for(int i = 0; i < nRegionsEB; ++i) {
-			TString Name = Form("g_EoC_EB_%d", i);
-			g_EoC_EB.push_back( (TGraphErrors*)(momentumscale->Get(Name)) );
+		if(vm.count("r9WeightFile")) {
+			// if the data are weighted need to use the unbinned likelihood fit to have the correct errors
+			fitter._isDataUnbinned = true;
+			fitter._isDataSumW2 = true;
 		}
 
-		///Use the whole sample statistics if numberOfEvents < 0
-		if ( numberOfEvents < 0 ) numberOfEvents = data->GetEntries();
-
-		/// run in normal mode: full statistics
-		if ( splitStat == 0 ) {
-
-			TString name ;
-			TString name_tmp;
-
-			if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_R9_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_WZ_Fbrem_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_WZ_PT_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_EP_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_WZ_noEP_miscalib_EB", outputFile.c_str());
-
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_R9_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_WZ_Fbrem_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_WZ_PT_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_EP_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_WZ_noEP_EB", outputFile.c_str());
-
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_W_R9_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_W_Fbrem_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_W_PT_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_W_EP_miscalib_EB", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_W_noEP_miscalib_EB", outputFile.c_str());
-
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_R9_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_W_Fbrem_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_W_PT_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_W_EP_EB", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_W_noEP_EB", outputFile.c_str());
-			else {
-				std::cout << " Option not considered --> exit " << std::endl;
-				return -1 ;
-			}
-
-			name = Form("%s%s.root", outputPath.c_str(), name_tmp.Data());
-			TFile *outputName = new TFile(name, "RECREATE");
-
-			TString outEPDistribution = "Weight_" + name;
-
-			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
-
-			if(isSaveEPDistribution == true) {
-				FastCalibratorEB analyzer(data, g_EoC_EB, typeEB, outEPDistribution);
-				analyzer.bookHistos(nLoops);
-				analyzer.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-				analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-				analyzer.saveHistos(outputName);
-			} else {
-				FastCalibratorEB analyzer(data, g_EoC_EB, typeEB);
-				analyzer.bookHistos(nLoops);
-				analyzer.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-				analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-				analyzer.saveHistos(outputName);
-			}
-
-		}
-
-		/// run in even-odd mode: half statistics
-		else if ( splitStat == 1 ) {
-
-
-			/// Prepare the outputs
-			TString name;
-			TString name2;
-
-			if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_R9_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_R9_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_EP_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_EP_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_WZ_Fbrem_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_Fbrem_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_WZ_PT_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_PT_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_noEP_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_noEP_miscalib_EB_odd.root", outputFile.c_str());
-			}
-
-
-
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_R9_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_R9_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_EP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_EP_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_WZ_Fbrem_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_Fbrem_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_WZ_PT_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_PT_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_noEP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_noEP_EB_odd.root", outputFile.c_str());
-			}
-
-
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_R9_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_R9_miscalib_EB_odd.root", outputFile.c_str());
-			}
-
-			else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_EP_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_EP_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_W_Fbrem_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_Fbrem_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_W_PT_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_PT_miscalib_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_noEP_miscalib_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_noEP_miscalib_EB_odd.root", outputFile.c_str());
-			}
-
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_R9_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_R9_EB_odd.root", outputFile.c_str());
-			}
-
-
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_EP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_EP_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_EP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_EP_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_W_Fbrem_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_Fbrem_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_W_PT_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_PT_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_noEP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_noEP_EB_odd.root", outputFile.c_str());
-			} else {
-				std::cout << " Option not considered --> exit " << std::endl;
-				return -1 ;
-			}
-
-			TFile *outputName1 = new TFile(outputPath + name, "RECREATE");
-			TFile *outputName2 = new TFile(outputPath + name2, "RECREATE");
-
-			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
-
-			/// Run on odd
-			FastCalibratorEB analyzer_even(data, g_EoC_EB, typeEB);
-			analyzer_even.bookHistos(nLoops);
-			analyzer_even.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-			analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-			analyzer_even.saveHistos(outputName1);
-
-			/// Run on even
-			FastCalibratorEB analyzer_odd(data, g_EoC_EB, typeEB);
-			analyzer_odd.bookHistos(nLoops);
-			analyzer_odd.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-			analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat * (-1), nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-			analyzer_odd.saveHistos(outputName2);
-
-		}
-
-		return 0;
-//E/P calibration done!
-	}
-
-
-	if(vm.count("EOverPCalib") && vm.count("doEE")) {
-///////// E/P calibration
-
-		std::cout << "---- START E/P CALIBRATION: ENDCAP ----" << std::endl;
-		/// open ntupla of data or MC
-// TChain * tree = new TChain (inputTree.c_str());
-// FillChain(*tree,inputList);
-		int nRegionsEE = GetNRegionsEE(typeEE);
-
-		std::map<int, std::vector<std::pair<int, int> > > jsonMap;
-		jsonMap = readJSONFile(jsonFileName);
-		std::cout << "JSON file: " << jsonFileName << std::endl;
-
-		std::cout << "Output Directory: " << outputPath << std::endl;
-		system(("mkdir -p " + outputPath).c_str());
-
-		/// open calibration momentum graph
-		TFile* f4 = new TFile((inputMomentumScale + "_" + typeEB + "_" + typeEE + ".root").c_str());
-		std::vector<TGraphErrors*> g_EoC_EE;
-
-		for(int i = 0; i < nRegionsEE; ++i) {
-			TString Name = Form("g_EoC_EE_%d", i);
-			g_EoC_EE.push_back( (TGraphErrors*)(f4->Get(Name)) );
-		}
-
-		///Use the whole sample statistics if numberOfEvents < 0
-		if ( numberOfEvents < 0 ) numberOfEvents = data->GetEntries();
-
-
-		/// run in normal mode: full statistics
-		if ( splitStat == 0 ) {
-
-			TString name ;
-			TString name_tmp;
-
-			if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_R9_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_WZ_Fbrem_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_WZ_PT_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_EP_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 1 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_WZ_noEP_miscalib_EE", outputFile.c_str());
-
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_R9_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_WZ_Fbrem_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_WZ_PT_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_EP_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 1 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_WZ_noEP_EE", outputFile.c_str());
-
-
-
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_W_R9_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_W_Fbrem_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_W_PT_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_W_EP_miscalib_EE", outputFile.c_str());
-			else if(isMiscalib == true && useZ == 0 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_W_noEP_miscalib_EE", outputFile.c_str());
-
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_WZ_R9_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false )
-				name_tmp = Form ("%s_W_Fbrem_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true )
-				name_tmp = Form ("%s_W_PT_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == true && isfbrem == false && isPtCut == false )
-				name_tmp = Form ("%s_W_EP_EE", outputFile.c_str());
-			else if(isMiscalib == false && useZ == 0 && isEPselection == false && isR9selection == false && isPtCut == false && isfbrem == false  )
-				name_tmp = Form ("%s_W_noEP_EE", outputFile.c_str());
-			else {
-				std::cout << " Option not considered --> exit " << std::endl;
-				return -1 ;
-			}
-
-			name = Form("%s%s.root", outputPath.c_str(), name_tmp.Data());
-			TFile *f1 = new TFile(name, "RECREATE");
-
-			TString outEPDistribution = "Weight_" + name;
-
-			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
-
-
-			if(isSaveEPDistribution == true) {
-				FastCalibratorEE analyzer(data, g_EoC_EE, typeEE, outEPDistribution);
-				analyzer.bookHistos(nLoops);
-				analyzer.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-				analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-				analyzer.saveHistos(f1);
-			} else {
-				FastCalibratorEE analyzer(data, g_EoC_EE, typeEE);
-				analyzer.bookHistos(nLoops);
-				analyzer.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-				analyzer.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-				analyzer.saveHistos(f1);
-			}
-
-		}
-
-		/// run in even-odd mode: half statistics
-		else if ( splitStat == 1 ) {
-
-			/// Prepare the outputs
-			TString name;
-			TString name2;
-
-			if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_R9_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_R9_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_EP_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_EP_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_WZ_Fbrem_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_Fbrem_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_WZ_PT_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_PT_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_noEP_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_noEP_miscalib_EE_odd.root", outputFile.c_str());
-			}
-
-
-			else if(isMiscalib == false && useZ == 1 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_R9_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_R9_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_EP_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_EP_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_WZ_Fbrem_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_Fbrem_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_WZ_PT_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_PT_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 1 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_WZ_noEP_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_WZ_noEP_EE_odd.root", outputFile.c_str());
-			}
-
-
-			else if(isMiscalib == true && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_R9_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_R9_miscalib_EE_odd.root", outputFile.c_str());
-			}
-
-			else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_EP_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_EP_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_W_Fbrem_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_Fbrem_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_W_PT_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_PT_miscalib_EE_odd.root", outputFile.c_str());
-			} else if(isMiscalib == true && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_noEP_miscalib_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_noEP_miscalib_EE_odd.root", outputFile.c_str());
-			}
-
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_R9_EE_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_R9_EE_odd.root", outputFile.c_str());
-			}
-
-
-			else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_EP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_EP_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == true && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_EP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_EP_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == true && isPtCut == false) {
-				name  = Form ("%s_W_Fbrem_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_Fbrem_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == false && isEPselection == false && isfbrem == false && isPtCut == true) {
-				name  = Form ("%s_W_PT_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_PT_EB_odd.root", outputFile.c_str());
-			} else if(isMiscalib == false && useZ == 0 && isR9selection == true && isEPselection == false && isfbrem == false && isPtCut == false) {
-				name  = Form ("%s_W_noEP_EB_even.root", outputFile.c_str());
-				name2 = Form ("%s_W_noEP_EB_odd.root", outputFile.c_str());
-			} else {
-				std::cout << " Option not considered --> exit " << std::endl;
-				return -1 ;
-			}
-
-			TFile *outputName1 = new TFile(outputPath + name, "RECREATE");
-			TFile *outputName2 = new TFile(outputPath + name2, "RECREATE");
-
-			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
-
-			/// Run on odd
-			FastCalibratorEE analyzer_even(data, g_EoC_EE, typeEE);
-			analyzer_even.bookHistos(nLoops);
-			analyzer_even.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-			analyzer_even.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-			analyzer_even.saveHistos(outputName1);
-
-			/// Run on even
-			FastCalibratorEE analyzer_odd(data, g_EoC_EE, typeEE);
-			analyzer_odd.bookHistos(nLoops);
-			analyzer_odd.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
-			analyzer_odd.Loop(numberOfEvents, useZ, useW, splitStat * (-1), nLoops, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, jsonMap, miscalibMethod, miscalibMap);
-			analyzer_odd.saveHistos(outputName2);
-
-		}
-
-		return 0;
-//E/P calibration done!
-	}
-
-
-	ZFit_class fitter( data, mc, NULL,
-	                   invMass_var.c_str(), invMass_min, invMass_max, invMass_binWidth);
-
-	fitter._oddMC = vm.count("isOddMC");
-	fitter._oddData = vm.count("isOddData");
-
-	if(vm.count("r9WeightFile")) {
-		// if the data are weighted need to use the unbinned likelihood fit to have the correct errors
-		fitter._isDataUnbinned = true;
-		fitter._isDataSumW2 = true;
-	}
-
-	fitter._forceNewFit = vm.count("forceNewFit");
-	//  fitter._initFitMC=true;
-	fitter.SetFitType(fit_type_value);
-	fitter._updateOnly = vm.count("updateOnly");
-
-	fitter.imgFormat = imgFormat;
-	fitter.outDirFitResMC = outDirFitResMC;
-	fitter.outDirFitResData = outDirFitResData;
-	fitter.outDirImgMC = outDirImgMC;
-	fitter.outDirImgData = outDirImgData;
-
-	// check folder existance
-	fitter.SetPDF_model(signal_type_value, 0); // (0,0) convolution, CB no_bkg
-	//fitter.SetPDF_model(1,0); // cruijff, no_bkg
-
-	if(!vm.count("smearerFit")) {
+		fitter._forceNewFit = vm.count("forceNewFit");
+		//  fitter._initFitMC=true;
+		fitter.SetFitType(fit_type_value);
+		fitter._updateOnly = vm.count("updateOnly");
+
+		fitter.imgFormat = imgFormat;
+		fitter.outDirFitResMC = outDirFitResMC;
+		fitter.outDirFitResData = outDirFitResData;
+		fitter.outDirImgMC = outDirImgMC;
+		fitter.outDirImgData = outDirImgData;
+
+		// check folder existance
+		fitter.SetPDF_model(signal_type_value, 0); // (0,0) convolution, CB no_bkg
+		//fitter.SetPDF_model(1,0); // cruijff, no_bkg
 
 		fitter.Import(commonCut.c_str(), eleID, activeBranchList);
 		for(std::vector<TString>::const_iterator category_itr = categories.begin();
@@ -1743,7 +1105,188 @@ int main(int argc, char **argv)
 	}
 
 	myClock.Reset();
+
+
+
+	if(vm.count("loop")) {
+//     TFile *file = new TFile("evList.root","read");
+
+//     Loop((tagChainMap["s1"])["selected"],file);
+		return 0;
+	}
+
+
+	//------------------------------ ZFit_class declare and set the options
+
+	//------------------------------ anyVar_class declare and set the options
+	if(vm.count("anyVar")) {
+		std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
+#ifdef dump_root_tree
+		// first all the single variables
+		branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
+		branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
+		branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
+		branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
+		branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
+		branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
+		branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
+		// then all the array variables
+		branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
+		branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+#endif
+		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/");
+		anyVar._exclusiveCategories = false;
+#ifdef linearity
+		for(unsigned int moduloIndex = 0; moduloIndex < 10; ++moduloIndex) {
+			anyVar.Import(commonCut, eleID, activeBranchList, 10, moduloIndex);
+			std::string dir = outDirFitResData;
+			if(dir.rfind("/") != std::string::npos) dir.erase(dir.rfind("/"));
+			dir += "-modulo_" + std::to_string(moduloIndex) + "/";
+			anyVar.SetOutDirName(dir);
+			std::cout << "[INFO] setting new output dir: " << dir << std::endl;
+			continue;
+#ifndef dump_root_tree
+			for(auto& region : categories) {
+				std::cout << "------------------------------------------------------------" << std::endl;
+				std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
+				anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+			}
+#endif
+		}
+#else
+		anyVar.Import(commonCut, eleID, activeBranchList);
+		std::string dir = outDirFitResData;
+#ifndef dump_root_tree
+		for(auto& region : categories) {
+			std::cout << "------------------------------------------------------------" << std::endl;
+			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
+			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
+		}
+#endif
+
+#endif
+
+
+#ifdef dump_root_tree
+		anyVar.TreeToTree(data, TCut("1"));
+#endif
+	}
+
 	if(vm.count("smearerFit")) {
+		//------------------------------ RooSmearer
+		RooArgSet args;
+		std::vector<RooArgSet> args_vec;
+
+		for(std::vector<TString>::const_iterator region_itr = categories.begin();
+		        region_itr != categories.end();
+		        region_itr++) {
+			RooRealVar *scale_ = new RooRealVar("scale_" + *region_itr, "scale_" + *region_itr, 1.0, 0.95, 1.05, "GeV"); //0.9,1.1,"GeV")
+			scale_->setError(0.005); // 1%
+			//    scale_->setConstant();
+			//    scale_->setBinning(RooBinning(
+			args.add(*scale_);
+
+			TString varName = *region_itr;
+			TPRegexp reg("Et_[0-9]*_[0-9]*");
+			reg.Substitute(varName, "");
+			TPRegexp reg2("energySC_[0-9]*_[0-9]*");
+			reg2.Substitute(varName, "");
+			varName.ReplaceAll("--", "-");
+			if(varName.First("-") == 0) varName.Remove(0, 1);
+
+			//RooRealVar *const_term_ = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+*region_itr, 0.01, 0.0005, 0.05);
+			RooAbsReal *const_term_ = NULL;
+			RooRealVar *const_term_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("constTerm_" + varName);
+			if(const_term_v == NULL) {
+				if(vm.count("constTermFix") == 0) const_term_v = new RooRealVar("constTerm_" + *region_itr, "constTerm_" + varName, 0.00, 0.000, 0.05);
+				else const_term_v = new RooRealVar("constTerm_" + varName, "constTerm_" + varName, 0.00, 0.000, 0.02);
+				const_term_v->setError(0.03); // 1%
+				//const_term_v->setConstant(true);
+				args.add(*const_term_v);
+			}
+			if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) ) && vm.count("constTermFix") == 1) {
+				const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
+				const_term_v->setConstant(false);
+			} else const_term_ = const_term_v;
+
+
+
+			RooAbsReal *alpha_ = NULL;
+			RooRealVar *alpha_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("alpha_" + varName);
+			if(alpha_v == NULL) {
+				alpha_v = new RooRealVar("alpha_" + varName, "alpha_" + varName, 0.0, 0., 0.20);
+				alpha_v->setError(0.01);
+				alpha_v->setConstant(true);
+				//alpha_v->Print();
+				if(!vm.count("alphaGoldFix") || !region_itr->Contains("absEta_1_1.4442-gold")) {
+					args.add(*alpha_v);
+				}
+			}
+			if(reg.MatchB(*region_itr) && vm.count("constTermFix") == 1) {
+				if(vm.count("alphaGoldFix") && region_itr->Contains("absEta_1_1.4442-gold")) {
+					std::cout << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
+					std::cerr << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
+					TString lowRegionVarName = varName;
+					lowRegionVarName.ReplaceAll("absEta_1_1.4442", "absEta_0_1");
+					alpha_v = (RooRealVar *)args.find("alpha_" + lowRegionVarName);
+					alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + lowRegionVarName, "@0", *alpha_v);
+				} else {
+					alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + varName, "@0", *alpha_v);
+				}
+				alpha_v->setConstant(false);
+			} else alpha_ = alpha_v;
+
+			args_vec.push_back(RooArgSet(*scale_, *alpha_, *const_term_));
+		}
+
+		if(vm.count("onlyScale")) {
+			TIterator *it1 = NULL;
+			it1 = args.createIterator();
+			for(RooRealVar *var = (RooRealVar *) it1->Next(); var != NULL;
+			        var = (RooRealVar *) it1->Next()) {
+				TString name(var->GetName());
+				if(name.Contains("scale")) continue;
+				var->setConstant(true);
+			}
+		}
+
+		args.sort(kFALSE);
+		if(vm.count("smearerFit")) {
+			std::cout << "------------------------------ smearer parameters" << std::endl;
+			args.writeToStream(std::cout, kFALSE);
+		}
+
+		TRandom3 g(0);
+		Long64_t randomInt = g.Integer(1000000);
+		TString filename = "tmp/tmpFile-";
+		filename += randomInt;
+		filename += ".root";
+		TFile *tmpFile = new TFile(filename, "recreate");
+		tmpFile->cd();
+		RooSmearer smearer("smearer", (tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL,
+		                   categories,
+		                   args_vec, args, energyBranchName);
+		smearer._isDataSmeared = vm.count("isDataSmeared");
+		if(vm.count("runToy")) smearer.SetPuWeight(false);
+		smearer.SetOnlyDiagonal(vm.count("onlyDiagonal"));
+		smearer._autoBin = vm.count("autoBin");
+		smearer._autoNsmear = vm.count("autoNsmear");
+		smearer.smearscan = vm.count("smearscan");
+		//smearer.nEventsMinDiag = nEventsMinDiag;
+		smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
+		smearer.SetSmearingEt(vm.count("smearingEt"));
+		smearer.SetR9Weight(vm.count("useR9weight"));
+		smearer.SetPdfSystWeight(pdfSystWeightIndex);
+		smearer.SetZPtWeight(vm.count("useZPtweight"));
+		smearer.SetFsrWeight(vm.count("useFSRweight"));
+		smearer.SetWeakWeight(vm.count("useWEAKweight"));
+
+		if(nSmearToy > 0) smearer._nSmearToy = nSmearToy;
+
 
 		smearer.SetHistBinning(80, 100, invMass_binWidth); // to do before Init
 		if(vm.count("runToy")) {
@@ -2012,8 +1555,9 @@ int main(int argc, char **argv)
 			fOutProfile->Close();
 
 		}
+		tmpFile->Close();
+
 	}
-	tmpFile->Close();
 	globalClock.Stop();
 	std::cout << "[INFO] Total elapsed time: ";
 	globalClock.Print();

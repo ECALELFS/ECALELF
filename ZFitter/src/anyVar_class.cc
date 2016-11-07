@@ -1,4 +1,4 @@
-#include "anyVar_class.h"
+#include "../interface/anyVar_class.h"
 #include <TTreeFormula.h>
 #include <TObject.h>
 #include <TBranchElement.h>
@@ -119,25 +119,24 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 #endif
 
 	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
+	assert(elist != NULL);
 #ifdef DEBUG
-	std::cout << "[DEBUG] chain ptr :\t" << chain << std::endl;
+	elist->Print();
 #endif
 	TECALChain *chain_ecal = (TECALChain*)chain;
 	chain_ecal->TECALChain::SetEntryList(elist);
-	assert(elist != NULL);
+
 	std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
-	chain = dynamic_cast<TChain*>(chain_ecal);
-#ifdef DEBUG
-	std::cout << "[DEBUG] new chain ptr :\t" << chain_ecal << std::endl;
-	std::cout << "[DEBUG]     chain ptr :\t" << chain      << std::endl;
-#endif
+	//chain = dynamic_cast<TChain*>(chain_ecal);
 	ts.Stop();
 	ts.Print();
 
 #ifndef dump_root_tree
 	TreeToTreeShervin(chain, "", modulo, moduloIndex);
-#endif
+#else
 	TreeToTree(chain, "");
+#endif
+
 	return chain;
 }
 
@@ -147,7 +146,6 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	std::cout << "[INFO] Start copying the tree in memory" << std::endl;
 	TStopwatch ts;
 	ts.Start();
-//	TFile * outFile = TFile::Open("dataset.root", "recreate");
 	reduced_data  =  chain->CloneTree(0, "fast");
 	reduced_data->SetDirectory(&dir);
 	TList *friends = chain->GetListOfFriends();
@@ -163,7 +161,6 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		}
 
 	}
-//		reduced_data->Show(0);
 
 	// add branches in friends
 	/////TIter next(chain->GetListOfFriends());
@@ -174,11 +171,12 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	/////        ((TFriendElement *)obj)->GetTree()->Print();
 	/////}
 	Long64_t nentries = chain->GetEntryList()->GetN();
+	std::cout << "[[ Entries = " << nentries << std::endl;
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
 	for (Long64_t i = 0; i < nentries; ++i) {
-		if(modulo != 0 && i % modulo != moduloIndex) continue;
+		if(modulo > 0 && i % modulo != moduloIndex) continue;
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
@@ -204,17 +202,19 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 
 	reduced_data->Draw(">>" + evListName, "", "entrylist");
 	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
-	// std::cout << elist << std::endl;
-	// elist->Print()aa;
-	// assert(elist!=NULL);
-	reduced_data->SetEntryList(elist);
+	assert(elist != NULL);
+	TECALChain *chain_ecal = (TECALChain*)reduced_data;
+	chain_ecal->TECALChain::SetEntryList(elist);
+
+	reduced_data = dynamic_cast<TChain*>(chain_ecal);
+
 	reduced_data->Print();
 	for(auto& friendTree : friendTreesCopy) {
 		friendTree->Print(); //				friendTree->Show(0);
 	}
 
 	// assert(reduced_data->GetEntryList()!=NULL);
-	reduced_data->GetEntryList()->Print();
+	//reduced_data->GetEntryList()->Print();
 
 
 	ts.Stop();
@@ -499,6 +499,13 @@ RooDataSet *anyVar_class::TreeToRooDataSet(TChain *chain, TCut cut, int iEle)
 	return data;
 }
 
+
+
+/**
+ * \retval VOID The method is void, but it prints to one file the region name and the \ref stats.
+ *         The name of the output file is the same as the branch used to collect the stat.
+ *         Refer to stats to see what is the print format
+ */
 void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale, float smearing)
 {
 	_stats_vec.reset();

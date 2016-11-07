@@ -1,4 +1,4 @@
-#include "Stats.hh"
+#include "../interface/Stats.hh"
 
 stats::stats(const std::vector<float>& v):
 	_isSorted(false),
@@ -80,7 +80,10 @@ void stats::fillHisto(TH1 * h)
 	for (auto & v : _values) h->Fill(v);
 }
 
-
+/**
+ * This operator defines how the stats are printed.
+ *	\snippet Stats.cc STATS OUTPUT
+ */
 std::ostream& operator<<(std::ostream& os, const stats s)
 {
 	if(s.n() == 0) {
@@ -88,7 +91,17 @@ std::ostream& operator<<(std::ostream& os, const stats s)
 	} else {
 		std::pair<size_t, size_t> interval = s.eff_sigma_interval();
 		std::pair<size_t, size_t> interval03 = s.eff_sigma_interval(0.3);
-		os << s.name() << "\t" << s.n() << "\t" << s.mean() << "\t" << s.stdDev() << "\t" << s.median() << "\t" << s.eff_sigma(interval) << "\t" << s.eff_sigma(interval03) << "\t" << s.mean(interval.first, interval.second) << "\t" << s.mean(interval03.first, interval03.second); // << "\t" << s.recursive_effective_mode() ;
+/// [STATS OUTPUT]
+		os << s.name()   << "\t"
+		   << s.n()      << "\t"
+		   << s.mean()   << "\t"
+		   << s.stdDev() << "\t"
+		   << s.median() << "\t"
+		   << s.eff_sigma(interval) << "\t"
+		   << s.eff_sigma(interval03) << "\t"
+		   << s.mean(interval.first, interval.second) << "\t"
+		   << s.mean(interval03.first, interval03.second); // << "\t" << s.recursive_effective_mode() ;
+/// [STATS OUTPUT]
 	}
 	return os;
 }
