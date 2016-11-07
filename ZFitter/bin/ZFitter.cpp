@@ -1234,8 +1234,8 @@ int main(int argc, char **argv)
 	        }
 	}
 	*/
-#ifdef dump_root_tree
 	fout->Close();
+#ifdef dump_root_tree
 	anyVar.TreeToTree(data, TCut("1"));
 #endif
 	return 3;
