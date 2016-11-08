@@ -21,6 +21,7 @@
  *  - List of possible cuts with 1 parameter:
  *    - Et_X: Et_
  *    - eleID_X: eleID == X
+ *    - gainEle_X: 12, 6, 1, 6and1
  *  - List of possible cuts with 2 parameters:  <BR>
  * <B> ATTENTION! Same syntax but different meaning! </B> <BR>
  *   - \b runNumber_X_Y: X <= runNumber <= Y

@@ -11,7 +11,7 @@ configFile=data/validation/monitoring_2012_53X.dat
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test2
 updateOnly="--updateOnly"
-#extraOptions="--forceNewFit"
+extraOptions="--noPU"
 #extraOptions="--addBranch iSM --forceNewFit"
 
 # VALIDATION=y
@@ -41,6 +41,7 @@ usage(){
     echo " --commonCut arg (=${commonCut})"
     echo " --period RUN2012A, RUN2012AB, RUN2012C, RUN2012D"
     echo " --cruijff"
+	echo " --noPU"
 }
 
 desc(){
@@ -54,7 +55,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics:,slides,onlyTable,test,commonCut:,period:,cruijff,refreg,R9Ele -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics:,slides,onlyTable,test,commonCut:,period:,cruijff,refreg,R9Ele,noPU -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -70,6 +71,7 @@ do
         -f) configFile=$2; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--puName) puName=$2; shift;;
+	--noPU) NOPU="yes";;
 	--runRangesFile) runRangesFile=$2; echo "[OPTION] runRangesFile = ${runRangesFile}"; shift;;
 	--baseDir) baseDir=$2; echo "[OPTION] baseDir = $baseDir"; shift;;
 	--rereco) rereco=$2; echo "[OPTION] rereco = $rereco"; shift;;
@@ -201,8 +203,10 @@ case $PERIOD in
 esac
 
 ## pileup reweight name
-puName ${configFile}
-echo "PUName: $puName"
+if [ -z "${NOPU}" ];then
+	puName ${configFile}
+	echo "PUName: $puName"
+fi
 
 mcName ${configFile}
 echo "mcName: ${mcName}"
@@ -257,8 +261,7 @@ echo "$outDirMC" > $outDirData/whichMC.txt
 if [ -n "$VALIDATION" ];then
     regionFile=data/regions/validation.dat
 	if [ -z "${ONLYTABLE}" ];then
-		./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
-			${extraOptions} \
+		./bin/ZFitter.exe -f ${configFile} --zFit --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
 			--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 			--commonCut=${commonCut}  --selection=${selection} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
 			--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img ${extraOptions} > ${outDirData}/log/validation.log|| exit 1
