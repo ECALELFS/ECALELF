@@ -9,7 +9,7 @@
 #define MAXENTRIES 10000
 #define MAXBRANCHES  20
 
-//#define dump_root_tree 1
+#define dump_root_tree 1
 
 anyVar_class::~anyVar_class(void)
 {
@@ -134,7 +134,7 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 #ifndef dump_root_tree
 	TreeToTreeShervin(chain, "", modulo, moduloIndex);
 #else
-	TreeToTree(chain, "");
+	TreeToTree(chain, "1");
 #endif
 
 	return chain;
@@ -288,12 +288,11 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	TTree * outree = chain->CloneTree(0);
 	//chain->GetEntry(0);
 	// add branches of friends
-	TIter next(chain->GetListOfFriends());
+	TIter next(outree->GetListOfFriends());
 	TObject * obj;
 	while ((obj = next())) {
 		std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
 		TTree * t = ((TFriendElement *)obj)->GetTree();
-		outree->RemoveFriend(t);
 		TObjArray * branches = t->GetListOfBranches();
 		Int_t nb = branches->GetEntriesFast();
 		for (Int_t i = 0; i < nb; ++i) {
@@ -303,8 +302,8 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 				outree->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
 			}
 		}
+		outree->RemoveFriend(t);
 	}
-	//outree->Reset();
 	Long64_t nentries = chain->GetEntryList()->GetN();
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
@@ -313,7 +312,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	for (Long64_t i = 0; i < nentries; ++i) {
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
-		if (ientry % 1237 == 0) fprintf(stderr, " Processed events: %lld (%.2f%%)\r", ientry, (Float_t)ientry / nentries * 100);
+		if (ientry % 1237 == 0) fprintf(stderr, " Processed events: %lld (%.2f%%)\r", ientry, (Float_t)i / nentries * 100);
 		if (chain->GetTreeNumber() != treenumber) {
 			treenumber = chain->GetTreeNumber();
 			selector->UpdateFormulaLeaves();
@@ -324,6 +323,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	}
 	std::cout << "[INFO] selected " << selected << " event(s) out of " << nentries << "\n";
 	outree->Print();
+        outree->GetListOfFriends()->Print();
 	outree->AutoSave();
 }
 

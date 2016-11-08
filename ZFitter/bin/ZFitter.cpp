@@ -80,7 +80,7 @@ configuration files.
 //#define DEBUG
 #define smooth
 
-//#define dump_root_tree 1
+#define dump_root_tree 1
 
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
@@ -1158,22 +1158,22 @@ int main(int argc, char **argv)
 #endif
 		}
 #else
-		anyVar.Import(commonCut, eleID, activeBranchList);
-		std::string dir = outDirFitResData;
 #ifndef dump_root_tree
 		for(auto& region : categories) {
 			std::cout << "------------------------------------------------------------" << std::endl;
 			std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
 			anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
 		}
+#else
+		anyVar.Import(commonCut, eleID, activeBranchList);
 #endif
 
 #endif
 
 
-#ifdef dump_root_tree
-		anyVar.TreeToTree(data, TCut("1"));
-#endif
+//#ifdef dump_root_tree
+//		anyVar.TreeToTree(data, TCut("1"));
+//#endif
 	}
 
 	if(vm.count("smearerFit")) {
