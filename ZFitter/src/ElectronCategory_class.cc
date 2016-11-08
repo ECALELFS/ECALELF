@@ -364,12 +364,18 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TObjString *Objstring1 = (TObjString *) splitted->At(1);
 
 			TString string1 = Objstring1->GetString();
-			if(string1 == "12") string1 = "0";
-			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "2";
 
-			TCut cutEle1("gainEle_ele1 ==" + string1);
-			TCut cutEle2("gainEle_ele2 ==" + string1);
+			UChar_t b = 0x00; // this is gain12 only
+			if(string1 == "1") b = 0x01;
+			if(string1 == "6") b = 0x02;
+			if(string1 == "1and6" || string1 == "6and1"){
+				b |= 0x01;
+				b |= 0x02;
+			}
+
+			string1.Form("%d", b);
+			TCut cutEle1("(gainEle_ele1 & " + string1 + ")==" + string1);
+			TCut cutEle2("(gainEle_ele2 & " + string1 + ")==" + string1);
 
 			if(string.Contains("SingleEle"))
 				cutSet.insert(TString(cutEle1 || cutEle2));

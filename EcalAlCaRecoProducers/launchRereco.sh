@@ -14,14 +14,14 @@ jsonName=271036_279931-Cal_Sep2016
 PERIOD=CAL_SEP2016_V2
 #PERIOD=RUN2016C
 
-for tagfile in  config/reRecoTags/Cal_Nov2016_ICmultiBase_v1.py
+for tagfile in  config/reRecoTags/Cal_Nov2016_Alpha_v1.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in --check
+	for CHECK in --submitOnly #--check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
@@ -34,7 +34,7 @@ do
 				;;
 		esac
 	done
-
+continue
 	for CHECK in  --createOnly --check
 	do
 		case $tagfile in 

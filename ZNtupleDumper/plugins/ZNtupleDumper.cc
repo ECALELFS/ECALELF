@@ -1553,7 +1553,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		seedEnergySCEle[index] = -1.;
 		seedLCSCEle[index] = -10;
 		avgLCSCEle[index] = -10;
-		gainEle[index] = -1;
+		gainEle[index = 0;
 
 		assert(sc->seed().isAvailable());
 		DetId seedDetId = sc->seed()->seed();
@@ -1608,9 +1608,8 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 					//}
 				}
 
-				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] = 1;
-				else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] = 2;
-				else gainEle[index] = 0;
+				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
+				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
 			}
 		}
 	}
@@ -1684,9 +1683,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 	EcalRecHitCollection::const_iterator seedRecHit = recHitsEE->find(seedDetId) ;
 	assert(seedRecHit != recHitsEE->end());
 	seedEnergySCEle[index] = seedRecHit->energy();
-	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] = 1;
-	else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] = 2;
-	else gainEle[index] = 0;
+	gainEle[index]=0x00;
+	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
+	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
 
 	if(isMC) seedLCSCEle[index] = -10;
 	else seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
@@ -1865,9 +1864,9 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 	if(isMC) seedLCSCEle[index] = -10;
 	else seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
 
-	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] = 1;
-	else if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] = 2;
-	else gainEle[index] = 0;
+	gainEle[index]=0x00;
+	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
+	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
 
 	float sumLC_E = 0.;
 	float sumE = 0.;
