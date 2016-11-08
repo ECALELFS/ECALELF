@@ -520,8 +520,9 @@ if [ -n "${CHECK}" ];then
 		do
 			file=`basename $file .root`
 #			echo "FILE $file"
-			mergeOutput.sh -u ${UI_WORKING_DIR} -g $file
+			( mergeOutput.sh -u ${UI_WORKING_DIR} -g $file ) &
 		done
+		wait
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 fi
