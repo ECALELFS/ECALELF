@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#source /afs/cern.ch/cms/LCG/LCG-2/UI/cms_ui_env.sh
-#eval `scramv1 runtime -sh`
-#source /afs/cern.ch/cms/ccs/wm/scripts/Crab/crab.sh
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 case $USER in
     hengne|heli)
@@ -13,12 +10,11 @@ case $USER in
 	;;
 esac
 
-#cd calibration/SANDBOX
-#setenv PATH $PWD/bin:$PATH
-#PATH=`echo $PATH | sed 's|/afs/cern.ch/project/eos/installation/pro/bin/||'`
-
 PATH=$PATH:/afs/cern.ch/project/eos/installation/pro/bin/
 PATH=$PATH:$CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/bin
+
+echo "[CMSSW] " ${CMSSW_BASE}
+echo "[CRAB3] " $(which crab) 
 
 export ECALELFINIT=y
 
