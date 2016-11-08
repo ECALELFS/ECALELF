@@ -1,3 +1,15 @@
+# Producing `ECALELF NTuples` for Calibration
+## using the `MiniAOD`
+Starting from `CMSSW_8_0_22` crab3 can be used to send jobs on the grid. A solution exist on how to run on the  `CAF` queues via CERN.
+
+
+
+
+
+
+
+
+# Italian Version
 * Girare in locale (funziona)
 ```
 ##DATI
