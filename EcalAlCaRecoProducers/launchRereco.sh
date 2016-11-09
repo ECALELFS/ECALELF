@@ -21,7 +21,7 @@ do
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in --submitOnly #--check
+	for CHECK in --check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
@@ -34,8 +34,8 @@ do
 				;;
 		esac
 	done
-continue
-	for CHECK in  --createOnly --check
+
+	for CHECK in  --check
 	do
 		case $tagfile in 
 			*/Cal_Sep2016_final_v3.py)
