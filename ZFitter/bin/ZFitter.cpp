@@ -80,7 +80,6 @@ configuration files.
 //#define DEBUG
 #define smooth
 
-#define dump_root_tree 1
 
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 

@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 
 CXXFLAGS=-Wall -pedantic -std=c++11
+CXXFLAGS+=-Ddump_root_tree
 
 ROOT_LIB:=`root-config --libs --glibs`
 ROOT_FLAGS:=`root-config --cflags --ldflags`

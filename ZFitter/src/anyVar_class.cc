@@ -9,7 +9,6 @@
 #define MAXENTRIES 10000
 #define MAXBRANCHES  20
 
-#define dump_root_tree 1
 
 anyVar_class::~anyVar_class(void)
 {
@@ -148,18 +147,22 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	ts.Start();
 	reduced_data  =  chain->CloneTree(0, "fast");
 	reduced_data->SetDirectory(&dir);
-	TList *friends = chain->GetListOfFriends();
-	std::vector<TTree *> friendTreesCopy;
-	if(friends != NULL) {
-		TIter newfriend_itr(friends);
-		for(TFriendElement *friendElement = (TFriendElement*) newfriend_itr.Next();
-		        friendElement != NULL; friendElement = (TFriendElement*) newfriend_itr.Next()) {
-			TString treeName = friendElement->GetTreeName();
-			TTree *tree = friendElement->GetTree();
-			TTree *clonetree = tree->CloneTree(0, "fast");
-			friendTreesCopy.push_back(clonetree);
-		}
 
+	TIter next(reduced_data->GetListOfFriends());
+	TObject * obj;
+	while ((obj = next())) {
+		//std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
+		TTree * t = ((TFriendElement *)obj)->GetTree();
+		TObjArray * branches = t->GetListOfBranches();
+		Int_t nb = branches->GetEntriesFast();
+		for (Int_t i = 0; i < nb; ++i) {
+			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
+			TString title = br->GetTitle();
+			if (chain->GetBranchStatus(br->GetName())) {
+				reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+			}
+		}
+		reduced_data->RemoveFriend(t);
 	}
 
 	// add branches in friends
@@ -185,17 +188,9 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		}
 		if(selector != NULL && selector->EvalInstance() == false) continue;
 		reduced_data->Fill();
-		for(auto& friendTree : friendTreesCopy) {
-			friendTree->Fill(); //				friendTree->Show(0);
-		}
 //
 	}
-	for(auto& friendTree : friendTreesCopy) {
-		reduced_data->AddFriend(friendTree);
-	}
 
-//	outree->Print();
-//	outree->AutoSave();
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
 	evListName += "_red";
@@ -209,9 +204,6 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	reduced_data = dynamic_cast<TChain*>(chain_ecal);
 
 	reduced_data->Print();
-	for(auto& friendTree : friendTreesCopy) {
-		friendTree->Print(); //				friendTree->Show(0);
-	}
 
 	// assert(reduced_data->GetEntryList()!=NULL);
 	//reduced_data->GetEntryList()->Print();
