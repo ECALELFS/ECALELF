@@ -183,11 +183,10 @@ for dataset in $datasets
 	else
 		./scripts/prodNtuples.sh  -t ${TAGFILE} --type=ALCARERECO \
   			${JSONFILE} ${JSONNAME} \
-			--scheduler=$SCHEDULER --file_per_job=10   --doEleIDTree  --extraName=withEleID  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --file_per_job=10   --doEleIDTree --doExtraStudyTree --extraName=gainEleFix  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
 			${TUTORIAL} $dataset 
 #--scheduler=$SCHEDULER --file_per_job=10  --doExtraCalibTree --doEleIDTree --doExtraStudyTree --extraName=withExtraStudy  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
-
-
+		
 	fi
 	
 done
