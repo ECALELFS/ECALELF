@@ -23,12 +23,6 @@
 #include <TSystem.h>
 #include <TFile.h>
 #include <TDirectory.h>
-// roofit headers
-#include <RooRealVar.h>
-#include <RooDataSet.h>
-#include <RooDataHist.h>
-#include <RooFitResult.h>
-#include <RooPlot.h>
 #include <TMath.h>
 #include <TString.h>
 // needed for TEntryList fix
@@ -112,26 +106,18 @@ private:
 	statsCollection _stats_vec;
 
 
-	RooArgSet Vars; ///< argSet containing the RooRealVars of branches under study
-
 	std::string massBranchName_; ///< branch name for the di-object invariant mass
 
 	Double_t weight; ///< variable with the total event weight
 
-	RooRealVar * idx, * mass, * smearMass;
-
 
 	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
 	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
-	RooDataSet *TreeToRooDataSet(TChain *chain, TCut cut, int iEle = 0); //< returns a RooDataset with selected events and weight
-
 
 public:
 	// define a struct saving the infos:
 
 
-
-	double GetEffectiveSigma(RooAbsData *dataset, float quant);
 
 	void PrintStats(std::ostream outScale);
 	bool _exclusiveCategories;
