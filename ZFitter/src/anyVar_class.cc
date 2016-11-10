@@ -287,6 +287,16 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	TFile * outFile = TFile::Open("dataset.root", "recreate");
 	TTree * outree = chain->CloneTree(0);
 	//chain->GetEntry(0);
+        // get list of active branches already in the main tree
+        // so that they don't get duplicated when merging TFriends
+        TObjArray * branches = outree->GetListOfBranches();
+        Int_t nb = branches->GetEntriesFast();
+        std::set<std::string> blist;
+        for (Int_t i = 0; i < nb; ++i) {
+                if (chain->GetBranchStatus(branches->At(i)->GetName())) {
+                        blist.insert(branches->At(i)->GetName());
+                }
+        }
 	// add branches of friends
 	TIter next(outree->GetListOfFriends());
 	TObject * obj;
@@ -298,8 +308,9 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 		for (Int_t i = 0; i < nb; ++i) {
 			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
 			TString title = br->GetTitle();
-			if (chain->GetBranchStatus(br->GetName())) {
+			if (chain->GetBranchStatus(br->GetName()) && blist.find(br->GetName()) == blist.end()) {
 				outree->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+                                blist.insert(br->GetName());
 			}
 		}
 		outree->RemoveFriend(t);
