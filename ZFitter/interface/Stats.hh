@@ -96,6 +96,16 @@ public:
 		else return 0.5 * (_values[i - 1] + _values[i]);
 	};
 
+	float min() {
+		if(_n == 0) return 0;
+		return _values[0];
+	}
+	
+	float max() {
+		if(_n == 0) return 0;
+		return _values[_n - 1];
+	}
+
 
 	void add(double); ///< add one entry to the list of values
 
