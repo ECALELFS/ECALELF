@@ -324,6 +324,10 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale, float smearing)
 {
 	_stats_vec.reset();
+	if(reduced_data==NULL){
+		std::cerr << "[ERROR] reduced_data is NULL. Maybe you have to call the Import() method" << std::endl;
+		return;
+	}
 	TECALChain *chain_ecal = (TECALChain *)reduced_data;
 
 	Long64_t entries = chain_ecal->GetEntryList()->GetN();

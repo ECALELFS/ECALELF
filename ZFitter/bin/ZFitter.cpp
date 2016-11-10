@@ -1141,8 +1141,8 @@ int main(int argc, char **argv)
 #endif
 		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/");
 		anyVar._exclusiveCategories = false;
+		anyVar.Import(commonCut, eleID, activeBranchList);
 		if(vm.count("runToy") && modulo > 0) {
-			anyVar.Import(commonCut, eleID, activeBranchList);
 			// splitting the events by "modulo" and obtaining statistically indipendent subsamples
 			for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
 				//change the output directory for the results
