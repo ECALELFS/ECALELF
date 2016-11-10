@@ -8,20 +8,23 @@
 #include <vector>
 
 #include "TFile.h"
+#include "TFriendElement.h"
 #include "TH1F.h"
 #include "TTree.h"
 
 #include "interface/Stats.hh"
 
 typedef enum { kEffSigma, kHSM, kREM, kMedian } Estimator;
-typedef enum { kMass = 0, kTime, kR9, kSigmaieie, kVars } Variable;
+typedef enum { kMass = 0, kTime, kNPV, kR9, kSieie, kVars } Variable;
 
 typedef struct {
         Int_t   run;
         UInt_t  ts;
+        Int_t   nPV;
         Float_t mass;
-        Float_t r9[3];
         Float_t etaSC[3];
+        Float_t r9[3];
+        Float_t sieie[3];
 } Event;
 Event e;
 
@@ -39,10 +42,10 @@ Categories c;
 void enable_branches(TTree * t)
 {
         t->SetBranchStatus("*", 0);
+        fprintf(stderr, "opened\n");
         for (auto s : brlist) {
                 fprintf(stdout, "enabling branch `%s'\n", s.c_str());
                 t->SetBranchStatus(s.c_str(), 1);
-                //t->AddBranchToCache(s, 1);
         }
 }
 
@@ -53,6 +56,8 @@ void set_branches(TTree * t)
         brlist.push_back("runNumber");
         t->SetBranchAddress("runTime", &e.ts);
         brlist.push_back("runTime");
+        t->SetBranchAddress("nPV", &e.nPV);
+        brlist.push_back("nPV");
         t->SetBranchAddress("invMass_SC_must_regrCorr_ele", &e.mass);
         brlist.push_back("invMass_SC_must_regrCorr_ele");
         t->SetAlias("mass", "invMass_SC_must_regrCorr_ele");
@@ -60,6 +65,8 @@ void set_branches(TTree * t)
         brlist.push_back("R9Ele");
         t->SetBranchAddress("etaSCEle", e.etaSC);
         brlist.push_back("etaSCEle");
+        t->SetBranchAddress("sigmaIEtaIEtaSCEle", e.sieie);
+        brlist.push_back("sigmaIEtaIEtaSCEle");
         //t->SetCacheSize(5000000000);
         enable_branches(t);
 }
@@ -240,6 +247,14 @@ std::string category_run()
 }
 
 
+std::string category_run_inclusive()
+{
+        char tmp[32];
+        sprintf(tmp, "%lu_%lu", c.run_boundaries[0], c.run_boundaries[c.run_boundaries.size() - 1]);
+        return tmp;
+}
+
+
 bool isEB(float eta)   { return fabs(eta) < 1.48; }
 bool isEE(float eta)   { return fabs(eta) > 1.56 && fabs(eta) < 2.5; }
 bool isMod1(float eta) { return fabs(eta) <= 0.45; }
@@ -251,9 +266,7 @@ bool isMod4(float eta) { return fabs(eta) > 1.14 && fabs(eta) <= 1.48; }
 std::vector<std::string> category_electron(int idx)
 {
         std::vector<std::string> crun; 
-        char tmp[32];
-        sprintf(tmp, "%lu_%lu", c.run_boundaries[0], c.run_boundaries[c.run_boundaries.size() - 1]);
-        crun.push_back(tmp);
+        crun.push_back(category_run_inclusive());
         std::string r =  category_run();
         if (r != "") crun.push_back(r);
         std::vector<std::string> ceta;
@@ -279,9 +292,9 @@ std::vector<std::string> category_dielectron()
 {
         std::vector<std::string> res;
         res.push_back("inclusive");
-        if (isEB(e.etaSC[0]) && isEB(e.etaSC[1])) res.push_back("EB_EB");
-        else                                      res.push_back("notEB_notEB");
-        if (isEE(e.etaSC[0]) && isEE(e.etaSC[1])) res.push_back("EE_EE");
+        if (isEB(e.etaSC[0]) && isEB(e.etaSC[1])) res.push_back("EBEB");
+        else                                      res.push_back("notEBnotEB");
+        if (isEE(e.etaSC[0]) && isEE(e.etaSC[1])) res.push_back("EEEE");
         return res;
 }
 
@@ -289,7 +302,7 @@ std::vector<std::string> category_dielectron()
 int main()
 {
         fprintf(stderr, "starting...\n");
-        TFile * fin = TFile::Open("dataset_full.root");
+        TFile * fin = TFile::Open("./dataset.root");
         TTree * t = (TTree*)fin->Get("selected");
         //std::cout << fin << " " << ds << "\n";
         
@@ -301,16 +314,21 @@ int main()
         define_categories_run(runs_meta_data, selections_runs);
 
         std::vector<std::unique_ptr<TH1F> > histos(kVars);
-        histos[kR9]   = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 200, 0.8, 1.0));
-        histos[kMass] = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
+        histos[kR9]    = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 1200, 0.0, 1.2));
+        histos[kSieie] = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0.002, 0.04));
+        //histos[kSieie] = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0., 0.075));
+        histos[kMass]  = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
+        histos[kTime]  = std::unique_ptr<TH1F>(new TH1F("htime", "time", 1000, 1456786800., 1478613587.));
+        histos[kNPV]   = std::unique_ptr<TH1F>(new TH1F("hnPV", "nPV", 100, 0., 100.));
 
         TFile * fout = TFile::Open("histos.root", "recreate");
 
         std::vector<std::string> vars(kVars);
-        vars[kR9]        = "r9";
-        vars[kSigmaieie] = "sigmaieie";
-        vars[kMass]      = "mass";
-        vars[kTime]      = "time";
+        vars[kR9]    = "r9";
+        vars[kSieie] = "sieie";
+        vars[kMass]  = "mass";
+        vars[kTime]  = "time";
+        vars[kNPV]   = "nPV";
 
         std::vector<std::map<std::string, stats> > data(kVars);
         for (size_t v = 0; v < kVars; ++v) {
@@ -329,13 +347,16 @@ int main()
                         data[kMass][category_run() + "_" + c].add(e.mass);
                 }
                 data[kTime][category_run()].add(e.ts);
+                data[kTime][category_run_inclusive()].add(e.ts);
+                data[kNPV][category_run()].add(e.nPV);
+                data[kNPV][category_run_inclusive()].add(e.nPV);
                 std::vector<std::string> cat;
                 for (int jel = 0; jel < 2; ++jel) {
                         cat = category_electron(jel);
                         for (auto & s : cat) {
                                 //fprintf(stderr, "--> %lu %f --> %s\n", (size_t)e.run, e.etaSC[jel], s.c_str());
                                 data[kR9][s].add(e.r9[jel]);
-                                //data["sigmaieie"][s].add(e.sigmaIEtaIEtaSCEle[jel]);
+                                data[kSieie][s].add(e.sieie[jel]);
                         }
                 }
         }
@@ -349,11 +370,13 @@ int main()
                 for (auto & cat : var) {
                         auto & s = cat.second;
                         if (histos[cnt] != 0) {
-                                TH1F * h = (TH1F*)histos[cnt]->Clone((vars[cnt] + "_" + cat.first).c_str());
+                                TH1F * h = (TH1F*)histos[cnt]->Clone(("h_" + vars[cnt] + "_" + cat.first).c_str());
                                 s.fillHisto(h);
+                        } else {
+                                fprintf(stderr, "error filling histogram for var %lu (%s)  category %s\n", cnt, vars[cnt].c_str(), cat.first.c_str());
                         }
                         fprintf(stdout, "computing variables for category %s %s\n", vars[cnt].c_str(), cat.first.c_str());
-                        fprintf(fd, "%s_%s  %lu  %f %f %f %f %f\n", vars[cnt].c_str(), cat.first.c_str(), s.n(), s.mean(), s.stdDev(), s.eff_sigma(), s.median(), s.eff_mean(0.68269 / 2.));
+                        fprintf(fd, "%s_%s  %lu  %f %f %f %f %f %f %f\n", vars[cnt].c_str(), cat.first.c_str(), s.n(), s.mean(), s.stdDev(), s.eff_sigma(), s.median(), s.eff_mean(0.68269 / 2.), s.min(), s.max());
                 }
                 fclose(fd);
                 ++cnt;
