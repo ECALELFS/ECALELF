@@ -501,8 +501,10 @@ proxy_server = myproxy.cern.ch
 EOF
 fi
 
+###################################crab 3 .py writing###############################
 if [[ ${CRABVERSION} = "3" ]]; then
 echo "writing crab config for version 3"
+echo "I used the tool: crab2cfgTOcrab3py [crab2confgiName.cfg] [crab3configName.py]"
 cat > ${crabFile} <<EOF
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
@@ -514,26 +516,39 @@ config.General.transferLogs = False
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'python/alcaSkimming.py'
-#config.JobType.pyCfgParams=['isMC=False']
-config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','jsonFile=${JSONFILE}','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}']
+config.JobType.outputFiles = ['ntuple.root']
+config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','jsonFile=${JSONFILE}','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}', 'MC=${isMC}']
 
 config.Data.inputDataset = '${DATASETPATH}'
 config.Data.inputDBS = 'global'
+EOF
+
+if [[ ${isMC} = "0" ]]; then
+cat >> ${crabFile} <<EOF
 config.Data.splitting = 'LumiBased'
 config.Data.unitsPerJob = 100
 config.Data.lumiMask = '${JSONFILE}'
-#config.Data.runRange = '193093-193999'
-#config.Data.outLFNDirBase = 'my_job_crab3/' 
-config.Data.publication = False
-config.Data.outputDatasetTag = 'outputdatasetTag'
-config.Site.storageSite = '$STORAGE_PATH' #=> come si scrive su eos??
-#config.Site.storageSite = 'T2_CH_CERN'
-#config.Site.storageSite = 'T2_IT_Rome'
-config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
-#config.Data.outLFNDirBase = '/store/user/gfasanel/crab_jobs_ECALELF/'
-
+config.Data.runRange = '${RUNRANGE}'
+EOF
+elif [[ ${isMC} = "1" ]]; then
+cat >> ${crabFile} <<EOF
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 1
 EOF
 fi
+
+cat >> ${crabFile} <<EOF
+#config.Data.outLFNDirBase = 'my_job_crab3/' 
+config.Data.publication = False
+#config.Data.outputDatasetTag = 'outputdatasetTag'
+#config.Site.storageSite = '$STORAGE_PATH' #=> come si scrive su eos??
+#config.Site.storageSite = 'srm-eoscms.cern.ch'
+#config.Site.storageSite = 'T2_CH_CERN'
+config.Site.storageSite = 'T2_IT_Rome'
+#config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
+config.Data.outLFNDirBase = '/store/user/gfasanel/crab_jobs_ECALELF_2/'
+EOF
+fi #end of crab 3 switch
 
 ##############At this point you wrote the crab config file in tmp/${crabFile}####################
 
