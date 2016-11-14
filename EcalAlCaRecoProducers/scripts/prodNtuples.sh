@@ -21,16 +21,8 @@ SUBMIT=y
 
 SKIM=""
 OUTFILES="ntuple.root"
-#CRABVERSION=2
-CRABVERSION=3
+CRABVERSION=3 #default crab version is 3
 
-if [[ ${CRABVERSION} = "2" ]]; then
-    crabFile=tmp/ntuple.cfg
-fi
-
-if [[ ${CRABVERSION} = "3" ]]; then
-    crabFile=tmp/crabConfig.py
-fi
 FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
@@ -86,13 +78,14 @@ expertUsage(){
     echo "    --extraName arg: additional name for folder structure (to make different versions) (='')"
     echo "    --file_per_job arg: number of files to process in 1 job (=1)"
     echo "    --develRelease: CRAB do not check if the CMSSW version is in production (only if you are sure what you are doing)"
+    echo "    --crab2"
 }
 
     
 #------------------------------ parsing
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doExtraStudyTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco -- "$@")
+if ! options=$(getopt -u -o hHd:n:s:r:t:f: -l help,expertHelp,datasetpath:,datasetname:,skim:,runrange:,store:,remote_dir:,scheduler:,isMC,isParticleGun,ntuple_remote_dir:,json:,tag:,type:,json_name:,ui_working_dir:,extraName:,doExtraCalibTree,doExtraStudyTree,doEleIDTree,noStandardTree,createOnly,submitOnly,check,isPrivate,file_per_job:,develRelease,weightsReco,crab2 -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -196,13 +189,23 @@ do
  	--file_per_job) echo "[OPTION] file per job: $2"; FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 	--weightsReco)    echo "[OPTION `basename $0`] using weights for local reco"; BUNCHSPACING=-1;;
-
+ 	--crab2) echo "[OPTION] You decided to use crab2 "; CRABVERSION=2;;
 	(--) shift; break;;
 	(-*) usage; echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
 	(*) break;;
     esac
     shift
 done
+
+##Define the crab config file##
+if [[ ${CRABVERSION} = "2" ]]; then
+    echo "crab config file for v2 will be tmp/ntuple.cfg"
+    crabFile=tmp/ntuple.cfg
+elif [[ ${CRABVERSION} = "3" ]]; then
+    echo "crab config file for v3 will be tmp/crabConfig.py"
+    crabFile=tmp/crabConfig.py
+fi
+##Define the crab config file##
 
 if [ -z "$DATASETNAME" ];then 
     echo "[ERROR] DATASETNAME not defined" >> /dev/stderr
@@ -470,7 +473,7 @@ output_file=${OUTFILES}
 
 
 use_parent=0
-#lumi_mask=
+lumi_mask=${JSONFILE}
 
 
 [LSF]
