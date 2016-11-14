@@ -504,7 +504,8 @@ fi
 ###################################crab 3 .py writing###############################
 if [[ ${CRABVERSION} = "3" ]]; then
 echo "writing crab config for version 3"
-echo "I used the tool: crab2cfgTOcrab3py [crab2confgiName.cfg] [crab3configName.py]"
+#I used the tool: crab2cfgTOcrab3py [crab2confgiName.cfg] [crab3configName.py]
+##jsonFile=${JSONFILE}
 cat > ${crabFile} <<EOF
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
@@ -517,7 +518,7 @@ config.General.transferLogs = False
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'python/alcaSkimming.py'
 config.JobType.outputFiles = ['ntuple.root']
-config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','jsonFile=${JSONFILE}','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}', 'MC=${isMC}']
+config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}', 'MC=${isMC}']
 
 config.Data.inputDataset = '${DATASETPATH}'
 config.Data.inputDBS = 'global'
