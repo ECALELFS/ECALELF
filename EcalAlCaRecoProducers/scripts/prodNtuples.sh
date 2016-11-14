@@ -520,7 +520,7 @@ if [ -n "${CHECK}" ];then
 		do
 			file=`basename $file .root`
 #			echo "FILE $file"
-			( mergeOutput.sh -u ${UI_WORKING_DIR} -g $file ) &
+			( mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove ) &
 		done
 		wait
     fi
