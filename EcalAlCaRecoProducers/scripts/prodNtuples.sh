@@ -21,8 +21,16 @@ SUBMIT=y
 
 SKIM=""
 OUTFILES="ntuple.root"
-crabFile=tmp/ntuple.cfg
-CRABVERSION=2
+#CRABVERSION=2
+CRABVERSION=3
+
+if [[ ${CRABVERSION} = "2" ]]; then
+    crabFile=tmp/ntuple.cfg
+fi
+
+if [[ ${CRABVERSION} = "3" ]]; then
+    crabFile=tmp/crabConfig.py
+fi
 FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
@@ -393,6 +401,10 @@ if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`"
 fi
 
 if [ ! -d "tmp" ];then mkdir tmp/; fi
+
+#Write the crab config file
+if [[ ${CRABVERSION} = "2" ]]; then
+echo "write crab config for version 2"
 cat > ${crabFile} <<EOF
 [CRAB]
 scheduler=$SCHEDULER
@@ -487,17 +499,88 @@ rb = CERN
 proxy_server = myproxy.cern.ch
 
 EOF
+fi
 
+###################################crab 3 .py writing###############################
+if [[ ${CRABVERSION} = "3" ]]; then
+echo "writing crab config for version 3"
+#I used the tool: crab2cfgTOcrab3py [crab2confgiName.cfg] [crab3configName.py]
+##jsonFile=${JSONFILE}
+cat > ${crabFile} <<EOF
+from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+config = config()
 
+config.General.workArea = '${UI_WORKING_DIR}'
+config.General.requestName = '${TYPE}'
+config.General.transferOutputs = True
+config.General.transferLogs = False
+
+config.JobType.pluginName = 'Analysis'
+config.JobType.psetName = 'python/alcaSkimming.py'
+config.JobType.outputFiles = ['ntuple.root']
+config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}', 'MC=${isMC}']
+
+config.Data.inputDataset = '${DATASETPATH}'
+config.Data.inputDBS = 'global'
+EOF
+
+if [[ ${isMC} = "0" ]]; then
+cat >> ${crabFile} <<EOF
+config.Data.splitting = 'LumiBased'
+config.Data.unitsPerJob = 100
+config.Data.lumiMask = '${JSONFILE}'
+config.Data.runRange = '${RUNRANGE}'
+EOF
+elif [[ ${isMC} = "1" ]]; then
+cat >> ${crabFile} <<EOF
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 1
+EOF
+fi
+
+cat >> ${crabFile} <<EOF
+#config.Data.outLFNDirBase = 'my_job_crab3/' 
+config.Data.publication = False
+#config.Data.outputDatasetTag = 'outputdatasetTag'
+#config.Site.storageSite = '$STORAGE_PATH' #=> come si scrive su eos??
+#config.Site.storageSite = 'srm-eoscms.cern.ch'
+#config.Site.storageSite = 'T2_CH_CERN'
+config.Site.storageSite = 'T2_IT_Rome'
+#config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
+config.Data.outLFNDirBase = '/store/user/gfasanel/crab_jobs_ECALELF_2/'
+EOF
+fi #end of crab 3 switch
+
+##############At this point you wrote the crab config file in tmp/${crabFile}####################
+
+if [[ ${CRABVERSION} = "2" ]]; then
+    echo "You are using crab version "${CRABVERSION} 
     crab -cfg ${crabFile} -create || exit 1
     if [ -n "$FILELIST" ];then
-	  makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
+	makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
     fi
     splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
 fi
 
+echo "Working dir is " $UI_WORKING_DIR
+#in Crab 3 you directly submit (do not create the job first)
+fi  #This is the end of the option createOnly
+
 if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
-    crab -c ${UI_WORKING_DIR} -submit
+    if [[ ${CRABVERSION} = "2" ]]; then
+	crab -c ${UI_WORKING_DIR} -submit
+    fi
+
+    if [[ ${CRABVERSION} = "3" ]]; then
+	echo "you are using crab 3"
+	echo ${crabFile}
+
+	##?? makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
+
+	##?? splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
+	crab submit -c  ${crabFile}
+    fi
+
     STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TYPE}\t${TAG}\t${JSONNAME}"
     echo -e $STRING >> ntuple_datasets.dat
 
@@ -520,9 +603,8 @@ if [ -n "${CHECK}" ];then
 		do
 			file=`basename $file .root`
 #			echo "FILE $file"
-			( mergeOutput.sh -u ${UI_WORKING_DIR} -g $file ) &
+			mergeOutput.sh -u ${UI_WORKING_DIR} -g $file
 		done
-		wait
     fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
 fi
