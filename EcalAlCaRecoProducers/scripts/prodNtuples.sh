@@ -473,9 +473,15 @@ output_file=${OUTFILES}
 
 
 use_parent=0
+EOF
+
+if [[ ${isMC} = "0" ]]; then
+cat >> ${crabFile} <<EOF
 lumi_mask=${JSONFILE}
+EOF
+fi
 
-
+cat >> ${crabFile} <<EOF
 [LSF]
 queue = 1nd
 [CAF]
@@ -502,7 +508,7 @@ rb = CERN
 proxy_server = myproxy.cern.ch
 
 EOF
-fi
+fi ##end of crab v2 cfg writing
 
 ###################################crab 3 .py writing###############################
 if [[ ${CRABVERSION} = "3" ]]; then
@@ -542,15 +548,15 @@ EOF
 fi
 
 cat >> ${crabFile} <<EOF
-#config.Data.outLFNDirBase = 'my_job_crab3/' 
 config.Data.publication = False
+config.Site.storageSite = 'T2_CH_CERN'
+config.Data.outLFNDirBase = 'cms/store/${USER_REMOTE_DIR}' 
+#config.Site.storageSite = 'T2_IT_Rome'
+#config.Data.outLFNDirBase = '/store/user/gfasanel/crab_jobs_ECALELF_2/'
+#config.Data.outLFNDirBase = 'my_job_crab3/' 
 #config.Data.outputDatasetTag = 'outputdatasetTag'
 #config.Site.storageSite = '$STORAGE_PATH' #=> come si scrive su eos??
 #config.Site.storageSite = 'srm-eoscms.cern.ch'
-#config.Site.storageSite = 'T2_CH_CERN'
-config.Site.storageSite = 'T2_IT_Rome'
-#config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
-config.Data.outLFNDirBase = '/store/user/gfasanel/crab_jobs_ECALELF_2/'
 EOF
 fi #end of crab 3 switch
 
