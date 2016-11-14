@@ -1,6 +1,6 @@
-/// Zee Fit program
-
 /**\file
+\brief 	General program for Z fit (monitoring, calibration validation)
+
 The aim of the program is to provide a common interface to all the Z
 fitting algorithms reading and combining in the proper way the
 configuration files.
@@ -9,6 +9,9 @@ configuration files.
    - remove commonCut from category name and add it in the ZFit_class in order to not repeate the cut
    - make alpha fitting more generic (look for alphaName)
    - Implement the iterative Et dependent scale corrections
+
+  # ZFitter options:
+ \include ZFitter_options.txt
 
 */
 
@@ -78,12 +81,12 @@ configuration files.
 
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
-//using namespace std;
 using namespace RooStats;
 
 ///\endcond
 
 
+//------------------------------------------------------------
 /// map that associates the name of the tree and the pointer to the chain
 typedef std::map< TString, TChain* > chain_map_t;
 
@@ -93,7 +96,7 @@ typedef std::map< TString, TChain* > chain_map_t;
  */
 typedef std::map< TString, chain_map_t > tag_chain_map_t;
 
-
+//------------------------------------------------------------
 /** Function parsing the region files
  * \retval vector of strings, each string is the name of one region
  */
@@ -125,7 +128,7 @@ std::vector<TString> ReadRegionsFromFile(TString fileName)
 	return regions;
 }
 
-
+//------------------------------------------------------------
 /**
  * This function reassociates the chains as friends of the "selected" tree.
  *
@@ -164,11 +167,13 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 	return;
 }
 
+//------------------------------------------------------------
 void Dump(tag_chain_map_t& tagChainMap, TString tag = "s", Long64_t firstentry = 0)
 {
 	(tagChainMap[tag])["selected"]->Scan("etaEle:R9Ele:energySCEle_regrCorrSemiParV5_pho/cosh(etaSCEle):smearerCat:catName", "", "col=5:4:5:3:50", 5, firstentry);
 }
 
+//------------------------------------------------------------
 /**
  * \param tagChainMap map of all the tags declared in the validation config file
  * \param tag name of the new \b tag created by the function, all the existent tags with name starting with
@@ -211,13 +216,13 @@ void MergeSamples(tag_chain_map_t& tagChainMap, TString regionsFileNameTag, TStr
 }
 
 
-
+//------------------------------------------------------------
 TString energyBranchNameFromInvMassName(TString invMass_var)
 {
 	return TString( (energyBranchNameFromInvMassName(std::string(invMass_var))).c_str());
 }
 
-
+//------------------------------------------------------------
 int main(int argc, char **argv)
 {
 	TStopwatch myClock;
@@ -335,7 +340,9 @@ int main(int argc, char **argv)
 	("useWEAKweight", "activate the WEAK interference weight in MC")
 	("saveRootMacro", "")
 	//
-	("selection", po::value<string>(&selection)->default_value("loose25nsRun2"), "")
+	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID|Spring15|25ns|V1|standalone|loose"), "")
+	  //Note for users: whenever the eleID selection name has a "-" put a "|" instead here
+	  //This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
 	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")

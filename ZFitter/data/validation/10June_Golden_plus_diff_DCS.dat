@@ -1,0 +1,27 @@
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v8/DoubleEG-Run2016B-PromptReco-v2-miniAOD_03June_v3/273150-274240/Golden_json_3June/unmerged-allRange.root
+d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v8/DoubleEG-Run2016B-PromptReco-v2-miniAOD_10June/274241-274421/Golden_json_10June/unmerged-allRange.root
+d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v8/DoubleEG-Run2016B-PromptReco-v2-miniAOD_10June_DCS/274422-274443/diff_DCS_Golden_10June/unmerged-allRange.root
+
+s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYToEE_NNPDF30-powheg-pythia8/allRange/RunII-2016/DYToEE_NNPDF30-powheg-pythia8-allRange.root
+s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DYJets_madgraph-RunIISpring16-miniAOD/allRange/DYJets_madgraph-RunIISpring16-miniAOD-allRange.root
+
+
+d pileupHist data/puHistos/pu_data_10June_Golden_plus_diff_DCS.root
+s pileupHist data/puHistos/pu_MC_10June_Golden_plus_diff_DCS.root
+s1 pileup data/puTree/s1_10June_Golden_plus_diff_DCS.root
+s2 pileup data/puTree/s2_10June_Golden_plus_diff_DCS.root
+d1 scaleEle_80_corr friends/others/scaleEle_80_corr_d1-10June_Golden_plus_diff_DCS.root
+d2 scaleEle_80_corr friends/others/scaleEle_80_corr_d2-10June_Golden_plus_diff_DCS.root
+d3 scaleEle_80_corr friends/others/scaleEle_80_corr_d3-10June_Golden_plus_diff_DCS.root
+s1 smearEle_80_corr friends/others/smearEle_80_corr_s1-10June_Golden_plus_diff_DCS.root
+s2 smearEle_80_corr friends/others/smearEle_80_corr_s2-10June_Golden_plus_diff_DCS.root
+s1 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_s1-10June_Golden_plus_diff_DCS.root
+s2 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_s2-10June_Golden_plus_diff_DCS.root
+d1 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_d1-10June_Golden_plus_diff_DCS.root
+d2 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_d2-10June_Golden_plus_diff_DCS.root
+d3 smearerCat_scaleStep0_et friends/smearerCat/smearerCat_scaleStep0_et_d3-10June_Golden_plus_diff_DCS.root
+s1 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_s1-10June_Golden_plus_diff_DCS.root
+s2 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_s2-10June_Golden_plus_diff_DCS.root
+d1 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_d1-10June_Golden_plus_diff_DCS.root
+d2 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_d2-10June_Golden_plus_diff_DCS.root
+d3 smearerCat_scaleStep0_et_2 friends/smearerCat/smearerCat_scaleStep0_et_2_d3-10June_Golden_plus_diff_DCS.root

@@ -1,11 +1,21 @@
 #include "../interface/SmearingImporter.hh"
 #include "../interface/BW_CB_pdf_class.hh"
-
+#include "../interface/ZFit_class.hh"
 #include <TTreeFormula.h>
 #include <TRandom3.h>
 #include <TDirectory.h>
-//#define DEBUG
 #include <TStopwatch.h>
+#include <TList.h>
+#include <TObject.h>
+#include <TFriendElement.h>
+#include <TEntryList.h>
+#include <fstream>
+#include <TTreeFormula.h>
+#include <TObjArray.h>
+#include <TChainElement.h>
+//#define DEBUG
+
+
 #define SELECTOR
 #define FIXEDSMEARINGS
 SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut):
@@ -361,17 +371,12 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 				else exit(1);
 			}
 		}
-		if(mcGenWeight != -1) {
-			if(_useMCweight && !_excludeByWeight) event.weight *= mcGenWeight;
-
-			if(_excludeByWeight && mcGenWeight != 1) {
-				float rnd = excludeGen.Rndm();
-				if(jentry < 10)  std::cout << "mcGen = " << mcGenWeight << "\t" << rnd << std::endl;
-				if(mcGenWeight < rnd) { /// \todo fix the reject by weight in case of pu,r9,pt reweighting
-
-					excludedByWeight++;
-					continue;
-				} // else event.weight=1;
+		//As simple as that
+		if(isMC) {
+			if(mcGenWeight > 0) {
+				event.weight *= 1;
+			} else {
+				event.weight *= -1;
 			}
 		}
 		//#ifdef DEBUG
@@ -387,7 +392,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 		}
 		//#endif
 
-		if(event.weight <= 0 || event.weight != event.weight || event.weight > 10) continue;
+		//if(event.weight==0){//ok, fixed
+		//event.weight=1;
+		//}
+		//if(event.weight<=0 || event.weight!=event.weight || event.weight>10) {continue;}
+		if(event.weight > 10) {
+			continue;   //also negative weights are possible
+		}
 
 #ifdef FIXEDSMEARINGS
 		if(isMC) {
@@ -413,7 +424,6 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	chain->ResetBranchAddresses();
 	chain->GetEntry(0);
 	return;
-
 
 }
 
@@ -447,6 +457,7 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	if(_chain->GetBranch("smearEle") != NULL) {
 		std::cout << "[STATUS] Activating branch smearEle" << std::endl;
 		_chain->SetBranchStatus("smearEle", 1);
+		_chain->SetBranchStatus("smearSigmaEle", 1);//This is the sigma used to smear the MC
 	}
 
 
@@ -476,12 +487,14 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	evListName += "_all";
 	TEntryList *oldList = _chain->GetEntryList();
 	if(oldList == NULL) {
-		std::cout << "[STATUS] Setting entry list: " << evListName << std::endl;
+		std::cout << "[STATUS] In SmearingImporter.cc, Setting entry list: " << evListName << std::endl;
 		_chain->Draw(">>" + evListName, cutter.GetCut(_commonCut + "-" + eleID_, isMC), "entrylist");
-		//_chain->Draw(">>"+evListName, "", "entrylist");
 		TEntryList *elist_all = (TEntryList*)gDirectory->Get(evListName);
-		//  elist_all->SetBit(!kCanDelete);
-		_chain->SetEntryList(elist_all);
+		TECALChain *chain_ecal = (TECALChain*)_chain;
+		chain_ecal->TECALChain::SetEntryList(elist_all);
+		assert(elist_all != NULL);
+		std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
+		_chain = dynamic_cast<TChain*>(chain_ecal);
 	}
 	for(std::vector<TString>::const_iterator region_ele1_itr = _regionList.begin();
 	        region_ele1_itr != _regionList.end();

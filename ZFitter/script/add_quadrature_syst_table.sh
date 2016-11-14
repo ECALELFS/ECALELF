@@ -1,0 +1,1 @@
+awk -F" " '{if($4 == "$R9"){syst_err=0; for(i=12; i<=NF; i+=2){syst_err+=$i*$i} for(i=1; i<NF; i++){printf "%s ",$i}; printf " & %.2lf \\\\ \n",sqrt(syst_err)}else{print}}' $1 > tmp/`basename $1 .dat`_quadrature.dat

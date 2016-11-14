@@ -216,7 +216,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	//  EB+ : 2, 4, 5, 8, 11
 	//   (17:58:27) Riccardo Paramatti: EB- : 7, 9, 10, 16, 17
 	TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
-	TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
+	TCut fiducial_cut = "eleID_ele1%2==1 && eleID_ele2%2==1";
 
 
 	/*
@@ -364,12 +364,18 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TObjString *Objstring1 = (TObjString *) splitted->At(1);
 
 			TString string1 = Objstring1->GetString();
-			if(string1 == "12") string1 = "0";
-			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "2";
 
-			TCut cutEle1("gainEle_ele1 ==" + string1);
-			TCut cutEle2("gainEle_ele2 ==" + string1);
+			UChar_t b = 0x00; // this is gain12 only
+			if(string1 == "1") b = 0x01;
+			if(string1 == "6") b = 0x02;
+			if(string1 == "1and6" || string1 == "6and1"){
+				b |= 0x01;
+				b |= 0x02;
+			}
+
+			string1.Form("%d", b);
+			TCut cutEle1("(gainEle_ele1 & " + string1 + ")==" + string1);
+			TCut cutEle2("(gainEle_ele2 & " + string1 + ")==" + string1);
 
 			if(string.Contains("SingleEle"))
 				cutSet.insert(TString(cutEle1 || cutEle2));
@@ -744,36 +750,27 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 
 		//--------------- eleID
 		if(string.Contains("eleID_")) {
-			TObjArray *splitted = string.Tokenize("_");
-			if(splitted->GetEntries() < 2) {
-				std::cerr << "ERROR: incomplete eleID region definition" << std::endl;
-				continue;
-			}
-			TObjString *Objstring1 = (TObjString *) splitted->At(1);
-
-			TString string1 = Objstring1->GetString();
-			string1.Form("%d", eleID_map.eleIDmap[string1.Data()]);
-			/*
-			if(string1=="loose") string1="2";
-			else if(string1=="medium") string1="6";
-			else if(string1=="tight") string1="14";
-			else if(string1=="WP90PU") string1="16";
-			else if(string1=="WP80PU") string1="48";
-			else if(string1=="loose25nsRun2") string1="128";
-			else if(string1=="medium25nsRun2") string1="384";
-			else if(string1=="tight25nsRun2") string1="896";
-			else if(string1=="loose50nsRun2") string1="1024";
-			else if(string1=="medium50nsRun2") string1="3072";
-			else if(string1=="tight50nsRun2") string1="7168";
-			*/
-
-			TCut cutEle1("(eleID[0] & " + string1 + ")==" + string1);
-			TCut cutEle2("(eleID[1] & " + string1 + ")==" + string1);
-
-			cut_string += cutEle1 && cutEle2;
-			cutSet.insert(TString(cutEle1 && cutEle2));
-			delete splitted;
-			continue;
+		  //The eleID names are like: cutBasedElectronID-Spring15-25ns-V1-standalone-loose
+		  //But GetCut uses "-" to parse the category name
+		  //The solution is to use | instead of - when you call the category name
+		  //and then change on the fly | in -
+		  TObjArray *splitted = string.Tokenize("_");
+		  if(splitted->GetEntries() < 2) {
+		    std::cerr << "ERROR: incomplete eleID region definition" << std::endl;
+		    continue;
+		  }
+		  TObjString *Objstring1 = (TObjString *) splitted->At(1);
+		  TString string1 = Objstring1->GetString();
+		  string1.ReplaceAll("|","-");
+		  string1.Form("%d", eleID_map.eleIDmap[string1.Data()]);
+		  
+		  TCut cutEle1("(eleID_ele1 & " + string1 + ")==" + string1);
+		  TCut cutEle2("(eleID_ele2 & " + string1 + ")==" + string1);
+		  
+		  cut_string += cutEle1 && cutEle2;
+		  cutSet.insert(TString(cutEle1 && cutEle2));
+		  delete splitted;
+		  continue;
 		}
 
 		//--------------- iSM

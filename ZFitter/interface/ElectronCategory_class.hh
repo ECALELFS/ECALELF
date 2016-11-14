@@ -2,42 +2,35 @@
 #define ElectronCategory_class_hh
 /// Di-electron events are selected using a short special syntax defined in this class
 /**\class ElectronCategory_class ElectronCategory_class.cc Calibration/ZFitter/src/ElectronCategory_class.cc
- * Description:
- *
  */
 
 /***********************************************************//**
- * Parser of category class provides a TCut
- * one di-electron category is difined by a series of cuts to be
+ * One di-electron category is difined by a series of cuts to be
  * applied to both electrons
  *
- *
- * Syntax:
+ * \par Syntax:
  *  - '-' is the cut separator <BR>
  *         es. <cut1>-<cut2>-<cut3> <BR>
  *         es. EB-absEta_0_1-gold:  <BR>
  *               three cuts are applied:
- *               EB -> no parameters,
- *               absEta_0_1 -> two parameters 0 and 1 (parameters are
- *                             separated by _,
- *               gold -> no parameters
- *
- * List of possible cuts without parameter:
+ *               - EB -> no parameters,
+ *               - absEta_0_1 -> two parameters 0 and 1 (parameters are separated by _,
+ *               - gold -> no parameters
+ *  - List of possible cuts without parameter:
  * EB EE EB_EE EBp (EB+) EBm (EB-)  EE EEp EEm RefReg
- *
- * List of possible cuts with 1 parameter:
- * Et_X: Et_
- * eleID_X: eleID == X
- *
- * List of possible cuts with 2 parameters:  <BR>
+ *  - List of possible cuts with 1 parameter:
+ *    - Et_X: Et_
+ *    - eleID_X: eleID == X
+ *    - gainEle_X: 12, 6, 1, 6and1
+ *  - List of possible cuts with 2 parameters:  <BR>
  * <B> ATTENTION! Same syntax but different meaning! </B> <BR>
- * - runNumber_X_Y: X <= runNumber <= Y
- * - IEta_X_Y:      X <= ieta (or iX) <= Y
- * - absIEta_X_Y:   X <= abs(ieta) <= Y
- * - distIEta_X_Y:  X-Y <= ieta <= X+Y
- * - absEta_X_Y:    X <= |eta| < Y
- * - energySC_X_Y:  X <= energySCEle < Y
- * - nPV_X_Y:       X <= nPV < Y
+ *   - \b runNumber_X_Y: X <= runNumber <= Y
+ *   - \b IEta_X_Y:      X <= ieta (or iX) <= Y
+ *   - \b absIEta_X_Y:   X <= abs(ieta) <= Y
+ *   - \b distIEta_X_Y:  X-Y <= ieta <= X+Y
+ *   - \b absEta_X_Y:    X <= |eta| < Y
+ *   - \b energySC_X_Y:  X <= energySCEle < Y
+ *   - \b nPV_X_Y:       X <= nPV < Y
  *
  *************************************************************/
 

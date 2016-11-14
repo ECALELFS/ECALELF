@@ -1,0 +1,12 @@
+d1  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v9/DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD/273150-275376/271036-276384_NoL1T_v4/unmerged-allRange.root
+d2  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v10/DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD/275657-276283/MiniAOD-LC/merged.root
+d3  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v10/DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD/276315-276811/MiniAOD-LC/megred.root
+d4  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v10/DoubleEG-Run2016E-noSkim-Prompt_v2-miniAOD/276831-277420/MiniAOD-LC/merged.root
+d5  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v10/DoubleEG-Run2016F-noSkim-Prompt_v1-miniAOD/277981-278808/277981-278808/merged.root
+d6  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v11/DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD/279653-280385/MiniAOD-LC/merged.root
+
+s1  selected    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_v3/DYToEE_NNPDF30-powheg-pythia8-miniAODv1/allRange/DYToEE_NNPDF30-powheg-pythia8-miniAODv1-allRange.root
+
+d pileupHist data/puHistos/pu_data_80X_dataRun2_Prompt_v11_11Oct2016.root
+s pileupHist data/puHistos/pu_MC_80X_dataRun2_Prompt_v11_11Oct2016.root
+s1 pileup data/puTree/s1_80X_dataRun2_Prompt_v11_11Oct2016.root
