@@ -13,38 +13,58 @@ anyVar_class::~anyVar_class(void)
 {
 }
 
-anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes):
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes, bool updateOnly):
 	data_chain(data_chain_),
 	reduced_data(NULL),
 	dir(),
 	_branchNames(branchNames),
 	_cutter(cutter),
-	massBranchName_(massBranchName)
+	massBranchName_(massBranchName),
+	_outDirFitRes(outDirFitRes)
 {
 
-	Long64_t entries = data_chain->GetEntries();
+	Long64_t entries = data_chain->GetEntriesFast();
 	for(auto& branch : _branchNames) {
 		TString& bname = branch.first;
-		_statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat"));
-
+		if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat", std::ofstream::app));
+		else _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat"));
+		
 		stats s(bname.Data(), entries);
 		_stats_vec.push_back(s);
 	}
 
-	_statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat"));
+	//SetOutDirName(outDirFitRes, updateOnly);
+	if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat",  std::ofstream::app));
+	else _statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat"));
 	stats s(massBranchName_, entries);
 	_stats_vec.push_back(s);
+
+	for(size_t i = 0; i < _stats_vec.size(); ++i) {
+		auto& s = _stats_vec[i];
+		*(_statfiles[i]) << s.printHeader() << std::endl;
+	}
+
 }
 
-void anyVar_class::SetOutDirName(std::string dirname)
+void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 {
+	_outDirFitRes = dirname;
 	system(("mkdir -p "+dirname).c_str());
 	_statfiles.clear(); ///momory leak?
 	for(auto& branch : _branchNames) {
 		TString& bname = branch.first;
-		_statfiles.emplace_back(new std::ofstream(dirname + bname + ".dat"));
+		if(updateOnly) _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat", std::ofstream::app));
+		else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat"));
 	}
-	_statfiles.emplace_back(new std::ofstream(dirname + massBranchName_ + ".dat"));
+
+	if(updateOnly) _statfiles.emplace_back(new std::ofstream(_outDirFitRes + massBranchName_ + ".dat",  std::ofstream::app));
+	else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + massBranchName_ + ".dat"));
+
+	for(size_t i = 0; i < _stats_vec.size(); ++i) {
+		auto& s = _stats_vec[i];
+		*(_statfiles[i]) << s.printHeader() << std::endl;
+	}
+
 }
 
 void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex)
@@ -122,7 +142,7 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 
 #ifndef dump_root_tree
 	// updates the reduced_data
-	TreeToTreeShervin(chain, "", modulo, moduloIndex);
+	TreeToTreeShervin(chain, "", modulo);
 #else
 	TreeToTree(chain, "1");
 #endif
@@ -131,32 +151,39 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 }
 
 
-void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo, unsigned int moduloIndex)
+void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo)
 {
 	std::cout << "[INFO] Start copying the tree in memory" << std::endl;
 	TStopwatch ts;
 	ts.Start();
-	if(reduced_data!=NULL) delete reduced_data;
-	reduced_data  =  chain->CloneTree(0, "fast");
-	reduced_data->SetDirectory(&dir);
-
-	TIter next(reduced_data->GetListOfFriends());
-	TObject * obj;
-	while ((obj = next())) {
-		//std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
-		TTree * t = ((TFriendElement *)obj)->GetTree();
-		TObjArray * branches = t->GetListOfBranches();
-		Int_t nb = branches->GetEntriesFast();
-		for (Int_t i = 0; i < nb; ++i) {
-			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
-			TString title = br->GetTitle();
-			if (chain->GetBranchStatus(br->GetName())) {
-				reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
-			}
+	reduced_data_vec.clear();
+	for(unsigned int i=0; i < modulo; ++i){
+		reduced_data_vec.emplace_back(chain->CloneTree(0, "fast"));
+		std::unique_ptr<TTree>& reduced_data = reduced_data_vec[i];
+		std::string title = reduced_data->GetTitle();
+		title+="_mod";
+		title+=i;
+		reduced_data->SetTitle(title.c_str());
+		reduced_data->SetDirectory(&dir);
+		
+		TIter next(reduced_data->GetListOfFriends());
+		TObject * obj;
+		while ((obj = next())) {
+			//std::cout << "--> " << ((TFriendElement *)obj)->GetTree()->GetName() << "\n";
+			TTree * t = ((TFriendElement *)obj)->GetTree();
+			TObjArray * branches = t->GetListOfBranches();
+			Int_t nb = branches->GetEntriesFast();
+			for (Int_t i = 0; i < nb; ++i) {
+				TBranch * br = chain->GetBranch(branches->At(i)->GetName());
+				TString title = br->GetTitle();
+				if (chain->GetBranchStatus(br->GetName())) {
+					reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+				}
 		}
-		reduced_data->RemoveFriend(t);
-	}
+			reduced_data->RemoveFriend(&(*reduced_data));
+		}
 
+	}
 	// add branches in friends
 	/////TIter next(chain->GetListOfFriends());
 	/////TObject * obj;
@@ -171,7 +198,6 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
 	for (Long64_t i = 0; i < nentries; ++i) {
-		if(modulo > 0 && i % modulo != moduloIndex) continue;
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
@@ -179,27 +205,21 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 			if(selector != NULL) selector->UpdateFormulaLeaves();
 		}
 		if(selector != NULL && selector->EvalInstance() == false) continue;
-		reduced_data->Fill();
-//
+		reduced_data_vec[i%modulo]->Fill();
 	}
 
-	TString evListName = "evList_";
-	evListName += chain->GetTitle();
-	evListName += "_red";
+	for(auto& reduced_data : reduced_data_vec){
+		TString evListName = "evList_";
+		evListName += chain->GetTitle();
+		evListName += "_red";
 
-	reduced_data->Draw(">>" + evListName, "", "entrylist");
-	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
-	assert(elist != NULL);
-	elist->Print();
-	//TECALChain *chain_ecal = (TECALChain*)reduced_data;
-	//chain_ecal->TECALChain::SetEntryList(elist);
-	reduced_data->SetEntryList(elist);
-	//reduced_data = dynamic_cast<TChain*>(chain_ecal);
-	
-	reduced_data->Print();
-
-	// assert(reduced_data->GetEntryList()!=NULL);
-	//reduced_data->GetEntryList()->Print();
+		reduced_data->Draw(">>" + evListName, "", "entrylist");
+		TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
+		assert(elist != NULL);
+		elist->Print();
+		reduced_data->SetEntryList(elist);
+	}
+	reduced_data_vec[0]->Print();
 
 
 	ts.Stop();
@@ -328,6 +348,21 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		std::cerr << "[ERROR] reduced_data is NULL. Maybe you have to call the Import() method" << std::endl;
 		return;
 	}
+
+// this makes sure that the same category is not processed twice
+	bool doProcess=true;
+	std::string file=_outDirFitRes+"/"+massBranchName_+".dat";
+	std::string s="grep -q  "+region+" "+file;
+	doProcess = doProcess && !(system(s.c_str()));
+	if(doProcess==true){
+	for(auto& branch : _branchNames) {
+		TString& bname = branch.first;
+		doProcess = doProcess && (system(s.c_str()));
+		if(doProcess==false) break;
+	}
+	}
+	if(doProcess==true) return;
+
 	TECALChain *chain_ecal = (TECALChain *)reduced_data;
 
 	Long64_t entries = chain_ecal->GetEntryList()->GetN();
@@ -459,6 +494,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		auto& s = _stats_vec[i];
 		std::cout << "Start sorting " << s.name() << std::endl;
 		s.sort();
+		*(_statfiles[i]) << "#H" << s.printHeader() << std::endl;
 		*(_statfiles[i]) << region << "\t" << s << std::endl;
 	}
 	std::cout << "[INFO] Region fully processed" << std::endl;

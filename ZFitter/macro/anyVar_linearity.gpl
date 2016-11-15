@@ -1,0 +1,51 @@
+reset
+resType="pt 6"
+peakType="pt 3"
+file='test/dato/anyVar_linearity/scaleRatio-invMass_SC_must.dat'
+category="[EE-bad-Et_25]"
+
+set title 'M_{ee}: '.category
+
+set terminal pdfcairo enhanced color solid font "Helvetica,16" size 5,5
+system("mkdir -p test/dato/anyVar_linearity/img/ ")
+set output 'test/dato/anyVar_linearity/img/anyVar_linearity.pdf'
+set output 'test.pdf'
+
+set grid
+set size square
+set key left
+set xrange [0.85:1.15]
+set autoscale fix
+
+set xlabel 'scale'
+set ylabel 'relative variation: V(X)/V(1)'
+p file u 2:5:6 i category w yerr  t "mean", \
+'' u 2:7:8 i category w yerr t 'stdDev', \
+'' u 2:9:10 i category w yerr t 'median', \
+'' u 2:11:12 i category w yerr t 'effSigma68', \
+'' u 2:13:14 i category w yerr t 'effSigma30', \
+'' u 2:15:16 i category w yerr t 'mean68', \
+'' u 2:17:18 i category w yerr t 'mean30', \
+x dt 2 t 'y=x'
+
+set ylabel 'residual variation w.r.t. linearity [%]"
+set offsets graph 0.05, graph 0.05, graph 0.1, graph 0.1
+set key bottom left maxrows 5
+set yrange [*:*]
+set xrange [*:*]
+p file \
+u 2:($5-$2):6 i category w yerr @peakType lc 6 t "mean", \
+'' u 2:($9-$2):10 i category w yerr @peakType lc 2 t 'median', \
+'' u 2:($15-$2):16 i category w yerr @peakType lc 1 t 'mean68', \
+'' u 2:($17-$2):18 i category w yerr @peakType lc 4 t 'mean30', \
+0 dt 2 t 'y=0'
+
+p file \
+ u 2:($7-$2):8 i category w yerr @resType lc 6 t 'stdDev', \
+'' u 2:($11-$2):12 i category w yerr @resType lc 2 t 'effSigma68', \
+'' u 2:($13-$2):14 i category w yerr @resType lc 1 t 'effSigma30', \
+0 dt 2 t 'y=0'
+
+
+
+set output 

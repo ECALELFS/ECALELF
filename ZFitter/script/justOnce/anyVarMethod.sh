@@ -13,19 +13,26 @@ echo "
 outDirBase=test/dato/anyVar_linearity
 scales=(0.90 0.95 0.98 0.99 1.00 1.01 1.02 1.05 1.10)
 smearings=(0.001 0.005 0.010 0.015 0.020)
+modulos=(10 50 100 500 1000)
+
 for scale in ${scales[@]}
 do
-	outDir=$outDirBase/scale/$scale/
+	for modulo in ${modulos[@]}
+	do
+	outDir=$outDirBase/scale/$scale/$modulo/
 	mkdir -p $outDir
-	(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=10 --scale=$scale --outDirFitResData=$outDir &> $scale.log) &
+		(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir &> $scale-$modulo.log) &
+	done
+	wait
 done
 wait
 
+exit 0
 for smearing in ${smearings[@]}
 do
 	outDir=$outDirBase/smearing/$smearing/
 	mkdir -p $outDir
-	(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=10 --smearing=$scale --outDirFitResData=$outDir &> $smearing.log) &
+#	(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=10 --smearing=$scale --outDirFitResData=$outDir &> $smearing.log) &
 done
 wait
 
@@ -33,76 +40,11 @@ wait
 vars=(`ls -1 $outDirBase/${scale}/*.dat | sed "s|$outDirBase/${scale}/||;s|.dat||"`)
 echo ${vars[@]}
 
+#awk/anyVarMethod.awk
 # script to get mean and standard deviation over different "modulos"
-cat > tmp/anyVarMethod.awk <<EOF
-BEGIN{
-  firstColumn=3
-}
 
-(NF!=0){
-  cat=\$1; 
-  cats[cat]=NF
-  for(i=firstColumn; i <=NF; i++){
-    sum[cat,i]+=\$i; 
-    sum2[cat,i]+=\$i*\$i; 
-  }
-  n[cat]+=1
-};
-END{
-  for(cat in cats){
-    printf("%s\t%.2f", cat, scale) 
-    printf("\t%d", n[cat]);
-    for(i=firstColumn; i <= cats[cat]; i++){
-      if(n[cat] == 0){
-        printf("\t%f\t%f", 0, 0);
-      } else {
-        mean   =  sum[cat,i]/n[cat]             
-        stdDev =  sqrt(sum2[cat,i]/n[cat]-mean*mean)
-        printf("\t%f\t%f", mean, stdDev);
-      }
-    }
-   printf("\n");
-  }
-}
-
-EOF
-
-
-
-cat > tmp/anyVarMethod_ratio.awk<<EOF
-BEGIN{
-  firstColumn=4
-}
-
-{
-  line=\$0
-  if(NR==1){
-    while(1==getline <FILENAME ){
-      if(NF!=0){
-  cat=\$1; 
-  cats[cat]=NF
-        if(\$2==1){        
-  for(i=firstColumn; i <=NF; i++){
-    val[cat,i]=\$i; 
-  }
-}
-      }
-    }
-  }
-  \$0=line
-  cat=\$1; 
-  printf("%s\t%.2f", cat, \$2)
-  for(i=firstColumn; i <=NF; i++){
-    printf("\t%f", \$i/val[cat,i])
-    i++
-    printf("\t%f", sqrt(\$i/\$(i-1))*(\$i/\$(i-1))+(val[cat,i]/val[cat,(i-1)])*(val[cat,i]/val[cat,(i-1)]))
-#    printf("\t%f", val[cat,i])
-  }
-  printf("\n")
-};
-
-
-EOF
+#awk/anyVarMethod_ratio.awk
+# make the ratio w.r.t. scale=1
 
 for var in ${vars[@]}
 do
@@ -112,12 +54,16 @@ do
 	echo -n "" > $file
 	for scale in ${scales[@]}
 	do
-		cat $outDirBase/$scale-modulo_*/$var.dat   | awk -v scale=$scale -f tmp/anyVarMethod.awk >> $file
+		sort $outDirBase/$scale-modulo_*/$var.dat |uniq  | awk -v scale=$scale -f awk/anyVarMethod.awk >> $file
 	done
 
 	#make the ratio w.r.t. scale=1
 	fileRatio=$outDirBase/scaleRatio-$var.dat
-	awk -f tmp/anyVarMethod_ratio.awk $file > $fileRatio
+	awk -f awk/anyVarMethod_ratio.awk $file | sort | awk -f awk/splitCategory.awk | sed '1,2 d' > $fileRatio
+	
 done
 
+
+echo "Now plot with gnuplot:"
+echo "load 'macro/anyVar_linearity.gpl'"
 

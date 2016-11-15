@@ -1,4 +1,5 @@
 s1	selected	root://eoscms.cern.ch//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/80X_mcRun2_asymptotic_2016_v3/DYJets_madgraph-RunIISpring16/allRange/DYJets_madgraph-RunIISpring16-allRange.root
+d1 selected       root://eoscms.cern.ch//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016B-ZSkim-Prompt_v2/273150-275376/271036_279931-Cal_Sep2016/withExtras2/DoubleEG-Run2016B-ZSkim-Prompt_v2-273150-275376.root
 #s	pileupHist	data/pileupHist_mc_v2.root
 #d	pileupHist	data/pileupHist_data_v2.root
 #s1	pileup		data/mcPUtrees_madgraph_v2.root

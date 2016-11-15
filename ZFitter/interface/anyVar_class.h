@@ -86,18 +86,22 @@ public:
 	anyVar_class(TChain *data_chain_,
 	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
 	             std::string massBranchName,
-	             std::string outDirFitRes
+	             std::string outDirFitRes,
+				 bool updateOnly=true
 	            );
 
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< to be called in the main
 	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
-	void SetOutDirName(std::string dirname);
-	void TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< skim the input TChain with selected events, copying only active branches
-
+	void SetOutDirName(std::string dirname, bool updateOnly=true);
+	void TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo = 0); ///< skim the input TChain with selected events, copying only active branches
+	void ChangeModulo(unsigned int moduloIndex){
+		reduced_data = &(*reduced_data_vec[moduloIndex]);
+	};
 private:
 	TChain *data_chain; // pointer fixed in the constructor
 	TTree *reduced_data;
+	std::vector<std::unique_ptr<TTree> > reduced_data_vec;
 	TDirectory dir;
 	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
@@ -121,7 +125,7 @@ public:
 
 	void PrintStats(std::ostream outScale);
 	bool _exclusiveCategories;
-
+	std::string _outDirFitRes;
 
 
 };

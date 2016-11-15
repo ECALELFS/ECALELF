@@ -39,7 +39,7 @@ std::pair<size_t, size_t> stats::eff_sigma_interval(float q) const
 	return interval;
 }
 
-float stats::mean(size_t imin, size_t imax) const
+double stats::mean(size_t imin, size_t imax) const
 {
 	double sum = 0;
 	unsigned int n = 0;
@@ -79,12 +79,12 @@ void stats::fillHisto(TH1 * h)
 {
 	for (auto & v : _values) h->Fill(v);
 }
-
+	
 /**
  * This operator defines how the stats are printed.
  *	\snippet Stats.cc STATS OUTPUT
  */
-std::ostream& operator<<(std::ostream& os, const stats s)
+	std::ostream& operator<<(std::ostream& os, const stats s)
 {
 	if(s.n() == 0) {
 		os << s.name() << "\t" << s.n() << "\t" << "-" << "\t" << "-" << "\t" << "-" << "\t" << "-";
@@ -104,4 +104,19 @@ std::ostream& operator<<(std::ostream& os, const stats s)
 /// [STATS OUTPUT]
 	}
 	return os;
+}
+
+std::string stats::printHeader(void)
+{
+	std::string s;
+	s + "varName" + "\t" 
+		+ "nEvents" + "\t" 
+		+ "mean" + "\t" 
+		+ "stdDev" + "\t" 
+		+ "median" + "\t" 
+		+ "effSigma" + "\t" 
+		+ "effSigma30" + "\t" 
+		+ "mean68" + "\t" 
+		+ "mean30";
+	return s;
 }

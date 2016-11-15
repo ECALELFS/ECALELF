@@ -55,7 +55,7 @@ public:
 		return _sum / _n;
 	}; ///< returns the mean
 
-	float mean(size_t imin, size_t imax) const; ///< returns the mean in an interval
+	double mean(size_t imin, size_t imax) const; ///< returns the mean in an interval
 
 	inline double stdDev(void) const
 	{
@@ -130,6 +130,7 @@ public:
 
 
 	friend std::ostream& operator<<(std::ostream& os, const stats s);
+	std::string printHeader(void);
 
 private:
 	std::string _name;

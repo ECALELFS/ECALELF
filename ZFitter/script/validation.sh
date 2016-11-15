@@ -196,7 +196,7 @@ if [ -n "$VALIDATION" ];then
     regionFile=data/regions/validation.dat
 #	regionFile=data/regions/validation_0T.dat
 
-    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
+    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  $updateOnly --invMass_var ${invMass_var} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	--outDirImgMC=${outDirMC}/img   --outDirImgData=${outDirData}/img  --commonCut=${commonCut}  --imgFormat=${imgFormat} --selection=${selection}  $NOPUOPT $FLOATTAILSOPT || exit 1 #> ${outDirData}/log/validation.log||  exit 1
 
