@@ -467,14 +467,14 @@ runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
 pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doExtraCalibTree=${DOEXTRACALIBTREE} doExtraStudyTree=${DOEXTRASTUDYTREE} doEleIDTree=${DOELEIDTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}
+pycfg_params=type=${TYPE} doTree=${DOTREE} doExtraCalibTree=${DOEXTRACALIBTREE} doExtraStudyTree=${DOEXTRASTUDYTREE} doEleIDTree=${DOELEIDTREE} doTreeOnly=1 isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}
 get_edm_output=1
 output_file=${OUTFILES}
 
 
 use_parent=0
 EOF
-
+##jsonFile=${JSONFILE}
 if [[ ${isMC} = "0" ]]; then
 cat >> ${crabFile} <<EOF
 lumi_mask=${JSONFILE}
