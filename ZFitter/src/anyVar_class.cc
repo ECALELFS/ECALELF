@@ -163,7 +163,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	TObject * obj = NULL;
 	bool firstLoop=true;
 	while ((obj = next())) {
-		TTree * t = ((TFriendElement *)obj)->GetTree();
+		TTree *t = ((TFriendElement *)obj)->GetTree();
 		TObjArray* branches= t->GetListOfBranches();
 		Int_t nb = branches->GetEntriesFast();
 		for (Int_t i = 0; i < nb; ++i) {
@@ -182,13 +182,13 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 #endif
 						reduced_data->SetDirectory(&dir);
 						reduced_data->SetTitle(title);
+						reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
 					}
 					reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
 				}
 				firstLoop=false;
 			}
 		}
-		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
 	}
 
 //#ifdef DEBUG
