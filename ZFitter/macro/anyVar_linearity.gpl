@@ -1,7 +1,7 @@
 reset
 resType="pt 6"
 peakType="pt 3"
-file='test/dato/anyVar_linearity/scale/scaleRatio-modulo_100-invMass_SC_must.dat'
+file='test/dato/anyVar_linearity/scale/scaleRatio-modulo_10-invMass_SC_must.dat'
 categories = system("grep '#' ".file." | awk '{print $2}' | sort | uniq | tr '\n' ' ' ")
 
 set terminal pdfcairo enhanced color solid font "Helvetica,16" size 5,5
@@ -28,7 +28,7 @@ do for [category in categories]{
 		'' u 2:11:12 i category w yerr t 'effSigma68', \
 		'' u 2:13:14 i category w yerr t 'effSigma30', \
 		'' u 2:15:16 i category w yerr t 'mean68', \
-		'' u 2:17:18 i category w yerr t 'mean30', \
+		'' u 2:17:18 i category w yerr  t 'mean30', \
 		x dt 2 t 'y=x'
 }
 
@@ -43,7 +43,7 @@ p file \
 u 2:($5-$2):6 i category w yerr @peakType lc 6 t "mean", \
 '' u 2:($9-$2):10 i category w yerr @peakType lc 2 t 'median', \
 '' u 2:($15-$2):16 i category w yerr @peakType lc 1 t 'mean68', \
-'' u 2:($17-$2):18 i category w yerr @peakType lc 4 t 'mean30', \
+'' u 2:($17-$2):18 i category w yerr @peakType lc 4 dt 1 t 'mean30', \
 0 dt 2 t 'y=0'
 
 p file \

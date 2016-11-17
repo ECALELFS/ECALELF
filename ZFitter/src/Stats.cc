@@ -109,7 +109,7 @@ void stats::fillHisto(TH1 * h)
 std::string stats::printHeader(void)
 {
 	std::string s;
-	s += "varName\t";
+	s += "catName\t";
 	s += "nEvents\t"; 
 	s += "mean\t"; 
 	s += "stdDev\t"; 

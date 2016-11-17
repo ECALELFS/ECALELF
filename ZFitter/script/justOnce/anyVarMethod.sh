@@ -13,17 +13,18 @@ echo "
 outDirBase=test/dato/anyVar_linearity
 scales=(0.90 0.95 0.98 0.99 1.00 1.01 1.02 1.05 1.10)
 smearings=(0.001 0.005 0.010 0.015 0.020)
-modulos=(10 50 100 1000)
+modulos=(10) # 50 100 1000)
 
 for modulo in ${modulos[@]}
 do
 	echo "[`basename $0`] Processing modulo = $modulo"
 	for scale in ${scales[@]}
 	do
-		echo "[`basename $0`] Processing scale = $scale"
+		echo "[`basename $0`] -> Processing scale = $scale"
 		outDir=$outDirBase/scale/$scale/$modulo/
 		mkdir -p $outDir
 #		(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir &> $outDirBase/$scale-$modulo.log) &
+		./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir 
 	done
 	wait
 done
@@ -59,7 +60,7 @@ do
 		for scale in ${scales[@]}
 		do
 			echo $scale
-			sort $outDirBase/scale/$scale/${modulo}-modulo_*/$var.dat |uniq  | awk -v scale=$scale -f awk/anyVarMethod.awk  >> $file
+			sort $outDirBase/scale/$scale/${modulo}-modulo_*/$var.dat | grep -v "#" | uniq  | awk -v scale=$scale -f awk/anyVarMethod.awk  >> $file
 		done
 		sort $file | uniq > $file.tmp; 
 		mv $file.tmp $file
