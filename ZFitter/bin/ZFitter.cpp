@@ -1134,11 +1134,11 @@ int main(int argc, char **argv)
 		// then all the array variables
 		branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
+#endif
+		branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-#endif
 		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", vm.count("updateOnly"));
 		anyVar._exclusiveCategories = false;
 		anyVar.Import(commonCut, eleID, activeBranchList, modulo);

@@ -144,7 +144,7 @@ private:
 	float eff_sigma(std::vector<float> & v, float q = 0.68269);
 };
 
-class statsCollection
+class statsCollection : std::vector<stats>
 {
 	typedef std::vector<stats> stats_coll_t;
 	stats_coll_t _stats_coll;
