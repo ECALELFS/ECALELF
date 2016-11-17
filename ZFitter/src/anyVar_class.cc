@@ -4,7 +4,7 @@
 #include <TBranchElement.h>
 #include <TFriendElement.h>
 #include <TStopwatch.h>
-//#define DEBUG
+#define DEBUG
 #define MAXENTRIES 10000
 #define MAXBRANCHES  20
 #include <cassert>
@@ -158,7 +158,20 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	TStopwatch ts;
 	ts.Start();
 	reduced_data_vec.clear();
-		
+
+	for(unsigned int i=0; i < modulo; ++i){
+		reduced_data_vec.emplace_back(chain->CloneTree(0));
+		TTree *reduced_data = reduced_data_vec[i].get();
+		char title[50];
+		sprintf(title, "%s_mod_%d", reduced_data->GetTitle(), i);
+#ifdef DEBUG
+		std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
+#endif
+		reduced_data->SetDirectory(&dir);
+		reduced_data->SetTitle(title);
+	}
+
+
 	TIter next(chain->GetListOfFriends()); // cannot use reduced_data otherwise crashes
 	TObject * obj = NULL;
 	bool firstLoop=true;
@@ -166,34 +179,26 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		TTree *t = ((TFriendElement *)obj)->GetTree();
 		TObjArray* branches= t->GetListOfBranches();
 		Int_t nb = branches->GetEntriesFast();
+		std::cout << nb << "\t" << t->GetName() << "\t" << t->GetTitle() << std::endl;
 		for (Int_t i = 0; i < nb; ++i) {
 			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
 			if (chain->GetBranchStatus(br->GetName())) {
-				for(unsigned int i=0; i < modulo; ++i){
-					if(firstLoop){
-						reduced_data_vec.emplace_back(chain->CloneTree(0));
-					}
-					TTree *reduced_data = reduced_data_vec[i].get();
-					if(firstLoop){
-						char title[50];
-						sprintf(title, "%s_mod_%d", reduced_data->GetTitle(), i);
 #ifdef DEBUG
-						std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
+				std::cout << "[anyVar_class][DEBUG] " << br->GetName() << std::endl;
 #endif
-						reduced_data->SetDirectory(&dir);
-						reduced_data->SetTitle(title);
-						reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
-					}
+				for(unsigned int i=0; i < modulo; ++i){
+					TTree *reduced_data = reduced_data_vec[i].get();
 					reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+					if(firstLoop) reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
 				}
 				firstLoop=false;
 			}
 		}
 	}
-
 //#ifdef DEBUG
 	std::cout << "[DEBUG] Friends removed and branches added" << std::endl;
 //#endif
+
 	// add branches in friends
 	/////TIter next(chain->GetListOfFriends());
 	/////TObject * obj;
@@ -203,10 +208,18 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	/////        ((TFriendElement *)obj)->GetTree()->Print();
 	/////}
 	Long64_t nentries = chain->GetEntryList()->GetN();
-
 	chain->LoadTree(chain->GetEntryNumber(0));
 	Long64_t treenumber = -1;
 	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
+
+	std::vector<TEntryList*> elists;
+	for(auto& reduced_data : reduced_data_vec){
+		TString evListName = "evList_";
+		evListName += reduced_data->GetTitle();
+		evListName += "_red";
+
+		elists.emplace_back(new TEntryList(evListName, evListName, reduced_data.get()));
+	}	
 	for (Long64_t i = 0; i < nentries; ++i) {
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
@@ -216,22 +229,18 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		}
 		if(selector != NULL && selector->EvalInstance() == false) continue;
 		reduced_data_vec[i%modulo]->Fill();
+		elists[i%modulo]->Enter(ientry);
 	}
 
 #ifdef DEBUG
 	std::cout << "[DEBUG] Entries in tree copied" << std::endl;
 #endif
 
-	for(auto& reduced_data : reduced_data_vec){
-		TString evListName = "evList_";
-		evListName += reduced_data->GetTitle();
-		evListName += "_red";
-
-		reduced_data->Draw(">>" + evListName, "", "entrylist");
-		TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
-		assert(elist != NULL);
-		elist->Print();
-		reduced_data->SetEntryList(elist);
+	for(size_t i=0; i< reduced_data_vec.size(); ++i){
+#ifdef DEBUG
+		elists[i]->Print();
+#endif
+		reduced_data_vec[i]->SetEntryList(elists[i]);
 	}
 	reduced_data_vec[0]->Print();
 
@@ -240,6 +249,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	ts.Stop();
 	std::cout << "Copy tree done: ";
 	ts.Print();
+	assert(false);
 	ChangeModulo(0);
 }
 
