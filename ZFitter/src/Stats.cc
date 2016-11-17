@@ -109,14 +109,14 @@ void stats::fillHisto(TH1 * h)
 std::string stats::printHeader(void)
 {
 	std::string s;
-	s + "varName" + "\t" 
-		+ "nEvents" + "\t" 
-		+ "mean" + "\t" 
-		+ "stdDev" + "\t" 
-		+ "median" + "\t" 
-		+ "effSigma" + "\t" 
-		+ "effSigma30" + "\t" 
-		+ "mean68" + "\t" 
-		+ "mean30";
+	s += "varName\t";
+	s += "nEvents\t"; 
+	s += "mean\t"; 
+	s += "stdDev\t"; 
+	s += "median\t"; 
+	s += "effSigma\t"; 
+	s += "effSigma30\t"; 
+	s += "mean68\t"; 
+	s += "mean30";
 	return s;
 }

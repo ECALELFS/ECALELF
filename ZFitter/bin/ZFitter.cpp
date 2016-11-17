@@ -1141,19 +1141,16 @@ int main(int argc, char **argv)
 #endif
 		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", vm.count("updateOnly"));
 		anyVar._exclusiveCategories = false;
-		anyVar.Import(commonCut, eleID, activeBranchList);
+		anyVar.Import(commonCut, eleID, activeBranchList, modulo);
 
 		///\todo allocating both takes too much memory
-		anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
-		anyVarMC._exclusiveCategories = false;
-		anyVarMC.Import(commonCut, eleID, activeBranchList);
-
 		if(vm.count("runToy") && modulo > 0) {
 			// splitting the events by "modulo" and obtaining statistically indipendent subsamples
 			for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
 				//change the output directory for the results
 				std::string dir = outDirFitResData;
-				if(dir.rfind("/") != std::string::npos) dir.erase(dir.rfind("/"));
+				size_t slashpos=dir.find_last_of('/');
+				if( slashpos != std::string::npos && slashpos!=dir.size()) dir.erase(dir.rfind("/"));
 				dir += "-modulo_" + std::to_string(moduloIndex) + "/";
 				anyVar.SetOutDirName(dir, vm.count("updateOnly"));
 				std::cout << "[INFO] setting new output dir: " << dir << std::endl;
@@ -1171,6 +1168,10 @@ int main(int argc, char **argv)
 #endif
 			}
 		} else {
+		anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
+		anyVarMC._exclusiveCategories = false;
+		anyVarMC.Import(commonCut, eleID, activeBranchList);
+
 #ifndef dump_root_tree
 			for(auto& region : categories) {
 				std::cout << "------------------------------------------------------------" << std::endl;

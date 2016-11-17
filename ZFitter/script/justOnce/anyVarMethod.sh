@@ -13,21 +13,22 @@ echo "
 outDirBase=test/dato/anyVar_linearity
 scales=(0.90 0.95 0.98 0.99 1.00 1.01 1.02 1.05 1.10)
 smearings=(0.001 0.005 0.010 0.015 0.020)
-modulos=(10 50 100 500 1000)
+modulos=(10 50 100 1000)
 
-for scale in ${scales[@]}
+for modulo in ${modulos[@]}
 do
-	for modulo in ${modulos[@]}
+	echo "[`basename $0`] Processing modulo = $modulo"
+	for scale in ${scales[@]}
 	do
-	outDir=$outDirBase/scale/$scale/$modulo/
-	mkdir -p $outDir
-		(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir &> $scale-$modulo.log) &
+		echo "[`basename $0`] Processing scale = $scale"
+		outDir=$outDirBase/scale/$scale/$modulo/
+		mkdir -p $outDir
+#		(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir &> $outDirBase/$scale-$modulo.log) &
 	done
 	wait
 done
 wait
 
-exit 0
 for smearing in ${smearings[@]}
 do
 	outDir=$outDirBase/smearing/$smearing/
@@ -37,8 +38,8 @@ done
 wait
 
 # get the list of variables 
-vars=(`ls -1 $outDirBase/${scale}/*.dat | sed "s|$outDirBase/${scale}/||;s|.dat||"`)
-echo ${vars[@]}
+vars=(`ls -1 $outDirBase/scale/${scale}/${modulo}-modulo_0/*.dat | sed "s|.*/||;s|.dat||"`)
+echo "Variables analyzed: ${vars[@]}"
 
 #awk/anyVarMethod.awk
 # script to get mean and standard deviation over different "modulos"
@@ -48,18 +49,25 @@ echo ${vars[@]}
 
 for var in ${vars[@]}
 do
-
-	# calculate mean and stdDev
-	file=$outDirBase/scale-$var.dat
-	echo -n "" > $file
-	for scale in ${scales[@]}
+	for modulo in ${modulos[@]}
 	do
-		sort $outDirBase/$scale-modulo_*/$var.dat |uniq  | awk -v scale=$scale -f awk/anyVarMethod.awk >> $file
-	done
+		# calculate mean and stdDev
+		file=$outDirBase/scale/modulo_$modulo-$var.dat
+		fileRatio=$outDirBase/scale/scaleRatio-modulo_$modulo-$var.dat
+		echo "Output file: $fileRatio"
+		echo -n "" > $file
+		for scale in ${scales[@]}
+		do
+			echo $scale
+			sort $outDirBase/scale/$scale/${modulo}-modulo_*/$var.dat |uniq  | awk -v scale=$scale -f awk/anyVarMethod.awk  >> $file
+		done
+		sort $file | uniq > $file.tmp; 
+		mv $file.tmp $file
 
-	#make the ratio w.r.t. scale=1
-	fileRatio=$outDirBase/scaleRatio-$var.dat
-	awk -f awk/anyVarMethod_ratio.awk $file | sort | awk -f awk/splitCategory.awk | sed '1,2 d' > $fileRatio
+		#make the ratio w.r.t. scale=1
+		awk -f awk/anyVarMethod_ratio.awk $file | sort | awk -f awk/splitCategory.awk | sed '1,2 d' > $fileRatio
+
+	done
 	
 done
 

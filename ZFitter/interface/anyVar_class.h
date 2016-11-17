@@ -82,6 +82,7 @@ public:
 	 *  \param cutter already contructed with the right energySC branch set
 	 *  \param massBranchName name of the invariant mass branch
 	 *  \param outDirFitRes  name of the output directory storing the files with the stats
+	 *  \param updateOnly    if true opens the output files in append mode
 	 */
 	anyVar_class(TChain *data_chain_,
 	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
@@ -91,12 +92,12 @@ public:
 	            );
 
 	~anyVar_class(void);
-	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 0, unsigned int moduloIndex = 0); ///< to be called in the main
+	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 1); ///< to be called in the main
 	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
 	void SetOutDirName(std::string dirname, bool updateOnly=true);
 	void TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modulo = 0); ///< skim the input TChain with selected events, copying only active branches
 	void ChangeModulo(unsigned int moduloIndex){
-		reduced_data = &(*reduced_data_vec[moduloIndex]);
+		reduced_data = reduced_data_vec[moduloIndex].get();
 	};
 private:
 	TChain *data_chain; // pointer fixed in the constructor
@@ -115,7 +116,7 @@ private:
 	Double_t weight; ///< variable with the total event weight
 
 
-	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo, unsigned int moduloIndex); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
 	void TreeToTree(TChain *chain, TCut cut); ///< skim the input TChain with selected events, copying only active branches
 
 public:
