@@ -158,6 +158,18 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	TStopwatch ts;
 	ts.Start();
 	reduced_data_vec.clear();
+
+	for(unsigned int i=0; i < modulo; ++i){
+		reduced_data_vec.emplace_back(chain->CloneTree(0));
+		TTree *reduced_data = reduced_data_vec[i].get();
+		char title[50];
+		sprintf(title, "%s_mod_%d", reduced_data->GetTitle(), i);
+#ifdef DEBUG
+		std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
+#endif
+		reduced_data->SetDirectory(&dir);
+		reduced_data->SetTitle(title);
+	}
 		
 	TIter next(chain->GetListOfFriends()); // cannot use reduced_data otherwise crashes
 	TObject * obj = NULL;
@@ -169,26 +181,10 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		for (Int_t i = 0; i < nb; ++i) {
 			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
 			if (chain->GetBranchStatus(br->GetName())) {
-				for(unsigned int i=0; i < modulo; ++i){
-					if(firstLoop){
-						reduced_data_vec.emplace_back(chain->CloneTree(0));
-					}
-					TTree *reduced_data = reduced_data_vec[i].get();
-					if(firstLoop){
-						char title[50];
-						sprintf(title, "%s_mod_%d", reduced_data->GetTitle(), i);
-#ifdef DEBUG
-						std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
-#endif
-						reduced_data->SetDirectory(&dir);
-						reduced_data->SetTitle(title);
-						reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
-					}
-					reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
-				}
-				firstLoop=false;
+				reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
 			}
 		}
+		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
 	}
 
 //#ifdef DEBUG
