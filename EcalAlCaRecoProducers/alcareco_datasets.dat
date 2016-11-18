@@ -244,27 +244,22 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_
 276315-276585	/DoubleEG/Run2016D-EcalCalZElectron-PromptReco-v2/ALCARECO DoubleEG-Run2016D-ZSkim-Prompt_v2          caf database VALID RUN2016D
 #276315-276585	/DoubleEG/Run2016D-PromptReco-v2/AOD                       DoubleEG-Run2016D-ZSkim-Prompt_v2          caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco VALID RUN2016D
 276315-276585	/DoubleEG/Run2016D-PromptReco-v2/MINIAOD                   DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
-####
-###### MC LT Binned for Hgg linearity studies
-allRange	/DYJetsToEE_M-50_LTbinned_5To75_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_5To75-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_75To80_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_75To80-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_80To85_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_80To85-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_85To90_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_85To90-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_90To95_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_90To95-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_95To100_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_95To100-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_100To200_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_100To200-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_200To400_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_200To400-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_400To800_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_400To800-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
-allRange	/DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_800To2000-RunIISpring16DR80   caf group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco	 VALID - -
 
-###### MC LT Binned for Hgg linearity studies (MINIAOD samples)#######################
-allRange 	/DYJetsToEE_M-50_LTbinned_5To75_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_5To75 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_75To80_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_75To80 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_80To85_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_80To85 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_85To90_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_85To90 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_90To95_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_90To95 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_95To100_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_95To100 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_100To200_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_100To200 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_200To400_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_200To400 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_400To800_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_400To800 caf database VALID - - 
-allRange 	/DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_800To2000 caf database VALID - - 
+# with new laser correction, new prompt tag v10
+275657-276283	 /DoubleEG/Run2016C-PromptReco-v2/MINIAOD	DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016C
+276315-276811	 /DoubleEG/Run2016D-PromptReco-v2/MINIAOD	DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
+276831-277420	 /DoubleEG/Run2016E-PromptReco-v2/MINIAOD	DoubleEG-Run2016E-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016E
+277981-278808	 /DoubleEG/Run2016F-PromptReco-v1/MINIAOD       DoubleEG-Run2016F-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016F
+278820-279588	 /DoubleEG/Run2016G-PromptReco-v1/MINIAOD       DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016G
+279653-280385	 /DoubleEG/Run2016G-PromptReco-v1/MINIAOD       DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016G
+281613-282037	 /DoubleEG/Run2016H-PromptReco-v2/MINIAOD       DoubleEG-Run2016H-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016H
+
+# Sept23 rereco
+
+272007-272785 /DoubleEG/Run2016B-23Sep2016-v2/MINIAOD  DoubleEG-Run2016B-noSkim-3Sep2016-v2-miniAOD  caf database VALID RUN2016B
+274198-275376 /DoubleEG/Run2016B-23Sep2016-v3/MINIAOD  DoubleEG-Run2016B-noSkim-3Sep2016-v3-miniAOD  caf database VALID RUN2016B
+275657-276283 /DoubleEG/Run2016C-23Sep2016-v1/MINIAOD  DoubleEG-Run2016C-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016C
+276315-276811 /DoubleEG/Run2016D-23Sep2016-v1/MINIAOD  DoubleEG-Run2016D-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016D
+276831-277420 /DoubleEG/Run2016E-23Sep2016-v1/MINIAOD  DoubleEG-Run2016E-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016E
+277772-278808 /DoubleEG/Run2016F-23Sep2016-v1/MINIAOD  DoubleEG-Run2016F-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016F
+278820-280385 /DoubleEG/Run2016G-23Sep2016-v1/MINIAOD  DoubleEG-Run2016G-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016G
