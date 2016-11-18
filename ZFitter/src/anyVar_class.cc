@@ -41,7 +41,7 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];
-		*(_statfiles[i]) << "#H" << "catName" << s.printHeader() << std::endl;
+		*(_statfiles[i]) << "" << "catName" << "\t" << s.printHeader() << std::endl;
 	}
 
 }
@@ -62,7 +62,7 @@ void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];
-		*(_statfiles[i]) << s.printHeader() << std::endl;
+		*(_statfiles[i]) << "catName" << "\t" << s.printHeader() << std::endl;
 	}
 
 }
@@ -165,6 +165,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	while ((obj = next())) {
 		TTree *reduced_data = reduced_data_vec[0].get();
 		TTree *t = ((TFriendElement *)obj)->GetTree();
+		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
 		TObjArray* branches= t->GetListOfBranches();
 		Int_t nb = branches->GetEntriesFast();
 		for (Int_t i = 0; i < nb; ++i) {
@@ -176,7 +177,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 				reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
 			}
 		}
-		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
+
 	}
 	
 
@@ -191,7 +192,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
 #endif
 		reduced_data->SetDirectory(&dir);
-		reduced_data->SetTitle(title);
+		reduced_data->SetName(title);
 	}
 
 #ifdef DEBUG
@@ -228,10 +229,10 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 #endif
 
 	for(size_t i=0; i< reduced_data_vec.size(); ++i){
-//#ifdef DEBUG
+#ifdef DEBUG
 		elists[i]->Print();
 		std::cout << reduced_data_vec[i]->GetEntries() << std::endl;
-//#endif
+#endif
 		reduced_data_vec[i]->SetEntryList(elists[i]);
 		reduced_data_vec[i]->ResetBranchAddresses();
 	}
@@ -244,6 +245,7 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	std::cout << "Copy tree done: ";
 	ts.Print();
 	ChangeModulo(0);
+
 }
 
 
@@ -437,9 +439,9 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	          << "\t" << "with " << entries << " entries" << std::endl;
 //	std::cerr << "[ 00%]";
 
-//	std::unique_ptr<TEntryList> exclusiveEventList = (_exclusiveCategories) ? new TEntryList(*reduced_data->GetEntryList()) : NULL;
+	//std::unique_ptr<TEntryList> exclusiveEventList(new TEntryList(*reduced_data->GetEntryList()));//(_exclusiveCategories) ? new TEntryList(*reduced_data->GetEntryList()) : NULL;
 	TEntryList* exclusiveEventList = NULL;
-
+	Long64_t count=0;
 	for(Long64_t jentry = 0; jentry < entries; ++jentry) {
 		Long64_t entryNumber = reduced_data->GetEntryNumber(jentry);
 		reduced_data->GetEntry(entryNumber);
@@ -455,6 +457,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		passing_ele.fill(false);
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
+		if(passing_ele[0] && passing_ele[1]) count++;
 
 #ifdef DEBUG
 		if(jentry < 1) {
@@ -520,8 +523,10 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		std::cout << region << "\t" << s << std::endl;
 #endif
 	}
-	std::cout << "[INFO] Region fully processed" << std::endl;
+	std::cout << "[INFO] Region fully processed" << "\t" << count << std::endl;
 //	_stats_vec.dump("testfile.dat");
 	_stats_vec.reset();	
 	return;
 }
+
+

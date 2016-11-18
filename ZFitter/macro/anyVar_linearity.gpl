@@ -1,15 +1,16 @@
 reset
 resType="pt 6"
 peakType="pt 3"
-file='test/dato/anyVar_linearity/scale/scaleRatio-modulo_10-invMass_SC_must.dat'
-categories = system("grep '#' ".file." | awk '{print $2}' | sort | uniq | tr '\n' ' ' ")
-
+fileRatio='test/dato/anyVar_linearity/scale/scaleRatio-modulo_10-invMass_SC_must.dat'
+file='test/dato/anyVar_linearity/scale/modulo_10-invMass_SC_must.dat'
+categories = system("grep '#' ".fileRatio." | awk '{print $2}' | sort | uniq | tr '\n' ' ' ")
+variable="M_{ee} [GeV]"
 set terminal pdfcairo enhanced color solid font "Helvetica,16" size 5,5
 system("mkdir -p test/dato/anyVar_linearity/img/ ")
 set output 'test/dato/anyVar_linearity/img/anyVar_linearity.pdf'
 set output 'test.pdf'
 
-set offsets graph 0.05, graph 0.05, graph 0.1, graph 0.1
+set offsets graph 0.025, graph 0.025, graph 0.025, graph 0.025
 set grid
 set size square
 
@@ -19,37 +20,54 @@ set key left
 set xrange [0.85:1.15]
 set yrange [0.85:1.15]
 set xlabel 'scale'
-set ylabel 'relative variation: V(X)/V(1)'
+set ylabel 'V(scale)/V(scale=1)'
 do for [category in categories]{
    set title 'M_{ee}: '.category
-   p file u 2:5:6 i category w yerr  t "mean", \
-		'' u 2:7:8 i category w yerr t 'stdDev', \
-		'' u 2:9:10 i category w yerr t 'median', \
-		'' u 2:11:12 i category w yerr t 'effSigma68', \
-		'' u 2:13:14 i category w yerr t 'effSigma30', \
-		'' u 2:15:16 i category w yerr t 'mean68', \
-		'' u 2:17:18 i category w yerr  t 'mean30', \
+   p fileRatio u 2:"mean":"err_mean" i category w yerr  t "mean", \
+		'' u 2:"stdDev":"err_stdDev" i category w yerr t 'stdDev', \
+		'' u 2:"median":"err_median" i category w yerr t 'median', \
+		'' u 2:"effSigma":"err_effSigma" i category w yerr t 'effSigma68', \
+		'' u 2:"effSigma30":"err_effSigma30" i category w yerr t 'effSigma30', \
+		'' u 2:"mean68":"err_mean68" i category w yerr t 'mean68', \
+		'' u 2:"mean30":"err_mean30" i category w yerr  t 'mean30', \
 		x dt 2 t 'y=x'
 }
 
+### second plot err(var) vs scale for different categories
+set key outside 
+set key top center
+set key maxrows 3
+set yrange [*:*]
+set ylabel 'err('.variable.')'
+do for [category in categories]{
+   set title 'M_{ee}: '.category
+   p file u 2:(column("err_mean")*sqrt(0.3)) i category   t "mean", \
+		'' u 2:"err_median" i category  t 'median', \
+		'' u 2:(column("err_mean68")*sqrt(0.68)) i category  t 'mean68 rescaled', \
+		'' u 2:(column("err_mean68")) i category  t 'mean68', \
+		'' u 2:"err_mean30" i category   t 'mean30'
+}
+#		'' u 2:"stdDev":"err_stdDev" i category w yerr t 'stdDev', \
+#		'' u 2:"effSigma":"err_effSigma" i category w yerr t 'effSigma68', \
+#		'' u 2:"effSigma30":"err_effSigma30" i category w yerr t 'effSigma30', \
 
 
-set ylabel 'residual variation w.r.t. linearity [%]"
+set ylabel 'residual w.r.t. linearity: V(scale)/V(scale=1) - scale'
 
 set key bottom left maxrows 5
 set yrange [*:*]
 set xrange [*:*]
-p file \
-u 2:($5-$2):6 i category w yerr @peakType lc 6 t "mean", \
-'' u 2:($9-$2):10 i category w yerr @peakType lc 2 t 'median', \
-'' u 2:($15-$2):16 i category w yerr @peakType lc 1 t 'mean68', \
-'' u 2:($17-$2):18 i category w yerr @peakType lc 4 dt 1 t 'mean30', \
+p fileRatio \
+u 2:(column("mean")-column("scale")):"err_mean" i category w yerr @peakType lc 6 t "mean", \
+'' u 2:(column("median")-column("scale")):"err_median" i category w yerr @peakType lc 2 t 'median', \
+'' u 2:(column("mean68")-column("scale")):"err_mean68" i category w yerr @peakType lc 1 t 'mean68', \
+'' u 2:(column("mean30")-column("scale")):"err_mean30" i category w yerr @peakType lc 4 dt 1 t 'mean30', \
 0 dt 2 t 'y=0'
 
-p file \
- u 2:($7-$2):8 i category w yerr @resType lc 6 t 'stdDev', \
-'' u 2:($11-$2):12 i category w yerr @resType lc 2 t 'effSigma68', \
-'' u 2:($13-$2):14 i category w yerr @resType lc 1 t 'effSigma30', \
+p fileRatio \
+ u 2:(column("stdDev")-column("scale")):"err_stdDev" i category w yerr @resType lc 6 t 'stdDev', \
+'' u 2:(column("effSigma")-column("scale")):"err_effSigma" i category w yerr @resType lc 2 t 'effSigma68', \
+'' u 2:(column("effSigma30")-column("scale")):"err_effSigma30" i category w yerr @resType lc 1 t 'effSigma30', \
 0 dt 2 t 'y=0'
 
 

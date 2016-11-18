@@ -1,5 +1,6 @@
 BEGIN{
-  firstColumn=3
+	# catName varName nEvents
+	firstColumn=3
 }
 
 (NF!=0){
@@ -9,8 +10,9 @@ BEGIN{
 	  header[-1]="AAcatName" ## the AA is needed to sort and get it as first line
 	  header[0]="scale"
 	  header[1]="nToys"
-	  for(i=firstColumn-1; i <=NF; i++){
-		  header[i]=sprintf("%s\terr_%s", $i, $i)
+	  header[2]=""
+	  for(i=firstColumn; i <=NF; i++){
+		  header[i-1]=sprintf("%s\terr_%s", $i, $i)
 	  }
   }  else{
 	  for(i=firstColumn; i <=NF; i++){

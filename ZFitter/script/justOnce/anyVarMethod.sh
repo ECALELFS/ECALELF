@@ -24,7 +24,7 @@ do
 		outDir=$outDirBase/scale/$scale/$modulo/
 		mkdir -p $outDir
 #		(./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir &> $outDirBase/$scale-$modulo.log) &
-		./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir 
+		#./bin/ZFitter.exe -f $configFile --regionsFile=$regionsFile --runRangesFile=d.dat  --noPU --commonCut="Et_25" --anyVar --selection=loose25nsRun2 --runToy --modulo=$modulo --scale=$scale --outDirFitResData=$outDir 
 	done
 	wait
 done
@@ -60,14 +60,16 @@ do
 		for scale in ${scales[@]}
 		do
 			echo $scale
-			sort $outDirBase/scale/$scale/${modulo}-modulo_*/$var.dat | grep -v "#" | uniq  | awk -v scale=$scale -f awk/anyVarMethod.awk  >> $file
+			sort $outDirBase/scale/$scale/${modulo}-modulo_*/$var.dat | grep -v "#" | uniq  | awk -v scale=$scale  -f awk/anyVarMethod.awk  >> $file
 		done
 		sort $file | uniq > $file.tmp; 
-		mv $file.tmp $file
+
+		awk -f awk/splitCategory.awk $file.tmp | sed '1,2 d' > $file
 
 		#make the ratio w.r.t. scale=1
-		awk -f awk/anyVarMethod_ratio.awk $file | sort | awk -f awk/splitCategory.awk | sed '1,2 d' > $fileRatio
+		awk -f awk/anyVarMethod_ratio.awk $file.tmp | sort | awk -f awk/splitCategory.awk | sed '1,2 d' > $fileRatio
 
+		rm $file.tmp
 	done
 	
 done

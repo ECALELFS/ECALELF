@@ -1,5 +1,8 @@
 BEGIN{
-  firstColumn=4 # first column to be considered for the ratio: nEvents
+	# column 1 = catName
+	# column 2 = scale
+	# column 3 = modulo
+    firstColumn=4 # first column to be considered for the ratio: nEvents
 }
 
 
@@ -20,17 +23,17 @@ BEGIN{
 	}
 	$0=line
 	cat=$1; 
-	if(cat=="AAcatName") print $0
+	if(cat=="AAcatName") print $0 # this is the header
 	else{
-	printf("%s\t%.2f", cat, $2)
-	for(i=firstColumn; i <=NF; i++){
-		ratio=$i/val[cat,i]
-		printf("\t%f", ratio)
-		i++
-		printf("\t%f", ratio * sqrt($i/$(i-1))*($i/$(i-1))+(val[cat,i]/val[cat,(i-1)])*(val[cat,i]/val[cat,(i-1)]))
+		printf("%s\t%.2f\t%d", cat, $2, $3) # catName and scale
+		for(i=firstColumn; i <=NF; i++){
+			ratio=$i/val[cat,i]
+			printf("\t%f", ratio)
+			i++
+			printf("\t%f", ratio * sqrt($i/$(i-1))*($i/$(i-1))+(val[cat,i]/val[cat,(i-1)])*(val[cat,i]/val[cat,(i-1)]))
 #    printf("\t%f", val[cat,i])
-	}
-	printf("\n")
+		}
+		printf("\n")
 	}
 };
 

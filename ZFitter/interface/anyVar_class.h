@@ -99,6 +99,11 @@ public:
 	void ChangeModulo(unsigned int moduloIndex){
 		reduced_data = reduced_data_vec[moduloIndex].get();
 	};
+	void SaveReducedTree(TFile* f){
+		f->cd();
+		reduced_data->Write();
+	}
+
 private:
 	TChain *data_chain; // pointer fixed in the constructor
 	TTree *reduced_data;

@@ -1146,6 +1146,7 @@ int main(int argc, char **argv)
 		///\todo allocating both takes too much memory
 		if(vm.count("runToy") && modulo > 0) {
 			// splitting the events by "modulo" and obtaining statistically indipendent subsamples
+			TFile *reduced_trees_file = new TFile("reduced_trees_file.root","RECREATE");
 			for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
 				//change the output directory for the results
 				std::string dir = outDirFitResData;
@@ -1157,6 +1158,7 @@ int main(int argc, char **argv)
 
 				//anyVar.Import(commonCut, eleID, activeBranchList, modulo, moduloIndex);
 				anyVar.ChangeModulo(moduloIndex);
+				anyVar.SaveReducedTree(reduced_trees_file);
 #ifndef dump_root_tree
 				for(auto& region : categories) {
 					std::cout << "------------------------------------------------------------" << std::endl;
@@ -1167,10 +1169,12 @@ int main(int argc, char **argv)
 				std::cerr << "[ERROR] dump_root_tree defined and running the toys with modulo: not implemented" << std::endl;
 #endif
 			}
+			reduced_trees_file->Write();
+			reduced_trees_file->Close();
 		} else {
-		anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
-		anyVarMC._exclusiveCategories = false;
-		anyVarMC.Import(commonCut, eleID, activeBranchList);
+			anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
+			anyVarMC._exclusiveCategories = false;
+			anyVarMC.Import(commonCut, eleID, activeBranchList);
 
 #ifndef dump_root_tree
 			for(auto& region : categories) {
