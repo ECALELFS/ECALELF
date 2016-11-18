@@ -158,51 +158,76 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 	TStopwatch ts;
 	ts.Start();
 	reduced_data_vec.clear();
-	reduced_data_vec.emplace_back(chain->CloneTree(0));
-
+	chain->LoadTree(chain->GetEntryNumber(0));	
+	TObjArray* branches= chain->GetListOfBranches();
 	TIter next(chain->GetListOfFriends()); // cannot use reduced_data otherwise crashes
 	TObject * obj = NULL;
 	while ((obj = next())) {
-		TTree *reduced_data = reduced_data_vec[0].get();
 		TTree *t = ((TFriendElement *)obj)->GetTree();
-		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
-		TObjArray* branches= t->GetListOfBranches();
-		Int_t nb = branches->GetEntriesFast();
-		for (Int_t i = 0; i < nb; ++i) {
-			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
-			if (chain->GetBranchStatus(br->GetName())) {
-#ifdef DEBUG
-				std::cout << "[anyVar_class][DEBUG] " << br->GetName() << std::endl;
-#endif
-				reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
-			}
-		}
-
+// 		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
+// 		TObjArray* branches= t->GetListOfBranches();
+		branches->AddAll(t->GetListOfBranches());
 	}
-	
+
 
 	for(unsigned int i=0; i < modulo; ++i){
-		if(i>0){
-			reduced_data_vec.emplace_back(reduced_data_vec[0]->CloneTree(0));
-		}
-		TTree *reduced_data = reduced_data_vec[i].get();
 		char title[50];
 		sprintf(title, "%s_mod_%d", chain->GetName(), i);
 #ifdef DEBUG
 		std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
 #endif
+		
+		reduced_data_vec.emplace_back(new TTree(title, title));
+		TTree *reduced_data = reduced_data_vec[i].get();
 		reduced_data->SetDirectory(&dir);
-		reduced_data->SetName(title);
 	}
+	
+	Int_t nb = branches->GetEntriesFast();
+	for (Int_t i = 0; i < nb; ++i) {
+		TBranch * br = chain->GetBranch(branches->At(i)->GetName());
+		if (chain->GetBranchStatus(br->GetName())) {
+			std::cout << "Active: " << br->GetName()<< std::endl;
+			for(unsigned int i=0; i < modulo; ++i){
+				TTree *reduced_data = reduced_data_vec[i].get();
+				TBranch *brr = reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+				assert(brr!=NULL);
+				//brr->Print();
+				brr->SetAutoDelete(kFALSE);
+				if (brr->InheritsFrom(TBranchElement::Class())) {
+					((TBranchElement*) brr)->ResetDeleteObject();
+				}				
+			}
+		}
+		
+	}
+	for(unsigned int i=0; i < modulo; ++i){
+		chain->CopyAddresses(reduced_data_vec[i].get());
+	}
+
+// 	TIter next(chain->GetListOfFriends()); // cannot use reduced_data otherwise crashes
+// 	TObject * obj = NULL;
+// 	while ((obj = next())) {
+// 		TTree *reduced_data = reduced_data_vec[0].get();
+// 		TTree *t = ((TFriendElement *)obj)->GetTree();
+// 		reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
+// 		TObjArray* branches= t->GetListOfBranches();
+// 		Int_t nb = branches->GetEntriesFast();
+// 		for (Int_t i = 0; i < nb; ++i) {
+// 			TBranch * br = chain->GetBranch(branches->At(i)->GetName());
+// 			if (chain->GetBranchStatus(br->GetName())) {
+// #ifdef DEBUG
+// 				std::cout << "[anyVar_class][DEBUG] " << br->GetName() << std::endl;
+// #endif
+// 				reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
+// 			}
+// 		}
+
+// 	}
+	reduced_data_vec[0]->Print();
 
 #ifdef DEBUG
 	std::cout << "[DEBUG] Friends removed and branches added" << std::endl;
 #endif
-
-	Long64_t nentries = chain->GetEntryList()->GetN();
-	chain->LoadTree(chain->GetEntryNumber(0));
-	Long64_t treenumber = -1;
-	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
 
 	std::vector<TEntryList*> elists;
 	for(auto& reduced_data : reduced_data_vec){
@@ -212,8 +237,14 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 
 		elists.emplace_back(new TEntryList(evListName, evListName, reduced_data.get()));
 	}	
+
+	Long64_t nentries = chain->GetEntryList()->GetN();
+	Long64_t treenumber = -1;
+	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
+
 	for (Long64_t i = 0; i < nentries; ++i) {
 		Long64_t ientry = chain->GetEntryNumber(i);
+		std::cout << ientry << std::endl;
 		chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
 			treenumber = chain->GetTreeNumber();
@@ -223,11 +254,11 @@ void anyVar_class::TreeToTreeShervin(TChain *chain, TCut cut, unsigned int modul
 		reduced_data_vec[i%modulo]->Fill();
 		elists[i%modulo]->Enter(ientry);
 	}
-
+	assert(false);
 #ifdef DEBUG
 	std::cout << "[DEBUG] Entries in tree copied" << std::endl;
 #endif
-
+	assert(false);
 	for(size_t i=0; i< reduced_data_vec.size(); ++i){
 #ifdef DEBUG
 		elists[i]->Print();
