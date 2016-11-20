@@ -105,9 +105,13 @@ ZFit_class::ZFit_class(TChain *data_chain_,
 
 void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList)
 {
+  //quick check to see if the MC is rundep or not
 	signal_chain->Draw(">>list", "runNumber>1", "entrylist", 10);
 	TEntryList *l = (TEntryList*) gROOT->FindObject("list");
+	TECALChain *chain_ecal = (TECALChain*)signal_chain;
+	chain_ecal->TECALChain::SetEntryList(l);
 	assert(l != NULL);
+	//signal_chain = dynamic_cast<TChain*>(chain_ecal);//probably not needed here
 
 	commonCut += "-eleID_" + eleID_;
 	TString mcCut, dataCut;
@@ -116,7 +120,7 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 		if(_oddMC) mcCut = cutter.GetCut(commonCut + "-odd", false);
 		else mcCut = cutter.GetCut(commonCut, false);
 	} else {
-		std::cout << "[INFO] Importing std MC" << std::endl;
+		std::cout << "[INFO] Importing std MC (non run-dep)" << std::endl;
 		if(_oddMC) mcCut = cutter.GetCut(commonCut + "-odd", true);
 		else mcCut = cutter.GetCut(commonCut, true);
 	}
@@ -124,10 +128,12 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 
 	if(_oddData) dataCut = cutter.GetCut(commonCut + "-odd", false);
 	else dataCut = cutter.GetCut(commonCut, false);
-#ifdef DEBUG
+	std::cout << "****************************************";
+	std::cout << "MC CUT: ********************************";
 	std::cout << "MC CUT: " << mcCut << std::endl;
+	std::cout << "Data CUT: ******************************";
 	std::cout << "DATA CUT: " << dataCut << std::endl;
-#endif
+	std::cout << "****************************************";
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
 	std::cout << "--------------- Importing signal mc: " << signal_chain->GetEntries() << std::endl;
 	//if(signal!=NULL) delete signal;
