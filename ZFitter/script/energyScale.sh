@@ -332,7 +332,7 @@ if [ -n "${STEP1}" ];then
 	    $isOdd $updateOnly --selection=${selection}  --invMass_var ${invMass_var} --commonCut $commonCut \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img \
-	    > ${outDirData}/log/`basename ${outFile} .dat`.log || exit 1
+	    |tee ${outDirData}/log/`basename ${outFile} .dat`.log || exit 1
 	
 	./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut ${commonCut} \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
