@@ -128,12 +128,12 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 
 	if(_oddData) dataCut = cutter.GetCut(commonCut + "-odd", false);
 	else dataCut = cutter.GetCut(commonCut, false);
-	std::cout << "****************************************";
-	std::cout << "MC CUT: ********************************";
-	std::cout << "MC CUT: " << mcCut << std::endl;
-	std::cout << "Data CUT: ******************************";
-	std::cout << "DATA CUT: " << dataCut << std::endl;
-	std::cout << "****************************************";
+	std::cout << "****************************************"<<std::endl;
+	std::cout << "MC CUT: ********************************"<<std::endl;
+	std::cout << mcCut << std::endl;
+	std::cout << "Data CUT: ******************************"<<std::endl;
+	std::cout << dataCut << std::endl;
+	std::cout << "****************************************"<<std::endl;
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
 	std::cout << "--------------- Importing signal mc: " << signal_chain->GetEntries() << std::endl;
 	//if(signal!=NULL) delete signal;
