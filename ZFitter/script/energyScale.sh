@@ -2,7 +2,7 @@
 source script/functions.sh
 shopt -s expand_aliases
 source ~/.bashrc
-
+source script/bash_functions_calibration.sh
 # energy scale derived in different steps:
 # - time dependence (step1)
 # - material dependence  (step2)
@@ -20,7 +20,7 @@ updateOnly="--updateOnly --fit_type_value=1" # --profileOnly --initFile=init.txt
 commonCut=EtLeading_32-EtSubLeading_20-noPF #Hgg trigger emulation (2 GeV above the trigger)
 #commonCut=Et_20-noPF #Standard common Cuts for Z calibration
 #commonCut=Et_30-noPF #Et_30 for 0 T calibration
-selection=loose #you can change this via steps_maker.sh
+#default selection is cutBasedElectronID-Spring15-25ns-V1-standalone-loose #you can change this via steps_maker.sh
 invMass_var=invMass_SC_corr
 #invMass_var=invMass_SC_pho_regrCorr #you can change this via script (steps_maker.sh)
 Et_smear=
@@ -119,26 +119,26 @@ if [ -z "${runRangesFile}" ];then
     exit 1
 fi
 
-case ${selection} in
-    WP80PU)
-        ;;
-    WP90PU)
-	;;
-    loose)
-	;;
-    medium)
-	;;
-    tight)
-	;;
-    diphotonIso25nsRun2Boff)
-	;;
-    noID) #To be used in rare cases ;-)
-	;;
-    *)
-	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
-        exit 1
-        ;;
-esac
+#case ${selection} in
+#    WP80PU)
+#        ;;
+#    WP90PU)
+#	;;
+#    loose)
+#	;;
+#    medium)
+#	;;
+#    tight)
+#	;;
+#    diphotonIso25nsRun2Boff)
+#	;;
+#    noID) #To be used in rare cases ;-)
+#	;;
+#    *)
+#	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
+#        exit 1
+#        ;;
+#esac
 
 
 
@@ -320,7 +320,7 @@ if [ -n "${STEP1}" ];then
     # runNumber x eta with fitMethod
     regionFile=data/regions/scaleStep1.dat
     outFile=${outFileStep1}
-    echo "outDirMC is step1 is "${outDirMC}
+    echo "outDirMC in step1 is "${outDirMC}
     if [ ! -e "${outDirTable}/${outFile}" -o -n "$FORCE" ];then
 	if [ ! -e "${outDirMC}/fitres" ];then mkdir ${outDirMC}/fitres -p; fi
 	if [ ! -e "${outDirMC}/img" ];then mkdir ${outDirMC}/img -p; fi

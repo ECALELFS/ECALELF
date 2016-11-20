@@ -340,9 +340,7 @@ int main(int argc, char **argv)
 	("useWEAKweight", "activate the WEAK interference weight in MC")
 	("saveRootMacro", "")
 	//
-	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID|Spring15|25ns|V1|standalone|loose"), "")
-	  //Note for users: whenever the eleID selection name has a "-" put a "|" instead here
-	  //This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
+	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "") 
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
 	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
@@ -1026,6 +1024,9 @@ int main(int argc, char **argv)
 	) return 0;
 
 	eleID += selection.c_str();
+	eleID.ReplaceAll("-", "|");
+	//Note for expert users: whenever the eleID selection name (the one in CMSSW) has a "-" it must be replaced (before categorization) with "|"
+	//This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
 	eleID.ReplaceAll("_", "");
 
 	//------------------------------ RooSmearer
