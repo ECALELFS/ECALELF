@@ -2,21 +2,22 @@
 shopt -s expand_aliases
 source ~/.bashrc
 
-#1)Fai pileupHist
+eos_path=/eos/project/c/cms-ecal-calibration
+#1)Make pileupHist
 pileupHist(){
 script/pileup_histoMaker.sh $file
 }
 
 pileupTrees(){
 #region name is there just because it's mandatory for ZFitter
-./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/scaleStep0.dat --saveRootMacro
+./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/scaleStep0.dat --saveRootMacro 
 
 #pileUPtree
 for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
 do
-    #tag e' s1, s2, ...
-    mv tmp/mcPUtree${tag}.root  data/puTree/${tag}_${file}.root
-    echo "${tag} pileup data/puTree/${tag}_${file}.root" >> data/validation/${file}.dat 
+    #tag is s1, s2, ...
+    mv tmp/mcPUtree${tag}.root  ${eos_path}/data/puTree/${tag}_${file}.root
+    echo "${tag} pileup ${eos_path}/data/puTree/${tag}_${file}.root" >> data/validation/${file}.dat 
 done
 }
 
