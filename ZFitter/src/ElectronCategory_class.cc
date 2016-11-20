@@ -825,6 +825,9 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region){
       std::cout<<"*********************************"<<std::endl;
       std::cout<<"[INFO] In ElectronCategory_class: eleID is "<<string1<<std::endl;
       std::cout<<"*********************************"<<std::endl;
+      string1.ReplaceAll("|","-");
+      //Note for expert users: the original eleID name has "-", hence to avoid splitting "-" are replaced with "|" by ZFitter.cpp 
+      //This is the moment where the "|" are again mapped in their righteous "-" (jeux de cartes) 
       string1.Form("%d",eleID_map.eleIDmap[string1.Data()]);
       TCut cutEle1("(eleID[0] & "+string1+")=="+string1);
       TCut cutEle2("(eleID[1] & "+string1+")=="+string1);
