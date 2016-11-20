@@ -3,6 +3,10 @@ shopt -s expand_aliases
 source ~/.bashrc
 
 eos_path=/eos/project/c/cms-ecal-calibration
+www_mkdir(){
+if [[ $1 = "" ]]; then echo "you should specify a directory"; else mkdir -p $1; cp ${eos_path}/www/index.php $1; fi
+}
+
 #1)Make pileupHist
 pileupHist(){
 script/pileup_histoMaker.sh $file
