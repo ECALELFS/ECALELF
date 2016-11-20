@@ -4,12 +4,12 @@ source ~/.bashrc
 file=`basename $1 .dat` #so you can tab the name of the file :-)
 interval=$2
 invMass_type=$3
-sel=$4
+sel=$4 #if empty default one is used cutBased....loose
 
 if [[ $1 = "" ]]; then echo "you should specify the validation file"; exit;fi
 if [[ $2 = "" ]]; then echo "you should specify the interval"; exit;fi
 if [[ $3 = "" ]]; then echo "you should specify the mass Type"; exit;fi
-if [[ $sel = "" ]]; then sel="loose";fi
+if [[ $4 = "" ]]; then sel="cutBasedElectronID-Spring15-25ns-V1-standalone-loose";fi
 
 echo "[INFO: invMass scenario] " $invMass_type $scenario
 ###############################START TO COOK EVERYTHING#########################################################################################################
