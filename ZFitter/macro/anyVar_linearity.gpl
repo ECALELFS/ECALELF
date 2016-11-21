@@ -1,21 +1,13 @@
 reset
 resType="pt 6"
 peakType="pt 3"
-fileRatio='test/dato/anyVar_linearity/scale/scaleRatio-modulo_10-invMass_SC_must.dat'
-file='test/dato/anyVar_linearity/scale/modulo_10-invMass_SC_must.dat'
-categories = system("grep '#' ".fileRatio." | awk '{print $2}' | sort | uniq | tr '\n' ' ' ")
-variable="M_{ee} [GeV]"
-set terminal pdfcairo enhanced color solid font "Helvetica,16" size 5,5
-system("mkdir -p test/dato/anyVar_linearity/img/ ")
-set output 'test/dato/anyVar_linearity/img/anyVar_linearity.pdf'
-set output 'test.pdf'
+fileRatio='test/dato/anyVar_linearity/scale/scaleRatio-modulo_100-invMass_SC_must.dat'
+file='test/dato/anyVar_linearity/scale/modulo_100-invMass_SC_must.dat'
+files="test/dato/anyVar_linearity/scale/modulo_10-invMass_SC_must.dat test/dato/anyVar_linearity/scale/modulo_50-invMass_SC_must.dat test/dato/anyVar_linearity/scale/modulo_100-invMass_SC_must.dat test/dato/anyVar_linearity/scale/modulo_1000-invMass_SC_must.dat"
 
-set offsets graph 0.025, graph 0.025, graph 0.025, graph 0.025
-set grid
-set size square
+print files
+categories = system("grep '#' ".fileRatio." | awk '{print $2}' | sort | uniq | awk '{ print length, $0 }' | sort -n -s | cut -d' ' -f2- | tr '\n' ' ' ")
 
-test
-#### First plot: variable variation vs scale for different categories
 set style line 1 pt 2
 set style line 2 pt 2
 set style line 3 pt 2
@@ -23,60 +15,145 @@ set style line 4 pt 2
 set style line 5 pt 2
 set style line 6 pt 2
 set style line 7 pt 2
+
+variable="M_{ee} [GeV]"
+set terminal pdfcairo enhanced color solid font "Helvetica,16" size 5,5
+system("mkdir -p test/dato/anyVar_linearity/img/ ")
+set output 'test/dato/anyVar_linearity/img/anyVar_linearity.pdf'
+set output 'test.pdf'
+
+set auto fix
+set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
+set grid
+set size square
+
+test
+#### First plot: variable variation vs scale for different categories
 set key left
-set xrange [0.85:1.15]
-set yrange [0.85:1.15]
 set xlabel 'scale'
 set ylabel 'V(scale)/V(scale=1)'
+
+set xrange [0.8875:1.1125]
+set yrange [0.8875:1.1125]
+set arrow 1 from graph 0,0 to graph 1,1 nohead front dt 2
 do for [category in categories]{
-   set title 'M_{ee}: '.category
-   p fileRatio u 2:"mean":"err_mean" i category w yerr   t "mean", \
+   #set title 'variable = M_{ee}  category='.category
+   set label 1 'variable = M_{ee}'   at graph 0.95,0.1 right front
+   set label 2  'category='.category at graph 0.95,0.05 right front
+   p fileRatio u 2:"mean":"err_mean" i category w yerr t "mean", \
 		'' u 2:"mean68":"err_mean68" i category w yerr t 'mean68', \
-		'' u 2:"mean30":"err_mean30" i category w yerr  t 'mean30', \
-		'' u 2:"median":"err_median" i category w yerr t 'median', \
-		x dt 2 lt 1 lc 0 t 'y=x'
-   p fileRatio u 2:"stdDev":"err_stdDev" i category w yerr t 'stdDev', \
-		'' u 2:"effSigma":"err_effSigma" i category w yerr t 'effSigma68', \
-		'' u 2:"effSigma30":"err_effSigma30" i category w yerr t 'effSigma30', \
-		x dt 2 lt 1 lc 0 t 'y=x'
+		'' u 2:"mean30":"err_mean30" i category w yerr t 'mean30', \
+		'' u 2:"median":"err_median" i category w yerr t 'median'
 }
 
-### second plot err(var) vs scale for different categories
-set key outside 
+
+set xrange [*:*]
+set yrange [*:*]
+unset arrow
+
+do for [category in categories]{
+   #set title 'variable = M_{ee}  category='.category
+   set label 1 'variable = M_{ee}'   at graph 0.95,0.1 right front
+   set label 2  'category='.category at graph 0.95,0.05 right front
+
+   p fileRatio u 2:"stdDev":"err_stdDev" i category w yerr @resType t 'stdDev', \
+		'' u 2:"effSigma":"err_effSigma" i category w yerr @resType t 'effSigma68', \
+		'' u 2:"effSigma30":"err_effSigma30" i category w yerr @resType t 'effSigma30', \
+		x dt 2 lc 0 notitle
+}
+
+
+#### Second plot
+set key right
+set ylabel 'residual w.r.t. linearity: V(scale)/V(scale=1) - scale'
+set ylabel 'V(scale)/V(scale=1) - scale'
+
+set arrow 1 from graph 0, first 0 length graph 1 angle 0 nohead front dt 2
+set yrange [-0.01:0.01]
+set ytics 0.002
+do for [category in categories]{
+   set label 1 'variable = M_{ee}'   at graph 0.1, graph 0.15 left front
+   set label 2  'category='.category at graph 0.1, graph 0.1 left front
+   p fileRatio \
+   	 u 2:(column("mean")-column("scale")):"err_mean" i category w yerr @peakType        t "mean", \
+   	 '' u 2:(column("median")-column("scale")):"err_median" i category w yerr @peakType t 'median', \
+   	 '' u 2:(column("mean68")-column("scale")):"err_mean68" i category w yerr @peakType t 'mean68', \
+   	 '' u 2:(column("mean30")-column("scale")):"err_mean30" i category w yerr @peakType dt 1 t 'mean30'
+}
+
+
+#### Third plot
+set offsets graph 0.025, graph 0.025, graph 0.025, graph 0.025
+set key above vert maxrows 5 Left font "Helvetica,12"
+set label 1 'peak estimator = mean68' 
+unset label 2
+set yrange [*:*]
+set ytics auto
+p for [category in categories] fileRatio \
+   	 u (column("scale")+column(-2)/700.):(column("mean68")-column("scale")):"err_mean68" i category w yerr @peakType  t category
+#   	 '' u 2:(column("mean30")-column("scale")):"err_mean30" i category w yerr @resType  dt 1 t 'mean30 '.category
+
+
+
+### fourth plot err(var) vs scale for different categories
+unset label 
+unset arrow
+set key outside Right
 set key top center
 set key maxrows 3
 set yrange [*:*]
-set ylabel 'err('.variable.')'
+set offsets graph 0.025, graph 0.025, graph 0.025, graph 0.025
+set ylabel 'relative stat uncertainty on peak estimator [%]'
 do for [category in categories]{
-   set title 'M_{ee}: '.category
-   p file u 2:(column("err_mean")*sqrt(0.3)) i category   t "mean", \
-		'' u 2:"err_median" i category  t 'median', \
-		'' u 2:(column("err_mean68")*sqrt(0.68)) i category  t 'mean68 rescaled', \
-		'' u 2:(column("err_mean68")) i category  t 'mean68', \
-		'' u 2:"err_mean30" i category   t 'mean30'
+   set xlabel 'scale'
+   set label 1 'variable = M_{ee}'   at graph 0.025,0.95 left front
+   set label 2  'category='.category at graph 0.025,0.9 left front
+   p file u "scale":(column("err_mean")/column("mean")*100) i category   t "mean", \
+	   '' u "scale":(column("err_median")/column("median")*100) i category  t 'median', \
+	   '' u "scale":(column("err_mean68")/column("mean68")*100) i category  t 'mean68', \
+	   '' u "scale":(column("err_mean30")/column("mean30")*100) i category   t 'mean30', \
+	   '' u "scale":(column("err_mean68")/column("mean68")*100*sqrt(0.68)) i category w l ls 3 t 'mean68*sqrt(0.68)'
 }
+
+set yrange [*:*]
+set offsets graph 0.025, graph 0.03, graph 0.03, graph 0.03
+set label 1 at graph 0.825,0.85 right front
+unset label 2
+set key inside
+set xlabel 'sqrt(nEvents)'
+xAxis='(sqrt(column("nEvents")))'
+category="[EB-Et_25]"
+
+
+set multiplot
+set xrange [0:800]
+set yrange [0.01:1.2]
+set log y
+set ytics add 0.1
+p  file u @xAxis:(column("err_mean")/column("mean")*100) i category ls 1  t "mean", file u @xAxis:(column("err_median")/column("median")*100) i category ls 2 t 'median', file u @xAxis:(column("err_mean68")/column("mean68")*100) i category ls 3 t 'mean68',  file u @xAxis:(column("err_mean30")/column("mean30")*100) i category ls 4 t 'mean30'
+
+unset key 
+unset label 1
+
+ do for [category in categories]{
+   do for [file in files]{
+    p  file u @xAxis:(column("err_mean")/column("mean")*100) i category ls 1  notitle
+    p  file u @xAxis:(column("err_median")/column("median")*100) i category ls 2 notitle 
+    p  file u @xAxis:(column("err_mean68")/column("mean68")*100) i category ls 3 notitle
+    p  file u @xAxis:(column("err_mean30")/column("mean30")*100) i category ls 4 notitle
+ }
+ }
+unset multiplot
 #		'' u 2:"stdDev":"err_stdDev" i category w yerr t 'stdDev', \
 #		'' u 2:"effSigma":"err_effSigma" i category w yerr t 'effSigma68', \
 #		'' u 2:"effSigma30":"err_effSigma30" i category w yerr t 'effSigma30', \
 
 
-set ylabel 'residual w.r.t. linearity: V(scale)/V(scale=1) - scale'
-
-set key bottom left maxrows 5
-set yrange [*:*]
-set xrange [*:*]
-p fileRatio \
-u 2:(column("mean")-column("scale")):"err_mean" i category w yerr @peakType lc 6 t "mean", \
-'' u 2:(column("median")-column("scale")):"err_median" i category w yerr @peakType lc 2 t 'median', \
-'' u 2:(column("mean68")-column("scale")):"err_mean68" i category w yerr @peakType lc 1 t 'mean68', \
-'' u 2:(column("mean30")-column("scale")):"err_mean30" i category w yerr @peakType lc 4 dt 1 t 'mean30', \
-0 dt 2 t 'y=0'
-
-p fileRatio \
- u 2:(column("stdDev")-column("scale")):"err_stdDev" i category w yerr @resType lc 6 t 'stdDev', \
-'' u 2:(column("effSigma")-column("scale")):"err_effSigma" i category w yerr @resType lc 2 t 'effSigma68', \
-'' u 2:(column("effSigma30")-column("scale")):"err_effSigma30" i category w yerr @resType lc 1 t 'effSigma30', \
-0 dt 2 t 'y=0'
+# p fileRatio \
+#  u 2:(column("stdDev")-column("scale")):"err_stdDev" i category w yerr @resType lc 6 t 'stdDev', \
+# '' u 2:(column("effSigma")-column("scale")):"err_effSigma" i category w yerr @resType lc 2 t 'effSigma68', \
+# '' u 2:(column("effSigma30")-column("scale")):"err_effSigma30" i category w yerr @resType lc 1 t 'effSigma30', \
+# 0 dt 2 t 'y=0'
 
 
 

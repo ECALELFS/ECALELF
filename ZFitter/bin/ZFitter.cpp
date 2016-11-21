@@ -1146,7 +1146,7 @@ int main(int argc, char **argv)
 		///\todo allocating both takes too much memory
 		if(vm.count("runToy") && modulo > 0) {
 			// splitting the events by "modulo" and obtaining statistically indipendent subsamples
-			TFile *reduced_trees_file = new TFile("reduced_trees_file.root","RECREATE");
+			TFile *reduced_trees_file = new TFile((outDirFitResData+"/reduced_trees_file.root").c_str(),"RECREATE");
 			for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
 				//change the output directory for the results
 				std::string dir = outDirFitResData;
