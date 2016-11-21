@@ -243,7 +243,6 @@ private:
 	double invMass_bin_;
 	int nBins_;
 
-	//  unsigned int _deactive_minEvents;
 public:
 	float deltaNLLMaxSmearToy;
 	unsigned int _deactive_minEventsDiag;

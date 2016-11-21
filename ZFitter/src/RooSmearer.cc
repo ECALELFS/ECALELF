@@ -217,7 +217,7 @@ void RooSmearer::InitCategories(bool mcToy)
 			//------------------------------ deactivating category
 			cat.active = true;
 
-			//Just print out the category index
+			//Just print out the category index (useful if you have to make a quick plot)
 			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
 				std::cout << "[INFO on index] Diagonal Category: " << ZeeCategories.size()
 				          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
@@ -228,26 +228,9 @@ void RooSmearer::InitCategories(bool mcToy)
 				          << "; Integral is " << cat.hist_data->Integral() << std::endl;
 			}
 
-			//DEACTIVATION STRATEGY TO BE TWEAKED (COMMENTED FOR THE MOMENT)
-			//unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
-//      unsigned int deactiveMinEvents = 1; //_deactive_minEventsDiag;
-			//if(cat.categoryIndex1 != cat.categoryIndex2) // not diagonal category
-//	//deactiveMinEvents=1500; //_deactive_minEventsOffDiag;
-//	deactiveMinEvents=1; //_deactive_minEventsOffDiag;
-			//if(cat.hist_mc->Integral() < deactiveMinEvents){
-			//      if(cat.hist_data->Integral() < deactiveMinEvents){
-			//std::cout << "[INFO] Category: " << ZeeCategories.size()
-			//	  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-			//	  << " has been deactivated: events in data less "<<deactiveMinEvents<<std::endl;
-//	if(cat.categoryIndex1 != cat.categoryIndex2) std::cout << _deactive_minEventsOffDiag << ")";
-//	else std::cout << _deactive_minEventsDiag << ")";
-//	std::cout << " nEvents mc invMass: " << cat.hist_mc->Integral()
-			//<< std::endl;
-			//cat.active=false;
-			//}
-
-			unsigned int deactiveMinEvents = 1000; //_deactive_minEventsDiag;
-			unsigned int deactiveMinEvents_off = 2000; //_deactive_minEvents_offDiag;
+			//Cat deactivation strategy: if events are too few it's just noise in the likelihood!
+			unsigned int deactiveMinEvents = _deactive_minEventsDiag;//default is 1000
+			unsigned int deactiveMinEvents_off = _deactive_minEvents_offDiag;//default is 2000
 			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
 				if(cat.hist_data->Integral() < deactiveMinEvents) {
 					std::cout << "[INFO] Diagonal Category: " << ZeeCategories.size()
@@ -266,17 +249,17 @@ void RooSmearer::InitCategories(bool mcToy)
 				}
 			}
 
-			//Shoulder
-//      float max=cat.hist_mc->GetMaximum();
-//      float left=cat.hist_mc->GetBinContent(1);
-//      float right=cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
-//      if((right - left)/max > 0.2 || (left - right)/max > 0.4){
-//	cat.active=false;
-//	std::cout << "[INFO] Category: " << ZeeCategories.size()
-//		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-//		  << " has been deactivated for high sholder: " << right << " " << left << " " << max
-//		  << std::endl;
-//      }
+			//Shoulder in the invariant mass spectra (if the mass spectrum is too much asymmetric, the category is de-activated)
+			//      float max=cat.hist_mc->GetMaximum();
+			//      float left=cat.hist_mc->GetBinContent(1);
+			//      float right=cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
+			//      if((right - left)/max > 0.2 || (left - right)/max > 0.4){
+			//	cat.active=false;
+			//	std::cout << "[INFO] Category: " << ZeeCategories.size()
+			//		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+			//		  << " has been deactivated for high sholder: " << right << " " << left << " " << max
+			//		  << std::endl;
+			//      }
 
 			//------------------------------
 			if (_autoBin) {
@@ -291,23 +274,23 @@ void RooSmearer::InitCategories(bool mcToy)
 
 			cat.nLLtoy = 1;
 			cat.nll = 0;
-			//DEACTIVATION STRATEGY TO BE TWEAKED
-//      std::cout << "[INFO] Category: " << ZeeCategories.size()
-//		<< "\t" << cat.categoryName1 << "\t" << cat.categoryName2
-//		<< "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
-//		<< "\t" << cat.nSmearToy
-//		<< "\t" << cat.nLLtoy
-//		<< "\t" << cat.nBins
-//		<< "\t" << cat.mc_events->size()
-//		<< "\t" << cat.data_events->size()
-//		<< "\t" << cat.hist_mc->Integral()
-//		<< "\t" << cat.hist_data->Integral()
-//		<< "\t" << cat.active
-//		<< "\t" << right
-//		<< "\t" << left
-//		<< "\t" << max
-//		<< std::endl;
-
+#ifdef DEBUG
+			std::cout << "[INFO] Category: " << ZeeCategories.size()
+				  << "\t" << cat.categoryName1 << "\t" << cat.categoryName2
+				  << "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
+				  << "\t" << cat.nSmearToy
+				  << "\t" << cat.nLLtoy
+				  << "\t" << cat.nBins
+				  << "\t" << cat.mc_events->size()
+				  << "\t" << cat.data_events->size()
+				  << "\t" << cat.hist_mc->Integral()
+				  << "\t" << cat.hist_data->Integral()
+				  << "\t" << cat.active
+				  << "\t" << right
+				  << "\t" << left
+				  << "\t" << max
+				  << std::endl;
+#endif
 			ZeeCategories.push_back(cat);
 
 			index++;
