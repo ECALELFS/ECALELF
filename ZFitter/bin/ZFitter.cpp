@@ -246,7 +246,7 @@ int main(int argc, char **argv)
 	std::string ZPtWeightFile;
 	std::string initFileName;
 	//  bool savePUweightTree;
-	std::string imgFormat = "png", outDirFitResMC = "test/MC/fitres", outDirFitResData = "test/dato/fitres", outDirImgMC = "test/MC/img", outDirImgData = "test/dato/img", outDirTable = "test/dato/table", selection;
+	std::string imgFormat, outDirFitResMC = "test/MC/fitres", outDirFitResData = "test/dato/fitres", outDirImgMC = "test/MC/img", outDirImgData = "test/dato/img", outDirTable = "test/dato/table", selection;
 	TString eleID = "";
 	//std::vector<std::string> signalFiles, bkgFiles, dataFiles;
 	std::string commonCut;
@@ -396,7 +396,7 @@ int main(int argc, char **argv)
 	("initFile", po::value< string >(&initFileName), "Configuration file with init values of fit model")
 	;
 	outputOption.add_options()
-	("imgFormat", po::value<string>(&imgFormat)->default_value("pdf"), "")
+	("imgFormat", po::value<string>(&imgFormat)->default_value("png"), "")
 	("outDirFitResMC", po::value<string>(&outDirFitResMC), "")
 	("outDirFitResData", po::value<string>(&outDirFitResData), "")
 	("outDirImgMC", po::value<string>(&outDirImgMC), "")
@@ -1128,7 +1128,7 @@ int main(int argc, char **argv)
 	smearer._autoBin = vm.count("autoBin");
 	smearer._autoNsmear = vm.count("autoNsmear");
 	smearer.smearscan = vm.count("smearscan");
-	//smearer.nEventsMinDiag = nEventsMinDiag;
+	smearer._deactive_minEventsDiag = nEventsMinDiag;
 	smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
 	smearer.SetSmearingEt(vm.count("smearingEt"));
 	smearer.SetR9Weight(vm.count("useR9weight"));
