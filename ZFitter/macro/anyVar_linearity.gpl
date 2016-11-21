@@ -14,8 +14,15 @@ set offsets graph 0.025, graph 0.025, graph 0.025, graph 0.025
 set grid
 set size square
 
-
+test
 #### First plot: variable variation vs scale for different categories
+set style line 1 pt 2
+set style line 2 pt 2
+set style line 3 pt 2
+set style line 4 pt 2
+set style line 5 pt 2
+set style line 6 pt 2
+set style line 7 pt 2
 set key left
 set xrange [0.85:1.15]
 set yrange [0.85:1.15]
@@ -23,14 +30,15 @@ set xlabel 'scale'
 set ylabel 'V(scale)/V(scale=1)'
 do for [category in categories]{
    set title 'M_{ee}: '.category
-   p fileRatio u 2:"mean":"err_mean" i category w yerr  t "mean", \
-		'' u 2:"stdDev":"err_stdDev" i category w yerr t 'stdDev', \
-		'' u 2:"median":"err_median" i category w yerr t 'median', \
-		'' u 2:"effSigma":"err_effSigma" i category w yerr t 'effSigma68', \
-		'' u 2:"effSigma30":"err_effSigma30" i category w yerr t 'effSigma30', \
+   p fileRatio u 2:"mean":"err_mean" i category w yerr   t "mean", \
 		'' u 2:"mean68":"err_mean68" i category w yerr t 'mean68', \
 		'' u 2:"mean30":"err_mean30" i category w yerr  t 'mean30', \
-		x dt 2 t 'y=x'
+		'' u 2:"median":"err_median" i category w yerr t 'median', \
+		x dt 2 lt 1 lc 0 t 'y=x'
+   p fileRatio u 2:"stdDev":"err_stdDev" i category w yerr t 'stdDev', \
+		'' u 2:"effSigma":"err_effSigma" i category w yerr t 'effSigma68', \
+		'' u 2:"effSigma30":"err_effSigma30" i category w yerr t 'effSigma30', \
+		x dt 2 lt 1 lc 0 t 'y=x'
 }
 
 ### second plot err(var) vs scale for different categories

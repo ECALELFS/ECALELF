@@ -1,7 +1,7 @@
 #!/bin/bash
 # this script tests the anyVar method for biases
 
-configFile=data/validation/test_ss.dat
+configFile=data/validation/rereco/Cal_Nov2016/Cal_Nov2016_ref.dat
 #configFile=data/validation/rereco/Cal_Nov2016/Cal_Nov2016_Alpha_v1.dat
 regionsFile=data/regions/validation.dat
 echo "
