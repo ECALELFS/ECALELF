@@ -129,7 +129,7 @@ public:
 
 /**
    \class ZFit_class
-   \brief Class for fitting the Z lineshape from any RooAbsData 
+   \brief Class for fitting the Z lineshape from any RooAbsData
    \author Shervin Nourbakhsh
 */
 

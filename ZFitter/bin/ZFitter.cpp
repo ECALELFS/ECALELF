@@ -340,7 +340,7 @@ int main(int argc, char **argv)
 	("useWEAKweight", "activate the WEAK interference weight in MC")
 	("saveRootMacro", "")
 	//
-	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "") 
+	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "")
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
 	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
@@ -1055,27 +1055,27 @@ int main(int argc, char **argv)
 		RooRealVar *const_term_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("constTerm_" + varName);
 		if(const_term_v == NULL) {
 
-		  if(vm.count("constTermFix")==0){//constTermFix means no Et-dep smearing corrections
-		    if(smearEleType=="" && initFileName==""){
-		      const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); //default value set to 0.01 for constTerm  
-		    }else{//if you already correct the smearing or you have an initFile, the best guess for extra-smearing would be 0           
-		      const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.00, 0.000,0.05); //default value set to 0.00 for constTerm 
-		    }
-		  }else{//decide what to do if constTermFix not active (for the moment it's the same as before)
-		    if(smearEleType=="" && initFileName==""){
-		      const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.01, 0.000,0.05); //default value set to 0.01 for constTerm  
-		    }else{//if you already correct the smearing or you have an initFile, the best guess for extra-smearing would be 0           
-		      const_term_v = new RooRealVar("constTerm_"+*region_itr, "constTerm_"+varName,0.00, 0.000,0.05); //default value set to 0.00 for constTerm 
-		    }
-		  }//init parameter choice for constTerm
+			if(vm.count("constTermFix") == 0) { //constTermFix means no Et-dep smearing corrections
+				if(smearEleType == "" && initFileName == "") {
+					const_term_v = new RooRealVar("constTerm_" + *region_itr, "constTerm_" + varName, 0.01, 0.000, 0.05); //default value set to 0.01 for constTerm
+				} else { //if you already correct the smearing or you have an initFile, the best guess for extra-smearing would be 0
+					const_term_v = new RooRealVar("constTerm_" + *region_itr, "constTerm_" + varName, 0.00, 0.000, 0.05); //default value set to 0.00 for constTerm
+				}
+			} else { //decide what to do if constTermFix not active (for the moment it's the same as before)
+				if(smearEleType == "" && initFileName == "") {
+					const_term_v = new RooRealVar("constTerm_" + *region_itr, "constTerm_" + varName, 0.01, 0.000, 0.05); //default value set to 0.01 for constTerm
+				} else { //if you already correct the smearing or you have an initFile, the best guess for extra-smearing would be 0
+					const_term_v = new RooRealVar("constTerm_" + *region_itr, "constTerm_" + varName, 0.00, 0.000, 0.05); //default value set to 0.00 for constTerm
+				}
+			}//init parameter choice for constTerm
 
-		  const_term_v->setError(0.03); 
-		  //const_term_v->setConstant(true);
-		  args.add(*const_term_v);
+			const_term_v->setError(0.03);
+			//const_term_v->setConstant(true);
+			args.add(*const_term_v);
 		} //const_term_v ==NULL
 		if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) ) && vm.count("constTermFix") == 1) {
-		  const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
-		  const_term_v->setConstant(false);
+			const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
+			const_term_v->setConstant(false);
 		} else const_term_ = const_term_v;
 
 		RooAbsReal *alpha_ = NULL;
