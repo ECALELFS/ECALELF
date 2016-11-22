@@ -1553,7 +1553,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 		seedEnergySCEle[index] = -1.;
 		seedLCSCEle[index] = -10;
 		avgLCSCEle[index] = -10;
-		gainEle[index = 0;
+		gainEle[index] = 0;
 
 		assert(sc->seed().isAvailable());
 		DetId seedDetId = sc->seed()->seed();
