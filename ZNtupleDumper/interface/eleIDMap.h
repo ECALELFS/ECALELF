@@ -44,6 +44,14 @@ public:
 		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-medium"] = 0x400000;
 		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-tight"]  = 0x800000;
 
+		//official eleIDs 2016 (Moriond 2017)
+		eleIDmap["cutBasedElectronID-Summer16-80X-V1-veto"]   = 0x1000000;
+		eleIDmap["cutBasedElectronID-Summer16-80X-V1-loose"]  = 0x2000000;
+		eleIDmap["cutBasedElectronID-Summer16-80X-V1-medium"] = 0x4000000;
+		eleIDmap["cutBasedElectronID-Summer16-80X-V1-tight"]  = 0x8000000;
+
+		eleIDmap["cutBasedElectronHLTPreselection-Summer16-V1"]  = 0x10000000;
+		eleIDmap["cutBasedElectronHLTPreselection-Summer16-V1"]  = 0x20000000;
 	}
 
 };
