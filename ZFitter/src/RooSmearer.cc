@@ -230,7 +230,7 @@ void RooSmearer::InitCategories(bool mcToy)
 
 			//Cat deactivation strategy: if events are too few it's just noise in the likelihood!
 			unsigned int deactiveMinEvents = _deactive_minEventsDiag;//default is 1000
-			unsigned int deactiveMinEvents_off = _deactive_minEvents_offDiag;//default is 2000
+			unsigned int deactiveMinEvents_off = _deactive_minEventsOffDiag;//default is 2000
 			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
 				if(cat.hist_data->Integral() < deactiveMinEvents) {
 					std::cout << "[INFO] Diagonal Category: " << ZeeCategories.size()
