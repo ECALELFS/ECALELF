@@ -185,17 +185,21 @@ case $CMSSW_VERSION in
 	git cms-addpkg Configuration/StandardSequences
 	git cms-merge-topic -u ldcorpe:topic-ecalelf-alcareco-streams
 	;;
-	CMSSW_7_6_*)
-	    git cms-merge-topic shervin86:76X || exit 1
-	    ;;
-	CMSSW_8_0_*)
-	    git cms-addpkg FWCore/ParameterSet
-	    git cms-merge-topic shervin86:fix80X || exit 1
-	    ;;
+    CMSSW_7_6_*)
+	git cms-merge-topic shervin86:76X || exit 1
+	;;
+    CMSSW_8_0_*)
+	#You are here $CMSSW_BASE/src
+	git cms-addpkg FWCore/ParameterSet
+	git cms-merge-topic shervin86:fix80X || exit 1
+	git cms-merge-topic ikrav:egm_id_80X_v1
+	;;
 
 esac
 
 # compile
+echo "[INFO] Starting to compile"
+echo "[INFO for USERS] You could get a C++ seg fault: Be persistent! from $CMSSW_BASE/src go for a scram b -j16 again :-)"
 scram b -j16
 
 # for file in `find -name '*.url'`; 
