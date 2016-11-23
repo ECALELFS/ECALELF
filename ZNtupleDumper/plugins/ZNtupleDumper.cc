@@ -131,6 +131,7 @@
 
 #include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
 #include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/PatCandidates/interface/VIDCutFlowResult.h"
 
 #define initFloat {-999.,-999.,-999.}
 #define initInt   {0,0,0}
@@ -196,6 +197,8 @@ private:
 	//------------------------------ Input Tags
 	// input tag for primary vertex
 	edm::EDGetTokenT<GenEventInfoProduct> generatorInfoToken_;
+        //ID decisions objects
+        edm::EDGetTokenT<edm::ValueMap<bool> > eleIdMapToken_;//new
 	edm::EDGetTokenT<reco::VertexCollection> vtxCollectionToken_;
 	//edm::InputTag vtxCollectionTAG;
 	edm::EDGetTokenT<reco::BeamSpot>         beamSpotToken_;
@@ -220,7 +223,8 @@ private:
 	edm::EDGetTokenT<edm::TriggerResults> triggerResultsToken_;
 	edm::EDGetTokenT<edm::TriggerResults> WZSkimResultsToken_;
 	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
-	std::vector< std::string> hltPaths, SelectEvents;
+        std::vector< std::string> hltPaths, SelectEvents;
+  
 private:
 	std::string foutName;
 
@@ -274,6 +278,7 @@ private:
 	Float_t seedYSCEle[3]=initFloat;        ///< iphi(iy) of the SC seed in EB(EE)
 	Float_t seedEnergySCEle[3]=initFloat;   ///< energy of the SC seed
 	UChar_t gainEle[3]=initInt;           ///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
+        Int_t   passEleId[3]=initInt;
 	Float_t seedLCSCEle[3]=initFloat;       ///< laser correction of the SC seed crystal
 
 	Float_t avgLCSCEle[3]=initFloat;
@@ -505,6 +510,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	isPartGun(iConfig.getParameter<bool>("isPartGun")),
 	doHighEta_LowerEtaCut(iConfig.getParameter<double>("doHighEta_LowerEtaCut")),
 	generatorInfoToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator"))),
+	eleIdMapToken_(consumes<edm::ValueMap<bool> >(edm::InputTag("eleIdMap"))),
 	vtxCollectionToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
 	electronsToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronCollection"))),
@@ -574,7 +580,10 @@ ZNtupleDumper::~ZNtupleDumper()
 // ------------ method called for each event  ------------
 void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-	//  using namespace edm;
+  //  using namespace edm;
+  edm::Handle<edm::ValueMap<bool> > ele_id_decisions;
+  iEvent.getByToken(eleIdMapToken_ ,ele_id_decisions);
+
 	eventType = isPartGun ? PARTGUN : UNKNOWN;
 
 	chargeEle[0] = -100;
@@ -867,6 +876,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					doFill = true;
 
 					if(eventType == UNKNOWN) eventType = ZEE;
+					//std::cout<<"eventType  "<<eventType<<std::endl;
+					//std::cout<<"ele_pt is"<<(*eleIter1).et();
+					//std::cout<<"ele_pt is"<<(&(*eleIter1))->et();
+					//std::cout<<"ele_dec "<<(*ele_id_decisions)[&(*eleIter1)]<<std::endl;
+					//std::cout<<"pointer is "<<&(*eleIter1);
+					//const auto el= (&(*eleIter1));
+					//std::cout<<"ele_dec "<<(*ele_id_decisions)[el]<<std::endl;
+					//bool my_bool = (*ele_id_decisions)[eleIter1];
+					bool my_bool = (*ele_id_decisions)[*eleIter1];
+					//std::cout<<eleIter1->et();
 					TreeSetDiElectronVar(*eleIter1, *eleIter2);
 
 					if(doExtraCalibTree || doExtraStudyTree) {
@@ -1246,6 +1265,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("alphaSeedSCEle", alphaSeedSCEle, "alphaSeedSCEle[3]/F");
 
 	tree->Branch("gainEle", gainEle, "gainEle[3]/b");
+	tree->Branch("passEleId"  , passEleId, "passEleId[3]/I");
 
 	tree->Branch("energyMCEle", energyMCEle, "energyMCEle[3]/F");
 	tree->Branch("energyEle", energyEle, "energyEle[3]/F");
@@ -1424,8 +1444,7 @@ DetId ZNtupleDumper::findSCseed(const reco::SuperCluster& cluster)
 
 // a negative index means that the corresponding electron does not exist, fill with 0
 void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int index)
-{
-
+{//This method is used for miniAOD ntuplization
 	if(index < 0) {
 		PtEle[-index] 	  = 0;
 		chargeEle[-index] = -100;
@@ -1521,14 +1540,19 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	//       R9Ele[index] = R9Ele[index]*1.0086-0.0007;
 	//   }
 
-	eleIDMap eleID_map;
+	//old working version
+//	eleIDMap eleID_map;
+//	eleID[index] = 0;
+//	for (std::map<std::string, UInt_t>::iterator it = eleID_map.eleIDmap.begin(); it != eleID_map.eleIDmap.end(); ++it) {
+//	  std::cout<<"it->first is "<<it->first<<std::endl;
+//	  if(electron1.isElectronIDAvailable(it->first)) { //
+//	    std::cout<<"eleID available"<<std::endl;
+//	    if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
+//	  }//
+//	}
 
-	eleID[index] = 0;
-	for (std::map<std::string, UInt_t>::iterator it = eleID_map.eleIDmap.begin(); it != eleID_map.eleIDmap.end(); ++it) {
-		if(electron1.isElectronIDAvailable(it->first)) { //
-			if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
-		}//
-	}
+//	bool isPassEleID=(*ele_id_decisions)[electron1];
+//	passEleId[index]=(int)isPassEleID;
 
 	classificationEle[index] = electron1.classification();
 
@@ -2411,7 +2435,7 @@ void ZNtupleDumper::InitEleIDTree()
 {
 
 	//  tree = new TTree("selected",fChain->GetTitle());
-	std::cout << "[STATUS] InitEleIDTree" << std::endl;
+	std::cout << "[STATUS] InitEleIDTree in ZNtupleDumper::InitEleIDTree" << std::endl;
 	if(eleIDTree == NULL) {
 		return;
 	}

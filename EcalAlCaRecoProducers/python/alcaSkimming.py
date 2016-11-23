@@ -6,8 +6,8 @@ import copy
 
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 from Calibration.EcalAlCaRecoProducers.customRereco import EcalRecal 
-
-
+#eleID 16
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 ############################################################
 ### SETUP OPTIONS
 options = VarParsing.VarParsing('standard')
@@ -127,10 +127,12 @@ elif(options.type == 'SKIMEFFTEST'):
     MC = True
 elif(options.type == "MINIAODNTUPLE" ):
     processName = "MINIAODNTUPLE"
+    dataFormat = DataFormat.MiniAOD
 else:
     print "[ERROR] wrong type defined"
     sys.exit(-1)
-    
+
+
 doTreeOnly=False
 doAnyTree=False
 if(options.doTree>0 or options.doEleIDTree>0 or options.doExtraCalibTree>0 or options.doExtraStudyTree>0):
@@ -571,7 +573,17 @@ if (options.skim=="ZmmgSkim"):
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
 else:
-    process.NtuplePath = cms.Path(process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
+    print "in else option"
+    switchOnVIDElectronIdProducer(process, dataFormat)
+    my_id_modules = [
+        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff'
+        ]
+    #add them to the VID producer
+    for idmod in my_id_modules:
+        setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+    
+    # Make sure to add the ID sequence upstream from the user analysis module
+    process.NtuplePath = cms.Path(process.egmGsfElectronIDSequence * process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
@@ -741,10 +753,16 @@ else:
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')
     process.zNtupleDumper.SelectEvents = cms.vstring('NtuplePath')
-    process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
-    process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
-    process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
+    ##Those lines are useles?????
+    #process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
+    #process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
+    #process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
+    process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Summer16-80X-V1-loose")
+    process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Summer16-80X-V1-medium")
+    process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Summer16-80X-V1-tight")
 #    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
+    ##Questo cosa e'?
+    process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronHLTPreselection-Summer16-V1")
 
 
 if(options.type=="ALCARERECO"):
