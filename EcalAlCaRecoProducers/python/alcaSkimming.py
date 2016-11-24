@@ -589,8 +589,10 @@ else:
     for idmod in my_id_modules:
         setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedECALELFElectrons') #new
-    process.electronIDValueMapProducer.src = cms.InputTag('slimmedECALELFElectrons') #new
+    #process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedECALELFElectrons') #new
+    #process.electronIDValueMapProducer.src = cms.InputTag('slimmedECALELFElectrons') #new
+    #process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons') #new
+    #process.electronIDValueMapProducer.src = cms.InputTag('slimmedElectrons') #new
     # Make sure to add the ID sequence upstream from the user analysis module
     process.NtuplePath = cms.Path(process.egmGsfElectronIDSequence * process.electronIDValueMapProducer *process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
