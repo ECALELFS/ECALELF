@@ -268,3 +268,21 @@ allRange 	/DYJetsToEE_M-50_LTbinned_100To200_5f_LO_13TeV-madgraph_pythia8/RunIIS
 allRange 	/DYJetsToEE_M-50_LTbinned_200To400_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_200To400 caf database VALID - - 
 allRange 	/DYJetsToEE_M-50_LTbinned_400To800_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_400To800 caf database VALID - - 
 allRange 	/DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM DYJetsToEE_M-50_LTbinned_800To2000 caf database VALID - - 
+# with new laser correction, new prompt tag v10
+275657-276283	 /DoubleEG/Run2016C-PromptReco-v2/MINIAOD	DoubleEG-Run2016C-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016C
+276315-276811	 /DoubleEG/Run2016D-PromptReco-v2/MINIAOD	DoubleEG-Run2016D-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016D
+276831-277420	 /DoubleEG/Run2016E-PromptReco-v2/MINIAOD	DoubleEG-Run2016E-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016E
+277981-278808	 /DoubleEG/Run2016F-PromptReco-v1/MINIAOD       DoubleEG-Run2016F-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016F
+278820-279588	 /DoubleEG/Run2016G-PromptReco-v1/MINIAOD       DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016G
+279653-280385	 /DoubleEG/Run2016G-PromptReco-v1/MINIAOD       DoubleEG-Run2016G-noSkim-Prompt_v1-miniAOD  caf database VALID RUN2016G
+281613-282037	 /DoubleEG/Run2016H-PromptReco-v2/MINIAOD       DoubleEG-Run2016H-noSkim-Prompt_v2-miniAOD  caf database VALID RUN2016H
+
+# Sept23 rereco
+
+272007-272785 /DoubleEG/Run2016B-23Sep2016-v2/MINIAOD  DoubleEG-Run2016B-noSkim-3Sep2016-v2-miniAOD  caf database VALID RUN2016B
+274198-275376 /DoubleEG/Run2016B-23Sep2016-v3/MINIAOD  DoubleEG-Run2016B-noSkim-3Sep2016-v3-miniAOD  caf database VALID RUN2016B
+275657-276283 /DoubleEG/Run2016C-23Sep2016-v1/MINIAOD  DoubleEG-Run2016C-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016C
+276315-276811 /DoubleEG/Run2016D-23Sep2016-v1/MINIAOD  DoubleEG-Run2016D-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016D
+276831-277420 /DoubleEG/Run2016E-23Sep2016-v1/MINIAOD  DoubleEG-Run2016E-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016E
+277772-278808 /DoubleEG/Run2016F-23Sep2016-v1/MINIAOD  DoubleEG-Run2016F-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016F
+278820-280385 /DoubleEG/Run2016G-23Sep2016-v1/MINIAOD  DoubleEG-Run2016G-noSkim-3Sep2016-v1-miniAOD  caf database VALID RUN2016G
