@@ -189,38 +189,38 @@ process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer
 #EleID producer
 process.load('RecoEgamma/ElectronIdentification/ElectronIDValueMapProducer_cfi')
 
-process.MessageLogger.cerr = cms.untracked.PSet(
-    optionalPSet = cms.untracked.bool(True),
-    INFO = cms.untracked.PSet(
-    limit = cms.untracked.int32(0)
-    ),
-    noTimeStamps = cms.untracked.bool(False),
-    FwkReport = cms.untracked.PSet(
-    optionalPSet = cms.untracked.bool(True),
-    reportEvery = cms.untracked.int32(1000),
-    limit = cms.untracked.int32(10000000)
-    ),
-    default = cms.untracked.PSet(
-    limit = cms.untracked.int32(100)
-    ),
-    Root_NoDictionary = cms.untracked.PSet(
-                 optionalPSet = cms.untracked.bool(True),
-                 limit = cms.untracked.int32(0)
-                 ),
-    FwkJob = cms.untracked.PSet(
-    optionalPSet = cms.untracked.bool(True),
-    limit = cms.untracked.int32(0)
-    ),
-    FwkSummary = cms.untracked.PSet(
-    optionalPSet = cms.untracked.bool(True),
-    reportEvery = cms.untracked.int32(1),
-    limit = cms.untracked.int32(10000000)
-    ),
-    threshold = cms.untracked.string('INFO')
-    )
-
-if(options.isCrab==0):
-    process.MessageLogger.cerr.FwkReport.reportEvery = 1
+#process.MessageLogger.cerr = cms.untracked.PSet(
+#    optionalPSet = cms.untracked.bool(True),
+#    INFO = cms.untracked.PSet(
+#    limit = cms.untracked.int32(0)
+#    ),
+#    noTimeStamps = cms.untracked.bool(False),
+#    FwkReport = cms.untracked.PSet(
+#    optionalPSet = cms.untracked.bool(True),
+#    reportEvery = cms.untracked.int32(1000),
+#    limit = cms.untracked.int32(10000000)
+#    ),
+#    default = cms.untracked.PSet(
+#    limit = cms.untracked.int32(100)
+#    ),
+#    Root_NoDictionary = cms.untracked.PSet(
+#                 optionalPSet = cms.untracked.bool(True),
+#                 limit = cms.untracked.int32(0)
+#                 ),
+#    FwkJob = cms.untracked.PSet(
+#    optionalPSet = cms.untracked.bool(True),
+#    limit = cms.untracked.int32(0)
+#    ),
+#    FwkSummary = cms.untracked.PSet(
+#    optionalPSet = cms.untracked.bool(True),
+#    reportEvery = cms.untracked.int32(1),
+#    limit = cms.untracked.int32(10000000)
+#    ),
+#    threshold = cms.untracked.string('INFO')
+#    )
+#
+#if(options.isCrab==0):
+#    process.MessageLogger.cerr.FwkReport.reportEvery = 1
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents)
@@ -582,7 +582,8 @@ else:
     #define which IDs you want to produce
     my_id_modules = [
         #'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff'
-        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff'
+        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff'
+        #'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff'
         ]
     #add them to the VID producer
     for idmod in my_id_modules:
@@ -768,7 +769,7 @@ else:
 #    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
     ##Questo cosa e'?
     ##process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronHLTPreselection-Summer16-V1")
-    process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronID-Summer16-80X-V1-loose")
+    #process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronID-Summer16-80X-V1-loose") #It doesn't work (explicitely written in ZNtupleDumper.cc)
     process.zNtupleDumper.eleIdVerbose = cms.bool(True)
 
 

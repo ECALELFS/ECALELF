@@ -510,7 +510,10 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	isPartGun(iConfig.getParameter<bool>("isPartGun")),
 	doHighEta_LowerEtaCut(iConfig.getParameter<double>("doHighEta_LowerEtaCut")),
 	generatorInfoToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator"))),
-	eleIdMapToken_(consumes<edm::ValueMap<bool> >(edm::InputTag("eleIdMap"))),
+	//This didn't work (why???)
+	//eleIdMapToken_(consumes<edm::ValueMap<bool> >(edm::InputTag("eleIdMap"))),
+	//explicitely written now (works better)
+	eleIdMapToken_(consumes<edm::ValueMap<bool> >(edm::InputTag("egmGsfElectronIDs:cutBasedElectronHLTPreselection-Summer16-V1"))),
 	verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose")),
 	vtxCollectionToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
