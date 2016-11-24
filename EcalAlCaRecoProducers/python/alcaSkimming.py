@@ -580,7 +580,8 @@ else:
     print "dataFormat is ",dataFormat
     #define which IDs you want to produce
     my_id_modules = [
-        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff'
+        #'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff'
+        'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff'
         ]
     #add them to the VID producer
     for idmod in my_id_modules:
@@ -765,7 +766,8 @@ else:
     process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Summer16-80X-V1-tight")
 #    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
     ##Questo cosa e'?
-    process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronHLTPreselection-Summer16-V1")
+    ##process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronHLTPreselection-Summer16-V1")
+    process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronID-Summer16-80X-V1-loose")
     process.zNtupleDumper.eleIdVerbose = cms.bool(True)
 
 

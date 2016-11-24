@@ -585,6 +585,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   //Get the electron ID data from the event stream (the VID ID modules have been run upstream)
   edm::Handle<edm::ValueMap<bool> > ele_id_decisions;
   iEvent.getByToken(eleIdMapToken_ ,ele_id_decisions);
+  if ( not ele_id_decisions.isValid() ) std::cout<<"[analyze]::[ERROR] el_id is not valid"<<std::endl;
 
 	eventType = isPartGun ? PARTGUN : UNKNOWN;
 
