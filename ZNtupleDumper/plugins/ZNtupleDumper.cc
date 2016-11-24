@@ -815,109 +815,109 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 #ifdef DEBUG
 		std::cout << "[DEBUG] Electrons in the event: " << electronsHandle->size() << std::endl;
 #endif
+		int iEle1=-1;
 
 		for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
-		        eleIter1 != electronsHandle->end();
-		        eleIter1++) {
+		     eleIter1 != electronsHandle->end();
+		     eleIter1++) {
+		  iEle1 ++;
+		  
+		  if(! elePreselection(*eleIter1)) continue;
+		  
+		  if(eventType == WENU) {
+		    if(! (eleIter1->electronID(eleID_tight)) ) continue;
+		    if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
+				
+		    // MET/MT selection
+		    if(  met.et() < 25. ) continue;
+		    if( sqrt( 2.*eleIter1->et()*met.et() * (1 - cos(eleIter1->phi() - met.phi()))) < 50. ) continue;
+		    if( eleIter1->et() < 30) continue;
 
-			if(! elePreselection(*eleIter1)) continue;
+		    doFill = true;
+		    if(eventType == UNKNOWN) eventType = WENU;
+		    TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
+		    TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
-			if(eventType == WENU) {
-				if(! (eleIter1->electronID(eleID_tight)) ) continue;
-				if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
-
-				// MET/MT selection
-				if(  met.et() < 25. ) continue;
-				if( sqrt( 2.*eleIter1->et()*met.et() * (1 - cos(eleIter1->phi() - met.phi()))) < 50. ) continue;
-				if( eleIter1->et() < 30) continue;
-
-				doFill = true;
-				if(eventType == UNKNOWN) eventType = WENU;
-				TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
-				TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
-
-				if(doExtraCalibTree || doExtraStudyTree) {
-					TreeSetExtraCalibVar(*eleIter1, 0);
-					TreeSetExtraCalibVar(*eleIter1, -1);
-				}
-				if(doEleIDTree) {
-					TreeSetEleIDVar(*eleIter1, 0);
-					TreeSetEleIDVar(*eleIter1, -1);
-				}
-			} else { //ZEE or UNKNOWN
-				// take only the fist di-electron pair (highest pt)
-				for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1 + 1;
-				        eleIter2 != electronsHandle->end() && doFill == false;
-				        eleIter2++) {
-
-					if(! elePreselection(*eleIter1)) continue;
+		    if(doExtraCalibTree || doExtraStudyTree) {
+		      TreeSetExtraCalibVar(*eleIter1, 0);
+		      TreeSetExtraCalibVar(*eleIter1, -1);
+		    }
+		    if(doEleIDTree) {
+		      TreeSetEleIDVar(*eleIter1, 0);
+		      TreeSetEleIDVar(*eleIter1, -1);
+		    }
+		  } else { //ZEE or UNKNOWN
+		    // take only the fist di-electron pair (highest pt)
+		    int iEle2=-1;
+		    for(pat::ElectronCollection::const_iterator eleIter2 = eleIter1 + 1;
+			eleIter2 != electronsHandle->end() && doFill == false;
+			eleIter2++) {
+		      iEle2++;
+		      if(! elePreselection(*eleIter1)) continue;
 #ifdef DEBUG
-					std::cout << "[DEBUG] Electron passing preselection" << std::endl;
+		      std::cout << "[DEBUG] Electron passing preselection" << std::endl;
 #endif
-					//	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
+		      //	  float mass=(eleIter1->p4()+eleIter2->p4()).mass();
+		      
+		      //calculate the invariant mass
+		      double t1 = TMath::Exp(-eleIter1->eta());
+		      double t1q = t1 * t1;
+		      double t2 = TMath::Exp(-eleIter2->eta());
+		      double t2q = t2 * t2;
+		      
+		      if(!eleIter2->parentSuperCluster().isNonnull()) continue;
+		      double angle = 1 -
+			( (1 - t1q) * (1 - t2q) + 4 * t1 * t2 * cos(eleIter1->phi() - eleIter2->phi())) / (
+													   (1 + t1q) * (1 + t2q)
+													   );
+		      double mass = sqrt(2 * eleIter1->energy() * eleIter2->energy() * angle); //use default electron energy, in order to have the same number of events between alcareco and alcarereco ntuples
+		      
+		      //	  std::cout<<" ele1 SC: "<<eleIter1->superCluster()->energy()<<" ele1 SC must: "<<eleIter1->parentSuperCluster()->energy()<<" eta1: "<<eleIter1->eta()<<" phi1: "<<eleIter1->phi()<<std::endl
+		      //		   <<" ele2 SC: "<<eleIter2->superCluster()->energy()<<" ele2 SC must: "<<eleIter2->parentSuperCluster()->energy()<<" eta2: "<<eleIter2->eta()<<" phi2: "<<eleIter2->phi()<<"mass: "<<mass<<std::endl;
+		      
+		      if(mass < 55 ) continue;
+		      doFill = true;
+		      
+		      if(eventType == UNKNOWN) eventType = ZEE;
+		      //valueMap wants a reference
+		      edm::RefToBase<pat::Electron> ref1 ( edm::Ref< pat::ElectronCollection >(electronsHandle, iEle1) ) ;
+		      edm::RefToBase<pat::Electron> ref2 ( edm::Ref< pat::ElectronCollection >(electronsHandle, iEle2) ) ;
+		      bool my_bool1 = (*ele_id_decisions)[ref1];
+		      bool my_bool2 = (*ele_id_decisions)[ref2];
+		      std::cout<<my_bool1<<" "<<my_bool2<<std::endl;
+		      //std::cout<<eleIter1->et();
+		      TreeSetDiElectronVar(*eleIter1, *eleIter2);
 
-					//calculate the invariant mass
-					double t1 = TMath::Exp(-eleIter1->eta());
-					double t1q = t1 * t1;
-					double t2 = TMath::Exp(-eleIter2->eta());
-					double t2q = t2 * t2;
+		      if(doExtraCalibTree || doExtraStudyTree) {
+			TreeSetExtraCalibVar(*eleIter1, *eleIter2);
+		      }
+		      if(doEleIDTree) {
+			TreeSetEleIDVar(*eleIter1, *eleIter2);
+		      }
+		      if(doPdfSystTree && isMC) {
+			TreeSetPdfSystVar(iEvent);
+			//pdfSystTree->Fill();
+		      }
 
-					if(!eleIter2->parentSuperCluster().isNonnull()) continue;
-					double angle = 1 -
-					               ( (1 - t1q) * (1 - t2q) + 4 * t1 * t2 * cos(eleIter1->phi() - eleIter2->phi())) / (
-					                   (1 + t1q) * (1 + t2q)
-					               );
-					double mass = sqrt(2 * eleIter1->energy() * eleIter2->energy() * angle); //use default electron energy, in order to have the same number of events between alcareco and alcarereco ntuples
+		      // if(electronsHandle->size() < NELE &&  eventType == SINGLEELE){
+		      
+		      // 	doFill=true;
+		      // 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
+		      // 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
 
-					//	  std::cout<<" ele1 SC: "<<eleIter1->superCluster()->energy()<<" ele1 SC must: "<<eleIter1->parentSuperCluster()->energy()<<" eta1: "<<eleIter1->eta()<<" phi1: "<<eleIter1->phi()<<std::endl
-					//		   <<" ele2 SC: "<<eleIter2->superCluster()->energy()<<" ele2 SC must: "<<eleIter2->parentSuperCluster()->energy()<<" eta2: "<<eleIter2->eta()<<" phi2: "<<eleIter2->phi()<<"mass: "<<mass<<std::endl;
-
-					if(mass < 55 ) continue;
-					doFill = true;
-
-					if(eventType == UNKNOWN) eventType = ZEE;
-					//std::cout<<"eventType  "<<eventType<<std::endl;
-					//std::cout<<"ele_pt is"<<(*eleIter1).et();
-					//std::cout<<"ele_pt is"<<(&(*eleIter1))->et();
-					//std::cout<<"ele_dec "<<(*ele_id_decisions)[&(*eleIter1)]<<std::endl;
-					//std::cout<<"pointer is "<<&(*eleIter1);
-					//const auto el= (&(*eleIter1));
-					//std::cout<<"ele_dec "<<(*ele_id_decisions)[el]<<std::endl;
-					//bool my_bool = (*ele_id_decisions)[eleIter1];
-					bool my_bool = (*ele_id_decisions)[*eleIter1];
-					//std::cout<<eleIter1->et();
-					TreeSetDiElectronVar(*eleIter1, *eleIter2);
-
-					if(doExtraCalibTree || doExtraStudyTree) {
-						TreeSetExtraCalibVar(*eleIter1, *eleIter2);
-					}
-					if(doEleIDTree) {
-						TreeSetEleIDVar(*eleIter1, *eleIter2);
-					}
-					if(doPdfSystTree && isMC) {
-						TreeSetPdfSystVar(iEvent);
-						//pdfSystTree->Fill();
-					}
-
-					// if(electronsHandle->size() < NELE &&  eventType == SINGLEELE){
-
-					// 	doFill=true;
-					// 	TreeSetSingleElectronVar(*eleIter1, 0);  //fill first electron
-					// 	TreeSetSingleElectronVar(*eleIter1, -1); // fill fake second electron
-
-					// 	if(doExtraCalibTree){
-					// 		TreeSetExtraCalibVar(*eleIter1, 0);
-					// 		TreeSetExtraCalibVar(*eleIter1, -1);
-					// 	}
-					// 	if(doEleIDTree){
-					// 		TreeSetEleIDVar(*eleIter1, 0);
-					// 		TreeSetEleIDVar(*eleIter1, -1);
-					// 	}
-					// }
-				}
-			}
+		      // 	if(doExtraCalibTree){
+		      // 		TreeSetExtraCalibVar(*eleIter1, 0);
+		      // 		TreeSetExtraCalibVar(*eleIter1, -1);
+		      // 	}
+		      // 	if(doEleIDTree){
+		      // 		TreeSetEleIDVar(*eleIter1, 0);
+		      // 		TreeSetEleIDVar(*eleIter1, -1);
+		      // 	}
+		      // }
+		    }
+		  }
 		}
-
+		
 	}	  else if (eventType == ZMMG) {
 		for( pat::MuonCollection::const_iterator muIter1 = muonsHandle->begin();
 		        muIter1 != muonsHandle->end() && doFill == false;
