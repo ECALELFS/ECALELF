@@ -228,7 +228,9 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(options.files),
                             secondaryFileNames = cms.untracked.vstring(options.secondaryFiles),
-                            skipEvents=cms.untracked.uint32(0),
+                            skipEvents=cms.untracked.uint32(0),##It was like this
+                            ##SkipEvent = cms.untracked.vstring('ProductNotFound'), -->suggested
+                            ##skipEvents = cms.vstring('ProductNotFound'),
 #                            inputCommands = cms.untracked.vstring( [ 'keep *', 
 #                                                                     'drop *_correctedHybridSuperClusters_*_RECO',
 #                                                                     'drop *_correctedMulti5x5SuperClustersWithPreshower_*_RECO',
@@ -573,8 +575,10 @@ if (options.skim=="ZmmgSkim"):
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
 else:
-    print "in else option"
+    print "[python/alcaSkimming.py] process.NtulePath (you are in the else switch)"
     switchOnVIDElectronIdProducer(process, dataFormat)
+    print "dataFormat is ",dataFormat
+    #define which IDs you want to produce
     my_id_modules = [
         'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff'
         ]
@@ -583,12 +587,11 @@ else:
         setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
     
     # Make sure to add the ID sequence upstream from the user analysis module
-    process.NtuplePath = cms.Path(process.egmGsfElectronIDSequence * process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
+    process.NtuplePath = cms.Path(process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
-
-process.NtupleEndPath = cms.EndPath( process.zNtupleDumper  )
+    process.NtupleEndPath = cms.EndPath(process.egmGsfElectronIDSequence * process.zNtupleDumper  )
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
@@ -717,7 +720,7 @@ if(options.type!="MINIAODNTUPLE"):
     process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
 
 else:
-    print "MINIAOD"
+    print "************************************MINIAOD"
     process.patSequence.remove(process.patElectrons)
     #configure everything for MINIAOD
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
@@ -763,6 +766,7 @@ else:
 #    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
     ##Questo cosa e'?
     process.zNtupleDumper.eleIdMap = cms.InputTag("egmGsfElectronIDs","cutBasedElectronHLTPreselection-Summer16-V1")
+    process.zNtupleDumper.eleIdVerbose = cms.bool(True)
 
 
 if(options.type=="ALCARERECO"):

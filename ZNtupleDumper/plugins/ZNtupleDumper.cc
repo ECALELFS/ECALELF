@@ -198,7 +198,8 @@ private:
 	// input tag for primary vertex
 	edm::EDGetTokenT<GenEventInfoProduct> generatorInfoToken_;
         //ID decisions objects
-        edm::EDGetTokenT<edm::ValueMap<bool> > eleIdMapToken_;//new
+        edm::EDGetTokenT<edm::ValueMap<bool> > eleIdMapToken_;
+        bool verboseIdFlag_;
 	edm::EDGetTokenT<reco::VertexCollection> vtxCollectionToken_;
 	//edm::InputTag vtxCollectionTAG;
 	edm::EDGetTokenT<reco::BeamSpot>         beamSpotToken_;
@@ -227,7 +228,6 @@ private:
   
 private:
 	std::string foutName;
-
 	bool doExtraCalibTree; ///< bool to activate the dump of the extra calib tree for E/p ICs
 	bool doExtraStudyTree; ///< bool to activate the dump of the extra tree for study with values for single recHits
 	bool doEleIDTree;      ///< bool to activate the dump of the electronID variables in a separate tree
@@ -511,6 +511,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	doHighEta_LowerEtaCut(iConfig.getParameter<double>("doHighEta_LowerEtaCut")),
 	generatorInfoToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator"))),
 	eleIdMapToken_(consumes<edm::ValueMap<bool> >(edm::InputTag("eleIdMap"))),
+	verboseIdFlag_(iConfig.getParameter<bool>("eleIdVerbose")),
 	vtxCollectionToken_(consumes<reco::VertexCollection>(iConfig.getParameter<edm::InputTag>("vertexCollection"))),
 	beamSpotToken_(consumes<reco::BeamSpot>(iConfig.getParameter<edm::InputTag>("BeamSpotCollection"))),
 	electronsToken_(consumes<pat::ElectronCollection>(iConfig.getParameter<edm::InputTag>("electronCollection"))),
@@ -581,6 +582,7 @@ ZNtupleDumper::~ZNtupleDumper()
 void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   //  using namespace edm;
+  //Get the electron ID data from the event stream (the VID ID modules have been run upstream)
   edm::Handle<edm::ValueMap<bool> > ele_id_decisions;
   iEvent.getByToken(eleIdMapToken_ ,ele_id_decisions);
 
@@ -812,16 +814,16 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			TreeSetEleIDVar(*eleIter1, *eleIter2);
 		}
 	} else if(eventType == ZEE || eventType == WENU || eventType == UNKNOWN) {
-#ifdef DEBUG
+	  //#ifdef DEBUG
 		std::cout << "[DEBUG] Electrons in the event: " << electronsHandle->size() << std::endl;
-#endif
+		//#endif
 		int iEle1=-1;
 
 		for( pat::ElectronCollection::const_iterator eleIter1 = electronsHandle->begin();
 		     eleIter1 != electronsHandle->end();
 		     eleIter1++) {
 		  iEle1 ++;
-		  
+
 		  if(! elePreselection(*eleIter1)) continue;
 		  
 		  if(eventType == WENU) {
@@ -883,8 +885,14 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		      edm::RefToBase<pat::Electron> ref1 ( edm::Ref< pat::ElectronCollection >(electronsHandle, iEle1) ) ;
 		      edm::RefToBase<pat::Electron> ref2 ( edm::Ref< pat::ElectronCollection >(electronsHandle, iEle2) ) ;
 		      bool my_bool1 = (*ele_id_decisions)[ref1];
-		      bool my_bool2 = (*ele_id_decisions)[ref2];
-		      std::cout<<my_bool1<<" "<<my_bool2<<std::endl;
+		      std::cout<<"my_bool1 "<<my_bool1<<std::endl;
+		      //bool my_bool2 = (*ele_id_decisions)[ref2];
+		  //#ifdef DEBUG
+		      std::cout<<ref1->et()<<std::endl;
+		      std::cout<<"iEle1 is "<<iEle1<<std::endl;
+		      std::cout<<"iEle2 is "<<iEle2<<std::endl;
+		  //#endif
+		      //std::cout<<my_bool1<<" "<<my_bool2<<std::endl;
 		      //std::cout<<eleIter1->et();
 		      TreeSetDiElectronVar(*eleIter1, *eleIter2);
 
