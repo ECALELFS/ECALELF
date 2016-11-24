@@ -888,6 +888,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		      //valueMap wants a reference
 		      edm::RefToBase<pat::Electron> ref1 ( edm::Ref< pat::ElectronCollection >(electronsHandle, iEle1) ) ;
 		      edm::RefToBase<pat::Electron> ref2 ( edm::Ref< pat::ElectronCollection >(electronsHandle, iEle2) ) ;
+		      std::cout<<"before the bool"<<std::endl;
 		      bool my_bool1 = (*ele_id_decisions)[ref1];
 		      std::cout<<"my_bool1 "<<my_bool1<<std::endl;
 		      //bool my_bool2 = (*ele_id_decisions)[ref2];
