@@ -186,7 +186,8 @@ process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 # ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
-
+#EleID producer
+process.load('RecoEgamma/ElectronIdentification/ElectronIDValueMapProducer_cfi')
 
 process.MessageLogger.cerr = cms.untracked.PSet(
     optionalPSet = cms.untracked.bool(True),
@@ -592,7 +593,7 @@ else:
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
-    process.NtupleEndPath = cms.EndPath(process.egmGsfElectronIDSequence * process.zNtupleDumper  )
+    process.NtupleEndPath = cms.EndPath(process.egmGsfElectronIDSequence * process.electronIDValueMapProducer * process.zNtupleDumper  )
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
