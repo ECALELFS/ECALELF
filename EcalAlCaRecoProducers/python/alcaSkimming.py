@@ -589,11 +589,11 @@ else:
         setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
     
     # Make sure to add the ID sequence upstream from the user analysis module
-    process.NtuplePath = cms.Path(process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
+    process.NtuplePath = cms.Path(process.egmGsfElectronIDSequence * process.electronIDValueMapProducer *process.filterSeq * process.preFilterSeq *  process.NtupleFilterSeq 
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
-    process.NtupleEndPath = cms.EndPath(process.egmGsfElectronIDSequence * process.electronIDValueMapProducer * process.zNtupleDumper  )
+    process.NtupleEndPath = cms.EndPath(process.zNtupleDumper  )
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
