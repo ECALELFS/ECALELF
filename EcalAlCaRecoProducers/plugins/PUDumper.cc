@@ -11,10 +11,6 @@ PUDumper::PUDumper(const edm::ParameterSet& iConfig)
 	edm::Service<TFileService> fs;
 	PUTree_ = fs -> make<TTree>("pileup", "pileup");
 
-	PUTree_ -> Branch("runNumber",     &runNumber,     "runNumber/I");
-	PUTree_ -> Branch("eventNumber",   &eventNumber, "eventNumber/l");
-	PUTree_ -> Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-
 	PUTree_ -> Branch("nBX",      &nBX,              "nBX/I");
 	PUTree_ -> Branch("BX",       BX_,              "BX[nBX]/I");
 	PUTree_ -> Branch("nPUtrue",  &nPUtrue_,    "nPUtrue/F");

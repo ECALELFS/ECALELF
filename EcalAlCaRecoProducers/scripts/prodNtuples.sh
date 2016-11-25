@@ -21,8 +21,20 @@ SUBMIT=y
 
 SKIM=""
 OUTFILES="ntuple.root"
-crabFile=tmp/ntuple.cfg
+#CRABVERSION=2
 CRABVERSION=2
+crab2File=tmp/ntuple.cfg
+crab3File=tmp/ntuple.py
+
+case ${CRABVERSION} in
+	2) crabFile=${crab2File};;
+	3) crabFile=${crab3File};;
+	*) 
+		echo "[`basename $0` ERROR] CRABVERSION = ${CRABVERSION} not valid" >> /dev/stderr
+		exit 1
+		;;
+esac
+
 FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
@@ -393,7 +405,9 @@ if [ "$RUNRANGE" == "allRange" -o "`echo $RUNRANGE |grep -c -P '[0-9]+-[0-9]+'`"
 fi
 
 if [ ! -d "tmp" ];then mkdir tmp/; fi
-cat > ${crabFile} <<EOF
+
+#Write the crab config file
+cat > ${crab2File} <<EOF
 [CRAB]
 scheduler=$SCHEDULER
 jobtype=cmssw
@@ -411,11 +425,11 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 				;;
 		esac
 		if [ -n "${DBS_URL}" ];then
-			echo "dbs_url=${DBS_URL}" >> ${crabFile}
+			echo "dbs_url=${DBS_URL}" >> ${crab2File}
 		fi
 
 		if [ "$isMC" != "1" ];then
-        cat >> ${crabFile} <<EOF
+        cat >> ${crab2File} <<EOF
 total_number_of_lumis = -1
 lumis_per_job=${LUMIS_PER_JOBS}
 datasetpath=${DATASETPATH}
@@ -423,7 +437,7 @@ datasetpath=${DATASETPATH}
 use_dbs3 = 1
 EOF
 		else
-			cat >> ${crabFile} <<EOF
+			cat >> ${crab2File} <<EOF
 total_number_of_events = -1
 events_per_job = ${EVENTS_PER_JOB}
 datasetpath=${DATASETPATH}
@@ -433,7 +447,7 @@ EOF
 		fi
         ;;
         *)
-        cat >> ${crabFile} <<EOF
+        cat >> ${crab2File} <<EOF
 total_number_of_events=${NJOBS}
 number_of_jobs=${NJOBS}
 datasetpath=None
@@ -442,12 +456,12 @@ EOF
 esac
 
 if [ -n "${DEVEL_RELEASE}" ]; then
-cat >> ${crabFile} <<EOF
+cat >> ${crab2File} <<EOF
 allow_NonProductionCMSSW = 1
 EOF
 fi
 
-cat >> ${crabFile} <<EOF
+cat >> ${crab2File} <<EOF
 runselection=${RUNRANGE}
 split_by_run=0
 check_user_remote_dir=1
@@ -488,16 +502,85 @@ proxy_server = myproxy.cern.ch
 
 EOF
 
+###################################crab 3 .py writing###############################
+#I used the tool: crab2cfgTOcrab3py [crab2confgiName.cfg] [crab3configName.py]
+##jsonFile=${JSONFILE}
+cat > ${crab3File} <<EOF
+from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+config = config()
 
+config.General.workArea = '${UI_WORKING_DIR}'
+config.General.requestName = '${TYPE}'
+config.General.transferOutputs = True
+config.General.transferLogs = False
+
+config.JobType.pluginName = 'Analysis'
+config.JobType.psetName = 'python/alcaSkimming.py'
+config.JobType.outputFiles = ['ntuple.root']
+config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}', 'MC=${isMC}']
+
+config.Data.inputDataset = '${DATASETPATH}'
+config.Data.inputDBS = 'global'
+EOF
+
+if [[ ${isMC} = "0" ]]; then
+cat >> ${crab3File} <<EOF
+config.Data.splitting = 'LumiBased'
+config.Data.unitsPerJob = 100
+config.Data.lumiMask = '${JSONFILE}'
+config.Data.runRange = '${RUNRANGE}'
+EOF
+elif [[ ${isMC} = "1" ]]; then
+cat >> ${crab3File} <<EOF
+config.Data.splitting = 'FileBased'
+config.Data.unitsPerJob = 1
+EOF
+fi
+
+cat >> ${crab3File} <<EOF
+#config.Data.outLFNDirBase = 'my_job_crab3/' 
+config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
+config.Data.publication = False
+#config.Data.outputDatasetTag = 'outputdatasetTag'
+#config.Site.storageSite = '$STORAGE_PATH' #=> come si scrive su eos??
+#config.Site.storageSite = 'srm-eoscms.cern.ch'
+config.Site.storageSite = 'T2_CH_CERN'
+#config.Site.storageSite = 'T2_IT_Rome'
+#config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
+
+EOF
+
+
+##############At this point you wrote the crab config file in tmp/${crabFile}####################
+
+if [[ ${CRABVERSION} = "2" ]]; then
+    echo "You are using crab version "${CRABVERSION} 
     crab -cfg ${crabFile} -create || exit 1
     if [ -n "$FILELIST" ];then
-	  makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
+	makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
     fi
     splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
 fi
 
+echo "Working dir is " $UI_WORKING_DIR
+#in Crab 3 you directly submit (do not create the job first)
+fi  #This is the end of the option createOnly
+
 if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
-    crab -c ${UI_WORKING_DIR} -submit
+    if [[ ${CRABVERSION} = "2" ]]; then
+	crab -c ${UI_WORKING_DIR} -submit
+    fi
+
+    if [[ ${CRABVERSION} = "3" ]]; then
+	echo "you are using crab 3"
+	echo ${crabFile}
+
+	##?? makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
+
+	##?? splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
+	crab submit -c  ${crabFile}
+    fi
+
     STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TYPE}\t${TAG}\t${JSONNAME}"
     echo -e $STRING >> ntuple_datasets.dat
 
