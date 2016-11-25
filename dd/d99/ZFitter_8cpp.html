@@ -108,137 +108,13 @@ Functions</h2></td></tr>
 <div class="textblock"><p>General program for Z fit (monitoring, calibration validation) </p>
 <p>The aim of the program is to provide a common interface to all the Z fitting algorithms reading and combining in the proper way the configuration files.</p>
 <dl class="todo"><dt><b><a class="el" href="../../dd/da0/todo.html#_todo000006">Todo:</a></b></dt><dd><ul>
-<li>remove commonCut from category name and add it in the <a class="el" href="../../d8/dfa/classZFit__class.html" title="Zee Fit class: BW+CB and Cruijff. ">ZFit_class</a> in order to not repeate the cut</li>
+<li>remove commonCut from category name and add it in the <a class="el" href="../../d8/dfa/classZFit__class.html" title="Class for fitting the Z lineshape from any RooAbsData. ">ZFit_class</a> in order to not repeate the cut</li>
 <li>make alpha fitting more generic (look for alphaName)</li>
 <li>Implement the iterative Et dependent scale corrections</li>
 </ul>
 </dd></dl>
 <h1>ZFitter options:</h1>
-<div class="fragment"><div class="line">============================== Z General Fitter</div>
-<div class="line">Main options:</div>
-<div class="line">  -h [ --help ]                         Help message</div>
-<div class="line">  --loop </div>
-<div class="line">  --runDivide                           execute the run division</div>
-<div class="line">  --nEvents_runDivide arg (=100000)     Minimum number of events in a run range</div>
-<div class="line">  --dataPU arg</div>
-<div class="line">  --mcPU arg</div>
-<div class="line">  --noPU </div>
-<div class="line">  --savePUTreeWeight </div>
-<div class="line">  --corrEleFile arg                     File with energy scale corrections</div>
-<div class="line">  --corrEleType arg                     Correction type/step</div>
-<div class="line">  --saveCorrEleTree </div>
-<div class="line">  --smearEleFile arg                    File with energy smearings</div>
-<div class="line">  --smearEleType arg                    Correction type/step</div>
-<div class="line">  --smearingCBAlpha arg                 Correction type/step</div>
-<div class="line">  --smearingCBPower arg                 Correction type/step</div>
-<div class="line">  --r9WeightFile arg                    File with r9 photon-electron weights</div>
-<div class="line">  --useR9weight                         use r9 photon-electron weights</div>
-<div class="line">  --saveR9TreeWeight </div>
-<div class="line">  --ZPtWeightFile arg                   File with ZPt weights</div>
-<div class="line">  --useZPtweight                        use ZPt weights</div>
-<div class="line">  --useFSRweight                        activate the FSR weight in MC</div>
-<div class="line">  --useWEAKweight                       activate the WEAK interference weight </div>
-<div class="line">                                        in MC</div>
-<div class="line">  --saveRootMacro </div>
-<div class="line">  --selection arg (=loose25nsRun2)</div>
-<div class="line">  --commonCut arg (=Et_25)</div>
-<div class="line">  --invMass_var arg (=invMass_SC_must)</div>
-<div class="line">  --invMass_min arg (=65)</div>
-<div class="line">  --invMass_max arg (=115)</div>
-<div class="line">  --invMass_binWidth arg (=0.25)        Smearing binning</div>
-<div class="line">  --isOddMC                             Activate if use only odd events in MC</div>
-<div class="line">  --isOddData                           Activate if use only odd events in data</div>
-<div class="line">  --readDirect </div>
-<div class="line">  --addBranch arg</div>
-<div class="line">  --saveAddBranchTree </div>
-<div class="line"></div>
-<div class="line">Input options:</div>
-<div class="line">  -f [ --chainFileList ] arg            Configuration file with input file list</div>
-<div class="line">  --regionsFile arg                     Configuration file with regions</div>
-<div class="line">  --runRangesFile arg                   Configuration file with run ranges</div>
-<div class="line">  --initFile arg                        Configuration file with init values of </div>
-<div class="line">                                        fit model</div>
-<div class="line"></div>
-<div class="line">Output options:</div>
-<div class="line">  --imgFormat arg (=pdf)</div>
-<div class="line">  --outDirFitResMC arg</div>
-<div class="line">  --outDirFitResData arg</div>
-<div class="line">  --outDirImgMC arg</div>
-<div class="line">  --outDirImgData arg</div>
-<div class="line"></div>
-<div class="line">Z fitter options:</div>
-<div class="line">  --fit_type_value arg (=1)             0=floating tails, 1=fixed tails</div>
-<div class="line">  --signal_type_value arg (=0)          0=BW+CB, 1=Cruijff</div>
-<div class="line">  --forceNewFit                         refit MC also if fit exists</div>
-<div class="line">  --updateOnly                          do not fit data if fit exists</div>
-<div class="line"></div>
-<div class="line">Z smearer options:</div>
-<div class="line">  --smearerFit                          call the smearing</div>
-<div class="line">  --smearerType arg (=profile)          minimization algo</div>
-<div class="line">  --onlyDiagonal                        if want to use only diagonal categories</div>
-<div class="line">  --autoBin </div>
-<div class="line">  --autoNsmear </div>
-<div class="line">  --smearscan </div>
-<div class="line">  --isDataSmeared </div>
-<div class="line">  --plotOnly                            active if you don&#39;t want to do the </div>
-<div class="line">                                        smearing</div>
-<div class="line">  --profileOnly </div>
-<div class="line">  --numIter arg (=300)                  number of MCMC steps</div>
-<div class="line">  --nEventsMinDiag arg (=1000)          min num events in diagonal categories</div>
-<div class="line">  --nEventsMinOffDiag arg (=2000)       min num events in off-diagonal </div>
-<div class="line">                                        categories</div>
-<div class="line">  --onlyScale                           fix the smearing to constant</div>
-<div class="line">  --constTermFix                        constTerm not depending on Et</div>
-<div class="line">  --alphaGoldFix                        alphaTerm for gold electrons fixed to </div>
-<div class="line">                                        the low eta region</div>
-<div class="line">  --smearingEt                          alpha term depend on sqrt(Et) and not </div>
-<div class="line">                                        on sqrt(E)</div>
-<div class="line">  --nSmearToy arg (=0)</div>
-<div class="line">  --pdfSystWeightIndex arg (=-1)        Index of the weight to be used</div>
-<div class="line"></div>
-<div class="line">toyMC options:</div>
-<div class="line">  --runToy </div>
-<div class="line">  --nToys arg (=1000)</div>
-<div class="line">  --constTermToy arg (=0.00999999978)</div>
-<div class="line">  --eventsPerToy arg (=0)               =0: all events</div>
-<div class="line"></div>
-<div class="line">EoverP options:</div>
-<div class="line">  --EOverPCalib                         call the E/p calibration</div>
-<div class="line">  --isBarrel arg (=1)                   1=barrel, 0=endcap</div>
-<div class="line">  --doEB                                do EoP IC calibration for EB</div>
-<div class="line">  --doEE                                do EoP IC calibration for EE</div>
-<div class="line">  --jsonFileName arg (=../EOverPCalibration/json/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt)</div>
-<div class="line">                                        jsonFileName</div>
-<div class="line">  --isMiscalib arg (=0)                 apply the initial miscalibration</div>
-<div class="line">  --miscalibMethod arg (=1)             miscalibration method</div>
-<div class="line">  --miscalibMap arg (=/gwteray/users/brianza/scalibMap2.txt)</div>
-<div class="line">                                        map for the miscalibration</div>
-<div class="line">  --isSaveEPDistribution arg (=0)       save E/P distribution</div>
-<div class="line">  --isMCTruth arg (=0)                  option for MC</div>
-<div class="line">  --isEPselection arg (=0)              apply E/p selection</div>
-<div class="line">  --isPtCut arg (=0)                    apply Pt cut</div>
-<div class="line">  --PtMin arg (=0)                      treshold for the Pt cut</div>
-<div class="line">  --isfbrem arg (=0)                    apply fbrem cut</div>
-<div class="line">  --fbremMax arg (=100)                 fbrem treshold</div>
-<div class="line">  --isR9selection arg (=0)              apply R9 selection</div>
-<div class="line">  --R9Min arg (=-1)                     R9 treshold</div>
-<div class="line">  --inputMomentumScale arg (=/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/EOverPCalibration/MomentumCalibration2012)</div>
-<div class="line">                                        input momentum scale</div>
-<div class="line">  --typeEB arg (=eta1)</div>
-<div class="line">  --typeEE arg (=eta1)</div>
-<div class="line">  --outputPath arg (=output/output_runD/)</div>
-<div class="line">                                        output dir for E/P calibration</div>
-<div class="line">  --outputFile arg (=FastCalibrator_Oct22_Run2012ABC_Cal_Dic2012)</div>
-<div class="line">                                        output file for E/P calibration</div>
-<div class="line">  --numberOfEvents arg (=-1)            number of events (-1=all)</div>
-<div class="line">  --useZ arg (=1)                       use Z events</div>
-<div class="line">  --useW arg (=1)                       use W events</div>
-<div class="line">  --splitStat arg (=1)                  split statistic</div>
-<div class="line">  --nLoops arg (=20)                    number of iteration of the L3 algorithm</div>
-<div class="line">  --isDeadTriggerTower arg (=0)</div>
-<div class="line">  --inputFileDeadXtal arg (=NULL)</div>
-<div class="line"></div>
-</div><!-- fragment --> </div><h2 class="groupheader">Typedef Documentation</h2>
+<div class="fragment"></div><!-- fragment --> </div><h2 class="groupheader">Typedef Documentation</h2>
 <a class="anchor" id="a6f9583393b23a18bc849a3eb79ad7cbf"></a>
 <div class="memitem">
 <div class="memproto">
