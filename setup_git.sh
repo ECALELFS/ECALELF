@@ -1,7 +1,5 @@
 #!/bin/bash
 
-branch=newMaster
-
 checkVERSION(){
     case $CMSSW_VERSION in
 		CMSSW_5_3_7_patch6)
