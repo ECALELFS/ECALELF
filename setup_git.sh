@@ -21,7 +21,7 @@ checkVERSION(){
 		CMSSW_7_6_3)
 			echo "[INFO] Installing for $CMSSW_VERSION (2015 13TeV)"
 			;;
-		 CMSSW_8_0_22)
+		 CMSSW_8_0_24_patch1)
 			echo "[INFO] Installing for $CMSSW_VERSION (2016 13TeV)"
 			;;
 		*)
@@ -64,16 +64,13 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 	shervin)
-	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-	    ;;
-	lbrianza|lcorpe)
-	    git clone git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+	    git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 	    ;;
 	*)
             ### if you are not Shervin download this to have some useful scripts
-	    git clone https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	    git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	    cd $myDir/EcalAlCaRecoProducers/
-	    git clone https://github.com/ECALELFS/Utilities.git bin
+	    git clone  --single-branch https://github.com/ECALELFS/Utilities.git bin
 	    ;;
     esac
 fi
