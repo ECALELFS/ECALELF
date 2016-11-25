@@ -16,7 +16,7 @@ Download instructions.
 ```
 wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/HEAD/setup_git.sh
 chmod +x setup_git.sh
-CMSSW_RELEASE=CMSSW_8_0_24_patch1
+CMSSW_VERSION=CMSSW_8_0_24_patch1
 ./setup_git.sh $CMSSW_VERSION
 cd $CMSSW_VERSION/src/
 cmsenv
