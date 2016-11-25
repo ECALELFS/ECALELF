@@ -1,0 +1,6 @@
+s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/80X_mcRun2_asymptotic_2016_v3/DYJets_madgraph-RunIISpring16/allRange/DYJets_madgraph-RunIISpring16-allRange.root
+#s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/80X_mcRun2_asymptotic_2016_v3/DYJets_amcatnlo-RunIISpring16/allRange/DYJets_amcatnlo-RunIISpring16-allRange.root
+s	pileupHist	data/pileupHist_mc.root
+d	pileupHist	data/pileupHist_data.root
+s1	pileup		data/mcPUtrees_madgraph.root
+d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jun2016_IC_piZero_v3/DoubleEG-ZSkim-Run2016B-Prompt-v2/273150-274999/271036_274443-Prompt/nopreselID_v3/unmerged-allRange.root

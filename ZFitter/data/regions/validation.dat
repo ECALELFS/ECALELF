@@ -1,0 +1,24 @@
+# regions defined for condition validation
+EB
+#EBp
+#EBm
+EB-gold
+EB-bad
+EB-absEta_0_1
+EB-absEta_1_1.4442
+#EB-absEta_0_1-gold
+#EB-absEta_0_1-bad
+#EB-absEta_1_1.4442-gold
+#EB-absEta_1_1.4442-bad
+#EB_EE
+EE
+#EEp
+#EEm
+EE-gold
+EE-bad
+EE-absEta_1.566_2
+EE-absEta_2_2.5
+#EE-absEta_1.566_2-gold
+#EE-absEta_1.566_2-bad
+#EE-absEta_2_2.5-gold
+#EE-absEta_2_2.5-bad

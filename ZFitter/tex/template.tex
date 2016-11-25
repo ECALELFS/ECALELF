@@ -1,0 +1,99 @@
+
+\documentclass[8pt,serif]{beamer}
+
+\usepackage{epstopdf}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{color}
+\usepackage{amsmath}
+\usepackage{seqsplit}
+\usepackage{xspace}
+\usepackage{comment}
+\usepackage{custombeamercommand}
+\usepackage{mathcommand}
+\usepackage{CMScommand}
+\definecolor{titlecolor}{named}{black}
+\usepackage{mathtools}
+\usepackage{lmodern}
+\usepackage{textpos}
+\addtobeamertemplate{frametitle}{
+\begin{textblock*}{\paperwidth}(-30pt,0pt)
+\includegraphics[width=\paperwidth,height=1.3cm]{logos/Blasenkammer_long1}
+\end{textblock*}
+}
+%\setbeamercolor{title}{use=structure,bg=blue,fg=white}
+%\setbeamercolor{author}{fg=white, bg=blue} 
+%\setbeamertemplate{title page}[default][colsep=-4bp,rounded=true,shadow=false]
+
+\beamertemplatenavigationsymbolsempty
+
+\setbeamerfont{page number in head/foot}{size=\large}
+\setbeamertemplate{footline}[frame number]
+\def\scanfunction#1{#1}
+\usepackage{listings}
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+
+\usefonttheme{professionalfonts}
+\usefonttheme{serif}
+%\usepackage{fontspec}
+%\setmainfont{Helvetica Neue}
+%\setbeamerfont{note page}{family*=pplx,size=\footnotesize} % Palatino for notes
+\fontsize{8pt}{6.2}\selectfont
+\title{Validation of rereco: 0NAME}
+\author{L.~Corpe \inst{1}, S.~Nourbakhsh \inst{2}, L.~Brianza \inst{3}}
+
+\institute[shortinst]{\inst{1} Imperial College London \and %
+                      \inst{2} University of Minnesota \and
+											\inst{3} Universita degli Studi di Milano-Bicocca}
+
+
+\titlegraphic{
+  \includegraphics[width=4cm]{logos/logo1}\hspace*{0.5cm}~%
+  \includegraphics[width=2cm]{logos/logo2}\hspace*{1.5cm}~%
+  \includegraphics[width=2cm]{logos/logo3}\hspace*{0.7cm}~%
+}
+
+\begin{document}
+
+\usebackgroundtemplate{
+	\includegraphics[width=\paperwidth,height=\paperheight]{logos/Blasenkammer_title}%
+}
+\begin{frame}
+\titlepage
+\end{frame}
+\usebackgroundtemplate{
+	\includegraphics[width=\paperwidth,height=\paperheight]{}%
+}
+
+\color{titlecolor}
+
+
+\begin{frame}
+\frametitle{Introduction - Fit Details}
+
+\vspace{10mm}
+
+
+\begin{itemize}
+\item \textbf{Dataset}: 0dataset
+\item \textbf{Global Tag}: 0globalTag
+\item \textbf{Rereco Tag}: 0rerecoTag
+%\item \textbf{Software version}: 
+\item \textbf{JSON}: 0json
+\item \textbf{MC Ntuples}: madgraph 25ns
+%\item \textbf{Fits}: 
+\item \textbf{PU reweighting}: Reweight MC PU to Data
+
+%\item \textbf{MC:} {\tt /DYJetsToLL\_M-50\_TuneCUETP8M1\_13TeV-amcatnloFXFX-pythia8/ \\ RunIISpring15DR74-Asympt50ns\_MCRUN2\_74\_V9A-v2/AODSIM }
+%\vspace{2mm}
+%merged ntuples can be found here { \tt /store/group/dpg\_ecal/alca\_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/ \\ DYJetsToLL\_M-50\_13TeV-Asympt50ns-pythia8\_16Jun15\_v3/allRange/v3/ \\ DYJetsToLL\_M-50\_13TeV-Asympt50ns-pythia8\_16Jun15\_v3-allRange.root }
+
+\end{itemize}
+
+\end{frame}

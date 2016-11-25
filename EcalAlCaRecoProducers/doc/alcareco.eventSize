@@ -1,0 +1,55 @@
+
+File DoubleElectron-ZSkim-RUN2012C-22Jan-v1/198022-203742/alcareco_31_1_qHm.root Events 18753
+Branch Name | Average Uncompressed Size (Bytes/Event) | Average Compressed Size (Bytes/Event) 
+recoGsfTrackExtras_electronGsfTracks__RECO. 13745 11025.7
+triggerTriggerEvent_hltTriggerSummaryAOD__HLT. 17736.7 5996.67
+recoCaloClusters_multi5x5SuperClusters_multi5x5EndcapBasicClusters_RECO. 9820.42 3062.86
+recoConversions_allConversions__RECO. 10340.7 2221.79
+EcalRecHitsSorted_alCaIsolatedElectrons_alcaBarrelHits_ALCARECO. 3088.17 1741.96
+recoVertexs_offlinePrimaryVertices__RECO. 10899.7 1728.45
+recoVertexs_offlinePrimaryVerticesWithBS__RECO. 10896.3 1713.79
+EcalRecHitsSorted_alCaIsolatedElectrons_alcaEndcapHits_ALCARECO. 1814.24 1007.57
+recoGsfElectrons_gsfElectrons__RECO. 2291.9 855.276
+recoSuperClusters_correctedMulti5x5SuperClustersWithPreshower__RECO. 2984.34 823.662
+recoSuperClusters_multi5x5SuperClustersWithPreshower__RECO. 2984.24 687.069
+recoPreshowerClusters_multi5x5SuperClustersWithPreshower_preshowerYClusters_RECO. 2821.08 675.189
+recoPreshowerClusters_multi5x5SuperClustersWithPreshower_preshowerXClusters_RECO. 2686.04 637.657
+recoSuperClusters_multi5x5SuperClusters_multi5x5EndcapSuperClusters_RECO. 2984.39 609.229
+recoCaloClusters_hybridSuperClusters_hybridBarrelBasicClusters_RECO. 2598.38 600.726
+recoPreshowerClusters_pfElectronTranslator_pf_RECO. 3067.15 597.468
+recoGsfTracks_electronGsfTracks__RECO. 2158.55 597.214
+recoCaloClusters_pfElectronTranslator_pf_RECO. 1784.59 586.863
+recoSuperClusters_pfElectronTranslator_pf_RECO. 1952.36 567.932
+recoSuperClusters_correctedHybridSuperClusters__RECO. 2510.12 565.189
+recoConversions_conversions__RECO. 2596.49 531.694
+L1GlobalTriggerObjectMaps_l1L1GtObjectMap__RECO. 4363.76 494.201
+recoSuperClusters_hybridSuperClusters__RECO. 2510.03 464.837
+EventProductProvenance 2767.9 220.958
+L1GlobalTriggerReadoutRecord_gtDigis__RECO. 2134.28 160.064
+recoPFMETs_pfMet__RECO. 199.477 101.871
+edmTriggerResults_TriggerResults__HLT. 934.786 41.3388
+EventAuxiliary 130.509 39.1364
+recoPreshowerClusterShapes_multi5x5PreshowerClusterShape_multi5x5PreshowerYClustersShape_RECO. 110.48 31.6739
+recoPreshowerClusterShapes_multi5x5PreshowerClusterShape_multi5x5PreshowerXClustersShape_RECO. 110.48 28.6793
+l1extraL1EmParticles_l1extraParticles_Isolated_RECO. 347.688 22.8891
+l1extraL1JetParticles_l1extraParticles_Tau_RECO. 212.318 17.1153
+recoGsfElectronCores_gsfElectronCores__RECO. 173.559 14.5369
+doubleedmValueMap_elPFIsoValueGamma03PFIdPFIso__ALCARECO. 69.0283 14.5246
+l1extraL1EtMissParticles_l1extraParticles_MET_RECO. 157.573 11.6706
+l1extraL1EtMissParticles_l1extraParticles_MHT_RECO. 157.573 9.81651
+doubleedmValueMap_elPFIsoValueCharged03PFIdPFIso__ALCARECO. 69.0354 8.85336
+double_kt6PFJetsForRhoCorrection_rho_ALCARECO. 9.48275 8.09838
+l1extraL1EmParticles_l1extraParticles_NonIsolated_RECO. 66.0719 8.07199
+double_kt6PFJets_rho_RECO. 9.41449 8.02848
+doubleedmValueMap_elPFIsoValueNeutral03PFIdPFIso__ALCARECO. 69.0354 7.56188
+l1extraL1MuonParticles_l1extraParticles__RECO. 35.1031 7.29094
+recoBeamSpot_offlineBeamSpot__RECO. 367.573 7.13576
+edmConditionsInEventBlock_conditionsInEdm__RECO. 17.5051 6.7643
+l1extraL1JetParticles_l1extraParticles_Central_RECO. 41.5401 5.92044
+l1extraL1JetParticles_l1extraParticles_Forward_RECO. 43.5407 5.72372
+EventSelections 108.242 5.36421
+l1extraL1HFRingss_l1extraParticles__RECO. 101.511 5.02112
+edmTriggerResults_TriggerResults__RECO. 88.5024 3.8877
+edmTriggerResults_TriggerResults__ALCARECO. 76.5093 3.41647
+BranchListIndexes 22.4318 2.63771
+

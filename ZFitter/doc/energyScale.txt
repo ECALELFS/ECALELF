@@ -1,0 +1,138 @@
+/**
+\page SCALESSMEARINGS Energy scale and smearings application
+\tableofcontents
+\section _WORKFLOW Workflow to derive energy scales and smearings
+
+Multistep procedure:
+ - first create a config file with the list of ntuples
+ - 
+
+
+\section _USE Use of energy scale and smearings in external frameworks
+The energy scale and smearings derived with ECALELF framework are provided as .dat files.
+
+The module to read and get the energy scale and smearings for the different electron categories is EnergyScaleCorrection_class
+
+\verbatim
+Constructor of the class: 
+  EnergyScaleCorrection_class(TString correctionFileName, 
+			      TString smearingFileName=""); 
+
+the method to get the correction is 
+  float ScaleCorrection(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, 
+			double EtEle,
+			int nPV, float nPVmean=0);
+
+\endverbatim
+
+
+\subsection scaleSmearing Energy scale and smearing corrections 
+Energy scale and smearings can be applied to the already existing ntuples.
+One can have different sets of energy scales and smearings, depending
+on 
+ - the particular energy used for the invariant mass, 
+ - the particular algorithm
+ - the number of steps in iterative procedure 
+
+For more details see the section dedicated to the energy scale and
+smearing derivation.
+
+Each set of energy scale and smearing corrections is defined by a
+"type" name. You can add all the wanted set of scale and smearing
+correction files to the same validation config file, but only the one
+specified by the --corrEleType and --smearEleType options are used.
+The name of the trees of the corrections are defined as follows:
+ <basename>_<type>, where <basename> is scaleEle for energy scale
+ corrections and smearEle for energy smearings.
+This way you don't need to modify your validation config file each
+time you want to run with a different set of corrections, you just
+need to pass the appropriate type name at the command line.
+
+\section _TUTORIAL Tutorial
+
+From Calibration/
+\verbatim
+git fetch origin
+git checkout -b updateFromFasanella origin/updateFromFasanella
+scram b -j 16
+\endverbatim
+
+\verbatim
+cd ZFitter/
+rm bin/ZFitter.exe
+make
+\endverbatim
+
+Create the directories: \verbatim mkdir test/{MC,dato}/{img,fitres} -p \endverbatim
+
+
+Have a look at the validation file containing data and MC ntuples: let's take data/validation/ICHEP_dataset_13_invfb.dat
+
+
+Define your "single-electron" region in a specific dat file (data/regions/scaleStep2smearing_1.dat in this example)
+
+Categorize in "di-electron" categories:
+\verbatim
+./bin/ZFitter.exe -f data/validation/ICHEP_dataset_13_invfb.dat --regionsFile=data/regions/scaleStep2smearing_1.dat --invMass_var=invMass_SC_corr --addBranch=smearerCat --saveRootMacro
+\endverbatim
+
+At the end you'll have produced in tmp/ root files containing the categorization branch (called "smearerCat")
+
+At the bottom of your validation file (data/validation/ICHEP_dataset_13_invfb.dat) paste the root files with the category branch:
+\verbatim
+d1      smearerCat_scaleStep2smearing_1 tmp/smearerCat_scaleStep2smearing_1_d1-ICHEP_dataset_13_invfb.root
+d2      smearerCat_scaleStep2smearing_1 tmp/smearerCat_scaleStep2smearing_1_d2-ICHEP_dataset_13_invfb.root
+d3      smearerCat_scaleStep2smearing_1 tmp/smearerCat_scaleStep2smearing_1_d3-ICHEP_dataset_13_invfb.root
+s1      smearerCat_scaleStep2smearing_1 tmp/smearerCat_scaleStep2smearing_1_s1-ICHEP_dataset_13_invfb.root
+s2      smearerCat_scaleStep2smearing_1 tmp/smearerCat_scaleStep2smearing_1_s2-ICHEP_dataset_13_invfb.root
+\endverbatim
+
+(**Note: it would be wise to mv the smearerCat*.root files in another directory and never use tmp/ in real cases)
+
+
+At this point you can fill your mass histograms divided in di-electron categories:
+\verbatim
+./bin/ZFitter.exe -f data/validation/ICHEP_dataset_13_invfb.dat --regionsFile=data/regions/scaleStep2smearing_1.dat --invMass_var=invMass_SC_corr --smearerFit --plotOnly
+\endverbatim
+Now have a look at the histograms in test/dato/fitres/histos-scaleStep2smearing_1-Et_25.root
+
+
+Quick view at the likelihood profiles:
+\verbatim
+./bin/ZFitter.exe -f data/validation/ICHEP_dataset_13_invfb.dat --regionsFile=data/regions/scaleStep2smearing_1.dat --invMass_var=invMass_SC_corr --smearerFit --plotOnly --profileOnly
+\endverbatim
+Now have a look at the likelihoods in test/dato/fitres/outProfile-scaleStep2smearing_1-Et_25.root
+
+
+\subsection TIME_DEP STEP1: time*eta dependent scale monitoring 
+Fit data an MC mass distributions with a Breit-Wigner function convoluted with a crystal ball.
+
+Have a look at the region file data/regions/scaleStep1.dat (there is no r9 requirement here, only eta)
+and the run range division in data/runRanges/run_range_for_tutorial.dat (there is only a run period here, for simplicity)
+\verbatim
+./bin/ZFitter.exe -f data/validation/ICHEP_dataset_13_invfb.dat --regionsFile data/regions/scaleStep1.dat  --runRangesFile data/runRanges/run_range_for_tutorial.dat --invMass_var invMass_SC_corr
+\endverbatim
+
+Have a look at your mass spectra you just fitted
+\verbatim
+ls -rthl test/dato/fitres/
+ls -rthl test/MC/fitres/
+display test/dato/img/EB-absEta_0_1-runNumber_273158_273160-Et_25.pdf
+display test/MC/img/EB-absEta_0_1-Et_25.pdf
+\endverbatim
+
+Produce a latex table with the results of the fit
+\verbatim
+ ./script/makeTable.sh --regionsFile data/regions/scaleStep1.dat  --runRangesFile data/runRanges/run_range_for_tutorial.dat --outDirFitResMC=test/MC/fitres --outDirFitResData=test/dato/fitres --commonCut=Et_25 > test/dato/fitres/step1_ICHEP_dataset_13_invfb.tex
+\endverbatim
+
+Produce a dat file with the scale shift
+\verbatim
+./script/tex2txt.sh test/dato/fitres/step1_ICHEP_dataset_13_invfb.tex | awk -F "\t" -f awk/recalibOutput.awk |grep -v '^%' > test/dato/fitres/step1_ICHEP_dataset_13_invfb.dat
+\endverbatim
+
+Produce a summary plot with the scale shift behaviour over time:
+\verbatim
+./script/stability.sh -t  test/dato/fitres/step1_ICHEP_dataset_13_invfb.tex --outDirImgData test/dato/img/ -x runNumber -y peak
+\endverbatim
+*/

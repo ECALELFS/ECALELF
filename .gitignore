@@ -1,0 +1,46 @@
+*.root
+*.log
+*~
+.svn
+#.gitignore
+prod_alcareco
+prod_alcaraw
+prod_ntuples
+prod_alcarereco
+
+# root compiled macros
+*_C.d
+*_C.so
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.d
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Compiled programs
+*.exe
+
+*#
+
+# python
+*.pyc
+*__init__.py
+
+# patch
+*.rej
+.__afs*
+
+# Images
+*.png
+*.eps
+*.pdf

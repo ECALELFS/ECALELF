@@ -1,0 +1,58 @@
+/**
+  * \page page6 Ntuple production
+
+\section NTUPLE Ntuple production
+
+Ntuples are produced starting from ALCARECO, ALCARECOSIM or ALCARERECO files.
+All commands should be executed from the Calibration/EcalAlCaRecoProducers directory.
+
+
+alcareco_datasets.dat, alcarereco_datasets.dat provide the useful informations to build the list of files on EOS and process them.
+as for the alcareco and alcaraw productions, you have to provide such informations using the parseDatasetFile.sh script with the right book-keeping file.
+
+
+\subsection fromALCARECO From alcareco
+for data:
+\code
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {string to select your dataset}` --type=ALCARECO --json jsonFile.txt --json_name <jsonName>
+\endcode
+<jsonName> is a name used to build the subdirectory where storing the files and keep memory of the json file used for the ntuple production. Usual syntax is: 
+
+{runMin}-{runMax}_{rerecoName/prompt}_{version}:
+ - runMin is the minimum run in the json file
+ - runMax is the maximum run in the json file
+ - indicate prompt if is a json for prompt dataset, indicate the name of the rereco (e.g. 22Jan) if it is for a reprocessed data
+ - indicate the version of the json
+For example, for the json file: 
+\verbatim 
+ /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt
+\endverbatim
+the jsonName should be: 190456-208686_22Jan-v1
+for MC:
+\code
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep {string to select your dataset}` --type=ALCARECOSIM
+\endcode
+
+\subsection fromALCARERECO From alcarereco
+Better to use the quick script, but if you want to process only one specific dataset:
+\code
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {string to select your dataset}` --type=ALCARERECO 
+\endcode
+
+\subsection publishedData From Published Data
+
+
+NB: You can produce NTuples from a published dataset by listing the location of the ALCARECO as \verbatim database \endverbatim in the file \code alcareco_datasets.dat \endcode.
+
+For example
+
+\verbatim
+
+ allRange /DYToEE_M-50_Tune4C_13TeV-pythia8/lcorpe-DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_v2-a98af318f27b1c189fe2b
+ 33712eaf929/USER DYToEE_M-50-pythia8-Phys14-ZSkim-19May2015_allRange_published_v2 caf database  VALID RUN2012A,RUN2012AB,RUN2012ABC,RUN2012ABCD
+
+ \endverbatim
+
+ And then following the regular workflow.
+
+*/
