@@ -21,7 +21,7 @@ from the Calibration/ directory and you can navigate instructions and code local
 
 \subpage INTRODUCTION
 
-<A HREF="https://github.com/ECALELFS/ECALELF/blob/newMaster/README.md"> Download instructions </A>
+<A HREF="https://github.com/ECALELFS/ECALELF/blob/HEAD/README.md"> Download instructions </A>
 
 
 \subpage WORKNTUPLES
@@ -37,7 +37,7 @@ from the Calibration/ directory and you can navigate instructions and code local
  - \ref pFindInfos 
  - \ref pAlcarecoProduction
  - \ref page5 
- - \ref page6
+ - \subpage NTUPLEPRODUCTION_
  - \ref page7
 * 
 
