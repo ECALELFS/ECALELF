@@ -8,6 +8,7 @@ electrons.
 
  - \b EcalUncalElectron (ALCARAW): Special data format for rereco purpose
 	- officially produced starting from CMSSW_8_0_X release
+	- re-recoing ALCARAW you get a variant of the \b ALCARECO that is named \b ALCARERECO
  - \b EcalCalElectron (ALCARECO): Reduced format for RECO data
     - can be produced from ALCARAW (\b default and \b recommended!)
 
