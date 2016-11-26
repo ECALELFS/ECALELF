@@ -159,8 +159,8 @@
 276315-276811	/SingleElectron/Run2016D-EcalUncalWElectron-PromptReco-v2/ALCARECO	SingleElectron-Run2016D-WSkim-Prompt_v2	caf	database	VALID	RUN2016D,RUN2016BCD,RUN2016CD,CAL_SEP2016,CAL_SEP2016_V2
 276830-277420	/SingleElectron/Run2016E-EcalUncalWElectron-PromptReco-v2/ALCARECO	SingleElectron-Run2016E-WSkim-Prompt-v2	caf	database	VALID	RUN2016E,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
 277820-278808	/SingleElectron/Run2016F-EcalUncalWElectron-PromptReco-v1/ALCARECO	SingleElectron-Run2016F-WSkim-Prompt-v1	caf	database	VALID	RUN2016F,RUN2016CDEFG,CAL_SEP2016,CAL_SEP2016_V2
-278817-279931	/SingleElectron/Run2016G-EcalUncalZElectron-PromptReco-v1/ALCARECO	SingleElectron-Run2016G-ZSkim-Prompt-v1	caf	database	VALID	RUN2016G,RUN2016CDEFG,CAL_SEP2016_V2,LEGACY2016
-281085-281201	/SingleElectron/Run2016H-EcalUncalWElectron-PromptReco-v1/ALCARECO	SingleElectron-Run2016H-ZSkim-Prompt-v1	caf	database	VALID	RUN2016H,RUN2016CDEFGH,CAL_NOV2016_V1
-281207-284035	/SingleElectron/Run2016H-EcalUncalWElectron-PromptReco-v2/ALCARECO	SingleElectron-Run2016H-ZSkim-Prompt-v2	caf	database	VALID	RUN2016H,RUN2016CDEFGH,CAL_NOV2016_V1
-284036-284068	/SingleElectron/Run2016H-EcalUncalWElectron-PromptReco-v3/ALCARECO	SingleElectron-Run2016H-ZSkim-Prompt-v3	caf	database	VALID	RUN2016H,RUN2016CDEFGH,CAL_NOV2016_V1
+278817-279931	/SingleElectron/Run2016G-EcalUncalWElectron-PromptReco-v1/ALCARECO	SingleElectron-Run2016G-WSkim-Prompt-v1	caf	database	VALID	RUN2016G,RUN2016CDEFG,CAL_SEP2016_V2,LEGACY2016
+281085-281201	/SingleElectron/Run2016H-EcalUncalWElectron-PromptReco-v1/ALCARECO	SingleElectron-Run2016H-WSkim-Prompt-v1	caf	database	VALID	RUN2016H,RUN2016CDEFGH,CAL_NOV2016_V1
+281207-284035	/SingleElectron/Run2016H-EcalUncalWElectron-PromptReco-v2/ALCARECO	SingleElectron-Run2016H-WSkim-Prompt-v2	caf	database	VALID	RUN2016H,RUN2016CDEFGH,CAL_NOV2016_V1
+284036-284068	/SingleElectron/Run2016H-EcalUncalWElectron-PromptReco-v3/ALCARECO	SingleElectron-Run2016H-WSkim-Prompt-v3	caf	database	VALID	RUN2016H,RUN2016CDEFGH,CAL_NOV2016_V1
 #
