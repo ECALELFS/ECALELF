@@ -1,4 +1,7 @@
+SHELL=/bin/bash
+
 CXXFLAGS=-Wall -pedantic -std=c++11
+#CXXFLAGS+=-Ddump_root_tree
 
 ROOT_LIB:=`root-config --libs --glibs`
 ROOT_FLAGS:=`root-config --cflags --ldflags`
@@ -23,15 +26,15 @@ ROOSTAT_LIB="-lRooStats"
 
 
 INCLUDEDIR=./interface
-FWCORE_INCLUDE=$(CMSSW_BASE)/src
+FWCORE_INCLUDE=-I$(CMSSW_BASE)/src -I$(CMSSW_RELEASE_BASE)/src
 SRCDIR=./src
 BUILDDIR=./bin
 OBJ_DIR=./lib
 
 EoPDir:=../EOverPCalibration
-SCRAM_ARCH=`scram arch`
+#SCRAM_ARCH=`scram arch`
 #################
-INCLUDE=-I$(INCLUDEDIR) -I$(FWCORE_INCLUDE) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
+INCLUDE=-I$(INCLUDEDIR) $(FWCORE_INCLUDE) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
 LIB=-L$(BOOST)/lib -L/usr/lib64 # -L/usr/lib 
 
 

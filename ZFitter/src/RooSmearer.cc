@@ -276,20 +276,20 @@ void RooSmearer::InitCategories(bool mcToy)
 			cat.nll = 0;
 #ifdef DEBUG
 			std::cout << "[INFO] Category: " << ZeeCategories.size()
-				  << "\t" << cat.categoryName1 << "\t" << cat.categoryName2
-				  << "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
-				  << "\t" << cat.nSmearToy
-				  << "\t" << cat.nLLtoy
-				  << "\t" << cat.nBins
-				  << "\t" << cat.mc_events->size()
-				  << "\t" << cat.data_events->size()
-				  << "\t" << cat.hist_mc->Integral()
-				  << "\t" << cat.hist_data->Integral()
-				  << "\t" << cat.active
-				  << "\t" << right
-				  << "\t" << left
-				  << "\t" << max
-				  << std::endl;
+			          << "\t" << cat.categoryName1 << "\t" << cat.categoryName2
+			          << "\t" << cat.categoryIndex1 << "\t" << cat.categoryIndex2
+			          << "\t" << cat.nSmearToy
+			          << "\t" << cat.nLLtoy
+			          << "\t" << cat.nBins
+			          << "\t" << cat.mc_events->size()
+			          << "\t" << cat.data_events->size()
+			          << "\t" << cat.hist_mc->Integral()
+			          << "\t" << cat.hist_data->Integral()
+			          << "\t" << cat.active
+			          << "\t" << right
+			          << "\t" << left
+			          << "\t" << max
+			          << std::endl;
 #endif
 			ZeeCategories.push_back(cat);
 
