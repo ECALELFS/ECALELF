@@ -14,7 +14,7 @@ jsonName=271036_279931-Cal_Sep2016
 PERIOD=CAL_SEP2016_V2
 #PERIOD=RUN2016C
 #config/reRecoTags/Cal_Nov2016_Alpha_v1.py
-for tagfile in  config/reRecoTags/Cal_Nov2016_ped_v1.py
+for tagfile in  config/reRecoTags/Cal_Nov2016_{Alpha,ped}_v2.py
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
