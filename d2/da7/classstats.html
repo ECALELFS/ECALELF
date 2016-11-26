@@ -65,9 +65,9 @@ Public Member Functions</h2></td></tr>
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/da7/classstats.html#ae1e4f2c0f4b4dce8096c3468de509d96">mean</a> (void) const </td></tr>
 <tr class="memdesc:ae1e4f2c0f4b4dce8096c3468de509d96"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the number of values <br/></td></tr>
 <tr class="separator:ae1e4f2c0f4b4dce8096c3468de509d96"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc25fbfafca1cd7c92df450874661046"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/da7/classstats.html#abc25fbfafca1cd7c92df450874661046">mean</a> (size_t imin, size_t imax) const </td></tr>
-<tr class="memdesc:abc25fbfafca1cd7c92df450874661046"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the mean  <a href="#abc25fbfafca1cd7c92df450874661046">More...</a><br/></td></tr>
-<tr class="separator:abc25fbfafca1cd7c92df450874661046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd340935fea94fa11917ca723b8bbdd1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/da7/classstats.html#acd340935fea94fa11917ca723b8bbdd1">mean</a> (size_t imin, size_t imax) const </td></tr>
+<tr class="memdesc:acd340935fea94fa11917ca723b8bbdd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the mean  <a href="#acd340935fea94fa11917ca723b8bbdd1">More...</a><br/></td></tr>
+<tr class="separator:acd340935fea94fa11917ca723b8bbdd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada735713d8ab7bee36cf097ed1a5fe25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada735713d8ab7bee36cf097ed1a5fe25"></a>
 std::pair&lt; size_t, size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/da7/classstats.html#ada735713d8ab7bee36cf097ed1a5fe25">eff_sigma_interval</a> (float q=0.68269) const </td></tr>
 <tr class="memdesc:ada735713d8ab7bee36cf097ed1a5fe25"><td class="mdescLeft">&#160;</td><td class="mdescRight">returns the standard devation <br/></td></tr>
@@ -115,12 +115,12 @@ Friends</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="abc25fbfafca1cd7c92df450874661046"></a>
+<a class="anchor" id="acd340935fea94fa11917ca723b8bbdd1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">float stats::mean </td>
+          <td class="memname">double stats::mean </td>
           <td>(</td>
           <td class="paramtype">size_t&#160;</td>
           <td class="paramname"><em>imin</em>, </td>
@@ -177,15 +177,16 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>This operator defines how the stats are printed. </p>
-<div class="fragment"><div class="line">                os &lt;&lt; s.name()   &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.n()      &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.mean()   &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.stdDev() &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.median() &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.eff_sigma(interval) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.eff_sigma(interval03) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.mean(interval.first, interval.second) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span> </div>
-<div class="line">                   &lt;&lt; s.mean(interval03.first, interval03.second); <span class="comment">// &lt;&lt; &quot;\t&quot; &lt;&lt; s.recursive_effective_mode() ;</span></div>
+<div class="fragment"><div class="line">                os &lt;&lt; s.name()   &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.n()      &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.mean()   &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.stdDev() &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.median() &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.eff_sigma(interval) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.eff_sigma(interval03) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.mean(interval.first, interval.second) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.mean(interval03.first, interval03.second) &lt;&lt; <span class="stringliteral">&quot;\t&quot;</span></div>
+<div class="line">                   &lt;&lt; s.eff_sigma(interval) / s.mean(interval.first, interval.second); <span class="comment">// &lt;&lt; &quot;\t&quot; &lt;&lt; s.recursive_effective_mode() ;</span></div>
 </div><!-- fragment -->
 </div>
 </div>

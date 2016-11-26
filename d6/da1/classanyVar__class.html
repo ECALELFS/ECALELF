@@ -77,29 +77,25 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab851dc15789911569ef70c24e3ae2b80"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#ab851dc15789911569ef70c24e3ae2b80">anyVar_class</a> (TChain *data_chain_, std::vector&lt; std::pair&lt; TString, <a class="el" href="../../d6/da1/classanyVar__class.html#a29451bab200a72b884342b8f56deef1e">kType</a> &gt; &gt; branchNames, <a class="el" href="../../d5/d11/classElectronCategory__class.html">ElectronCategory_class</a> &amp;cutter, std::string massBranchName, std::string outDirFitRes)</td></tr>
-<tr class="separator:ab851dc15789911569ef70c24e3ae2b80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c24c9bc41483794c53ec50d32267bbc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c24c9bc41483794c53ec50d32267bbc"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a7c24c9bc41483794c53ec50d32267bbc">Import</a> (TString commonCut, TString eleID_, std::set&lt; TString &gt; &amp;branchList, unsigned int modulo=0, unsigned int moduloIndex=0)</td></tr>
-<tr class="memdesc:a7c24c9bc41483794c53ec50d32267bbc"><td class="mdescLeft">&#160;</td><td class="mdescRight">to be called in the main <br/></td></tr>
-<tr class="separator:a7c24c9bc41483794c53ec50d32267bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7269aa99d8771579c86fe5ae03bfd1a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#af7269aa99d8771579c86fe5ae03bfd1a">anyVar_class</a> (TChain *data_chain_, std::vector&lt; std::pair&lt; TString, <a class="el" href="../../d6/da1/classanyVar__class.html#a29451bab200a72b884342b8f56deef1e">kType</a> &gt; &gt; branchNames, <a class="el" href="../../d5/d11/classElectronCategory__class.html">ElectronCategory_class</a> &amp;cutter, std::string massBranchName, std::string outDirFitRes, bool updateOnly=true)</td></tr>
+<tr class="separator:af7269aa99d8771579c86fe5ae03bfd1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a0545aac5fc2e9ffdc3e8c314e11047"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5a0545aac5fc2e9ffdc3e8c314e11047"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a5a0545aac5fc2e9ffdc3e8c314e11047">Import</a> (TString commonCut, TString eleID_, std::set&lt; TString &gt; &amp;branchList, unsigned int modulo=1)</td></tr>
+<tr class="memdesc:a5a0545aac5fc2e9ffdc3e8c314e11047"><td class="mdescLeft">&#160;</td><td class="mdescRight">to be called in the main <br/></td></tr>
+<tr class="separator:a5a0545aac5fc2e9ffdc3e8c314e11047"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a69e00468cf4728ef5d6f9eef764f8651"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a69e00468cf4728ef5d6f9eef764f8651">TreeAnalyzeShervin</a> (std::string region, TCut cut_ele1, TCut cut_ele2, float scale=1., float smearing=0.)</td></tr>
 <tr class="separator:a69e00468cf4728ef5d6f9eef764f8651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa20c791b293ccdf88ef291b39860d7ba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa20c791b293ccdf88ef291b39860d7ba"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#aa20c791b293ccdf88ef291b39860d7ba">TreeToTree</a> (TChain *chain, TCut cut, unsigned int modulo=0)</td></tr>
+<tr class="memdesc:aa20c791b293ccdf88ef291b39860d7ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">skim the input TChain with selected events, copying only active branches <br/></td></tr>
+<tr class="separator:aa20c791b293ccdf88ef291b39860d7ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:aa31f5a1a62a1aea7178184065cca0807"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa31f5a1a62a1aea7178184065cca0807"></a>
-TChain *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#aa31f5a1a62a1aea7178184065cca0807">ImportTree</a> (TChain *chain, TCut commonCut, std::set&lt; TString &gt; &amp;branchList, unsigned int modulo, unsigned int moduloIndex)</td></tr>
-<tr class="memdesc:aa31f5a1a62a1aea7178184065cca0807"><td class="mdescLeft">&#160;</td><td class="mdescRight">add to the chain the entry list with selected events, the returned pointer is the same as the one in input <br/></td></tr>
-<tr class="separator:aa31f5a1a62a1aea7178184065cca0807"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6d61290034730e1b3291a16430059657"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6d61290034730e1b3291a16430059657"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a6d61290034730e1b3291a16430059657">TreeToTreeShervin</a> (TChain *chain, TCut cut, unsigned int modulo=0, unsigned int moduloIndex=0)</td></tr>
-<tr class="memdesc:a6d61290034730e1b3291a16430059657"><td class="mdescLeft">&#160;</td><td class="mdescRight">skim the input TChain with selected events, copying only active branches <br/></td></tr>
-<tr class="separator:a6d61290034730e1b3291a16430059657"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73aaa3d0e786f5bbee4a1c42490483a2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73aaa3d0e786f5bbee4a1c42490483a2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a73aaa3d0e786f5bbee4a1c42490483a2">TreeToTree</a> (TChain *chain, TCut cut)</td></tr>
-<tr class="memdesc:a73aaa3d0e786f5bbee4a1c42490483a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">skim the input TChain with selected events, copying only active branches <br/></td></tr>
-<tr class="separator:a73aaa3d0e786f5bbee4a1c42490483a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae85dffa7c298c8b1961e9b4e2e58e69e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae85dffa7c298c8b1961e9b4e2e58e69e"></a>
+TChain *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#ae85dffa7c298c8b1961e9b4e2e58e69e">ImportTree</a> (TChain *chain, TCut commonCut, std::set&lt; TString &gt; &amp;branchList, unsigned int modulo)</td></tr>
+<tr class="memdesc:ae85dffa7c298c8b1961e9b4e2e58e69e"><td class="mdescLeft">&#160;</td><td class="mdescRight">add to the chain the entry list with selected events, the returned pointer is the same as the one in input <br/></td></tr>
+<tr class="separator:ae85dffa7c298c8b1961e9b4e2e58e69e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -108,10 +104,6 @@ std::vector&lt; std::unique_ptr<br class="typebreak"/>
 &lt; std::ofstream &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a9b08c3e7523497412bb795c6778c1450">_statfiles</a></td></tr>
 <tr class="memdesc:a9b08c3e7523497412bb795c6778c1450"><td class="mdescLeft">&#160;</td><td class="mdescRight">one file for each branch, here the stats are saved <br/></td></tr>
 <tr class="separator:a9b08c3e7523497412bb795c6778c1450"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf16035b277f76f6c8e5ae41a732c8d4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf16035b277f76f6c8e5ae41a732c8d4"></a>
-RooArgSet&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#adf16035b277f76f6c8e5ae41a732c8d4">Vars</a></td></tr>
-<tr class="memdesc:adf16035b277f76f6c8e5ae41a732c8d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">argSet containing the RooRealVars of branches under study <br/></td></tr>
-<tr class="separator:adf16035b277f76f6c8e5ae41a732c8d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a554375af3dec7c7ab4fef3cdbad4aa38"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a554375af3dec7c7ab4fef3cdbad4aa38"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da1/classanyVar__class.html#a554375af3dec7c7ab4fef3cdbad4aa38">massBranchName_</a></td></tr>
 <tr class="memdesc:a554375af3dec7c7ab4fef3cdbad4aa38"><td class="mdescLeft">&#160;</td><td class="mdescRight">branch name for the di-object invariant mass <br/></td></tr>
@@ -173,7 +165,7 @@ print m/q
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ab851dc15789911569ef70c24e3ae2b80"></a>
+<a class="anchor" id="af7269aa99d8771579c86fe5ae03bfd1a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -205,7 +197,13 @@ print m/q
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>outDirFitRes</em>&#160;</td>
+          <td class="paramname"><em>outDirFitRes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>updateOnly</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -221,11 +219,12 @@ print m/q
     <tr><td class="paramname">cutter</td><td>already contructed with the right energySC branch set </td></tr>
     <tr><td class="paramname">massBranchName</td><td>name of the invariant mass branch </td></tr>
     <tr><td class="paramname">outDirFitRes</td><td>name of the output directory storing the files with the stats </td></tr>
+    <tr><td class="paramname">updateOnly</td><td>if true opens the output files in append mode </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>References <a class="el" href="../../d6/da1/classanyVar__class.html#a9b08c3e7523497412bb795c6778c1450">_statfiles</a>, and <a class="el" href="../../d6/da1/classanyVar__class.html#adf16035b277f76f6c8e5ae41a732c8d4">Vars</a>.</p>
+<p>References <a class="el" href="../../d6/da1/classanyVar__class.html#a9b08c3e7523497412bb795c6778c1450">_statfiles</a>, and <a class="el" href="../../d6/da1/classanyVar__class.html#a554375af3dec7c7ab4fef3cdbad4aa38">massBranchName_</a>.</p>
 
 </div>
 </div>
