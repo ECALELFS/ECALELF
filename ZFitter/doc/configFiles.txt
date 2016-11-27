@@ -86,8 +86,7 @@ all the other chains are considered as friends of the "selected".
 
 
 \subsection pileupHist	How to get the pileup histogram
-When running the alcareco production for the MC, an additional file called PUDumper.root is produced for each job.
-It contains the 
+Please see the dedicated page \subpage PUFILES_
 
 
 \subsection pileup	How to produce ntuples with pileup weights
@@ -104,7 +103,7 @@ The tree name of the pileup weight files is \b pileup:
 s1    pileup	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root
 \endcode
 
-
+The pileupHist root files should be generated as indicated in \subpage PUFILES_
 
 
 \section runDivide How to produce runRanges .dat files 

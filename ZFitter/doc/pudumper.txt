@@ -1,53 +1,52 @@
 /**
-* \page pudumper  Generating PUDumper.root files
+* \page PUFILES_  Generating PU weight files
+\tableofcontents
 
-The PUDumper.root file is needed in order to generate a distribution of the number of vertices in MC. 
-This is needed because the PU distribution in Data does not match and so the MC needs to be corrected. 
-So info from the PUDumper is fed to the ZFitter executable via the -f option config.
+PU weights can be generated following the \b official \b recipe or by the  "quick and dirty" reweight using the reconstructed number of primary vertices (nPV)
 
-The PUDumper.root file is automatically generated when producing ALCARECOSIM with the test/alcaSkimming CMSSW config.
-Unfortunately, at the moment, the cmsDriver setup does not allow for this.
+In both cases what is needed is:
+ - a distribution for MC
+ - a distribution for data
+ - name of the variable in ntuples to be used as inputs for the event-by-event weight assignment
 
-Instructions for producing the file in the format needed are as follows:
+The files with the PU distributions should be added to the config file used by ZFitter (for more info about the config files see \ref ZFitterConfigFiles)
 
-First, pick one or two of your AODSIM files which you used to process the ALCARECO. 
-For example, for the AODSIM sample:
-\verbatim
-/DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM
-\endverbatim
+\section OFFICIALPUWEIGHTS_ Official recipe for PU weights
 
-Search for the dataset on the DAS:
-https://cmsweb.cern.ch/das/request?input=dataset%3D%2FDYToEE_M-50_Tune4C_13TeV-pythia8%2FPhys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2%2FAODSIM&instance=prod%2Fphys03
+\subsection MCPUtrue_ MC true PU
+The MC distribution is the true PU distribution defined in the PU scenario during the MC generation. There is a python config file in CMSSW that contains the values.
+The files can be found in \verbatim SimGeneral/MixingModule/python \endverbatim
+Make sure you pick up the right file matching the PU scenario used in your MC.
 
-And then click on \verbatim py \endverbatim to get a list of files:
-https://cmsweb.cern.ch/das/makepy?dataset=/DYToEE_M-50_Tune4C_13TeV-pythia8/Phys14DR-PU40bx25_tsg_castor_PHYS14_25_V1-v2/AODSIM&instance=prod/phys03
+You have to extract (by hand) the values from the python cfi and create a histogram with name \b pileup
 
-Pick one or two of these, and define an environment variable in the command line:
-\verbatim
-
-file=/store/mc/Phys14DR/DYToEE_M-50_Tune4C_13TeV-pythia8/AODSIM/PU40bx25_tsg_castor_PHYS14_25_V1-v2/00000/02C3529A-BE99-E411-B110-0025B3E06516.root,/store/mc/Phys14DR/DYToEE_M-50_Tune4C_13TeV-pythia8/AODSIM/PU40bx25_tsg_castor_PHYS14_25_V1-v2/00000/0A1266B9-B799-E411-91A3-002590200A28.root
-
-\endverbatim
+The MC pileup histograms should be put on EOS in the calibration project directory:
+\verbatim   \endverbatim
 
 
-And then run these files through ALCARECOSIM using  test/alcaSkimming.py :
-\verbatim
+\subsection DATAPUtrue_ True PU distribution in data
+Instructions can be found in
+<A HREF=""> DataPileupJSON </A>
 
-cd Calibration
-cmsenv
-source initCmsEnv.sh
-cmsRun EcalAlCaRecoProducers/python/alcaSkimming.py isCrab=0 skim=ZSkim maxEvents=-1 type=ALCARECOSIM files=$file doTree=0 tagFile=EcalAlCaRecoProducers/config/reRecoTags/test75x.py
+In summary you need:
+ - json file used in your analysis
+ - location of the pileup json file
+ - minimum bias cross section
+
+To generate the root file with the \b pileup histogram 
+\verbatim 
 
 \endverbatim
 
-This will produce a file PUDumper.root alongside the regular ALCARECO file.
 
-Finally, you need to turn the PUDumper.root file into something useable by ZFitter. 
+\section NPV_ Using Number of Primary Vertices
+
+The \b pileup histograms can simply be histograms of the \b nPV branch for data and MC.
+\b CAVEAT: the nPV is biased by the selection used in your sample, to reduce the data/MC difference, please apply the full selection of your analysis.
+
+The name of the tree in the config file has to contain the string "nPV": 
 \verbatim
-./script/PUDumperToHist.sh -f PUDumper.root -o pufile.root
+s   pileupHist_nPV   file.root
 \endverbatim
 
-You can then simply include this file in your ZFitter input config.
-
-And you are done!
 */

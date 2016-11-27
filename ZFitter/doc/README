@@ -75,9 +75,7 @@ The inputs to the ZFitter program are given in the form of:
 
 First, familiarize with the ntuple content: \subpage NtupleStructure
 
-How to generate the PUDumper.root files and use them: \ref pudumper
-
-How to generate the PUDumper.root files and use them: \ref pudumper2
+How to generate the PUDumper.root files and use them: \ref PUFILES_
 
 How to generate the PUDumper.root files and use them: \ref NtupleStructure
 
