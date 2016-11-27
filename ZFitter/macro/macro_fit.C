@@ -1201,7 +1201,7 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
   pave.SetTextAlign(12);
   pave.SetBorderSize(0);
   pave.SetTextSize(0.04);
-  pave.AddText("CMS Preliminary 0.218 fb^{-1} (13 TeV)");
+  pave.AddText("CMS Preliminary 36.26 fb^{-1} (13 TeV)");
 
   RooArgSet *vars= new RooArgSet();
 
