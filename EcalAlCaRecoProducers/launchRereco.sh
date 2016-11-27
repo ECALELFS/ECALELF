@@ -8,12 +8,10 @@ jsonName=271036_276811-ICHEP
 json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279588_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
 jsonName=271036_279588-Prompt
 
-json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-279931_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
-jsonName=271036_279931-Cal_Sep2016
+json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
+jsonName=271036_284044-23Sep2016
 
-PERIOD=CAL_SEP2016_V2
-#PERIOD=RUN2016C
-#config/reRecoTags/Cal_Nov2016_Alpha_v1.py
+PERIOD=LEGACY2016
 for tagfile in  config/reRecoTags/Cal_Nov2016_ped_v1.py
 do
 	echo

@@ -1,0 +1,16 @@
+col=6
+set title noenhanced
+category="EB-absEta_0_1-Et_25"
+set xdata time
+set timefmt "%s"
+set xtics timedate rotate 90
+set xtics format "%m"
+set x2tics rotate 90
+
+#p 'p.dat' u (strftime("%y",$14)):(strcol(1) eq category ? column(col) : 1/0):x2tic(strcol(12).'-'.strcol(13)) t '\verb#'.category.'#'
+p 'p.dat' u (strftime("%y",$15)):(strcol(1) eq category ? column(col) : 1/0) t '\verb#'.category.'#'
+set term tikz standalone
+set output 'p.tikz'
+rep
+set term x11
+set output
