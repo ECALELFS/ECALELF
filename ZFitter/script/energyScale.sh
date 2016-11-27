@@ -360,13 +360,13 @@ if [ -n "${STEP1}" ];then
 	    $isOdd $updateOnly --selection=${selection}  --invMass_var ${invMass_var} --commonCut $commonCut \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img \
-	    > ${outDirData}/log/`basename ${outFile} .dat`.log || exit 1
+	    |tee ${outDirData}/log/`basename ${outFile} .dat`.log || exit 1
 	
 	./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut ${commonCut} \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    >  ${outDirTable}/`basename ${outFile} .dat`.tex
 	
-	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F VIRGOLETTEDOPPIE\tVIRGOLETTEDOPPIE -f awk/recalibOutput.awk |grep -v '^%' > ${outDirTable}/${outFile}
+	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F DOUBLEQUOTES\tDOUBLEQUOTES -f awk/recalibOutput.awk |grep -v '^%' > ${outDirTable}/${outFile}
 	
 	#save root files with step1 corrections
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
