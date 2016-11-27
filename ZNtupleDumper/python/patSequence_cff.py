@@ -96,11 +96,12 @@ modPSet =  cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatV
         medium      = cms.InputTag("eleSelectionProducers", "medium"),
         tight      = cms.InputTag("eleSelectionProducers", "tight"),
         loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
-        medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
+        medium25nsRun2      = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
         tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
         loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
-        medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
+        medium50nsRun2      = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
         tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
+        loose25nsRun2V2016  = cms.InputTag("eleSelectionProducers", "loose25nsRun2V2016"),
         ),
                      photon_config   = cms.PSet( )
                      )

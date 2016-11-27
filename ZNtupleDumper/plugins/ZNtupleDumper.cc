@@ -1525,7 +1525,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 
 	eleID[index] = 0;
 	for (std::map<std::string, UInt_t>::iterator it = eleID_map.eleIDmap.begin(); it != eleID_map.eleIDmap.end(); ++it) {
-	  if((it->first).compare("loose25nsRun2V2016")==0){ std::cout<<"eleID is"<<it->first<<" isAvailable is "<<electron1.isElectronIDAvailable(it->first)<<std::endl; }
+	  #ifdef check_newID
+	  if((it->first).compare("loose25nsRun2V2016")==0){ std::cout<<"eleID is "<<it->first<<"; isAvailable is "<<electron1.isElectronIDAvailable(it->first)<<std::endl; }
+	  #endif
 		if(electron1.isElectronIDAvailable(it->first)) { //
 			if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
 		}//
