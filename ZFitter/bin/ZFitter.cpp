@@ -232,6 +232,7 @@ int main(int argc, char **argv)
 	globalClock.Start();
 
 	puWeights_class puWeights;
+	std::string puBranchName="nPU"; // it can be changed to nPV is the pileup hist file contains "nPV" in the name of the tree (chainName)
 	std::cout << "============================== Z General Fitter" << std::endl;
 
 	//------------------------------------------------------------
@@ -242,7 +243,6 @@ int main(int argc, char **argv)
 	std::string chainFileListName;
 	std::string regionsFileName;
 	std::string runRangesFileName;
-	std::string dataPUFileName, mcPUFileName;
 	std::vector<TString> dataPUFileNameVec, mcPUFileNameVec;
 	std::string r9WeightFile;
 	std::string ZPtWeightFile;
@@ -321,8 +321,6 @@ int main(int argc, char **argv)
 	("nEvents_runDivide", po::value<unsigned int>(&nEvents_runDivide)->default_value(100000), "Minimum number of events in a run range")
 
 	//
-	("dataPU", po::value< string >(&dataPUFileName), "")
-	("mcPU", po::value<string>(&mcPUFileName), "")
 	("noPU", "")
 	("savePUTreeWeight", "")
 	//
@@ -549,8 +547,6 @@ int main(int argc, char **argv)
 	        && !vm.count("EOverPCalib")
 	  ) return 1;
 
-	if(!dataPUFileName.empty()) dataPUFileNameVec.push_back(dataPUFileName.c_str());
-	if(!mcPUFileName.empty()) mcPUFileNameVec.push_back(mcPUFileName.c_str());
 	//============================== Reading the config file with the list of chains
 	tag_chain_map_t tagChainMap;
 	TString tag, chainName, fileName;
@@ -571,9 +567,10 @@ int main(int argc, char **argv)
 		}
 		chainFileList >> chainName >> fileName;
 		if(chainName.Contains("Hist")) {
+			if(chainName.Contains("nPV")) puBranchName="nPV";
 			// use these value only if not provided by the command line
-			if(tag.Contains("d") && dataPUFileName.empty()) dataPUFileNameVec.push_back(fileName);
-			else if(tag.Contains("s") && mcPUFileName.empty()) mcPUFileNameVec.push_back(fileName);
+			if(tag.Contains("d")) dataPUFileNameVec.push_back(fileName);
+			else if(tag.Contains("s")) mcPUFileNameVec.push_back(fileName);
 			else std::cerr << "[ERROR] in configuration file Hist not recognized" << std::endl;
 			continue;
 		}
@@ -798,7 +795,7 @@ int main(int argc, char **argv)
 				if(f.IsOpen()) {
 					f.cd();
 
-					TTree *puTree = puWeights.GetTreeWeight(ch, true);
+					TTree *puTree = puWeights.GetTreeWeight(ch, true, puBranchName.c_str());
 					puTree->SetName(treeName);
 					puTree->Write();
 					delete puTree;

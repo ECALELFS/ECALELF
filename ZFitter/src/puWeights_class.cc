@@ -214,7 +214,7 @@ TTree *puWeights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString nPUb
 	TString runNumberBranchName = "runNumber";
 
 	Float_t weight = 0;
-	TTree *newTree = new TTree("pileup", "");
+	TTree *newTree = new TTree("pileup", nPUbranchName);
 	newTree->Branch("puWeight", &weight, "puWeight/F");
 
 	if(fastLoop) {
@@ -223,7 +223,7 @@ TTree *puWeights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString nPUb
 		tree->SetBranchStatus(runNumberBranchName, 1);
 	}
 
-	Int_t nPU[200];
+	Int_t nPU[5];
 	Int_t runNumber;
 	tree->SetBranchAddress(nPUbranchName, nPU);
 	tree->SetBranchAddress(runNumberBranchName, &runNumber);
