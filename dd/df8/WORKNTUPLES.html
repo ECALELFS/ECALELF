@@ -55,6 +55,7 @@
 <li><a class="el" href="../../d6/d3e/classCruijff__pdf__class.html" title="Class providing a RooPdf corresponding to a Cruijff function (Gaussian with exponential tails) ...">Cruijff_pdf_class</a> Class providing a RooPdf corresponding to a Cruijff function (Gaussian with exponential tails)</li>
 <li><a class="el" href="../../d5/d11/classElectronCategory__class.html" title="Di-electron events are selected using a short special syntax defined in this class. ">ElectronCategory_class</a> Di-electron events are selected using a short special syntax defined in this class.</li>
 <li><a class="el" href="../../d8/dfa/classZFit__class.html" title="Zee Fit class: BW+CB and Cruijff. ">ZFit_class</a> Zee Fit class: BW+CB and Cruijff.</li>
+<li><a class="el" href="../../d6/da1/classanyVar__class.html" title="class for estimation of basic quantities for any Float_t branch in the tree ">anyVar_class</a> class for estimation of basic quantities for any Float_t branch in the tree</li>
 <li><a class="el" href="../../dd/d99/ZFitter_8cpp.html">ZFitter.cpp</a> General program for Z fit (monitoring, calibration validation)</li>
 </ul>
 <p>Input: While the classes are almost generic and flexible, the ZFitter program is thought to be used starting from ECALELF ntuples.</p>
@@ -82,13 +83,13 @@
 </ul>
 </li>
 </ul>
-<p>If no external PU reweight is provided and no tree containing the PU reweight for the MC, the program reads the files, add all the data PU histograms, add all the MC PU histograms, calculates the PU reweight, produce a tree with the per event weight for the MC. Then add the tree with the PU weights to the MC chain as a friend tree.</p>
 <p>Two methods are used in order to evaluate the energy scale and resolution:</p>
 <ul>
 <li><b>fitMethod:</b> consists in fitting the Z lineshape with a parametric model (implemented in <a class="el" href="../../d8/dfa/classZFit__class.html" title="Zee Fit class: BW+CB and Cruijff. ">ZFit_class</a>) This method gives an estimate of the Z peak and width separately for data and MC. On the other hand the energy scale and energy resolution are estimated for electrons belonging to the same di-electron categories. With this method the energy scale and resolution are measured for di-electron categories.</li>
 <li><b>smearingMethod:</b> consists in using the Z lineshape from MC after the scaling and smearing of the single electron energy (implemented in <a class="el" href="../../d1/d6a/classRooSmearer.html" title="Minimize NLL to get energy scale and smearings. ">RooSmearer</a>). The energy scale and smearing is applied to the single electron energy before calculating the invariant mass, so they are directly the single electron energy scale and smearings.</li>
+<li><b>anyVarMethod:</b> consists in measuring the effective sigma (minimum interval containing 68% of the events) and the mean in the effective sigma interval of the invariant mass distribution</li>
 </ul>
-<p>The methods are implemented in separate classes, there is only one executable (./bin/ZFitter.exe) that with command line options can run the fitMethod or the smearingMethod.</p>
+<p>The methods are implemented in separate classes, there is only one executable (./bin/ZFitter.exe) that with command line options can run the fitMethod or the smearingMethod or anyVarMethod</p>
 <p>The inputs to the ZFitter program are given in the form of:</p>
 <ul>
 <li>configuration files (.dat)<ul>
@@ -98,11 +99,8 @@
 <li>command line options</li>
 </ul>
 <p>First, familiarize with the ntuple content: <a class="el" href="../../db/d60/NtupleStructure.html">Ntuple content and logic of use</a></p>
-<p>How to generate the PUDumper.root files and use them: <a class="el" href="../../de/d29/PUFILES_.html">Generating PU weight files</a></p>
-<p>How to generate the PUDumper.root files and use them: <a class="el" href="../../db/d60/NtupleStructure.html">Ntuple content and logic of use</a></p>
-<p><a class="el" href="../../d0/d2a/plotNtuple.html">How to make plots using ECALELF ntuples</a></p>
-<hr/>
-<p> The files containing the histograms for the PU reweight are indicated with pileupHist as treeName and they are treated in a different way. There must be only one pileupHist for d and one for s, then the program calculates the weights for the MC, produces a temporary file with just one tree containing the weights (pileupTree) and it is added as friend to the chain of MC. You can also provide directly the "temporary" root file indicating s pileupTree file.root </p>
+<p><a class="el" href="../../de/d29/PUFILES_.html">Generating PU weight files</a></p>
+<p><a class="el" href="../../d0/d2a/plotNtuple.html">How to make plots using ECALELF ntuples</a> </p>
 </div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
