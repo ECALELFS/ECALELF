@@ -4,7 +4,7 @@ source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.s
 ############################### OPTIONS
 #------------------------------ default
 USESERVER=0
-SCHEDULER=caf
+SCHEDULER=grid
 STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
@@ -21,7 +21,6 @@ SUBMIT=y
 
 SKIM=""
 OUTFILES="ntuple.root"
-#CRABVERSION=2
 CRABVERSION=2
 crab2File=tmp/ntuple.cfg
 crab3File=tmp/ntuple.py
@@ -35,33 +34,33 @@ case ${CRABVERSION} in
 		;;
 esac
 
-FROMCRAB3=0
 JOBINDEX=""
 ISPRIVATE=0
 BUNCHSPACING=0
 
 usage(){
-    echo "`basename $0` {parseDatasetFile options} --type={type} [options]"
+    echo "`basename $0` {parseDatasetFile options} --type={type} -t tagFile [options]"
     echo "---------- provided by parseDatasetFile (all mandatory)"
     echo "    -r runRange"
     echo "    -d, --datasetpath path"
     echo "    -n, --datasetname name"
     echo "    --store dir"
     echo "    --remote_dir dir: origin files remote dir"
+
     echo "---------- provided by command-line (mandatory)"
-    echo "    --type alcareco|alcarecosim|ALCARERECO|miniAOD|MINIAOD|miniAODSIM:"
-    echo "           alcareco: produced on data"
-    echo "           ALCARECOSIM|alcarecosim: alcareco produced on MC"
+    echo "    --type TYPE: one of the following"
+    echo "           ALCARECOSIM: alcareco produced on MC"
     echo "           ALCARERECO: alcareco format after rereco on ALCARAW"
-    echo "           miniAOD|MINIAOD: ntuple production from miniAOD"
-    echo "           miniAODSIM: ntuple production from miniAOD from MC"
-    echo " *** for MC ***"
+    echo "                       supports only CAF as scheduler and CRAB2!"
+    echo "           MINIAOD: ntuple production from miniAOD"
+	echo "     -t tagFile: config file with the global tag. It's one of the files in config/reRecoTags/"
+    echo "    *** for MC ***"
     echo "    --isMC"
-    echo "    --isParticleGun: redundant, --skim=partGun is the same"
-    echo " *** for DATA ***"
+#    echo "    --isParticleGun: redundant, --skim=partGun is the same"
+    echo "    *** for DATA ***"
     echo "    --json_name jsonName: additional name in the folder structure to keep track of the used json"
     echo "    --json jsonFile.root"
-	echo "    --weightsReco: using weights for local reco"
+	echo "    --weightsReco: only if producing from ALCARERECO using weights for local reco"
 
     echo "---------- optional common"
     echo "    --doExtraCalibTree (needed for E/p calibration)"
@@ -85,7 +84,6 @@ expertUsage(){
     echo "    --scheduler caf,lsf,remoteGlidein (=${SCHEDULER})"
     echo "    -f, --filelist arg: produce ntuples from a list of files"
     echo "    -s, --skim arg: apply the skim (ZSkim, WSkim)"
-    echo "    -t, --tag arg: tag name of the alcarereco"
     echo "    --ui_working_dir arg: crab task folder (=${UI_WORKING_DIR})"
     echo "    --extraName arg: additional name for folder structure (to make different versions) (='')"
     echo "    --file_per_job arg: number of files to process in 1 job (=1)"
@@ -146,9 +144,10 @@ do
 		alcarereco | ALCARERECO)
 		    TYPE=ALCARERECO
 		    if [ "${isMC}" == "1" ]; then
-			echo "[ERROR `basename $0`] Incompatible options: TYPE=${TYPE} and --isMC" >> /dev/stderr
-			exit 1
+				echo "[ERROR `basename $0`] Incompatible options: TYPE=${TYPE} and --isMC" >> /dev/stderr
+				exit 1
 		    fi
+			CRABVERSION=2
 		    ;;
 		*)
 		    echo "[OPTION ERROR] Type $TYPE not recognize" >> /dev/stderr
@@ -237,6 +236,21 @@ if [ -z "$JSONNAME" -a "$isMC" != "1" ];then
     usage >> /dev/stderr
     exit 1
 fi
+
+if [ -z "${TAG}" ];then
+	echo "[ERROR] Tag not defined" >> /dev/stderr
+	usage >> /dev/stderr
+	exit 1
+fi
+
+case $SCHEDULER in
+	CAF|caf)
+		CRABVERSION=2
+		;;
+	*)
+		CRABVERSION=3
+		;;
+esac
 
 case $DATASETNAME in
 #	*-50nsReco) BUNCHSPACING=50;;
@@ -502,6 +516,7 @@ proxy_server = myproxy.cern.ch
 
 EOF
 
+crab3outfiles=`echo $OUTFILES | sed "s|^|\'|;s|$|'|;s|,|\',\'|"`
 ###################################crab 3 .py writing###############################
 #I used the tool: crab2cfgTOcrab3py [crab2confgiName.cfg] [crab3configName.py]
 ##jsonFile=${JSONFILE}
@@ -516,7 +531,7 @@ config.General.transferLogs = False
 
 config.JobType.pluginName = 'Analysis'
 config.JobType.psetName = 'python/alcaSkimming.py'
-config.JobType.outputFiles = ['ntuple.root']
+config.JobType.outputFiles = [$crab3outfiles]
 config.JobType.pyCfgParams=['type=${TYPE}','doTree=${DOTREE}','doExtraCalibTree=${DOEXTRACALIBTREE}','doExtraStudyTree=${DOEXTRASTUDYTREE}','doEleIDTree=${DOELEIDTREE}','doTreeOnly=1','isCrab=1','skim=${SKIM}','tagFile=${TAGFILE}','isPrivate=$ISPRIVATE','bunchSpacing=${BUNCHSPACING}', 'MC=${isMC}']
 
 config.Data.inputDataset = '${DATASETPATH}'
@@ -538,15 +553,13 @@ EOF
 fi
 
 cat >> ${crab3File} <<EOF
-#config.Data.outLFNDirBase = 'my_job_crab3/' 
-config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR_BASE}/${USER}/${TYPENAME}/${SQRTS}'
 config.Data.publication = False
 #config.Data.outputDatasetTag = 'outputdatasetTag'
 #config.Site.storageSite = '$STORAGE_PATH' #=> come si scrive su eos??
 #config.Site.storageSite = 'srm-eoscms.cern.ch'
 config.Site.storageSite = 'T2_CH_CERN'
 #config.Site.storageSite = 'T2_IT_Rome'
-#config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
+config.Data.outLFNDirBase = '${USER_REMOTE_DIR}' 
 
 EOF
 
