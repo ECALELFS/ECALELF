@@ -139,7 +139,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<electronRef_t>
 public: // interface
 
 
-	enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff};
+  enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff,loose25nsRun2V2016};
 
 	//  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
@@ -233,6 +233,7 @@ public: // interface
 		else if (versionStr.CompareTo("medium50nsRun2") == 0) version = medium50nsRun2;
 		else if (versionStr.CompareTo("tight50nsRun2") == 0) version = tight50nsRun2;
 		else if (versionStr.CompareTo("medium25nsRun2Boff") == 0) version = medium25nsRun2Boff;
+		else if (versionStr.CompareTo("loose25nsRun2V2016") == 0) version = loose25nsRun2V2016;
 		else {
 			std::cerr << "[ERROR] version type not defined" << std::endl;
 			std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -639,8 +640,27 @@ public: // interface
 			set("relEcalIso_EE",  100., false);
 			set("relHcalIso_EB",  100., false);
 			set("relHcalIso_EE",  100., false);
-		}
+		} else if (version_ == loose25nsRun2V2016) { //wp for 2016 data for 80X https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+		  //set("fiducial");
+		  //EB cuts
+		  set("sihih_EB",      0.011);
+		  set("deta_EB",       0.00477); //check if it's the seed
+		  set("dphi_EB",       0.222); //delta Phi In
+		  set("hoe_EB",        0.298);
+		  set("pfIso_EB",      0.0994); //check !
+		  set("ooemoop_EB",    0.241, true);
+		  set("maxNumberOfExpectedMissingHits_EB", 1);//check if <=
+		  //passconversion veto is missing
 
+		  set("sihih_EE",      0.0314);
+		  set("deta_EE",       0.00868); //check if it's the seed
+		  set("dphi_EE",       0.213); //delta Phi In
+		  set("hoe_EE",        0.101);
+		  set("pfIso_EE",      0.107); //check !
+		  set("ooemoop_EE",    0.14, true);
+		  set("maxNumberOfExpectedMissingHits_EE", 1);//check if <=
+		  //passconversion veto is missing
+		} 
 	}
 
 #ifdef shervin
