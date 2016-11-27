@@ -20,7 +20,7 @@ pileupTrees(){
 for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
 do
     #tag is s1, s2, ...
-    mv tmp/mcPUtree${tag}.root  ${eos_path}/data/puTree/${tag}_${file}.root
+    mv tmp/${tag}_pileup_chain.root  ${eos_path}/data/puTree/${tag}_${file}.root
     echo "${tag} pileup ${eos_path}/data/puTree/${tag}_${file}.root" >> data/validation/${file}.dat 
 done
 }
