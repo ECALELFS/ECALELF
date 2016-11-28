@@ -21,6 +21,7 @@ commonCut=EtLeading_32-EtSubLeading_20-noPF #Hgg trigger emulation (2 GeV above 
 #commonCut=Et_20-noPF #Standard common Cuts for Z calibration
 #commonCut=Et_30-noPF #Et_30 for 0 T calibration
 #default selection is cutBasedElectronID-Spring15-25ns-V1-standalone-loose #you can change this via steps_maker.sh
+selection=cutBasedElectronID-Spring15-25ns-V1-standalone-loose
 invMass_var=invMass_SC_corr
 #invMass_var=invMass_SC_pho_regrCorr #you can change this via script (steps_maker.sh)
 Et_smear=
@@ -224,7 +225,7 @@ esac
 
 
 #####################
-outFileStep1=step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat
+outFileStep1=step1-${invMass_var}-${selection}-${commonCut}-HggRunEta_scales.dat
 #outFileStep2=step2${extension}-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
 outFileStep2=step2-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
 outFileStep4=step4-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat
@@ -338,7 +339,7 @@ if [ -n "${STEP1}" ];then
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    >  ${outDirTable}/`basename ${outFile} .dat`.tex
 	
-	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F "\t" -f awk/recalibOutput.awk |grep -v '^%' > ${outDirTable}/${outFile}
+	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F "\t" -f awk/recalibOutput.awk |grep -v '^%'| grep -v 'EB '| grep -v 'EE ' > ${outDirTable}/${outFile}
 	
 	#save root files with step1 corrections
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
@@ -366,7 +367,7 @@ if [ -n "${STEP1}" ];then
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    >  ${outDirTable}/`basename ${outFile} .dat`.tex
 	
-	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F DOUBLEQUOTES\tDOUBLEQUOTES -f awk/recalibOutput.awk |grep -v '^%' > ${outDirTable}/${outFile}
+	./script/tex2txt.sh ${outDirTable}/`basename ${outFile} .dat`.tex | awk -F DOUBLEQUOTES\tDOUBLEQUOTES -f awk/recalibOutput.awk |grep -v '^%'| grep -v 'EB '| grep -v 'EE ' > ${outDirTable}/${outFile}
 	
 	#save root files with step1 corrections
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
@@ -387,12 +388,12 @@ if [ -n "${STEP1Stability}" ];then
     if [ ! -e "${outDirData}/step1/fitres" ];then mkdir ${outDirData}/step1/fitres -p; fi
     if [ ! -e "${outDirData}/step1/img" ];then mkdir ${outDirData}/step1/img -p; fi
 
-#    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
-#	$updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} \
-#	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
-#	--corrEleType HggRunEta \
-#	--corrEleFile ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat \
-#	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step1/img #> ${outDirData}/log/step1-stability.log || exit 1
+    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
+	$updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} \
+	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
+	--corrEleType HggRunEta \
+	--corrEleFile ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta.dat \
+	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step1/img #> ${outDirData}/log/step1-stability.log || exit 1
 
     ./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
@@ -569,7 +570,7 @@ if [ -n "${STEP2}" ];then
 	    echo "You are sending a test job to see if you need to pass an initFile"	
 	fi
 
-	./bin/ZFitter.exe -f $outDirData/step2/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} --selection=${selection}  --smearerFit --autoNsmear --autoBin --corrEleType=HggRunEta --outDirFitResData=${outDirData}/step2${extension}/fitres_test
+	#./bin/ZFitter.exe -f $outDirData/step2/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} --selection=${selection}  --smearerFit --autoNsmear --autoBin --corrEleType=HggRunEta --outDirFitResData=${outDirData}/step2${extension}/fitres_test
 	
 	./bin/ZFitter.exe -f $outDirData/step2/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --invMass_var ${invMass_var} --commonCut ${commonCut} --selection=${selection} --smearerFit --autoNsmear --autoBin  --corrEleType=HggRunEta --outDirFitResData=${outDirData}/step2${extension}/fitres_test
 
