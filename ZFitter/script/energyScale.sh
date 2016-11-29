@@ -1,8 +1,9 @@
 #!/bin/bash
 source script/functions.sh
-shopt -s expand_aliases
-source ~/.bashrc
 source script/bash_functions_calibration.sh
+#shopt -s expand_aliases
+#source ~/.bashrc
+
 # energy scale derived in different steps:
 # - time dependence (step1)
 # - material dependence  (step2)
@@ -227,7 +228,7 @@ esac
 #####################
 outFileStep1=step1-${invMass_var}-${selection}-${commonCut}-HggRunEta_scales.dat
 #outFileStep2=step2${extension}-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
-outFileStep2=step2-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9.dat
+outFileStep2=step2-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9_scales.dat
 outFileStep4=step4-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat
 outFileStep7=step7-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9Et.dat
 outFileStep8=step8-${invMass_var}-${selection}-${commonCut}-HggRunEtaR9Et.dat
@@ -537,7 +538,8 @@ if [ -n "${STEP2}" ];then
     basenameEB=`basename $regionFileEB .dat`
     basenameEE=`basename $regionFileEE .dat`
     regionFile=$regionFileEB
-    outFile=outFile-${outFileStep2}
+    outFile=outFile-`basename ${outFileStep2} _scales.dat`.dat
+    #outFileStep2 has only the scales inside, outFile has both scales and smearings
 
     #check if step1 has been done
     checkStepDep step1
@@ -612,7 +614,7 @@ if [ -n "${STEP2}" ];then
 
     fi #Submit_jobs
 
-    if [[ $scenario = Fit_Likelihood ]] || [[ $scenario = "" ]]; then
+    if [[ $scenario = Fit_Likelihood_1 ]] || [[ $scenario = "" ]]; then
 	./script/haddTGraph.sh -o ${outDirData}/step2/fitres/outProfile-${basenameEB}-${commonCut}.root ${outDirData}/step2/*/fitres/outProfile-${basenameEB}-${commonCut}.root
 	./script/haddTGraph.sh -o ${outDirData}/step2/fitres/outProfile-${basenameEE}-${commonCut}.root ${outDirData}/step2/*/fitres/outProfile-${basenameEE}-${commonCut}.root
 	
@@ -629,7 +631,7 @@ if [ -n "${STEP2}" ];then
 
 	cat ${outDirData}/step2${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config > ${outDirTable}/${outFile}
 	grep -v absEta_0_1 ${outDirData}/step2${extension}/img/outProfile-${basenameEE}-${commonCut}-FitResult-.config >> ${outDirTable}/${outFile}
-	echo "results for step2 are in ${outDirTable}/${outFile}"
+	echo "results (scale and smearings) for step2 are in ${outDirTable}/${outFile}"
 #	cat "`echo $initFile | sed 's|.*=||'`" |grep "C L" >>  ${outDirTable}/${outFile}
     fi
     if [[ $scenario = Plot_after_fit ]] || [[ $scenario = "" ]]; then
@@ -662,9 +664,8 @@ if [ -n "${STEP2}" ];then
 	#for i in "${!smearings[@]}"; do 
 	#    echo ${categories[$i]} ${smearings[$i]}>> ${outDirTable}/smearing_corrections.dat
 	#done
-
-	echo "complete set of corrections for scale step1*step2 is in ${outDirTable}/${outFileStep2}"
 	#echo "complete set of corrections for scale step1*step2 is in ${outDirTable}/smearing_corrections.dat"
+	echo "complete set of corrections for scale step1*step2 is in ${outDirTable}/${outFileStep2}"
     fi
     if [[ $scenario = root_corr_step1_step2 ]] || [[ $scenario = "" ]] || [[ $scenario = Fit_Likelihood ]]; then
 	#save root files with step1*step2 (scale corrections)
@@ -673,29 +674,28 @@ if [ -n "${STEP2}" ];then
 	mv tmp/scaleEle_HggRunEtaR9_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step2/    
     fi
 
-#################copying the dat file over my web space#######################
+#################copying the dat file over the eos web space#######################
     if [[ $scenario = finalize_step2 ]] || [[ $scenario = "" ]] || [[ $scenario = Fit_Likelihood ]]; then
 	if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2" ];then 
 	    echo "~gfasanel/scratch1/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2 is being created"
 	    www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/ -p
 	    www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/DataMC/ -p
 	fi
+	mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step2/img/outProfile-scaleStep2smearing_*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
+	mv ${outDirTable}/${outFileStep2} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
+	./script/latex_table_writer.sh ${outDirTable}/${outFile} -${commonCut}
+	echo table_`basename ${outFile} .dat`"_scale_tex.dat"
+	cp tmp/table_`basename ${outFile} .dat`_scale_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
+	cp tmp/table_`basename ${outFile} .dat`_smear_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
 
-	cp test/dato/${file}/loose/${invMass_var}/step2/img/outProfile-scaleStep2smearing_*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
-	cp test/dato/${file}/loose/${invMass_var}/table/step2-${invMass_var}-loose-${commonCut}-HggRunEtaR9.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
-	./script/latex_table_writer.sh test/dato/${file}/loose/${invMass_var}/table/outFile-step2-${invMass_var}-loose-${commonCut}-HggRunEtaR9.dat -${commonCut}
-	cp tmp/table_outFile-step2-${invMass_var}-loose-${commonCut}-HggRunEtaR9_scale_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
-	cp tmp/table_outFile-step2-${invMass_var}-loose-${commonCut}-HggRunEtaR9_smear_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2/
-
-    ###Data_MC_plots at the end of step2 (to see the original position of the data peak)
+        ###Data_MC_plots at the end of step2 (here the MC is shifted (not the data as in the analyses) to see the original position of the data peak)
 	file2EB=`basename ${regionFileEB} .dat`
 	file2EE=`basename ${regionFileEE} .dat`
-
-	./script/plot_histos_validation.sh test/dato/${file}/${selection}/${invMass_var}/step2${extension}/fitres/histos-${file2EB}-${commonCut}.root
-	./script/plot_histos_validation.sh test/dato/${file}/${selection}/${invMass_var}/step2${extension}/fitres/histos-${file2EE}-${commonCut}.root
-	cp test/dato/${file}/${selection}/${invMass_var}/step2${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2${extension}/DataMC/
+#
+#	./script/plot_histos_validation.sh test/dato/${file}/${selection}/${invMass_var}/step2${extension}/fitres/histos-${file2EB}-${commonCut}.root
+#	./script/plot_histos_validation.sh test/dato/${file}/${selection}/${invMass_var}/step2${extension}/fitres/histos-${file2EE}-${commonCut}.root
+#	cp test/dato/${file}/${selection}/${invMass_var}/step2${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2${extension}/DataMC/
     fi
-
 #Here step2 is closed	
 fi
 

@@ -304,7 +304,7 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
 
 
 
-void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="36.26", int rebin=4, TString myRegion=""){
+void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="36.4", int rebin=4, TString myRegion=""){
   //rebin=2 --> per il closure test in Et
   //rebin=4 --> binwidth=0.5 GeV
   
