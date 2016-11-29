@@ -11,17 +11,17 @@ jsonName=271036_279588-Prompt
 json25ns=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
 jsonName=271036_284044-23Sep2016
 
-PERIOD=CAL_SEP2016
+PERIOD=CAL_SEP2016_V2
 #LEGACY2016
-#config/reRecoTags/Cal_Nov2016_{Alpha,ped}_v{1,2}.py config/reRecoTags/Cal_Nov2016_ref.py 
-for tagfile in  config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
+##
+for tagfile in  config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py config/reRecoTags/Cal_Nov2016_{Alpha,ped}_v{1,2}.py config/reRecoTags/Cal_Nov2016_ref.py 
 do
 	echo
 #	./scripts/removeRereco.sh -t $tagfile -f alcarereco_datasets.dat
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in '' --check
+	for CHECK in  --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2016_ref.py)
@@ -36,7 +36,7 @@ do
 		esac
 	done
 continue
-	for CHECK in  --check
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_Nov2016_ref.py)

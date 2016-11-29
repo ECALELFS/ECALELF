@@ -17,12 +17,12 @@
 //#define DEBUG
 //#define PEDANTIC_OUTPUT
 
-EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed):
-	doScale(false), doSmearings(false),
+EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed, bool doScale_, bool doSmearings_):
+	doScale(doScale_), doSmearings(doSmearings_),
 	smearingType_(ECALELF)
 {
 
-	if(correctionFileName.size() > 0) {
+	if(correctionFileName.size() > 0 && doScale) {
 		std::string filename = correctionFileName + "_scales.dat";
 		ReadFromFile(filename);
 		if(scales.empty()) {
@@ -31,7 +31,7 @@ EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionF
 		}
 	}
 
-	if(correctionFileName.size() > 0) {
+	if(correctionFileName.size() > 0 && doSmearings) {
 		std::string filename = correctionFileName + "_smearings.dat";
 		ReadSmearingFromFile(filename);
 		if(smearings.empty()) {

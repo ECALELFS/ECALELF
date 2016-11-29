@@ -815,7 +815,7 @@ int main(int argc, char **argv)
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
 		TString treeName = "scaleEle_" + corrEleType;
-		EnergyScaleCorrection_class eScaler(corrEleFile);
+		EnergyScaleCorrection_class eScaler(corrEleFile, 0, true, false);
 
 		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
@@ -861,11 +861,7 @@ int main(int argc, char **argv)
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[STATUS] Getting energy smearings from file: " << smearEleFile << std::endl;
 		TString treeName = "smearEle_" + smearEleType;
-#ifdef toBeFixed
-		EnergyScaleCorrection_class eScaler("", smearEleFile);
-#else
-		EnergyScaleCorrection_class eScaler();
-#endif
+		EnergyScaleCorrection_class eScaler(smearEleFile, 0, false, true);
 		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
@@ -1137,15 +1133,15 @@ int main(int argc, char **argv)
 #endif
 		//branchListAny.push_back(make_pair("invMass_e5x5",          anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("esEnergySCEle",          anyVar_class::kAFloat_t));
-//		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
 		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", true); // vm.count("updateOnly"));
 		anyVar._exclusiveCategories = false;
 		anyVar.Import(commonCut, eleID, activeBranchList, modulo);
 
+		TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
 		///\todo allocating both takes too much memory
 		if(vm.count("runToy") && modulo > 0) {
 			// splitting the events by "modulo" and obtaining statistically indipendent subsamples
-			TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
 			for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
 				//change the output directory for the results
 				std::string dir = outDirFitResData;
@@ -1178,12 +1174,17 @@ int main(int argc, char **argv)
 			// anyVarMC.Import(commonCut, eleID, activeBranchList);
 
 #ifndef dump_root_tree
+			anyVar.SaveReducedTree(reduced_trees_file);
+			reduced_trees_file->Write();
+			reduced_trees_file->Close();
+			return 0;
 			for(auto& region : categories) {
 				std::cout << "------------------------------------------------------------" << std::endl;
 				std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
 				anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
 //				anyVarMC.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, true, 1), cutter.GetCut(region, true, 2), scale);
 			}
+
 #else
 			TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
 			anyVar.Import(commonCut, eleID, activeBranchList);

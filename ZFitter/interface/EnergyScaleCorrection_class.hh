@@ -149,7 +149,7 @@ public:
 	bool doScale, doSmearings;
 
 public:
-	EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed = 0);
+	EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed = 0, bool doScale_=false, bool doSmearings_=false);
 	EnergyScaleCorrection_class() {}; ///< dummy constructor needed in ElectronEnergyCalibratorRun2
 	~EnergyScaleCorrection_class(void);
 
