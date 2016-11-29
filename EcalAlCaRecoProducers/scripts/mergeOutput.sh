@@ -165,11 +165,11 @@ if [ -z "${NOREMOVE}" ];then
     for file in `cat filelist/${FILENAME_BASE}.list`
       do
       file=`echo $file | sed 's|root://eoscms.cern.ch/||'`
-      eos.select rm $file
+      eos rm $file
     done
 
     if [ -z "${MERGED_REMOTE_DIR}" ];then
-	eos.select rmdir `dirname ${STORAGE_PATH}/${USER_REMOTE_DIR} | sed 's|root://eoscms/||'`/unmerged
+	eos rmdir `dirname ${STORAGE_PATH}/${USER_REMOTE_DIR} | sed 's|root://eoscms/||'`/unmerged
     fi
 fi
 

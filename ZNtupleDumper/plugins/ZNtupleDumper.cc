@@ -513,8 +513,8 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	recHitCollectionEBToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEB" ))),
 	recHitCollectionEEToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>( "recHitCollectionEE" ))),
 	recHitCollectionESToken_(consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag>("recHitCollectionES"))),
-	ebURHToken_(consumes<EcalUncalibratedRecHitCollection>(iConfig.getParameter<edm::InputTag>( "uncalibRecHitCollectionEB" ))),
-	eeURHToken_(consumes<EcalUncalibratedRecHitCollection>(iConfig.getParameter<edm::InputTag>( "uncalibRecHitCollectionEE" ))),
+	ebURHToken_(mayConsume<EcalUncalibratedRecHitCollection>(iConfig.getParameter<edm::InputTag>( "uncalibRecHitCollectionEB" ))),
+	eeURHToken_(mayConsume<EcalUncalibratedRecHitCollection>(iConfig.getParameter<edm::InputTag>( "uncalibRecHitCollectionEE" ))),
 	EESuperClustersToken_(consumes<reco::SuperClusterCollection>(iConfig.getParameter< edm::InputTag>("EESuperClusterCollection"))),
 	rhoToken_(consumes<double>(iConfig.getParameter<edm::InputTag>("rhoFastJet"))),
 	pileupInfoToken_(consumes<std::vector<PileupSummaryInfo>>(iConfig.getParameter<edm::InputTag>("pileupInfo"))),
@@ -685,9 +685,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	//------------------------------
 	clustertools = new EcalClusterLazyTools (iEvent, iSetup, recHitCollectionEBToken_,
 	        recHitCollectionEEToken_);
-	iEvent.getByToken(ebURHToken_, pEBUncRecHits);
-	iEvent.getByToken(eeURHToken_, pEEUncRecHits);
 
+	if(doExtraCalibTree || doExtraStudyTree){
+		iEvent.getByToken(ebURHToken_, pEBUncRecHits);
+		iEvent.getByToken(eeURHToken_, pEEUncRecHits);
+	}
 	//------------------------------ electrons
 	if (eventType == ZMMG) {
 		//------------------------------ muons
@@ -2243,6 +2245,7 @@ void ZNtupleDumper::resetExtraVariables(int index)
 
 void ZNtupleDumper::TreeSetExtraCalibVar(const std::vector<std::pair<DetId, float> > & hitsFracs, int index, bool isEB)
 {
+
 	const EcalRecHitCollection *recHits = isEB ? clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
 	const EcalUncalibratedRecHitCollection * uncHits = isEB ? pEBUncRecHits.product() : pEEUncRecHits.product();
 	const EcalIntercalibConstantMap& icalMap = clustertools->getEcalIntercalibConstants();
