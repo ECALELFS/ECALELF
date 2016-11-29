@@ -65,7 +65,8 @@ mkSmearerCatSignal(){
     fi
 
     #Once cat root files are created, just write them in the bare configfile
-    echo "[INFO] You are writing the cat root files path on the validation file: $2"  
+    #TO-DO -> be sure that the writing is unique to avoid stupid crashes
+    echo "[INFO] You are writing the cat root files path for regions $1 at the bottom of the validation file: $2"  
     for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
     do
 	echo -e "${tag}\tsmearerCat_${basenameConfig}\t${eos_path}/data/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
@@ -86,34 +87,13 @@ mkSmearerCatData(){
 	    --saveRootMacro  --addBranch=smearerCat_d $4 #|| exit 1 -->FIX ME (dummy  seg faults)
 	mv tmp/smearerCat_`basename $1 .dat`_d*-`basename $configFile .dat`.root $2/ || exit 1
     fi
-# Not working for me (Giuseppe)
-#    cat $3 \
-#	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $3.tmp
-#    cat $3.tmp $3 | sort | uniq -d > $3.tmp2
-#    for line in `cat $3.tmp2 | sed 's|[ ]+|\t|g' | cut  -f 3`;
-#      do
-#      sed -i "\#$line# d" $3.tmp
-#    done
-#    cat $3.tmp
-#    echo 
-#    echo
-#    echo
-#    echo "file of mkSmearerCatData is" $3
-#    cat $3.tmp >> $3
-#    rm $3.tmp $3.tmp2
 
-##adapted from mkSmearerSignal -->This works
-#Once cat files exist, just write them in the bare configfile
+    #Once cat files exist, just write them in the bare configfile
+    #TO-DO -> be sure that the writing is unique to avoid stupid crashes
     for tag in `grep "^d" $3 | grep selected | awk -F" " ' { print $1 } '`
     do
 	echo -e "${tag}\tsmearerCat_${basenameConfig}\t$2/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
     done
-#    echo "Data smearer cat are in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root"
-#    for file in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root
-#    do
-#	tag=`echo $file | sed "s|${2}/smearerCat_${basenameConfig}_d\([0-9]\)-.*|d\1|"`
-#	echo -e "$tag\tsmearerCat_${basenameConfig}\t`echo $file | sed 's|tmp/||'`" >> $3
-#    done
 }
 	
 
