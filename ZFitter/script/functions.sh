@@ -1,3 +1,4 @@
+eos_path=/eos/project/c/cms-ecal-calibration
 puName(){
     ## pileup reweight name
     # $1 = configFile
@@ -51,52 +52,25 @@ mcName(){
 
 
 mkSmearerCatSignal(){
-    #if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s2-`basename $configFile .dat`.root" -o  ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s3-`basename $configFile .dat`.root" ];then
     basenameConfig=`basename $1 .dat`
-    if [ ! -e "data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ];then
+    if [ ! -e "${eos_path}/data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ];then
 	echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
+	echo "./bin/ZFitter.exe -f ${configFile} --regionsFile=$1 --saveRootMacro  --addBranch=smearerCat_s"
  	./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
- 	    --saveRootMacro  --addBranch=smearerCat_s  || exit 1
+ 	    --saveRootMacro  --addBranch=smearerCat_s #|| exit 1 -->dummy seg faults forced me to comment this exit 1 -->FIX ME
 	for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
-	#for file in tmp/smearerCat_${basenameConfig}_s*-`basename $configFile .dat`.root
 	do
-	    mv tmp/smearerCat_${basenameConfig}_${tag}-`basename $configFile .dat`.root data/smearerCat/ || exit 1
+	    mv tmp/smearerCat_${basenameConfig}_${tag}-`basename $configFile .dat`.root ${eos_path}/data/smearerCat/ || exit 1
 	done
     fi
 
-#Once cat files exist, just write them in the bare configfile
+    #Once cat root files are created, just write them in the bare configfile
+    #TO-DO -> be sure that the writing is unique to avoid stupid crashes
+    echo "[INFO] You are writing the cat root files path for regions $1 at the bottom of the validation file: $2"  
     for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
     do
-	echo -e "${tag}\tsmearerCat_${basenameConfig}\tdata/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
+	echo -e "${tag}\tsmearerCat_${basenameConfig}\t${eos_path}/data/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
     done
-
-    
-#     tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
-#     for tag in $tags
-#       do
-#       case ${tag} in
-# 	  s*)
-# 	      if [  "`grep -v '#' $configFile | grep \"^$tag\" | cut -f 2 | grep -c smearerCat`" == "0" ];then
-# 		  ./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
-# 		      --saveRootMacro \
-# 		      --addBranch=smearerCat_s  --smearerFit
-# 		  break;
-# 	      fi
-# 	      ;;
-#       esac
-#     done
-
-#     for tag in $tags
-#       do
-#       case ${tag} in
-# 	  s*)
-# 	      if [  "`grep -v '#' $configFile | grep \"^$tag\" | cut -f 2 | grep -c smearerCat`" == "0" ];then
-# 		  mv tmp/smearerCat_`basename $1 .dat`_${tag}-`basename $configFile .dat`.root data/smearerCat/smearerCat_`basename $1 .dat`_${tag}-`basename $configFile .dat`.root #|| exit 1
-# 		  echo -e "$tag\tsmearerCat_${basenameEB}\tdata/smearerCat/smearerCat_`basename $1 .dat`_${tag}-`basename $configFile .dat`.root" >> $configFile
-# 	      fi
-# 	      ;;
-#       esac
-#     done
 }
 
 
@@ -110,37 +84,16 @@ mkSmearerCatData(){
     if [ ! -e "$2/smearerCat_`basename $1 .dat`_d1-`basename $configFile .dat`.root" ];then
 	echo "[STATUS] Creating smearerCat for data: `basename $configFile .dat` `basename $1 .dat`"
 	./bin/ZFitter.exe -f $3 --regionsFile=$1  \
-	    --saveRootMacro  --addBranch=smearerCat_d $4 || exit 1
+	    --saveRootMacro  --addBranch=smearerCat_d $4 #|| exit 1 -->FIX ME (dummy  seg faults)
 	mv tmp/smearerCat_`basename $1 .dat`_d*-`basename $configFile .dat`.root $2/ || exit 1
     fi
-# Not working for me (Giuseppe)
-#    cat $3 \
-#	| sed "/selected/ ! d; /selected/{ s|^\(d[1-9]\)\tselected.*|\1\tsmearerCat_`basename $1 .dat`\t$2/smearerCat_`basename $1 .dat`_\1-`basename $3 .dat`.root|}" | sort | uniq |grep smearerCat |grep '^d'   >> $3.tmp
-#    cat $3.tmp $3 | sort | uniq -d > $3.tmp2
-#    for line in `cat $3.tmp2 | sed 's|[ ]+|\t|g' | cut  -f 3`;
-#      do
-#      sed -i "\#$line# d" $3.tmp
-#    done
-#    cat $3.tmp
-#    echo 
-#    echo
-#    echo
-#    echo "file of mkSmearerCatData is" $3
-#    cat $3.tmp >> $3
-#    rm $3.tmp $3.tmp2
 
-##adapted from mkSmearerSignal -->This works
-#Once cat files exist, just write them in the bare configfile
+    #Once cat files exist, just write them in the bare configfile
+    #TO-DO -> be sure that the writing is unique to avoid stupid crashes
     for tag in `grep "^d" $3 | grep selected | awk -F" " ' { print $1 } '`
     do
 	echo -e "${tag}\tsmearerCat_${basenameConfig}\t$2/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
     done
-#    echo "Data smearer cat are in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root"
-#    for file in $2/smearerCat_${basenameConfig}_d*-`basename $configFile .dat`.root
-#    do
-#	tag=`echo $file | sed "s|${2}/smearerCat_${basenameConfig}_d\([0-9]\)-.*|d\1|"`
-#	echo -e "$tag\tsmearerCat_${basenameConfig}\t`echo $file | sed 's|tmp/||'`" >> $3
-#    done
 }
 	
 

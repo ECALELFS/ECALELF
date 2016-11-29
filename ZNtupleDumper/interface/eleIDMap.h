@@ -44,6 +44,8 @@ public:
 		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-medium"] = 0x400000;
 		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-tight"]  = 0x800000;
 
+		eleIDmap["loose25nsRun2V2016"]  = 0x2000000;
+
 	}
 
 };
