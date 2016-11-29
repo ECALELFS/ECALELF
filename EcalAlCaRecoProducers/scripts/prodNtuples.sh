@@ -243,6 +243,17 @@ if [ -z "${TAG}" ];then
 	exit 1
 fi
 
+if [ "$DOEXTRACALIBTREE" != "0" -a "$TYPE" != "ALCARERECO" ]; then
+	echo "[ERROR] cannot produce the extra calib tree other datasets than ALCARERECO because there are no uncalib rechits"
+	exit 1
+fi
+
+if [ "$DOEXTRASTUDYTREE" != "0" -a "$TYPE" != "ALCARERECO" ]; then
+	echo "[ERROR] cannot produce the extra calib tree other datasets than ALCARERECO because there are no uncalib rechits"
+	exit 1
+fi
+
+
 case $SCHEDULER in
 	CAF|caf)
 		CRABVERSION=2
