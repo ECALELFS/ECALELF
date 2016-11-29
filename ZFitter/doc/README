@@ -12,6 +12,7 @@ Package content:
  - Cruijff_pdf_class      \copybrief Cruijff_pdf_class
  - ElectronCategory_class \copybrief ElectronCategory_class
  - ZFit_class             \copybrief ZFit_class
+ - anyVar_class           \copybrief anyVar_class
  - \ref ZFitter.cpp           	General program for Z fit (monitoring, calibration validation)
 
 Input:
@@ -40,14 +41,6 @@ is thought to be used starting from ECALELF ntuples.
 	- (not implemented) mixed switch value: 200 by default 
 
 
-If no external PU reweight is provided and no tree containing the PU
-reweight for the MC, the program reads the files, add all the data PU
-histograms, add all the MC PU histograms, calculates the PU
-reweight, produce a tree with the per event weight for the MC. 
-Then add the tree with the PU weights to the MC chain as a friend
-tree.
-
-
 Two methods are used in order to evaluate the energy scale and
 resolution:
  - \b fitMethod: consists in fitting the Z lineshape with a parametric
@@ -64,9 +57,11 @@ scaling and smearing of the single electron energy (implemented in RooSmearer).
 energy before calculating the invariant mass, so they are directly
 the single electron energy scale and smearings.
 
+ - \b anyVarMethod: consists in measuring the effective sigma (minimum interval containing 68% of the events) and the mean in the effective sigma interval of the invariant mass distribution
+
 The methods are implemented in separate classes, there is only one
 executable (./bin/ZFitter.exe) that with command line options can run the fitMethod or the
-smearingMethod.
+smearingMethod or anyVarMethod
 
 The inputs to the ZFitter program are given in the form of:
  - configuration files (.dat)
@@ -75,23 +70,11 @@ The inputs to the ZFitter program are given in the form of:
 
 First, familiarize with the ntuple content: \subpage NtupleStructure
 
-How to generate the PUDumper.root files and use them: \ref PUFILES_
-
-How to generate the PUDumper.root files and use them: \ref NtupleStructure
-
-\ref plotNtuple
+\subpage PUFILES_
 
 
+\subpage plotNtuple
 
-------------------------------
-The files containing the histograms for the PU reweight are
-indicated with pileupHist as treeName and they are treated in a
-different way. There must be only one pileupHist for d and one for s,
-then the program calculates the weights for the MC, produces a
-temporary file with just one tree containing the weights (pileupTree)
-and it is added as friend to the chain of MC. You can also provide
-directly the "temporary" root file indicating
-s	pileupTree	file.root
 
 
 

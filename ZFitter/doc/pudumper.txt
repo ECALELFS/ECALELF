@@ -21,12 +21,18 @@ Make sure you pick up the right file matching the PU scenario used in your MC.
 You have to extract (by hand) the values from the python cfi and create a histogram with name \b pileup
 
 The MC pileup histograms should be put on EOS in the calibration project directory:
-\verbatim   \endverbatim
+\verbatim /eos/project/c/cms-ecal-calibration/data/puHistos/  \endverbatim
+
+# pileup scenarios
+
+scenario   | python file                                             | pileupHist root file 
+---------- | ------------------------------------------------------- | -------------------------
+PUSpring16 | mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py | PUSpring16-nPUtrue.root
 
 
 \subsection DATAPUtrue_ True PU distribution in data
 Instructions can be found in
-<A HREF=""> DataPileupJSON </A>
+<A HREF="https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJSONFileforData"> PileupJSONFileforData </A>
 
 In summary you need:
  - json file used in your analysis
@@ -49,4 +55,17 @@ The name of the tree in the config file has to contain the string "nPV":
 s   pileupHist_nPV   file.root
 \endverbatim
 
+
+
+------------------------------
+The files containing the histograms for the PU reweight are
+indicated with pileupHist as treeName and they are treated in a
+different way. There must be only one pileupHist for d and one for s,
+then the program calculates the weights for the MC, produces a
+temporary file with just one tree containing the weights (pileupTree)
+and it is added as friend to the chain of MC. You can also provide
+directly the "temporary" root file indicating
+s	pileupTree	file.root
+
+------------------------------------------
 */
