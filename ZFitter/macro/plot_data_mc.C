@@ -19,6 +19,7 @@
 #include <TLine.h>
 #include <TGaxis.h>
 #include <iomanip> 
+#include <TLatex.h> 
 #define batch
 
 //typedef std::vector<bin_t>  hist_t;
@@ -114,54 +115,47 @@ void PlotCanvas(TCanvas *c, TH1F *mc, TH1F *data, TH1F *mcSmeared){
 
 
 
-void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="13", TString lumi="2.6", bool ratio=true){
-
+void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legend=NULL, TString region="", TString filename="",  TString energy="13", TString lumi="", bool ratio=true){
+  //lumi is specified in PlotMeanHist
   c->Clear();
   TPad * pad1 = new TPad("pad1", "pad1",0.00,0.25, 1,1.);  
   TPad * pad2 = new TPad("pad2", "pad2",0.00,0.00, 1,0.25);  
   TPad * pad3 = new TPad("pad3", "pad3",0.75,0.00, 1.,0.2);
-
+  //pad1 e' data-MC mass spectra
+  //pad2 e pad3 sono entrambe per il ratio
   float yscale=0.75/(pad1->GetYlowNDC() -pad2->GetYlowNDC());
   float xscale=1;
   std::cout<<"Starting plotting. Method Plot of plot_data_mc.C"<<endl;
   if(ratio){
-    //pad1->SetTopMargin(0.04); -->che cosa e' pad1? boh
-    //pad1->SetRightMargin(0.15);
-    pad1->SetBottomMargin(0.01);
+    pad1->SetTopMargin(0.08);
+    pad1->SetBottomMargin(0.02);
     //  pad1->SetLogy();
     pad1->Draw();
     pad1->cd();
     c->cd();
-    //pad2 e pad3 sono entrambe per il ratio
-    pad2->SetGrid(); //->pad2??
+    pad2->SetGrid(); 
     pad2->SetBottomMargin(0.5);
     pad2->SetTopMargin(0.02);
-  //pad2->SetRightMargin(0.15);
     pad2->Draw();
     pad2->cd();
     c->cd();
     pad3->SetGrid(); //->pad3???
     pad3->SetBottomMargin(0.4);
     pad3->SetRightMargin(0.1);
-    //  pad3->Draw();
-    //  pad3->cd();
     
     pad1->cd();
-
   }
 
   TGaxis::SetMaxDigits(3);
-
-  if(legend==NULL) legend = new TLegend(0.7,0.8,0.95,0.92);
-	
-  data->SetMarkerStyle(20);
        
-  mc->SetLineColor(kRed);
+  //mc->SetLineColor(kRed);
+  //mc->SetFillColor(kRed);
+  mc->SetLineColor(kAzure +6);
+  mc->SetFillColor(kAzure +6);
   mc->SetLineWidth(2);
-  //mc->SetFillStyle(1001);//colore pieno
-  mc->SetFillStyle(3001);
-  mc->SetFillColor(kRed);
-  
+  mc->SetFillStyle(1001);//colore pieno
+  //mc->SetFillStyle(3001);//colore zigrinato
+  mc->GetXaxis()->SetLabelSize(0);//the numbers on x axis are shown on the ratio
   mc->Draw();
   std::cout<<"MC name is"<<mc->GetTitle()<<std::endl;
   double x_min=0.;
@@ -194,71 +188,59 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   mcNorm->GetYaxis()->SetRangeUser(0,ymax);
   
   mcSmeared->SetLineWidth(3);
+  if(filename.Contains("scaleStep4smearing_0") || filename.Contains("scaleStep0")){
+    mcSmeared->SetLineColor(kAzure +6);
+    mcSmeared->SetFillColor(kAzure +6);
+  }
   TH1* mcSmeared_norm = mcSmeared->DrawNormalized("same hist",data->Integral());
+  data->SetMarkerStyle(20);
   data->Draw("E same");
+  pad1->RedrawAxis();  
 
-  //TString mc_title=mc->GetXaxis()->GetTitle();
-  //if(mc_title=="ptRatio"){
-  //  mc->GetXaxis()->SetLimits(0.5,1.5);
-  //  data->GetXaxis()->SetLimits(0.5,1.5);
-  //  mcSmeared_norm->GetXaxis()->SetLimits(0.5,1.5);
-  //}else{
-  //  mc->GetXaxis()->SetLimits(20,120);
-  //  data->GetXaxis()->SetLimits(20,120);
-  //  mcSmeared_norm->GetXaxis()->SetLimits(20,120);
-  //}
+  //legend->Clear();
+  //if(legend==NULL) legend = new TLegend(0.7,0.8,2.2,0.99); //This does NOT work properly
 
-  legend->Clear();
-  legend->AddEntry(mc,"MC","f");
-  legend->AddEntry(mcSmeared,"MC smear","l");
-  legend->AddEntry(data,"data","p");
+  TLegend* better_legend= new TLegend(0.6,0.7,0.82,0.85); //legend is already defined
+  better_legend->SetBorderSize(0);
+  better_legend->SetFillColor(0);
+  better_legend->SetTextSize(0.05);
+  if(!filename.Contains("scaleStep4smearing_0")&&!filename.Contains("scaleStep0")){
+    better_legend->AddEntry(mc,"MC","f");
+  }
+  if(!filename.Contains("scaleStep4smearing_0")&&!filename.Contains("scaleStep0")){
+    better_legend->AddEntry(mcSmeared,"#font[42]{MC smear}","l");
+  }else{
+    better_legend->AddEntry(mcSmeared,"#font[42]{MC smear}","f");
+  }
+  better_legend->AddEntry(data,"#font[42]{data}","p");
+  better_legend->Draw();
+
   double KS=data->KolmogorovTest(mcSmeared);
   TString ks="Kolmogorov test: ";
   char line[50];
   sprintf(line, "%.2f", KS);
   ks+=line;
   std::cout << "" << ks << std::endl;
-  
-  //  TPaveText pave(0.182,0.3,0.58,0.92, "ndc");
-  // 	pv->DeleteText();
-  // pave.SetFillColor(0);
-  // pave.SetTextAlign(12);
-  // pave.SetBorderSize(0);
-  // pave.SetTextSize(0.036);
-  // pave.AddText("CMS Preliminary");
-  // pave.AddText("#sqrt{s}="+energy);
-  // if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
 
-  TPaveText pave(0.182,0.97,0.4,0.99, "ndc");
-  // 	pv->DeleteText();
-  pave.SetFillColor(0);
-  pave.SetTextAlign(12);
-  pave.SetBorderSize(0);
-  pave.SetTextSize(0.036);
-  pave.AddText("CMS #font[50]{Preliminary} "+lumi+" fb^{-1} ("+energy+")");
-  //pave.AddText("#sqrt{s}="+energy);
-  //if(lumi.Sizeof()>1) pave.AddText("L="+lumi+" fb^{-1}");
+  //TLatex pave(0.200,0.94,"#bf{CMS} #scale[0.75]{#it{Preliminary}}");
+  //TLatex pave(0.200,0.94,"CMS #font[50]{Preliminary}");
+  TLatex pave(0.200,0.94,"#font[42]{#bf{CMS} #it{Preliminary}}");
+  pave.SetNDC();
+  pave.Draw();
 
-  pave.Draw();	
+  TLatex lumi_label(0.6,0.94,"#font[42]{"+lumi+" fb^{-1} ("+energy+")}");
+  lumi_label.SetNDC();
+  lumi_label.Draw();
 
-  legend->SetTextFont(22); // 132
-  legend->SetTextSize(0.06); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
-  //  legend->SetFillColor(0); // colore di riempimento bianco
-  //legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
-  //    SetLegendStyle(legend);
+  //legend->Draw();
   
-  legend->SetBorderSize(0);
-  legend->SetFillColor(0);
-  legend->SetFillStyle(1001);
-  legend->Draw();
-  
+  TLatex* region_label =new TLatex(0.2,0.8,region);
+  region_label->SetNDC();
+  //region_label->Draw();
   
   if(ratio){
-    //data->GetXaxis()->SetRangeUser(x_min,x_max);
-    //mcSmeared_norm->GetXaxis()->SetRangeUser(x_min,x_max);
     TH1F *sRatio = (TH1F*) data->Clone("sRatio");
     sRatio->Divide(mcSmeared_norm);
-    
     pad2->cd();
     sRatio->Draw();
 
@@ -283,17 +265,24 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
     ratioGraph->GetXaxis()->SetTitleOffset(0.92);
     ratioGraph->GetXaxis()->SetLabelSize(sRatio->GetYaxis()->GetLabelSize() *yscale   );
     ratioGraph->GetXaxis()->SetLabelOffset(sRatio->GetYaxis()->GetLabelOffset());
-    
-    ratioGraph->GetYaxis()->SetRangeUser(1- 2*ratioGraph->GetRMS(2),1+2*ratioGraph->GetRMS(2));
+    double Y_min=std::min(0.8,1-2*ratioGraph->GetRMS(2));
+    double Y_max=std::max(1.2,1+2*ratioGraph->GetRMS(2));
+    ratioGraph->GetYaxis()->SetRangeUser(Y_min,Y_max);
     ratioGraph->GetYaxis()->SetNdivisions(5);
     
     c->cd();
   }
   
   std::cout<<"*****************Saving the plots"<<std::endl;
-  c->SaveAs(img_filename(filename, region, ".eps"));
-  c->SaveAs(img_filename(filename, region, ".png"));
-  c->SaveAs(img_filename(filename, region, ".C"));
+  TString eps_name=img_filename(filename, region, ".eps").ReplaceAll("EtLeading_40-EtSubLeading_20-EtLeading_32-EtSubLeading_20","EtLeading_40-EtSubLeading_20");
+  TString png_name=img_filename(filename, region, ".png").ReplaceAll("EtLeading_40-EtSubLeading_20-EtLeading_32-EtSubLeading_20","EtLeading_40-EtSubLeading_20");
+  TString C_name=img_filename(filename, region, ".C").ReplaceAll("EtLeading_40-EtSubLeading_20-EtLeading_32-EtSubLeading_20","EtLeading_40-EtSubLeading_20");
+  c->SaveAs(eps_name);
+  c->SaveAs(png_name);
+  c->SaveAs(C_name);
+  //c->SaveAs(img_filename(filename, region, ".eps")); //Like this it's not compiling
+  //c->SaveAs(img_filename(filename, region, ".png"));
+  //c->SaveAs(img_filename(filename, region, ".C"));
   delete mc;
   mc=NULL;
   delete data;
@@ -301,7 +290,6 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   delete mcSmeared;
   mcSmeared=NULL;
 }
-
 
 
 void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="36.4", int rebin=4, TString myRegion=""){
@@ -382,8 +370,8 @@ void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="36.4"
   TLegend *legend = new TLegend(0.6,0.6,0.65,0.88);
   legend->SetFillStyle(3001);
   legend->SetFillColor(1);
-  legend->SetTextFont(22); // 132
-  legend->SetTextSize(0.04); // l'ho preso mettendo i punti con l'editor e poi ho ricavato il valore con il metodo GetTextSize()
+  legend->SetTextFont(22); 
+  legend->SetTextSize(0.025);
   //  legend->SetFillColor(0); // colore di riempimento bianco
   //legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
   //    SetLegendStyle(legend);
