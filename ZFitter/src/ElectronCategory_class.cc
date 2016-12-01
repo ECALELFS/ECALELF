@@ -832,9 +832,11 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TObjString *Objstring1 = (TObjString *) splitted->At(1);
 
 			TString string1 = Objstring1->GetString();
+#ifdef eleID_check
 			std::cout << "*********************************" << std::endl;
 			std::cout << "[INFO] In ElectronCategory_class: eleID is " << string1 << std::endl;
 			std::cout << "*********************************" << std::endl;
+#endif
 			string1.ReplaceAll("|", "-");
 			//Note for expert users: the original eleID name has "-", hence to avoid splitting "-" are replaced with "|" by ZFitter.cpp
 			//This is the moment where the "|" are again mapped in their righteous "-" (jeux de cartes)

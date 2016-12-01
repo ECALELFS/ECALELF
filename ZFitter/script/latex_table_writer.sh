@@ -1,5 +1,5 @@
 #! /bin/bash
-
+#example:
 #corr_file=test/dato/December2015_Rereco_C_D/loose/invMass_SC_corr/table/outFile-step2-invMass_SC_corr-loose-Et_20-noPF-HggRunEtaR9.dat
 #commonCut=-Et_20-noPF
 corr_file=$1
@@ -8,7 +8,7 @@ echo "corr_file is $corr_file"
 echo "commonCut are $commonCut"
 ##################Function definition#################################################################################################
 Write_dat_for_table(){
-##Scale corrections: per i dati -> 1/scala_MC
+##Scale corrections: for data -> 1/scale_MC
 grep scale ${corr_file} |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|${commonCut}||g"> tmp/corr_MC.dat
 
 categories=`grep scale tmp/corr_MC.dat | cut -f 1`
@@ -76,7 +76,6 @@ echo "     \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 echo "     Category & \\Delta P [\\%] & Error[\\%]\\\\ \hline">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat #I want to write \\ -> you have to escape \ 
 
 for i in "${!scales_data[@]}"; do
-#categories_name[$i]=`echo ${categories[$i]} | sed "s/_/-/g"`
 categories_name[$i]=`echo ${categories[$i]} | sed -f sed/tex.sed`
 printf "%s %s %.2lf %s %.2lf %s\n" "${categories_name[$i]}" "&" "${scales_data[$i]}" "&" "${errors_data[$i]}" "\\\\">> tmp/table_`basename ${corr_file} .dat`_scale_tex.dat
 ##%.4lf %s %.4lf %s "&" "${smearings_percentage[$i]}" "$\pm$" "${errors_smear_percentage[$i]}"

@@ -32,7 +32,6 @@ public:
 	double GetWeight(int nPU, int runNumber = 1);
 
 private:
-	TFile *f_pu;
 	//std::map<const int,double> PUweights;
 	typedef std::map<int, double> PUweights_t; ///< map of (nPU,weight) for a given run range: weights map
 	typedef std::map<int, PUweights_t>  PUWeightsRunDepMap_t; ///< map of (runMin,weights map)

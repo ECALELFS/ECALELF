@@ -139,7 +139,7 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<electronRef_t>
 public: // interface
 
 
-	enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff};
+  enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff,loose25nsRun2V2016};
 
 	//  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
@@ -233,6 +233,7 @@ public: // interface
 		else if (versionStr.CompareTo("medium50nsRun2") == 0) version = medium50nsRun2;
 		else if (versionStr.CompareTo("tight50nsRun2") == 0) version = tight50nsRun2;
 		else if (versionStr.CompareTo("medium25nsRun2Boff") == 0) version = medium25nsRun2Boff;
+		else if (versionStr.CompareTo("loose25nsRun2V2016") == 0) version = loose25nsRun2V2016;
 		else {
 			std::cerr << "[ERROR] version type not defined" << std::endl;
 			std::cerr << "[ERROR] using WP80PU" << std::endl;
@@ -639,8 +640,26 @@ public: // interface
 			set("relEcalIso_EE",  100., false);
 			set("relHcalIso_EB",  100., false);
 			set("relHcalIso_EE",  100., false);
-		}
-
+		} else if (version_ == loose25nsRun2V2016) { //wp for 2016 data for 80X https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+		  //EB cuts
+		  set("sihih_EB",      0.011);
+		  set("deta_EB",       0.00477); //check this implementation
+		  set("dphi_EB",       0.222); 
+		  set("hoe_EB",        0.298);
+		  set("pfIso_EB",      0.0994); //check if 80_X is defined (effective areas are different)
+		  set("ooemoop_EB",    0.241, true);
+		  set("maxNumberOfExpectedMissingHits_EB", 1);//correct is 7_2_X is defined
+		  set("hasMatchedConversion");
+		  //EE cuts
+		  set("sihih_EE",      0.0314);
+		  set("deta_EE",       0.00868); 
+		  set("dphi_EE",       0.213); 
+		  set("hoe_EE",        0.101);
+		  set("pfIso_EE",      0.107); 
+		  set("ooemoop_EE",    0.14, true);
+		  set("maxNumberOfExpectedMissingHits_EE", 1);
+		  set("hasMatchedConversion");
+		} 
 	}
 
 #ifdef shervin
@@ -782,7 +801,7 @@ public: // interface
 		Double_t etaSC = electron.superCluster()->eta();
 		float AEff;
 
-//25ns effective areas. see https://indico.cern.ch/event/369239/contribution/4/attachments/1134761/1623262/talk_effective_areas_25ns.pdf
+		//25ns effective areas. see https://indico.cern.ch/event/369239/contribution/4/attachments/1134761/1623262/talk_effective_areas_25ns.pdf
 		if      (fabs(etaSC) < 1.0)                          AEff = 0.1752;
 		else if (fabs(etaSC) >= 1.0   && fabs(etaSC) < 1.479)  AEff = 0.1862;
 		else if (fabs(etaSC) >= 1.479 && fabs(etaSC) < 2.0  )  AEff = 0.1411;
@@ -790,6 +809,16 @@ public: // interface
 		else if (fabs(etaSC) >= 2.2   && fabs(etaSC) < 2.3  )  AEff = 0.1903;
 		else if (fabs(etaSC) >= 2.3   && fabs(etaSC) < 2.4  )  AEff = 0.2243;
 		else                                               AEff = 0.2687;
+#ifdef CMSSW_80_X
+		//https://github.com/ikrav/cmssw/blob/egm_id_80X_v1/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt
+		if      (fabs(etaSC) < 1.0)                          AEff = 0.1703;
+		else if (fabs(etaSC) >= 1.0   && fabs(etaSC) < 1.479)  AEff = 0.1715;
+		else if (fabs(etaSC) >= 1.479 && fabs(etaSC) < 2.0  )  AEff = 0.1213;
+		else if (fabs(etaSC) >= 2.0   && fabs(etaSC) < 2.2  )  AEff = 0.1230;
+		else if (fabs(etaSC) >= 2.2   && fabs(etaSC) < 2.3  )  AEff = 0.1635;
+		else if (fabs(etaSC) >= 2.3   && fabs(etaSC) < 2.4  )  AEff = 0.1937;
+		else                                               AEff = 0.2393;
+#endif
 
 		double iso_ch = electron.pfIsolationVariables().sumChargedHadronPt;
 		double iso_em = electron.pfIsolationVariables().sumPhotonEt;

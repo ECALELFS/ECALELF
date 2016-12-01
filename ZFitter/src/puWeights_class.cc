@@ -56,15 +56,15 @@ void puWeights_class::ReadFromFile(std::string filename)
 		weights_itr->second.clear();
 	}
 
-	f_pu  = new TFile(filename.c_str(), "READ");
+	TFile f_pu(filename.c_str(), "READ");
 
-	f_pu->cd();
+	f_pu.cd();
 
 	TH1D *puweights = 0;
 	TH1D *gen_pu = 0;
 
-	gen_pu = (TH1D*) f_pu->Get("generated_pu");
-	puweights = (TH1D*) f_pu->Get("weights");
+	gen_pu = (TH1D*) f_pu.Get("generated_pu");
+	puweights = (TH1D*) f_pu.Get("weights");
 
 
 	if (!puweights || !gen_pu) {
@@ -98,7 +98,7 @@ void puWeights_class::ReadFromFile(std::string filename)
 	//     PUweights = generate_flat10_weights(PUhist);
 	//     PUfile.Close();
 
-	f_pu->Close();
+	f_pu.Close();
 
 	return;
 }

@@ -44,3 +44,5 @@ prod_alcarereco
 *.png
 *.eps
 *.pdf
+
+EcalAlCaRecoProducers/bin/
