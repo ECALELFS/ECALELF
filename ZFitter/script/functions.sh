@@ -53,7 +53,10 @@ mcName(){
 
 mkSmearerCatSignal(){
     basenameConfig=`basename $1 .dat`
-    if [ ! -e "${eos_path}/data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ];then
+    if [ ! -e "${eos_path}/data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ] || [ "$3" = "-f" ];then
+	if [ "$3" = "-f" ]; then
+	echo "[INFO] Force categorization for MC"
+	fi
 	echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
 	echo "./bin/ZFitter.exe -f ${configFile} --regionsFile=$1 --saveRootMacro  --addBranch=smearerCat_s"
  	./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
@@ -66,11 +69,14 @@ mkSmearerCatSignal(){
 
     #Once cat root files are created, just write them in the bare configfile
     #TO-DO -> be sure that the writing is unique to avoid stupid crashes
-    echo "[INFO] You are writing the cat root files path for regions $1 at the bottom of the validation file: $2"  
-    for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
-    do
-	echo -e "${tag}\tsmearerCat_${basenameConfig}\t${eos_path}/data/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
-    done
+    is_already_written=$(cat ${configFile} |grep "smearerCat_${basenameConfig}")
+    echo ${is_already_written}
+#    if[$(cat ${configFile} |grep "smearerCat_${basenameConfig}")]
+#    echo "[INFO MC] You are writing the cat root files path for regions $1 at the bottom of the validation file: $2"  
+#    for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
+#    do
+#	echo -e "${tag}\tsmearerCat_${basenameConfig}\t${eos_path}/data/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
+#    done
 }
 
 
@@ -90,6 +96,7 @@ mkSmearerCatData(){
 
     #Once cat files exist, just write them in the bare configfile
     #TO-DO -> be sure that the writing is unique to avoid stupid crashes
+    echo "[INFO Data] You are writing the cat root files path for regions $1 at the bottom of the validation file: $3"  
     for tag in `grep "^d" $3 | grep selected | awk -F" " ' { print $1 } '`
     do
 	echo -e "${tag}\tsmearerCat_${basenameConfig}\t$2/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
