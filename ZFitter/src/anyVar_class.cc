@@ -397,7 +397,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 	reduced_data->ResetBranchAddresses();
 
-	if(_exclusiveCategories && goodEntries.size() != entries) {
+	if(_exclusiveCategories && (Long64_t) goodEntries.size() != entries) {
 		std::cout << "Reduced number of events: " << entries << " -> " <<  goodEntries.size() << std::endl;
 	}
 	

@@ -132,17 +132,17 @@
 #include "Calibration/ZNtupleDumper/interface/eleIDMap.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
-#define initFloat {-999.,-999.,-999.}
-#define initInt   {0,0,0}
-
+// number of electrons in each branch (max nEle)
+#define NELE 3
+#define initFloat     {-999.,-999.,-999.} 
+#define initInt       {0,0,0}
+#define initIntCharge {-100,-100,-100}
 //#define DEBUG
 
 ////////////////////////////////////////////////
 // class declaration
 //
 
-// number of electrons in each branch (max nEle)
-#define NELE 2
 
 class ZNtupleDumper : public edm::EDAnalyzer
 {
@@ -259,7 +259,7 @@ private:
 	// selection
 	UInt_t eleID[NELE]=initInt;        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
-	Int_t  chargeEle[NELE]={-100,-100,-100}; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon \todo change it to Chart_t (B)
+	Int_t  chargeEle[NELE]=initIntCharge; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon \todo change it to Chart_t (B)
 	Float_t etaSCEle[NELE]=initFloat, phiSCEle[NELE]=initFloat; ///< phi of the SC
 	Float_t   etaEle[NELE]=initFloat, phiEle[NELE]  =initFloat; ///< phi of the electron (electron object)
 
@@ -327,7 +327,7 @@ private:
 
 	Float_t invMass_MC;
 	Float_t invMass_mumu;
-	Float_t   etaMCEle[NELE], phiMCEle[NELE]=initFloat;
+	Float_t   etaMCEle[NELE]=initFloat, phiMCEle[NELE]=initFloat;
 
 #ifdef shervin
 	Float_t invMass_inGsf;

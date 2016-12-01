@@ -1238,12 +1238,12 @@ int main(int argc, char **argv)
 					const_term_v = new RooRealVar("constTerm_" + varName, "constTerm_" + varName, 0.00, 0.000, 0.02);
 
 				if(smearEleType == "" && initFileName == "") {
-					const_term_v.setVal(0.01);
-
+					const_term_v->setVal(0.01);
+				}
 					const_term_v->setError(0.03); // 1%
 					//const_term_v->setConstant(true);
 					args.add(*const_term_v);
-				}
+			}
 				if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) ) && vm.count("constTermFix") == 1) {
 					const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
 					const_term_v->setConstant(false);

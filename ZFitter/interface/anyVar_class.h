@@ -87,7 +87,7 @@ public:
 		reduced_data = reduced_data_vec[moduloIndex].get();
 		goodEntries.clear();
 		Long64_t nentries=reduced_data->GetEntriesFast();
-		for(unsigned long long int i=0; i < nentries; ++i){
+		for(Long64_t i=0; i < nentries; ++i){
 			goodEntries.insert(goodEntries.end(),i);
 		}
 	};
