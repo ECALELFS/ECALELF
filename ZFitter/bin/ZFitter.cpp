@@ -1046,11 +1046,12 @@ int main(int argc, char **argv)
 	for(std::vector<TString>::const_iterator region_itr = categories.begin();
 	        region_itr != categories.end();
 	        region_itr++) {
-		std::set<TString> tmpList = cutter.GetBranchNameNtuple(*region_itr);
+		TString r=*region_itr;
+		r.ReplaceAll(commonCut,"");
+		std::set<TString> tmpList = cutter.GetBranchNameNtuple(r);
 		activeBranchList.insert(tmpList.begin(), tmpList.end());
 		// add also the friend branches!
 	}
-
 
 	if(vm.count("zFit")) {
 
@@ -1115,86 +1116,94 @@ int main(int argc, char **argv)
 
 	//------------------------------ anyVar_class declare and set the options
 	if(vm.count("anyVar")) {
-		std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
+		TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
+		std::vector<TString> branchListAny;
 #ifdef dump_root_tree
 		// first all the single variables
-		branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
-		branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
-		branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
-		// then all the array variables
-		branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
-		branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
-#endif
-		//branchListAny.push_back(make_pair("invMass_e5x5",          anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("esEnergySCEle",          anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
-		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", true); // vm.count("updateOnly"));
-		anyVar._exclusiveCategories = false;
-		anyVar.Import(commonCut, eleID, activeBranchList, modulo);
+// 		branchListAny.push_back("runNumber");
+// 		branchListAny.push_back("eventNumber");
+// 		branchListAny.push_back("lumiBlock");
+// 		branchListAny.push_back("runTime");
+// 		branchListAny.push_back("nBX");
+// 		branchListAny.push_back("nPV");
+// 		// then all the array variables
+// 		branchListAny.push_back("etaSCEle");
+// 		branchListAny.push_back("phiSCEle");
+// 		branchListAny.push_back("chargeEle");
+// 		branchListAny.push_back("R9Ele")
+ #endif
+// 		//branchListAny.push_back(make_pair("invMass_e5x5",          anyVar_class::kAFloat_t));
+// 		branchListAny.push_back("esEnergySCEle");
+// 		branchListAny.push_back("sigmaIEtaIEtaSCEle");
+ 		branchListAny.push_back(invMass_var);
 
-		TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
-		///\todo allocating both takes too much memory
-		if(vm.count("runToy") && modulo > 0) {
-			// splitting the events by "modulo" and obtaining statistically indipendent subsamples
-			for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
-				//change the output directory for the results
-				std::string dir = outDirFitResData;
-				size_t slashpos = dir.find_last_of('/');
-				if( slashpos != std::string::npos && slashpos != dir.size()) dir.erase(dir.rfind("/"));
-				dir += "-modulo_" + std::to_string(moduloIndex) + "/";
-				system(("mkdir -p " + dir).c_str());
-				anyVar.SetOutDirName(dir, vm.count("updateOnly"));
-				std::cout << "[INFO] setting new output dir: " << dir << std::endl;
-
-				//anyVar.Import(commonCut, eleID, activeBranchList, modulo, moduloIndex);
-				anyVar.ChangeModulo(moduloIndex);
-				anyVar.SaveReducedTree(reduced_trees_file);
+		TDirectory *dir = reduced_trees_file->GetDirectory("");
+		//TDirectory *dir = new TDirectory(); //
+		{
+			//anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", reduced_trees_file->GetDirectory(""), true); // vm.count("updateOnly"));
+			anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", dir, true); // vm.count("updateOnly"));
+			anyVar._exclusiveCategories = false;
+			anyVar.Import(commonCut, eleID, activeBranchList, modulo);
+			///\todo allocating both takes too much memory
+			if(vm.count("runToy") && modulo > 0) {
+				// splitting the events by "modulo" and obtaining statistically indipendent subsamples
+				for(unsigned int moduloIndex = 0; moduloIndex < modulo; ++moduloIndex) {
+					//change the output directory for the results
+					std::string dir = outDirFitResData;
+					size_t slashpos = dir.find_last_of('/');
+					if( slashpos != std::string::npos && slashpos != dir.size()) dir.erase(dir.rfind("/"));
+					dir += "-modulo_" + std::to_string(moduloIndex) + "/";
+					system(("mkdir -p " + dir).c_str());
+					anyVar.SetOutDirName(dir, vm.count("updateOnly"));
+					std::cout << "[INFO] setting new output dir: " << dir << std::endl;
+					
+					//anyVar.Import(commonCut, eleID, activeBranchList, modulo, moduloIndex);
+					anyVar.ChangeModulo(moduloIndex);
+					anyVar.SaveReducedTree(reduced_trees_file);
 #ifndef dump_root_tree
-				for(auto& region : categories) {
-					std::cout << "------------------------------------------------------------" << std::endl;
-					std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-					anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
-				}
-				break;
+					for(auto& region : categories) {
+						std::cout << "------------------------------------------------------------" << std::endl;
+						std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
+						anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+					}
+					break;
 #else
-				std::cerr << "[ERROR] dump_root_tree defined and running the toys with modulo: not implemented" << std::endl;
+					std::cerr << "[ERROR] dump_root_tree defined and running the toys with modulo: not implemented" << std::endl;
 #endif
 			}
-			reduced_trees_file->Write();
-			reduced_trees_file->Close();
-		} else {
-			// anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
-			// anyVarMC._exclusiveCategories = false;
-			// anyVarMC.Import(commonCut, eleID, activeBranchList);
-
+				reduced_trees_file->Write();
+				reduced_trees_file->Close();
+			} else {
+				// anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
+				// anyVarMC._exclusiveCategories = false;
+				// anyVarMC.Import(commonCut, eleID, activeBranchList);
+				
+//			anyVar.SaveReducedTree(reduced_trees_file);
 #ifndef dump_root_tree
-			anyVar.SaveReducedTree(reduced_trees_file);
-			reduced_trees_file->Write();
-			reduced_trees_file->Close();
-			return 0;
-			for(auto& region : categories) {
-				std::cout << "------------------------------------------------------------" << std::endl;
-				std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-				anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2));
+				anyVar._exclusiveCategories = true;
+				for(auto& region : regions){ //categories
+					anyVar.ChangeModulo(0);
+					if(runRanges.size()>0){
+					for(auto& runRange : runRanges) {
+						TString token1, token2;
+						TObjArray *tx = runRange.Tokenize("-");
+						token1 = ((TObjString *)(tx->At(0)))->String();
+						token2 = ((TObjString *)(tx->At(1)))->String();
+						TString category = region + "-runNumber_" + token1 + "_" + token2;
+						TString c = category + "-" + commonCut.c_str();
+						anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
+					}}else{
+						TString category = region;
+						TString c = category + "-" + commonCut.c_str();
+						anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
+					}
 //				anyVarMC.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, true, 1), cutter.GetCut(region, true, 2), scale);
-			}
-
-#else
-			TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
-			anyVar.Import(commonCut, eleID, activeBranchList);
-			anyVar.SaveReducedTree(reduced_trees_file);
-			reduced_trees_file->Write();
-			reduced_trees_file->Close();
-
+				}
 #endif
+				reduced_trees_file->Write();
+			}
 		}
-
+		reduced_trees_file->Close();
 	}
 
 	if(vm.count("smearerFit")) {
