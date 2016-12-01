@@ -23,6 +23,7 @@ xVar="((column(\"timeMax\")+column(\"timeMin\"))/2)"
 xVarDelta="((column(\"timeMax\")-column(\"timeMin\"))/2)"
 yVarDelta="((column(\"effSigma\")/sqrt(column(\"nEvents\"))/2)"
 yRes="(column(\"effSigma\")/column(\"mean68\")*91.2/100)"
+#yRes="(column(\"effSigmaScaled\")*91.2/100)"
 
 # Other settings
 set timefmt "%s"
@@ -54,7 +55,7 @@ set grid
 set tmargin 6
 
 
-load 'data/runRanges/runRangeLimits2.dat.label'
+#load 'data/runRanges/runRangeLimits2.dat.label'
 
 ##### The real plots!
 
@@ -81,13 +82,13 @@ if(ARGC==1){
 		}
 	}
 #	print files
+    print titles
 #	print categories
 	do for [category in categories]{
-	 	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
-		yVar="mean68"
+	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
+	 	yVar="mean68"
 
-		p for [id=1:words(files)] word(files,id) u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title word(titles,id)
-
+	 	p for [id=1:words(files)] word(files,id) u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title word(titles,id)
 		p for [id=1:words(files)] word(files,id) u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width '.word(titles,id)
 	
 	}

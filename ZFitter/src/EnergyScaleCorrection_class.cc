@@ -17,17 +17,13 @@
 //#define DEBUG
 //#define PEDANTIC_OUTPUT
 
-EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed):
-	doScale(false), doSmearings(false),
+EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed, bool doScale_, bool doSmearings_):
+	doScale(doScale_), doSmearings(doSmearings_),
 	smearingType_(ECALELF)
 {
 
-	if(correctionFileName.size() > 0) {
-		std::string filename = correctionFileName;
-		if(filename.find("_scales.dat") == std::string::npos) {
-			//If the correction file did not contain _scales.dat, then add it
-			std::string filename = filename + "_scales.dat";
-		}
+	if(correctionFileName.size() > 0 && doScale) {
+		std::string filename = correctionFileName + "_scales.dat";
 		ReadFromFile(filename);
 		if(scales.empty()) {
 			std::cerr << "[ERROR] scale correction map empty" << std::endl;
@@ -35,7 +31,7 @@ EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionF
 		}
 	}
 
-	if(correctionFileName.size() > 0) {
+	if(correctionFileName.size() > 0 && doSmearings) {
 		std::string filename = correctionFileName + "_smearings.dat";
 		ReadSmearingFromFile(filename);
 		if(smearings.empty()) {
@@ -161,12 +157,11 @@ void EnergyScaleCorrection_class::ReadFromFile(TString filename)
 	std::cout << "[STATUS] Reading energy scale correction  values from file: " << filename << std::endl;
 
 	//std::ifstream Ccufile(edm::FileInPath(Ccufilename).fullPath().c_str(),std::ios::in);
-#ifdef CMSSW //this is always true, then what's the purpose of the ifdef??
+#ifdef CMSSW
 	std::ifstream f_in(edm::FileInPath(filename).fullPath().c_str());
 #else
 	std::ifstream f_in(filename.Data());
 #endif
-
 	if(!f_in.good()) {
 		std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
 		exit(1);
