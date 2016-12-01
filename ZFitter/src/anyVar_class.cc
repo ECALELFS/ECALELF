@@ -7,16 +7,23 @@
 //#define DEBUG
 #define MAXENTRIES 100000
 #define MAXBRANCHES  20
+#define BUFSIZE 12 /* bytes */
 #include <cassert>
+
 
 anyVar_class::~anyVar_class(void)
 {
+	std::cerr << "[anyVar_class DESTROYING]" << std::endl;
+//	data_chain->SetEntryList(NULL);
+//	reduced_data_vec.clear();
+	std::cerr << "[anyVar_class DESTROY]" << std::endl;
+//	delete data_chain;
 }
 
-anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes, bool updateOnly):
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes, TDirectory* dir, bool updateOnly):
 	data_chain(data_chain_),
 	reduced_data(NULL),
-	dir(),
+	_dir(dir),
 	_branchNames(branchNames),
 	_cutter(cutter),
 	massBranchName_(massBranchName),
@@ -25,7 +32,7 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::pair<TString, k
 
 	Long64_t entries = data_chain->GetEntriesFast();
 	for(auto& branch : _branchNames) {
-		TString& bname = branch.first;
+		TString& bname = branch;
 		if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat", std::ofstream::app));
 		else _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat"));
 
@@ -52,7 +59,7 @@ void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 	system(("mkdir -p " + dirname).c_str());
 	_statfiles.clear(); ///momory leak?
 	for(auto& branch : _branchNames) {
-		TString& bname = branch.first;
+		TString& bname = branch;
 		if(updateOnly) _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat", std::ofstream::app));
 		else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat"));
 	}
@@ -67,52 +74,46 @@ void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 
 }
 
+// branchList is the list of branches used for selection of categories
 void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo)
 {
+	assert(branchList.size()>0);
 	commonCut += "-eleID_" + eleID_;
 	TCut dataCut = _cutter.GetCut(commonCut, false);
+	std::set<TString> commonCutBranches= _cutter.GetBranchNameNtuple(commonCut);
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
 	std::cout << "--------------- Importing: " << data_chain->GetEntries() << std::endl;
 	//if(data!=NULL) delete data;
-	TChain *data = ImportTree(data_chain, dataCut, branchList, modulo);
-	std::cout << "[INFO] imported "  << (data->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
+	ImportTree(data_chain, dataCut, commonCutBranches, branchList, modulo);
+	//std::cout << "[INFO] imported "  << (data_chain->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
 	//data->Print();
+	
+	//data_chain->SetEntryList(NULL);
+	data_chain->SetBranchStatus("*",0);
 	std::cout << "--------------- IMPORT finished" << std::endl;
 	return;
 }
 
 
-TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo)
+void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>& commonCutBranches, std::set<TString>& branchList, unsigned int modulo)
 {
+	std::cout << "[anyVar_class][STATUS] Disabling branches to fast import" << std::endl;
+	chain->SetBranchStatus("*", 0);
 
-	if(branchList.size() > 0) {
-		std::cout << "[anyVar_class][STATUS] Disabling branches to fast import" << std::endl;
-		chain->SetBranchStatus("*", 0);
-	}
-
-	for(auto branch : branchList) {
+	for(auto& branch : commonCutBranches) {
 		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch << std::endl;
 		chain->SetBranchStatus(branch, 1);
-		chain->AddBranchToCache(branch, kTRUE);
+//		chain->AddBranchToCache(branch, kTRUE);
 	}
 
-	for(auto branch : _branchNames) {
-		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch.first << std::endl;
-		chain->SetBranchStatus(branch.first, 1);
-		chain->AddBranchToCache(branch.first, kTRUE);
-	}
 	// abilitare la lista dei friend branch
 	if(chain->GetBranch("scaleEle"))  chain->SetBranchStatus("scaleEle", 1);
 	if(chain->GetBranch("smearEle")) chain->SetBranchStatus("smearEle", 1);
 	if(chain->GetBranch("puWeight")) chain->SetBranchStatus("puWeight", 1);
 	if(chain->GetBranch("r9Weight")) chain->SetBranchStatus("r9Weight", 1);
-	chain->SetBranchStatus(massBranchName_.c_str(), 1);
-//	chain->SetBranchStatus("R9Ele", 1);
-//	chain->SetBranchStatus("etaEle", 1);
-//	chain->SetBranchStatus("recoFlagsEle", 1);
-	chain->SetBranchStatus("eleID", 1);
-//	chain->SetBranchStatus("eventNumber", 1);
 
+	//chain->SetBranchStatus(massBranchName_.c_str(), 1);
+	//chain->SetBranchStatus("eleID", 1);
 	//chain->SetCacheSize(5000000000);
 	TStopwatch ts;
 	ts.Start();
@@ -126,6 +127,8 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 //	chain->Draw(">>" + evListName, commonCut, "entrylist", MAXENTRIES);
 	chain->Draw(">>" + evListName, commonCut, "entrylist");
 #endif
+
+	chain->SetBranchStatus("*" ,0);
 
 	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
 	assert(elist != NULL);
@@ -141,97 +144,77 @@ TChain *anyVar_class::ImportTree(TChain *chain, TCut commonCut, std::set<TString
 	ts.Print();
 
 	// updates the reduced_data
-	TreeToTree(chain, "", modulo);
+	TreeToTree(chain, branchList, modulo);
 
-	return chain;
+	return;
 }
 
 
-void anyVar_class::TreeToTree(TChain *chain, TCut cut, unsigned int modulo)
+void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsigned int modulo)
 {
 	assert(modulo > 0);
+	assert(branchList.size()>0);
 	std::cout << "[anyVar_class][STATUS] Start copying the tree to memory" << std::endl;
+	_dir->cd();
 	TStopwatch ts;
 	ts.Start();
 	reduced_data_vec.clear();
-	chain->LoadTree(chain->GetEntryNumber(0));
 
+
+	char buffer[BUFSIZE*MAXBRANCHES]; //4bytes * 3 in the array * number of branches
+	char *bufferPtr=buffer;
+
+	size_t buffIndex=0;
 	for(unsigned int i = 0; i < modulo; ++i) {
 		char title[50];
 		sprintf(title, "%s_mod_%d", chain->GetName(), i);
-#ifdef DEBUG
-		std::cout << "[DEBUG] " << modulo << "\t" << i << "\t" << title << std::endl;
-#endif
 
-		reduced_data_vec.emplace_back(chain->CloneTree(0));
+		reduced_data_vec.emplace_back(new TTree(title, title)); 
 		TTree *reduced_data = reduced_data_vec[i].get();
-		reduced_data->SetDirectory(&dir);
-		reduced_data->SetName(title);
+//		reduced_data->SetDirectory(_dir);
 	}
 
-	std::unique_ptr<TObjArray> branches(new TObjArray()); //chain->GetListOfBranches();
-	TIter next(chain->GetListOfFriends()); // cannot use reduced_data otherwise crashes
-	TObject * obj = NULL;
-	while ((obj = next())) {
-		TTree *t = ((TFriendElement *)obj)->GetTree();
-		branches->AddAll(t->GetListOfBranches());
-		for(auto& reduced_data : reduced_data_vec) {
-			reduced_data->RemoveFriend(reduced_data->GetFriend(t->GetName())); // only way to avoid memory leak
+	chain->SetBranchStatus("*", 0);
+	std::set<TString> allBranches;
+	allBranches.insert(branchList.begin(), branchList.end());
+	
+	for(auto& branch : _branchNames){
+		allBranches.insert(branch);
+	}
+
+	for(auto& branch : allBranches){
+		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch << std::endl;
+		chain->SetBranchStatus(branch, 1);
+		TBranch * br = chain->GetBranch(branch);
+		chain->SetBranchAddress(branch, bufferPtr); //bufferPtr);
+		assert(buffIndex<BUFSIZE*MAXBRANCHES);
+
+		for(unsigned int i = 0; i < modulo; ++i) {
+			TTree *reduced_data = reduced_data_vec[i].get();
+			TString title=br->GetTitle();
+			title.ReplaceAll("[3]","[2]");
+			//TBranch *brr = reduced_data->Branch(br->GetName(), &bufferPtr, title);
+			reduced_data->Branch(br->GetName(), bufferPtr, title);
 		}
+		buffIndex+=std::max(br->GetEntry(0), BUFSIZE); // BUFSIZE; //12 bytes
+		bufferPtr+=std::max(br->GetEntry(0), BUFSIZE); // BUFSIZE; //12 bytes
 	}
-
-	// for(auto& reduced_data : reduced_data_vec){
-	// 	reduced_data->GetListOfFriends()->Print();
-	// }
-
-
-	Int_t nb = branches->GetEntriesFast();
-	for (Int_t i = 0; i < nb; ++i) {
-		TBranch * br = chain->GetBranch(branches->At(i)->GetName());
-		if (chain->GetBranchStatus(br->GetName())) {
-			std::cout << "Active: " << br->GetName() << std::endl;
-			for(unsigned int i = 0; i < modulo; ++i) {
-				TTree *reduced_data = reduced_data_vec[i].get();
-				TBranch *brr = reduced_data->Branch(br->GetName(), br->GetAddress(), br->GetTitle());
-				//brr->Print();
-				// brr->SetAutoDelete(kFALSE);
-				// if (brr->InheritsFrom(TBranchElement::Class())) {
-				// 	((TBranchElement*) brr)->ResetDeleteObject();
-				// }
-			}
-		}
-
-	}
-	// for(unsigned int i=0; i < modulo; ++i){
-	// 	chain->CopyAddresses(reduced_data_vec[i].get());
-	// }
-
-	reduced_data_vec[0]->Print();
+//	reduced_data_vec[0]->Print();
 
 #ifdef DEBUG
 	std::cout << "[DEBUG] Friends removed and branches added" << std::endl;
 #endif
-
-	std::vector<TEntryList*> elists;
-	std::vector<Long64_t> n;
-	for(unsigned int i = 0; i < modulo; ++i) {
-		n.push_back(0);
-	}
-	for(auto& reduced_data : reduced_data_vec) {
-		TString evListName = "evList_";
-		evListName += reduced_data->GetTitle();
-		evListName += "_red";
-
-		elists.emplace_back(new TEntryList(evListName, evListName, reduced_data.get()));
-	}
-
 	Long64_t nentries = chain->GetEntryList()->GetN();
 	Long64_t treenumber = -1;
-	TTreeFormula *selector = (cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
+	TTreeFormula *selector = NULL; //(cut == "" ) ? NULL : new TTreeFormula("selector", cut, chain);
 
 	for (Long64_t i = 0; i < nentries; ++i) {
+		if(i % (nentries / 100) == 0) std::cerr << "\b\b\b\b\b\b[" << std::setw(3) << i / (nentries / 100) << "%]";
+
 		Long64_t ientry = chain->GetEntryNumber(i);
-		chain->GetEntry(ientry);
+		Long64_t jentry = chain->LoadTree(ientry);// entry in the tree
+
+		Long64_t nb = chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
 			treenumber = chain->GetTreeNumber();
 			if(selector != NULL) selector->UpdateFormulaLeaves();
@@ -239,24 +222,22 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut, unsigned int modulo)
 		if(selector != NULL && selector->EvalInstance() == false) continue;
 		if(modulo == 1) {
 			reduced_data_vec[0]->Fill();
-			elists[0]->Enter(n[0]++);
 		} else {
 			reduced_data_vec[i % modulo]->Fill();
-			elists[i % modulo]->Enter(n[i % modulo]++);
 		}
+	}
+	std::cout << "[reset branch address]" << std::endl;
+	chain->ResetBranchAddresses();
+
+	for(auto &reduced_data : reduced_data_vec){
+		reduced_data->ResetBranchAddresses();
 	}
 
 #ifdef DEBUG
 	std::cout << "[DEBUG] Entries in tree copied" << std::endl;
 #endif
-	for(size_t i = 0; i < reduced_data_vec.size(); ++i) {
-#ifdef DEBUG
-		elists[i]->Print();
-		std::cout << reduced_data_vec[i]->GetEntries() << std::endl;
-#endif
-		reduced_data_vec[i]->SetEntryList(elists[i]);
-//		reduced_data_vec[i]->ResetBranchAddresses();
-	}
+	std::cout << "[DEBUG] Entries in tree copied" << std::endl;
+
 	reduced_data_vec[0]->Print();
 	if(reduced_data_vec[0]->GetEntries() > 0) reduced_data_vec[0]->Show(0);
 
@@ -298,17 +279,15 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	}
 	if(doProcess == true) return;
 
-	//TECALChain *reduced_data = (TECALChain*) reduced_data;
 
-	Long64_t entries = reduced_data->GetEntryList()->GetN();
-	size_t nBranches = _branchNames.size();
-
-	// _branchList is used to make the set branch addresses
+	Float_t *mll = NULL;
 	Float_t branches_Float_t[MAXBRANCHES][3];
+	size_t nBranches = _branchNames.size();
 	for(unsigned int ibranch = 0; ibranch < nBranches; ++ibranch) {
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
-		TString& bname = _branchNames[ibranch].first;
+		TString& bname = _branchNames[ibranch];
 		reduced_data->SetBranchAddress(bname, &branches_Float_t[ibranch]);
+		if(bname==massBranchName_) mll = &(branches_Float_t[ibranch][0]);
 	}
 
 	Float_t weight_ = 1 ;
@@ -318,7 +297,6 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
 	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
 
-	Float_t mll;
 
 	if(reduced_data->GetBranch("puWeight") != NULL) {
 		std::cout << "[anyVar_class][STATUS] Adding pileup weight branch from friend" << std::endl;
@@ -341,8 +319,6 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		reduced_data->SetBranchAddress("r9Weight", r9weight_);
 	}
 
-	reduced_data->SetBranchAddress(massBranchName_.c_str(), &mll);
-
 	TStopwatch TT;
 	TT.Start();
 	reduced_data->LoadTree(reduced_data->GetEntryNumber(0));
@@ -350,15 +326,17 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	TTreeFormula *selector_ele1 = (cut_ele1 != "") ? new TTreeFormula("selector_ele1", cut_ele1, reduced_data) : NULL;
 	TTreeFormula *selector_ele2 = (cut_ele2 != "") ? new TTreeFormula("selector_ele2", cut_ele2, reduced_data) : NULL;
 
-	std::cout << "[anyVar_class][STATUS] anyVar processing: categories "
+	Long64_t entries = reduced_data->GetEntriesFast(); //yList()->GetN();
+
+	std::cout << "[anyVar_class][STATUS] anyVar processing: category " << region
 	          << "\t" << "with " << entries << " entries" << std::endl;
 //	std::cerr << "[ 00%]";
 
-	//std::unique_ptr<TEntryList> exclusiveEventList(new TEntryList(*reduced_data->GetEntryList()));//(_exclusiveCategories) ? new TEntryList(*reduced_data->GetEntryList()) : NULL;
-	TEntryList* exclusiveEventList = NULL;
+
 	Long64_t count = 0;
-	for(Long64_t jentry = 0; jentry < entries; ++jentry) {
-		Long64_t entryNumber = reduced_data->GetEntryNumber(jentry);
+	//for(Long64_t jentry = 0; jentry < entries; ++jentry) {
+	for(auto& jentry : goodEntries){
+		Long64_t entryNumber = jentry; //reduced_data->GetEntryNumber(jentry);
 		reduced_data->GetEntry(entryNumber);
 //		if(jentry % (entries / 100) == 0) std::cerr << "\b\b\b\b\b\b[" << std::setw(3) << jentry / (entries / 100) << "%]";
 
@@ -373,10 +351,9 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		if(selector_ele1 != NULL && selector_ele1->EvalInstance() == true) passing_ele[0] = true;
 		if(selector_ele2 != NULL && selector_ele2->EvalInstance() == true) passing_ele[1] = true;
 		if(passing_ele[0] && passing_ele[1]) count++;
-
 #ifdef DEBUG
 		if(jentry < 1) {
-			std::cout << "[DEBUG] invMass: " << mll << std::endl;
+			std::cout << "[DEBUG] invMass: " << *mll << std::endl;
 			std::cout << "[DEBUG] PU: " << pileupWeight_ << std::endl;
 			std::cout << "[DEBUG] corrEle[0]: " << corrEle_[0] << std::endl;
 			std::cout << "[DEBUG] corrEle[1]: " << corrEle_[1] << std::endl;
@@ -406,28 +383,24 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 		}
 		//double mllNew = mll * scale;
-		mll *= scale;
-		if(bothPassing && mll > 60. && mll < 120) 	_stats_vec[nBranches].add(mll);
-		if(_exclusiveCategories && bothPassing) exclusiveEventList->Remove(entryNumber); // remove the event
+		*mll *= scale;
+		if(bothPassing && *mll > 60. && *mll < 120) 	_stats_vec[nBranches].add(*mll);
+		if(_exclusiveCategories && bothPassing) goodEntries.erase(jentry);
 	}
 	//fprintf(stderr, "\n");
 	TT.Stop();
+	if(selector_ele1 != NULL) delete selector_ele1;
+	if(selector_ele2 != NULL) delete selector_ele2;
+
 	std::cout << "[INFO] Running over events: ";
 	TT.Print();
 
-	if(selector_ele1 != NULL) delete selector_ele1;
-	if(selector_ele2 != NULL) delete selector_ele2;
 	reduced_data->ResetBranchAddresses();
-	std::cout << "Original number of entries: " << reduced_data->GetEntryList()->GetN() << std::endl;
 
-	if(_exclusiveCategories && exclusiveEventList->GetN() != reduced_data->GetEntryList()->GetN()) {
-		//delete reduced_data->GetEntryList();
-		//reduced_data->TECALChain::SetEntryList(exclusiveEventList);
-		//reduced_data->TECALTree::SetEntryList(exclusiveEventList);
-		std::cout << "New number of entries: " <<  reduced_data->GetEntryList()->GetN() << std::endl;
-
+	if(_exclusiveCategories && goodEntries.size() != entries) {
+		std::cout << "Reduced number of events: " << entries << " -> " <<  goodEntries.size() << std::endl;
 	}
-	if(_exclusiveCategories) delete exclusiveEventList;
+	
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];

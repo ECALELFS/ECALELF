@@ -1,14 +1,14 @@
 #!/bin/bash
 source script/functions.sh
 #tag_name=""
-commonCut=Et_25
+commonCut=isEle-Et_25
 selection=loose25nsRun2
 invMass_var=invMass_SC_must_regrCorr_ele
 invMass_min=65
 invMass_max=115
 configFile=data/validation/monitoring_2016.dat
 runRangesFile=data/runRanges/monitoringRun2016.dat
-baseDir=test2
+baseDir=testNew
 #extraOptions="--addBranch iSM --forceNewFit"
 
 # VALIDATION=y

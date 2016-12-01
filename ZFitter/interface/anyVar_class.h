@@ -22,7 +22,6 @@
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TFile.h>
-#include <TDirectory.h>
 #include <TMath.h>
 #include <TString.h>
 // needed for TEntryList fix
@@ -64,19 +63,6 @@ class anyVar_class
 {
 public:
 
-	/// simple variable types
-	typedef enum { kInt_t = 1, ///< Int_t
-	               kUInt_t,    ///< UInt_t
-	               kULong64_t, ///< ULong64_t
-	               kFloat_t,   ///< Float_t
-	               kArrayTypes = 10,  // not used, just to increment the index of the array types
-	               kAInt_t,    ///< Array of Int_t
-	               kAUInt_t,   ///< Array of UInt_t
-	               kAULong64_t,///< Array of ULong64_t
-	               kAFloat_t,  ///< Array of Float_t
-	               kMaxType    // used only for checks
-	             } kType;
-
 	/** \param data_chain_ chain with the data to be analyzed.
 	 *  \param branchNames vector of <branchName, kType>
 	 *  \param cutter already contructed with the right energySC branch set
@@ -85,9 +71,10 @@ public:
 	 *  \param updateOnly    if true opens the output files in append mode
 	 */
 	anyVar_class(TChain *data_chain_,
-	             std::vector<std::pair<TString, kType> > branchNames, ElectronCategory_class& cutter,
+	             std::vector<TString> branchNames, ElectronCategory_class& cutter,
 	             std::string massBranchName,
 	             std::string outDirFitRes,
+				 TDirectory* dir,
 	             bool updateOnly = true
 	            );
 
@@ -95,10 +82,14 @@ public:
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 1); ///< to be called in the main
 	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
 	void SetOutDirName(std::string dirname, bool updateOnly = true);
-	void TreeToTree(TChain *chain, TCut cut, unsigned int modulo = 0); ///< skim the input TChain with selected events, copying only active branches
 	void ChangeModulo(unsigned int moduloIndex)
 	{
 		reduced_data = reduced_data_vec[moduloIndex].get();
+		goodEntries.clear();
+		Long64_t nentries=reduced_data->GetEntriesFast();
+		for(unsigned long long int i=0; i < nentries; ++i){
+			goodEntries.insert(goodEntries.end(),i);
+		}
 	};
 	void SaveReducedTree(TFile* f)
 	{
@@ -106,12 +97,17 @@ public:
 		reduced_data->Write();
 	}
 
+	void SetDir(TDirectory *dir_){
+		if(_dir!=NULL) delete _dir;
+		_dir=dir_;
+	}
 private:
 	TChain *data_chain; // pointer fixed in the constructor
 	TTree *reduced_data;
 	std::vector<std::unique_ptr<TTree> > reduced_data_vec;
-	TDirectory dir;
-	std::vector<std::pair<TString, kType> > _branchNames; //fixed in the constructor, these are the branches with the variables to study
+	std::set<long long int> goodEntries;
+	TDirectory *_dir;
+	std::vector<TString> _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
 	std::vector<std::unique_ptr<std::ofstream> > _statfiles; ///< one file for each branch, here the stats are saved
@@ -123,7 +119,8 @@ private:
 	Double_t weight; ///< variable with the total event weight
 
 
-	TChain *ImportTree(TChain *chain, TCut commonCut, std::set<TString>& branchList, unsigned int modulo); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	void ImportTree(TChain *chain, TCut& commonCut, std::set<TString>& commonCutBranches, std::set<TString>& branchList, unsigned int modulo); ///< add to the chain the entry list with selected events, the returned pointer is the same as the one in input
+	void TreeToTree(TChain *chain, std::set<TString>& branchList, unsigned int modulo = 0); ///< skim the input TChain with selected events, copying only active branches
 
 public:
 	// define a struct saving the infos:

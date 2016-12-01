@@ -27,6 +27,7 @@ do
 			*/Cal_Nov2016_ref.py)
 				#./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly  --singleEle --weightsReco
 				#./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly  --singleEle
+				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly  --weightsReco
 				;;
 			*)
@@ -36,7 +37,7 @@ do
 		esac
 	done
 continue
-	for CHECK in '' --check
+	for CHECK in '' #--check
 	do
 		case $tagfile in 
 			*/Cal_Nov2016_ref.py)

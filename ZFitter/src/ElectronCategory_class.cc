@@ -9,8 +9,6 @@
 
 ElectronCategory_class::~ElectronCategory_class()
 {
-
-
 	return;
 }
 
@@ -29,7 +27,7 @@ ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAs
 // nEle tells you if the cut is on electron 1 (nEle=1), electron 2 (nEle=2), both(nEle=0)
 TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool corrEle)
 {
-
+   
 	if(region.Sizeof() <= 1) {
 		std::cerr << "[ERROR]: no region defined" << std::endl;
 		return "error";
@@ -96,10 +94,8 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 
 std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 {
-	std::cout << "Inside ElectronCategory_class::GetCutSet" << std::endl;
-	std::cout << "Region is " << region << std::endl;
 	TCut cut_string;
-	cut_string.Clear();
+//	cut_string.Clear();
 
 	eleIDMap eleID_map;
 
@@ -227,6 +223,9 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	TCut noPFEle_cut = "recoFlagsEle_ele1 > 1 && recoFlagsEle_ele2 > 1";
 	TCut fiducial_cut = "eleID[0]%2==1 && eleID[1]%2==1";
 
+	TCut isEle_ele1_cut = "chargeEle_ele1 == 1 || chargeEle_ele1 == -1";
+	TCut isEle_ele2_cut = "chargeEle_ele2 == 1 || chargeEle_ele2 == -1";
+	TCut isEle_cut = isEle_ele1_cut && isEle_ele2_cut;
 
 	/*
 	  se region contiene runNumber:
@@ -236,7 +235,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	  fai il loop per prendere gli intervalli di runNumber e crea un vettore di pair
 	*/
 
-	TObjArray *region_splitted = region.Tokenize("-");
+	std::unique_ptr<TObjArray> region_splitted(region.Tokenize("-"));
 
 	for(int i = 0 ; i < region_splitted->GetEntries(); i++) {
 		TString string;
@@ -254,6 +253,11 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			continue;
 		}
 
+		if(string.CompareTo("isEle") == 0){
+			cut_string += isEle_cut;
+			cutSet.insert(TString(isEle_cut));
+			continue;
+		}
 
 		if(string.CompareTo("odd") == 0) {
 			cut_string += odd_cut;
@@ -824,7 +828,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 
 		//--------------- eleID
 		if(string.Contains("eleID_")) {
-			TObjArray *splitted = string.Tokenize("_");
+			std::unique_ptr<TObjArray> splitted(string.Tokenize("_"));
 			if(splitted->GetEntries() < 2) {
 				std::cerr << "ERROR: incomplete eleID region definition" << std::endl;
 				continue;
@@ -832,19 +836,15 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TObjString *Objstring1 = (TObjString *) splitted->At(1);
 
 			TString string1 = Objstring1->GetString();
-			std::cout << "*********************************" << std::endl;
-			std::cout << "[INFO] In ElectronCategory_class: eleID is " << string1 << std::endl;
-			std::cout << "*********************************" << std::endl;
 			string1.ReplaceAll("|", "-");
 			//Note for expert users: the original eleID name has "-", hence to avoid splitting "-" are replaced with "|" by ZFitter.cpp
 			//This is the moment where the "|" are again mapped in their righteous "-" (jeux de cartes)
 			string1.Form("%d", eleID_map.eleIDmap[string1.Data()]);
-			TCut cutEle1("(eleID[0] & " + string1 + ")==" + string1);
-			TCut cutEle2("(eleID[1] & " + string1 + ")==" + string1);
+			TCut cutEle1("(eleID_ele1 & " + string1 + ")==" + string1);
+			TCut cutEle2("(eleID_ele2 & " + string1 + ")==" + string1);
 
 			cut_string += cutEle1 && cutEle2;
 			cutSet.insert(TString(cutEle1 && cutEle2));
-			delete splitted;
 			continue;
 		}
 
@@ -1460,7 +1460,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 #ifdef DEBUG
 	std::cout << "Cut string = " << cut_string << std::endl;
 #endif
-	delete region_splitted;
+
 	return cutSet;
 }
 

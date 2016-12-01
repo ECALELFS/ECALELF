@@ -26,3 +26,17 @@
 278817-279931	/DoubleEG/Run2016G-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-Run2016G-ZSkim-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_Alpha_v2
 273150-275376	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016B-ZSkim-Prompt_v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ped_v1
 276315-276811	/DoubleEG/Run2016D-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016D-ZSkim-Prompt_v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ped_v1
+276830-277420	/DoubleEG/Run2016E-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016E-ZSkim-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ped_v1
+273150-275376	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016B-ZSkim-Prompt_v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ped_v2
+273150-275376	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016B-ZSkim-Prompt_v2-weightsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+275420-276283	/DoubleEG/Run2016C-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016C-ZSkim-Prompt_v2-weightsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+276315-276811	/DoubleEG/Run2016D-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016D-ZSkim-Prompt_v2-weightsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+276830-277420	/DoubleEG/Run2016E-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016E-ZSkim-Prompt-v2-weightsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+277820-278808	/DoubleEG/Run2016F-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-Run2016F-ZSkim-Prompt-v1-weightsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+278817-279931	/DoubleEG/Run2016G-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-Run2016G-ZSkim-Prompt-v1-weightsReco	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+273150-275376	/DoubleEG/Run2016B-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016B-ZSkim-Prompt_v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+275420-276283	/DoubleEG/Run2016C-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016C-ZSkim-Prompt_v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+276830-277420	/DoubleEG/Run2016E-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016E-ZSkim-Prompt-v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+277820-278808	/DoubleEG/Run2016F-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-Run2016F-ZSkim-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+278817-279931	/DoubleEG/Run2016G-EcalUncalZElectron-PromptReco-v1/ALCARECO	DoubleEG-Run2016G-ZSkim-Prompt-v1	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
+276315-276811	/DoubleEG/Run2016D-EcalUncalZElectron-PromptReco-v2/ALCARECO	DoubleEG-Run2016D-ZSkim-Prompt_v2	caf.cern.ch	group/dpg_ecal/alca_ecalcalib/ecalelf/alcarereco	Cal_Nov2016_ref
