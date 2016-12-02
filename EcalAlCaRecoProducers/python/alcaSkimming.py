@@ -76,6 +76,11 @@ options.register('bunchSpacing',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "50=50ns, 25=25ns,0=multifit auto,-1=weights")
+options.register('outputAll',
+                 False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Use EndPath with keep *, writes to output.root")
 
 ### setup any defaults you want
 options.output="alcaSkimALCARAW.root"
@@ -172,7 +177,10 @@ process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Ou
 # process.seqALCARECOEcalRecalElectron 
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_Output_cff')
+
+process.load('RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cff')
 from RecoLocalCalo.EcalRecProducers.ecalLocalCustom import *
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 
@@ -423,8 +431,10 @@ if(options.type!="MINIAODNTUPLE"):
     else:
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
-    process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
+    #process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
+    process.EIsequence = cms.Sequence(process.egmGsfElectronIDSequence)
     process.ntupleSeq = cms.Sequence(process.jsonFilter * process.EIsequence * process.patSequence)
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
     
 if(options.doTree==0):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -573,8 +583,12 @@ else:
                                   #                              * process.pfIsoEgamma 
                                   #                              * process.ALCARECOEcalCalElectronSeq 
                                * process.ntupleSeq)
+process.NtupleEndPath = cms.EndPath( process.zNtupleDumper)
+if options.outputAll:
+	outputAllFilename = "outputAll.root"
+	process.output = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string(outputAllFilename))
+	process.NtupleEndPath *= process.output
 
-process.NtupleEndPath = cms.EndPath( process.zNtupleDumper  )
 
 if(not doTreeOnly):
     process.ALCARECOoutput_step = cms.EndPath(process.outputALCARECO )
@@ -584,6 +598,15 @@ if(not doTreeOnly):
     if(options.type=="ALCARAW"):
         process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
             
+# define which IDs we want to produce
+my_id_modules = [
+		'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff',
+		'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff'
+		]
+
+#add them to the VID producer
+for idmod in my_id_modules:
+	setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
 
 
 
@@ -724,7 +747,8 @@ else:
 #    process.slimmedECALELFElectrons.modifierConfig.modifications=electron_energy_modifications
     process.slimmedECALELFElectrons.src = myEleCollection
     process.modPSet.electron_config.electronSrc = process.slimmedECALELFElectrons.src
-    process.modPSetBis.electron_config.electronSrc = process.slimmedECALELFElectrons.src
+    process.modPSetEleIDFloat.electron_config.electronSrc = process.slimmedECALELFElectrons.src
+    process.modPSetEleIDBool.electron_config.electronSrc = process.slimmedECALELFElectrons.src
     process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = cms.InputTag("reducedEgamma", "reducedEBRecHits")
     process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = cms.InputTag("reducedEgamma", "reducedEERecHits")
 

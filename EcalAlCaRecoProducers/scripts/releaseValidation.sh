@@ -7,19 +7,24 @@ function testStep(){
 	stepString=$2
 	stepLog=$3
 	stepCommand=$4
+	
+	dir=tmp/releaseValidation/$stepIndex/
+	if [ ! -d "$dir" ];then mkdir $dir; fi
 
-	if [ -e "tmp/releaseValidation/$stepIndex" ]; then
+	if [ -e "$dir/done" ]; then
 		echo  "[`basename $0`] $stepString OK "
 		return 0
 	fi
-	if [ ! -e "tmp/releaseValidation/$stepLog.log" ];then
+	if [ ! -e "$dir/$stepLog.log" ];then
 		echo -n "[`basename $0`] $stepString ... "
-		$stepCommand &> tmp/releaseValidation/$stepLog.err || {
+		cd $dir
+		$stepCommand &> $stepLog.err || {
 			echo "${bold}ERROR${normal}"
-			echo "See tmp/releaseValidation/$stepLog"
+			echo "See $dir/$stepLog.err"
 			exit 1
 		}
-		mv tmp/releaseValidation/$stepLog.{err,log}
+		cd -
+		mv $dir/$stepLog.{err,log}
 		echo "OK"
 	else
 		echo "[`basename $0`] $stepString already done and OK"
@@ -37,6 +42,7 @@ if [ ! -d "tmp/releaseValidation" ];then mkdir tmp/releaseValidation -p; fi
 case $CMSSW_VERSION in
 	CMSSW_8_0_*)
 		fileMINIAOD=/store/mc/RunIISpring16MiniAODv1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/008099CA-5501-E611-9AAE-24BE05BDCEF1.root
+		fileMINIAODData=/store/data/Run2016H/DoubleEG/MINIAOD/PromptReco-v3/000/284/036/00000/1878DF24-619F-E611-A962-02163E0146C8.root
 		;;
 	*)
 		echo "CMSSW RELEASE not supported" >> /dev/stderr
@@ -47,25 +53,54 @@ esac
 
 ############################################################
 # production in local of ntuples from MINIAOD
-testStep 1 "Testing local production of ntuples from MINIAODSIM" ntuple_miniaodsim "cmsRun python/alcaSkimming.py tagFile=config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py type=MINIAODNTUPLE maxEvents=100 doTree=1 doEleIDTree=1 files=$fileMINIAOD" || {
+logName=ntuple_miniaodsim_mc
+testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py type=MINIAODNTUPLE maxEvents=100 doTree=1 doEleIDTree=1 files=$fileMINIAOD outputAll=True" || {
 
-python test/dumpNtuple.py 1> tmp/ntuple_miniaodsim.dump 2> tmp/releaseValidation/ntuple_miniaodsim_2.log || {
-	echo "${bold}ERROR${normal}"
-	echo "See tmp/releaseValidation/ntuple_miniaodsim_2.log" 
-	exit 1
+	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
+		echo "${bold}ERROR${normal}"
+		echo "See $dir/${logName}_2.log" 
+		exit 1
+	}
+
+	echo -n "[`basename $0`] Checking difference in dump of ntuple content ... "
+	diff -q {tmp,test}/${logName}.dump > /dev/null || {
+		echo "${bold}ERROR${normal}"
+		echo "{$dir,test}/${logName}.dump are different" 
+		echo "you can use"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		exit 1
+	}
+	echo "OK"
+	touch $dir/done
+	rm $dir/*.root
 }
 
-echo -n "[`basename $0`] Checking difference in dump of ntuple content ... "
-diff -q {tmp,test}/ntuple_miniaodsim.dump > /dev/null || {
-	echo "${bold}ERROR${normal}"
-	echo "{tmp,test}/ntuple_miniaodsim.dump are different" 
-	echo "you can use"
-	echo "wdiff -n {tmp,test}/ntuple_miniaodsim.dump | colordiff  | less -RS"
-	exit 1
+
+################
+logName=ntuple_miniaodsim_data
+testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py type=MINIAODNTUPLE maxEvents=100 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=True" || {
+	
+	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
+		echo "${bold}ERROR${normal}"
+		echo "See $dir/${logName}_2.log" 
+		exit 1
+	}
+
+	echo -n "[`basename $0`] Checking difference in dump of ntuple content ... "
+	diff -q {tmp,test}/${logName}.dump > /dev/null || {
+		echo "${bold}ERROR${normal}"
+		echo "{$dir,test}/${logName}.dump are different" 
+		echo "you can use"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		exit 1
+	}
+	echo "OK"
+	touch $dir/done
+	rm $dir/*.root
 }
-echo "OK"
-touch tmp/releaseValidation/1
-}
+
+
+
 
 exit 0
 

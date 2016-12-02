@@ -88,6 +88,14 @@ modPSet =  cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatV
         energySCEleMustVar = cms.InputTag("eleNewEnergiesProducer","energySCEleMustVar"),
         energySCElePho = cms.InputTag("eleNewEnergiesProducer","energySCElePho"),
         energySCElePhoVar = cms.InputTag("eleNewEnergiesProducer","energySCElePhoVar"),
+        ),
+                     photon_config   = cms.PSet( )
+                     )
+
+modPSetEleIDFloat =  cms.PSet( 
+    modifierName = cms.string('EleIDModifierFromValueMaps'),
+    electron_config = cms.PSet( 
+        electronSrc = slimmedECALELFElectrons.src,
         fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
         WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
         WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
@@ -103,10 +111,21 @@ modPSet =  cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatV
         tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2"),
         loose25nsRun2V2016  = cms.InputTag("eleSelectionProducers", "loose25nsRun2V2016"),
         ),
-                     photon_config   = cms.PSet( )
-                     )
+    photon_config   = cms.PSet( )
+    )
 
-modPSetBis = modPSet.clone(modifierName = cms.string('EleIDModifierFromValueMaps'))
+modPSetEleIDBool =  cms.PSet( 
+    modifierName = cms.string('EleIDModifierFromBoolValueMaps'),
+    electron_config = cms.PSet( 
+        electronSrc = slimmedECALELFElectrons.src,
+        veto25nsRun22016Moriond  = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-veto"),
+        loose25nsRun22016Moriond = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose"),
+        medium5nsRun22016Moriond = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-medium"),
+        tight25nsRun22016Moriond = cms.InputTag("egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-tight"),
+        ),
+    photon_config   = cms.PSet( )
+    )
+
 
 modPSetSlewRate = cms.PSet( 
 	modifierName    = cms.string('EGSlewRateModifier'),
@@ -122,7 +141,8 @@ modPSetSlewRate = cms.PSet(
 slimmedECALELFElectrons.modifierConfig  = cms.PSet(
     modifications = cms.VPSet(
         modPSet,
-        modPSetBis,
+        modPSetEleIDFloat,
+        modPSetEleIDBool,
         modPSetSlewRate
         )
     )

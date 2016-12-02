@@ -3,7 +3,12 @@ import ROOT
 from ROOT import *
 import sys,os
 
-file='ntuple_numEvent100.root'
+if len(sys.argv) > 1:
+	folder = sys.argv[1]
+else:
+	folder = "."
+
+file=folder + '/ntuple_numEvent100.root'
 
 tfile = TFile.Open(file)
 tree  = tfile.Get("selected")

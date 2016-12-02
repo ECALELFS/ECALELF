@@ -344,7 +344,7 @@ private:
 	TTree *extraCalibTree;
 	edm::Timestamp runTime_;
 	Int_t nRecHitsEle[3];
-	Int_t nHitsSCEle[3];
+	Int_t nHitsSCEle[3]=initInt;
 	std::vector<unsigned int>  rawIdRecHitSCEle[3];
 	std::vector<int>           XRecHitSCEle[3];
 	std::vector<int>           YRecHitSCEle[3];

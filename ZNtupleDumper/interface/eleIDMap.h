@@ -34,18 +34,19 @@ public:
 		eleIDmap["diphotonIso25nsRun2Boff"] = 0x8000;
 
 		//official eleIDs
-		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-veto"]   = 0x10000;
-		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-loose"]  = 0x20000;
-		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-medium"] = 0x40000;
-		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-tight"]  = 0x80000;
-
-		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-veto"]   = 0x100000;
-		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-loose"]  = 0x200000;
-		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-medium"] = 0x400000;
-		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-tight"]  = 0x800000;
-
-		eleIDmap["loose25nsRun2V2016"]  = 0x2000000;
-
+		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-veto"]    =  0x10000;
+		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-loose"]   =  0x20000;
+		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-medium"]  =  0x40000;
+		eleIDmap["cutBasedElectronID-Spring15-25ns-V1-standalone-tight"]   =  0x80000;
+		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-veto"]    =  0x100000;
+		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-loose"]   =  0x200000;
+		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-medium"]  =  0x400000;
+		eleIDmap["cutBasedElectronID-Spring15-50ns-V1-standalone-tight"]   =  0x800000;
+		eleIDmap["loose25nsRun2V2016"]                                     =  0x2000000;
+		eleIDmap["veto25nsRun22016Moriond"]                                =  0x4000000;
+		eleIDmap["loose25nsRun22016Moriond"]                               =  0x8000000;
+		eleIDmap["medium5nsRun22016Moriond"]                               =  0x10000000;
+		eleIDmap["tight25nsRun22016Moriond"]                               =  0x20000000;
 	}
 
 };
