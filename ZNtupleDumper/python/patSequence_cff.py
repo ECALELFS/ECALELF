@@ -108,10 +108,22 @@ modPSet =  cms.PSet( modifierName    = cms.string('EGExtraInfoModifierFromFloatV
 
 modPSetBis = modPSet.clone(modifierName = cms.string('EleIDModifierFromValueMaps'))
 
+modPSetSlewRate = cms.PSet( 
+	modifierName    = cms.string('EGSlewRateModifier'),
+	ecalRecHitsEB  = cms.InputTag("reducedEgamma", "reducedEBRecHits"),
+	ecalRecHitsEE  = cms.InputTag("reducedEgamma", "reducedEERecHits"),
+	electron_config = cms.PSet( 
+		electronSrc = slimmedECALELFElectrons.src,
+        ),
+	photon_config   = cms.PSet( )
+)
+
+
 slimmedECALELFElectrons.modifierConfig  = cms.PSet(
     modifications = cms.VPSet(
         modPSet,
-        modPSetBis
+        modPSetBis,
+        modPSetSlewRate
         )
     )
 

@@ -47,7 +47,7 @@ esac
 
 ############################################################
 # production in local of ntuples from MINIAOD
-testStep 1 "Testing local production of ntuples from MINIAODSIM" ntuple_miniaodsim "cmsRun python/alcaSkimming.py tagFile=config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py type=MINIAODNTUPLE maxEvents=100 doTree=1 files=$fileMINIAOD" || {
+testStep 1 "Testing local production of ntuples from MINIAODSIM" ntuple_miniaodsim "cmsRun python/alcaSkimming.py tagFile=config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py type=MINIAODNTUPLE maxEvents=100 doTree=1 doEleIDTree=1 files=$fileMINIAOD" || {
 
 python test/dumpNtuple.py 1> tmp/ntuple_miniaodsim.dump 2> tmp/releaseValidation/ntuple_miniaodsim_2.log || {
 	echo "${bold}ERROR${normal}"
