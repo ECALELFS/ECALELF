@@ -246,6 +246,13 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 		}
 		vtype.push_back(typ);
 	}
+        //chain->Scan("runNumber:eventNumber:runTime:eleIDTree.runNumber:eleIDTree.eventNumber:eleIDTree.runTime", "runNumber > 276316");
+        Int_t ck_run, fr_run;
+        ULong64_t ck_evt, fr_evt;
+        chain->SetBranchAddress("runNumber", &ck_run);
+        chain->SetBranchAddress("eventNumber", &ck_evt);
+        chain->SetBranchAddress("eleIDTree.runNumber", &fr_run);
+        chain->SetBranchAddress("eleIDTree.eventNumber", &fr_evt);
 
 	Float_t weight_ = 1 ;
 	Float_t r9weight_[2] = {1, 1}; //r9weight_[0]=1; r9weight_[1]=1;
@@ -315,6 +322,11 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 	for (Long64_t i = 0; i < nentries; ++i) {
 		Long64_t ientry = chain->GetEntryNumber(i);
 		chain->GetEntry(ientry);
+                if (ck_run != fr_run || ck_evt != fr_evt) {
+                        fprintf(stderr, "[ERROR] event in the main chain do not correspond to event in the TFriend\n");
+                        fprintf(stderr, "--> entry: %ld (main chain) %d %llu vs %d %llu (friend)  %s (tree number: %d)\n", ientry, ck_run, ck_evt, fr_run, fr_evt, chain->GetFile()->GetName(), chain->GetTreeNumber());
+                        exit(10);
+                }
 		if (ientry % 1237 == 0) fprintf(stderr, " Processed events: %lld (%.2f%%)\r", ientry, (Float_t)i / nentries * 100);
 		if (chain->GetTreeNumber() != treenumber) {
 			treenumber = chain->GetTreeNumber();
