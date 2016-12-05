@@ -1009,6 +1009,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			if(doExtraCalibTree || doExtraStudyTree) {
 				TreeSetExtraCalibVar(*PatEle1, *HighEtaSC1);
 			}
+			if(doEleIDTree) {
+				TreeSetEleIDVar(*PatEle1, *HighEtaSC1);
+			}
 		}
 	}
 
@@ -2060,6 +2063,13 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 	return;
 }
 
+
+void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, const reco::SuperCluster& electron2)
+{
+
+	TreeSetEleIDVar(electron1, 0);
+	TreeSetEleIDVar(electron2, 1);
+}
 
 void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::Muon& muon1, const pat::Muon& muon2)
 {
