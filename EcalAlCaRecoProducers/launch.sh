@@ -1,10 +1,10 @@
 #!/bin/bash
 jsonDCS=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/DCSOnly/json_DCSONLY.txt
-json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/Cert_271036-276384_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt
+json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
 #Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt
 
 jsonName=DCSONLY
-jsonName=271036-276384_NoL1T_v4
+jsonName=271036-284044_23Sep2016_v1
 
 CHECK=--check
 
@@ -13,21 +13,36 @@ CHECK=--check
 #where=remoteGlidein
 scheduler=caf
 tag_MC=config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py
-tag_Data=config/reRecoTags/80X_dataRun2_Prompt_v9.py
+tag_Data=config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
+tagPrompt=config/reRecoTags/80X_dataRun2_Prompt_v14.py
+tagRereco2=config/reRecoTags/80X_dataRun2_2016SeptRepro_v3.py
+tag_DataG=config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
 
+fileList=alcareco_datasets.dat
+PERIOD=MORIOND2017
 
-while [ "1" == "1" ];do 
-#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RUN2016B | grep MINIAOD | head -1 ` --type=MINIAOD -s noSkim  --json=${json} --json_name=${jsonName} ${CHECK}
-#./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RUN2016B | grep MINIAOD | head -2 | tail -1 ` --type=MINIAOD -s noSkim  --json=${json} --json_name=${jsonName} ${CHECK}
+datasets=`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`
 
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep  MINIAOD | head -1 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016B | grep  MINIAOD | head -2 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
+# set IFS to newline in order to divide using new line the datasets
+IFS=$'\n'
+for dataset in $datasets
+  do
+	
+	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
+	datasetName=`echo $dataset | awk '{print $4}'`
 
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016C | grep  MINIAOD | head -1 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep Run2016D | grep  MINIAOD | head -1 | tail -1` --type MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} ${CHECK}
-
-
-sleep 1m
+	case $datasetName in
+		*PromptReco*)
+			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tagPrompt} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=slewRate ${CHECK} ${dataset} || exit 1
+			;;
+		*Run2016G*)
+			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tag_DataG} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=slewRate ${CHECK} ${dataset} || exit 1
+			;;
+		*)
+			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=slewRate ${CHECK} ${dataset} || exit 1
+			;;
+	esac
+	
 done
 exit 0
 while [ "1" == "1" ];do
