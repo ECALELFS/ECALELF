@@ -18,17 +18,20 @@ The MC distribution is the true PU distribution defined in the PU scenario durin
 The files can be found in \verbatim SimGeneral/MixingModule/python \endverbatim
 Make sure you pick up the right file matching the PU scenario used in your MC.
 
-You have to extract (by hand) the values from the python cfi and create a histogram with name \b pileup
-
 The MC pileup histograms should be put on EOS in the calibration project directory:
 \verbatim /eos/project/c/cms-ecal-calibration/data/puHistos/  \endverbatim
+
+To generate this MC Pileup root file:
+\verbatim
+cd $CMSSW_BASE/Calibration/ZFitter/;
+python script/generateMCPUHist.py PileupCFI=mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi output=PUSpring16-nPUtrue.root
+\endverbatim
 
 # pileup scenarios
 
 scenario   | python file                                             | pileupHist root file 
 ---------- | ------------------------------------------------------- | -------------------------
 PUSpring16 | mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py | PUSpring16-nPUtrue.root
-
 
 \subsection DATAPUtrue_ True PU distribution in data
 Instructions can be found in
@@ -39,9 +42,12 @@ In summary you need:
  - location of the pileup json file
  - minimum bias cross section
 
-To generate the root file with the \b pileup histogram 
+To generate the root file with the \b pileup histogram:
 \verbatim 
-
+JSONFILE=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
+PileUpJSON=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt
+OUTPUTFILE=271036-284044_23Sept_v1-nPUtrue.root
+pileupCalc.py -i $JSONFILE --inputLumiJSON $PileUpJSON --calcMode true --minBiasXsec 69200 --maxPileupBin 50 --numPileupBins 50 $OUTPUTFILE
 \endverbatim
 
 
