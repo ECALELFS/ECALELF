@@ -1138,6 +1138,7 @@ int main(int argc, char **argv)
 		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
 #endif
 		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/");
+		//anyVar_class anyVar(mc, branchListAny, cutter, invMass_var, outDirFitResData + "/");
 		anyVar._exclusiveCategories = false;
 #ifdef linearity
 		for(unsigned int moduloIndex = 0; moduloIndex < 10; ++moduloIndex) {
