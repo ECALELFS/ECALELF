@@ -1,9 +1,11 @@
 // compile with:
 //   g++ -Wall shosha.cc -O2 `root-config --libs --cflags` -Iinterface src/Stats.cc && time stdbuf -o 0 ./a.out
+#include <cassert>
 #include <iostream>
 #include <map>
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -19,6 +21,7 @@ typedef enum { kMass = 0, kTime, kNPV, kR9, kSieie, kVars } Variable;
 
 typedef struct {
         Int_t   run;
+        Int_t   bx;
         UInt_t  ts;
         Int_t   nPV;
         Float_t mass;
@@ -39,6 +42,13 @@ typedef struct {
 Categories c;
 
 
+typedef std::map<int, int> RunList;
+typedef std::vector<std::set<int> >  BxList;
+
+RunList runlist;
+BxList bxlist;
+
+
 void enable_branches(TTree * t)
 {
         t->SetBranchStatus("*", 0);
@@ -56,6 +66,8 @@ void set_branches(TTree * t)
         brlist.push_back("runNumber");
         t->SetBranchAddress("runTime", &e.ts);
         brlist.push_back("runTime");
+        t->SetBranchAddress("nBX", &e.bx);
+        brlist.push_back("nBX");
         t->SetBranchAddress("nPV", &e.nPV);
         brlist.push_back("nPV");
         t->SetBranchAddress("invMass_SC_must_regrCorr_ele", &e.mass);
@@ -212,6 +224,31 @@ void define_categories_run(const std::map<size_t, size_t> & run_md, std::map<std
         fprintf(stdout, "[define_categories_run] done\n");
 }
 
+void read_categories_run(const char * filename, std::map<std::string, std::pair<size_t, size_t> > & sel_runs)
+{
+        fprintf(stdout, "[read_categories_run] starting\n");
+        FILE * fd = fopen(filename, "r");
+        if (!fd) {
+                fprintf(stderr, "%s: read_categories_run: cannot open file\n", filename);
+                exit(1);
+        }
+        char name[64];
+        size_t run_min, run_max;
+        while (fscanf(fd, "%lu-%lu %*u %*u-%*u", &run_min, &run_max) != EOF) {
+                sprintf(name, "%lu_%lu", run_min, run_max);
+                sel_runs[name] = std::make_pair(run_min, run_max);
+                c.run_names.push_back(name);
+                c.run_boundaries.push_back(run_min);
+                fprintf(stderr, "found run range: %lu %lu\n", run_min, run_max);
+        }
+        sprintf(name, "%lu_%lu", run_max, (long unsigned int)999999);
+        sel_runs[name] = std::make_pair(run_max, (long unsigned int)999999);
+        c.run_names.push_back(name);
+        c.run_boundaries.push_back(run_max);
+        fprintf(stderr, "added run range: %lu %lu\n", run_max, (long unsigned int)999999);
+        fprintf(stdout, "[read_categories_run] done\n");
+}
+
 
 void print_categories()
 {
@@ -241,6 +278,7 @@ std::string category_run()
         if (it != c.run_boundaries.end()) {
                 return c.run_names[it - c.run_boundaries.begin() - 1];
         } else {
+                fprintf(stderr, "Warning: could not find boundary for run %d\n", e.run);
                 return c.run_names[c.run_names.size() - 1];
         }
         return "";
@@ -252,6 +290,122 @@ std::string category_run_inclusive()
         char tmp[32];
         sprintf(tmp, "%lu_%lu", c.run_boundaries[0], c.run_boundaries[c.run_boundaries.size() - 1]);
         return tmp;
+}
+
+
+enum BxFlag { kNone = 0, kFirst, kMiddle, kMTwelve, kMax };
+
+std::string flag_to_string(BxFlag b)
+{
+        switch (b) {
+                case kNone:
+                        return "kNone";
+                case kFirst:
+                        return "kFirst";
+                case kMiddle:
+                        return "kMiddle";
+                case kMTwelve:
+                        return "kMTwelve";
+                case kMax:
+                        return "kMax";
+        }
+        return "error";
+}
+
+
+std::set<int> read_bx_list(const char * line)
+{
+        int bx;
+        std::stringstream s(line);
+        std::string dummy;
+        s >> dummy;
+        std::set<int> v;
+        while (1) {
+                s >> bx;
+                if (!s) break;
+                //fprintf(stderr, "found bx %d\n", bx);
+                v.insert(bx);
+        }
+        return v;
+}
+
+
+void read_bunch_list(const char * filename, RunList & run_list, BxList & bx_list)
+{
+        FILE * fd = fopen(filename, "r");
+        if (fd == NULL) {
+                fprintf(stderr, "Error opening file `%s', abort.\n", filename);
+                exit(1);
+        }
+        char * line = NULL;
+        size_t len = 0;
+        ssize_t read;
+        size_t cnt_pattern = 0, cnt_bx = 0;
+	while (1) {
+		read = getline(&line, &len, fd);
+		if (read == -1) break;
+		if (line[0] == 'R') {
+                        assert(cnt_bx % 3 == 0);
+                        int run;
+                        std::stringstream s(line);
+                        std::string dummy;
+                        s >> dummy >> dummy;
+                        while (1) {
+                                s >> run;
+                                if (!s) break;
+                                run_list[run] = cnt_pattern * 3;
+                        }
+                        ++cnt_pattern;
+		} else if (line[0] == 'F') {
+                        std::cout << "pushing index " << cnt_pattern - 1 << " at place: " << cnt_bx << " with line " << line;
+                        bx_list.push_back(read_bx_list(line));
+                        ++cnt_bx;
+		} else if (line[0] == 'M') {
+                        bx_list.push_back(read_bx_list(line));
+                        ++cnt_bx;
+		} else if (line[0] == 'S') {
+                        bx_list.push_back(read_bx_list(line));
+                        ++cnt_bx;
+                }
+	}
+	if (line) free(line);
+}
+
+
+BxFlag bx_flag(size_t i)
+{
+        switch (i) {
+                case 0:
+                        return kFirst;
+                case 1:
+                        return kMiddle;
+                case 2:
+                        return kMTwelve;
+                default:
+                        fprintf(stderr, "Found unknown flag `%lu' for BX, abort.\n", i);
+                        exit(2);
+        }
+
+}
+
+
+BxFlag select_bunch(const RunList & run_list, BxList & bx_list)
+{
+        auto krun = run_list.find(e.run);
+        //std::cout << "run: " << e.run << " found? " << (krun != run_list.end()) << "\n";
+        if (krun == run_list.end()) return kNone;
+        for (size_t is = krun->second, js = 0; js < 3; ++js) {
+                auto kbx = bx_list[is + js].find(e.bx);
+                //if (kbx != bx_list[is + js].end()) std::cout << "run: " << e.run << " bx: " << e.bx << " type: " << js << " index: " << is << "\n";
+                if (kbx != bx_list[is + js].end()) return bx_flag(js);
+        }
+        return kNone;
+}
+
+
+std::string category_bx()
+{
+        return flag_to_string(select_bunch(runlist, bxlist));
 }
 
 
@@ -278,10 +432,13 @@ std::vector<std::string> category_electron(int idx)
         else if (isMod2(eta)) ceta.push_back("mod2");
         else if (isMod3(eta)) ceta.push_back("mod3");
         else if (isMod4(eta)) ceta.push_back("mod4");
+        std::string bx = category_bx();
+        //if (bx != "") crun.push_back(r + '_' + bx);
         std::vector<std::string> res;
         for (auto & r : crun) {
                 for (auto & e : ceta) {
                         res.push_back(r + "_" + e);
+                        res.push_back(r + "_" + bx + e);
                 }
         }
         return res;
@@ -293,16 +450,31 @@ std::vector<std::string> category_dielectron()
         std::vector<std::string> res;
         res.push_back("inclusive");
         if (isEB(e.etaSC[0]) && isEB(e.etaSC[1])) res.push_back("EBEB");
-        else                                      res.push_back("notEBnotEB");
+        else                                      res.push_back("notEBEB");
         if (isEE(e.etaSC[0]) && isEE(e.etaSC[1])) res.push_back("EEEE");
         return res;
 }
 
 
-int main()
+void usage(const char * prg, const char * msg)
 {
+        fprintf(stderr, "Error: %s\n", msg);
+        fprintf(stdout, "Usage: %s <root file> [optional label]\n", prg);
+        fprintf(stdout, "Where [optional label] is a suffix for the output files.\n");
+        exit(1);
+}
+
+
+int main(int argc, char ** argv)
+{
+        if (argc < 2) usage(argv[0], "takes at least one argument");
+
+        char label[32] = "none";
+        if (argc > 2) sprintf(label, "%s", argv[2]);
+
         fprintf(stderr, "starting...\n");
-        TFile * fin = TFile::Open("./dataset.root");
+
+        TFile * fin = TFile::Open(argv[1]);
         TTree * t = (TTree*)fin->Get("selected");
         //std::cout << fin << " " << ds << "\n";
         
@@ -311,7 +483,10 @@ int main()
         std::map<size_t, size_t> runs_meta_data = get_meta_data(t);
 
         std::map<std::string, std::pair<size_t, size_t> > selections_runs;
-        define_categories_run(runs_meta_data, selections_runs);
+        //define_categories_run(runs_meta_data, selections_runs);
+        read_categories_run("run.list", selections_runs);
+
+        read_bunch_list("bunches.dat", runlist, bxlist);
 
         std::vector<std::unique_ptr<TH1F> > histos(kVars);
         histos[kR9]    = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 1200, 0.0, 1.2));
@@ -321,7 +496,12 @@ int main()
         histos[kTime]  = std::unique_ptr<TH1F>(new TH1F("htime", "time", 1000, 1456786800., 1478613587.));
         histos[kNPV]   = std::unique_ptr<TH1F>(new TH1F("hnPV", "nPV", 100, 0., 100.));
 
-        TFile * fout = TFile::Open("histos.root", "recreate");
+        std::map<int, std::unique_ptr<TH1F> > histos_bx;
+        std::map<int, std::vector<std::unique_ptr<TH1F> > > histos_bx_sel;
+
+        char tmp[64];
+        sprintf(tmp, "histos_%s.root", label);
+        TFile * fout = TFile::Open(tmp, "recreate");
 
         std::vector<std::string> vars(kVars);
         vars[kR9]    = "r9";
@@ -335,21 +515,33 @@ int main()
                 data[v] = std::map<std::string, stats>();
         }
         size_t nentries = t->GetEntries();
-        char tmp[32];
         sprintf(tmp, "%lu_%lu", runs_meta_data.begin()->first, runs_meta_data.rbegin()->first);
-        std::string run_range(tmp);
+        std::string cat_run_inclusive(category_run_inclusive());
         for (size_t ien = 0; ien < nentries; ++ien) {
                 t->GetEntry(ien);
                 if (ien % 12347 == 0) fprintf(stderr, " Processed events: %lu (%.2f%%)  run=%d  mass=%f\r", ien, (Float_t)ien / nentries * 100, e.run, e.mass);
-                if (!(e.mass >= 70 && e.mass <= 100)) continue;
+                if (!(e.mass >= 60 && e.mass <= 120)) continue;
                 for (auto & c : category_dielectron()) {
-                        data[kMass][run_range + "_" + c].add(e.mass);
+                        data[kMass][cat_run_inclusive + "_" + c].add(e.mass);
                         data[kMass][category_run() + "_" + c].add(e.mass);
                 }
                 data[kTime][category_run()].add(e.ts);
-                data[kTime][category_run_inclusive()].add(e.ts);
+                data[kTime][cat_run_inclusive].add(e.ts);
                 data[kNPV][category_run()].add(e.nPV);
-                data[kNPV][category_run_inclusive()].add(e.nPV);
+                data[kNPV][cat_run_inclusive].add(e.nPV);
+                if (histos_bx.find(e.run) == histos_bx.end()) {
+			char tmp[32];
+			sprintf(tmp, "h_bx_%03u", e.run);
+			histos_bx[e.run] = std::unique_ptr<TH1F>(new TH1F(tmp, tmp, 3564, 0., 3564.));
+			histos_bx_sel[e.run] = std::vector<std::unique_ptr<TH1F> >(kMax);
+			for (int b = kNone; b < kMax; ++b) {
+				sprintf(tmp, "h_bx_%03u_sel_%s", e.run, flag_to_string((BxFlag)b).c_str());
+				histos_bx_sel[e.run][b] = std::unique_ptr<TH1F>(new TH1F(tmp, tmp, 3564, 0., 3564.));
+			}
+                }
+                histos_bx[e.run]->Fill(e.bx);
+                BxFlag bx_id = select_bunch(runlist, bxlist);
+                histos_bx_sel[e.run][bx_id]->Fill(e.bx);
                 std::vector<std::string> cat;
                 for (int jel = 0; jel < 2; ++jel) {
                         cat = category_electron(jel);
@@ -365,7 +557,7 @@ int main()
         size_t cnt = 0;
         for (auto & var : data) {
                 char tmp[128];
-                sprintf(tmp, "output_%s.dat", vars[cnt].c_str());
+                sprintf(tmp, "output_%s_%s.dat", vars[cnt].c_str(), label);
                 FILE * fd = fopen(tmp, "w");
                 for (auto & cat : var) {
                         auto & s = cat.second;
