@@ -25,7 +25,7 @@ cut = ["0.15","0.20","0.30","100"];#size of the E/p cut window (default is 0.15)
 #cut = ["0.15"]
 smoothCut = ["1"]; #0=use step-function to reweight, 1=use the E/p distribution                                                                                 
 energyType = ["0"]; #0=regression, 1=raw energy
-nLoops = "10"; #number of iterations
+nLoops = "20"; #number of iterations
 ntupleName = "Run2016BCDEFG_WZSkim_Cal_Sep2016_final_v3_multifit"
 #ntupleName = "DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1-allRange" #options: "data-Run2015D-25ns-multifit", "data-Run2015D-25ns-multifit" or "data-Run2015D-25ns-stream". 
 #For the MC use: "DYToEE_powheg_13TeV-RunIISpring15DR74-Asym25n-v1-allRange"

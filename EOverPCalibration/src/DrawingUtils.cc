@@ -129,7 +129,8 @@ void DrawSpreadGraph(TGraphErrors* g, const std::string& fileName, const std::st
   
   leg -> Draw("same");
   
-  c -> Print((fileName+".png").c_str(),"png");
+  c -> Print((fileName+"."+fileType).c_str(),fileType.c_str());
+  //  c -> Print((fileName+".png").c_str(),"png");
   
   delete c;
 }

@@ -730,29 +730,45 @@ int main(int argc, char **argv)
   {
     DrawICMap(h2_IC_raw_phiNorm[0],      outputFolder+"/EB_h2_IC_raw_phiNorm",      "png",isEB);
     DrawICMap(h2_IC_crackCorr_phiNorm[0],outputFolder+"/EB_h2_IC_crackCorr_phiNorm","png",isEB);
+    DrawICMap(h2_IC_raw_phiNorm[0],      outputFolder+"/EB_h2_IC_raw_phiNorm",      "pdf",isEB);
+    DrawICMap(h2_IC_crackCorr_phiNorm[0],outputFolder+"/EB_h2_IC_crackCorr_phiNorm","pdf",isEB);
     
     DrawSpreadHisto(h_spread[0],       outputFolder+"/EB_h_spread",          "f_EB_spread_vsEta",          "png",isEB);
     DrawSpreadHisto(h_spread_crackCorr,outputFolder+"/EB_h_spread_crackCorr","f_EB_spread_vsEta_crackCorr","png",isEB);
+    DrawSpreadHisto(h_spread[0],       outputFolder+"/EB_h_spread",          "f_EB_spread_vsEta",          "pdf",isEB);
+    DrawSpreadHisto(h_spread_crackCorr,outputFolder+"/EB_h_spread_crackCorr","f_EB_spread_vsEta_crackCorr","pdf",isEB);
     
     DrawSpreadGraph(g_spread_vsEta[0],       outputFolder+"/EB_g_spread_vsEta",          "png",isEB,g_stat_vsEta[0]);
     DrawSpreadGraph(g_spread_vsEta_crackCorr,outputFolder+"/EB_g_spread_vsEta_crackCorr","png",isEB,g_stat_vsEta_crackCorr);
+    DrawSpreadGraph(g_spread_vsEta[0],       outputFolder+"/EB_g_spread_vsEta",          "pdf",isEB,g_stat_vsEta[0]);
+    DrawSpreadGraph(g_spread_vsEta_crackCorr,outputFolder+"/EB_g_spread_vsEta_crackCorr","pdf",isEB,g_stat_vsEta_crackCorr);
     
     DrawResidualGraph(g_residual_vsEta[0],       outputFolder+"/EB_g_residual_vsEta",          "png",isEB);
     DrawResidualGraph(g_residual_vsEta_crackCorr,outputFolder+"/EB_g_residual_vsEta_crackCorr","png",isEB);
+    DrawResidualGraph(g_residual_vsEta[0],       outputFolder+"/EB_g_residual_vsEta",          "pdf",isEB);
+    DrawResidualGraph(g_residual_vsEta_crackCorr,outputFolder+"/EB_g_residual_vsEta_crackCorr","pdf",isEB);
     
     DrawPhiAvgICSpread(h_phiAvgICSpread[0],       outputFolder+"/EB_h_phiAvgICSpread",          "png",isEB);
     DrawPhiAvgICSpread(h_phiAvgICSpread_crackCorr,outputFolder+"/EB_h_phiAvgICSpread_crackCorr","png",isEB);
+    DrawPhiAvgICSpread(h_phiAvgICSpread[0],       outputFolder+"/EB_h_phiAvgICSpread",          "pdf",isEB);
+    DrawPhiAvgICSpread(h_phiAvgICSpread_crackCorr,outputFolder+"/EB_h_phiAvgICSpread_crackCorr","pdf",isEB);
     
     DrawAvgICVsPhiGraph(g_avgIC_vsPhi[0],       outputFolder+"/EB_g_avgIC_vsPhi",          "png",kRed+2,  isEB);
     DrawAvgICVsPhiGraph(g_avgIC_vsPhi_crackCorr,outputFolder+"/EB_g_avgIC_vsPhi_crackCorr","png",kGreen+2,isEB);
+    DrawAvgICVsPhiGraph(g_avgIC_vsPhi[0],       outputFolder+"/EB_g_avgIC_vsPhi",          "pdf",kRed+2,  isEB);
+    DrawAvgICVsPhiGraph(g_avgIC_vsPhi_crackCorr,outputFolder+"/EB_g_avgIC_vsPhi_crackCorr","pdf",kGreen+2,isEB);
     
     DrawAvgICVsPhiFoldGraph(g_avgIC_vsPhiFold_EBM,g_avgIC_vsPhiFold_crackCorr_EBM,outputFolder+"/EBM_g_avgIC_vsPhiFold","png",isEB);
     DrawAvgICVsPhiFoldGraph(g_avgIC_vsPhiFold_EBP,g_avgIC_vsPhiFold_crackCorr_EBP,outputFolder+"/EBP_g_avgIC_vsPhiFold","png",isEB);
+    DrawAvgICVsPhiFoldGraph(g_avgIC_vsPhiFold_EBM,g_avgIC_vsPhiFold_crackCorr_EBM,outputFolder+"/EBM_g_avgIC_vsPhiFold","pdf",isEB);
+    DrawAvgICVsPhiFoldGraph(g_avgIC_vsPhiFold_EBP,g_avgIC_vsPhiFold_crackCorr_EBP,outputFolder+"/EBP_g_avgIC_vsPhiFold","pdf",isEB);
   }
   else
   {
     DrawICMap(h2_IC_raw_phiNorm[-1],outputFolder+"/EEM_h2_IC_raw_phiNorm","png",isEB);
     DrawICMap(h2_IC_raw_phiNorm[+1],outputFolder+"/EEP_h2_IC_raw_phiNorm","png",isEB);
+    DrawICMap(h2_IC_raw_phiNorm[-1],outputFolder+"/EEM_h2_IC_raw_phiNorm","pdf",isEB);
+    DrawICMap(h2_IC_raw_phiNorm[+1],outputFolder+"/EEP_h2_IC_raw_phiNorm","pdf",isEB);
 
     //    DrawICMap(h2_corrP[-1],outputFolder+"/EEM_h2_corrP","png",isEB);
     //    DrawICMap(h2_corrP[+1],outputFolder+"/EEP_h2_corrP","png",isEB);
@@ -763,20 +779,33 @@ int main(int argc, char **argv)
     DrawSpreadHisto(h_spread[-1],outputFolder+"/EEM_h_spread","f_EE_spread_vsEta_EEM","png",isEB);
     DrawSpreadHisto(h_spread[0],  outputFolder+"/EE_h_spread","f_EE_spread_vsEta_EE", "png",isEB);
     DrawSpreadHisto(h_spread[+1],outputFolder+"/EEP_h_spread","f_EE_spread_vsEta_EEP","png",isEB);
+    DrawSpreadHisto(h_spread[-1],outputFolder+"/EEM_h_spread","f_EE_spread_vsEta_EEM","pdf",isEB);
+    DrawSpreadHisto(h_spread[0],  outputFolder+"/EE_h_spread","f_EE_spread_vsEta_EE", "pdf",isEB);
+    DrawSpreadHisto(h_spread[+1],outputFolder+"/EEP_h_spread","f_EE_spread_vsEta_EEP","pdf",isEB);
     
     DrawSpreadGraph(g_spread_vsEta[-1],outputFolder+"/EEM_g_spread_vsEta","png",isEB,g_stat_vsEta[-1]);
     DrawSpreadGraph(g_spread_vsEta[0],  outputFolder+"/EE_g_spread_vsEta","png",isEB,g_stat_vsEta[0]);
     DrawSpreadGraph(g_spread_vsEta[+1],outputFolder+"/EEP_g_spread_vsEta","png",isEB,g_stat_vsEta[+1]);
+    DrawSpreadGraph(g_spread_vsEta[-1],outputFolder+"/EEM_g_spread_vsEta","pdf",isEB,g_stat_vsEta[-1]);
+    DrawSpreadGraph(g_spread_vsEta[0],  outputFolder+"/EE_g_spread_vsEta","pdf",isEB,g_stat_vsEta[0]);
+    DrawSpreadGraph(g_spread_vsEta[+1],outputFolder+"/EEP_g_spread_vsEta","pdf",isEB,g_stat_vsEta[+1]);
     
     DrawResidualGraph(g_residual_vsEta[-1],outputFolder+"/EEM_g_residual_vsEta","png",isEB);
     DrawResidualGraph(g_residual_vsEta[0],  outputFolder+"/EE_g_residual_vsEta","png",isEB);
     DrawResidualGraph(g_residual_vsEta[+1],outputFolder+"/EEP_g_residual_vsEta","png",isEB);
+    DrawResidualGraph(g_residual_vsEta[-1],outputFolder+"/EEM_g_residual_vsEta","pdf",isEB);
+    DrawResidualGraph(g_residual_vsEta[0],  outputFolder+"/EE_g_residual_vsEta","pdf",isEB);
+    DrawResidualGraph(g_residual_vsEta[+1],outputFolder+"/EEP_g_residual_vsEta","pdf",isEB);
     
     DrawPhiAvgICSpread(h_phiAvgICSpread[-1],outputFolder+"/EEM_h_phiAvgICSpread","png",isEB);
     DrawPhiAvgICSpread(h_phiAvgICSpread[+1],outputFolder+"/EEP_h_phiAvgICSpread","png",isEB);
+    DrawPhiAvgICSpread(h_phiAvgICSpread[-1],outputFolder+"/EEM_h_phiAvgICSpread","pdf",isEB);
+    DrawPhiAvgICSpread(h_phiAvgICSpread[+1],outputFolder+"/EEP_h_phiAvgICSpread","pdf",isEB);
     
     DrawAvgICVsPhiGraph(g_avgIC_vsPhi[-1],outputFolder+"/EEM_g_avgIC_vsPhi","png",kRed+2,isEB);
     DrawAvgICVsPhiGraph(g_avgIC_vsPhi[+1],outputFolder+"/EEP_g_avgIC_vsPhi","png",kRed+2,isEB);
+    DrawAvgICVsPhiGraph(g_avgIC_vsPhi[-1],outputFolder+"/EEM_g_avgIC_vsPhi","pdf",kRed+2,isEB);
+    DrawAvgICVsPhiGraph(g_avgIC_vsPhi[+1],outputFolder+"/EEP_g_avgIC_vsPhi","pdf",kRed+2,isEB);
   }
   
   outFile -> Close();
