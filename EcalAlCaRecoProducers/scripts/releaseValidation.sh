@@ -78,7 +78,7 @@ testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "
 
 ################
 logName=ntuple_miniaodsim_data
-testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py type=MINIAODNTUPLE maxEvents=100 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=True" || {
+testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=True" || {
 	
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
