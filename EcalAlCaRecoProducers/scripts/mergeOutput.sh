@@ -153,7 +153,8 @@ fi
 # fi
 
 
-hadd -fk -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
+#hadd -fk -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
+ahadd.py -n 2 -t /tmp/$USER/tmpHadd/$FILENAME_BASE/ -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
 
 # copy the merged file to the repository
 # dirname is needed to remove "unmerged" subdir from the path

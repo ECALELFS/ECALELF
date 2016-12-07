@@ -1,11 +1,12 @@
 #include "Calibration/ZNtupleDumper/interface/readJsonFile.h"
-
+#include <cassert>
 
 
 std::map<int, std::vector<std::pair<int, int> > >
 readJsonFile(const std::string& inFileName)
 {
 	std::ifstream inFile(inFileName.c_str(), std::ios::in);
+	assert(inFile.good());
 
 	std::string line;
 	while(!inFile.eof()) {
