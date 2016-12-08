@@ -8,10 +8,23 @@ if len(sys.argv) > 1:
 else:
 	folder = "."
 
-file=folder + '/ntuple_numEvent100.root'
+file=folder + '/ntuple.root'
 
 tfile = TFile.Open(file)
 tree  = tfile.Get("selected")
 
+tree.Print()
 tree.SetScanField(0)
-tree.Scan("*")
+
+tree.Show(0)
+tree.Show(1)
+tree.Show(2)
+tree.Show(3)
+tree.Show(4)
+tree.Show(5)
+tree.Show(6)
+tree.Show(7)
+tree.Show(8)
+
+tree.Scan("*","", "", 100)
+tree.Scan("slewRateDeltaESeed:etaEle:energySeedSC","slewRateDeltaESeed>0", "", 100)

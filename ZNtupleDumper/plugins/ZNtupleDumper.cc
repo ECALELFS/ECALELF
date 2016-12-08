@@ -134,14 +134,10 @@
 
 // number of electrons in each branch (max nEle)
 #define NELE 3
-#define initFloat     {-999.,-999.,-999.} 
+#define initFloat     {-999.,-999.,-999.}
 #define initInt       {0,0,0}
 #define initIntCharge {-100,-100,-100}
 //#define DEBUG
-
-////////////////////////////////////////////////
-// class declaration
-//
 
 
 class ZNtupleDumper : public edm::EDAnalyzer
@@ -165,8 +161,8 @@ private:
 
 	// ----------member data ---------------------------
 private:
-	const edm::Event *pEvent;
-	const edm::EventSetup *pSetup;
+	const edm::Event *pEvent;      // to make the event content available in private methods
+	const edm::EventSetup *pSetup; // to make the event setup available in private methods
 
 	bool isMC;
 	bool isPartGun;
@@ -175,21 +171,26 @@ private:
 	//Handles and inputTags
 private:
 	//------------------------------ Handles
+	edm::ESHandle<CaloTopology> topologyHandle;
+	//--------------- for main tree
 	edm::Handle<std::vector<pat::Electron> > electronsHandle;
 	edm::Handle<std::vector<pat::Muon> > muonsHandle;
 	edm::Handle<std::vector<pat::Photon> > photonsHandle;
 	edm::Handle<std::vector<reco::SuperCluster>> EESuperClustersHandle; //used only for high-eta
-	edm::Handle<reco::BeamSpot> bsHandle;
-	edm::Handle<reco::VertexCollection> primaryVertexHandle;
-	edm::ESHandle<CaloTopology> topologyHandle;
+	edm::Handle<reco::VertexCollection> primaryVertexHandle; // for nPV
 	edm::Handle<double> rhoHandle;
 	edm::Handle<std::vector< PileupSummaryInfo > >  PupInfo;
 	edm::Handle< GenEventInfoProduct >  GenEventInfoHandle;
-	edm::Handle<reco::ConversionCollection> conversionsHandle;
 	edm::Handle< reco::PFMETCollection > metHandle;
 	edm::Handle<edm::TriggerResults> triggerResultsHandle;
 	edm::Handle<edm::TriggerResults> WZSkimResultsHandle;
 	edm::Handle<EcalRecHitCollection> ESRechitsHandle;
+
+	//--------------- for eleIDtree
+	edm::Handle<reco::BeamSpot> bsHandle;
+	edm::Handle<reco::ConversionCollection> conversionsHandle;
+
+	//--------------- for extraCalibTree
 	edm::Handle<EcalUncalibratedRecHitCollection> pEBUncRecHits;
 	edm::Handle<EcalUncalibratedRecHitCollection> pEEUncRecHits;
 
@@ -222,131 +223,102 @@ private:
 	edm::InputTag triggerResultsTAG, WZSkimResultsTAG;
 	std::vector< std::string> hltPaths, SelectEvents;
 private:
-	std::string foutName;
+	std::string ntupleFileName;
 
 	bool doExtraCalibTree; ///< bool to activate the dump of the extra calib tree for E/p ICs
 	bool doExtraStudyTree; ///< bool to activate the dump of the extra tree for study with values for single recHits
 	bool doEleIDTree;      ///< bool to activate the dump of the electronID variables in a separate tree
 
-
-	edm::Service<TFileService> fs; //< output file for extra ntuples
 	TTree *tree;                   //< output file for standard ntuple
 
 	// ntuple members, private to make them visible in doxygen
 private:
-	/**	
+	/**
 		\addtogroup BRANCHES
 		@{
-	 */ 
-	Int_t     	runNumber;   ///<
-	Long64_t      eventNumber; ///<
-	Int_t         lumiBlock;   ///< lumi section
-	UInt_t 	runTime;     ///< unix time
-	Int_t   nBX; ///< bunch crossing
+	 */
+	UInt_t     	runNumber;		///< run number
+	UShort_t      lumiBlock;		///< lumi section
+	Long64_t    eventNumber;	///< event number
+	UInt_t		eventTime;		///< unix time of the event
+	UShort_t		nBX;			///< bunch crossing
 
 	Float_t       mcGenWeight; ///< weight in generator for MC
 
-	std::vector< std::string > HLTNames[1]; ///< List of HLT names
-	std::vector<Bool_t> HLTResults[1];      ///< 0=fail, 1=fire
+	std::vector< std::string > HLTNames[1];		///< List of HLT names
+	std::vector<Bool_t>			HLTResults[1];	///< 0 = fail, 1=fire
 	std::map<std::string, bool> HLTBits;
-	Bool_t HLTfire; ///< true if pass the triggers indicated by hltPaths in cfg
+	Bool_t						HLTfire;		///< true if pass the triggers indicated by hltPaths in cfg
 
 	//pileup
-	Float_t rho;            ///< rho fast jet
-	Int_t   nPV;            ///< nVtx
-	Int_t   nPU[5];   //[nBX]   ///< number of PU (filled only for MC)
+	Float_t		rho;            ///< rho fast jet
+	UChar_t		nPV;            ///< nVtx
+	UChar_t		nPU;		    ///< number of PU (filled only for MC)
 
 	// selection
-	UInt_t eleID[NELE]=initInt;        ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
+	UInt_t eleID[NELE] = initInt;      ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
-	Int_t  chargeEle[NELE]=initIntCharge; ///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon \todo change it to Chart_t (B)
-	Float_t etaSCEle[NELE]=initFloat, phiSCEle[NELE]=initFloat; ///< phi of the SC
-	Float_t   etaEle[NELE]=initFloat, phiEle[NELE]  =initFloat; ///< phi of the electron (electron object)
+	Short_t  chargeEle[NELE]			= initIntCharge;	///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon //Char_t is interpreted as char and not as integer
+	UChar_t recoFlagsEle[NELE]		= initInt;	///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven 
+	Float_t   etaEle[NELE]			= initFloat, phiEle[NELE]  = initFloat;		///< phi of the electron (electron object)
+	Float_t R9Ele[NELE] = initFloat;    ///< e3x3/rawEnergySCEle
+	Float_t fbremEle[NELE]			= initFloat;
 
-	Int_t recoFlagsEle[NELE]=initInt;           ///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven \todo change it to UChar_t (b)
+	Bool_t isMustacheSC[NELE] = initInt;
+	Float_t etaSCEle[NELE]			= initFloat, phiSCEle[NELE] = initFloat;	///< phi of the SC
 
-	Float_t PtEle[NELE]=initFloat;
-	Int_t   classificationEle[NELE]=initInt;   ///< electron classification in GOLD, SHOWERING, etc. \todo drop
+	// seed of the SC
+	Short_t xSeedSC[NELE]			 = initInt;		///< ieta(ix) of the SC seed in EB(EE)
+	Short_t ySeedSC[NELE]			 = initInt;		///< iphi(iy) of the SC seed in EB(EE)
+	UChar_t gainSeedSC[NELE]		 = initInt;	///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
+	Float_t energySeedSC[NELE]		 = initFloat;		///< energy of the rechit seeding the SC
+	Float_t laserSeedSC[NELE]		 = initFloat;		///< laser correction of the SC seed crystal
+	Float_t avgLCSC[NELE]			 = initFloat;
+	Float_t alphaSeedSC[NELE]		 = initFloat;		///<alpha of the seed
+	Float_t slewRateDeltaESeed[NELE] = initFloat;		///< slew rate correction for seed crystal energy
 
-	Float_t fbremEle[NELE]=initFloat;
+	Float_t energyEle[NELE]					 = initFloat;		///< electron.energy(), not changed by rereco
+	Float_t rawEnergySCEle[NELE]			 = initFloat;		///< SC energy without cluster corrections
+	Float_t energy_ECAL_ele[NELE]			 = initFloat;		///< ele-tuned regression energy: mustache for rereco and correctedEcalEnergy for official reco
+	Float_t energy_ECAL_pho[NELE]			 = initFloat;		///< pho-tuned regression energy: mustache for rereco and correctedEcalEnergy for official reco
+	Float_t energyUncertainty_ECAL_ele[NELE] = initFloat;		///< ele-tuned regression energy: mustache for rereco and correctedEcalEnergy for official reco
+	Float_t energyUncertainty_ECAL_pho[NELE] = initFloat;		///< pho-tuned regression energy: mustache for rereco and correctedEcalEnergy for official reco
 
-	Bool_t isMustacheSC[NELE]=initInt;
-	Float_t seedXSCEle[NELE]=initFloat;        ///< ieta(ix) of the SC seed in EB(EE) \todo change it to Short_t
-	Float_t seedYSCEle[NELE]=initFloat;        ///< iphi(iy) of the SC seed in EB(EE) \todo change it to Short_t
-	Float_t seedEnergySCEle[NELE]=initFloat;   ///< energy of the rechit seeding the SC
-	UChar_t gainEle[NELE]=initInt;           ///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
-	Float_t seedLCSCEle[NELE]=initFloat;       ///< laser correction of the SC seed crystal
+	Float_t esEnergySCEle[NELE]			 = initFloat;	///< pre-shower energy associated to the electron
+	Float_t esEnergyPlane1SCEle[NELE]	 = initFloat;	///< energy associate to the electron in the first plane of ES
+	Float_t esEnergyPlane2SCEle[NELE]	 = initFloat;	///< energy associate to the electron in the second plane of ES
+	Float_t rawESEnergyPlane1SCEle[NELE] = initFloat;	///< pre-shower rechit energy sum of Plane 1 associated to the electron
+	Float_t rawESEnergyPlane2SCEle[NELE] = initFloat;	///< pre-shower recHit energy sum of Plane 2 associated to the electron
 
-	Float_t avgLCSCEle[NELE]=initFloat;
-	Float_t alphaSeedSCEle[NELE]=initFloat; ///<alpha of the seed
-	Float_t slewRateDeltaESeed[NELE]=initFloat; ///< slew rate correction for seed crystal energy
+	Float_t energy_3x3SC[NELE]				= initFloat;	//< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
+	Float_t energy_5x5SC[NELE]				= initFloat;	///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
+	Float_t eBCseedEle[NELE]			= initFloat;	///< energy of the basic cluster seeding the SC
+	Float_t pModeGsfEle[NELE]			= initFloat;	///< track momentum from Gsf Track (mode)
+	Float_t pAtVtxGsfEle[NELE]			= initFloat;	///< momentum estimated at the vertex
+	Float_t trackMomentumErrorEle[NELE] = initFloat;	///< track momentum error from standard electron method
+	Float_t pNormalizedChi2Ele[NELE]	= initFloat;	///< track normalized chi2 of the fit (GSF)
 
-	Float_t energyMCEle[NELE]=initFloat;    ///< Electron MC true energy
-	Float_t energyEle[NELE]=initFloat;      ///< electron.energy(), not changed by rereco
-	Float_t energySCEle[NELE]=initFloat;    ///< corrected SuperCluster energy with PF. NB: in the rereco case, this is mustache too!
-	Float_t energySCEle_must[NELE]=initFloat;    ///< corrected SuperCluster energy with mustache
-	Float_t rawEnergySCEle[NELE]=initFloat; ///< SC energy without cluster corrections
-	Float_t rawEnergySCEle_must[NELE]=initFloat; ///< SC mustach energy without cluster corrections
-
-	Float_t energySCEle_must_regrCorr_ele[NELE]=initFloat; ///< mustache SC energy derived with regression (offline tool)
-	Float_t energySigmaSCEle_must_regrCorr_ele[NELE]=initFloat; ///< mustache SC energy resolution derived with regression (offline tool)
-
-	Float_t energySCEle_pho_regrCorr[NELE]=initFloat; ///< mustache SC energy derived with regression (offline tool)
-	Float_t energySigmaSCEle_pho_regrCorr[NELE]=initFloat; ///< mustache SC energy resolution derived with regression (offline tool)
-
-	Float_t esEnergySCEle[NELE]=initFloat;  ///< pre-shower energy associated to the electron
-	Float_t esEnergyPlane1SCEle[NELE]=initFloat; ///< energy associate to the electron in the first plane of ES
-	Float_t esEnergyPlane2SCEle[NELE]=initFloat; ///< energy associate to the electron in the second plane of ES
-	Float_t rawESEnergyPlane1SCEle[NELE]=initFloat;  ///< pre-shower rechit energy sum of Plane 1 associated to the electron
-	Float_t rawESEnergyPlane2SCEle[NELE]=initFloat;  ///< pre-shower recHit energy sum of Plane 2 associated to the electron
-
-	Float_t energySCEle_corr[NELE]=initFloat;  ///< ecal energy: not changed by rereco
-
-	Float_t e3x3SCEle[NELE]=initFloat;   //< sum of the recHit energy in 3x3 matrix centered at the seed of the SC
-	Float_t e5x5SCEle[NELE]=initFloat;   ///< sum of the recHit energy in 5x5 matrix centered at the seed of the SC
-	Float_t efull5x5SCEle[NELE]=initFloat;   ///< full 5x5 from electron object (however it is computed)
-	Float_t eBCseedEle[NELE]=initFloat;  ///< energy of the basic cluster seeding the SC
-	Float_t pModeGsfEle[NELE]=initFloat;  ///< track momentum from Gsf Track (mode)
-	Float_t pAtVtxGsfEle[NELE]=initFloat; ///< momentum estimated at the vertex
-	Float_t trackMomentumErrorEle[NELE]=initFloat; ///< track momentum error from standard electron method
-	Float_t pNormalizedChi2Ele[NELE]=initFloat;  ///< track normalized chi2 of the fit (GSF)
-
-	Float_t R9Ele[NELE]=initFloat;      ///< e3x3/rawEnergySCEle
 	Float_t invMass;
-	Float_t invMass_SC;   ///< invariant mass using SC energy with PF. NB: in the rereco case, this is mustache too!
-	Float_t invMass_SC_must;   ///< invariant mass using SC energy with mustache
-	Float_t invMass_SC_must_regrCorr_ele;   ///< invariant mass using SC energy with mustache corrected with regression
-	Float_t invMass_SC_pho_regrCorr;   ///< invariant mass using SC energy from associated photon
-
-	//   Float_t invMass_e3x3;
-	Float_t invMass_e5x5;
-	Float_t invMass_efull5x5;
 	Float_t invMass_rawSC;
-	Float_t invMass_rawSC_must;
 	Float_t invMass_rawSC_esSC;
-	Float_t invMass_rawSC_esSC_must;
-	Float_t invMass_SC_corr;
+	Float_t invMass_ECAL_ele;   ///< invariant mass using ECAL energy, this is mustache ele-tuned regression if rereco, and correctedEcalEnergy if official reco
+	Float_t invMass_ECAL_pho;   ///< invariant mass using ECAL energy, this is mustache pho-tuned regression if rereco, and correctedEcalEnergy if official reco
+	//   Float_t invMass_e3x3;
+	Float_t invMass_5x5SC;
 
-	Float_t invMass_MC;
 	Float_t invMass_mumu;
-	Float_t   etaMCEle[NELE]=initFloat, phiMCEle[NELE]=initFloat;
 
-#ifdef shervin
-	Float_t invMass_inGsf;
-	Float_t invMass_outGsf;
-	Float_t invMass_SC_etaphiSC;
+	Float_t   etaMCEle[NELE]  = initFloat, phiMCEle[NELE] = initFloat;
+	Float_t energyMCEle[NELE] = initFloat;		///< Electron MC true energy
+	Float_t		invMass_MC;
 
-	Int_t   bxPU[5];   //[nBX]
-	Int_t tagProbe_check;
-	Int_t nBCSCEle[3];
-#endif
 
 	//============================== ExtraCalibTree (for E/p)
 	TFile *extraCalibTreeFile;
 	TTree *extraCalibTree;
-	edm::Timestamp runTime_;
+	edm::Timestamp eventTime_;
 	Int_t nRecHitsEle[3];
-	Int_t nHitsSCEle[3]=initInt;
+	Int_t nHitsSCEle[3] = initInt;
 	std::vector<unsigned int>  rawIdRecHitSCEle[3];
 	std::vector<int>           XRecHitSCEle[3];
 	std::vector<int>           YRecHitSCEle[3];
@@ -371,26 +343,21 @@ private:
 	std::vector<float>               chi2UncalibRecHitSCEle[3];
 	std::vector<uint32_t>            flagsUncalibRecHitSCEle[3];
 
-
 	//============================== check ele-id and iso
 	TFile *eleIDTreeFile;
 	TTree *eleIDTree;
 	Float_t sigmaIEtaIEtaSCEle[3];
 	Float_t sigmaIPhiIPhiSCEle[3];
-	Float_t hOverE[3];
+	Float_t hOverE[3], hOverEBC[3];	
 	Float_t dr03TkSumPt[3];
 	Float_t dr03EcalRecHitSumEt[3];
 	Float_t dr03HcalTowerSumEt[3];
 	Float_t deltaPhiSuperClusterTrackAtVtx[3];
 	Float_t deltaEtaSuperClusterTrackAtVtx[3];
-	Float_t sigmaIEtaIEta_F5x5[3];
-	Float_t R9_F5x5[3];
-	Float_t E1x5_F5x5[3];
-	//Float_t E2x5_F5x5[3];
-	//Float_t E3x3_F5x5[3];
-	Float_t E5x5_F5x5[3];
+	Float_t E1x5[3];
 	Float_t E1x3[3];
 	Float_t E2x2[3];
+	Float_t E2x5Max[3];
 	Float_t S4[3];
 	Float_t etaWidth[3];
 	Float_t phiWidth[3];
@@ -402,18 +369,18 @@ private:
 
 	//==============================
 
-/**
- @}
-*/
+	/**
+	 @}
+	*/
 	//==============================
 private:
 	TFile *tree_file;
 	void InitNewTree(void);
 
-	void TreeSetSingleSCVar(const reco::SuperClusterRef& sc, int index);
+	void TreeSetSingleSCVar(const reco::SuperCluster& sc, int index);
 
 	void TreeSetSingleElectronVar(const pat::Electron& electron1, int index);
-	void TreeSetSingleElectronVar(const reco::SuperCluster& electron1, int index);
+	void TreeSetSingleElectronVar(const reco::SuperCluster& sc, int index);
 	void TreeSetSinglePhotonVar(const pat::Photon& photon, int index);
 	void TreeSetSingleMuonVar(const pat::Muon& muon1, int index);
 	void TreeSetDiElectronVar(const pat::Electron& electron1, const pat::Electron& electron2);
@@ -444,7 +411,7 @@ private:
 	//  void Tree_output(TString filename);
 	void TreeSetEventSummaryVar(const edm::Event& iEvent);
 	void TreeSetPileupVar(void);
-	float GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsigned int planeIndex);
+	float GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex);
 
 	bool elePreselection(const pat::Electron& electron);
 	//puWeights_class puWeights;
@@ -457,7 +424,7 @@ private:
 
 	//------------------------------
 	// cluster tools
-	EcalClusterLazyTools *clustertools;
+	noZS::EcalClusterLazyTools *clustertools;
 	//  EcalClusterLocal _ecalLocal;
 
 
@@ -482,8 +449,9 @@ private:
 
 
 	eventType_t eventType;
-	unsigned int eventTypeCounter[6];
+	unsigned int eventTypeCounter[DEBUG_T]={0};
 
+	bool _isMINIAOD;
 };
 
 
@@ -516,7 +484,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	WZSkimResultsTAG(iConfig.getParameter<edm::InputTag>("WZSkimResultsCollection")),
 	hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
 	SelectEvents(iConfig.getParameter<std::vector<std::string> >("SelectEvents")),
-	foutName(iConfig.getParameter<std::string>("foutName")),
+	ntupleFileName(iConfig.getParameter<std::string>("foutName")),
 	doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
 	doExtraStudyTree(iConfig.getParameter<bool>("doExtraStudyTree")),
 	doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
@@ -527,10 +495,8 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	eleID_tight(iConfig.getParameter< std::string>("eleID_tight")),
 	eventType(ZEE)
 {
-
-
-
-
+	_isMINIAOD = (iConfig.getParameter<edm::InputTag>("recHitCollectionEB") == edm::InputTag("alCaIsolatedElectrons", "alcaBarrelHits"));
+	if(_isMINIAOD) std::cout << "[INFO ZntupleDumper] running on MINIAOD" << std::endl;
 	//  current_dir.cd();
 
 
@@ -551,10 +517,10 @@ void ZNtupleDumper::beginJob()
 #ifdef DEBUG
 	std::cout << "[DEBUG] Starting creation of ntuples" << std::endl;
 #endif
-	
-	tree_file = new TFile(foutName.c_str(), "recreate");
+
+	tree_file = new TFile(ntupleFileName.c_str(), "recreate");
 	if(tree_file->IsZombie()) {
-		throw cms::Exception("OutputError") <<  "Output tree not created (Zombie): " << foutName;
+		throw cms::Exception("OutputError") <<  "Output tree not created (Zombie): " << ntupleFileName;
 		return;
 	}
 	tree_file->cd();
@@ -573,7 +539,7 @@ void ZNtupleDumper::beginJob()
 		// put the extraCalibTree into the default outfile
 		extraCalibTreeFile = new TFile("extraCalibTree.root", "recreate");
 		if(extraCalibTreeFile->IsZombie()) {
-			throw cms::Exception("OutputError") <<  "Output tree for extra calib not created (Zombie): " << foutName;
+			throw cms::Exception("OutputError") <<  "Output tree for extra calib not created (Zombie): " << ntupleFileName;
 			return;
 		}
 		extraCalibTreeFile->cd();
@@ -586,7 +552,7 @@ void ZNtupleDumper::beginJob()
 	if(doExtraStudyTree) {
 		extraStudyTreeFile = new TFile("extraStudyTree.root", "recreate");
 		if(extraStudyTreeFile->IsZombie()) {
-			throw cms::Exception("OutputError") <<  "Output tree for extra study not created (Zombie): " << foutName;
+			throw cms::Exception("OutputError") <<  "Output tree for extra study not created (Zombie): " << ntupleFileName;
 			return;
 		}
 		extraStudyTreeFile->cd();
@@ -600,7 +566,7 @@ void ZNtupleDumper::beginJob()
 	if(doEleIDTree) {
 		eleIDTreeFile = new TFile("eleIDTree.root", "recreate");
 		if(eleIDTreeFile->IsZombie()) {
-			throw cms::Exception("OutputError") <<  "Output tree for extra calib not created (Zombie): " << foutName;
+			throw cms::Exception("OutputError") <<  "Output tree for extra calib not created (Zombie): " << ntupleFileName;
 			return;
 		}
 		eleIDTreeFile->cd();
@@ -610,9 +576,9 @@ void ZNtupleDumper::beginJob()
 		InitEleIDTree();
 	}
 
-	for(int i = ZEE; i <= DEBUG_T; i++) {
-		eventTypeCounter[i] = 0;
-	}
+	//for(int i = ZEE; i <= DEBUG_T && i <= 7; i++) {
+	//	eventTypeCounter[i] = 0;
+	//}
 
 #ifdef DEBUG
 	std::cout << "[DEBUG] End creation of ntuples" << std::endl;
@@ -635,14 +601,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	invMass_mumu = 0;
 
 
-	energySCEle[0] = -99;
-	energySCEle[1] = -99;
 	energyEle[0] = -99;
 	energyEle[1] = -99;
-	energySCEle_must[0] = -99;
-	energySCEle_must[1] = -99;
-	invMass_SC = -99;
-	invMass_SC_must = -99;
 
 	pEvent = &iEvent;
 	pSetup = &iSetup;
@@ -735,10 +695,10 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
 
 	//------------------------------
-	clustertools = new EcalClusterLazyToolsT<true> (iEvent, iSetup, recHitCollectionEBToken_,
+	clustertools = new noZS::EcalClusterLazyTools(iEvent, iSetup, recHitCollectionEBToken_,
 	        recHitCollectionEEToken_);
 
-	if(doExtraCalibTree || doExtraStudyTree){
+	if(doExtraCalibTree || doExtraStudyTree) {
 		iEvent.getByToken(ebURHToken_, pEBUncRecHits);
 		iEvent.getByToken(eeURHToken_, pEEUncRecHits);
 	}
@@ -828,7 +788,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		        eleIter1 != electronsHandle->end() && eleIter1->genLepton() == 0;
 		        eleIter1++) {
 		}
-
 		//if no electron matching the gen particles then the event is skipped
 		//if(eleIter1 == electronsHandle->end()) return;
 		if(eleIter1 == electronsHandle->end()) eleIter1 = electronsHandle->begin();
@@ -863,7 +822,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		        eleIter1++) {
 
 			if(! elePreselection(*eleIter1)) continue;
-
+			if(!eleIter1->ecalDrivenSeed()) continue; // skip tracker-driven only electrons
 			if(eventType == WENU) {
 				if(! (eleIter1->electronID(eleID_tight)) ) continue;
 				if( nTight != 1 || nLoose > 0 ) continue; //to be a Wenu event request only 1 ele WP70 in the event
@@ -892,7 +851,8 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 				        eleIter2 != electronsHandle->end() && doFill == false;
 				        eleIter2++) {
 
-					if(! elePreselection(*eleIter1)) continue;
+					if(! elePreselection(*eleIter2)) continue;
+					if(!eleIter2->ecalDrivenSeed()) continue; // skip tracker-driven only electrons
 #ifdef DEBUG
 					std::cout << "[DEBUG] Electron passing preselection" << std::endl;
 #endif
@@ -904,7 +864,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 					double t2 = TMath::Exp(-eleIter2->eta());
 					double t2q = t2 * t2;
 
-					if(!eleIter2->parentSuperCluster().isNonnull()) continue;
+//					if(!eleIter2->parentSuperCluster().isNonnull()) continue;
 					double angle = 1 -
 					               ( (1 - t1q) * (1 - t2q) + 4 * t1 * t2 * cos(eleIter1->phi() - eleIter2->phi())) / (
 					                   (1 + t1q) * (1 + t2q)
@@ -919,9 +879,9 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
 					if(eventType == UNKNOWN) eventType = ZEE;
 					TreeSetDiElectronVar(*eleIter1, *eleIter2);
-					if(eleID[0]<2 || (abs(chargeEle[1])==1 && eleID[1] <2)){
+					if(eleID[0] < 2 || (abs(chargeEle[1]) == 1 && eleID[1] < 2)) {
 						// this event is not passing any eleID, skip it
-						doFill=false;
+						doFill = false;
 						continue;
 					}
 					if(doExtraCalibTree || doExtraStudyTree) {
@@ -999,21 +959,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 		        //stop when HighEtaSC1 is a valid SC (this means that there is a pair matching the Z mass
 		        PatEle1 != electronsHandle->end();
 		        PatEle1++) {
-
-			// consider electrons passing at least the loose identification
-			//if(!PatEle1->electronID("loose50nsRun2") ) continue;
-			//nMedium=0;
-			// take the highest pt tight electrons if it exists (the collection is ordered in pt)
-			// consider only the electrons passing the tightest electron identification
-			//if(nWP70>0){ // if there are tight electrons, consider only those
-			//if(!PatEle1->electronID("tight50nsRun2") ) continue;
-			//}else if(nMedium>0){ // if there are only medium electrons, consider only those
-			//if(!PatEle1->electronID("medium50nsRun2") ) continue;
-			//}
-
-			//      if(!PatEle1->ecalDriven()){ //to make alcareco/alcarereco ntuples coeherent
-			//        continue;
-			//      }
+			if(!PatEle1->ecalDrivenSeed()) continue;
 
 			// you have the first electrons candidate satifying the electrons criteria
 			// now look for a SC matching the Z invariant mass. If not SC is found, let's look to another electrons candidate
@@ -1118,10 +1064,10 @@ void ZNtupleDumper::endJob()
 		eleIDTreeFile->Close();
 	}
 
-
-	for(int i = ZEE; i <= DEBUG_T; i++) {
-		std::cout << "[NTUPLEDUMPER] EventTypeCounter[" << i << "]\t" << eventTypeCounter[i] << std::endl;
-	}
+	std::cout << DEBUG_T << std::endl;
+//	for(size_t i = 0; i < 8; ++i) {
+//		std::cout << "[NTUPLEDUMPER] EventTypeCounter[" << i << "]\t" << eventTypeCounter[i] << std::endl;
+//	}
 }
 
 // ------------ method called when starting to processes a run  ------------
@@ -1167,11 +1113,11 @@ void ZNtupleDumper::InitNewTree()
 	//  tree = new TTree("selected",fChain->GetTitle());
 	std::cout << "[STATUS] InitNewTree" << std::endl;
 	if(tree == NULL) return;
-	tree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	tree->Branch("runNumber",     &runNumber,   "runNumber/i");
+	tree->Branch("lumiBlock",     &lumiBlock,   "lumiBlock/s");
 	tree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-	tree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-	tree->Branch("runTime",       &runTime,         "runTime/i");
-	tree->Branch("nBX", &nBX, "nBX/I");
+	tree->Branch("eventTime",       &eventTime,     "eventTime/i");
+	tree->Branch("nBX",           &nBX,         "nBX/s");
 
 	tree->Branch("mcGenWeight",   &mcGenWeight, "mcGenWeight/F");
 
@@ -1180,47 +1126,46 @@ void ZNtupleDumper::InitNewTree()
 	//tree->Branch("HLTResults",&(HLTResults[0]));
 
 	// pu
-	tree->Branch("nPU", nPU, "nPU[1]/I");
 	tree->Branch("rho", &rho, "rho/F");
-	tree->Branch("nPV", &nPV, "nPV/I");
+	tree->Branch("nPV", &nPV, "nPV/b");
+	tree->Branch("nPU", &nPU, "nPU/b");
 
 	// ele
 	tree->Branch("eleID", eleID, "eleID[3]/i");
-	tree->Branch("chargeEle",   chargeEle,    "chargeEle[3]/I");
-	tree->Branch("recoFlagsEle", recoFlagsEle, "recoFlagsEle[3]/I");
-	tree->Branch("gainEle", gainEle, "gainEle[3]/b");
-	tree->Branch("etaEle",      etaEle,       "etaEle[3]/F");	
-	tree->Branch("phiEle",      phiEle,       "phiEle[3]/F");	
-	tree->Branch("R9Ele", R9Ele, "R9Ele[3]/F");
+	tree->Branch("chargeEle",   chargeEle,    "chargeEle[3]/S");
+	tree->Branch("recoFlagsEle", recoFlagsEle, "recoFlagsEle[3]/b");
+	tree->Branch("etaEle",      etaEle,       "etaEle[3]/F");
+	tree->Branch("phiEle",      phiEle,       "phiEle[3]/F");
 	tree->Branch("fbremEle",    fbremEle,     "fbremEle[3]/F");
+	tree->Branch("R9Ele", R9Ele, "R9Ele[3]/F");
+
 
 	// SC
-	tree->Branch("etaSCEle",      etaSCEle,       "etaSCEle[3]/F");	
-	tree->Branch("phiSCEle",      phiSCEle,       "phiSCEle[3]/F");	
+	tree->Branch("etaSCEle",      etaSCEle,       "etaSCEle[3]/F");
+	tree->Branch("phiSCEle",      phiSCEle,       "phiSCEle[3]/F");
 	tree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[3]/I");
-	tree->Branch("avgLCSCEle",  avgLCSCEle,       "avgLCSCEle[3]/F");
+	tree->Branch("avgLCSC",  avgLCSC,       "avgLCSC[3]/F");
 	tree->Branch("isMustacheSC", isMustacheSC, "isMustacheSC[3]/b");
-	tree->Branch("energySCEle", energySCEle, "energySCEle[3]/F");
 	tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
-	tree->Branch("energySCEle_corr", energySCEle_corr, "energySCEle_corr[3]/F"); ///< correctedEcalEnergy from MINIAOD
-	tree->Branch("energySCEle_must_regrCorr_ele", energySCEle_must_regrCorr_ele, "energySCEle_must_regrCorr_ele[3]/F"); ///< energy regression tuned on mustache SC without ES
-	tree->Branch("energySigmaSCEle_must_regrCorr_ele", energySigmaSCEle_must_regrCorr_ele, "energySigmaSCEle_must_regrCorr_ele[3]/F");
-	tree->Branch("energySCEle_pho_regrCorr", energySCEle_pho_regrCorr, "energySCEle_pho_regrCorr[3]/F");
-	tree->Branch("energySigmaSCEle_pho_regrCorr", energySigmaSCEle_pho_regrCorr, "energySigmaSCEle_pho_regrCorr[3]/F");
-	tree->Branch("e5x5SCEle", e5x5SCEle, "e5x5SCEle[3]/F");
-//	tree->Branch("efull5x5SCEle", efull5x5SCEle, "efull5x5SCEle[3]/F");
+	tree->Branch("energy_ECAL_ele", energy_ECAL_ele, "energy_ECAL_ele[3]/F"); ///< correctedEcalEnergy from MINIAOD or mustache regression if rereco
+	tree->Branch("energy_ECAL_pho", energy_ECAL_pho, "energy_ECAL_pho[3]/F");
+	tree->Branch("energyUncertainty_ECAL_ele", energyUncertainty_ECAL_ele, "energyUncertainty_ECAL_ele[3]/F"); ///< correctedEcalEnergy from MINIAOD or mustache regression if rereco
+	tree->Branch("energyUncertainty_ECAL_pho", energyUncertainty_ECAL_pho, "energyUncertainty_ECAL_pho[3]/F");
+
+	tree->Branch("energy_5x5SC", energy_5x5SC, "energy_5x5SC[3]/F");
 	tree->Branch("pModeGsfEle", pModeGsfEle, "pModeGsfEle[3]/F");
 	tree->Branch("pAtVtxGsfEle", pAtVtxGsfEle, "pAtVtxGsfEle[3]/F");
 	tree->Branch("pNormalizedChi2Ele", pNormalizedChi2Ele, "pNormalizedChi2Ele[3]/F");
 	tree->Branch("trackMomentumErrorEle", trackMomentumErrorEle, "trackMomentumErrorEle[3]/F");
 
 	// seed recHit
-	tree->Branch("seedXSCEle",           seedXSCEle,      "seedXSCEle[3]/I");
-	tree->Branch("seedYSCEle",           seedYSCEle,      "seedYSCEle[3]/I");
-	tree->Branch("seedEnergySCEle", seedEnergySCEle, "seedEnergySCEle[3]/F");
-	tree->Branch("seedLCSCEle",         seedLCSCEle,     "seedLCSCEle[3]/F");
-	tree->Branch("seedAlphaSCEle", alphaSeedSCEle, "alphaSeedSCEle[3]/F");
-	tree->Branch("slewRateDeltaESeed",  slewRateDeltaESeed, "slewRateDeltaESeed[3]/F");
+	tree->Branch("xSeedSC",            xSeedSC,            "xSeedSC[3]/S");
+	tree->Branch("ySeedSC",            ySeedSC,            "ySeedSC[3]/S");
+	tree->Branch("gainSeedSC", gainSeedSC, "gainSeedSC[3]/b");
+	tree->Branch("energySeedSC",       energySeedSC,       "energySeedSC[3]/F");
+	tree->Branch("laserSeedSC",        laserSeedSC,        "laserSeedSC[3]/F");
+	tree->Branch("alphaSeedSC",        alphaSeedSC,        "alphaSeedSC[3]/F");
+	tree->Branch("slewRateDeltaESeed", slewRateDeltaESeed, "slewRateDeltaESeed[3]/F");
 
 	// ES
 	tree->Branch("esEnergySCEle", esEnergySCEle, "esEnergySCEle[3]/F");
@@ -1236,11 +1181,10 @@ void ZNtupleDumper::InitNewTree()
 
 	// invariant mass
 	tree->Branch("invMass",    &invMass,      "invMass/F");
-	tree->Branch("invMass_SC_corr", &invMass_SC_corr, "invMass_SC_corr/F"); ///< using correctedEcalEnergy
-	tree->Branch("invMass_SC_must_regrCorr_ele", &invMass_SC_must_regrCorr_ele,   "invMass_SC_must_regrCorr_ele/F"); ///< using mustache SC dedicated regression
-	tree->Branch("invMass_SC_pho_regrCorr", &invMass_SC_pho_regrCorr,   "invMass_SC_pho_regrCorr/F");
+	tree->Branch("invMass_ECAL_ele", &invMass_ECAL_ele, "invMass_ECAL_ele/F"); ///< using correctedEcalEnergy or using mustache SC dedicated regression
+	tree->Branch("invMass_ECAL_pho", &invMass_ECAL_pho,   "invMass_ECAL_pho/F");
 	//   tree->Branch("invMass_e3x3",    &invMass_e3x3,      "invMass_e3x3/F");
-	tree->Branch("invMass_e5x5",    &invMass_e5x5,      "invMass_e5x5/F");
+	tree->Branch("invMass_5x5SC",    &invMass_5x5SC,      "invMass_5x5SC/F");
 	//tree->Branch("invMass_efull5x5",    &invMass_efull5x5,      "invMass_efull5x5/F");
 	tree->Branch("invMass_rawSC", &invMass_rawSC,   "invMass_rawSC/F");
 	tree->Branch("invMass_rawSC_esSC", &invMass_rawSC_esSC,   "invMass_rawSC_esSC/F");
@@ -1253,13 +1197,14 @@ void ZNtupleDumper::InitNewTree()
 void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent)
 {
 
-	runTime_   = iEvent.eventAuxiliary().time();
-	runTime = runTime_.unixTime();
-	runNumber = iEvent.id().run();
-	eventNumber = iEvent.id().event();
-	nBX = iEvent.bunchCrossing();
+	eventTime_   =  iEvent.eventAuxiliary().time();
+	eventTime = (UInt_t) eventTime_.unixTime();
+	runNumber = (UInt_t) iEvent.run();
+	eventNumber = (Long64_t) iEvent.id().event();
+//	nBX = (UShort_t) (iEvent.isRealData()) ? iEvent.bunchCrossing() : 0;
+	nBX = (UShort_t)  iEvent.bunchCrossing();
 
-	lumiBlock = iEvent.isRealData() ? iEvent.luminosityBlock() : -1;
+	lumiBlock = (UShort_t) iEvent.luminosityBlock();
 
 	if(!hltPaths.empty()) {
 		edm::TriggerNames HLTNames_ = iEvent.triggerNames(*triggerResultsHandle);
@@ -1281,8 +1226,8 @@ void ZNtupleDumper::TreeSetEventSummaryVar(const edm::Event& iEvent)
 void ZNtupleDumper::TreeSetPileupVar(void)
 {
 	rho = *rhoHandle;
-	nPV = 0;
-	nPU[0] = -1;
+	nPV = 255;
+	nPU = 255;
 	mcGenWeight = -1;
 
 	if(primaryVertexHandle->size() > 0) {
@@ -1297,14 +1242,14 @@ void ZNtupleDumper::TreeSetPileupVar(void)
 		for(PVI = PupInfo->begin(); PVI != PupInfo->end(); ++PVI) {
 			int BX = PVI->getBunchCrossing();
 			if(BX == 0) { // in-time pu
-				nPU[0] = PVI->getTrueNumInteractions();
+				nPU = PVI->getTrueNumInteractions();
 			}
 		}
-		
-		if(!GenEventInfoHandle->weights().empty()){
+
+		if(!GenEventInfoHandle->weights().empty()) {
 			mcGenWeight = (GenEventInfoHandle->weights())[0];
 		}
-	} 
+	}
 	return;
 }
 
@@ -1334,173 +1279,88 @@ DetId ZNtupleDumper::findSCseed(const reco::SuperCluster& cluster)
 
 
 // a negative index means that the corresponding electron does not exist, fill with 0
-void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int index)
+void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron, int index)
 {
 
 	if(index < 0) {
-		PtEle[-index] 	  = 0;
 		chargeEle[-index] = -100;
 		etaEle[-index]    = 0;
 		phiEle[-index]    = 0;
 		recoFlagsEle[-index] = -1;
 		return;
 	}
+	assert(electron.ecalDrivenSeed());
 
-	energyEle[index] = electron1.energy();
-	PtEle[index]     = electron1.et();
-	chargeEle[index] = electron1.charge();
-	etaEle[index]    = electron1.eta(); // degli elettroni
-	phiEle[index]    = electron1.phi();
+	energyEle[index] = electron.energy();
+	chargeEle[index] = (Char_t)electron.charge();
+	etaEle[index]    = electron.eta(); // degli elettroni
+	phiEle[index]    = electron.phi();
+	fbremEle[index]  = electron.fbrem(); // fatta con pIn-pOut
 
-
-	if(electron1.ecalDrivenSeed()) {
-		if(electron1.trackerDrivenSeed()) recoFlagsEle[index] = 3;
+	if(electron.ecalDrivenSeed()) {
+		if(electron.trackerDrivenSeed()) recoFlagsEle[index] = 3;
 		else recoFlagsEle[index] = 2;
 	} else recoFlagsEle[index] = 1;
 
-
-	fbremEle[index] = electron1.fbrem(); // fatta con pIn-pOut
-
-	isMustacheSC[index] = !electron1.superCluster().isNonnull();
-	
-	const reco::SuperClusterRef& sc = isMustacheSC[index] ?  electron1.parentSuperCluster() : electron1.superCluster();
+	isMustacheSC[index] = !electron.superCluster().isNonnull();
+	assert(isMustacheSC);
+	const reco::SuperClusterRef& sc = isMustacheSC[index] ?  electron.parentSuperCluster() : electron.superCluster();
 	assert(sc.isNonnull()); // at least one of the SCs has to be defined!
 
-	TreeSetSingleSCVar(sc, index);
+	TreeSetSingleSCVar(*sc, index);
 
-	energySCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMust");
-	energySigmaSCEle_must_regrCorr_ele[index] = electron1.userFloat("energySCEleMustVar");
+	energy_ECAL_ele[index]			  = (_isMINIAOD) ? electron.correctedEcalEnergy()     : electron.userFloat("energySCEleMust");
+	energyUncertainty_ECAL_ele[index] = (_isMINIAOD) ? electron.correctedEcalEnergyError() : electron.userFloat("energySCEleMustVar");
 
-	energySCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePho");
-	energySigmaSCEle_pho_regrCorr[index] = electron1.userFloat("energySCElePhoVar");
+	energy_ECAL_pho[index]			  = electron.userFloat("energySCElePho");
+	energyUncertainty_ECAL_pho[index] = electron.userFloat("energySCElePhoVar");
 
-	slewRateDeltaESeed[index] = electron1.hasUserFloat("slewRateDeltaESeed") ? electron1.userFloat("slewRateDeltaESeed") : 0;
+	slewRateDeltaESeed[index] = electron.hasUserFloat("slewRateDeltaESeed") ? electron.userFloat("slewRateDeltaESeed") : 0;
 
-
-	energySCEle_corr[index] = electron1.correctedEcalEnergy();
-	efull5x5SCEle[index] = electron1.full5x5_e5x5(); //check this
-
-	
 	// change in an electron properties please, EleNewEnergyProducer
-	e3x3SCEle[index] = clustertools->e3x3(*sc->seed());
-	e5x5SCEle[index] = clustertools->e5x5(*sc->seed());
-	std::cout << efull5x5SCEle[index] << "\t" << e5x5SCEle[index] << std::endl;
-	assert(efull5x5SCEle == e5x5SCEle);
+	energy_3x3SC[index] = clustertools->e3x3(*sc->seed());
+	energy_5x5SC[index] = electron.full5x5_e5x5();
+		
+	Float_t efull5x5SCEle = clustertools->e5x5(*sc->seed()); // this is the official one, in rerecoes it is the one of the prompt reco, not updated by the rereco
+	if(fabs(efull5x5SCEle - energy_5x5SC[index])>1e-6){
+		std::cout << "[WARNING] " << efull5x5SCEle << "\t" << energy_5x5SC[index] << "\t" << efull5x5SCEle-energy_5x5SC[index] << "\t" << clustertools->n5x5(*sc->seed()) << "\t" << etaEle[index] << "\t" <<runNumber << "\t" << eventNumber << std::endl;
+	} 
+	//if(efull5x5SCEle>15) assert(fabs(efull5x5SCEle - energy_5x5SC[index])< 1e-6);
 
+	pModeGsfEle[index] = electron.gsfTrack()->pMode();
+	trackMomentumErrorEle[index] = electron.trackMomentumError();
+	pNormalizedChi2Ele[index] = electron.gsfTrack()->normalizedChi2();
+	pAtVtxGsfEle[index] = electron.trackMomentumAtVtx().R();
 
-	pModeGsfEle[index] = electron1.gsfTrack()->pMode();
-	trackMomentumErrorEle[index] = electron1.trackMomentumError();
-	pNormalizedChi2Ele[index] = electron1.gsfTrack()->normalizedChi2();
-	pAtVtxGsfEle[index] = electron1.trackMomentumAtVtx().R();
-
-	//R9Ele[index] = e3x3SCEle[index]/sc->rawEnergy();//already commented
-	R9Ele[index] = electron1.full5x5_r9();
-
+	//R9Ele[index] = e3x3SCEle[index] / sc->rawEnergy(); //already commented
+	R9Ele[index] = electron.full5x5_r9();
+	assert(fabs(R9Ele[index] - energy_3x3SC[index] / sc->rawEnergy()) < 1e-6);
+	
 	eleIDMap eleID_map;
 
 	eleID[index] = 0;
 	for (std::map<std::string, UInt_t>::iterator it = eleID_map.eleIDmap.begin(); it != eleID_map.eleIDmap.end(); ++it) {
-	  #ifdef check_newID
-	  if((it->first).compare("loose25nsRun2V2016")==0){ std::cout<<"eleID is "<<it->first<<"; isAvailable is "<<electron1.isElectronIDAvailable(it->first)<<std::endl; }
-	  #endif
-		if(electron1.isElectronIDAvailable(it->first)) { //
-			if ((bool) electron1.electronID(it->first))  eleID[index] |= it->second;//
+#ifdef check_newID
+		if((it->first).compare("loose25nsRun2V2016") == 0) {
+			std::cout << "eleID is " << it->first << "; isAvailable is " << electron.isElectronIDAvailable(it->first) << std::endl;
+		}
+#endif
+		if(electron.isElectronIDAvailable(it->first)) { //
+			if ((bool) electron.electronID(it->first))  eleID[index] |= it->second;//
 		}//
 	}
 
-	classificationEle[index] = electron1.classification();
 
 //	return;//To be fixed
-	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
-	pSetup->get<EcalLaserDbRecord>().get( aSetup );
-
-	EcalLaserAlpha alpha;
-	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
-	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
-
-
-	if(electron1.ecalDrivenSeed()){
-		//assert(recHits!=NULL);
-		const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-
-		seedXSCEle[index] = 0;
-		seedYSCEle[index] = 0;
-		nHitsSCEle[index] = -1;
-		avgLCSCEle[index] = -1.;
-		alphaSeedSCEle[index] = -1.;
-		seedEnergySCEle[index] = -1.;
-		seedLCSCEle[index] = -10;
-		avgLCSCEle[index] = -10;
-		gainEle[index] = 0;
-
-		assert(sc->seed().isAvailable());
-		DetId seedDetId = sc->seed()->seed();
-
-		assert(seedDetId.null());
-
-		// if(seedDetId.null()) {
-		// 	assert(electron1.trackerDrivenSeed()); // DEBUG
-		// 	//seedDetId = findSCseed(*(sc));
-		// }
-
-		if(!seedDetId.null()) { //false for trackerDriverElectons
-			if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel) {
-				EBDetId seedDetIdEcal = seedDetId;
-				seedXSCEle[index] = seedDetIdEcal.ieta();
-				seedYSCEle[index] = seedDetIdEcal.iphi();
-			} else if(electron1.isEE() && seedDetId.subdetId() == EcalEndcap) {
-				EEDetId seedDetIdEcal = seedDetId;
-				seedXSCEle[index] = seedDetIdEcal.ix();
-				seedYSCEle[index] = seedDetIdEcal.iy();
-			}
-
-			const EcalRecHitCollection *recHits = (seedDetId.subdetId() == EcalBarrel) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-
-			EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-			//assert(seedRecHit!=recHits->end()); // DEBUG
-			if(seedRecHit != recHits->end()) {
-				seedEnergySCEle[index] = seedRecHit->energy();
-
-				float sumLC_E = 0.;
-				float sumE = 0.;
-
-				if( !isMC) {
-					seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
-					std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = sc->hitsAndFractions();
-					for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-					        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-						EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-						//assert(oneHit!=recHits->end()); // DEBUG
-						sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
-						sumE    += oneHit->energy();
-					}
-					avgLCSCEle[index] = sumLC_E / sumE;
-
-					EcalLaserAlphaMap::const_iterator italpha = laserAlphaMap.find( seedDetId );
-					if ( italpha != laserAlphaMap.end() ) {
-						alpha = (*italpha);
-						alphaSeedSCEle[index] = alpha;
-						//					        std::cout << " ALPHA = " << alpha << std::endl;
-					}
-					//					else {
-					//      edm::LogError("EcalLaserDbService") << "error with laserAlphaMap!" << std::endl;
-					//}
-				}
-
-				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
-				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
-			}
-		}
-	}
-	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron1.superCluster()->seed()))[index]);
+	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron.superCluster()->seed()))[index]);
 	//  sigmaIEtaIEtaSCEle[1] = sqrt(clustertools->localCovariances(*(electron2.superCluster()->seed()))[index]);
 	//  sigmaIPhiIPhiBC = sqrt(clustertools->localCovariances(*b)[3]);
 	//  sigmaIEtaIPhiBC = clustertools->localCovariances(*b)[1];
 
-	if(electron1.genLepton() != 0) {
-		energyMCEle[index]  = electron1.genLepton()->energy();
-		etaMCEle[index]  = electron1.genLepton()->eta();
-		phiMCEle[index]  = electron1.genLepton()->phi();
+	if(electron.genLepton() != 0) {
+		energyMCEle[index]  = electron.genLepton()->energy();
+		etaMCEle[index]  = electron.genLepton()->eta();
+		phiMCEle[index]  = electron.genLepton()->phi();
 	} else {
 		energyMCEle[index] = 0;
 		etaMCEle[index] = 0;
@@ -1510,22 +1370,64 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	return;
 }
 
-void ZNtupleDumper::TreeSetSingleSCVar(const reco::SuperClusterRef& sc, int index)
+void ZNtupleDumper::TreeSetSingleSCVar(const reco::SuperCluster& sc, int index)
 {
-	etaSCEle[index] = sc->eta();
-	phiSCEle[index] = sc->phi();
+	etaSCEle[index] = sc.eta();
+	phiSCEle[index] = sc.phi();
 
-	nHitsSCEle[index] = sc->size();
+	nHitsSCEle[index] = sc.size();
 
-	energySCEle[index]		   = sc->energy();
-	rawEnergySCEle[index]	   = sc->rawEnergy();
-	esEnergySCEle[index]	   = sc->preshowerEnergy();
-	esEnergyPlane1SCEle[index] = sc-> preshowerEnergyPlane1();
-	esEnergyPlane2SCEle[index] = sc-> preshowerEnergyPlane2();
+	rawEnergySCEle[index]	   = sc.rawEnergy();
+	eBCseedEle[index] = sc.seed()->energy();
+
+	esEnergySCEle[index]	   = sc.preshowerEnergy();
+	esEnergyPlane1SCEle[index] = sc. preshowerEnergyPlane1();
+	esEnergyPlane2SCEle[index] = sc. preshowerEnergyPlane2();
 	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(sc, 1);
 	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(sc, 2);
-	eBCseedEle[index] = sc->seed()->energy();
 
+
+	DetId seedDetId = sc.seed()->seed();
+	if(seedDetId.subdetId() == EcalBarrel) {
+		EBDetId seedDetIdEcal = seedDetId;
+		xSeedSC[index] = seedDetIdEcal.ieta();
+		ySeedSC[index] = seedDetIdEcal.iphi();
+	} else {
+		EEDetId seedDetIdEcal = seedDetId;
+		xSeedSC[index] = seedDetIdEcal.ix();
+		ySeedSC[index] = seedDetIdEcal.iy();
+	}
+
+	const EcalRecHitCollection *recHits = (seedDetId.subdetId() == EcalBarrel) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+	EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
+	assert(seedRecHit != recHits->end());
+	energySeedSC[index] = seedRecHit->energy();
+
+	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
+	laserSeedSC[index] = laserHandle_->getLaserCorrection(seedDetId, eventTime_);
+
+	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
+	pSetup->get<EcalLaserDbRecord>().get( aSetup );
+	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
+	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
+	alphaSeedSC[index] = *(laserAlphaMap.find( seedDetId ));
+
+	float sumLC_E = 0.;
+	float sumE = 0.;
+
+	std::vector< std::pair<DetId, float> > hitsAndFractions = sc.hitsAndFractions();
+	for (const auto&  detitr : hitsAndFractions) {
+		EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr.first) ) ;
+#ifdef DEBUG
+		assert(oneHit != recHits->end()); // DEBUG
+#endif
+		sumLC_E += laserHandle_->getLaserCorrection(detitr.first, eventTime_) * oneHit->energy();
+		sumE    += oneHit->energy();
+	}
+	avgLCSC[index] = sumLC_E / sumE;
+
+	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainSeedSC[index] |= 0x01;
+	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainSeedSC[index] |= 0x02;
 
 	return;
 }
@@ -1536,7 +1438,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 {
 
 	if(index < 0) {
-		PtEle[-index] 	  = 0;
 		chargeEle[-index] = -100;
 		etaEle[-index]    = 0;
 		phiEle[-index]    = 0;
@@ -1545,7 +1446,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 
 	//checks
 
-	PtEle[index]     = electron1.energy() / cosh(electron1.eta());
 	chargeEle[index] = 0; // dont know the charge for SC
 	etaEle[index]    = electron1.eta(); // eta = etaSC
 	phiEle[index]    = electron1.phi();
@@ -1557,110 +1457,22 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const reco::SuperCluster& electron1
 	etaSCEle[index] = electron1.eta(); // itself is a SC
 	phiSCEle[index] = electron1.phi();
 
-	const EcalRecHitCollection *recHitsEE = clustertools->getEcalEERecHitCollection();
-
-	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-
-	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
-	pSetup->get<EcalLaserDbRecord>().get( aSetup );
-
-	EcalLaserAlpha alpha;
-	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
-	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
-
-
-	DetId seedDetId = electron1.seed()->seed();
-	//assert(!(seedDetId.null() && !electron1.ecalDrivenSeed()));
-	if(seedDetId.null()) {
-		seedDetId = findSCseed(electron1);
-	}
-	assert(seedDetId.subdetId() == EcalEndcap);
-	assert(!seedDetId.null());
-	EEDetId seedDetIdEcal = seedDetId;
-	seedXSCEle[index] = seedDetIdEcal.ix();
-	seedYSCEle[index] = seedDetIdEcal.iy();
-
-	EcalRecHitCollection::const_iterator seedRecHit = recHitsEE->find(seedDetId) ;
-	assert(seedRecHit != recHitsEE->end());
-	seedEnergySCEle[index] = seedRecHit->energy();
-	gainEle[index]=0x00;
-	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
-	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
-
-	if(isMC) seedLCSCEle[index] = -10;
-	else seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
-
-	float sumLC_E = 0.;
-	float sumE = 0.;
-	if( !isMC) {
-		std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = electron1.hitsAndFractions();
-		for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-		        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-
-			double hitenergy = 0;
-			EcalRecHitCollection::const_iterator oneHit = recHitsEE->find( (detitr -> first) ) ;
-			hitenergy = oneHit->energy();
-
-			sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * hitenergy;
-			sumE    += hitenergy;
-		}
-		avgLCSCEle[index] = sumLC_E / sumE;
-
-		EcalLaserAlphaMap::const_iterator italpha = laserAlphaMap.find( seedDetId );
-		if ( italpha != laserAlphaMap.end() ) {
-			alpha = (*italpha);
-			alphaSeedSCEle[index] = alpha;
-			//					        std::cout << " ALPHA = " << alpha << std::endl;
-		}
-
-	} else     avgLCSCEle[index] = -10;
-
-	nHitsSCEle[index] = electron1.size();
-
 	// no MC matching has been considered yet for SCV
 	energyMCEle[index] = -100;
 	etaMCEle[index] = -100;
 	phiMCEle[index] = -100;
 
-	energySCEle[index]  = electron1.energy();
-	energySCEle_must[index]  = electron1.energy();
-	rawEnergySCEle[index]  = electron1.rawEnergy();
-	rawEnergySCEle_must[index]  = electron1.rawEnergy();
-	esEnergySCEle[index] = electron1.preshowerEnergy();
-	esEnergyPlane1SCEle[index] = electron1.preshowerEnergyPlane1();
-	esEnergyPlane2SCEle[index] = electron1.preshowerEnergyPlane2();
-	rawESEnergyPlane2SCEle[index] = -1;
-	rawESEnergyPlane1SCEle[index] = -1;
-
-	energySCEle_corr[index] = electron1.energy();
-
-
-	// change in an electron properties please, EleNewEnergyProducer
-	e3x3SCEle[index] = clustertools->e3x3(*electron1.seed());
-	e5x5SCEle[index] = clustertools->e5x5(*electron1.seed());
-	eBCseedEle[index] = electron1.seed()->energy();
 
 	pModeGsfEle[index] = -1; // no track, though ..
 	trackMomentumErrorEle[index] = -1;
 	pNormalizedChi2Ele[index] = -1;
 	pAtVtxGsfEle[index] = -1;
 
-	R9Ele[index] = e3x3SCEle[index] / electron1.rawEnergy(); //original version
-
-	// make it a function
-	//eleID[index] = ((bool) electron1.electronID("fiducial")) << 0;
-	//eleID[index] += ((bool) electron1.electronID("loose")) << 1;
-	//eleID[index] += ((bool) electron1.electronID("medium")) << 2;
-	//eleID[index] += ((bool) electron1.electronID("tight")) << 3;
-	//eleID[index] += ((bool) electron1.electronID("WP90PU")) << 4;
-	//eleID[index] += ((bool) electron1.electronID("WP80PU")) << 5;
-	//eleID[index] += ((bool) electron1.electronID("WP70PU")) << 6;
-	//classificationEle[index] = electron1.classification();
 
 	// temporary ignor the id and classification
 	eleID[index] = -100;
-	classificationEle[index] = -100;
 
+	TreeSetSingleSCVar(electron1, index);
 	return;
 }
 
@@ -1669,14 +1481,12 @@ void ZNtupleDumper::TreeSetSingleMuonVar(const pat::Muon& muon1, int index)
 {
 
 	if(index < 0) {
-		PtEle[-index] 	  = 0;
 		chargeEle[-index] = -100;
 		etaEle[-index]    = 0;
 		phiEle[-index]    = 0;
 		return;
 	}
 
-	PtEle[index]     = muon1.pt();
 	chargeEle[index] = muon1.charge();
 	etaEle[index]    = muon1.eta(); // degli elettroni
 	phiEle[index]    = muon1.phi();
@@ -1699,7 +1509,6 @@ void ZNtupleDumper::TreeSetSingleMuonVar(const pat::Muon& muon1, int index)
 	//  eleID[index] += ((bool) muon1.muonID("highPT")) << 2;
 	//  eleID[index] += ((bool) muon1.muonID("tight")) << 3;
 
-	//  classificationEle[index] = muon1.classification();
 
 	return;
 }
@@ -1710,92 +1519,20 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 {
 
 	if(index < 0) {
-		PtEle[-index] 	  = 0;
 		chargeEle[-index] = -100;
 		etaEle[-index]    = 0;
 		phiEle[-index]    = 0;
 		return;
 	}
 
-	PtEle[index]     = photon.energy() / cosh(photon.eta());
-	chargeEle[index] = photon.charge();
+	chargeEle[index] = (Char_t) photon.charge();
 	etaEle[index]    = photon.eta();
 	phiEle[index]    = photon.phi();
 
 	etaSCEle[index] = photon.superCluster()->eta();
 	phiSCEle[index] = photon.superCluster()->phi();
 
-	const EcalRecHitCollection *recHits = (photon.isEB()) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
-	//assert(recHits!=NULL);
-	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
-
-
-	edm::ESHandle<EcalLaserDbService> aSetup; //ALPHA PART
-	pSetup->get<EcalLaserDbRecord>().get( aSetup );
-
-	EcalLaserAlpha alpha;
-	const EcalLaserAlphas* myalpha =  aSetup->getAlphas();
-	const EcalLaserAlphaMap& laserAlphaMap =  myalpha->getMap();
-
-
-
-	DetId seedDetId = photon.superCluster()->seed()->seed();
-	if(seedDetId.null()) {
-		//assert(photon.trackerDrivenSeed()); // DEBUG
-		seedDetId = findSCseed(*(photon.superCluster()));
-	}
-
-	if(photon.isEB() && seedDetId.subdetId() == EcalBarrel) {
-		EBDetId seedDetIdEcal = seedDetId;
-		seedXSCEle[index] = seedDetIdEcal.ieta();
-		seedYSCEle[index] = seedDetIdEcal.iphi();
-	} else if(photon.isEE() && seedDetId.subdetId() == EcalEndcap) {
-		EEDetId seedDetIdEcal = seedDetId;
-		seedXSCEle[index] = seedDetIdEcal.ix();
-		seedYSCEle[index] = seedDetIdEcal.iy();
-	} else { ///< this case is strange but happens for trackerDriven electrons
-		seedXSCEle[index] = 0;
-		seedYSCEle[index] = 0;
-	}
-
-	EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
-	//assert(seedRecHit!=recHits->end()); // DEBUG
-	seedEnergySCEle[index] = seedRecHit->energy();
-	if(isMC) seedLCSCEle[index] = -10;
-	else seedLCSCEle[index] = laserHandle_->getLaserCorrection(seedDetId, runTime_);
-
-	gainEle[index]=0x00;
-	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
-	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
-
-	float sumLC_E = 0.;
-	float sumE = 0.;
-	if( !isMC) {
-		std::vector< std::pair<DetId, float> > hitsAndFractions_ele1 = photon.superCluster()->hitsAndFractions();
-		for (std::vector<std::pair<DetId, float> >::const_iterator detitr = hitsAndFractions_ele1.begin();
-		        detitr != hitsAndFractions_ele1.end(); detitr++ ) {
-			EcalRecHitCollection::const_iterator oneHit = recHits->find( (detitr -> first) ) ;
-			//assert(oneHit!=recHits->end()); // DEBUG
-			sumLC_E += laserHandle_->getLaserCorrection(detitr->first, runTime_) * oneHit->energy();
-			sumE    += oneHit->energy();
-		}
-		avgLCSCEle[index] = sumLC_E / sumE;
-
-		EcalLaserAlphaMap::const_iterator italpha = laserAlphaMap.find( seedDetId );
-		if ( italpha != laserAlphaMap.end() ) {
-			alpha = (*italpha);
-			alphaSeedSCEle[index] = alpha;
-			//					        std::cout << " ALPHA = " << alpha << std::endl;
-		}
-
-	} else     avgLCSCEle[index] = -10;
-
-	nHitsSCEle[index] = photon.superCluster()->size();
-
-	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(photon.superCluster()->seed()))[index]);
-	//  sigmaIEtaIEtaSCEle[1] = sqrt(clustertools->localCovariances(*(electron2.superCluster()->seed()))[index]);
-	//  sigmaIPhiIPhiBC = sqrt(clustertools->localCovariances(*b)[3]);
-	//  sigmaIEtaIPhiBC = clustertools->localCovariances(*b)[1];
+	TreeSetSingleSCVar(*(photon.superCluster()), index);
 
 	if(photon.genParticle() != 0) {
 		energyMCEle[index]  = photon.genParticle()->energy();
@@ -1807,14 +1544,6 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 		phiMCEle[index] = 0;
 	}
 
-	energySCEle[index]  = photon.superCluster()->energy();
-	if(photon.parentSuperCluster().isNonnull()) {
-		energySCEle_must[index] = photon.parentSuperCluster()->energy();
-		rawEnergySCEle_must[index]  = photon.parentSuperCluster()->rawEnergy();
-	} else {
-		energySCEle_must[index] = -99.;
-		rawEnergySCEle_must[index] = -99.;
-	}
 
 	rawEnergySCEle[index]  = photon.superCluster()->rawEnergy();
 	esEnergySCEle[index] = photon.superCluster()->preshowerEnergy();
@@ -1824,10 +1553,10 @@ void ZNtupleDumper::TreeSetSinglePhotonVar(const pat::Photon& photon, int index)
 	//  energySCEle_corr[index] = photon.scEcalEnergy(); //but, I don't think this is the correct energy..
 
 	// change in an electron properties please, EleNewEnergyProducer
-	e3x3SCEle[index] = clustertools->e3x3(*photon.superCluster()->seed());
-	e5x5SCEle[index] = clustertools->e5x5(*photon.superCluster()->seed());
+	energy_3x3SC[index] = clustertools->e3x3(*photon.superCluster()->seed());
+	energy_5x5SC[index] = clustertools->e5x5(*photon.superCluster()->seed());
 	eBCseedEle[index] = photon.superCluster()->seed()->energy();
-	R9Ele[index] = e3x3SCEle[index] / photon.superCluster()->rawEnergy(); //original
+	R9Ele[index] = energy_3x3SC[index] / photon.superCluster()->rawEnergy(); //original
 
 	//   if(isMC){
 	//     if(photon.isEB())
@@ -1865,39 +1594,17 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	               );
 
 
-	invMass = sqrt(2 * electron1.energy() * electron2.energy() * angle);
-	invMass_e5x5   = sqrt(2 * e5x5SCEle[0] * e5x5SCEle[1] * /// full 5x5
-	                      angle);
+	invMass		= sqrt(2 * electron1.energy() * electron2.energy() * angle);
+	invMass_5x5SC = sqrt(2 * energy_5x5SC[0] * energy_5x5SC[1] * angle);
 
-	invMass_efull5x5   = sqrt(2 * electron1.full5x5_e5x5() * electron2.full5x5_e5x5() *
-	                          angle);
+	invMass_ECAL_ele = sqrt(2 * energy_ECAL_ele[0] * energy_ECAL_ele[1] * angle);
+	invMass_ECAL_pho = sqrt(2 * energy_ECAL_pho[0] * energy_ECAL_pho[1] * angle);
 
-	invMass_SC = sqrt(2 * energySCEle[0] * energySCEle[1] *
-	                  angle);
-
-	invMass_SC_must = sqrt(2 * energySCEle_must[0] * energySCEle_must[1] *
-	                       angle);
-
-	invMass_SC_must_regrCorr_ele = sqrt(2 * energySCEle_must_regrCorr_ele[0] * energySCEle_must_regrCorr_ele[1] *
-	                                    angle);
-
-	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *
-	                               angle);
-
-	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
-	                     angle);
-
-	invMass_rawSC_must = sqrt(2 * rawEnergySCEle_must[0] * rawEnergySCEle_must[1] *
-	                          angle);
-
+	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] * angle);
 
 	invMass_rawSC_esSC = sqrt(2 * (rawEnergySCEle[0] + esEnergySCEle[0]) *
 	                          (rawEnergySCEle[1] + esEnergySCEle[1]) *
 	                          angle);
-
-	invMass_SC_corr = sqrt(2 * energySCEle_corr[0] * energySCEle_corr[1] *
-	                       angle);
-
 
 	if(electron1.genLepton() != 0 && electron2.genLepton() != 0) {
 		invMass_MC     = sqrt(2 * electron1.genLepton()->energy() * electron2.genLepton()->energy() *
@@ -1930,28 +1637,19 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 
 	double angle = 1 - ( (1 - t1q) * (1 - t2q) + 4 * t1 * t2 * cos(phiEle[0] - phiEle[1])) / ( (1 + t1q) * (1 + t2q) );
 
-
 	invMass = sqrt(2 * electron1.energy() * electron2.energy() * angle);
-	invMass_e5x5   = sqrt(2 * electron1.e5x5() * (clustertools->e5x5(*electron2.seed())) * angle);
+	invMass_5x5SC   = sqrt(2 * energy_5x5SC[0] * energy_5x5SC[1] * /// full 5x5
+	                      angle);
 
-	invMass_SC = sqrt(2 * energySCEle[0] * energySCEle[1] *  angle);
+	invMass_ECAL_ele = sqrt(2 * energy_ECAL_ele[0] * energy_ECAL_ele[1] * angle);
+	invMass_ECAL_pho = sqrt(2 * energy_ECAL_pho[0] * energy_ECAL_pho[1] * angle);
 
-	invMass_SC_must = sqrt(2 * energySCEle_must[0] * energySCEle_must[1] *  angle);
-	invMass_SC_must_regrCorr_ele = sqrt(2 * energySCEle_must_regrCorr_ele[0] * energySCEle_must_regrCorr_ele[1] *  angle);
-	invMass_SC_pho_regrCorr = sqrt(2 * energySCEle_pho_regrCorr[0] * energySCEle_pho_regrCorr[1] *  angle);
-
-
-	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] * angle);
-
-	invMass_rawSC_must = sqrt(2 * rawEnergySCEle_must[0] * rawEnergySCEle_must[1] * angle);
-
+	invMass_rawSC = sqrt(2 * rawEnergySCEle[0] * rawEnergySCEle[1] *
+	                     angle);
 
 	invMass_rawSC_esSC = sqrt(2 * (rawEnergySCEle[0] + esEnergySCEle[0]) *
 	                          (rawEnergySCEle[1] + esEnergySCEle[1]) *
 	                          angle);
-
-	invMass_SC_corr = sqrt(2 * energySCEle_corr[0] * energySCEle_corr[1] *
-	                       angle);
 
 
 	invMass_MC = -100; // temporary set it to be -100 for SC
@@ -1972,33 +1670,21 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 	TLorentzVector *m1 = new TLorentzVector();
 	TLorentzVector *m2 = new TLorentzVector();
 
-	ph->SetPtEtaPhiE(PtEle[0], etaEle[0], phiEle[0], photon.energy());
-	m1->SetPtEtaPhiE(PtEle[1], etaEle[1], phiEle[1], muon1.energy());
-	m2->SetPtEtaPhiE(PtEle[2], etaEle[2], phiEle[2], muon2.energy());
+//	ph->SetPtEtaPhiE(PtEle[0], etaEle[0], phiEle[0], photon.energy());
+//	m1->SetPtEtaPhiE(PtEle[1], etaEle[1], phiEle[1], muon1.energy());
+//	m2->SetPtEtaPhiE(PtEle[2], etaEle[2], phiEle[2], muon2.energy());
 
 	*Z = *ph + *m1 + *m2;
 	invMass = Z->M();
 
 	Z->SetE(photon.e5x5() + muon1.energy() + muon2.energy());
-	invMass_e5x5 = Z->M();
-
-	Z->SetE(energySCEle[0] + muon1.energy() + muon2.energy());
-	invMass_SC = Z->M();
-
-	Z->SetE(energySCEle_must[0] + muon1.energy() + muon2.energy());
-	invMass_SC_must = Z->M();
+	invMass_5x5SC = Z->M();
 
 	Z->SetE(rawEnergySCEle[0] + muon1.energy() + muon2.energy());
 	invMass_rawSC = Z->M();
 
-	Z->SetE(rawEnergySCEle_must[0] + muon1.energy() + muon2.energy());
-	invMass_rawSC_must = Z->M();
-
 	Z->SetE(rawEnergySCEle[0] + esEnergySCEle[0] + muon1.energy() + muon2.energy());
 	invMass_rawSC_esSC = Z->M();
-
-	Z->SetE(energySCEle_corr[0] + muon1.energy() + muon2.energy());
-	invMass_SC_corr = Z->M();
 
 	if(photon.genPhoton() != 0 && muon1.genLepton() != 0 && muon2.genLepton() != 0) {
 		Z->SetE(photon.genPhoton()->energy() + muon1.genLepton()->energy() + muon2.genLepton()->energy());
@@ -2016,7 +1702,7 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 	               );
 
 	invMass     = sqrt(2 * muon1.energy() * muon2.energy() *
-	                        angle);
+	                   angle);
 
 	delete Z;
 	delete ph;
@@ -2030,17 +1716,17 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 
 // method to get the raw energy of one plane of ES summing the energy of only recHits associated to the electron SC
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
-float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperClusterRef& sc, unsigned int planeIndex)
+float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex)
 {
 	float RawenergyPlane = 0;
 	float pfRawenergyPlane = 0;
 
 //	if(!ESRechitsHandle.isValid())
 //		return RawenergyPlane;
-	if (!sc->preshowerClusters().isAvailable()) //protection for miniAOD
+	if (!sc.preshowerClusters().isAvailable()) //protection for miniAOD
 		return RawenergyPlane;
 
-	for(auto iES = sc->preshowerClustersBegin(); iES != sc->preshowerClustersEnd(); ++iES) {
+	for(auto iES = sc.preshowerClustersBegin(); iES != sc.preshowerClustersEnd(); ++iES) {
 		const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
 		for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
 			//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
@@ -2076,10 +1762,10 @@ void ZNtupleDumper::InitExtraCalibTree()
 	std::cout << "[STATUS] InitExtraCalibTree" << std::endl;
 	if(extraCalibTree == NULL) return;
 
-	extraCalibTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	extraCalibTree->Branch("runNumber",     &runNumber,   "runNumber/i");
+	extraCalibTree->Branch("lumiBlock",     &lumiBlock,   "lumiBlock/s");
 	extraCalibTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-	extraCalibTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-	extraCalibTree->Branch("runTime",       &runTime, "        runTime/i");
+	extraCalibTree->Branch("eventTime",       &eventTime,     "eventTime/i");
 
 	extraCalibTree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[3]/I");
 
@@ -2193,7 +1879,7 @@ void ZNtupleDumper::TreeSetExtraCalibVar(const std::vector<std::pair<DetId, floa
 		flagsUncalibRecHitSCEle[index].push_back(oneUHit->flags());
 		// in order to get back the ADC counts from the recHit energy, three ingredients are necessary:
 		// 1) get laser correction coefficient
-		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, runTime_));
+		LCRecHitSCEle[index].push_back(laserHandle_->getLaserCorrection(detitr->first, eventTime_));
 		//laserHandle->
 		// 2) get intercalibration
 		EcalIntercalibConstantMap::const_iterator icalit = icalMap.find(detitr->first);
@@ -2276,10 +1962,10 @@ void ZNtupleDumper::InitExtraStudyTree()
 	std::cout << "[STATUS] InitExtraStudyTree" << std::endl;
 	if(extraStudyTree == NULL) return;
 
-	extraStudyTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	extraStudyTree->Branch("runNumber",     &runNumber,   "runNumber/i");
+	extraStudyTree->Branch("lumiBlock",     &lumiBlock,   "lumiBlock/s");
 	extraStudyTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-	extraStudyTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-	extraStudyTree->Branch("runTime",       &runTime, "        runTime/i");
+	extraStudyTree->Branch("eventTime",       &eventTime,     "eventTime/i");
 
 	extraStudyTree->Branch("LCRecHitSCEle1", &(LCRecHitSCEle[0]));
 	extraStudyTree->Branch("LCRecHitSCEle2", &(LCRecHitSCEle[1]));
@@ -2317,23 +2003,20 @@ void ZNtupleDumper::InitEleIDTree()
 		return;
 	}
 
-	eleIDTree->Branch("runNumber",     &runNumber,     "runNumber/I");
+	eleIDTree->Branch("runNumber",     &runNumber,   "runNumber/i");
+	eleIDTree->Branch("lumiBlock",     &lumiBlock,   "lumiBlock/s");
 	eleIDTree->Branch("eventNumber",   &eventNumber, "eventNumber/l");
-	eleIDTree->Branch("lumiBlock",     &lumiBlock,     "lumiBlock/I");
-	eleIDTree->Branch("runTime",       &runTime,         "runTime/i");
+	eleIDTree->Branch("eventTime",       &eventTime,     "eventTime/i");
 
 	eleIDTree->Branch("dr03TkSumPt", dr03TkSumPt, "dr03TkSumPt[3]/F");
 	eleIDTree->Branch("dr03EcalRecHitSumEt", dr03EcalRecHitSumEt, "dr03EcalRecHitSumEt[3]/F");
 	eleIDTree->Branch("dr03HcalTowerSumEt", dr03HcalTowerSumEt, "dr03HcalTowerSumEt[3]/F");
 	eleIDTree->Branch("sigmaIEtaIEtaSCEle", sigmaIEtaIEtaSCEle, "sigmaIEtaIEtaSCEle[3]/F");
-	eleIDTree->Branch("sigmaIEtaIEta_F5x5", sigmaIEtaIEta_F5x5);
-	eleIDTree->Branch("R9_F5x5", R9_F5x5, "R9_F5x5[3]/F");
-	eleIDTree->Branch("E1x5_F5x5", E1x5_F5x5, "E1x5_F5x5[3]/F");
-	//eleIDTree->Branch("E2x5_F5x5", E2x5_F5x5, "E2x5_F5x5[3]/F");
-	//eleIDTree->Branch("E3x3_F5x5", E3x3_F5x5, "E3x3_F5x5[3]/F");
-	eleIDTree->Branch("E5x5_F5x5", E5x5_F5x5, "E5x5_F5x5[3]/F");
-	eleIDTree->Branch("E1x3", E1x3, "E1x3[3]/F");
-	eleIDTree->Branch("E2x2", E2x2, "E2x2[3]/F");
+
+	eleIDTree->Branch("E1x5",    E1x5,    "E1x5[3]/F");
+	eleIDTree->Branch("E2x5Max", E2x5Max, "E2x5Max[3]/F");
+	eleIDTree->Branch("E1x3",    E1x3,    "E1x3[3]/F");
+	eleIDTree->Branch("E2x2",    E2x2,    "E2x2[3]/F");
 	eleIDTree->Branch("S4", S4, "S4[3]/F");
 	eleIDTree->Branch("etaWidth", etaWidth, "etaWidth[3]/F");
 	eleIDTree->Branch("phiWidth", phiWidth, "phiWidth[3]/F");
@@ -2356,51 +2039,36 @@ void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, const pat::E
 	return;
 }
 
-void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& electron1, int index)
+void ZNtupleDumper::TreeSetEleIDVar(const pat::Electron& ele, int index)
 {
 	if(index < 0) {
 		hOverE[-index] = -1;
 		return;
 	}
 
-	dr03TkSumPt[index]         = electron1.dr03TkSumPt();
-	dr03EcalRecHitSumEt[index] = electron1.dr03EcalRecHitSumEt();
-	dr03HcalTowerSumEt[index]  = electron1.dr03HcalTowerSumEt();
-	sigmaIEtaIEtaSCEle[index]  = electron1.sigmaIetaIeta(); // alcarereco
-	sigmaIPhiIPhiSCEle[index]  = electron1.sigmaIphiIphi(); // alcarereco
-	deltaPhiSuperClusterTrackAtVtx[index]  = electron1.deltaPhiSuperClusterTrackAtVtx();
-	deltaEtaSuperClusterTrackAtVtx[index]  = electron1.deltaEtaSuperClusterTrackAtVtx();
-	hOverE[index] = electron1.hadronicOverEm();
+	dr03TkSumPt[index]					  = ele.dr03TkSumPt();
+	dr03EcalRecHitSumEt[index]			  = ele.dr03EcalRecHitSumEt();
+	dr03HcalTowerSumEt[index]			  = ele.dr03HcalTowerSumEt();
+	sigmaIEtaIEtaSCEle[index]			  = ele.full5x5_sigmaIetaIeta();
+	sigmaIPhiIPhiSCEle[index]			  = ele.full5x5_sigmaIphiIphi();
+	E1x5[index]							  = ele.full5x5_e1x5();
+	E2x5Max[index]						  = ele.full5x5_e2x5Max();
+	deltaPhiSuperClusterTrackAtVtx[index] = ele.deltaPhiSuperClusterTrackAtVtx();
+	deltaEtaSuperClusterTrackAtVtx[index] = ele.deltaEtaSuperClusterTrackAtVtx();
+	hOverE[index]						  = ele.full5x5_hcalOverEcal();
+	hOverEBC[index]                       = ele.full5x5_hcalOverEcalBc();
 
-	pfMVA[index]   = electron1.mva_e_pi();
-	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(electron1, conversionsHandle, bsHandle->position());
-	maxNumberOfExpectedMissingHits[index] = electron1.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
+	pfMVA[index]   = ele.mva_e_pi();
+	hasMatchedConversion[index] = ConversionTools::hasMatchedConversion(ele, conversionsHandle, bsHandle->position());
+	maxNumberOfExpectedMissingHits[index] = ele.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
 
-	sigmaIEtaIEta_F5x5[index] = electron1.full5x5_sigmaIetaIeta();
-	E1x5_F5x5[index] = electron1.full5x5_e1x5();
-	const reco::CaloClusterPtr seed_clu = electron1.superCluster()->seed();
+	const reco::CaloClusterPtr seed_clu = ele.superCluster()->seed();
 	E1x3[index] = clustertools->e1x3( *seed_clu );
 	E2x2[index] = clustertools->e2x2( *seed_clu );
-	//E2x5_F5x5[index] = electron1.full5x5_e2x5();
-	//E3x3_F5x5[index] = electron1.full5x5_e3x3();
 	S4[index]   = clustertools->e2x2( *seed_clu ) / clustertools->e5x5( *seed_clu );
-	etaWidth[index] = electron1.superCluster()->etaWidth();
-	phiWidth[index] = electron1.superCluster()->phiWidth();
+	etaWidth[index] = ele.superCluster()->etaWidth();
+	phiWidth[index] = ele.superCluster()->phiWidth();
 
-
-
-	//   if (primaryVertexHandle->size() > 0) {
-	//     reco::VertexRef vtx(primaryVertexHandle, 0);
-	//     d0vtx[index] = electron1.gsfTrack()->dxy(vtx->position());
-	//     dzvtx[index] = electron1.gsfTrack()->dz(vtx->position());
-	//   } else {
-	//     d0vtx[index] = electron1.gsfTrack()->dxy();
-	//     dzvtx[index] = electron1.gsfTrack()->dz();
-	//   }
-
-	// eleIDloose[index]  = electron1.electronID("loose50nsRun2");
-	// eleIDmedium[index] = electron1.electronID("medium50nsRun2");
-	// eleIDtight[index]  = electron1.electronID("tight50nsRun2");
 	return;
 }
 

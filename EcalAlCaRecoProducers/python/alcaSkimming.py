@@ -259,37 +259,18 @@ else:
         print "[ERROR] no file with tags specified, but rereco requested"
         sys.exit(1)
         
-    if(re.match("CMSSW_7_0_.*",CMSSW_VERSION)):
-        if(MC):
-            print "[INFO] Using GT POSTLS162_V5::All"
-            process.GlobalTag.globaltag = 'POSTLS162_V5::All'
-        else:
-            process.GlobalTag.globaltag = 'GR_R_62_V3::All'
-            if(options.files==""):
-                process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
-    elif(re.match("CMSSW_7_5_.*",CMSSW_VERSION)):
-        if(MC):
-            print "[INFO] Using GT auto:run2_mc"
-            from Configuration.AlCa.GlobalTag import GlobalTag
-            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
-        else:
-            print "[INFO] Using GT auto:run2_data"
-            from Configuration.AlCa.GlobalTag import GlobalTag
-            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
-        if(options.files==""):
-                process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
-    else: #assuming a Run2 release
-        if (MC):
-            print "[INFO] Using GT auto:run2_mc"
-            from Configuration.AlCa.GlobalTag import GlobalTag
-            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
-        else:
-            print "[INFO] Using GT auto:run2_data"
-            from Configuration.AlCa.GlobalTag import GlobalTag
-            process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
+#assuming a Run2 release
+    if (MC):
+        print "[INFO] Using GT auto:run2_mc"
+        from Configuration.AlCa.GlobalTag import GlobalTag
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+    else:
+        print "[INFO] Using GT auto:run2_data"
+        from Configuration.AlCa.GlobalTag import GlobalTag
+        process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data', '')
         if(options.files==""):
             process.source.fileNames=[ 'root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root' ]
-
+            
 myEleCollection =  cms.InputTag("gedGsfElectrons")
 
 if(options.type=="MINIAODNTUPLE" ):
@@ -722,15 +703,22 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 #process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
 #process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
 if(options.type!="MINIAODNTUPLE"):
-    process.eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
-    process.eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+    rechitsEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
+    rechitsEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+    rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
+
+    process.eleNewEnergiesProducer.recHitCollectionEB = rechitsEB
+    process.eleNewEnergiesProducer.recHitCollectionEE = rechitsEE
 
 else:
     print "MINIAOD"
     process.patSequence.remove(process.patElectrons)
+    rechitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
+    rechitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
+    rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     #configure everything for MINIAOD
-    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
-    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
+    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = rechitsEB
+    process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = rechitsEE
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.eleNewEnergiesProducer.electronCollection =  myEleCollection
     process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
@@ -749,13 +737,13 @@ else:
     process.modPSet.electron_config.electronSrc = process.slimmedECALELFElectrons.src
     process.modPSetEleIDFloat.electron_config.electronSrc = process.slimmedECALELFElectrons.src
     process.modPSetEleIDBool.electron_config.electronSrc = process.slimmedECALELFElectrons.src
-    process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = cms.InputTag("reducedEgamma", "reducedEBRecHits")
-    process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = cms.InputTag("reducedEgamma", "reducedEERecHits")
+    process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = rechitsEB
+    process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = rechitsEE
 
-    process.zNtupleDumper.useIDforPresel = cms.bool(False)
-    process.zNtupleDumper.recHitCollectionEB = cms.InputTag("reducedEgamma", "reducedEBRecHits")
-    process.zNtupleDumper.recHitCollectionEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
-    process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEgamma", "reducedESRecHits")
+    process.zNtupleDumper.useIDforPresel = cms.bool(True)
+    process.zNtupleDumper.recHitCollectionEB = rechitsEB
+    process.zNtupleDumper.recHitCollectionEE = rechitsEE
+    process.zNtupleDumper.recHitCollectionES = rechitsES
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
@@ -763,9 +751,9 @@ else:
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')
     process.zNtupleDumper.SelectEvents = cms.vstring('NtuplePath')
-    process.zNtupleDumper.eleID_loose = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-loose")
-    process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
-    process.zNtupleDumper.eleID_tight = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-tight")
+    process.zNtupleDumper.eleID_loose = cms.string("veto25nsRun22016Moriond")
+    #process.zNtupleDumper.eleID_medium = cms.string("cutBasedElectronID-Spring15-25ns-V1-standalone-medium")
+    process.zNtupleDumper.eleID_tight = cms.string("tight25nsRun22016Moriond")
 #    process.zNtupleDumper.userIDs = cms.InputTag("eleSelectionProducers", "medium25nsRun2Boff")
 
 
