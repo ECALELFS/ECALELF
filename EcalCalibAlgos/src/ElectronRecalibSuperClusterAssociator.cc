@@ -14,7 +14,7 @@
 #include "RecoEcal/EgammaCoreTools/interface/EcalClusterTools.h"
 #include "FWCore/Utilities/interface/isFinite.h"
 //#define DEBUG
-
+#define DELTARMIN 0.2
 
 ElectronRecalibSuperClusterAssociator::ElectronRecalibSuperClusterAssociator(const edm::ParameterSet& iConfig)
 {
@@ -51,10 +51,6 @@ ElectronRecalibSuperClusterAssociator::~ElectronRecalibSuperClusterAssociator()
 // ------------ method called to produce the data  ------------
 void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::EventSetup& iSetup)
 {
-#ifdef DEBUG
-	std::cout << "GEDElectronRecalibSuperClusterAssociator::produce" << std::endl;
-#endif
-
 	iSetup.get<CaloTopologyRecord>().get(_theCaloTopology);
 	iSetup.get<CaloGeometryRecord>().get(_theGeometry);
 
@@ -65,9 +61,6 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 	// Get SuperClusters in EB
 	edm::Handle<reco::SuperClusterCollection> superClusterEBHandle;
 	e.getByToken(ebScToken_, superClusterEBHandle);
-#ifdef DEBUG
-	std::cout << "EB scCollection->size()" << superClusterEBHandle->size() << std::endl;
-#endif
 
 	// Get SuperClusters in EE
 	edm::Handle<reco::SuperClusterCollection> superClusterEEHandle;
@@ -78,41 +71,27 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 	edm::Handle<EcalRecHitCollection> recHitsEEHandle;
 	e.getByToken(eeRecHitsToken_, recHitsEEHandle);
 
-
-#ifdef DEBUG
-	std::cout << "EE scCollection->size()" << superClusterEEHandle->size() << std::endl;
-#endif
-
 	// Get Electrons
 	edm::Handle<reco::GsfElectronCollection> eleHandle;
 	e.getByToken(electronToken_, eleHandle);
-	//  const reco::GsfElectronCollection* electronCollection = eleHandle.product();
 
 	reco::GsfElectronCoreRefProd rEleCore = e.getRefBeforePut<reco::GsfElectronCoreCollection>();
 	edm::Ref<reco::GsfElectronCoreCollection>::key_type idxEleCore = 0;
 
-#ifdef DEBUG
-	std::cout << "[DEBUG" << "Electron collection size: " << eleHandle->size() << std::endl;
-#endif
-
-	if(superClusterEEHandle->size() + superClusterEBHandle->size() < eleHandle->size()) {
-		edm::LogError("ALCARERECO") << "Reconstructed SCs < old electrons";
-#ifdef DEBUG
-		assert(superClusterEEHandle->size() + superClusterEBHandle->size() >= eleHandle->size());
-#endif
-	}
+	unsigned int nEcalDrivenEle=0;
 	for(reco::GsfElectronCollection::const_iterator eleIt = eleHandle->begin(); eleIt != eleHandle->end(); eleIt++) {
-		float DeltaRMineleSCbarrel(0.15); //initial minDeltaR
-		float DeltaRMineleSCendcap(0.15);
+		if(!eleIt->ecalDrivenSeed()) {
+//			edm::LogError("trackerDriven") << "skipping trackerDriven electrons";
+			continue;
+		}
+		if(eleIt->et()<15) continue;
+		float DeltaRMineleSCbarrel(DELTARMIN); //initial minDeltaR
+		float DeltaRMineleSCendcap(DELTARMIN);
 		const reco::SuperCluster* nearestSCbarrel = 0;
 		const reco::SuperCluster* nearestSCendcap = 0;
 		int iscRef = -1, iscRefendcap = -1;
 		int iSC = 0;
 
-		if(!eleIt->ecalDrivenSeed()) {
-			edm::LogError("trackerDriven") << "skipping trackerDriven electrons";
-			continue;
-		}
 		// first loop is on EB superClusters
 		iSC = 0;
 		for(reco::SuperClusterCollection::const_iterator scIt = superClusterEBHandle->begin();
@@ -165,8 +144,11 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 			edm::LogError("ElectronRecalibAssociator") << "EB electron, but nearest SC is in EE";;
 			continue;
 		}
+		if(eleIt->isEE() && DeltaRMineleSCbarrel < DeltaRMineleSCendcap) {
+			edm::LogError("ElectronRecalibAssociator") << "EE electron, but nearest SC is in EB";;
+			continue;
+		}
 
-		reco::SuperClusterRef scRef(reco::SuperClusterRef(superClusterEBHandle, iscRef));  // Reference to the new SC
 		if( (eleIt->isEB() && nearestSCbarrel) || (!(eleIt->isEB()) && nearestSCendcap)) {
 			pOutEleCore->push_back(*eleIt->core()); // clone the old core and add to the collection of new cores
 			reco::GsfElectronCoreRef newEleCoreRef(rEleCore, idxEleCore++); // reference to the new electron core in the new collection
@@ -187,7 +169,6 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 
 			pOutEle->push_back(reco::GsfElectron(*eleIt, newEleCoreRef));
 			reco::GsfElectron& newEle = pOutEle->back();
-			
 			//-- first possibility: set the new p4SC using refined SC
 			newEle.setP4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER,
 			             eleIt->p4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER),
@@ -199,13 +180,24 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 			//-- update the correctedEcalEnergy... it does not make too much sense for re-recoes
 //			newEle.setCorrectedEcalEnergy(eleIt->ecalEnergy() * (scRef->energy() / eleIt->p4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER).energy()));
 //			newEle.setCorrectedEcalEnergyError(eleIt->ecalEnergyError() * (scRef->energy() / eleIt->ecalEnergy()));
-
-			newEle.full5x5_setShowerShape(calculateShowerShape_full5x5(newEle.superCluster(), recHits));
+			auto ss = calculateShowerShape_full5x5(newEleCore.superCluster(), recHits, eleIt->full5x5_showerShape());
+			newEle.full5x5_setShowerShape(ss);
+			nEcalDrivenEle++;
 		} else {
-			edm::LogError("Failed SC association") << "No SC to be associated to the electron";
+			edm::LogError("Failed SC association") << "No SC to be associated to the electron" << std::endl
+												   << "isEB="<<eleIt->isEB() <<"\t"
+												   << "isEE="<<eleIt->isEE() <<"\t"
+												   << nearestSCbarrel <<"\t" << nearestSCendcap << "\t"
+												   << superClusterEBHandle->size() << "\t" << superClusterEEHandle->size() << "\t" << eleIt->eta();
 		}
 	}
 
+	if(superClusterEEHandle->size() + superClusterEBHandle->size() < nEcalDrivenEle) {
+		edm::LogError("ALCARERECO") << "Reconstructed SCs < old electrons";
+#ifdef DEBUG
+		assert(superClusterEEHandle->size() + superClusterEBHandle->size() >= eleHandle->size());
+#endif
+	}
 
 
 #ifdef DEBUG
@@ -225,9 +217,10 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 
 
 reco::GsfElectron::ShowerShape ElectronRecalibSuperClusterAssociator::calculateShowerShape_full5x5( const reco::SuperClusterRef & theClus, 
-																		  const EcalRecHitCollection* recHits)
+																									const EcalRecHitCollection* recHits, 
+																									const reco::GsfElectron::ShowerShape& ss)
 {
-	reco::GsfElectron::ShowerShape showerShape;
+	reco::GsfElectron::ShowerShape showerShape = ss; // h/E not updated!
 
 	const reco::CaloCluster & seedCluster = *(theClus->seed()) ;
 
