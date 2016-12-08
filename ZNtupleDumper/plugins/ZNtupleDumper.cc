@@ -1421,10 +1421,56 @@ DetId ZNtupleDumper::findSCseed(const reco::SuperCluster& cluster)
 	return seedDetId;
 }
 
+//Marco's functions
+double CorrectionFunction1(double x, double chi2){
+  if (x<4000){std::cout<<"************questo e'"<<std::endl; return 1;}
+  if (x>10000) x=10000;
+  double p0   =    0.0567521;
 
+  double p1   =  0.000609019;
+  double p2   = -1.35626e-07;
+  double p3   =  1.21114e-11;
+  double p4   = -3.84392e-16;
+  return p0+p1*x+p2*x*x+p3*x*x*x+p4*x*x*x*x;
+}
+double CorrectionFunction2(double x, double chi2){
+  if (x<7000) return 1;
+  if (x>18000) x=18000;
+  double p0   =    0.770166;
+  double p1   = 7.22759e-05;
+  double p2   = -6.8392e-09;
+  double p3   = 1.67209e-13;
+  return p0+p1*x+p2*x*x+p3*x*x*x;
+}
+double CorrectionFunction3(double x, double chi2){
+  if (x<4000 || x>7000) return 1;
+  double p0   =       -2.391;
+  double p1   =  0.000997096;
+  double p2   = -8.34263e-08;
+  return p0+p1*x+p2*x*x;
+}
+float MultiFitParametricCorrection(float amplitude_multifit_intime_uncal, float chi2, bool has_g6, bool has_g1){
+        
+  float x = amplitude_multifit_intime_uncal;
+        
+  if (!has_g1 && !has_g6) return 1.; // no gain switch
+  else if (has_g6 && !has_g1) {
+    if(x>5000 && chi2<250){
+      return 1.;
+    }else{return CorrectionFunction1(x,chi2);}
+  }
+  else if (!has_g6 && has_g1){
+    if (chi2>6000) return CorrectionFunction1(x,chi2);
+    else if (x<4000 || x>7000) return 1.;
+    else return CorrectionFunction3(x,chi2);
+  }
+  else if (has_g1 && has_g6) return CorrectionFunction2(x,chi2);
+  else return 1.;
+}
+//End Marco's functions
 // a negative index means that the corresponding electron does not exist, fill with 0
 void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int index)
-{
+{//working here
 
 	if(index < 0) {
 		PtEle[-index] 	  = 0;
@@ -1614,6 +1660,44 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
 				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
 			}
+			/////////////////CHECK THIS/////////////////////////
+			//Apply the corrections
+			//if( !isMC) {//only if data
+			if( 1) {
+			  if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel) {
+			    const auto & hitsAndFractions = sc->hitsAndFractions();
+			    float energySum=0., recalibEnergySum=0., recalibCorrEnergySum=0.;
+			    for(const auto & hnf : hitsAndFractions) {
+			      /// std::cout << hnf.first.rawId() << " " << hnf.second << std::endl;
+			      auto crh = recHits->find(hnf.first);//are those the right recHits??
+			      if( crh == recHits->end() ) { continue; }
+			      auto rrh = recHits->find(hnf.first);
+			      if( rrh == recHits->end() ) { continue; }
+			      float chi2 = crh->chi2();
+			      bool g6 = crh->checkFlag( EcalRecHit::kHasSwitchToGain6 );
+			      bool g1 = crh->checkFlag( EcalRecHit::kHasSwitchToGain1 );           
+			      energySum += crh->energy() * hnf.second;
+			      recalibEnergySum += rrh->energy() * hnf.second;
+			      float gcorr = MultiFitParametricCorrection(rrh->energy(),chi2,g6,g1);
+			      //float gcorr=1;
+			      recalibCorrEnergySum += rrh->energy() * hnf.second / gcorr;
+			      if( g6 || g1 ) { 
+			      std::cout << "applyCorrection g6:" << g6 << " g1:" << g1 << " gcorr:" << gcorr << " " << energySum << " " << recalibEnergySum << " " << recalibCorrEnergySum << std::endl;}
+			    }
+			    
+			    float corr = 1. + energySum * ( recalibEnergySum != 0 ? recalibCorrEnergySum / recalibEnergySum - 1. : 0. ) / electron1.superCluster()->rawEnergy();
+			    std::cout<<"[*****]corr is "<<corr<<std::endl;
+			    //ELIMINARE
+			    // std::cout << "PhotonGainRatios::applyCorrection " << energySum << " " << recalibEnergySum << " " << recalibCorrEnergySum << std::endl;
+			    //			  if( updateEnergy_ ) {
+			    //			    y.updateEnergy( shiftLabel( syst_shift ), corr * y.energy() );
+			    //			  } else {
+			    //			    y.addUserFloat( shiftLabel( syst_shift ), corr * y.energy() );
+			    //			  }
+			    //}
+			  }
+			}
+			/////////////////CHECK THIS/////////////////////////
 		}
 	}
 	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron1.superCluster()->seed()))[index]);
