@@ -34,23 +34,37 @@ events = ["20000","20000","20000","10000","10000","10000","10000","10000","10000
 #"DoubleEG-Run2016E-ZSkim-Prompt-v2-276830-277420.root","DoubleEG-Run2016F-ZSkim-Prompt-v1-277820-278808.root","DoubleEG-Run2016G-ZSkim-Prompt-v1-278817-279588.root","DoubleEG-Run2016G-ZSkim-Prompt-v1-279589-279931.root"]
 
 ntuplelist = [
-"DoubleEG-Run2016B-ZSkim-Prompt_v2-273150-275376",
-"DoubleEG-Run2016C-ZSkim-Prompt_v2-275420-276283",
-"DoubleEG-Run2016D-ZSkim-Prompt_v2-276315-276811",
-"DoubleEG-Run2016E-ZSkim-Prompt-v2-276830-277420",
-"DoubleEG-Run2016F-ZSkim-Prompt-v1-277820-278808",
-"DoubleEG-Run2016G-ZSkim-Prompt-v1-278817-279588",
-"DoubleEG-Run2016G-ZSkim-Prompt-v1-279589-279931"
+#"DoubleEG-Run2016B-ZSkim-Prompt_v2-273150-275376",
+#"DoubleEG-Run2016C-ZSkim-Prompt_v2-275420-276283",
+#"DoubleEG-Run2016D-ZSkim-Prompt_v2-276315-276811",
+#"DoubleEG-Run2016E-ZSkim-Prompt-v2-276830-277420",
+#"DoubleEG-Run2016F-ZSkim-Prompt-v1-277820-278808",
+#"DoubleEG-Run2016G-ZSkim-Prompt-v1-278817-279588",
+#"DoubleEG-Run2016G-ZSkim-Prompt-v1-279589-279931",
+"SingleElectron-Run2016B-WSkim-Prompt_v2-273150-275376",
+"SingleElectron-Run2016C-WSkim-Prompt_v2-275420-276283",
+"SingleElectron-Run2016D-WSkim-Prompt_v2-276315-276811",
+"SingleElectron-Run2016E-WSkim-Prompt-v2-276830-277420",
+"SingleElectron-Run2016F-WSkim-Prompt-v1-277820-278808",
+"SingleElectron-Run2016G-WSkim-Prompt-v1-278817-279588",
+"SingleElectron-Run2016G-WSkim-Prompt-v1-279589-279931"
 ]
 
 folderlist=[
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016B-ZSkim-Prompt_v2/273150-275376/271036_279931-Cal_Sep2016/withExtras2/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016C-ZSkim-Prompt_v2/275420-276283/271036_279931-Cal_Sep2016/withExtras2/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016D-ZSkim-Prompt_v2/276315-276811/271036_279931-Cal_Sep2016/withExtras2/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016E-ZSkim-Prompt-v2/276830-277420/271036_279931-Cal_Sep2016/withExtras2/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016F-ZSkim-Prompt-v1/277820-278808/271036_279931-Cal_Sep2016/withExtras2/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016G-ZSkim-Prompt-v1/278817-279588/271036_279931-Cal_Sep2016/withExtras2/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016G-ZSkim-Prompt-v1/279589-279931/271036_279931-Cal_Sep2016/withExtras2/"
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016B-ZSkim-Prompt_v2/273150-275376/271036_279931-Cal_Sep2016/withExtras2/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016C-ZSkim-Prompt_v2/275420-276283/271036_279931-Cal_Sep2016/withExtras2/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016D-ZSkim-Prompt_v2/276315-276811/271036_279931-Cal_Sep2016/withExtras2/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016E-ZSkim-Prompt-v2/276830-277420/271036_279931-Cal_Sep2016/withExtras2/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016F-ZSkim-Prompt-v1/277820-278808/271036_279931-Cal_Sep2016/withExtras2/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016G-ZSkim-Prompt-v1/278817-279588/271036_279931-Cal_Sep2016/withExtras2/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/DoubleEG-Run2016G-ZSkim-Prompt-v1/279589-279931/271036_279931-Cal_Sep2016/withExtras2/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016B-WSkim-Prompt_v2/273150-275376/271036_279931-Cal_Sep2016/withExtras/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016C-WSkim-Prompt_v2/275420-276283/271036_279931-Cal_Sep2016/withExtras/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016D-WSkim-Prompt_v2/276315-276811/271036_279931-Cal_Sep2016/withExtras/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016E-WSkim-Prompt-v2/276830-277420/271036_279931-Cal_Sep2016/withExtras/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016F-WSkim-Prompt-v1/277820-278808/271036_279931-Cal_Sep2016/withExtras/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016G-WSkim-Prompt-v1/278817-279588/271036_279931-Cal_Sep2016/withExtras/",
+"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Sep2016_final_v3/SingleElectron-Run2016G-WSkim-Prompt-v1/279589-279931/271036_279931-Cal_Sep2016/withExtras/"
 ]
 
 
@@ -69,9 +83,9 @@ for i in range(len(categories)):
     fn = "Job_monitoring_"+ntupleName+"/Job_"+categories[i];
 
     outScript = open(fn+".sh","w");
-#    command = "ZFitter.exe -f EoverPmonitoring_batch_"+ntupleName+".dat --evtsPerPoint 200000 --laserMonitoringEPvsPU --EBEE "+categories[i]+" --yMIN 0.95 --yMAX 1.05 --LUMI 12.9 --dayMin 15-03-2016 --dayMax 01-08-2016" #CAMBIA 1.15!!!! #use this if you want to run vs Nvtx
-#    command = "ZFitter.exe -f EoverPmonitoring_batch_"+ntupleName+".dat --evtsPerPoint 200000 --laserMonitoringEP --EBEE "+categories[i]+" --yMIN 0.8 --yMAX 1.20 --LUMI 12.9 --dayMin 15-03-2016 --dayMax 01-09-2016" #CAMBIA 1.15!!!! #use this if you want to run E/p vs LC
-    command = "ZFitter.exe -f EoverPmonitoring_batch_"+ntupleName+".dat --evtsPerPoint "+events[i]+" --laserMonitoringEP --EBEE "+categories[i]+" --yMIN "+yMIN[i]+" --yMAX 1.15 --LUMI 24.1 --dayMin 15-03-2016 --dayMax 15-09-2016" 
+    command = "ZFitter.exe -f EoverPmonitoring_batch_"+ntupleName+".dat --evtsPerPoint 200000 --laserMonitoringEP --EBEE "+categories[i]+" --yMIN 0.95 --yMAX 1.05 --LUMI 24.1 --dayMin 15-03-2016 --dayMax 15-09-2016 --EoPvsPU 1" #use this if you want to run vs Nvtx
+#    command = "ZFitter.exe -f EoverPmonitoring_batch_"+ntupleName+".dat --evtsPerPoint 200000 --laserMonitoringEP --EBEE "+categories[i]+" --yMIN 0.8 --yMAX 1.20 --LUMI 24.1 --dayMin 15-03-2016 --dayMax 15-09-2016" #use this if you want to run E/p vs LC
+#    command = "ZFitter.exe -f EoverPmonitoring_batch_"+ntupleName+".dat --evtsPerPoint "+events[i]+" --laserMonitoringEP --EBEE "+categories[i]+" --yMIN "+yMIN[i]+" --yMAX 1.15 --LUMI 24.1 --dayMin 15-03-2016 --dayMax 15-09-2016" #default, to be run for E/p vs time
     print command;
     outScript.write('#!/bin/bash');
     outScript.write("\n"+'cd '+CMSSWDir);
@@ -83,8 +97,8 @@ for i in range(len(categories)):
 
     for j in range(len(ntuplelist)):
         outScript.write("\necho \"copy main tree\" ");
-#        outScript.write("\ncmsStage "+folderlist[j]+""+ntuplelist[j]+".root ./")
-        outScript.write("\ncmsStage "+folderlist[j]+""+ntuplelist[j]+" ./")
+        outScript.write("\ncmsStage "+folderlist[j]+""+ntuplelist[j]+".root ./")
+#        outScript.write("\ncmsStage "+folderlist[j]+""+ntuplelist[j]+" ./")
 #        outScript.write("\necho \"copy extracalib tree\" ");
 #        outScript.write("\ncmsStage "+folderlist[j]+"extraCalibTree-"+ntuplelist[j]+".root ./")
 

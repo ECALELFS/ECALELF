@@ -1,4 +1,4 @@
-//adapting it to ECALELF ntuple
+//Class for the monitoring of laser corrections with E/p
 
 #include "../interface/LaserMonitoringEoP.h"
 #include <TH2.h>
@@ -41,39 +41,6 @@ LaserMonitoringEoP::~LaserMonitoringEoP(){
   delete fChainMC->GetCurrentFile();
 }
 
-///=== Acces to the entry information in the input tree or chain
-/*
-Int_t LaserMonitoringEoP::GetEntry(Long64_t entry){
-
-  if (!fChain) return 0;
-  return fChain->GetEntry(entry);
-}
-
-
-Int_t LaserMonitoringEoP::GetEntryMC(Long64_t entry){
-
-  if (!fChainMC) return 0;
-  return fChainMC->GetEntry(entry);
-}
-*/
-
-///==== Load information of input Ntupla
-
-/*
-Long64_t LaserMonitoringEoP::LoadTree(Long64_t entry){
-// Set the environment to read one entry
-  if (!fChain) return -5;
-  Long64_t centry = fChain->LoadTree(entry);
-  if (centry < 0) return centry;
-  if (!fChain->InheritsFrom(TChain::Class()))  return centry;
-
-  TChain *chain = (TChain*)fChain;
-  if (chain->GetTreeNumber() != fCurrent) {
-    fCurrent = chain->GetTreeNumber();
-  }
-  return centry;
-}
-*/
 
 ///==== Variables initialization
 
@@ -92,6 +59,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression){
   fChain->SetBranchStatus("runNumber",1);  
   fChain->SetBranchStatus("runTime",1);
   fChain->SetBranchStatus("nPU",1);
+  fChain->SetBranchStatus("nPV",1);
   fChain->SetBranchStatus("avgLCSCEle",1);
   //  fChain->SetBranchStatus("seedLaserAlphaSCEle1",1);
   //  fChain->SetBranchStatus("ele1_EOverP",1);
@@ -108,6 +76,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression){
   fChain->SetBranchAddress("runNumber", &runNumber);  
   fChain->SetBranchAddress("runTime", &runTime);
   fChain->SetBranchAddress("nPU", &nPU);
+  fChain->SetBranchAddress("nPV", &nPV);
   fChain->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
   //fChain->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
   //  fChain->SetBranchAddress("ele1_EOverP", &EoP);
@@ -139,6 +108,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression){
   fChainMC->SetBranchStatus("runNumber",1);  
   fChainMC->SetBranchStatus("runTime",1);
   fChainMC->SetBranchStatus("nPU",1);
+  fChainMC->SetBranchStatus("nPV",1);
   fChainMC->SetBranchStatus("avgLCSCEle",1);
   //  fChainMC->SetBranchStatus("seedLaserAlphaSCEle1",1);
   //  fChainMC->SetBranchStatus("ele1_EOverP",1);
@@ -155,6 +125,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression){
   fChainMC->SetBranchAddress("runNumber", &runNumber);  
   fChainMC->SetBranchAddress("runTime", &runTime);
   fChainMC->SetBranchAddress("nPU", &nPU);
+  fChainMC->SetBranchAddress("nPV", &nPV);
   fChainMC->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
   //fChainMC->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
   //  fChainMC->SetBranchAddress("ele1_EOverP", &EoP);
@@ -176,7 +147,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression){
 
 /// Calibration Loop over the ntu events
 void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evtsPerPoint, int useRegression, std::string dayMin, std::string dayMax, std::string dayZOOM,
-			       std::string LUMI) {
+			       std::string LUMI, int vsPU) {
    if (fChain == 0) return;
    if (fChainMC == 0) return;
    
@@ -224,11 +195,15 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
   int IphiMax = -1;
 
   
-
-
   int t1 = dateToInt(dayMin);
   int t2 = dateToInt(dayMax);
   int t3 = dateToInt(dayZOOM);
+
+  if (vsPU) {
+    t1=0;
+    t2=60;
+    t3=0;
+  }
   
   /*
   if(argc >= 5)
@@ -486,9 +461,15 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
       if( (seedYSCEle[0] < IphiMin) || (seedYSCEle[0] > IphiMax) ) continue;
     }
     
-    if( runTime < t1 ) continue;
-    if( runTime > t2 ) continue;
-    
+    if (vsPU==0) {
+      if( runTime < t1 ) continue;
+      if( runTime > t2 ) continue;
+    }
+    else {
+      if( nPV < t1 ) continue;
+      if( nPV > t2 ) continue;
+    }
+
     if( avgLCSCEle[0] <= 0. ) continue;
     
     isSavedEntries.at(ientry) = true;
@@ -496,7 +477,8 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
     
     // fill sorter
     Sorter dummy;
-    dummy.time = runTime;
+    if (vsPU==0) dummy.time = runTime;
+    else         dummy.time = nPV; 
     dummy.entry = ientry;
     sortedEntries.push_back(dummy);
     
@@ -525,32 +507,35 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
   //  TEventList* evlist = (TEventList*) gDirectory->Get("events");
     
   wideBinEntryMax.push_back(0);  
-  for(int iSaved = 0; iSaved < nSavePts; ++iSaved)
-  {
-    if( iSaved%10000 == 0 ) std::cout << "reading saved entry " << iSaved << "\r" << std::endl;//std::flush;
-    fChain->GetEntry(sortedEntries[iSaved].entry);  
-    //    data->GetEntry(evlist->GetEntry(sortedEntries[iSaved].entry));
-    
-    if( iSaved == 0 )
-    {
-      timeStampOld = runTime;
-      continue;
-    }
-    
-    if( (runTime-timeStampOld)/3600. > timeLapse )
-    {
-      ++nWideBins;
-      wideBinEntryMax.push_back(iSaved-1);
-    }
-    
-    timeStampOld = runTime;
+
+  if (vsPU==0) {
+    for(int iSaved = 0; iSaved < nSavePts; ++iSaved)
+      {
+	if( iSaved%10000 == 0 ) std::cout << "reading saved entry " << iSaved << "\r" << std::endl;//std::flush;
+	fChain->GetEntry(sortedEntries[iSaved].entry);  
+	//    data->GetEntry(evlist->GetEntry(sortedEntries[iSaved].entry));
+	
+	if( iSaved == 0 )
+	  {
+	    timeStampOld = runTime;
+	    continue;
+	  }
+	
+	if( (runTime-timeStampOld)/3600. > timeLapse )
+	  {
+	    ++nWideBins;
+	    wideBinEntryMax.push_back(iSaved-1);
+	  }
+	
+	timeStampOld = runTime;
+      }
   }
   std::cout << std::endl;
   wideBinEntryMax.push_back(nSavePts);
   
   
   // bins with approximatively evtsPerPoint events per bin
-    int nBins = 0;
+  int nBins = 0;
   std::vector<int> binEntryMax;
   
   binEntryMax.push_back(0);
@@ -698,9 +683,16 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
     
     Entries[bin] += 1;
     
-    if( iSaved == binEntryMax.at(bin)+1 )   MinTime[bin] = runTime;
-    if( iSaved == binEntryMax.at(bin+1)-1 ) MaxTime[bin] = runTime;
-    AveTime[bin] += runTime;
+    if(vsPU==0) {
+      if( iSaved == binEntryMax.at(bin)+1 )   MinTime[bin] = runTime;
+      if( iSaved == binEntryMax.at(bin+1)-1 ) MaxTime[bin] = runTime;
+      AveTime[bin] += runTime;
+    }
+    else {
+      if( iSaved == binEntryMax.at(bin)+1 )   MinTime[bin] = nPV;
+      if( iSaved == binEntryMax.at(bin+1)-1 ) MaxTime[bin] = nPV;
+      AveTime[bin] += nPV;
+    }
     
     if( iSaved == binEntryMax.at(bin)+1 )   MinRun[bin] = runNumber;
     if( iSaved == binEntryMax.at(bin+1)-1 ) MaxRun[bin] = runNumber;
@@ -1352,12 +1344,13 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
   gPad -> Update();
   */
   
-  
+    
   
   //------------------
   // Final plot vs run
   //------------------
-    
+  if (vsPU==0) {
+ 
   TCanvas* cplot_run = new TCanvas("cplot_run", "history plot vs run",100,100,1000,500);
   cplot_run->cd();
   
@@ -1472,7 +1465,195 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
   cplot -> SaveAs((folderName+"/"+folderName+"_history_vsTime.root").c_str());
   cplot_run -> SaveAs((folderName+"/"+folderName+"_history_vsRun.root").c_str());
 
+  } 
   
+  
+  else {
+  
+  /////////////////////////PLOT
+  TCanvas* cplot = new TCanvas("cplot", "history plot vs Vertex",100,100,1000,500);
+  cplot->cd();
+
+  TPad *cLeft  = new TPad("pad_0","pad_0",0.00,0.00,0.75,1.00);
+  TPad *cRight = new TPad("pad_1","pad_1",0.75,0.00,1.00,1.00);
+
+  cLeft->SetLeftMargin(0.15); 
+  cLeft->SetRightMargin(0.025); 
+  cRight->SetLeftMargin(0.025); 
+
+  cLeft->Draw();
+  cRight->Draw();
+
+  float tYoffset = 1.0; 
+  float labSize = 0.05;
+  float labSize2 = 0.06;
+
+  cLeft->cd(); 
+  
+  cLeft->SetGridx();
+  cLeft->SetGridy();
+  
+  TH1F *hPad = (TH1F*)gPad->DrawFrame(t1,0.9,t2,1.05);
+    
+  hPad->GetXaxis()->SetLimits(0,46);
+  //hPad->GetXaxis()->SetTimeFormat("%d/%m%F1970-01-01 00:00:00");
+  //hPad->GetXaxis()->SetTimeDisplay(1);
+  //hPad->GetXaxis() -> SetRangeUser(MinTime[0]-43200,MaxTime[nBins-1]+43200);
+  hPad->GetXaxis()->SetTitle(" Number of Vertices");
+  hPad->GetXaxis()->SetTitleOffset(0.8);
+  
+  //ciao
+  
+  
+  if( strcmp(EBEE.c_str(),"EB") == 0 )
+    hPad->GetYaxis()->SetTitle("Relative E/p scale"); 
+  else
+    hPad->GetYaxis()->SetTitle("Relative E/p scale"); 
+  hPad->GetYaxis()->SetTitleOffset(tYoffset);
+  hPad->GetXaxis()->SetLabelSize(labSize);
+  hPad->GetXaxis()->SetTitleSize(labSize2);
+  hPad->GetYaxis()->SetLabelSize(labSize);
+  hPad->GetYaxis()->SetTitleSize(labSize2);
+  hPad -> SetMinimum(yMIN);
+  hPad -> SetMaximum(yMAX);
+  
+  // draw history plot
+  g_fit -> SetMarkerStyle(24);
+  g_fit -> SetMarkerSize(0.7);
+  g_fit -> SetMarkerColor(kRed+2);
+  g_fit -> SetLineColor(kRed+2);
+  //g_fit -> Draw("P");
+  g_c_fit -> SetMarkerStyle(20);
+  g_c_fit -> SetMarkerColor(kGreen+2);
+  g_c_fit -> SetLineColor(kGreen+2);
+  g_c_fit -> SetMarkerSize(0.7);
+  g_c_fit -> Draw("EP");
+  g_las -> SetLineColor(kAzure-2);
+  g_las -> SetLineWidth(2);
+  //g_las -> Draw("L,same");
+  
+  TLegend* legend = new TLegend(0.60,0.78,0.90,0.94);
+  legend -> SetLineColor(kWhite);
+  legend -> SetLineWidth(0);
+  legend -> SetFillColor(kWhite);
+  legend -> SetFillStyle(0);
+  legend -> SetTextFont(42);
+  legend -> SetTextSize(0.04);
+  legend -> AddEntry(g_c_fit,"with LM correction","PL");
+  //legend -> AddEntry(g_fit,  "without LM correction","PL");
+  //legend -> AddEntry(g_las,  "1 / LM correction","L");
+  legend -> Draw("same");
+  
+  char latexBuffer[250];
+  
+  sprintf(latexBuffer,"CMS 2015 Preliminary");
+  TLatex* latex = new TLatex(0.18,0.89,latexBuffer);  
+  latex -> SetNDC();
+  latex -> SetTextFont(62);
+  latex -> SetTextSize(0.05);
+  latex -> Draw("same");
+  
+  //sprintf(latexBuffer,"#sqrt{s} = 8 TeV   L = 3.95 fb^{-1}");
+  sprintf(latexBuffer,"#sqrt{s} = 13 TeV");
+  TLatex* latex2 = new TLatex(0.18,0.84,latexBuffer);  
+  latex2 -> SetNDC();
+  latex2 -> SetTextFont(42);
+  latex2 -> SetTextSize(0.05);
+  latex2 -> Draw("same");
+  
+  if( strcmp(EBEE.c_str(),"EB") == 0 || strcmp(EBEE.c_str(),"EB_0_1") == 0 || strcmp(EBEE.c_str(),"EB_1_1479") == 0)
+    sprintf(latexBuffer,"ECAL Barrel");
+  else
+    sprintf(latexBuffer,"ECAL Endcap");
+  TLatex* latex3 = new TLatex(0.18,0.19,latexBuffer);
+  latex3 -> SetNDC();
+  latex3 -> SetTextFont(42);
+  latex3 -> SetTextSize(0.05);
+  latex3 -> Draw("same");
+  
+  //sprintf(latexBuffer,"%.2E events",1.*nSavePts);
+  //TLatex* latex4 = new TLatex(0.18,0.24,latexBuffer);  
+  //latex4 -> SetNDC();
+  //latex4 -> SetTextFont(42);
+  //latex4 -> SetTextSize(0.04);
+  //latex4 -> Draw("same");
+  //
+  //sprintf(latexBuffer,"%d events/bin - %d bins",evtsPerPoint,nBins);
+  //TLatex* latex5 = new TLatex(0.18,0.19,latexBuffer);  
+  //latex5 -> SetNDC();
+  //latex5 -> SetTextFont(42);
+  //latex5 -> SetTextSize(0.04);
+  //latex5 -> Draw("same");
+  
+  
+  cRight -> cd();
+  
+  TPaveStats* s_EoP_spread = new TPaveStats();
+  TPaveStats* s_EoC_spread = new TPaveStats();
+  
+  
+  h_EoC_spread -> SetFillStyle(3001);
+  h_EoC_spread -> SetFillColor(kGreen+2);
+  h_EoC_spread->GetYaxis()->SetLabelSize(0.09);
+  h_EoC_spread->GetYaxis()->SetLabelOffset(-0.03);
+  h_EoC_spread->GetYaxis()->SetTitleSize(0.08);
+  h_EoC_spread->GetYaxis()->SetNdivisions(505);
+  h_EoC_spread->GetXaxis()->SetLabelOffset(1000);
+  
+  h_EoC_spread -> Draw("hbar");
+  gPad -> Update();
+  
+  s_EoC_spread = (TPaveStats*)(h_EoC_spread->GetListOfFunctions()->FindObject("stats"));
+  s_EoC_spread -> SetStatFormat("1.4g");
+  s_EoC_spread->SetX1NDC(0.06); //new x start position
+  s_EoC_spread->SetX2NDC(0.71); //new x end position
+  s_EoC_spread->SetY1NDC(0.43); //new x start position
+  s_EoC_spread->SetY2NDC(0.34); //new x end position
+  s_EoC_spread -> SetOptStat(1100);
+  s_EoC_spread ->SetTextColor(kGreen+2);
+  s_EoC_spread ->SetTextSize(0.08);
+  s_EoC_spread -> Draw("sames");
+  
+  
+  h_EoP_spread -> SetFillStyle(3001);
+  h_EoP_spread -> SetFillColor(kRed+2);
+  h_EoP_spread -> Draw("hbarsames");
+  gPad -> Update();
+  s_EoP_spread = (TPaveStats*)(h_EoP_spread->GetListOfFunctions()->FindObject("stats"));
+  s_EoP_spread -> SetStatFormat("1.4g");
+  s_EoP_spread->SetX1NDC(0.06); //new x start position
+  s_EoP_spread->SetX2NDC(0.71); //new x end position
+  s_EoP_spread->SetY1NDC(0.33); //new x start position
+  s_EoP_spread->SetY2NDC(0.24); //new x end position
+  s_EoP_spread ->SetOptStat(1100);
+  s_EoP_spread ->SetTextColor(kRed+2);
+  s_EoP_spread ->SetTextSize(0.08);
+  s_EoP_spread -> Draw("sames");
+  
+  /*
+  h_EoP_spread -> SetFillStyle(3001);
+  h_EoP_spread -> SetFillColor(kRed+2);
+  h_EoP_spread -> Draw("hbarsame");
+  gPad -> Update();
+  */
+  
+      
+  
+  
+  
+  cplot -> Print((folderName+"/"+folderName+"_history_vsVertex.png").c_str(),"png");
+      
+  cplot -> Print((folderName+"/"+folderName+"_history_vsVertex.pdf").c_str(),"pdf");
+   
+  cplot -> SaveAs((folderName+"/"+folderName+"_history_vsVertex.C").c_str());
+  
+  }
+  
+  
+  
+  
+  
+  ///////////////////////////
   
    o -> cd();
         
@@ -1511,7 +1692,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
    
    o -> Close();
    
-}
+  }
 
 
 void LaserMonitoringEoP::setLaserPlotStyle()
@@ -1678,37 +1859,3 @@ void LaserMonitoringEoP::setLaserPlotStyle()
 
   laserPlotStyle->cd();
 }
-
-/*
-/// Save infos in the output
-void LaserMonitoringEoP::saveHistos(TFile * f1){
-
-  f1->cd();
-  hC_IntercalibValues -> Write(*f1);
-  hC_PullFromScalib -> Write(*f1);
-  hC_EoP -> Write(*f1);
-  hC_scale_EB -> Write("",*f1);
-  h_scalib_EB -> Write();
-
-  h_IntercalibValues_test -> Write();
-  h_Occupancy_hashedIndex -> Write();
-  p_IntercalibValues_iEta -> Write();
-  h_Init_IntercalibValues -> Write(); 
-
-  h_IntercalibSpread_iEta -> Write();
-  h_scale_EB -> Write();
-  h_scale_EB_meanOnPhi -> Write("h_scale_map");
-  h_scale_EB_hashedIndex -> Write(); 
-  
-  h_occupancy -> Write();
-  
-  g_ICmeanVsLoop -> Write();
-  g_ICrmsVsLoop -> Write();
-
-  h_map_Dead_Channels -> Write() ;
-
-  f1->Close();
-
-  return;
-}
-*/

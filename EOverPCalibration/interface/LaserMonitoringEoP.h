@@ -1,8 +1,5 @@
 //////////////////////////////////////////////////////////
-// This class has been automatically generated on
-// Sat Jul  2 02:30:39 2011 by ROOT version 5.27/06b
-// from TTree ntu/ntu
-// found on file: /data1/dimatteo/Calibration/Ntuples/Run2011A/WZAnalysisSingleXtal/WZAnalysis_SingleElectron_Run2011A-WElectron-May10ReReco-v1.root
+// Class for the monitoring of laser corrections with E/p
 //////////////////////////////////////////////////////////
 
 #ifndef LaserMonitoringEoP_h
@@ -53,17 +50,9 @@ class LaserMonitoringEoP {
   
     virtual ~LaserMonitoringEoP();
     
-    //    virtual Int_t    GetEntry(Long64_t entry);
-
-    //    virtual void     bookHistos(int);
-
-    //    virtual void     saveHistos(TFile *f1);
-    
-    //    virtual Long64_t LoadTree(Long64_t entry);
-    
     virtual void     Init(TTree *tree, TTree *treeMC, int useRegression);
     
-    virtual void     Loop(float, float, std::string, int, int, std::string, std::string, std::string, std::string);
+    virtual void     Loop(float, float, std::string, int, int, std::string, std::string, std::string, std::string, int);
 
     virtual void     setLaserPlotStyle();        
     
@@ -77,30 +66,11 @@ class LaserMonitoringEoP {
     int runNumber;
     int runTime;
     int nPU;
+    int nPV;
     float avgLCSCEle[3], etaSCEle[3], phiSCEle[3], energySCEle[3], esEnergySCEle[3], pAtVtxGsfEle[3], energySCEle_corr[3];
     int seedXSCEle[3], seedYSCEle[3];//, seedZside;    
     //  float seedLaserAlphaSCEle1; 
     
-
-    ///! List of input branches from ntu
-    /*    
-    TBranch        *b_runNumber;   //!
-    TBranch        *b_runTime;  //!
-    TBranch        *b_nPU; //!
-    TBranch        *b_avgLCSCEle;   //!
-    TBranch        *b_etaSCEle;   //!
-    TBranch        *b_phiSCEle;   //!
-    TBranch        *b_energySCEle;   //!
-    TBranch        *b_esEnergySCEle;   //!
-    TBranch        *b_pAtVtxGsfEle;   //!
-    TBranch        *b_energySCEle_corr;   //!
-    TBranch        *b_seedXSCEle;   //!
-    TBranch        *b_seedYSCEle;   //!
-    */
-
-    ///! Output information 
-    //    TGraphErrors *g_ICmeanVsLoop;
-
 };
 
 #endif
