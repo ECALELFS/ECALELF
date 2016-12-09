@@ -770,7 +770,7 @@ else:
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
-    process.zNtupleDumper.conversionCollection = cms.InputTag('reducedEgamma','reducedConversions'), #cms.InputTag('allConversions'),
+    process.zNtupleDumper.conversionCollection = cms.InputTag('reducedEgamma','reducedConversions') #cms.InputTag('allConversions'),
 
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')

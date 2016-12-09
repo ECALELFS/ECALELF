@@ -495,7 +495,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	eleID_tight(iConfig.getParameter< std::string>("eleID_tight")),
 	eventType(ZEE)
 {
-	_isMINIAOD = (iConfig.getParameter<edm::InputTag>("recHitCollectionEB") == edm::InputTag("alCaIsolatedElectrons", "alcaBarrelHits"));
+	_isMINIAOD = !(iConfig.getParameter<edm::InputTag>("recHitCollectionEB") == edm::InputTag("alCaIsolatedElectrons", "alcaBarrelHits"));
 	if(_isMINIAOD) std::cout << "[INFO ZntupleDumper] running on MINIAOD" << std::endl;
 	//  current_dir.cd();
 
@@ -1145,7 +1145,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("phiSCEle",      phiSCEle,       "phiSCEle[3]/F");
 	tree->Branch("nHitsSCEle", nHitsSCEle, "nHitsSCEle[3]/I");
 	tree->Branch("avgLCSC",  avgLCSC,       "avgLCSC[3]/F");
-	tree->Branch("isMustacheSC", isMustacheSC, "isMustacheSC[3]/b");
+//	tree->Branch("isMustacheSC", isMustacheSC, "isMustacheSC[3]/b");
 	tree->Branch("rawEnergySCEle", rawEnergySCEle, "rawEnergySCEle[3]/F");
 	tree->Branch("energy_ECAL_ele", energy_ECAL_ele, "energy_ECAL_ele[3]/F"); ///< correctedEcalEnergy from MINIAOD or mustache regression if rereco
 	tree->Branch("energy_ECAL_pho", energy_ECAL_pho, "energy_ECAL_pho[3]/F");
