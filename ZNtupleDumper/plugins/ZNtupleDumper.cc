@@ -1536,7 +1536,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 	rawESEnergyPlane1SCEle[index] = GetESPlaneRawEnergy(sc, 1);
 	rawESEnergyPlane2SCEle[index] = GetESPlaneRawEnergy(sc, 2);
 
-	energySCEle_corr[index] = electron1.correctedEcalEnergy();
 	efull5x5SCEle[index] = electron1.full5x5_e5x5(); //check this
 
 	if(sc.isNonnull()) {
@@ -1625,6 +1624,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 			}
 
 			const EcalRecHitCollection *recHits = (seedDetId.subdetId() == EcalBarrel) ?  clustertools->getEcalEBRecHitCollection() : clustertools->getEcalEERecHitCollection();
+			const EcalUncalibratedRecHitCollection * uncHits_EB = pEBUncRecHits.product();//check this
 
 			EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
 			//assert(seedRecHit!=recHits->end()); // DEBUG
@@ -1660,46 +1660,77 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron1, int
 				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainEle[index] |= 0x01;
 				if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainEle[index] |= 0x02;
 			}
+//			/////////////////CHECK THIS/////////////////////////
+//			//Apply the corrections
+//			//if( !isMC) {//only if data
+//			if( 1) {
+//			  if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel) {
+//			    const auto & hitsAndFractions = sc->hitsAndFractions();
+//			    float energySum=0., recalibEnergySum=0., recalibCorrEnergySum=0.;
+//			    for(const auto & hnf : hitsAndFractions) {
+//			      /// std::cout << hnf.first.rawId() << " " << hnf.second << std::endl;
+//			      auto crh = recHits->find(hnf.first);//Calibrated recHits: are those the right recHits??
+//			      if( crh == recHits->end() ) { continue; }
+//			      auto rrh = uncHits_EB->find(hnf.first);//start from unCalibrated recHits and apply Marco's corrections: are those the right recHits?
+//			      if( rrh == uncHits_EB->end() ) { continue; }
+//			      float chi2 = crh->chi2();
+//			      bool g6 = crh->checkFlag( EcalRecHit::kHasSwitchToGain6 );
+//			      bool g1 = crh->checkFlag( EcalRecHit::kHasSwitchToGain1 );           
+//			      energySum += crh->energy() * hnf.second;
+//			      recalibEnergySum += rrh->energy() * hnf.second;
+//			      float gcorr = MultiFitParametricCorrection(rrh->energy(),chi2,g6,g1);
+//			      //float gcorr=1;
+//			      recalibCorrEnergySum += rrh->energy() * hnf.second / gcorr;
+//			      if( g6 || g1 ) { 
+//			      std::cout << "applyCorrection g6:" << g6 << " g1:" << g1 << " gcorr:" << gcorr << " " << energySum << " " << recalibEnergySum << " " << recalibCorrEnergySum << std::endl;}
+//			    }
+//			    
+//			    float corr = 1. + energySum * ( recalibEnergySum != 0 ? recalibCorrEnergySum / recalibEnergySum - 1. : 0. ) / electron1.superCluster()->rawEnergy();
+//			    std::cout<<"[*****]corr is "<<corr<<std::endl;
+//			    //ELIMINARE
+//			    // std::cout << "PhotonGainRatios::applyCorrection " << energySum << " " << recalibEnergySum << " " << recalibCorrEnergySum << std::endl;
+//			    //			  if( updateEnergy_ ) {
+//			    //			    y.updateEnergy( shiftLabel( syst_shift ), corr * y.energy() );
+//			    //			  } else {
+//			    //			    y.addUserFloat( shiftLabel( syst_shift ), corr * y.energy() );
+//			    //			  }
+//			    //}
+//			  }
+//			}
+//			/////////////////CHECK THIS/////////////////////////
+
 			/////////////////CHECK THIS/////////////////////////
 			//Apply the corrections
 			//if( !isMC) {//only if data
 			if( 1) {
 			  if(electron1.isEB() && seedDetId.subdetId() == EcalBarrel) {
 			    const auto & hitsAndFractions = sc->hitsAndFractions();
-			    float energySum=0., recalibEnergySum=0., recalibCorrEnergySum=0.;
+			    float energySum=0., recalibEnergySum=0.;
 			    for(const auto & hnf : hitsAndFractions) {
 			      /// std::cout << hnf.first.rawId() << " " << hnf.second << std::endl;
-			      auto crh = recHits->find(hnf.first);//are those the right recHits??
+			      auto crh = recHits->find(hnf.first);//Calibrated recHits: are those the right recHits??
 			      if( crh == recHits->end() ) { continue; }
-			      auto rrh = recHits->find(hnf.first);
-			      if( rrh == recHits->end() ) { continue; }
-			      float chi2 = crh->chi2();
+			      auto rrh = uncHits_EB->find(hnf.first);//start from unCalibrated recHits and apply Marco's corrections: are those the right recHits?
+			      if( rrh == uncHits_EB->end() ) { continue; }
+			      //float chi2 = crh->chi2();
+			      float chi2 = rrh->chi2();//this is the right chi2
 			      bool g6 = crh->checkFlag( EcalRecHit::kHasSwitchToGain6 );
 			      bool g1 = crh->checkFlag( EcalRecHit::kHasSwitchToGain1 );           
 			      energySum += crh->energy() * hnf.second;
-			      recalibEnergySum += rrh->energy() * hnf.second;
-			      float gcorr = MultiFitParametricCorrection(rrh->energy(),chi2,g6,g1);
-			      //float gcorr=1;
-			      recalibCorrEnergySum += rrh->energy() * hnf.second / gcorr;
+			      float gcorr = MultiFitParametricCorrection(rrh->amplitude(),chi2,g6,g1);
+			      recalibEnergySum += crh->energy() * hnf.second / gcorr;
 			      if( g6 || g1 ) { 
-			      std::cout << "applyCorrection g6:" << g6 << " g1:" << g1 << " gcorr:" << gcorr << " " << energySum << " " << recalibEnergySum << " " << recalibCorrEnergySum << std::endl;}
+				std::cout << "applyCorrection g6:" << g6 << " g1:" << g1 << " gcorr:" << gcorr << " " << rrh->amplitude() << " " << chi2 << "  " << crh->energy() << std::endl;}
 			    }
-			    
-			    float corr = 1. + energySum * ( recalibEnergySum != 0 ? recalibCorrEnergySum / recalibEnergySum - 1. : 0. ) / electron1.superCluster()->rawEnergy();
+			    float corr = (energySum!=0) ? recalibEnergySum/energySum : 1;
 			    std::cout<<"[*****]corr is "<<corr<<std::endl;
-			    //ELIMINARE
-			    // std::cout << "PhotonGainRatios::applyCorrection " << energySum << " " << recalibEnergySum << " " << recalibCorrEnergySum << std::endl;
-			    //			  if( updateEnergy_ ) {
-			    //			    y.updateEnergy( shiftLabel( syst_shift ), corr * y.energy() );
-			    //			  } else {
-			    //			    y.addUserFloat( shiftLabel( syst_shift ), corr * y.energy() );
-			    //			  }
-			    //}
 			  }
 			}
 			/////////////////CHECK THIS/////////////////////////
+
 		}
 	}
+	energySCEle_corr[index] = electron1.correctedEcalEnergy();//*corr///
 	//  sigmaIEtaIEtaSCEle[index] = sqrt(clustertools->localCovariances(*(electron1.superCluster()->seed()))[index]);
 	//  sigmaIEtaIEtaSCEle[1] = sqrt(clustertools->localCovariances(*(electron2.superCluster()->seed()))[index]);
 	//  sigmaIPhiIPhiBC = sqrt(clustertools->localCovariances(*b)[3]);
