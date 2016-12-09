@@ -178,14 +178,45 @@ process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalUncalIsolElectron_Ou
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_cff')
 process.load('Calibration.EcalAlCaRecoProducers.ALCARECOEcalRecalIsolElectron_Output_cff')
 
-process.load('RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cff')
+#process.load('RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cff')
 from RecoLocalCalo.EcalRecProducers.ecalLocalCustom import *
-from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+#from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
+
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+
+# define which IDs we want to produce
+my_id_modules = [
+#		'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff',
+		'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff'
+		]
+
+#add them to the VID producer
+for idmod in my_id_modules:
+	setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection) #, False, False)
+
+process.patElectrons.userData = cms.PSet(
+        userCands = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userClasses = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userFloats = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userFunctionLabels = cms.vstring(),
+        userFunctions = cms.vstring(),
+        userInts = cms.PSet(
+            src = cms.VInputTag("")
+        )
+)
+
+
 
 # ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
@@ -275,6 +306,8 @@ myEleCollection =  cms.InputTag("gedGsfElectrons")
 
 if(options.type=="MINIAODNTUPLE" ):
     myEleCollection= cms.InputTag("slimmedElectrons")
+recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
+
 process.MinEleNumberFilter.src = myEleCollection
 
 #Define the sequences
@@ -406,6 +439,8 @@ if (options.skim=="ZmmgSkim"):
     process.patSequence=cms.Sequence( (process.muonSelectionProducers * process.phoSelectionProducers) * process.patMuons * process.patPhotons )
     process.patSequenceMC=cms.Sequence( process.muonMatch * process.photonMatch * (process.muonSelectionProducers * process.phoSelectionProducers ) * process.patMuons * process.patPhotons )
 
+#process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag("patElectrons") #myEleCollection
+
 if(options.type!="MINIAODNTUPLE"):
     if(MC):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
@@ -413,9 +448,8 @@ if(options.type!="MINIAODNTUPLE"):
         process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
     #process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
-    process.EIsequence = cms.Sequence(process.egmGsfElectronIDSequence)
-    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.EIsequence * process.patSequence)
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
+    process.ntupleSeq = cms.Sequence(process.jsonFilter  * process.patSequence)
+
     
 if(options.doTree==0):
     process.zNtupleDumper.doStandardTree = cms.bool(False)
@@ -579,17 +613,6 @@ if(not doTreeOnly):
     if(options.type=="ALCARAW"):
         process.ALCARAWoutput_step = cms.EndPath(process.outputALCARAW)
             
-# define which IDs we want to produce
-my_id_modules = [
-		'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronHLTPreselecition_Summer16_V1_cff',
-		'RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff'
-		]
-
-#add them to the VID producer
-for idmod in my_id_modules:
-	setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
-
-
 
 ############################################################
 # Schedule definition
@@ -747,6 +770,7 @@ else:
     process.zNtupleDumper.rhoFastJet = cms.InputTag("fixedGridRhoFastjetAll")
     process.zNtupleDumper.pileupInfo = cms.InputTag("slimmedAddPileupInfo")
     process.zNtupleDumper.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
+    process.zNtupleDumper.conversionCollection = cms.InputTag('reducedEgamma','reducedConversions'), #cms.InputTag('allConversions'),
 
     process.zNtupleDumper.EESuperClusterCollection = cms.InputTag("reducedEgamma", "reducedSuperClusters")
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')
@@ -758,18 +782,30 @@ else:
 
 
 if(options.type=="ALCARERECO"):
-    recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
+
     process = EcalRecal(process)
+    process.electronMVAValueMapProducer.src = recalibElectronSrc
+    #process.egmGsfElectronIDs.physicsObjectSrc = recalibElectronSrc
+
     process.patElectrons.electronSource                = recalibElectronSrc
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
 
-    
+    #process.slimmedECALELFElectrons.src = recalibElectronSrc    
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
 #    process.MinEleNumberFilter.src = recalibElectronSrc
     process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
+
+    for ps in     process.egmGsfElectronIDs.physicsObjectIDs:
+        for cutflow in ps.idDefinition.cutFlow:
+            if(cutflow.cutName == cms.string('GsfEleCalPFClusterIsoCut') or 
+               cutflow.cutName == cms.string('GsfEleCalPFClusterIsoCut') or
+               cutflow.cutName == cms.string('GsfEleEffAreaPFIsoCut')
+               ):
+                cutflow.rho = cms.InputTag("kt6PFJetsForRhoCorrection:rho")
+                
 
     if(options.bunchSpacing==25):
         print "bunchSpacing", options.bunchSpacing
@@ -795,15 +831,22 @@ if(options.type=="ALCARERECO"):
         exit(1)
     process.zNtupleDumper.uncalibRecHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", process.alCaIsolatedElectrons.alcaBarrelUncalibHitCollection.value())
     process.zNtupleDumper.uncalibRecHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", process.alCaIsolatedElectrons.alcaEndcapUncalibHitCollection.value())
-        
-process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
-process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
+    process.electronRegressionValueMapProducer.ebReducedRecHitCollectionMiniAOD = cms.InputTag('alCaIsolatedElectrons', process.alCaIsolatedElectrons.alcaBarrelHitCollection.value())
+    process.electronRegressionValueMapProducer.eeReducedRecHitCollectionMiniAOD = process.eleNewEnergiesProducer.recHitCollectionEE
+    process.electronRegressionValueMapProducer.esReducedRecHitCollectionMiniAOD = cms.InputTag('alCaIsolatedElectrons', 'alcaPreshowerHits')
+    process.electronRegressionValueMapProducer.srcMiniAOD = recalibElectronSrc
 #process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 #process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
+    process.zNtupleDumper.recHitCollectionES = cms.InputTag('alCaIsolatedElectrons', 'alcaPreshowerHits')
+
+process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
+process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
+process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
+process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
-#process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
+
 ############################
 ## Dump the output Python ##
 ############################

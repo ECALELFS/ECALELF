@@ -21,6 +21,9 @@ from Calibration.ZNtupleDumper.phoselectionproducers_cfi import *
 from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 # process.EleSelectionProducers
 
+from RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cff import *
+egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('patElectrons')
+
 #============================== Adding new energies to patElectrons
 # adding new float variables to the patElectron
 # this variables are produced with a specific producer: eleNewEnergiesProducer
@@ -36,24 +39,24 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 
 
 #============================== Adding electron ID to patElectrons
-# patElectrons.addElectronID=cms.bool(True)
-# patElectrons.electronIDSources =  cms.PSet(
-#     # configure many IDs as InputTag <someName> = <someTag> you
-#     # can comment out those you don't want to save some disk space
-#     fiducial = cms.InputTag("eleSelectionProducers", "fiducial"),
-#     WP70PU      = cms.InputTag("eleSelectionProducers", "WP70PU"),
-#     WP80PU      = cms.InputTag("eleSelectionProducers", "WP80PU"),
-#     WP90PU      = cms.InputTag("eleSelectionProducers", "WP90PU"),
-#     loose       = cms.InputTag("eleSelectionProducers", "loose"),
-#     medium      = cms.InputTag("eleSelectionProducers", "medium"),
-#     tight      = cms.InputTag("eleSelectionProducers", "tight"),
-#     loose25nsRun2       = cms.InputTag("eleSelectionProducers", "loose25nsRun2"),
-#     medium25nsRun2       = cms.InputTag("eleSelectionProducers", "medium25nsRun2"),
-#     tight25nsRun2       = cms.InputTag("eleSelectionProducers", "tight25nsRun2"),
-#     loose50nsRun2       = cms.InputTag("eleSelectionProducers", "loose50nsRun2"),
-#     medium50nsRun2       = cms.InputTag("eleSelectionProducers", "medium50nsRun2"),
-#     tight50nsRun2       = cms.InputTag("eleSelectionProducers", "tight50nsRun2")
-#     )
+patElectrons.addElectronID=cms.bool(False)
+patElectrons.electronIDSources =  cms.PSet()
+patElectrons.userData = cms.PSet(
+        userCands = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userClasses = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userFloats = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userFunctionLabels = cms.vstring(),
+        userFunctions = cms.vstring(),
+        userInts = cms.PSet(
+            src = cms.VInputTag("")
+        )
+)
 
 electronMatch.src=cms.InputTag('gedGsfElectrons')
 
@@ -127,15 +130,29 @@ modPSetEleIDBool =  cms.PSet(
     )
 
 
+eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
+eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
+eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
+eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
+
+#eleRegressionEnergy.recHitCollectionEB = eleNewEnergiesProducer.recHitCollectionEB.value()
+#eleRegressionEnergy.recHitCollectionEE = eleNewEnergiesProducer.recHitCollectionEE.value()
+#patElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
+#patElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()
+
+slimmedECALELFElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
+slimmedECALELFElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()
+
 modPSetSlewRate = cms.PSet( 
 	modifierName    = cms.string('EGSlewRateModifier'),
-	ecalRecHitsEB  = cms.InputTag("reducedEgamma", "reducedEBRecHits"),
-	ecalRecHitsEE  = cms.InputTag("reducedEgamma", "reducedEERecHits"),
+	ecalRecHitsEB  = slimmedECALELFElectrons.reducedBarrelRecHitCollection, #cms.InputTag("reducedEgamma", "reducedEBRecHits"),
+	ecalRecHitsEE  = slimmedECALELFElectrons.reducedEndcapRecHitCollection, #cms.InputTag("reducedEgamma", "reducedEERecHits"),
 	electron_config = cms.PSet( 
 		electronSrc = slimmedECALELFElectrons.src,
         ),
 	photon_config   = cms.PSet( )
 )
+
 
 
 slimmedECALELFElectrons.modifierConfig  = cms.PSet(
@@ -153,23 +170,12 @@ slimmedECALELFElectrons.modifierConfig  = cms.PSet(
 #process.electronMatch: assosiation map of gsfelectron and genparticle
 #process.patElectrons: producer of patElectron
 #process.zNtupleDumper: dumper of flat tree for MVA energy training (Francesco Micheli)
+EIsequence = cms.Sequence(egmGsfElectronIDSequence)
 prePatSequence = cms.Sequence() #(eleSelectionProducers ))
 postPatSequence = cms.Sequence(eleSelectionProducers * eleNewEnergiesProducer * slimmedECALELFElectrons )
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
-patSequence=cms.Sequence( prePatSequence * patElectrons * postPatSequence)
+patSequence=cms.Sequence( prePatSequence * patElectrons * EIsequence* postPatSequence)
 #patSequence=cms.Sequence( prePatSequence * postPatSequence)
 patSequenceMC=cms.Sequence( electronMatch * prePatSequence * patElectrons * postPatSequence)
 
 
-eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
-eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
-eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
-eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
-
-#eleRegressionEnergy.recHitCollectionEB = eleNewEnergiesProducer.recHitCollectionEB.value()
-#eleRegressionEnergy.recHitCollectionEE = eleNewEnergiesProducer.recHitCollectionEE.value()
-#patElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
-#patElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()
-
-slimmedECALELFElectrons.reducedBarrelRecHitCollection = eleNewEnergiesProducer.recHitCollectionEB.value()
-slimmedECALELFElectrons.reducedEndcapRecHitCollection = eleNewEnergiesProducer.recHitCollectionEE.value()

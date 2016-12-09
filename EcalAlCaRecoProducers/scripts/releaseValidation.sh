@@ -8,7 +8,7 @@ function testStep(){
 	stepLog=$3
 	stepCommand=$4
 	
-	dir=tmp/releaseValidation/$stepIndex/
+	dir=tmp/releaseValidation/$stepIndex
 	if [ ! -d "$dir" ];then mkdir $dir; fi
 
 	if [ -e "$dir/done" ]; then
@@ -111,7 +111,54 @@ testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $
 
 ################
 logName=ntuple_alcarereco_data
-testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=10000 doTree=1 doEleIDTree=1 doTreeOnly=1 files=$fileALCARAWData outputAll=True  isCrab=1" || {
+testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=True  isCrab=1" || {
+
+	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
+		echo "${bold}ERROR${normal}"
+		echo "See $dir/${logName}_2.log" 
+		exit 1
+	}
+
+	echo -n "[`basename $0`] Checking difference in dump of ntuple content ... "
+	diff -q {$dir,test}/${logName}.dump > /dev/null || {
+		echo "${bold}ERROR${normal}"
+		echo "{$dir,test}/${logName}.dump are different" 
+		echo "you can use"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		exit 1
+	}
+	echo "OK"
+	touch $dir/done
+#	rm $dir/*.root
+}
+
+################
+logName=alcarereco_data
+testStep 5 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v1.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileALCARAWData outputAll=True  isCrab=1" || {
+	echo "OK"
+	touch $dir/done
+#	rm $dir/*.root
+}
+
+
+################
+logName=ntuple_alcarereco_data
+testStep 6 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v1.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=True  isCrab=1" || {
+
+	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
+		echo "${bold}ERROR${normal}"
+		echo "See $dir/${logName}_2.log" 
+		exit 1
+	}
+
+	echo -n "[`basename $0`] Checking difference in dump of ntuple content ... "
+	diff -q {$dir,test}/${logName}.dump > /dev/null || {
+		echo "${bold}ERROR${normal}"
+		echo "{$dir,test}/${logName}.dump are different" 
+		echo "you can use"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		exit 1
+	}
 	echo "OK"
 	touch $dir/done
 #	rm $dir/*.root
