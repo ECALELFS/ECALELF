@@ -1594,7 +1594,7 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	               );
 
 
-	invMass		= sqrt(2 * electron1.energy() * electron2.energy() * angle);
+	invMass		= sqrt(2 * energyEle[0] * energyEle[1] * angle);
 	invMass_5x5SC = sqrt(2 * energy_5x5SC[0] * energy_5x5SC[1] * angle);
 
 	invMass_ECAL_ele = sqrt(2 * energy_ECAL_ele[0] * energy_ECAL_ele[1] * angle);
