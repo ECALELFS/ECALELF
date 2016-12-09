@@ -199,25 +199,6 @@ my_id_modules = [
 for idmod in my_id_modules:
 	setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection) #, False, False)
 
-process.patElectrons.userData = cms.PSet(
-        userCands = cms.PSet(
-            src = cms.VInputTag("")
-        ),
-        userClasses = cms.PSet(
-            src = cms.VInputTag("")
-        ),
-        userFloats = cms.PSet(
-            src = cms.VInputTag("")
-        ),
-        userFunctionLabels = cms.vstring(),
-        userFunctions = cms.vstring(),
-        userInts = cms.PSet(
-            src = cms.VInputTag("")
-        )
-)
-
-
-
 # ntuple
 # added by Shervin for ES recHits (saved as in AOD): large window 15x3 (strip x row)
 process.load('RecoEcal.EgammaClusterProducers.interestingDetIdCollectionProducer_cfi')
@@ -714,6 +695,26 @@ else:
 process.selectedECALElectrons.src = myEleCollection
 process.PassingVetoId.src = myEleCollection
 
+process.patElectrons.userData = cms.PSet(
+        userCands = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userClasses = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userFloats = cms.PSet(
+            src = cms.VInputTag("")
+        ),
+        userFunctionLabels = cms.vstring(),
+        userFunctions = cms.vstring(),
+        userInts = cms.PSet(
+            src = cms.VInputTag("")
+        )
+)
+
+
+
+
 
 #process.patElectrons.electronSource = myEleCollection
 #process.eleSelectionProducers.electronCollection = cms.InputTag("patElectrons")
@@ -740,6 +741,8 @@ else:
     rechitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     #configure everything for MINIAOD
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
+
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = rechitsEB
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = rechitsEE
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
@@ -838,11 +841,11 @@ if(options.type=="ALCARERECO"):
 #process.zNtupleDumper.recHitCollectionEB = process.eleNewEnergiesProducer.recHitCollectionEB
 #process.zNtupleDumper.recHitCollectionEE = process.eleNewEnergiesProducer.recHitCollectionEE
     process.zNtupleDumper.recHitCollectionES = cms.InputTag('alCaIsolatedElectrons', 'alcaPreshowerHits')
+    process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
+    process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
-process.slimmedECALELFElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
-process.slimmedECALELFElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
