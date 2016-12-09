@@ -305,10 +305,10 @@ if(doAnyTree):
          # The jsonFilter has to be used when making something+ntuples in the same job, because we want the json applied only at ntuple level
          print "[INFO] Using json file"
     # else:
-    #     if(len(options.jsonFile)>0):
-    #         print "[INFO] Using json file"
-    #         import FWCore.PythonUtilities.LumiList as LumiList
-    #         process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
+if(len(options.jsonFile)>0): # this works only in local
+    print "[INFO] Using json file"
+    import FWCore.PythonUtilities.LumiList as LumiList
+    process.source.lumisToProcess = LumiList.LumiList(filename = options.jsonFile).getVLuminosityBlockRange()
 
     
 

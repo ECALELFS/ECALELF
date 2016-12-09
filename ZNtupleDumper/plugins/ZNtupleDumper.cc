@@ -346,25 +346,25 @@ private:
 	//============================== check ele-id and iso
 	TFile *eleIDTreeFile;
 	TTree *eleIDTree;
-	Float_t sigmaIEtaIEtaSCEle[3];
-	Float_t sigmaIPhiIPhiSCEle[3];
-	Float_t hOverE[3], hOverEBC[3];	
-	Float_t dr03TkSumPt[3];
-	Float_t dr03EcalRecHitSumEt[3];
-	Float_t dr03HcalTowerSumEt[3];
-	Float_t deltaPhiSuperClusterTrackAtVtx[3];
-	Float_t deltaEtaSuperClusterTrackAtVtx[3];
-	Float_t E1x5[3];
-	Float_t E1x3[3];
-	Float_t E2x2[3];
-	Float_t E2x5Max[3];
-	Float_t S4[3];
-	Float_t etaWidth[3];
-	Float_t phiWidth[3];
-	Bool_t hasMatchedConversion[3];
-	Int_t maxNumberOfExpectedMissingHits[3];
-	Float_t pfMVA[3];
-	Float_t eleIDloose[3], eleIDmedium[3], eleIDtight[3];
+	Float_t sigmaIEtaIEtaSCEle[3]=initFloat;
+	Float_t sigmaIPhiIPhiSCEle[3]=initFloat;
+	Float_t hOverE[3]=initFloat, hOverEBC[3]=initFloat;	
+	Float_t dr03TkSumPt[3]=initFloat;
+	Float_t dr03EcalRecHitSumEt[3]=initFloat;
+	Float_t dr03HcalTowerSumEt[3]=initFloat;
+	Float_t deltaPhiSuperClusterTrackAtVtx[3]=initFloat;
+	Float_t deltaEtaSuperClusterTrackAtVtx[3]=initFloat;
+	Float_t E1x5[3]=initFloat;
+	Float_t E1x3[3]=initFloat;
+	Float_t E2x2[3]=initFloat;
+	Float_t E2x5Max[3]=initFloat;
+	Float_t S4[3]=initFloat;
+	Float_t etaWidth[3]=initFloat;
+	Float_t phiWidth[3]=initFloat;
+	Bool_t hasMatchedConversion[3]=initInt;
+	Int_t maxNumberOfExpectedMissingHits[3]=initInt;
+	Float_t pfMVA[3]=initFloat;
+	Float_t eleIDloose[3]=initFloat, eleIDmedium[3]=initFloat, eleIDtight[3]=initFloat;
 	//==============================
 
 	//==============================

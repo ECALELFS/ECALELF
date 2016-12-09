@@ -18,6 +18,7 @@
 // system include files
 
 #include <memory>
+#include <iostream>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -178,7 +179,7 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
 	produces< SelectionMap >("medium25nsRun2Boff");
 	produces< SelectionMap >("loose25nsRun2V2016");
 	//now do what ever other initialization is needed
-
+	std::cout << "[INFO] EleSelectionProducer" << std::endl;
 }
 
 
