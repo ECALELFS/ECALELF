@@ -30,8 +30,7 @@ public :
 	//! reset the chi2 matrices
 	virtual void reset () = 0 ;
 	//! retrieve the coefficients
-	float at (const unsigned int index)
-	{
+	float at (const unsigned int index) {
 		return m_coefficients[index] ;
 	}
 	//! solve the chi2 linear system

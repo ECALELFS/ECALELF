@@ -151,7 +151,7 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
 	medium25nsRun2Boff_selector("medium25nsRun2Boff", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
 	                            chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle),
 	loose25nsRun2V2016_selector("loose25nsRun2V2016", electronsHandle, conversionsHandle, bsHandle, vertexHandle,
-	                       chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
+	                            chIsoValsHandle, emIsoValsHandle, nhIsoValsHandle, rhoHandle)
 {
 	//register your products
 	/* Examples

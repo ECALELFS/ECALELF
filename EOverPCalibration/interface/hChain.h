@@ -27,8 +27,7 @@ public:
 	void Reset();
 	void Write (TFile & outputFile) ;
 	void Write (const std::string& dirName, TFile & outputFile) ;
-	unsigned int Size()
-	{
+	unsigned int Size() {
 		return m_histos.size();
 	};
 

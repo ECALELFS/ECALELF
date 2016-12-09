@@ -27,7 +27,7 @@ ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAs
 // nEle tells you if the cut is on electron 1 (nEle=1), electron 2 (nEle=2), both(nEle=0)
 TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool corrEle)
 {
-   
+
 	if(region.Sizeof() <= 1) {
 		std::cerr << "[ERROR]: no region defined" << std::endl;
 		return "error";
@@ -253,7 +253,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			continue;
 		}
 
-		if(string.CompareTo("isEle") == 0){
+		if(string.CompareTo("isEle") == 0) {
 			cut_string += isEle_cut;
 			cutSet.insert(TString(isEle_cut));
 			continue;

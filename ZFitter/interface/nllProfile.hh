@@ -93,17 +93,14 @@ public:
 	ProposalHelper *ph;
 	ProposalFunction* proposal;
 	void Propose(RooArgSet& xPrime, RooArgSet& x);
-	inline Bool_t IsSymmetric(RooArgSet& xPrime, RooArgSet& x)
-	{
+	inline Bool_t IsSymmetric(RooArgSet& xPrime, RooArgSet& x) {
 		return true;
 	}; //proposal->IsSymmetric(xPrime,x);};
-	inline Double_t GetProposalDensity(RooArgSet& xPrime, RooArgSet& x)
-	{
+	inline Double_t GetProposalDensity(RooArgSet& xPrime, RooArgSet& x) {
 		return 0;
 	}; //proposal->GetProposalDensity(xPrime, x);};
 
-	inline void SetMinuit(RooMinuit& m)
-	{
+	inline void SetMinuit(RooMinuit& m) {
 		_m = &m;
 	};
 private:

@@ -259,7 +259,7 @@ private:
 	UInt_t eleID[NELE] = initInt;      ///< bit mask for eleID: 1=fiducial, 2=loose, 6=medium, 14=tight, 16=WP90PU, 48=WP80PU, 112=WP70PU, 128=loose25nsRun2, 384=medium25nsRun2, 896=tight25nsRun2, 1024=loose50nsRun2, 3072=medium50nsRun2, 7168=tight50nsRun2. Selection from https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaCutBasedIdentification#Electron_ID_Working_Points
 
 	Short_t  chargeEle[NELE]			= initIntCharge;	///< -100: no electron, 0: SC or photon, -1 or +1:electron or muon //Char_t is interpreted as char and not as integer
-	UChar_t recoFlagsEle[NELE]		= initInt;	///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven 
+	UChar_t recoFlagsEle[NELE]		= initInt;	///< 1=trackerDriven, 2=ecalDriven only, 3=tracker and ecal driven
 	Float_t   etaEle[NELE]			= initFloat, phiEle[NELE]  = initFloat;		///< phi of the electron (electron object)
 	Float_t R9Ele[NELE] = initFloat;    ///< e3x3/rawEnergySCEle
 	Float_t fbremEle[NELE]			= initFloat;
@@ -346,25 +346,25 @@ private:
 	//============================== check ele-id and iso
 	TFile *eleIDTreeFile;
 	TTree *eleIDTree;
-	Float_t sigmaIEtaIEtaSCEle[3]=initFloat;
-	Float_t sigmaIPhiIPhiSCEle[3]=initFloat;
-	Float_t hOverE[3]=initFloat, hOverEBC[3]=initFloat;	
-	Float_t dr03TkSumPt[3]=initFloat;
-	Float_t dr03EcalRecHitSumEt[3]=initFloat;
-	Float_t dr03HcalTowerSumEt[3]=initFloat;
-	Float_t deltaPhiSuperClusterTrackAtVtx[3]=initFloat;
-	Float_t deltaEtaSuperClusterTrackAtVtx[3]=initFloat;
-	Float_t E1x5[3]=initFloat;
-	Float_t E1x3[3]=initFloat;
-	Float_t E2x2[3]=initFloat;
-	Float_t E2x5Max[3]=initFloat;
-	Float_t S4[3]=initFloat;
-	Float_t etaWidth[3]=initFloat;
-	Float_t phiWidth[3]=initFloat;
-	Bool_t hasMatchedConversion[3]=initInt;
-	Int_t maxNumberOfExpectedMissingHits[3]=initInt;
-	Float_t pfMVA[3]=initFloat;
-	Float_t eleIDloose[3]=initFloat, eleIDmedium[3]=initFloat, eleIDtight[3]=initFloat;
+	Float_t sigmaIEtaIEtaSCEle[3] = initFloat;
+	Float_t sigmaIPhiIPhiSCEle[3] = initFloat;
+	Float_t hOverE[3] = initFloat, hOverEBC[3] = initFloat;
+	Float_t dr03TkSumPt[3] = initFloat;
+	Float_t dr03EcalRecHitSumEt[3] = initFloat;
+	Float_t dr03HcalTowerSumEt[3] = initFloat;
+	Float_t deltaPhiSuperClusterTrackAtVtx[3] = initFloat;
+	Float_t deltaEtaSuperClusterTrackAtVtx[3] = initFloat;
+	Float_t E1x5[3] = initFloat;
+	Float_t E1x3[3] = initFloat;
+	Float_t E2x2[3] = initFloat;
+	Float_t E2x5Max[3] = initFloat;
+	Float_t S4[3] = initFloat;
+	Float_t etaWidth[3] = initFloat;
+	Float_t phiWidth[3] = initFloat;
+	Bool_t hasMatchedConversion[3] = initInt;
+	Int_t maxNumberOfExpectedMissingHits[3] = initInt;
+	Float_t pfMVA[3] = initFloat;
+	Float_t eleIDloose[3] = initFloat, eleIDmedium[3] = initFloat, eleIDtight[3] = initFloat;
 	//==============================
 
 	//==============================
@@ -449,7 +449,7 @@ private:
 
 
 	eventType_t eventType;
-	unsigned int eventTypeCounter[DEBUG_T]={0};
+	unsigned int eventTypeCounter[DEBUG_T] = {0};
 
 	bool _isMINIAOD;
 };
@@ -1320,11 +1320,11 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron, int 
 	// change in an electron properties please, EleNewEnergyProducer
 	energy_3x3SC[index] = clustertools->e3x3(*sc->seed());
 	energy_5x5SC[index] = electron.full5x5_e5x5();
-		
+
 	Float_t efull5x5SCEle = clustertools->e5x5(*sc->seed()); // this is the official one, in rerecoes it is the one of the prompt reco, not updated by the rereco
-	if(fabs(efull5x5SCEle - energy_5x5SC[index])>1e-6){
-		std::cout << "[WARNING] " << efull5x5SCEle << "\t" << energy_5x5SC[index] << "\t" << efull5x5SCEle-energy_5x5SC[index] << "\t" << clustertools->n5x5(*sc->seed()) << "\t" << etaEle[index] << "\t" <<runNumber << "\t" << eventNumber << std::endl;
-	} 
+	if(fabs(efull5x5SCEle - energy_5x5SC[index]) > 1e-6) {
+		std::cout << "[WARNING] " << efull5x5SCEle << "\t" << energy_5x5SC[index] << "\t" << efull5x5SCEle - energy_5x5SC[index] << "\t" << clustertools->n5x5(*sc->seed()) << "\t" << etaEle[index] << "\t" << runNumber << "\t" << eventNumber << std::endl;
+	}
 	//if(efull5x5SCEle>15) assert(fabs(efull5x5SCEle - energy_5x5SC[index])< 1e-6);
 
 	pModeGsfEle[index] = electron.gsfTrack()->pMode();
@@ -1335,7 +1335,7 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron, int 
 	//R9Ele[index] = e3x3SCEle[index] / sc->rawEnergy(); //already commented
 	R9Ele[index] = electron.full5x5_r9();
 	assert(fabs(R9Ele[index] - energy_3x3SC[index] / sc->rawEnergy()) < 1e-6);
-	
+
 	eleIDMap eleID_map;
 
 	eleID[index] = 0;
@@ -1594,7 +1594,7 @@ void ZNtupleDumper:: TreeSetDiElectronVar(const pat::Electron& electron1, const 
 	               );
 
 
-	invMass		= sqrt(2 * electron1.energy() * electron2.energy() * angle);
+	invMass		= sqrt(2 * energyEle[0] * energyEle[1] * angle);
 	invMass_5x5SC = sqrt(2 * energy_5x5SC[0] * energy_5x5SC[1] * angle);
 
 	invMass_ECAL_ele = sqrt(2 * energy_ECAL_ele[0] * energy_ECAL_ele[1] * angle);
@@ -1639,7 +1639,7 @@ void ZNtupleDumper::TreeSetDiElectronVar(const pat::Electron& electron1, const r
 
 	invMass = sqrt(2 * electron1.energy() * electron2.energy() * angle);
 	invMass_5x5SC   = sqrt(2 * energy_5x5SC[0] * energy_5x5SC[1] * /// full 5x5
-	                      angle);
+	                       angle);
 
 	invMass_ECAL_ele = sqrt(2 * energy_ECAL_ele[0] * energy_ECAL_ele[1] * angle);
 	invMass_ECAL_pho = sqrt(2 * energy_ECAL_pho[0] * energy_ECAL_pho[1] * angle);
@@ -1733,7 +1733,7 @@ float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned 
 			//      ++iCount;
 			for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {//loop over ES rechits to find the one in the cluster
 				ESDetId rhid = ESDetId(esItr->id());
-				if(rhid == (*rh).first) { // found ESrechit 
+				if(rhid == (*rh).first) { // found ESrechit
 					// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
 					if((int) rhid.plane() == (int) planeIndex) {
 						RawenergyPlane += esItr->energy();

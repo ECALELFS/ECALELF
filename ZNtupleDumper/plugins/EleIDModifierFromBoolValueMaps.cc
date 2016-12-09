@@ -6,9 +6,8 @@
 
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 
-namespace
-{
-const edm::InputTag empty_tag;
+namespace {
+	const edm::InputTag empty_tag;
 }
 
 #include <unordered_map>
@@ -67,14 +66,13 @@ EleIDModifierFromBoolValueMaps(const edm::ParameterSet& conf) :
 	ele_idx = 0;
 }
 
-namespace
-{
-inline void get_product(const edm::Event& evt,
-                        const edm::EDGetTokenT<EleIDModifierFromBoolValueMaps::valueMap_t>& tok,
-                        std::unordered_map<unsigned, edm::Handle<EleIDModifierFromBoolValueMaps::valueMap_t> >& map)
-{
-	evt.getByToken(tok, map[tok.index()]);
-}
+namespace {
+	inline void get_product(const edm::Event& evt,
+	                        const edm::EDGetTokenT<EleIDModifierFromBoolValueMaps::valueMap_t>& tok,
+	                        std::unordered_map<unsigned, edm::Handle<EleIDModifierFromBoolValueMaps::valueMap_t> >& map)
+	{
+		evt.getByToken(tok, map[tok.index()]);
+	}
 }
 
 void EleIDModifierFromBoolValueMaps::
@@ -105,13 +103,12 @@ void EleIDModifierFromBoolValueMaps::setEventContent(const edm::EventSetup& evs)
 {
 }
 
-namespace
-{
-template<typename T, typename U, typename V>
-inline void make_consumes(T& tag, U& tok, V& sume)
-{
-	if( !(empty_tag == tag) ) tok = sume.template consumes<EleIDModifierFromBoolValueMaps::valueMap_t >(tag);
-}
+namespace {
+	template<typename T, typename U, typename V>
+	inline void make_consumes(T& tag, U& tok, V& sume)
+	{
+		if( !(empty_tag == tag) ) tok = sume.template consumes<EleIDModifierFromBoolValueMaps::valueMap_t >(tag);
+	}
 }
 
 void EleIDModifierFromBoolValueMaps::setConsumes(edm::ConsumesCollector& sumes)
@@ -125,13 +122,12 @@ void EleIDModifierFromBoolValueMaps::setConsumes(edm::ConsumesCollector& sumes)
 
 }
 
-namespace
-{
-template<typename T, typename U, typename V>
-inline void assignValue(const T& ptr, const U& tok, const V& map, EleIDModifierFromBoolValueMaps::valType_t& value)
-{
-	if( !tok.isUninitialized() ) value = map.find(tok.index())->second->get(ptr.id(), ptr.key());
-}
+namespace {
+	template<typename T, typename U, typename V>
+	inline void assignValue(const T& ptr, const U& tok, const V& map, EleIDModifierFromBoolValueMaps::valType_t& value)
+	{
+		if( !tok.isUninitialized() ) value = map.find(tok.index())->second->get(ptr.id(), ptr.key());
+	}
 }
 
 void EleIDModifierFromBoolValueMaps::modifyObject(pat::Electron& ele) const

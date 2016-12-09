@@ -38,8 +38,7 @@ class HcalElectronicsMap;
 class PixelRegion
 {
 public:
-	PixelRegion(math::XYZVector & momentum, float dphi = 0.5, float deta = 0.5, float maxz = 24.0)
-	{
+	PixelRegion(math::XYZVector & momentum, float dphi = 0.5, float deta = 0.5, float maxz = 24.0) {
 		vector = momentum;
 		dPhi = dphi ;
 		dEta = deta ;
@@ -61,8 +60,7 @@ public:
 
 	PixelModule() {}
 	PixelModule(float phi, float eta) : Phi(phi), Eta(eta), x(0.), y(0.), z(0.), DetId(0), Fed(0) {}
-	bool operator < (const PixelModule& m) const
-	{
+	bool operator < (const PixelModule& m) const {
 		if(Phi < m.Phi) return true;
 		if(Phi == m.Phi && Eta < m.Eta) return true;
 		if(Phi == m.Phi && Eta == m.Eta && DetId < m.DetId) return true;

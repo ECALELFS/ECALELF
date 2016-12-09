@@ -10,8 +10,7 @@ class eleIDMap
 public:
 	std::map<std::string, UInt_t> eleIDmap;
 
-	eleIDMap()
-	{
+	eleIDMap() {
 
 		eleIDmap["fiducial"]          = 0x0001;
 		eleIDmap["loose"]             = 0x0002;

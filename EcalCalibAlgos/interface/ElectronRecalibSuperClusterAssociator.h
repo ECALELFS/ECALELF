@@ -49,7 +49,7 @@ private:
 	edm::EDGetTokenT<reco::SuperClusterCollection> eeScToken_;
 	edm::EDGetTokenT<EcalRecHitCollection> ebRecHitsToken_;
 	edm::EDGetTokenT<EcalRecHitCollection> eeRecHitsToken_;
-	
+
 	reco::GsfElectron::ShowerShape calculateShowerShape_full5x5( const reco::SuperClusterRef & theClus, const EcalRecHitCollection* recHits, const reco::GsfElectron::ShowerShape& ss);
 
 	edm::ESHandle<CaloTopology> _theCaloTopology;

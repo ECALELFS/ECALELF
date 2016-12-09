@@ -30,33 +30,28 @@ public:
 	void appendList(const ConfigFileLine &other);
 
 	//! Check whether name of option is "name"
-	bool isOption(const std::string &name) const
-	{
+	bool isOption(const std::string &name) const {
 		return name == option;
 	}
 
 	//! Check whether the option line has a name, i.e. is defined
-	bool isDefined() const
-	{
+	bool isDefined() const {
 		return option.length();
 	}
 
 	//! Return the list of configuration values
-	std::list<std::string> getValues() const
-	{
+	std::list<std::string> getValues() const {
 		// This operation is somewhat time-consuming!
 		return values;
 	}
 
 	//! Sets the list of configuration values
-	void setValues(const std::list<std::string> &v)
-	{
+	void setValues(const std::list<std::string> &v) {
 		values = v;
 	}
 
 	//! Get option name
-	const std::string &getOptionName() const
-	{
+	const std::string &getOptionName() const {
 		return option;
 	}
 

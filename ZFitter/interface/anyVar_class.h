@@ -74,7 +74,7 @@ public:
 	             std::vector<TString> branchNames, ElectronCategory_class& cutter,
 	             std::string massBranchName,
 	             std::string outDirFitRes,
-				 TDirectory* dir,
+	             TDirectory* dir,
 	             bool updateOnly = true
 	            );
 
@@ -82,24 +82,22 @@ public:
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 1); ///< to be called in the main
 	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
 	void SetOutDirName(std::string dirname, bool updateOnly = true);
-	void ChangeModulo(unsigned int moduloIndex)
-	{
+	void ChangeModulo(unsigned int moduloIndex) {
 		reduced_data = reduced_data_vec[moduloIndex].get();
 		goodEntries.clear();
-		Long64_t nentries=reduced_data->GetEntriesFast();
-		for(Long64_t i=0; i < nentries; ++i){
-			goodEntries.insert(goodEntries.end(),i);
+		Long64_t nentries = reduced_data->GetEntriesFast();
+		for(Long64_t i = 0; i < nentries; ++i) {
+			goodEntries.insert(goodEntries.end(), i);
 		}
 	};
-	void SaveReducedTree(TFile* f)
-	{
+	void SaveReducedTree(TFile* f) {
 		f->cd();
 		reduced_data->Write();
 	}
 
-	void SetDir(TDirectory *dir_){
-		if(_dir!=NULL) delete _dir;
-		_dir=dir_;
+	void SetDir(TDirectory *dir_) {
+		if(_dir != NULL) delete _dir;
+		_dir = dir_;
 	}
 private:
 	TChain *data_chain; // pointer fixed in the constructor

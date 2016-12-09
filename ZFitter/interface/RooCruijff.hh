@@ -21,8 +21,7 @@ public:
 	           RooAbsReal& _alphaL, RooAbsReal& _alphaR
 	          );
 	RooCruijff(const RooCruijff& other, const char* name = 0) ;
-	virtual TObject* clone(const char* newname) const
-	{
+	virtual TObject* clone(const char* newname) const {
 		return new RooCruijff(*this, newname);
 	}
 	inline virtual ~RooCruijff() { }

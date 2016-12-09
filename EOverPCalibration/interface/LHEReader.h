@@ -23,81 +23,62 @@ public:
 	bool GetNextEvent();
 	void PrintEvent();
 
-	int GetNUP()
-	{
+	int GetNUP() {
 		return NUP;
 	};
-	int GetIDPRUP()
-	{
+	int GetIDPRUP() {
 		return IDPRUP;
 	};
-	float GetXWGTUP()
-	{
+	float GetXWGTUP() {
 		return XWGTUP;
 	};
-	float GetSCALUP()
-	{
+	float GetSCALUP() {
 		return SCALUP;
 	};
-	float GetAQEDUP()
-	{
+	float GetAQEDUP() {
 		return AQEDUP;
 	};
-	float GetAQCDUP()
-	{
+	float GetAQCDUP() {
 		return AQCDUP;
 	};
 
-	std::vector<int> GetIDUP()
-	{
+	std::vector<int> GetIDUP() {
 		return IDUP;
 	};
-	std::vector<int> GetISTUP()
-	{
+	std::vector<int> GetISTUP() {
 		return ISTUP;
 	};
-	std::vector<int> GetMOTH1UP()
-	{
+	std::vector<int> GetMOTH1UP() {
 		return MOTH1UP;
 	};
-	std::vector<int> GetMOTH2UP()
-	{
+	std::vector<int> GetMOTH2UP() {
 		return MOTH2UP;
 	};
-	std::vector<int> GetICOL1UP()
-	{
+	std::vector<int> GetICOL1UP() {
 		return ICOL1UP;
 	};
-	std::vector<int> GetICOL2UP()
-	{
+	std::vector<int> GetICOL2UP() {
 		return ICOL2UP;
 	};
-	std::vector<float> GetPXUP()
-	{
+	std::vector<float> GetPXUP() {
 		return PXUP;
 	};
-	std::vector<float> GetPYUP()
-	{
+	std::vector<float> GetPYUP() {
 		return PYUP;
 	};
-	std::vector<float> GetPZUP()
-	{
+	std::vector<float> GetPZUP() {
 		return PZUP;
 	};
-	std::vector<float> GetPEUP()
-	{
+	std::vector<float> GetPEUP() {
 		return PEUP;
 	};
-	std::vector<float> GetPMUP()
-	{
+	std::vector<float> GetPMUP() {
 		return PMUP;
 	};
-	std::vector<float> GetVTIMUP()
-	{
+	std::vector<float> GetVTIMUP() {
 		return VTIMUP;
 	};
-	std::vector<float> GetSPINUP()
-	{
+	std::vector<float> GetSPINUP() {
 		return SPINUP;
 	};
 

@@ -64,12 +64,10 @@ public:
 	RooAbsPdf& pdf;
 	RooArgSet params;
 
-	inline  RooAbsPdf& GetPdf(void)
-	{
+	inline  RooAbsPdf& GetPdf(void) {
 		return pdf;
 	};
-	inline  RooArgSet* GetParams(void)
-	{
+	inline  RooArgSet* GetParams(void) {
 		return &params;
 	};
 	void SetFitType(int value); ///< 0=all floating, 1=fixed tail

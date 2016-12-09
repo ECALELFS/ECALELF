@@ -35,63 +35,49 @@ public:
 	SmearingImporter(std::vector<TString> regionList, TString energyBranchName, TString commonCut = "");
 
 
-	inline void SetRegionList(std::vector<TString> regionList)
-	{
+	inline void SetRegionList(std::vector<TString> regionList) {
 		_regionList = regionList;
 	};
 	regions_cache_t GetCache(TChain *_chain, bool isMC, bool odd, Long64_t nEvents = 0, bool isToy = false, bool externToy = true);
 	regions_cache_t GetCacheToy(Long64_t nEvents, bool isMC);
 
-	inline void SetPuWeight(bool value)
-	{
+	inline void SetPuWeight(bool value) {
 		_usePUweight = value;
 	};
-	inline void SetMCWeight(bool value)
-	{
+	inline void SetMCWeight(bool value) {
 		_useMCweight = value;
 	};
-	inline void SetR9Weight(bool value)
-	{
+	inline void SetR9Weight(bool value) {
 		_useR9weight = value;
 	};
-	inline void SetPtWeight(bool value)
-	{
+	inline void SetPtWeight(bool value) {
 		_usePtweight = value;
 	};
-	inline void SetZPtWeight(bool value)
-	{
+	inline void SetZPtWeight(bool value) {
 		_useZPtweight = value;
 	};
-	inline void SetFsrWeight(bool value)
-	{
+	inline void SetFsrWeight(bool value) {
 		_useFSRweight = value;
 	};
-	inline void SetWeakWeight(bool value)
-	{
+	inline void SetWeakWeight(bool value) {
 		_useWEAKweight = value;
 	};
-	inline void SetExcludeByWeight(bool value)
-	{
+	inline void SetExcludeByWeight(bool value) {
 		_excludeByWeight = value;
 	};
-	inline void SetOnlyDiagonal(bool value)
-	{
+	inline void SetOnlyDiagonal(bool value) {
 		_onlyDiagonal = value;
 	};
-	inline void SetEleID(TString value)
-	{
+	inline void SetEleID(TString value) {
 		_eleID = value;
 	};
-	inline void SetCommonCut(TString cut)
-	{
+	inline void SetCommonCut(TString cut) {
 		_commonCut = cut;
 	};
-	inline void SetSmearingEt(bool value)
-	{
+	inline void SetSmearingEt(bool value) {
 		_isSmearingEt = value;
 	};
-	inline void SetPdfSystWeight(int value)
-	{
+	inline void SetPdfSystWeight(int value) {
 		_pdfWeightIndex = value;
 	};
 

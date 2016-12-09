@@ -250,16 +250,16 @@ void RooSmearer::InitCategories(bool mcToy)
 			}
 
 			//Shoulder in the invariant mass spectra (if the mass spectrum is too much asymmetric, the category is de-activated)
-			//      float max=cat.hist_mc->GetMaximum();
-			//      float left=cat.hist_mc->GetBinContent(1);
-			//      float right=cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
-			//      if((right - left)/max > 0.2 || (left - right)/max > 0.4){
-			//	cat.active=false;
-			//	std::cout << "[INFO] Category: " << ZeeCategories.size()
-			//		  << ": " << cat.categoryName1 << "\t" << cat.categoryName2
-			//		  << " has been deactivated for high sholder: " << right << " " << left << " " << max
-			//		  << std::endl;
-			//      }
+			float max = cat.hist_mc->GetMaximum();
+			float left = cat.hist_mc->GetBinContent(1);
+			float right = cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
+			if((right - left) / max > 0.2 || (left - right) / max > 0.4) {
+				cat.active = false;
+				std::cout << "[INFO] Category: " << ZeeCategories.size()
+				          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
+				          << " has been deactivated for high sholder: " << right << " " << left << " " << max
+				          << std::endl;
+			}
 
 			//------------------------------
 			if (_autoBin) {

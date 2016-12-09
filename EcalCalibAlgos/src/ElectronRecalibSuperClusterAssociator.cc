@@ -34,7 +34,7 @@ ElectronRecalibSuperClusterAssociator::ElectronRecalibSuperClusterAssociator(con
 	eeScToken_      = consumes<reco::SuperClusterCollection>(iConfig.getParameter<edm::InputTag > ("superClusterCollectionEE"));
 	ebRecHitsToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag > ("recHitCollectionEB"));
 	eeRecHitsToken_ = consumes<EcalRecHitCollection>(iConfig.getParameter<edm::InputTag > ("recHitCollectionEE"));
-	
+
 #ifdef DEBUG
 	std::cout << "ElectronRecalibSuperClusterAssociator::ElectronRecalibSuperClusterAssociator::end" << std::endl;
 #endif
@@ -78,13 +78,13 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 	reco::GsfElectronCoreRefProd rEleCore = e.getRefBeforePut<reco::GsfElectronCoreCollection>();
 	edm::Ref<reco::GsfElectronCoreCollection>::key_type idxEleCore = 0;
 
-	unsigned int nEcalDrivenEle=0;
+	unsigned int nEcalDrivenEle = 0;
 	for(reco::GsfElectronCollection::const_iterator eleIt = eleHandle->begin(); eleIt != eleHandle->end(); eleIt++) {
 		if(!eleIt->ecalDrivenSeed()) {
 //			edm::LogError("trackerDriven") << "skipping trackerDriven electrons";
 			continue;
 		}
-		if(eleIt->et()<15) continue;
+		if(eleIt->et() < 15) continue;
 		float DeltaRMineleSCbarrel(DELTARMIN); //initial minDeltaR
 		float DeltaRMineleSCendcap(DELTARMIN);
 		const reco::SuperCluster* nearestSCbarrel = 0;
@@ -154,8 +154,8 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 			reco::GsfElectronCoreRef newEleCoreRef(rEleCore, idxEleCore++); // reference to the new electron core in the new collection
 			reco::GsfElectronCore & newEleCore = pOutEleCore->back(); // pick the clone
 			//newEleCore.setGsfTrack(eleIt->gsfTrack());           // set the gsf track (not needed since it is not changed)
-			const EcalRecHitCollection *recHits =NULL;
-			if(eleIt->isEB()){
+			const EcalRecHitCollection *recHits = NULL;
+			if(eleIt->isEB()) {
 				recHits = recHitsEBHandle.product();
 				reco::SuperClusterRef scRef(reco::SuperClusterRef(superClusterEBHandle, iscRef));  // Reference to the new SC
 				newEleCore.setParentSuperCluster(scRef);             // mustache
@@ -173,10 +173,10 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 			newEle.setP4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER,
 			             eleIt->p4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER),
 			             eleIt->p4Error(reco::GsfElectron::P4_FROM_SUPER_CLUSTER), false);  //*newEle.superCluster()->energy()/eleIt->superCluster()->energy());
-			
+
 			//-- second possibility: set the new p4SC using mustache SC
 			//newEle.setP4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER, eleIt->p4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER)*newEle.parentSuperCluster()->energy()/eleIt->parentSuperCluster()->energy(), eleIt->p4Error(reco::GsfElectron::P4_FROM_SUPER_CLUSTER), false);
-			
+
 			//-- update the correctedEcalEnergy... it does not make too much sense for re-recoes
 //			newEle.setCorrectedEcalEnergy(eleIt->ecalEnergy() * (scRef->energy() / eleIt->p4(reco::GsfElectron::P4_FROM_SUPER_CLUSTER).energy()));
 //			newEle.setCorrectedEcalEnergyError(eleIt->ecalEnergyError() * (scRef->energy() / eleIt->ecalEnergy()));
@@ -185,10 +185,10 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 			nEcalDrivenEle++;
 		} else {
 			edm::LogError("Failed SC association") << "No SC to be associated to the electron" << std::endl
-												   << "isEB="<<eleIt->isEB() <<"\t"
-												   << "isEE="<<eleIt->isEE() <<"\t"
-												   << nearestSCbarrel <<"\t" << nearestSCendcap << "\t"
-												   << superClusterEBHandle->size() << "\t" << superClusterEEHandle->size() << "\t" << eleIt->eta();
+			                                       << "isEB=" << eleIt->isEB() << "\t"
+			                                       << "isEE=" << eleIt->isEE() << "\t"
+			                                       << nearestSCbarrel << "\t" << nearestSCendcap << "\t"
+			                                       << superClusterEBHandle->size() << "\t" << superClusterEEHandle->size() << "\t" << eleIt->eta();
 		}
 	}
 
@@ -216,9 +216,9 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 }
 
 
-reco::GsfElectron::ShowerShape ElectronRecalibSuperClusterAssociator::calculateShowerShape_full5x5( const reco::SuperClusterRef & theClus, 
-																									const EcalRecHitCollection* recHits, 
-																									const reco::GsfElectron::ShowerShape& ss)
+reco::GsfElectron::ShowerShape ElectronRecalibSuperClusterAssociator::calculateShowerShape_full5x5( const reco::SuperClusterRef & theClus,
+        const EcalRecHitCollection* recHits,
+        const reco::GsfElectron::ShowerShape& ss)
 {
 	reco::GsfElectron::ShowerShape showerShape = ss; // h/E not updated!
 
@@ -227,16 +227,16 @@ reco::GsfElectron::ShowerShape ElectronRecalibSuperClusterAssociator::calculateS
 	const CaloTopology * topology = _theCaloTopology.product() ;
 	const CaloGeometry * geometry = _theGeometry.product() ;
 
-	std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster,recHits,topology,geometry) ;
-	std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster,recHits,topology) ;
+	std::vector<float> covariances = noZS::EcalClusterTools::covariances(seedCluster, recHits, topology, geometry) ;
+	std::vector<float> localCovariances = noZS::EcalClusterTools::localCovariances(seedCluster, recHits, topology) ;
 	showerShape.sigmaEtaEta = sqrt(covariances[0]) ;
 	showerShape.sigmaIetaIeta = sqrt(localCovariances[0]) ;
 	if (!edm::isNotFinite(localCovariances[2])) showerShape.sigmaIphiIphi = sqrt(localCovariances[2]) ;
-	showerShape.e1x5 = noZS::EcalClusterTools::e1x5(seedCluster,recHits,topology)  ;
-	showerShape.e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster,recHits,topology)  ;
-	showerShape.e5x5 = noZS::EcalClusterTools::e5x5(seedCluster,recHits,topology) ;
-	showerShape.r9 = noZS::EcalClusterTools::e3x3(seedCluster,recHits,topology)/theClus->rawEnergy() ;
-	const float see_by_spp = showerShape.sigmaIetaIeta*showerShape.sigmaIphiIphi;
+	showerShape.e1x5 = noZS::EcalClusterTools::e1x5(seedCluster, recHits, topology)  ;
+	showerShape.e2x5Max = noZS::EcalClusterTools::e2x5Max(seedCluster, recHits, topology)  ;
+	showerShape.e5x5 = noZS::EcalClusterTools::e5x5(seedCluster, recHits, topology) ;
+	showerShape.r9 = noZS::EcalClusterTools::e3x3(seedCluster, recHits, topology) / theClus->rawEnergy() ;
+	const float see_by_spp = showerShape.sigmaIetaIeta * showerShape.sigmaIphiIphi;
 	if(  see_by_spp > 0 ) {
 		showerShape.sigmaIetaIphi = localCovariances[1] / see_by_spp;
 	} else if ( localCovariances[1] > 0 ) {
@@ -244,18 +244,18 @@ reco::GsfElectron::ShowerShape ElectronRecalibSuperClusterAssociator::calculateS
 	} else {
 		showerShape.sigmaIetaIphi = -1.f;
 	}
-	showerShape.eMax          = noZS::EcalClusterTools::eMax(seedCluster,recHits);
-	showerShape.e2nd          = noZS::EcalClusterTools::e2nd(seedCluster,recHits);
-	showerShape.eTop          = noZS::EcalClusterTools::eTop(seedCluster,recHits,topology);
-	showerShape.eLeft         = noZS::EcalClusterTools::eLeft(seedCluster,recHits,topology);
-	showerShape.eRight        = noZS::EcalClusterTools::eRight(seedCluster,recHits,topology);
-	showerShape.eBottom       = noZS::EcalClusterTools::eBottom(seedCluster,recHits,topology);
-	
+	showerShape.eMax          = noZS::EcalClusterTools::eMax(seedCluster, recHits);
+	showerShape.e2nd          = noZS::EcalClusterTools::e2nd(seedCluster, recHits);
+	showerShape.eTop          = noZS::EcalClusterTools::eTop(seedCluster, recHits, topology);
+	showerShape.eLeft         = noZS::EcalClusterTools::eLeft(seedCluster, recHits, topology);
+	showerShape.eRight        = noZS::EcalClusterTools::eRight(seedCluster, recHits, topology);
+	showerShape.eBottom       = noZS::EcalClusterTools::eBottom(seedCluster, recHits, topology);
+
 	// showerShape.hcalDepth1OverEcal = generalData_->hcalHelper->hcalESumDepth1(*theClus)/theClus->energy() ;
-    // showerShape.hcalDepth2OverEcal = generalData_->hcalHelper->hcalESumDepth2(*theClus)/theClus->energy() ;
-    // showerShape.hcalTowersBehindClusters = generalData_->hcalHelper->hcalTowersBehindClusters(*theClus) ;
-    // showerShape.hcalDepth1OverEcalBc = generalData_->hcalHelper->hcalESumDepth1BehindClusters(showerShape.hcalTowersBehindClusters)/showerShape.e5x5 ;
-    // showerShape.hcalDepth2OverEcalBc = generalData_->hcalHelper->hcalESumDepth2BehindClusters(showerShape.hcalTowersBehindClusters)/showerShape.e5x5 ;
+	// showerShape.hcalDepth2OverEcal = generalData_->hcalHelper->hcalESumDepth2(*theClus)/theClus->energy() ;
+	// showerShape.hcalTowersBehindClusters = generalData_->hcalHelper->hcalTowersBehindClusters(*theClus) ;
+	// showerShape.hcalDepth1OverEcalBc = generalData_->hcalHelper->hcalESumDepth1BehindClusters(showerShape.hcalTowersBehindClusters)/showerShape.e5x5 ;
+	// showerShape.hcalDepth2OverEcalBc = generalData_->hcalHelper->hcalESumDepth2BehindClusters(showerShape.hcalTowersBehindClusters)/showerShape.e5x5 ;
 
 	return showerShape;
 }

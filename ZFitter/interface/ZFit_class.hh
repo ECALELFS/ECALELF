@@ -99,17 +99,14 @@ public:
 	// if you want to change the pdf
 	void SetPDF_signal(int pdf_index = 0); // associate an index to the pdf type
 	void SetPDF_model(int signal_pdf_index = 0, int bkg_pdf_index = 0); // associate an index to the pdf type
-	inline  void SetFitType(int fit_type)
-	{
+	inline  void SetFitType(int fit_type) {
 		std::cout << "[INFO] Setting fit type to " << fit_type << std::endl;
 		_fit_type = fit_type;
 	};
-	inline  void SetInitFileMC(TString initFileName)
-	{
+	inline  void SetInitFileMC(TString initFileName) {
 		_initFileNameMC = initFileName;
 	};
-	inline  void SetInitFileData(TString initFileName)
-	{
+	inline  void SetInitFileData(TString initFileName) {
 		_initFileNameData = initFileName;
 	};
 
@@ -140,8 +137,7 @@ public:
 	double GetLastWidth(bool isMC = true);
 
 
-	inline  float GetRescaledWidth(float width, float peakShift)
-	{
+	inline  float GetRescaledWidth(float width, float peakShift) {
 		return width / (91.187 + peakShift);
 	}
 	float GetRescaledWidthError(float width, float width_error, float peakShift, float peakShift_error);

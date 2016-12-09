@@ -139,14 +139,13 @@ class SimpleCutBasedElectronIDSelectionFunctor : public Selector<electronRef_t>
 public: // interface
 
 
-  enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff,loose25nsRun2V2016};
+	enum Version_t { NONE = 0, fiducial, WP80PU, WP90PU, WP70PU, loose, medium, tight, loose25nsRun2, medium25nsRun2, tight25nsRun2, loose50nsRun2, medium50nsRun2, tight50nsRun2, medium25nsRun2Boff, loose25nsRun2V2016};
 
 	//  SimpleCutBasedElectronIDSelectionFunctor(): {}
 
 #ifdef shervin
 	// initialize it by inserting directly the cut values in a parameter set
-	SimpleCutBasedElectronIDSelectionFunctor(edm::ParameterSet const & parameters)
-	{
+	SimpleCutBasedElectronIDSelectionFunctor(edm::ParameterSet const & parameters) {
 		// get the cuts from the PS
 		initialize( parameters.getParameter<Double_t>("trackIso_EB"),
 		            parameters.getParameter<Double_t>("ecalIso_EB"),
@@ -181,8 +180,7 @@ public: // interface
 		ConversionsHandle_(ConversionsHandle),
 		BeamSpotHandle_(BeamSpotHandle),
 		rhoHandle_(rhoHandle), EgammaCutBasedEleId::IsoDepositMaps {
-		if (version == NONE)
-		{
+		if (version == NONE) {
 			std::cout << "SimpleCutBasedElectronIDSelectionFunctor: If you want to use version NONE "
 			<< "then you have also to provide the selection cuts by yourself " << std::endl;
 			std::cout << "SimpleCutBasedElectronIDSelectionFunctor: ID Version is changed to 80cIso "
@@ -210,8 +208,7 @@ public: // interface
 		chIsoValsHandle_(chIsoValsHandle),
 		emIsoValsHandle_(emIsoValsHandle),
 		nhIsoValsHandle_(nhIsoValsHandle),
-		rhoHandle_(rhoHandle)
-	{
+		rhoHandle_(rhoHandle) {
 		Version_t version = NONE;
 		if (versionStr.CompareTo("NONE") == 0) {
 			std::cout << "SimpleCutBasedElectronIDSelectionFunctor: If you want to use version NONE "
@@ -244,8 +241,7 @@ public: // interface
 		retInternal_ = getBitTemplate();
 	}
 
-	void initialize( Version_t version )
-	{
+	void initialize( Version_t version ) {
 		version_ = version;
 
 		//------------------------------ initialize the cut variables (to be put in the bitmask)
@@ -641,25 +637,25 @@ public: // interface
 			set("relHcalIso_EB",  100., false);
 			set("relHcalIso_EE",  100., false);
 		} else if (version_ == loose25nsRun2V2016) { //wp for 2016 data for 80X https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
-		  //EB cuts
-		  set("sihih_EB",      0.011);
-		  set("deta_EB",       0.00477); //check this implementation
-		  set("dphi_EB",       0.222); 
-		  set("hoe_EB",        0.298);
-		  set("pfIso_EB",      0.0994); //check if 80_X is defined (effective areas are different)
-		  set("ooemoop_EB",    0.241, true);
-		  set("maxNumberOfExpectedMissingHits_EB", 1);//correct is 7_2_X is defined
-		  set("hasMatchedConversion");
-		  //EE cuts
-		  set("sihih_EE",      0.0314);
-		  set("deta_EE",       0.00868); 
-		  set("dphi_EE",       0.213); 
-		  set("hoe_EE",        0.101);
-		  set("pfIso_EE",      0.107); 
-		  set("ooemoop_EE",    0.14, true);
-		  set("maxNumberOfExpectedMissingHits_EE", 1);
-		  set("hasMatchedConversion");
-		} 
+			//EB cuts
+			set("sihih_EB",      0.011);
+			set("deta_EB",       0.00477); //check this implementation
+			set("dphi_EB",       0.222);
+			set("hoe_EB",        0.298);
+			set("pfIso_EB",      0.0994); //check if 80_X is defined (effective areas are different)
+			set("ooemoop_EB",    0.241, true);
+			set("maxNumberOfExpectedMissingHits_EB", 1);//correct is 7_2_X is defined
+			set("hasMatchedConversion");
+			//EE cuts
+			set("sihih_EE",      0.0314);
+			set("deta_EE",       0.00868);
+			set("dphi_EE",       0.213);
+			set("hoe_EE",        0.101);
+			set("pfIso_EE",      0.107);
+			set("ooemoop_EE",    0.14, true);
+			set("maxNumberOfExpectedMissingHits_EE", 1);
+			set("hasMatchedConversion");
+		}
 	}
 
 #ifdef shervin
@@ -671,8 +667,7 @@ public: // interface
 	                Double_t trackIso_EE, Double_t ecalIso_EE, Double_t hcalIso_EE,
 	                Double_t sihih_EE, Double_t  dphi_EE, Double_t deta_EE, Double_t hoe_EE,
 	                Double_t cIso_EE, Int_t conversionRejection,
-	                Int_t maxNumberOfExpectedMissingHits_EB, Int_t maxNumberOfExpectedMissingHits_EE)
-	{
+	                Int_t maxNumberOfExpectedMissingHits_EB, Int_t maxNumberOfExpectedMissingHits_EE) {
 		version_ = NONE;
 		push_back("trackIso_EB");
 		push_back("trackIso_EE");
@@ -718,15 +713,13 @@ public: // interface
 	}
 #endif
 
-	bool operator()( const electronRef_t& electron, pat::strbitset& ret)
-	{
+	bool operator()( const electronRef_t& electron, pat::strbitset& ret) {
 		// new electron, clear old electron bitmask
 		retInternal_ = getBitTemplate();
 		// for the time being only WPxx_PU variable definition
 		return WPxx_PU(electron, ret );
 	}
-	float result()
-	{
+	float result() {
 		// this should be modified in order to return:
 		//    // 0: fails,
 		// 1: passes electron ID only,
@@ -741,8 +734,7 @@ public: // interface
 
 	using Selector<electronRef_t>::operator();
 	// function with the Spring10 variable definitions
-	bool WPxx_PU( const electronRef_t electronRef, pat::strbitset& ret)
-	{
+	bool WPxx_PU( const electronRef_t electronRef, pat::strbitset& ret) {
 		const auto electron = *electronRef;
 
 		//    ret.set(false);
@@ -993,8 +985,7 @@ public: // interface
 		return (bool)retInternal_;
 	}
 
-	int bitMask()
-	{
+	int bitMask() {
 		int mask = 0;
 		pat::strbitset::bit_vector retBits = retInternal_.bits();
 		for(pat::strbitset::bit_vector::const_iterator bitIter = retBits.begin();

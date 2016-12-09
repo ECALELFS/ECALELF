@@ -25,16 +25,14 @@
 class ZeeCategory
 {
 public:
-	inline  ZeeCategory()
-	{
+	inline  ZeeCategory() {
 		hist_data = NULL;
 		smearHist_data = NULL;
 		hist_mc = NULL;
 		smearHist_mc = NULL;
 	};
 
-	inline ~ZeeCategory()
-	{
+	inline ~ZeeCategory() {
 		//std::cout << "[STATUS] Destroy ZeeCategory: " << categoryName1 << "\t" << categoryName2 << std::endl;
 		// do not delete data_events;
 		// do not delete mc_events;
@@ -104,8 +102,7 @@ public:
 
 	inline RooSmearer() {};
 	RooSmearer(const RooSmearer& c, const char *newname);
-	virtual TObject* clone(const char* newname) const
-	{
+	virtual TObject* clone(const char* newname) const {
 		return new RooSmearer(*this, newname);
 	};
 //   virtual ~RooSmearer();
@@ -134,61 +131,48 @@ public:
 	void AutoNBins(ZeeCategory& category);
 
 	// interface functions to SmearingImporter
-	inline void SetPuWeight(bool usePuReweight)
-	{
+	inline void SetPuWeight(bool usePuReweight) {
 		importer.SetPuWeight(usePuReweight);
 	};
-	inline void SetR9Weight(bool useR9Reweight)
-	{
+	inline void SetR9Weight(bool useR9Reweight) {
 		importer.SetR9Weight(useR9Reweight);
 	};
-	inline void SetPtWeight(bool usePtReweight)
-	{
+	inline void SetPtWeight(bool usePtReweight) {
 		importer.SetPtWeight(usePtReweight);
 	};
-	inline void SetFsrWeight(bool value)
-	{
+	inline void SetFsrWeight(bool value) {
 		importer.SetFsrWeight(value);
 	};
-	inline void SetWeakWeight(bool value)
-	{
+	inline void SetWeakWeight(bool value) {
 		importer.SetWeakWeight(value);
 	};
-	inline void SetZPtWeight(bool useZPtReweight)
-	{
+	inline void SetZPtWeight(bool useZPtReweight) {
 		importer.SetZPtWeight(useZPtReweight);
 	};
-	inline void SetOnlyDiagonal(bool value)
-	{
+	inline void SetOnlyDiagonal(bool value) {
 		importer.SetOnlyDiagonal(value);
 	};
-	inline void SetSmearingEt(bool value)
-	{
+	inline void SetSmearingEt(bool value) {
 		importer.SetSmearingEt(value);
 	};
-	inline void SetPdfSystWeight(int value)
-	{
+	inline void SetPdfSystWeight(int value) {
 		importer.SetPdfSystWeight(value);
 	};
 
 	void SetNSmear(unsigned int n_smear = 0, unsigned int nlltoy = 0);
 
-	inline void SetToyScale(float scaleToy = 1.01, float constTermToy = 0.01)
-	{
+	inline void SetToyScale(float scaleToy = 1.01, float constTermToy = 0.01) {
 		importer._scaleToy = scaleToy;
 		importer._constTermToy = constTermToy;
 	}
-	inline void SetEleID(TString value)
-	{
+	inline void SetEleID(TString value) {
 		importer.SetEleID(value);
 	};
-	inline void SetCommonCut(TString cut)
-	{
+	inline void SetCommonCut(TString cut) {
 		importer.SetCommonCut(cut);
 	};
 
-	inline void SetHistBinning(double min, double max, double width)
-	{
+	inline void SetHistBinning(double min, double max, double width) {
 		invMass_min_ = min;
 		invMass_max_ = max;
 		invMass_bin_ = width;
@@ -209,12 +193,10 @@ public:
 	//  void EnableCategory(int categoryIndex);
 	//  void DisableCategory(TString categoryName);
 	//  void DisableCategory(int categoryIndex);
-	inline RooDataSet *GetMarkovChainAsDataSet()
-	{
+	inline RooDataSet *GetMarkovChainAsDataSet() {
 		return _markov.GetAsDataSet();
 	};
-	inline RooDataSet *SetDataSet(TString name = "profile", TString title = "", double nllMin_ = 0)
-	{
+	inline RooDataSet *SetDataSet(TString name = "profile", TString title = "", double nllMin_ = 0) {
 		if(dataset != NULL) {
 			std::cerr << "[WARNING] Removing last dataset: " << std::endl;
 			dataset->Print();
@@ -224,8 +206,7 @@ public:
 		dataset = new RooDataSet(name, title, RooArgSet(_paramSet, nllVar));
 		return dataset;
 	};
-	inline RooDataSet *GetDataSet(void)
-	{
+	inline RooDataSet *GetDataSet(void) {
 		return dataset;
 	}
 private:
@@ -303,13 +284,11 @@ public:
 	double getCompatibility(bool forceUpdate = false) const;
 	void DumpNLL(void) const;
 	//  float getCompatibility(const RooSmearer *ptr);
-	inline RooArgSet GetParams(void)
-	{
+	inline RooArgSet GetParams(void) {
 		return _paramSet;
 	};
 
-	inline double GetNllRMS()
-	{
+	inline double GetNllRMS() {
 		return lastNLLrms;
 	};
 };

@@ -77,19 +77,19 @@ void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 // branchList is the list of branches used for selection of categories
 void anyVar_class::Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo)
 {
-	assert(branchList.size()>0);
+	assert(branchList.size() > 0);
 	commonCut += "-eleID_" + eleID_;
 	TCut dataCut = _cutter.GetCut(commonCut, false);
-	std::set<TString> commonCutBranches= _cutter.GetBranchNameNtuple(commonCut);
+	std::set<TString> commonCutBranches = _cutter.GetBranchNameNtuple(commonCut);
 	std::cout << "------------------------------ IMPORT DATASETS" << std::endl;
 	std::cout << "--------------- Importing: " << data_chain->GetEntries() << std::endl;
 	//if(data!=NULL) delete data;
 	ImportTree(data_chain, dataCut, commonCutBranches, branchList, modulo);
 	//std::cout << "[INFO] imported "  << (data_chain->GetEntryList())->GetN() << " events passing commmon cuts" << std::endl;
 	//data->Print();
-	
+
 	//data_chain->SetEntryList(NULL);
-	data_chain->SetBranchStatus("*",0);
+	data_chain->SetBranchStatus("*", 0);
 	std::cout << "--------------- IMPORT finished" << std::endl;
 	return;
 }
@@ -128,7 +128,7 @@ void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>&
 	chain->Draw(">>" + evListName, commonCut, "entrylist");
 #endif
 
-	chain->SetBranchStatus("*" ,0);
+	chain->SetBranchStatus("*" , 0);
 
 	TEntryList *elist = (TEntryList*)gROOT->FindObject(evListName);
 	assert(elist != NULL);
@@ -153,7 +153,7 @@ void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>&
 void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsigned int modulo)
 {
 	assert(modulo > 0);
-	assert(branchList.size()>0);
+	assert(branchList.size() > 0);
 	std::cout << "[anyVar_class][STATUS] Start copying the tree to memory" << std::endl;
 	_dir->cd();
 	TStopwatch ts;
@@ -161,15 +161,15 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 	reduced_data_vec.clear();
 
 
-	char buffer[BUFSIZE*MAXBRANCHES]; //4bytes * 3 in the array * number of branches
-	char *bufferPtr=buffer;
+	char buffer[BUFSIZE * MAXBRANCHES]; //4bytes * 3 in the array * number of branches
+	char *bufferPtr = buffer;
 
-	size_t buffIndex=0;
+	size_t buffIndex = 0;
 	for(unsigned int i = 0; i < modulo; ++i) {
 		char title[50];
 		sprintf(title, "%s_mod_%d", chain->GetName(), i);
 
-		reduced_data_vec.emplace_back(new TTree(title, title)); 
+		reduced_data_vec.emplace_back(new TTree(title, title));
 		TTree *reduced_data = reduced_data_vec[i].get();
 //		reduced_data->SetDirectory(_dir);
 	}
@@ -177,27 +177,27 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 	chain->SetBranchStatus("*", 0);
 	std::set<TString> allBranches;
 	allBranches.insert(branchList.begin(), branchList.end());
-	
-	for(auto& branch : _branchNames){
+
+	for(auto& branch : _branchNames) {
 		allBranches.insert(branch);
 	}
 
-	for(auto& branch : allBranches){
+	for(auto& branch : allBranches) {
 		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch << std::endl;
 		chain->SetBranchStatus(branch, 1);
 		TBranch * br = chain->GetBranch(branch);
 		chain->SetBranchAddress(branch, bufferPtr); //bufferPtr);
-		assert(buffIndex<BUFSIZE*MAXBRANCHES);
+		assert(buffIndex < BUFSIZE * MAXBRANCHES);
 
 		for(unsigned int i = 0; i < modulo; ++i) {
 			TTree *reduced_data = reduced_data_vec[i].get();
-			TString title=br->GetTitle();
-			title.ReplaceAll("[3]","[2]");
+			TString title = br->GetTitle();
+			title.ReplaceAll("[3]", "[2]");
 			//TBranch *brr = reduced_data->Branch(br->GetName(), &bufferPtr, title);
 			reduced_data->Branch(br->GetName(), bufferPtr, title);
 		}
-		buffIndex+=std::max(br->GetEntry(0), BUFSIZE); // BUFSIZE; //12 bytes
-		bufferPtr+=std::max(br->GetEntry(0), BUFSIZE); // BUFSIZE; //12 bytes
+		buffIndex += std::max(br->GetEntry(0), BUFSIZE); // BUFSIZE; //12 bytes
+		bufferPtr += std::max(br->GetEntry(0), BUFSIZE); // BUFSIZE; //12 bytes
 	}
 //	reduced_data_vec[0]->Print();
 
@@ -229,7 +229,7 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 	std::cout << "[reset branch address]" << std::endl;
 	chain->ResetBranchAddresses();
 
-	for(auto &reduced_data : reduced_data_vec){
+	for(auto &reduced_data : reduced_data_vec) {
 		reduced_data->ResetBranchAddresses();
 	}
 
@@ -287,7 +287,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
 		TString& bname = _branchNames[ibranch];
 		reduced_data->SetBranchAddress(bname, &branches_Float_t[ibranch]);
-		if(bname==massBranchName_) mll = &(branches_Float_t[ibranch][0]);
+		if(bname == massBranchName_) mll = &(branches_Float_t[ibranch][0]);
 	}
 
 	Float_t weight_ = 1 ;
@@ -335,7 +335,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 	Long64_t count = 0;
 	//for(Long64_t jentry = 0; jentry < entries; ++jentry) {
-	for(auto& jentry : goodEntries){
+	for(auto& jentry : goodEntries) {
 		Long64_t entryNumber = jentry; //reduced_data->GetEntryNumber(jentry);
 		reduced_data->GetEntry(entryNumber);
 //		if(jentry % (entries / 100) == 0) std::cerr << "\b\b\b\b\b\b[" << std::setw(3) << jentry / (entries / 100) << "%]";
@@ -400,7 +400,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	if(_exclusiveCategories && (Long64_t) goodEntries.size() != entries) {
 		std::cout << "Reduced number of events: " << entries << " -> " <<  goodEntries.size() << std::endl;
 	}
-	
+
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];

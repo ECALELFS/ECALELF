@@ -39,28 +39,24 @@ public:
 		run_t _runMax;
 
 		line():
-			_nEvents(0), _timeMin(99999999), _timeMax(0), _runMax(0)
-		{
+			_nEvents(0), _timeMin(99999999), _timeMax(0), _runMax(0) {
 		}
 		line(time_t t, run_t runMax):
-			_nEvents(1), _timeMin(t), _timeMax(t), _runMax(runMax)
-		{
+			_nEvents(1), _timeMin(t), _timeMax(t), _runMax(runMax) {
 		};
 
 		/** increment the counters, to be called for each event with that runNumber
 		 * param t Event time
 		 * this method udpates the min and max time of the run and increment the number of events by 1
 		 */
-		void update(time_t t)  // increment
-		{
+		void update(time_t t) { // increment
 			_nEvents++;
 			_timeMin = std::min(_timeMin, t);
 			_timeMax = std::max(_timeMax, t);
 		}
 
 		/** this method merges this run with the one provided, the number of events are summed, the timeMin and timeMax are updated to take into accont the values of the new run*/
-		void add(line& l)
-		{
+		void add(line& l) {
 			_nEvents += l._nEvents;
 			_timeMin = std::min(_timeMin, l._timeMin);
 			_timeMax = std::max(_timeMax, l._timeMax);
@@ -82,8 +78,7 @@ public:
 	            std::string runNumber_branchName = "runNumber",
 	            std::string time_branchName      = "runTime");
 
-	void PrintRunRangeEvents(std::ostream& os = std::cout)
-	{
+	void PrintRunRangeEvents(std::ostream& os = std::cout) {
 		os << *this;
 		return;
 	}

@@ -6,8 +6,7 @@
 class TECALChain : public TChain
 {
 public:
-	virtual void SetEntryList(TEntryList *elist)
-	{
+	virtual void SetEntryList(TEntryList *elist) {
 		if (fEntryList) {
 			//check, if the chain is the owner of the previous entry list
 			//(it happens, if the previous entry list was created from a user-defined

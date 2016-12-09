@@ -98,8 +98,7 @@ public: // interface
 		chIsoValsHandle_(chIsoValsHandle),
 		emIsoValsHandle_(emIsoValsHandle),
 		nhIsoValsHandle_(nhIsoValsHandle),
-		rhoHandle_(rhoHandle)
-	{
+		rhoHandle_(rhoHandle) {
 		Version_t version = NONE;
 		if (versionStr.CompareTo("NONE") == 0) {
 			std::cout << "SimpleCutBasedPhotonIDSelectionFunctor: If you want to use version NONE "
@@ -124,8 +123,7 @@ public: // interface
 		retInternal_ = getBitTemplate();
 	}
 
-	void initialize( Version_t version )
-	{
+	void initialize( Version_t version ) {
 		version_ = version;
 
 		//------------------------------ initialize the cut variables (to be put in the bitmask)
@@ -263,21 +261,18 @@ public: // interface
 	}
 
 
-	bool operator()( const reco::PhotonRef& photon, pat::strbitset& ret)
-	{
+	bool operator()( const reco::PhotonRef& photon, pat::strbitset& ret) {
 		retInternal_ = getBitTemplate();
 		// for the time being only WPxx_PU variable definition
 		return WPxx_PU(photon, ret );
 	}
-	float result()
-	{
+	float result() {
 		return (float) retInternal_;
 	}
 
 	using Selector<reco::PhotonRef>::operator();
 	// function with the Spring10 variable definitions
-	bool WPxx_PU( const reco::PhotonRef photonRef, pat::strbitset& ret)
-	{
+	bool WPxx_PU( const reco::PhotonRef photonRef, pat::strbitset& ret) {
 		const reco::Photon photon = *photonRef;
 
 		Double_t sihih    = photon.sigmaIetaIeta();
@@ -350,8 +345,7 @@ public: // interface
 		return (bool)retInternal_;
 	}
 
-	int bitMask()
-	{
+	int bitMask() {
 		int mask = 0;
 		pat::strbitset::bit_vector retBits = retInternal_.bits();
 		for(pat::strbitset::bit_vector::const_iterator bitIter = retBits.begin();

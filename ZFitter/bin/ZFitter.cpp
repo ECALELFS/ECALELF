@@ -1046,8 +1046,8 @@ int main(int argc, char **argv)
 	for(std::vector<TString>::const_iterator region_itr = categories.begin();
 	        region_itr != categories.end();
 	        region_itr++) {
-		TString r=*region_itr;
-		r.ReplaceAll(commonCut,"");
+		TString r = *region_itr;
+		r.ReplaceAll(commonCut, "");
 		std::set<TString> tmpList = cutter.GetBranchNameNtuple(r);
 		activeBranchList.insert(tmpList.begin(), tmpList.end());
 		// add also the friend branches!
@@ -1131,11 +1131,11 @@ int main(int argc, char **argv)
 // 		branchListAny.push_back("phiSCEle");
 // 		branchListAny.push_back("chargeEle");
 // 		branchListAny.push_back("R9Ele")
- #endif
+#endif
 // 		//branchListAny.push_back(make_pair("invMass_e5x5",          anyVar_class::kAFloat_t));
 // 		branchListAny.push_back("esEnergySCEle");
 // 		branchListAny.push_back("sigmaIEtaIEtaSCEle");
- 		branchListAny.push_back(invMass_var);
+		branchListAny.push_back(invMass_var);
 
 		TDirectory *dir = reduced_trees_file->GetDirectory("");
 		//TDirectory *dir = new TDirectory(); //
@@ -1156,7 +1156,7 @@ int main(int argc, char **argv)
 					system(("mkdir -p " + dir).c_str());
 					anyVar.SetOutDirName(dir, vm.count("updateOnly"));
 					std::cout << "[INFO] setting new output dir: " << dir << std::endl;
-					
+
 					//anyVar.Import(commonCut, eleID, activeBranchList, modulo, moduloIndex);
 					anyVar.ChangeModulo(moduloIndex);
 					anyVar.SaveReducedTree(reduced_trees_file);
@@ -1170,29 +1170,30 @@ int main(int argc, char **argv)
 #else
 					std::cerr << "[ERROR] dump_root_tree defined and running the toys with modulo: not implemented" << std::endl;
 #endif
-			}
+				}
 				reduced_trees_file->Write();
 				reduced_trees_file->Close();
 			} else {
 				// anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
 				// anyVarMC._exclusiveCategories = false;
 				// anyVarMC.Import(commonCut, eleID, activeBranchList);
-				
+
 //			anyVar.SaveReducedTree(reduced_trees_file);
 #ifndef dump_root_tree
 				anyVar._exclusiveCategories = true;
-				for(auto& region : regions){ //categories
+				for(auto& region : regions) { //categories
 					anyVar.ChangeModulo(0);
-					if(runRanges.size()>0){
-					for(auto& runRange : runRanges) {
-						TString token1, token2;
-						TObjArray *tx = runRange.Tokenize("-");
-						token1 = ((TObjString *)(tx->At(0)))->String();
-						token2 = ((TObjString *)(tx->At(1)))->String();
-						TString category = region + "-runNumber_" + token1 + "_" + token2;
-						TString c = category + "-" + commonCut.c_str();
-						anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
-					}}else{
+					if(runRanges.size() > 0) {
+						for(auto& runRange : runRanges) {
+							TString token1, token2;
+							TObjArray *tx = runRange.Tokenize("-");
+							token1 = ((TObjString *)(tx->At(0)))->String();
+							token2 = ((TObjString *)(tx->At(1)))->String();
+							TString category = region + "-runNumber_" + token1 + "_" + token2;
+							TString c = category + "-" + commonCut.c_str();
+							anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
+						}
+					} else {
 						TString category = region;
 						TString c = category + "-" + commonCut.c_str();
 						anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
@@ -1240,289 +1241,289 @@ int main(int argc, char **argv)
 				if(smearEleType == "" && initFileName == "") {
 					const_term_v->setVal(0.01);
 				}
-					const_term_v->setError(0.03); // 1%
-					//const_term_v->setConstant(true);
-					args.add(*const_term_v);
+				const_term_v->setError(0.03); // 1%
+				//const_term_v->setConstant(true);
+				args.add(*const_term_v);
 			}
-				if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) ) && vm.count("constTermFix") == 1) {
-					const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
-					const_term_v->setConstant(false);
-				} else const_term_ = const_term_v;
+			if((reg.MatchB(*region_itr) || reg2.MatchB(*region_itr) ) && vm.count("constTermFix") == 1) {
+				const_term_ = new RooFormulaVar("constTerm_" + *region_itr, "constTerm_" + varName, "@0", *const_term_v);
+				const_term_v->setConstant(false);
+			} else const_term_ = const_term_v;
 
 
 
-				RooAbsReal *alpha_ = NULL;
-				RooRealVar *alpha_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("alpha_" + varName);
-				if(alpha_v == NULL) {
-					alpha_v = new RooRealVar("alpha_" + varName, "alpha_" + varName, 0.0, 0., 0.20);
-					alpha_v->setError(0.01);
-					alpha_v->setConstant(true);
-					//alpha_v->Print();
-					if(!vm.count("alphaGoldFix") || !region_itr->Contains("absEta_1_1.4442-gold")) {
-						args.add(*alpha_v);
-					}
-				}
-				if(reg.MatchB(*region_itr) && vm.count("constTermFix") == 1) {
-					if(vm.count("alphaGoldFix") && region_itr->Contains("absEta_1_1.4442-gold")) {
-						std::cout << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
-						std::cerr << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
-						TString lowRegionVarName = varName;
-						lowRegionVarName.ReplaceAll("absEta_1_1.4442", "absEta_0_1");
-						alpha_v = (RooRealVar *)args.find("alpha_" + lowRegionVarName);
-						alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + lowRegionVarName, "@0", *alpha_v);
-					} else {
-						alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + varName, "@0", *alpha_v);
-					}
-					alpha_v->setConstant(false);
-				} else alpha_ = alpha_v;
-
-				args_vec.push_back(RooArgSet(*scale_, *alpha_, *const_term_));
-			}
-
-			if(vm.count("onlyScale")) {
-				TIterator *it1 = NULL;
-				it1 = args.createIterator();
-				for(RooRealVar *var = (RooRealVar *) it1->Next(); var != NULL;
-				        var = (RooRealVar *) it1->Next()) {
-					TString name(var->GetName());
-					if(name.Contains("scale")) continue;
-					var->setConstant(true);
+			RooAbsReal *alpha_ = NULL;
+			RooRealVar *alpha_v = args.getSize() == 0 ? NULL : (RooRealVar *) args.find("alpha_" + varName);
+			if(alpha_v == NULL) {
+				alpha_v = new RooRealVar("alpha_" + varName, "alpha_" + varName, 0.0, 0., 0.20);
+				alpha_v->setError(0.01);
+				alpha_v->setConstant(true);
+				//alpha_v->Print();
+				if(!vm.count("alphaGoldFix") || !region_itr->Contains("absEta_1_1.4442-gold")) {
+					args.add(*alpha_v);
 				}
 			}
+			if(reg.MatchB(*region_itr) && vm.count("constTermFix") == 1) {
+				if(vm.count("alphaGoldFix") && region_itr->Contains("absEta_1_1.4442-gold")) {
+					std::cout << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
+					std::cerr << "[STATUS] Fixing alpha term to low eta region " << *region_itr << std::endl;
+					TString lowRegionVarName = varName;
+					lowRegionVarName.ReplaceAll("absEta_1_1.4442", "absEta_0_1");
+					alpha_v = (RooRealVar *)args.find("alpha_" + lowRegionVarName);
+					alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + lowRegionVarName, "@0", *alpha_v);
+				} else {
+					alpha_ = new RooFormulaVar("alpha_" + *region_itr, "alpha_" + varName, "@0", *alpha_v);
+				}
+				alpha_v->setConstant(false);
+			} else alpha_ = alpha_v;
 
-			args.sort(kFALSE);
-			if(vm.count("smearerFit")) {
-				std::cout << "------------------------------ smearer parameters" << std::endl;
+			args_vec.push_back(RooArgSet(*scale_, *alpha_, *const_term_));
+		}
+
+		if(vm.count("onlyScale")) {
+			TIterator *it1 = NULL;
+			it1 = args.createIterator();
+			for(RooRealVar *var = (RooRealVar *) it1->Next(); var != NULL;
+			        var = (RooRealVar *) it1->Next()) {
+				TString name(var->GetName());
+				if(name.Contains("scale")) continue;
+				var->setConstant(true);
+			}
+		}
+
+		args.sort(kFALSE);
+		if(vm.count("smearerFit")) {
+			std::cout << "------------------------------ smearer parameters" << std::endl;
+			args.writeToStream(std::cout, kFALSE);
+		}
+
+		TRandom3 g(0);
+		Long64_t randomInt = g.Integer(1000000);
+		TString filename = "tmp/tmpFile-";
+		filename += randomInt;
+		filename += ".root";
+		TFile *tmpFile = new TFile(filename, "recreate");
+		tmpFile->cd();
+		RooSmearer smearer("smearer", (tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL,
+		                   categories,
+		                   args_vec, args, energyBranchName);
+		smearer._isDataSmeared = vm.count("isDataSmeared");
+		if(vm.count("runToy")) smearer.SetPuWeight(false);
+		smearer.SetOnlyDiagonal(vm.count("onlyDiagonal"));
+		smearer._autoBin = vm.count("autoBin");
+		smearer._autoNsmear = vm.count("autoNsmear");
+		smearer.smearscan = vm.count("smearscan");
+		//smearer.nEventsMinDiag = nEventsMinDiag;
+		smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
+		smearer.SetSmearingEt(vm.count("smearingEt"));
+		smearer.SetR9Weight(vm.count("useR9weight"));
+		smearer.SetPdfSystWeight(pdfSystWeightIndex);
+		smearer.SetZPtWeight(vm.count("useZPtweight"));
+		smearer.SetFsrWeight(vm.count("useFSRweight"));
+		smearer.SetWeakWeight(vm.count("useWEAKweight"));
+
+		if(nSmearToy > 0) smearer._nSmearToy = nSmearToy;
+
+
+		smearer.SetHistBinning(80, 100, invMass_binWidth); // to do before Init
+		if(vm.count("runToy")) {
+			smearer.SetPuWeight(false);
+
+			smearer.SetToyScale(1, constTermToy);
+			if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true, initFileName.c_str());
+			//	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
+			else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
+			std::cout << "[DEBUG] " << constTermToy << std::endl;
+		} else {
+			if(vm.count("initFile")) {
+				std::cout << "[INFO] Reading init file: " << initFileName << std::endl;
+				args.readFromFile(initFileName.c_str());
+			}
+			args.writeToStream(std::cout, kFALSE);
+			smearer.Init(commonCut.c_str(), eleID);
+		}
+		myClock.Start();
+		smearer.evaluate();
+		myClock.Stop();
+		myClock.Print();
+		smearer.DumpNLL();
+
+		//if(vm.count("plotOnly")) //smearer.SetNSmear(10);
+		RooMinuit m(smearer);
+		if(! vm.count("plotOnly") && ! vm.count("profileOnly")) {
+			//m.setStrategy(0);
+			//m.setVerbose();
+
+			//m.hesse(); // one turn of hess to guess the covariance matrix
+			//RooFitResult *fitres = m.save();
+			ShervinMinuit sh(100, smearer);//(RooArgSet&)fitres->floatParsFinal());
+			sh.SetMinuit(m);
+			//ph.SetVariables();
+			//ph.SetCovMatrix(fitres->covarianceMatrix());
+			//ph.SetUpdateProposalParameters(kTRUE); // auto-create mean vars and add mappings
+			//ph.SetCacheSize(100);
+			//ProposalFunction* pf = ph.GetProposalFunction();
+
+			if(minimType == "migrad") {
+
+				//fitres =
+				m.fit("");
+				//m.migrad();
+				//m.hesse();
+			} else if(minimType == "profile") {
+				MinimizationProfile(smearer, args, nIter);
 				args.writeToStream(std::cout, kFALSE);
-			}
-
-			TRandom3 g(0);
-			Long64_t randomInt = g.Integer(1000000);
-			TString filename = "tmp/tmpFile-";
-			filename += randomInt;
-			filename += ".root";
-			TFile *tmpFile = new TFile(filename, "recreate");
-			tmpFile->cd();
-			RooSmearer smearer("smearer", (tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL,
-			                   categories,
-			                   args_vec, args, energyBranchName);
-			smearer._isDataSmeared = vm.count("isDataSmeared");
-			if(vm.count("runToy")) smearer.SetPuWeight(false);
-			smearer.SetOnlyDiagonal(vm.count("onlyDiagonal"));
-			smearer._autoBin = vm.count("autoBin");
-			smearer._autoNsmear = vm.count("autoNsmear");
-			smearer.smearscan = vm.count("smearscan");
-			//smearer.nEventsMinDiag = nEventsMinDiag;
-			smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
-			smearer.SetSmearingEt(vm.count("smearingEt"));
-			smearer.SetR9Weight(vm.count("useR9weight"));
-			smearer.SetPdfSystWeight(pdfSystWeightIndex);
-			smearer.SetZPtWeight(vm.count("useZPtweight"));
-			smearer.SetFsrWeight(vm.count("useFSRweight"));
-			smearer.SetWeakWeight(vm.count("useWEAKweight"));
-
-			if(nSmearToy > 0) smearer._nSmearToy = nSmearToy;
-
-
-			smearer.SetHistBinning(80, 100, invMass_binWidth); // to do before Init
-			if(vm.count("runToy")) {
-				smearer.SetPuWeight(false);
-
-				smearer.SetToyScale(1, constTermToy);
-				if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), true, initFileName.c_str());
-				//	  if(vm.count("initFile")) smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"), false,initFileName.c_str());
-				else smearer.Init(commonCut.c_str(), eleID, nEventsPerToy, vm.count("runToy"));
-				std::cout << "[DEBUG] " << constTermToy << std::endl;
-			} else {
-				if(vm.count("initFile")) {
-					std::cout << "[INFO] Reading init file: " << initFileName << std::endl;
-					args.readFromFile(initFileName.c_str());
-				}
+			} else if(minimType == "MCMC") {
+				MinimizationProfile(smearer, args, nIter, true);
 				args.writeToStream(std::cout, kFALSE);
-				smearer.Init(commonCut.c_str(), eleID);
-			}
-			myClock.Start();
-			smearer.evaluate();
-			myClock.Stop();
-			myClock.Print();
-			smearer.DumpNLL();
-
-			//if(vm.count("plotOnly")) //smearer.SetNSmear(10);
-			RooMinuit m(smearer);
-			if(! vm.count("plotOnly") && ! vm.count("profileOnly")) {
-				//m.setStrategy(0);
-				//m.setVerbose();
-
-				//m.hesse(); // one turn of hess to guess the covariance matrix
-				//RooFitResult *fitres = m.save();
-				ShervinMinuit sh(100, smearer);//(RooArgSet&)fitres->floatParsFinal());
-				sh.SetMinuit(m);
-				//ph.SetVariables();
-				//ph.SetCovMatrix(fitres->covarianceMatrix());
-				//ph.SetUpdateProposalParameters(kTRUE); // auto-create mean vars and add mappings
-				//ph.SetCacheSize(100);
-				//ProposalFunction* pf = ph.GetProposalFunction();
-
-				if(minimType == "migrad") {
-
-					//fitres =
-					m.fit("");
-					//m.migrad();
-					//m.hesse();
-				} else if(minimType == "profile") {
-					MinimizationProfile(smearer, args, nIter);
-					args.writeToStream(std::cout, kFALSE);
-				} else if(minimType == "MCMC") {
-					MinimizationProfile(smearer, args, nIter, true);
-					args.writeToStream(std::cout, kFALSE);
-				} else if(minimType == "sampling") {
-					RooArgList 	 argList_(args);
-					TIterator 	*it_ = argList_.createIterator();
-					for(RooRealVar *var = (RooRealVar*)it_->Next(); var != NULL; var = (RooRealVar*)it_->Next()) {
-						if (var->isConstant() || !var->isLValue()) continue;
-						TString  name(var->GetName());
-						if(name.Contains("scale")) var->setConstant();
-					}
-
-					RooStats::ProposalHelper ph;
-					ph.SetVariables(args);
-					ph.SetCovMatrix(*(smearer._markov.GetAsDataSet()->covarianceMatrix(args)));
-					ph.SetUniformFraction(0.05);
-					ph.SetWidthRangeDivisor(2);
-
-					RooStats::MetropolisHastings MCMC(smearer, args, *(ph.GetProposalFunction()), nIter);
-					MCMC.SetNumBurnInSteps(10);
-					MCMC.SetSign(RooStats::MetropolisHastings::kNegative);
-					MCMC.SetType(RooStats::MetropolisHastings::kLog);
-					//MCMC.SetProposalFunction(sh);
-					RooStats::MarkovChain *mcChain = (MCMC.ConstructChain());
-					mcChain->SaveAs("tmp/newChain.root");
-					delete mcChain;
-
+			} else if(minimType == "sampling") {
+				RooArgList 	 argList_(args);
+				TIterator 	*it_ = argList_.createIterator();
+				for(RooRealVar *var = (RooRealVar*)it_->Next(); var != NULL; var = (RooRealVar*)it_->Next()) {
+					if (var->isConstant() || !var->isLValue()) continue;
+					TString  name(var->GetName());
+					if(name.Contains("scale")) var->setConstant();
 				}
+
+				RooStats::ProposalHelper ph;
+				ph.SetVariables(args);
+				ph.SetCovMatrix(*(smearer._markov.GetAsDataSet()->covarianceMatrix(args)));
+				ph.SetUniformFraction(0.05);
+				ph.SetWidthRangeDivisor(2);
+
+				RooStats::MetropolisHastings MCMC(smearer, args, *(ph.GetProposalFunction()), nIter);
+				MCMC.SetNumBurnInSteps(10);
+				MCMC.SetSign(RooStats::MetropolisHastings::kNegative);
+				MCMC.SetType(RooStats::MetropolisHastings::kLog);
+				//MCMC.SetProposalFunction(sh);
+				RooStats::MarkovChain *mcChain = (MCMC.ConstructChain());
+				mcChain->SaveAs("tmp/newChain.root");
+				delete mcChain;
+
 			}
+		}
 
-			std::cout << "[INFO] Minimization time: \t";
-			myClock.Stop();
-			myClock.Print();
-			if(!vm.count("profileOnly") && !vm.count("plotOnly")) {
-				args.writeToFile(outDirFitResData + "/params-" + r + "-" + TString(commonCut.c_str()) + ".txt");
-				smearer._markov.SaveAs((outDirFitResData + "/markov-" + r + "-" + TString(commonCut.c_str()) + ".root"));
-			}
+		std::cout << "[INFO] Minimization time: \t";
+		myClock.Stop();
+		myClock.Print();
+		if(!vm.count("profileOnly") && !vm.count("plotOnly")) {
+			args.writeToFile(outDirFitResData + "/params-" + r + "-" + TString(commonCut.c_str()) + ".txt");
+			smearer._markov.SaveAs((outDirFitResData + "/markov-" + r + "-" + TString(commonCut.c_str()) + ".root"));
+		}
 
-			//RooDataSet *dSet = smearer.GetMarkovChainAsDataSet();
-			//dSet->SaveAs("tmp/dataset.root");
-			//save the smeared histograms
+		//RooDataSet *dSet = smearer.GetMarkovChainAsDataSet();
+		//dSet->SaveAs("tmp/dataset.root");
+		//save the smeared histograms
 
+		for(std::vector<ZeeCategory>::iterator itr = smearer.ZeeCategories.begin();
+		        itr != smearer.ZeeCategories.end();
+		        itr++) {
+			smearer.GetSmearedHisto(*itr, true, false);
+			smearer.GetSmearedHisto(*itr, true, true);
+			smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
+		}
+
+		if(vm.count("plotOnly") || !vm.count("profileOnly")) {
+			TFile *f = new TFile(outDirFitResData + "/histos-" + r + "-" + TString(commonCut.c_str()) + ".root", "recreate");
+			f->Print();
+			f->cd();
 			for(std::vector<ZeeCategory>::iterator itr = smearer.ZeeCategories.begin();
 			        itr != smearer.ZeeCategories.end();
 			        itr++) {
-				smearer.GetSmearedHisto(*itr, true, false);
-				smearer.GetSmearedHisto(*itr, true, true);
-				smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
+				//if(!itr->active) continue;
+				TH1F *MC = smearer.GetSmearedHisto(*itr, true, false);
+				TH1F *smearMC = smearer.GetSmearedHisto(*itr, true, true);
+				TH1F *data = smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
+
+				MC->Write();
+				smearMC->Write();
+				data->Write();
+				f->Write();
 			}
+			f->Close();
+		}
 
-			if(vm.count("plotOnly") || !vm.count("profileOnly")) {
-				TFile *f = new TFile(outDirFitResData + "/histos-" + r + "-" + TString(commonCut.c_str()) + ".root", "recreate");
-				f->Print();
-				f->cd();
-				for(std::vector<ZeeCategory>::iterator itr = smearer.ZeeCategories.begin();
-				        itr != smearer.ZeeCategories.end();
-				        itr++) {
-					//if(!itr->active) continue;
-					TH1F *MC = smearer.GetSmearedHisto(*itr, true, false);
-					TH1F *smearMC = smearer.GetSmearedHisto(*itr, true, true);
-					TH1F *data = smearer.GetSmearedHisto(*itr, false, smearer._isDataSmeared);
+		if(vm.count("profileOnly") || !vm.count("plotOnly")) {
+			//if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
 
-					MC->Write();
-					smearMC->Write();
-					data->Write();
-					f->Write();
-				}
-				f->Close();
-			}
+			std::cout << "==================PROFILE==================" << endl;
+			//if(!vm.count("constTermFix")) smearer.SetNSmear(0,20);
+			//create profiles
+			TString outFile = outDirFitResData.c_str();
+			outFile += "/outProfile-";
+			outFile += r + "-" + TString(commonCut.c_str()) + ".root";
+			TFile *fOutProfile = new TFile(outFile, "recreate");
+			//test/dato/fitres/Hgg_Et_v7/0.03//outProfile-data/regions/test.dat-Et_25-EB.root
 
-			if(vm.count("profileOnly") || !vm.count("plotOnly")) {
-				//if(vm.count("profileOnly") && !vm.count("runToy")) smearer.SetNSmear(10);
+			for (int ivar = 0; ivar < args.getSize(); ++ivar) {
+				RooArgList argList(args);
+				RooRealVar* var = (RooRealVar*)(argList.at(ivar));
+				if (var->isConstant())
+					continue;
 
-				std::cout << "==================PROFILE==================" << endl;
-				//if(!vm.count("constTermFix")) smearer.SetNSmear(0,20);
-				//create profiles
-				TString outFile = outDirFitResData.c_str();
-				outFile += "/outProfile-";
-				outFile += r + "-" + TString(commonCut.c_str()) + ".root";
-				TFile *fOutProfile = new TFile(outFile, "recreate");
-				//test/dato/fitres/Hgg_Et_v7/0.03//outProfile-data/regions/test.dat-Et_25-EB.root
+				TString name(var->GetName());
+				//if(name.Contains("scale")) continue;
+				//if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
+				// special part for alpha fitting
+				double min = 0.;
+				TString  alphaName = name;
+				alphaName.ReplaceAll("constTerm", "alpha");
+				RooRealVar *var2 = name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName) : NULL;
+				if(var2 != NULL && name.Contains("constTerm") && var2->isConstant() == false) {
+					TString name2 = name;
 
-				for (int ivar = 0; ivar < args.getSize(); ++ivar) {
-					RooArgList argList(args);
-					RooRealVar* var = (RooRealVar*)(argList.at(ivar));
-					if (var->isConstant())
-						continue;
+					double rho = 0, Emean = 0;
+					smearer.SetDataSet(name, TString(var->GetName()) + TString(var2->GetName()));
+					if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, rho, Emean, false);
+					smearer.dataset->Write();
 
-					TString name(var->GetName());
-					//if(name.Contains("scale")) continue;
-					//if(name.Contains("absEta_1_1.4442-gold") && vm.count("alphaGoldFix")) continue;
-					// special part for alpha fitting
-					double min = 0.;
-					TString  alphaName = name;
-					alphaName.ReplaceAll("constTerm", "alpha");
-					RooRealVar *var2 = name.Contains("constTerm") ? (RooRealVar *)argList.find(alphaName) : NULL;
-					if(var2 != NULL && name.Contains("constTerm") && var2->isConstant() == false) {
-						TString name2 = name;
-
-						double rho = 0, Emean = 0;
-						smearer.SetDataSet(name, TString(var->GetName()) + TString(var2->GetName()));
-						if(vm.count("constTermFix")) MinProfile2D(var, var2, smearer, -1, 0., min, rho, Emean, false);
-						smearer.dataset->Write();
-
-						// rho profile
-						name2.ReplaceAll("constTerm", "rho");
-						smearer.SetDataSet(name2, "rho");
-						Double_t v1 = var->getVal();
-						Double_t v2 = var2->getVal();
-						var2->setVal(0);
-						var->setVal(rho);
-						TGraph *profil = NULL;
-						profil = GetProfile(var, smearer, 0);
-						var2->setVal(v2);
-						var->setVal(v1);
-						TString n = "profileChi2_" + name2 + "_";
-						n += randomInt;
-						profil->SetName(n);
-						TCanvas c("c_" + name);
-						profil->Draw("AP*");
-						fOutProfile->cd();
-						profil->Write();
-						delete profil;
-						smearer.dataset->Write();
+					// rho profile
+					name2.ReplaceAll("constTerm", "rho");
+					smearer.SetDataSet(name2, "rho");
+					Double_t v1 = var->getVal();
+					Double_t v2 = var2->getVal();
+					var2->setVal(0);
+					var->setVal(rho);
+					TGraph *profil = NULL;
+					profil = GetProfile(var, smearer, 0);
+					var2->setVal(v2);
+					var->setVal(v1);
+					TString n = "profileChi2_" + name2 + "_";
+					n += randomInt;
+					profil->SetName(n);
+					TCanvas c("c_" + name);
+					profil->Draw("AP*");
+					fOutProfile->cd();
+					profil->Write();
+					delete profil;
+					smearer.dataset->Write();
 
 
-						// phi profile
-						name2.ReplaceAll("rho", "phi");
-						smearer.SetDataSet(name2, "phi");
-						profil = GetProfile(var, var2, smearer, true, rho, Emean);
-						n = "profileChi2_" + name2 + "_";
-						n += randomInt;
-						profil->SetName(n);
-						profil->Draw("AP*");
-						fOutProfile->cd();
-						profil->Write();
-						delete profil;
-						smearer.dataset->Write();
+					// phi profile
+					name2.ReplaceAll("rho", "phi");
+					smearer.SetDataSet(name2, "phi");
+					profil = GetProfile(var, var2, smearer, true, rho, Emean);
+					n = "profileChi2_" + name2 + "_";
+					n += randomInt;
+					profil->SetName(n);
+					profil->Draw("AP*");
+					fOutProfile->cd();
+					profil->Write();
+					delete profil;
+					smearer.dataset->Write();
 
-						// rho profile with fixed phi!=pi/2
-						name2.ReplaceAll("phi", "rho_phi4");
-						smearer.SetDataSet(name2, "rho_phi4");
-						profil = GetProfile(var, var2, smearer, true, 0, Emean, 0.785);
-						n = "profileChi2_" + name2 + "_";
-						n += randomInt;
-						profil->SetName(n);
-						profil->Draw("AP*");
-						fOutProfile->cd();
-						profil->Write();
-						delete profil;
-						smearer.dataset->Write();
+					// rho profile with fixed phi!=pi/2
+					name2.ReplaceAll("phi", "rho_phi4");
+					smearer.SetDataSet(name2, "rho_phi4");
+					profil = GetProfile(var, var2, smearer, true, 0, Emean, 0.785);
+					n = "profileChi2_" + name2 + "_";
+					n += randomInt;
+					profil->SetName(n);
+					profil->Draw("AP*");
+					fOutProfile->cd();
+					profil->Write();
+					delete profil;
+					smearer.dataset->Write();
 
 // 		// rho profile with fixed phi!=pi/2
 // 		name2.ReplaceAll("rho_phi4", "rho_phi6");
@@ -1549,54 +1550,54 @@ int main(int argc, char **argv)
 // 		smearer.dataset->Write();
 
 
-					}
-
-					//if(!name.Contains("scale")) continue;
-					std::cout << "Doing " << name << "\t" << var->getVal() << std::endl;
-					smearer.SetDataSet(name, name);
-					//	      if(vm.count("runToy")){
-					//		MinProfile(var, smearer, -1, 0., min, false);
-					//}
-					TGraph *profil = GetProfile(var, smearer, 0);
-					TString n = "profileChi2_" + name + "_";
-					n += randomInt;
-					profil->SetName(n);
-					TCanvas c("c_" + name);
-					profil->Draw("AP*");
-					fOutProfile->cd();
-					profil->Write();
-					std::cout << "Saved profile for " << name << std::endl;
-					smearer.dataset->Write();
-					delete profil;
 				}
-				std::cout << "Cloning args" << std::endl;
-				//	  RooArgSet *mu = (RooArgSet *)args.snapshot();
-				//std::cout << "creating roomultivargaussian" << std::endl;
-				//RooMultiVarGaussian g("multi","",args, *mu, *(smearer.GetMarkovChainAsDataSet()->covarianceMatrix()));
-				//std::cout << "created" << std::endl;
 
-				// 	  RooDataSet *dataset = g.generate(args,10);
-				// 	  for(Long64_t iGen=0; iGen<1; iGen++){
-				// 	    RooArgList argList_(* dataset->get(iGen));
-				// 	    TIterator *it_ = argList_.createIterator();
-				// 	    for(RooRealVar *var = (RooRealVar*)it_->Next(); var != NULL; var = (RooRealVar*)it_->Next()){
-				// 	      if (!var->isLValue()) continue;
-				// 	      TString  name(var->GetName());
-				// 	      //std::cout << name << var->getVal() << std::endl;
-				// 	      var->Print();
-				// 	      //args.setRealValue(name,var->getVal());
+				//if(!name.Contains("scale")) continue;
+				std::cout << "Doing " << name << "\t" << var->getVal() << std::endl;
+				smearer.SetDataSet(name, name);
+				//	      if(vm.count("runToy")){
+				//		MinProfile(var, smearer, -1, 0., min, false);
+				//}
+				TGraph *profil = GetProfile(var, smearer, 0);
+				TString n = "profileChi2_" + name + "_";
+				n += randomInt;
+				profil->SetName(n);
+				TCanvas c("c_" + name);
+				profil->Draw("AP*");
+				fOutProfile->cd();
+				profil->Write();
+				std::cout << "Saved profile for " << name << std::endl;
+				smearer.dataset->Write();
+				delete profil;
+			}
+			std::cout << "Cloning args" << std::endl;
+			//	  RooArgSet *mu = (RooArgSet *)args.snapshot();
+			//std::cout << "creating roomultivargaussian" << std::endl;
+			//RooMultiVarGaussian g("multi","",args, *mu, *(smearer.GetMarkovChainAsDataSet()->covarianceMatrix()));
+			//std::cout << "created" << std::endl;
+
+			// 	  RooDataSet *dataset = g.generate(args,10);
+			// 	  for(Long64_t iGen=0; iGen<1; iGen++){
+			// 	    RooArgList argList_(* dataset->get(iGen));
+			// 	    TIterator *it_ = argList_.createIterator();
+			// 	    for(RooRealVar *var = (RooRealVar*)it_->Next(); var != NULL; var = (RooRealVar*)it_->Next()){
+			// 	      if (!var->isLValue()) continue;
+			// 	      TString  name(var->GetName());
+			// 	      //std::cout << name << var->getVal() << std::endl;
+			// 	      var->Print();
+			// 	      //args.setRealValue(name,var->getVal());
 // 	    }
 // 	    //smearer.evaluate();
 // 	  }
-				fOutProfile->Close();
-
-			}
-			tmpFile->Close();
+			fOutProfile->Close();
 
 		}
-		globalClock.Stop();
-		std::cout << "[INFO] Total elapsed time: ";
-		globalClock.Print();
-		return 0;
+		tmpFile->Close();
+
 	}
+	globalClock.Stop();
+	std::cout << "[INFO] Total elapsed time: ";
+	globalClock.Print();
+	return 0;
+}
 
