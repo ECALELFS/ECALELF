@@ -57,7 +57,7 @@ esac
 ############################################################
 # production in local of ntuples from MINIAOD
 logName=ntuple_miniaodsim_mc
-testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAOD outputAll=True" || {
+testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAOD outputAll=False isCrab=0" || {
 
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
@@ -81,7 +81,8 @@ testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "
 
 ################
 logName=ntuple_miniaodsim_data
-testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=True jsonFile=$json" || {
+echo "python $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=False jsonFile=$PWD/$json isCrab=0"
+testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=False jsonFile=$PWD/$json isCrab=0" || {
 	
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
@@ -105,7 +106,7 @@ testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName
 
 ################
 logName=alcarereco_data
-testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=500 doTree=0 doEleIDTree=0 files=$fileALCARAWData outputAll=True  isCrab=1" || {
+testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=500 doTree=0 doEleIDTree=0 files=$fileALCARAWData outputAll=False  isCrab=0" || {
 	echo "OK"
 	touch $dir/done
 #	rm $dir/*.root
@@ -113,7 +114,7 @@ testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $
 
 ################
 logName=ntuple_alcarereco_data
-testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=True jsonFile=$json" || {
+testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=False jsonFile=$json" || {
 
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
@@ -136,7 +137,7 @@ testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName
 
 ################
 logName=alcarereco_data
-testStep 5 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v1.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileALCARAWData outputAll=True  isCrab=1" || {
+testStep 5 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v1.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileALCARAWData outputAll=False  isCrab=0" || {
 	echo "OK"
 	touch $dir/done
 #	rm $dir/*.root
@@ -145,7 +146,7 @@ testStep 5 "Testing local production of ntuples from alcarereco (DATA)" $logName
 
 ################
 logName=ntuple_alcarereco_data
-testStep 6 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v1.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=True  isCrab=1" || {
+testStep 6 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v1.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=False  isCrab=0" || {
 
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
