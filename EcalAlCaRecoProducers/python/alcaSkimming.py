@@ -847,6 +847,10 @@ if(options.type=="ALCARERECO"):
 process.patElectrons.reducedBarrelRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEB
 process.patElectrons.reducedEndcapRecHitCollection = process.eleNewEnergiesProducer.recHitCollectionEE
 
+for modifier in process.slimmedECALELFElectrons.modifierConfig.modifications:
+    modifier.ecalRecHitsEB = process.slimmedECALELFElectrons.reducedBarrelRecHitCollection
+    modifier.ecalRecHitsEE = process.slimmedECALELFElectrons.reducedEndcapRecHitCollection
+
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 
