@@ -70,7 +70,7 @@ case $CMSSW_VERSION in
     CMSSW_8_0_*)
 		git cms-merge-topic 16790  || exit 1
 		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
-		git cms-merge-topic previsualconsent:slewrate || exit 1
+		git cms-merge-topic shervin86:slewrate || exit 1
 		;;
 esac
 
