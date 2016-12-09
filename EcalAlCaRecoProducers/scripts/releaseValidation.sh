@@ -42,8 +42,10 @@ if [ ! -d "tmp/releaseValidation" ];then mkdir tmp/releaseValidation -p; fi
 case $CMSSW_VERSION in
 	CMSSW_8_0_*)
 		fileMINIAOD=/store/mc/RunIISpring16MiniAODv1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/008099CA-5501-E611-9AAE-24BE05BDCEF1.root
-		fileMINIAODData=/store/data/Run2016H/DoubleEG/MINIAOD/PromptReco-v3/000/284/036/00000/1878DF24-619F-E611-A962-02163E0146C8.root
-		fileALCARAWData=/store/data/Run2016H/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v3/000/284/036/00000/240108A1-599F-E611-A3A5-FA163E7F2F56.root
+		fileMINIAODData=/store/data/Run2016B/DoubleEG/MINIAOD/23Sep2016-v3/00000/F48EC9B9-A197-E611-BBBE-001E6739753A.root
+		fileALCARAWData=/store/data/Run2016B/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v2/000/275/376/00000/6EB9C0F0-E639-E611-AAD9-02163E014492.root
+		json=test/releaseValidation.json
+#/store/data/Run2016H/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v3/000/284/036/00000/240108A1-599F-E611-A3A5-FA163E7F2F56.root
 		;;
 	*)
 		echo "CMSSW RELEASE not supported" >> /dev/stderr
@@ -79,7 +81,7 @@ testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "
 
 ################
 logName=ntuple_miniaodsim_data
-testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=True  isCrab=1" || {
+testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=MINIAODNTUPLE maxEvents=-1 doTree=1 doEleIDTree=1 files=$fileMINIAODData outputAll=True jsonFile=$json" || {
 	
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
@@ -111,7 +113,7 @@ testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $
 
 ################
 logName=ntuple_alcarereco_data
-testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=True  isCrab=1" || {
+testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=True jsonFile=$json" || {
 
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
 		echo "${bold}ERROR${normal}"
