@@ -1718,22 +1718,22 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
 float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex)
 {
-	float RawenergyPlane = 0;
-	float pfRawenergyPlane = 0;
+	double RawenergyPlane = 0.;
+	double pfRawenergyPlane = 0.;
 
 //	if(!ESRechitsHandle.isValid())
 //		return RawenergyPlane;
 	if (!sc.preshowerClusters().isAvailable()) //protection for miniAOD
-		return RawenergyPlane;
+		return -999;
 
-	for(auto iES = sc.preshowerClustersBegin(); iES != sc.preshowerClustersEnd(); ++iES) {
+	for(auto iES = sc.preshowerClustersBegin(); iES != sc.preshowerClustersEnd(); ++iES) {//loop over preshower clusters
 		const std::vector< std::pair<DetId, float> > hits = (*iES)->hitsAndFractions();
-		for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
+		for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) { // loop over recHits of the cluster
 			//      std::cout << "print = " << (*iES)->printHitAndFraction(iCount);
 			//      ++iCount;
-			for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {
+			for(ESRecHitCollection::const_iterator esItr = ESRechitsHandle->begin(); esItr != ESRechitsHandle->end(); ++esItr) {//loop over ES rechits to find the one in the cluster
 				ESDetId rhid = ESDetId(esItr->id());
-				if(rhid == (*rh).first) {
+				if(rhid == (*rh).first) { // found ESrechit 
 					// std::cout << " ES energy = " << esItr->energy() << " pf energy = " << (*rh).second << std::endl;
 					if((int) rhid.plane() == (int) planeIndex) {
 						RawenergyPlane += esItr->energy();
@@ -1748,7 +1748,7 @@ float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned 
 	if (pfRawenergyPlane) ; // avoid compilation error for unused var
 	if (RawenergyPlane);
 	//std::cout << "LC DEBUG RawenergyPlane "<< RawenergyPlane << ", pfRawenergyPlane " << pfRawenergyPlane << std::endl;
-	return pfRawenergyPlane;
+	return RawenergyPlane;
 }
 
 //////////////
