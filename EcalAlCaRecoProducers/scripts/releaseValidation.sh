@@ -70,7 +70,7 @@ testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "
 		echo "${bold}ERROR${normal}"
 		echo "{$dir,test}/${logName}.dump are different" 
 		echo "you can use"
-		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
 		exit 1
 	}
 	echo "OK"
@@ -95,7 +95,7 @@ testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName
 		echo "${bold}ERROR${normal}"
 		echo "{$dir,test}/${logName}.dump are different" 
 		echo "you can use"
-		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
 		exit 1
 	}
 	echo "OK"
@@ -128,7 +128,7 @@ testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName
 		echo "${bold}ERROR${normal}"
 		echo "{$dir,test}/${logName}.dump are different" 
 		echo "you can use"
-		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
 		exit 1
 	}
 	echo "OK"
@@ -136,6 +136,7 @@ testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName
 #	rm $dir/*.root
 }
 
+exit 0
 ################
 logName=alcarereco_data
 testStep 5 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v3.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileALCARAWData outputAll=False jsonFile=$json  isCrab=0" || {
@@ -160,7 +161,7 @@ testStep 6 "Testing local production of ntuples from alcarereco (DATA)" $logName
 		echo "${bold}ERROR${normal}"
 		echo "{$dir,test}/${logName}.dump are different" 
 		echo "you can use"
-		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff  | less -RS"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
 		exit 1
 	}
 	echo "OK"
