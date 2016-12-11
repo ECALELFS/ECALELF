@@ -44,7 +44,6 @@
 //#include <functions.h>
 
 
-typedef std::map<TString, TChain* > chain_map_t;
 typedef std::map<TString, TString > config_map_t;
 typedef std::map<TString, TH1F *> hist_map_t;
 
