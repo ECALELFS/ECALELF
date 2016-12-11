@@ -21,6 +21,7 @@ configuration files.
 #include <cstdlib>
 #include <string>
 #include <stdexcept>
+#include <memory>
 #include <boost/program_options.hpp>
 
 #include <TChain.h>
@@ -87,10 +88,13 @@ using namespace RooStats;
 
 ///\endcond
 
+//------------------------------------------------------------
+/// type to hold TChain Pointers
+typedef std::shared_ptr<TChain> pTChain_t;
 
 //------------------------------------------------------------
 /// map that associates the name of the tree and the pointer to the chain
-typedef std::map< TString, TChain* > chain_map_t;
+typedef std::map< TString, pTChain_t > chain_map_t;
 
 /** \brief map that associates the name of the tag to the chain_map_t
  *
@@ -145,7 +149,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 	        tag_chain_itr != tagChainMap.end();
 	        tag_chain_itr++) {
 		// take the selected tree of that tag
-		TChain *chain = (tag_chain_itr->second.find("selected"))->second;
+		TChain * chain = (tag_chain_itr->second.find("selected"))->second.get();
 
 		// loop over all the trees
 		for(chain_map_t::const_iterator chain_itr = tag_chain_itr->second.begin();
@@ -156,7 +160,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 				if(chain->GetFriend(chain_itr->first) == NULL) {
 					std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
 					          << " to tag " << tag_chain_itr->first << std::endl;
-					chain->AddFriend(chain_itr->second);
+					chain->AddFriend(chain_itr->second.get());
 				} // already added
 			}
 
@@ -204,12 +208,11 @@ void MergeSamples(tag_chain_map_t& tagChainMap, TString regionsFileNameTag, TStr
 		        chain_itr++) {
 			TString chainName = chain_itr->first;
 			if(tagChainMap.count(chainName) == 0) { // create the new chain if does not exist for tag
-				std::pair<TString, TChain* > pair_tmp(chainName, new TChain(chainName));
-				(tagChainMap[tag]).insert(pair_tmp);
+				(tagChainMap[tag]).insert(make_pair(chainName, pTChain_t(new TChain(chainName))));
 				(tagChainMap[tag])[chainName]->SetTitle(tag);
 			}
-			(tagChainMap[tag])[chainName]->Add(chain_itr->second);
-			std::cout << tag << "\t" << tag_chain_itr->first << "\t" << chainName <<  "\t" << chain_itr->second << "\t" << chain_itr->second->GetTitle() << std::endl;
+			(tagChainMap[tag])[chainName]->Add(chain_itr->second.get());
+			std::cout << tag << "\t" << tag_chain_itr->first << "\t" << chainName <<  "\t" << chain_itr->second.get() << "\t" << chain_itr->second->GetTitle() << std::endl;
 
 		}
 	}
@@ -594,14 +597,12 @@ int main(int argc, char **argv)
 #ifdef DEBUG
 			std::cout << "[DEBUG] Create new tag map for tag: " << tag << std::endl;
 #endif
-			std::pair<TString, chain_map_t > pair_tmp(tag, chain_map_t()); // make_pair not work with scram b
-			tagChainMap.insert(pair_tmp);
+			tagChainMap.insert(make_pair(tag, chain_map_t()));
 		}
 
 		if(!tagChainMap[tag].count(chainName)) {
-			std::pair<TString, TChain* > pair_tmp(chainName, new TChain(chainName));
-			(tagChainMap[tag]).insert(pair_tmp);
-			(tagChainMap[tag])[chainName]->SetTitle(tag);
+			tagChainMap[tag].insert(make_pair(chainName, pTChain_t(new TChain(chainName))));
+			tagChainMap[tag][chainName]->SetTitle(tag);
 		}
 		std::cout << "Adding file: " << tag << "\t" << chainName << "\t" << fileName << std::endl;
 		if((tagChainMap[tag])[chainName]->Add(fileName, -1) == 0) exit(1);
@@ -676,12 +677,12 @@ int main(int argc, char **argv)
 		TString treeName = "r9Weight";
 
 		// mc // save it in a file and reload it as a chain to be safe against the reference directory for the tree
-		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
+		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
 			if(tag_chain_itr->first.CompareTo("d") == 0 || tag_chain_itr->first.CompareTo("s") == 0) continue;
 			if(tag_chain_itr->second.count(treeName) != 0) continue; //skip if already present
-			TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+			TChain * ch = tag_chain_itr->second.find("selected")->second.get();
 
 			TString filename = "tmp/r9Weight_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
 			std::cout << "[STATUS] Saving r9Weights tree to root file:" << filename << std::endl;
@@ -700,8 +701,7 @@ int main(int argc, char **argv)
 
 			f.Write();
 			f.Close();
-			std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-			chain_map_t::iterator chain_itr = ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+			chain_map_t::iterator chain_itr = (tag_chain_itr->second.insert(make_pair(treeName, pTChain_t(new TChain(treeName))))).first;
 			chain_itr->second->SetTitle(tag_chain_itr->first);
 			chain_itr->second->Add(filename);
 
@@ -722,13 +722,13 @@ int main(int argc, char **argv)
 		TString treeName = "ZPtWeight";
 
 		// mc // save it in a file and reload it as a chain to be safe against the reference directory for the tree
-		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
+		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
 			if(tag_chain_itr->first.Contains("d")) continue; /// \todo ZPtWeight only on MC! because from PdfWeights, to make it more general
 			if(tag_chain_itr->first.CompareTo("d") == 0 || tag_chain_itr->first.CompareTo("s") == 0) continue;
 			if(tag_chain_itr->second.count(treeName) != 0) continue; //skip if already present
-			TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+			TChain * ch = (tag_chain_itr->second.find("selected"))->second.get();
 
 			TString filename = "tmp/ZPtWeight_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
 			std::cout << "[STATUS] Saving r9Weights tree to root file:" << filename << std::endl;
@@ -747,8 +747,7 @@ int main(int argc, char **argv)
 
 			f.Write();
 			f.Close();
-			std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-			chain_map_t::iterator chain_itr = ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+			chain_map_t::iterator chain_itr = (tag_chain_itr->second.insert(make_pair(treeName, pTChain_t(new TChain(treeName))))).first;
 			chain_itr->second->SetTitle(tag_chain_itr->first);
 			chain_itr->second->Add(filename);
 
@@ -783,11 +782,11 @@ int main(int argc, char **argv)
 
 			// for each mc sample create a tree with the per-event-weight
 			// but exclude the chain "s" since it's supposed to be created mergin alle the s-type samples
-			for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
+			for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 			        tag_chain_itr != tagChainMap.end();
 			        tag_chain_itr++) {
 				if(tag_chain_itr->first.CompareTo("s") == 0 || !tag_chain_itr->first.Contains("s")) continue;
-				TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+				TChain * ch = (tag_chain_itr->second.find("selected"))->second.get();
 				if((tag_chain_itr->second.count("pileup"))) continue;
 				TString treeName = "pileup";
 				TString filename = "tmp/mcPUtree" + tag_chain_itr->first + ".root";
@@ -801,8 +800,7 @@ int main(int argc, char **argv)
 					delete puTree;
 					f.Write();
 					f.Close();
-					std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-					chain_map_t::iterator chain_itr = ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+					chain_map_t::iterator chain_itr = (tag_chain_itr->second.insert(make_pair(treeName, pTChain_t(new TChain(treeName))))).first;
 					chain_itr->second->SetTitle(tag_chain_itr->first);
 					chain_itr->second->Add(filename);
 				}
@@ -817,12 +815,12 @@ int main(int argc, char **argv)
 		TString treeName = "scaleEle_" + corrEleType;
 		EnergyScaleCorrection_class eScaler(corrEleFile, 0, true, false);
 
-		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
+		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
 			if(tag_chain_itr->first.CompareTo("d") == 0 || !tag_chain_itr->first.Contains("d")) continue; //only data
 			if(tag_chain_itr->second.count(treeName) != 0) continue; //skip if already present
-			TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+			TChain * ch = (tag_chain_itr->second.find("selected"))->second.get();
 
 			TString filename = "tmp/scaleEle_" + corrEleType + "_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
 			std::cout << "[STATUS] Saving electron scale corrections to root file:" << filename << std::endl;
@@ -847,8 +845,7 @@ int main(int argc, char **argv)
 
 			f.Write();
 			f.Close();
-			std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-			chain_map_t::iterator chain_itr = ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+			chain_map_t::iterator chain_itr = (tag_chain_itr->second.insert(make_pair(treeName, pTChain_t(new TChain(treeName))))).first;
 			chain_itr->second->SetTitle(tag_chain_itr->first);
 			chain_itr->second->Add(filename);
 
@@ -862,12 +859,12 @@ int main(int argc, char **argv)
 		std::cout << "[STATUS] Getting energy smearings from file: " << smearEleFile << std::endl;
 		TString treeName = "smearEle_" + smearEleType;
 		EnergyScaleCorrection_class eScaler(smearEleFile, 0, false, true);
-		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
+		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
 			if(tag_chain_itr->first.CompareTo("s") == 0 || !tag_chain_itr->first.Contains("s")) continue; //only data
 			if(tag_chain_itr->second.count(treeName) != 0) continue; //skip if already present
-			TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+			TChain * ch = (tag_chain_itr->second.find("selected"))->second.get();
 
 			TString filename = "tmp/smearEle_" + smearEleType + "_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
 			std::cout << "[STATUS] Saving electron smearings to root file:" << filename << std::endl;
@@ -897,8 +894,7 @@ int main(int argc, char **argv)
 
 			f.Write();
 			f.Close();
-			std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-			chain_map_t::iterator chain_itr = ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+			chain_map_t::iterator chain_itr = (tag_chain_itr->second.insert(make_pair(treeName, pTChain_t(new TChain(treeName))))).first;
 			chain_itr->second->SetTitle(tag_chain_itr->first);
 			chain_itr->second->Add(filename);
 		}
@@ -933,13 +929,13 @@ int main(int argc, char **argv)
 			newBrancher.scaler = new EnergyScaleCorrection_class("", smearEleFile);
 		}
 #endif
-		for(tag_chain_map_t::const_iterator tag_chain_itr = tagChainMap.begin();
+		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
 			if((tag_chain_itr->first.CompareTo("s") == 0 || tag_chain_itr->first.CompareTo("d") == 0)) continue; //only data
 			if(tag_chain_itr->second.count(treeName) != 0) continue; //skip if already present
 			if(t != "" && !tag_chain_itr->first.Contains(t)) continue;
-			TChain *ch = (tag_chain_itr->second.find("selected"))->second;
+			TChain * ch = (tag_chain_itr->second.find("selected"))->second.get();
 
 			//data
 			std::cout << "[STATUS] Adding branch " << branchName << " to " << tag_chain_itr->first << std::endl;
@@ -962,8 +958,8 @@ int main(int argc, char **argv)
 			delete newTree;
 			//f.Write();
 			f.Close();
-			std::pair<TString, TChain* > pair_tmp(treeName, new TChain(treeName));
-			chain_map_t::iterator chain_itr = ((tagChainMap[tag_chain_itr->first]).insert(pair_tmp)).first;
+			std::pair<TString, pTChain_t > pair_tmp(treeName, pTChain_t(new TChain(treeName)));
+			chain_map_t::iterator chain_itr = (tag_chain_itr->second.insert(pair_tmp)).first;
 			chain_itr->second->SetTitle(tag_chain_itr->first);
 			chain_itr->second->Add(filename);
 		} //end of sample loop
@@ -984,7 +980,7 @@ int main(int argc, char **argv)
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
 		runDivide_class runDivider;
-		runDivider.Divide((tagChainMap["d"])["selected"], "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
+		runDivider.Divide((tagChainMap["d"])["selected"].get(), "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		// std::vector<TString> runRanges;
 		// if(runRangesFileName != "") runRanges = ReadRegionsFromFile(runRangesFileName);
@@ -1031,11 +1027,11 @@ int main(int argc, char **argv)
 	//This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
 	eleID.ReplaceAll("_", "");
 
-	TChain *data = NULL;
-	TChain *mc = NULL;
+	TChain * data = NULL;
+	TChain * mc = NULL;
 	if(!vm.count("smearerFit")) {
-		data = (tagChainMap["d"])["selected"];
-		mc  = (tagChainMap["s"])["selected"];
+		data = (tagChainMap["d"])["selected"].get();
+		mc  = (tagChainMap["s"])["selected"].get();
 	}
 
 
@@ -1304,7 +1300,7 @@ int main(int argc, char **argv)
 		filename += ".root";
 		TFile *tmpFile = new TFile(filename, "recreate");
 		tmpFile->cd();
-		RooSmearer smearer("smearer", (tagChainMap["d"])["selected"], (tagChainMap["s"])["selected"], NULL,
+		RooSmearer smearer("smearer", (tagChainMap["d"])["selected"].get(), (tagChainMap["s"])["selected"].get(), NULL,
 		                   categories,
 		                   args_vec, args, energyBranchName);
 		smearer._isDataSmeared = vm.count("isDataSmeared");
@@ -1452,7 +1448,7 @@ int main(int argc, char **argv)
 			TString outFile = outDirFitResData.c_str();
 			outFile += "/outProfile-";
 			outFile += r + "-" + TString(commonCut.c_str()) + ".root";
-			TFile *fOutProfile = new TFile(outFile, "recreate");
+			TFile fOutProfile(outFile, "recreate");
 			//test/dato/fitres/Hgg_Et_v7/0.03//outProfile-data/regions/test.dat-Et_25-EB.root
 
 			for (int ivar = 0; ivar < args.getSize(); ++ivar) {
@@ -1493,7 +1489,7 @@ int main(int argc, char **argv)
 					profil->SetName(n);
 					TCanvas c("c_" + name);
 					profil->Draw("AP*");
-					fOutProfile->cd();
+					fOutProfile.cd();
 					profil->Write();
 					delete profil;
 					smearer.dataset->Write();
@@ -1507,7 +1503,7 @@ int main(int argc, char **argv)
 					n += randomInt;
 					profil->SetName(n);
 					profil->Draw("AP*");
-					fOutProfile->cd();
+					fOutProfile.cd();
 					profil->Write();
 					delete profil;
 					smearer.dataset->Write();
@@ -1520,7 +1516,7 @@ int main(int argc, char **argv)
 					n += randomInt;
 					profil->SetName(n);
 					profil->Draw("AP*");
-					fOutProfile->cd();
+					fOutProfile.cd();
 					profil->Write();
 					delete profil;
 					smearer.dataset->Write();
@@ -1532,7 +1528,7 @@ int main(int argc, char **argv)
 // 		n="profileChi2_"+name2+"_"; n+=randomInt;
 // 		profil->SetName(n);
 // 		profil->Draw("AP*");
-// 		fOutProfile->cd();
+// 		fOutProfile.cd();
 // 		profil->Write();
 // 		delete profil;
 // 		smearer.dataset->Write();
@@ -1544,7 +1540,7 @@ int main(int argc, char **argv)
 // 		n="profileChi2_"+name2+"_"; n+=randomInt;
 // 		profil->SetName(n);
 // 		profil->Draw("AP*");
-// 		fOutProfile->cd();
+// 		fOutProfile.cd();
 // 		profil->Write();
 // 		delete profil;
 // 		smearer.dataset->Write();
@@ -1564,7 +1560,7 @@ int main(int argc, char **argv)
 				profil->SetName(n);
 				TCanvas c("c_" + name);
 				profil->Draw("AP*");
-				fOutProfile->cd();
+				fOutProfile.cd();
 				profil->Write();
 				std::cout << "Saved profile for " << name << std::endl;
 				smearer.dataset->Write();
@@ -1589,7 +1585,7 @@ int main(int argc, char **argv)
 // 	    }
 // 	    //smearer.evaluate();
 // 	  }
-			fOutProfile->Close();
+			fOutProfile.Close();
 
 		}
 		tmpFile->Close();
