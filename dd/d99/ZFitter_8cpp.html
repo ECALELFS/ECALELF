@@ -64,6 +64,7 @@
 <code>#include &lt;cstdlib&gt;</code><br/>
 <code>#include &lt;string&gt;</code><br/>
 <code>#include &lt;stdexcept&gt;</code><br/>
+<code>#include &lt;memory&gt;</code><br/>
 <code>#include &lt;boost/program_options.hpp&gt;</code><br/>
 <code>#include &lt;TChain.h&gt;</code><br/>
 <code>#include &lt;TStopwatch.h&gt;</code><br/>
@@ -85,13 +86,17 @@
 </div><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:a033fffadef8e02e0a5a850fa5da10822"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a033fffadef8e02e0a5a850fa5da10822"></a>
+<tr class="memitem:afb857a243ecc06f7068566c19659ea77"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb857a243ecc06f7068566c19659ea77"></a>
+typedef std::shared_ptr&lt; TChain &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#afb857a243ecc06f7068566c19659ea77">pTChain_t</a></td></tr>
+<tr class="memdesc:afb857a243ecc06f7068566c19659ea77"><td class="mdescLeft">&#160;</td><td class="mdescRight">type to hold TChain Pointers <br/></td></tr>
+<tr class="separator:afb857a243ecc06f7068566c19659ea77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acab0bb7a2482553c7aecddd2ba8c5e22"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acab0bb7a2482553c7aecddd2ba8c5e22"></a>
 typedef std::map&lt; TString, <br class="typebreak"/>
-TChain * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#a033fffadef8e02e0a5a850fa5da10822">chain_map_t</a></td></tr>
-<tr class="memdesc:a033fffadef8e02e0a5a850fa5da10822"><td class="mdescLeft">&#160;</td><td class="mdescRight">map that associates the name of the tree and the pointer to the chain <br/></td></tr>
-<tr class="separator:a033fffadef8e02e0a5a850fa5da10822"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<a class="el" href="../../dd/d99/ZFitter_8cpp.html#afb857a243ecc06f7068566c19659ea77">pTChain_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#acab0bb7a2482553c7aecddd2ba8c5e22">chain_map_t</a></td></tr>
+<tr class="memdesc:acab0bb7a2482553c7aecddd2ba8c5e22"><td class="mdescLeft">&#160;</td><td class="mdescRight">map that associates the name of the tree and the pointer to the chain <br/></td></tr>
+<tr class="separator:acab0bb7a2482553c7aecddd2ba8c5e22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f9583393b23a18bc849a3eb79ad7cbf"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; TString, <br class="typebreak"/>
-<a class="el" href="../../dd/d99/ZFitter_8cpp.html#a033fffadef8e02e0a5a850fa5da10822">chain_map_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#a6f9583393b23a18bc849a3eb79ad7cbf">tag_chain_map_t</a></td></tr>
+<a class="el" href="../../dd/d99/ZFitter_8cpp.html#acab0bb7a2482553c7aecddd2ba8c5e22">chain_map_t</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/ZFitter_8cpp.html#a6f9583393b23a18bc849a3eb79ad7cbf">tag_chain_map_t</a></td></tr>
 <tr class="memdesc:a6f9583393b23a18bc849a3eb79ad7cbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">map that associates the name of the tag to the chain_map_t  <a href="#a6f9583393b23a18bc849a3eb79ad7cbf">More...</a><br/></td></tr>
 <tr class="separator:a6f9583393b23a18bc849a3eb79ad7cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -120,7 +125,7 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::map&lt; TString, <a class="el" href="../../dd/d99/ZFitter_8cpp.html#a033fffadef8e02e0a5a850fa5da10822">chain_map_t</a> &gt; <a class="el" href="../../dd/d99/ZFitter_8cpp.html#a6f9583393b23a18bc849a3eb79ad7cbf">tag_chain_map_t</a></td>
+          <td class="memname">typedef std::map&lt; TString, <a class="el" href="../../dd/d99/ZFitter_8cpp.html#acab0bb7a2482553c7aecddd2ba8c5e22">chain_map_t</a> &gt; <a class="el" href="../../dd/d99/ZFitter_8cpp.html#a6f9583393b23a18bc849a3eb79ad7cbf">tag_chain_map_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

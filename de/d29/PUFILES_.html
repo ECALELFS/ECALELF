@@ -68,9 +68,11 @@ Official recipe for PU weights</h1>
 MC true PU</h2>
 <p>The MC distribution is the true PU distribution defined in the PU scenario during the MC generation. There is a python config file in CMSSW that contains the values. The files can be found in</p>
 <pre class="fragment">SimGeneral/MixingModule/python </pre><p> Make sure you pick up the right file matching the PU scenario used in your MC.</p>
-<p>You have to extract (by hand) the values from the python cfi and create a histogram with name <b>pileup</b> </p>
 <p>The MC pileup histograms should be put on EOS in the calibration project directory: </p>
-<pre class="fragment">/eos/project/c/cms-ecal-calibration/data/puHistos/  </pre><h1>pileup scenarios</h1>
+<pre class="fragment">/eos/project/c/cms-ecal-calibration/data/puHistos/  </pre><p>To generate this MC Pileup root file: </p>
+<pre class="fragment">cd $CMSSW_BASE/Calibration/ZFitter/;
+python script/generateMCPUHist.py PileupCFI=mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi output=PUSpring16-nPUtrue.root
+</pre><h1>pileup scenarios</h1>
 <table class="doxtable">
 <tr>
 <th>scenario </th><th>python file </th><th>pileupHist root file  </th></tr>
@@ -86,8 +88,12 @@ True PU distribution in data</h2>
 <li>location of the pileup json file</li>
 <li>minimum bias cross section</li>
 </ul>
-<p>To generate the root file with the <b>pileup</b> histogram </p>
-<pre class="fragment"></pre><h1><a class="anchor" id="NPV_"></a>
+<p>To generate the root file with the <b>pileup</b> histogram: </p>
+<pre class="fragment">JSONFILE=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt
+PileUpJSON=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/PileUp/pileup_latest.txt
+OUTPUTFILE=271036-284044_23Sept_v1-nPUtrue.root
+pileupCalc.py -i $JSONFILE --inputLumiJSON $PileUpJSON --calcMode true --minBiasXsec 69200 --maxPileupBin 50 --numPileupBins 50 $OUTPUTFILE
+</pre><h1><a class="anchor" id="NPV_"></a>
 Using Number of Primary Vertices</h1>
 <p>The <b>pileup</b> histograms can simply be histograms of the <b>nPV</b> branch for data and MC. <b>CAVEAT:</b> the nPV is biased by the selection used in your sample, to reduce the data/MC difference, please apply the full selection of your analysis.</p>
 <p>The name of the tree in the config file has to contain the string "nPV": </p>
