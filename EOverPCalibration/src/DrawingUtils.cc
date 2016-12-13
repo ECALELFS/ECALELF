@@ -28,7 +28,7 @@ void DrawICMap(TH2F* h2, const std::string& fileName, const std::string& fileTyp
     h2 -> GetXaxis() -> SetNdivisions(510);
     h2 -> GetXaxis() -> SetTitle("ix");
     h2 -> GetYaxis() -> SetTitle("iy");
-    h2 -> GetZaxis() -> SetRangeUser(0.85,1.15);
+    h2 -> GetZaxis() -> SetRangeUser(0.70,1.30);
   }
   
   h2 -> Draw("COLZ");
