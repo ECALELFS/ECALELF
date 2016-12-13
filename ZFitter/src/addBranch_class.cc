@@ -4,7 +4,6 @@
 #include <TLorentzVector.h>
 #include <TGraph.h>
 #include <iostream>
-
 //#define DEBUG
 //#define NOFRIEND
 
@@ -47,10 +46,10 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 	originalChain->SetBranchAddress("R9Ele", R9Ele);
 
 	//2015
-//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
-//  //root file with r9 transformation:
-//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
-//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
+	//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
+	//  //root file with r9 transformation:
+	//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
+	//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
 
 	//2016
 	TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
@@ -100,238 +99,62 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 }
 
 TTree* addBranch_class::AddBranch_scaleEle(TChain* originalChain, TString treename, bool isMC){
+  //To do:
+  //Add flexibility in .dat file name
+  //Add flexibility in branch names
+  EnergyScaleCorrection_class eScaler("/afs/cern.ch/work/g/gfasanel/17_Moriond_ECALELF/CMSSW_8_0_24_patch1/src/Calibration/ZFitter/ScalesSmearings/Winter_2016_reReco_v1_ele_scales.dat");
+  eScaler.doScale=true;
   originalChain->SetBranchStatus("*",0);
   originalChain->SetBranchStatus("runNumber",1);
-  //originalChain->SetBranchStatus(runNumberBranchName,1);
-//    originalChain->SetBranchStatus(etaEleBranchName,1);
-//    originalChain->SetBranchStatus(etaSCEleBranchName,1);
-//    originalChain->SetBranchStatus(energySCEleBranchName,1);
-//    originalChain->SetBranchStatus(R9EleBranchName,1);
-//    originalChain->SetBranchStatus(nPVBranchName,1);
+  originalChain->SetBranchStatus("etaSCEle",1);
+  originalChain->SetBranchStatus("R9Ele",1);
+  originalChain->SetBranchStatus("energy_ECAL_ele",1);
+  originalChain->SetBranchStatus("energy_ECAL_pho",1);
+  originalChain->SetBranchStatus("energySCEle_corr",1);
 
-  //  TString runNumberBranchName,
-  //TString R9EleBranchName,
-  //TString etaEleBranchName,
-//    TString etaSCEleBranchName,
-//    TString energySCEleBranchName,
-//    TString nPVBranchName
-//
-//  std::cout<<"in GetCorrTree r9 is "<<R9EleBranchName<<std::endl;
-//  std::cout<<"in GetCorrTree ene is "<<energySCEleBranchName<<std::endl;
-//  float nPVmean = 0;
-//  //   if(correctionType.Contains("nPV"))          
-//
-//  Int_t nPV_;
-//  Int_t runNumber_;
-//  Float_t etaEle_[3];
-//  Float_t etaSCEle_[3];
-//  Float_t R9Ele_[3];
-//  Float_t energySCEle_[3];
-//
+  unsigned int    runNumber;
+  Float_t         etaSCEle[3];
+  Float_t         R9Ele[3];
+  Float_t         energy_ECAL_ele[3];
+  Float_t         energy_ECAL_pho[3];
+  
+  originalChain->SetBranchAddress("runNumber", &runNumber);
+  originalChain->SetBranchAddress("etaSCEle", etaSCEle);
+  originalChain->SetBranchAddress("R9Ele", R9Ele);
+  //originalChain->SetBranchAddress("energy_ECAL_ele", energy_ECAL_ele);
+  originalChain->SetBranchAddress("energy_ECAL_pho", energy_ECAL_pho);
+  originalChain->SetBranchAddress("energySCEle_corr", energy_ECAL_ele);
+
   Float_t scaleEle_[3];
-//
-  TTree *newTree = new TTree("scaleEle",""); //+correctionType,correctionType);                                                                                                 
+  TTree *newTree = new TTree(treename,""); //treeName is scaleEle
   newTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
-  if(isMC){//dummy scale corr for MC
-    std::cout<<"MC"<<std::endl;
+  if(isMC){//dummy scale corr for MC -->probably there is a better way
     scaleEle_[0]=-999;
     scaleEle_[1]=-999;
     return newTree;
   }
 
   Long64_t nentries = originalChain->GetEntries();
-  for(Long64_t ientry = 0; ientry < nentries; ientry++) {
-  //for(Long64_t ientry = 0; ientry < 1000; ientry++) {
+  //for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+  for(Long64_t ientry = 0; ientry < 1000; ientry++) {
     originalChain->GetEntry(ientry);
-    scaleEle_[0]=1.;
+    //    scaleEle_[0]=1.;
     scaleEle_[1]=1.;
-    //scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0],etaEle_[0], energySCEle_[0]/cosh(etaSCEle_[0]), nPV_, nPVmean);
-  //scaleEle_[1] = ScaleCorrection(runNumber_, fabs(etaSCEle_[1]) < 1.4442, R9Ele_[1],etaEle_[1], energySCEle_[1]/cosh(etaSCEle_[1]), nPV_, nPVmean);
-    //  //In case you want to categorize in energy                                                                                                                              
-//  //     scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442,                                                                                              
-//  //                             R9Ele_[0],etaEle_[0], energySCEle_[0], nPV_, nPVmean);                                                                                       
-//  //scaleEle_[1] = ScaleCorrection(runNumber_, fabs(etaSCEle_[1]) < 1.4442,                                                                                                   
-//  //                             R9Ele_[1],etaEle_[1], energySCEle_[1], nPV_, nPVmean);                                                                                       
+    //scaleEle_[0] = ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0],etaEle[0], energy_ECAL_Ele[0]/cosh(etaSCEle[0]));
+    //#ifdef DEBUG_scale
+    std::cout<<"[CHECK THIS]"<<runNumber<<" "<<etaSCEle[0]<<" "<<R9Ele[0]<<" "<<etaSCEle[0]<<" "<<energy_ECAL_ele[0]<<std::endl;
+    //#endif
+    scaleEle_[0]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy_ECAL_ele[0]/cosh(etaSCEle[0]));
+
+    //Quick and dirty: In case you want to categorize in energy                                                                                                        
+    //scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0],etaEle_[0], energySCEle_[0], nPV_, nPVmean);                         
     newTree->Fill();
   }
   originalChain->SetBranchStatus("*", 1);
   originalChain->ResetBranchAddresses();
   return newTree;
-//  tree->SetBranchStatus(runNumberBranchName,1);
-//  if(fastLoop){
-//    tree->SetBranchStatus("*",0);
-//    tree->SetBranchStatus(runNumberBranchName,1);
-//    tree->SetBranchStatus(etaEleBranchName,1);
-//    tree->SetBranchStatus(etaSCEleBranchName,1);
-//    tree->SetBranchStatus(energySCEleBranchName,1);
-//    tree->SetBranchStatus(R9EleBranchName,1);
-//    tree->SetBranchStatus(nPVBranchName,1);
-//  }
-//
-//  tree->SetBranchAddress(nPVBranchName, &nPV_);
-//  tree->SetBranchAddress(runNumberBranchName, &runNumber_);
-//  tree->SetBranchAddress(etaEleBranchName,etaEle_);
-//  tree->SetBranchAddress(etaSCEleBranchName,etaSCEle_);
-//  tree->SetBranchAddress(energySCEleBranchName,energySCEle_);
-//  tree->SetBranchStatus(R9EleBranchName,1);
-//  tree->SetBranchStatus(nPVBranchName,1);
-//}
-//
-//tree->SetBranchAddress(nPVBranchName, &nPV_);
-//tree->SetBranchAddress(runNumberBranchName, &runNumber_);
-//tree->SetBranchAddress(etaEleBranchName,etaEle_);
-//tree->SetBranchAddress(etaSCEleBranchName,etaSCEle_);
-//tree->SetBranchAddress(energySCEleBranchName,energySCEle_);
-//tree->SetBranchAddress(R9EleBranchName, R9Ele_);
-//Long64_t nentries = tree->GetEntries();
-//
-//
-//
-//std::cout << "[STATUS] Get scaleEle for tree: " << tree->GetTitle()
-//<< "\t" << "with " << nentries << " entries" << std::endl;
-//std::cerr << "[00%]";
-//
-//// loop over tree                                                                                                                                                             
-//for(Long64_t ientry = 0; ientry<nentries; ientry++){
-//  tree->GetEntry(ientry);
-//  scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442,
-//				 R9Ele_[0],etaEle_[0], energySCEle_[0]/cosh(etaSCEle_[0]), nPV_, nPVmean);
-//  scaleEle_[1] = ScaleCorrection(runNumber_, fabs(etaSCEle_[1]) < 1.4442,
-//				 R9Ele_[1],etaEle_[1], energySCEle_[1]/cosh(etaSCEle_[1]), nPV_, nPVmean);
-//  //In case you want to categorize in energy                                                                                                                                  
-//  //     scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442,                                                                                              
-//  //                             R9Ele_[0],etaEle_[0], energySCEle_[0], nPV_, nPVmean);                                                                                       
-//  //scaleEle_[1] = ScaleCorrection(runNumber_, fabs(etaSCEle_[1]) < 1.4442,                                                                                                   
-//  //                             R9Ele_[1],etaEle_[1], energySCEle_[1], nPV_, nPVmean);                                                                                       
-//  newTree->Fill();
-//
-//  if(ientry%(nentries/100)==0) std::cerr << "\b\b\b\b" << std::setw(2) << ientry/(nentries/100) << "%]";
-// }
-//
-//
-//if(fastLoop) tree->SetBranchStatus("*",1);
-//tree->ResetBranchAddresses();
-//tree->GetEntry(0);
-////  std::cout << "[WARNING] nPU > nPU max for " << warningCounter << " times" << std::endl;                                                                                   
-//return newTree;
-//
-//
-//
-//
-//
-//	//From the original tree take R9 and eta
-//	Float_t         R9Ele[3];
-//	Float_t         etaEle[3];
-//
-//	originalChain->SetBranchStatus("*", 0);
-//	originalChain->SetBranchStatus("etaEle", 1);
-//	originalChain->SetBranchStatus("R9Ele", 1);
-//	originalChain->SetBranchAddress("etaEle", etaEle);
-//	originalChain->SetBranchAddress("R9Ele", R9Ele);
-//
-//
-//	//2016
-//	TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
-//	//root file with r9 transformation for 2016 MC:
-//	TGraph* gR9EB = (TGraph*) f->Get("TGraphtransffull5x5R9EB");
-//	TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
-//	f->Close();
-//
-//	TTree* newtree = new TTree(treename, treename);
-//	Float_t R9Eleprime[3];
-//	newtree->Branch("R9Eleprime", R9Eleprime, "R9Eleprime[3]/F");
-//
-//	Long64_t nentries = originalChain->GetEntries();
-//	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
-//		originalChain->GetEntry(ientry);
-//		if(isMC) {
-//			//electron 0
-//			if(abs(etaEle[0]) < 1.4442) { //barrel
-//				R9Eleprime[0] = gR9EB->Eval(R9Ele[0]);
-//			} else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5) { //endcap
-//				R9Eleprime[0] = gR9EE->Eval(R9Ele[0]);;
-//			} else {
-//				R9Eleprime[0] = R9Ele[0];
-//			}
-//
-//			//electron 1
-//			if(abs(etaEle[1]) < 1.4442) { //barrel
-//				R9Eleprime[1] = gR9EB->Eval(R9Ele[1]);
-//			} else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5) { //endcap
-//				R9Eleprime[1] = gR9EE->Eval(R9Ele[1]);;
-//			} else {
-//				R9Eleprime[1] = R9Ele[1];
-//			}
-//		} else { //no transformation needed for data
-//			//std::cout<<"R9 in data is not transformed ->R9Eleprime==R9Ele"<<std::endl;
-//			R9Eleprime[0] = R9Ele[0];
-//			R9Eleprime[1] = R9Ele[1];
-//		}
-//
-//		R9Eleprime[2] = -999; //not used the third electron
-//		newtree->Fill();
-//	}
-//
-//	originalChain->SetBranchStatus("*", 1);
-//	originalChain->ResetBranchAddresses();
-//	return newtree;
+
 }
-
-//float EnergyScaleCorrection_class::ScaleCorrection(int runNumber, bool isEBEle,
-//                                                   double R9Ele, double etaSCEle, double EtEle,
-//                                                   int nPV, float nPVmean){
-//  float correction = 1;
-//  //  if(correctionType.Contains("Run", TString::kIgnoreCase))                                                                                                                  
-//  correction*=getScaleOffset(runNumber, isEBEle, R9Ele, etaSCEle, EtEle);
-//
-//  //  if(correctionType.Contains("nPV",TString::kIgnoreCase)) correction *= 1- (-0.02 * (nPV -nPVmean))/100;                                                                    
-//
-//  return correction;
-//
-//}
-//
-//
-//float EnergyScaleCorrection_class::getScaleOffset(int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle){
-//  if(noCorrections) return 1;
-//
-//  //#ifdef lettura                                                                                                                                                                
-//  //  std::cout<<"runNumber is "<<runNumber<<std::endl;                                                                                                                           
-//  //  std::cout<<"isEBEle "<<isEBEle<<std::endl;                                                                                                                                  
-//  //  std::cout<<"R9Ele is "<<R9Ele<<std::endl;                                                                                                                                   
-//  //  std::cout<<"etaSCEle is "<<etaSCEle<<std::endl;                                                                                                                             
-//  //  std::cout<<"EtEle is "<<EtEle<<std::endl;                                                                                                                                   
-//  //#endif                                                                                                                                                                        
-//  correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle);
-//  correction_map_t::const_iterator corr_itr = scales.find(category);
-//  if(corr_itr==scales.end()){ // if not in the standard classes, add it in the list of not defined classes                                                                      
-//    if(scales_not_defined.count(category)==0){
-//      correctionValue_class corr;
-//      scales_not_defined[category]=corr;
-//    }
-//    corr_itr = scales_not_defined.find(category);
-//    if(R9Ele>0 && fabs(etaSCEle)<3){
-//
-//      #ifdef NOT_FOUND
-//      std::cout << "[ERROR] Category not found: " << std::endl;
-//      std::cout << category << std::endl;
-//      #endif
-//    }
-//#ifdef DEBUG
-//    exit(1);
-//#endif
-//  }
-//
-//#ifdef DEBUG
-//  std::cout << "[DEBUG] Checking correction for category: " << category << std::endl;
-//  std::cout << "[DEBUG] Correction is: " << corr_itr->second
-//            << std::endl
-//            << "        given for category " <<  corr_itr->first << std::endl;;
-//#endif
-//
-//  return corr_itr->second.scale;
-//
-//}
-
 
 TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, TString energyBranchName, bool fastLoop)
 {
