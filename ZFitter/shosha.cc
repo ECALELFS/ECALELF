@@ -54,8 +54,8 @@ void set_branches(TTree * t)
 {
         t->SetBranchAddress("runNumber", &e.run);
         brlist.push_back("runNumber");
-        t->SetBranchAddress("runTime", &e.ts);
-        brlist.push_back("runTime");
+        t->SetBranchAddress("eventTime", &e.ts);
+        brlist.push_back("eventTime");
         t->SetBranchAddress("nPV", &e.nPV);
         brlist.push_back("nPV");
         t->SetBranchAddress("invMass_SC_must_regrCorr_ele", &e.mass);

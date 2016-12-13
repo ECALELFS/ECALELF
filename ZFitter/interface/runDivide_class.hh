@@ -23,8 +23,8 @@
  */
 class runDivide_class
 {
-	typedef unsigned int run_t;
-	typedef UInt_t       time_t;
+	typedef UInt_t run_t;
+	typedef UInt_t time_t;
 public:
 	runDivide_class(void);
 	~runDivide_class(void);
@@ -76,7 +76,7 @@ public:
 	            std::string fileName, // limits
 	            unsigned int nEvents_min = 50000,
 	            std::string runNumber_branchName = "runNumber",
-	            std::string time_branchName      = "runTime");
+	            std::string time_branchName      = "eventTime");
 
 	void PrintRunRangeEvents(std::ostream& os = std::cout) {
 		os << *this;
@@ -88,7 +88,7 @@ private:
 	std::set<run_t> limits; // set of limits given by source file
 
 	void ReadRunRangeLimits(std::string fileName); ///< read the file with the run limits: run ranges cannot go across the limits
-	void LoadRunEventNumbers(TChain *tree, std::string runNumber_branchName = "runNumber", std::string runTime_branchName = "runTime"); ///< read from the tree the list of run numbers, the minimum and maximum time of the events of each run and the number of events in each run. This fills all the maps
+	void LoadRunEventNumbers(TChain *tree, std::string runNumber_branchName = "runNumber", std::string runTime_branchName = "eventTime"); ///< read from the tree the list of run numbers, the minimum and maximum time of the events of each run and the number of events in each run. This fills all the maps
 
 	void FillRunLimits(unsigned int nEvents_min = 100000, float nEventsFrac_min = 0.7);
 
