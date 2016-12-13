@@ -218,16 +218,20 @@ allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIIFall15MiniAODv2-magnetOffBS0T
 #
 ###################################2016 Campaign###########################################################
 #### madgraph
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM	DYJets_madgraph-RunIISpring16	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID	-	-
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/MINIAODSIM	DYJets_madgraph-RunIISpring16-miniAODv1	caf	database	VALID	-	-
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM	DYJets_madgraph-RunIISpring16-miniAODv2	caf	database	VALID	-	-	
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM	DYJets_madgraph-RunIISpring16	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID	MCICHEP2016	-
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/MINIAODSIM	DYJets_madgraph-RunIISpring16-miniAODv1	caf	database	VALID	MCICHEP2016	-
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1/MINIAODSIM	DYJets_madgraph-RunIISpring16-miniAODv2	caf	database	INVALID	MCICHEP2016	-	
 ####	amc@nlo
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM	DYJets_amcatnlo-RunIISpring16	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID			-	-
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM	DYJets_amcatnlo-RunIISpring16-miniAODv1	caf	database	VALID	-	-	
-allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJets_amcatnlo-RunIISpring16-miniAODv2	caf	database	VALID	-	-	
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM	DYJets_amcatnlo-RunIISpring16	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID			MCICHEP2016	-
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM	DYJets_amcatnlo-RunIISpring16-miniAODv1	caf	database	VALID	MCICHEP2016	-
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJets_amcatnlo-RunIISpring16-miniAODv2	caf	database	INVALID	MCICHEP2016	-
 ####	powheg
-allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM	DYToEE_NNPDF30-powheg-pythia8-miniAODv1	caf	database	VALID	-	-
-allRange	/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM	ZToEE_NNPDF30-powheg-Spring16-miniAODv1	caf	database	VALID	-	-
+#allRange	/DYToEE_NNPDF30_13TeV-powheg-pythia8/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/MINIAODSIM	DYToEE_NNPDF30-powheg-pythia8-miniAODv1	caf	database	VALID	MCICHEP2016	-
+allRange	/ZToEE_NNPDF30_13TeV-powheg_M_50_120/RunIISpring16MiniAODv1-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2/MINIAODSIM	ZToEE_NNPDF30-powheg-Spring16-miniAODv1	caf	database	VALID	MCICHEP2016	-
+####
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/AODSIM	DYJets_madgraph-RunIISpring16-withES	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID	MCICHEP2016	-
+####	amc@nlo
+allRange	/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM	DYJets_amcatnlo-RunIISpring16-withES	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID			MCICHEP2016	-
 ####
 ###### MC LT Binned for Hgg linearity studies
 allRange	/DYJetsToEE_M-50_LTbinned_5To75_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_5To75-RunIISpring16DR80	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID	- -
@@ -242,16 +246,16 @@ allRange	/DYJetsToEE_M-50_LTbinned_400To800_5f_LO_13TeV-madgraph_pythia8/RunIISp
 allRange	/DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV-madgraph_pythia8/RunIISpring16DR80-PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/AODSIM DYJets_madgraph-LT_800To2000-RunIISpring16DR80	caf	group/dpg_ecal/alca_ecalcalib/ecalelf/alcareco		VALID	- -
 
 ###### MC LT Binned for Hgg linearity studies (MINIAOD samples)#######################
-allRange	/DYJetsToEE_M-50_LTbinned_5To75_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_5To75	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_75To80_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_75To80	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_80To85_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_80To85	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_85To90_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_85To90	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_90To95_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_90To95	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_95To100_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_95To100	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_100To200_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_100To200	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_200To400_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_200To400	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_400To800_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_400To800	caf	database	VALID	-	-	
-allRange	/DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_800To2000	caf	database	VALID	-	-	
+allRange	/DYJetsToEE_M-50_LTbinned_5To75_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_5To75-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_75To80_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_75To80-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_80To85_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_80To85-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_85To90_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_85To90-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_90To95_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_90To95-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_95To100_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_95To100-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_100To200_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_100To200-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_200To400_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_200To400-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_400To800_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_400To800-MINIAOD	caf	database	VALID	MCICHEP2016	-	
+allRange	/DYJetsToEE_M-50_LTbinned_800To2000_5f_LO_13TeV-madgraph_pythia8/RunIISpring16MiniAODv2-PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/MINIAODSIM	DYJetsToEE_M-50_LTbinned_800To2000-MINIAOD	caf	database	VALID	MCICHEP2016	-	
 #
 ### Data PromptReco 2016 (runH excluded: it's in Moriond 2017 dataset)
 273150-275376	/DoubleEG/Run2016B-PromptReco-v2/MINIAOD	DoubleEG-Run2016B-noSkim-Prompt_v2-miniAOD	caf	database	VALID	RUN2016B

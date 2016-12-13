@@ -6,50 +6,65 @@ json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions16/13TeV/ReRe
 jsonName=DCSONLY
 jsonName=271036-284044_23Sep2016_v1
 
-CHECK=--check
 
+CHECK=--check
+#CHECK=--createOnly
 
 
 #where=remoteGlidein
 scheduler=caf
 tag_MC=config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py
-tag_Data=config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
-tagPrompt=config/reRecoTags/80X_dataRun2_Prompt_v14.py
-tagRereco2=config/reRecoTags/80X_dataRun2_2016SeptRepro_v3.py
-tag_DataG=config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
+tag_Prompt=config/reRecoTags/80X_dataRun2_Prompt_v14.py
+tag_Rereco=config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
 
 fileList=alcareco_datasets.dat
 PERIOD=MORIOND2017
 
-datasets=`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`
-
-# set IFS to newline in order to divide using new line the datasets
 IFS=$'\n'
-for dataset in $datasets
+datasetsData=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`)
+datasetsMC=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "MCICHEP2016,"`)
+# set IFS to newline in order to divide using new line the datasets
+
+
+
+for dataset in ${datasetsMC[@]}
+do
+	datasetName=`echo $dataset | awk '{print $6}'`
+	echo $datasetName
+#	continue
+	case $datasetName in
+		*MINIAODSIM)
+#			echo $datasetName
+			./scripts/prodNtuples.sh  --isMC --type=MINIAOD -t ${tag_MC} -s noSkim --scheduler=${scheduler} --doEleIDTree --extraName=newNtuples ${CHECK} $dataset
+			;;
+		*-withES)
+			echo "--> $datasetName"
+			./scripts/prodAlcareco.sh --isMC --type=ALCARECO -t ${tag_MC} -s ZSkim --scheduler=${scheduler}  ${CHECK} $dataset
+			./scripts/prodNtuples.sh  --isMC --type=ALCARECO -t ${tag_MC} -s ZSkim --scheduler=${scheduler} --doEleIDTree --extraName=newNtuples ${CHECK} $dataset
+			;;
+	esac
+done
+exit 0
+for dataset in ${datasetsData[@]}
   do
 	
 	if [ "`echo $dataset | grep -c SingleElectron`" != "0" -a "`echo $dataset | grep -c ZElectron`" != "0" ];then continue; fi
 	datasetName=`echo $dataset | awk '{print $4}'`
-
+#	echo $dataset
+#	continue
 	case $datasetName in
 		*PromptReco*)
-			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tagPrompt} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=slewRate ${CHECK} ${dataset} || exit 1
-			;;
-		*Run2016G*)
-			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tag_DataG} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=slewRate ${CHECK} ${dataset} || exit 1
+			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tag_Prompt} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=newNtuples ${CHECK} ${dataset} || exit 1
 			;;
 		*)
-			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tag_Data} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=slewRate ${CHECK} ${dataset} || exit 1
+			./scripts/prodNtuples.sh  --type=MINIAOD -t ${tag_Rereco} -s noSkim  --json=${json} --json_name=${jsonName} --scheduler=${scheduler} --doEleIDTree --extraName=newNtuples ${CHECK} ${dataset} || exit 1
 			;;
 	esac
 	
 done
+	
 exit 0
 while [ "1" == "1" ];do
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -1| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=${scheduler} ${CHECK}
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -2| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=${scheduler} ${CHECK}
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -3| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=remoteGlidein ${CHECK}
-./scripts/prodNtuples.sh `parseDatasetFile.sh alcareco_datasets.dat | grep RunIISpring16 | grep miniAODv1 | head -4| tail -1` --isMC --type MINIAOD -t ${tag_MC} -s noZSkim --scheduler=${scheduler} ${CHECK}
 sleep 15m
 done
 exit 0

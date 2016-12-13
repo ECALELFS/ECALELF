@@ -106,12 +106,12 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	// get UncalibRecHits
 	Handle<EBUncalibratedRecHitCollection> barrelUncalibRecHitsHandle;
 	iEvent.getByToken(ebUncalibRecHitsToken_, barrelUncalibRecHitsHandle);
-	const EBUncalibratedRecHitCollection *barrelUncalibHitsCollection = barrelUncalibRecHitsHandle.product () ;
+	const EBUncalibratedRecHitCollection *barrelUncalibHitsCollection = barrelUncalibRecHitsHandle.isValid() ? barrelUncalibRecHitsHandle.product () : NULL;
 
 	// get UncalibRecHits
 	Handle<EEUncalibratedRecHitCollection> endcapUncalibRecHitsHandle;
 	iEvent.getByToken(eeUncalibRecHitsToken_, endcapUncalibRecHitsHandle);
-	const EEUncalibratedRecHitCollection *endcapUncalibHitsCollection = endcapUncalibRecHitsHandle.product () ;
+	const EEUncalibratedRecHitCollection *endcapUncalibHitsCollection = endcapUncalibRecHitsHandle.isValid() ?  endcapUncalibRecHitsHandle.product () : NULL;
 
 
 	// get ES RecHits
@@ -219,7 +219,7 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	        itr != reducedRecHit_EBmap.end(); itr++) {
 		if (barrelHitsCollection->find(*itr) != barrelHitsCollection->end())
 			miniEBRecHitCollection->push_back(*(barrelHitsCollection->find(*itr)));
-		if (barrelUncalibHitsCollection->find(*itr) != barrelUncalibHitsCollection->end())
+		if (barrelUncalibHitsCollection != NULL && barrelUncalibHitsCollection->find(*itr) != barrelUncalibHitsCollection->end())
 			miniEBUncalibRecHitCollection->push_back(*(barrelUncalibHitsCollection->find(*itr)));
 	}
 
@@ -227,7 +227,7 @@ AlCaECALRecHitReducer::produce (edm::Event& iEvent,
 	        itr != reducedRecHit_EEmap.end(); itr++) {
 		if (endcapHitsCollection->find(*itr) != endcapHitsCollection->end())
 			miniEERecHitCollection->push_back(*(endcapHitsCollection->find(*itr)));
-		if (endcapUncalibHitsCollection->find(*itr) != endcapUncalibHitsCollection->end())
+		if (endcapUncalibHitsCollection != NULL && endcapUncalibHitsCollection->find(*itr) != endcapUncalibHitsCollection->end())
 			miniEEUncalibRecHitCollection->push_back(*(endcapUncalibHitsCollection->find(*itr)));
 	}
 

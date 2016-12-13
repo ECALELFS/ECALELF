@@ -1,3 +1,4 @@
+<flags SKIP_FILES="*"/>
 <use name="root"/>
 <use name="rootmath"/>
 <use name="roofit"/>
@@ -9,7 +10,7 @@
 <use name="FWCore/ParameterSet"/>
 <lib name="TreePlayer"/>
 <export>
-   <lib name="1"/>
+  <lib name="1"/>
 </export>
 
-
+ 

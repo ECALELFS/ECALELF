@@ -1,0 +1,56 @@
+
+File tmp/releaseValidation/5/alcareco.root Events 2972
+Branch Name | Average Uncompressed Size (Bytes/Event) | Average Compressed Size (Bytes/Event) 
+recoGenParticles_genParticles__HLT. 234386 24471.2
+triggerTriggerEvent_hltTriggerSummaryAOD__HLT. 17114.9 6817.58
+PileupSummaryInfos_addPileupInfo__HLT. 8726.18 3243.32
+recoVertexs_offlinePrimaryVertices__RECO. 13614.9 1995.59
+recoVertexs_offlinePrimaryVerticesWithBS__RECO. 13613.6 1975.23
+recoConversions_allConversions__RECO. 7402.68 1974.32
+EcalRecHitsSorted_alCaIsolatedElectrons_alcaEndcapHits_ALCARECO. 3164.23 1687.98
+recoCaloClusters_multi5x5SuperClusters_multi5x5EndcapBasicClusters_RECO. 5013.35 1597.44
+recoPhotons_gedPhotons__RECO. 2213.16 1413.15
+recoGsfElectrons_gedGsfElectrons__RECO. 2395.03 1350.01
+EcalRecHitsSorted_alCaIsolatedElectrons_alcaBarrelHits_ALCARECO. 1842.23 944.574
+recoCaloClusters_alCaIsolatedElectrons_alcaCaloCluster_ALCARECO. 1909.21 738.341
+recoCaloClusters_particleFlowSuperClusterECAL_particleFlowBasicClusterECALPreshower_RECO. 2260.83 694.059
+recoSuperClusters_correctedMulti5x5SuperClustersWithPreshower__RECO. 2293.65 683.917
+EcalRecHitsSorted_reducedEcalRecHitsES__RECO. 1287.53 638.793
+EventProductProvenance 4334.7 632.521
+recoCaloClusters_particleFlowEGamma_EBEEClusters_RECO. 1458.77 620.655
+recoCaloClusters_particleFlowEGamma_ESClusters_RECO. 2036.51 620.024
+recoGsfTracks_electronGsfTracks__RECO. 1357.78 607.719
+recoCaloClusters_hybridSuperClusters_hybridBarrelBasicClusters_RECO. 2388.59 568.692
+recoSuperClusters_particleFlowEGamma__RECO. 1717.24 568.359
+recoConversions_conversions__RECO. 2194.32 535.78
+recoSuperClusters_correctedHybridSuperClusters__RECO. 2397.83 531.468
+recoPreshowerClusters_multi5x5SuperClustersWithPreshower_preshowerYClusters_RECO. 1924.61 478.645
+recoCaloClusters_particleFlowSuperClusterECAL_particleFlowBasicClusterECALBarrel_RECO. 1101.26 468.593
+recoPreshowerClusters_multi5x5SuperClustersWithPreshower_preshowerXClusters_RECO. 1699.6 424.787
+recoSuperClusters_particleFlowSuperClusterECAL_particleFlowSuperClusterECALBarrel_RECO. 1162.79 403.757
+EcalRecHitsSorted_alCaIsolatedElectrons_alcaPreshowerHits_ALCARECO. 660.816 330.697
+recoSuperClusters_particleFlowSuperClusterECAL_particleFlowSuperClusterECALEndcapWithPreshower_RECO. 911.521 311.461
+ints_genParticles__HLT. 4406.47 293.933
+recoTracks_alcaElectronTracksReducer__ALCARECO. 662.286 284.773
+recoCaloClusters_particleFlowSuperClusterECAL_particleFlowBasicClusterECALEndcap_RECO. 623.752 272.117
+recoPFMETs_pfMet__RECO. 245.669 101.31
+recoSuperClusters_SCselector__ALCARECO. 277.806 67.6581
+GenEventInfoProduct_generator__SIM. 221.301 67.2981
+recoGsfElectronCores_gedGsfElectronCores__RECO. 247.094 52.4219
+l1extraL1EmParticles_l1extraParticles_Isolated_RECO. 299.863 51.0942
+L1GlobalTriggerReadoutRecord_gtDigis__RECO. 1955.23 46.0875
+recoPreshowerClusterShapes_multi5x5PreshowerClusterShape_multi5x5PreshowerYClustersShape_RECO. 90.6363 32.5848
+recoPreshowerClusterShapes_multi5x5PreshowerClusterShape_multi5x5PreshowerXClustersShape_RECO. 90.6363 28.8294
+edmTriggerResults_TriggerResults__HLT. 1064.68 22.2069
+l1extraL1EmParticles_l1extraParticles_NonIsolated_RECO. 89.2611 21.5471
+recoTrackExtras_alcaElectronTracksReducer_alCaElectronTracksExtra_ALCARECO. 127.136 21.5138
+recoBeamSpot_offlineBeamSpot__RECO. 300.02 15.7197
+EventAuxiliary 133.859 14.4744
+double_kt6PFJetsForRhoCorrection_rho_ALCARECO. 10.2009 8.86743
+edmTriggerResults_TriggerResults__ALCARECO. 81.2931 4.6255
+EventSelections 107.754 4.3496
+edmTriggerResults_TriggerResults__RECO. 87.2581 4.33042
+edmTriggerResults_TriggerResults__SIM. 79.2493 4.20289
+BranchListIndexes 24.43 2.42295
+int_addPileupInfo_bunchSpacing_HLT. 6.10801 1.22476
+

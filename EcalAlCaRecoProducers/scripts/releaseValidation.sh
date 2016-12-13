@@ -44,6 +44,7 @@ case $CMSSW_VERSION in
 		fileMINIAOD=/store/mc/RunIISpring16MiniAODv1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/008099CA-5501-E611-9AAE-24BE05BDCEF1.root
 		fileMINIAODData=/store/data/Run2016B/DoubleEG/MINIAOD/23Sep2016-v3/00000/F48EC9B9-A197-E611-BBBE-001E6739753A.root
 		fileALCARAWData=/store/data/Run2016B/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v2/000/275/376/00000/6EB9C0F0-E639-E611-AAD9-02163E014492.root
+		fileAODSIM=/store/mc/RunIISpring16DR80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/AODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/20000/F28F765D-A3FB-E511-B7F4-3417EBE64699.root
 		json=$PWD/test/releaseValidation.json
 #/store/data/Run2016H/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v3/000/284/036/00000/240108A1-599F-E611-A3A5-FA163E7F2F56.root
 		;;
@@ -136,10 +137,54 @@ testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName
 #	rm $dir/*.root
 }
 
+
+################
+logName=alcareco_mc
+testStep 5 "Testing local production of ALCARECOSIM from AODSIM (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py type=ALCARECOSIM maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileAODSIM outputAll=False jsonFile= skim=ZSkim isCrab=0" || {
+
+	echo -n "[`basename $0`] Checking difference in dump of alcarecosim content ... "
+	edmEventSize -v $dir/alcareco.root > $logName.dump || exit 1
+
+	diff -q {$dir,test}/${logName}.dump > /dev/null || {
+		echo "${bold}ERROR${normal}"
+		echo "{$dir,test}/${logName}.dump are different" 
+		echo "you can use"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
+		exit 1
+	}
+
+	echo "OK"
+	touch $dir/done
+#	rm $dir/*.root
+}
+
+################
+logName=ntuple_alcareco_mc
+testStep 6 "Testing local production of ntuples from alcareco (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py type=ALCARECOSIM doTree=1 doExtraCalibTree=0 doExtraStudyTree=0 doEleIDTree=1 doTreeOnly=1  jsonFile= isCrab=1 skim=ZSkim tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py isPrivate=0  bunchSpacing=0 files=file:$PWD/tmp/releaseValidation/5/alcareco.root " || {
+
+	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
+		echo "${bold}ERROR${normal}"
+		echo "See $dir/${logName}_2.log" 
+		exit 1
+	}
+
+	echo -n "[`basename $0`] Checking difference in dump of ntuple content ... "
+	diff -q {$dir,test}/${logName}.dump > /dev/null || {
+		echo "${bold}ERROR${normal}"
+		echo "{$dir,test}/${logName}.dump are different" 
+		echo "you can use"
+		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
+		exit 1
+	}
+	echo "OK"
+	touch $dir/done
+#	rm $dir/*.root
+}
+
 exit 0
 ################
 logName=alcarereco_data
-testStep 5 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v3.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileALCARAWData outputAll=False jsonFile=$json  isCrab=0" || {
+testStep 5 "Testing local production of ALCARECO from AODSIMalcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Nov2016_ped_v3.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileAODSIM outputAll=False jsonFile=$json  isCrab=0" || {
 	echo "OK"
 	touch $dir/done
 #	rm $dir/*.root

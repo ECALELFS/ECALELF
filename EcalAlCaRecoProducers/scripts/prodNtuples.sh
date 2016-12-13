@@ -627,7 +627,17 @@ if [ -n "${CHECK}" ];then
 		do
 			file=`basename $file .root`
 #			echo "FILE $file"
-			( mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove ) &
+			#( mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove ) &
+			case $file in
+				*ntuple*)
+					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
+					;;
+				*eleIDTree*)
+					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
+					;;
+				*)
+					;;
+			esac
 		done
 		wait
     fi

@@ -272,6 +272,7 @@ private:
 	Short_t ySeedSC[NELE]			 = initInt;		///< iphi(iy) of the SC seed in EB(EE)
 	UChar_t gainSeedSC[NELE]		 = initInt;	///< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
 	Float_t energySeedSC[NELE]		 = initFloat;		///< energy of the rechit seeding the SC
+	Float_t timeSeedSC[NELE]         = initFloat;       ///< time of the rechit seeding the SC
 	Float_t laserSeedSC[NELE]		 = initFloat;		///< laser correction of the SC seed crystal
 	Float_t avgLCSC[NELE]			 = initFloat;
 	Float_t alphaSeedSC[NELE]		 = initFloat;		///<alpha of the seed
@@ -1163,6 +1164,7 @@ void ZNtupleDumper::InitNewTree()
 	tree->Branch("ySeedSC",            ySeedSC,            "ySeedSC[3]/S");
 	tree->Branch("gainSeedSC", gainSeedSC, "gainSeedSC[3]/b");
 	tree->Branch("energySeedSC",       energySeedSC,       "energySeedSC[3]/F");
+	tree->Branch("timeSeedSC",       timeSeedSC,       "timeSeedSC[3]/F");
 	tree->Branch("laserSeedSC",        laserSeedSC,        "laserSeedSC[3]/F");
 	tree->Branch("alphaSeedSC",        alphaSeedSC,        "alphaSeedSC[3]/F");
 	tree->Branch("slewRateDeltaESeed", slewRateDeltaESeed, "slewRateDeltaESeed[3]/F");
@@ -1334,7 +1336,9 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron, int 
 
 	//R9Ele[index] = e3x3SCEle[index] / sc->rawEnergy(); //already commented
 	R9Ele[index] = electron.full5x5_r9();
-	assert(fabs(R9Ele[index] - energy_3x3SC[index] / sc->rawEnergy()) < 1e-6);
+	if(fabs(R9Ele[index] - energy_3x3SC[index] / sc->rawEnergy()) > 1e-4) {
+		std::cerr << "[WARNING] R9 different: " << runNumber << "\t" << eventNumber << "\t" << etaEle[index] << "\t" << R9Ele[index] << "\t" << energy_3x3SC[index] / sc->rawEnergy() << std::endl;
+	}
 
 	eleIDMap eleID_map;
 
@@ -1402,6 +1406,7 @@ void ZNtupleDumper::TreeSetSingleSCVar(const reco::SuperCluster& sc, int index)
 	EcalRecHitCollection::const_iterator seedRecHit = recHits->find(seedDetId) ;
 	assert(seedRecHit != recHits->end());
 	energySeedSC[index] = seedRecHit->energy();
+	timeSeedSC[index]   = seedRecHit->time();
 
 	const edm::ESHandle<EcalLaserDbService>& laserHandle_ = clustertools->getLaserHandle();
 	laserSeedSC[index] = laserHandle_->getLaserCorrection(seedDetId, eventTime_);

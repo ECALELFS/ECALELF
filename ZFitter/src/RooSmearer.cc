@@ -250,6 +250,7 @@ void RooSmearer::InitCategories(bool mcToy)
 			}
 
 			//Shoulder in the invariant mass spectra (if the mass spectrum is too much asymmetric, the category is de-activated)
+
 			float max = cat.hist_mc->GetMaximum();
 			float left = cat.hist_mc->GetBinContent(1);
 			float right = cat.hist_mc->GetBinContent(cat.hist_mc->GetNbinsX());
@@ -300,7 +301,7 @@ void RooSmearer::InitCategories(bool mcToy)
 }
 
 
-TH1F *RooSmearer::GetSmearedHisto(ZeeCategory& category, bool isMC,
+TH1F *RooSmearer::GetSmearedHisto(ZeeCategory & category, bool isMC,
                                   bool smearEnergy, bool forceNew, bool multiSmearToy)
 {
 
@@ -367,7 +368,7 @@ TH1F *RooSmearer::GetSmearedHisto(ZeeCategory& category, bool isMC,
 	return *h;
 }
 
-void RooSmearer::SetHisto(const zee_events_t& cache, TH1F *hist) const
+void RooSmearer::SetHisto(const zee_events_t& cache, TH1F * hist) const
 {
 #ifdef DEBUG
 	hist->Print();
@@ -390,7 +391,7 @@ void RooSmearer::SetHisto(const zee_events_t& cache, TH1F *hist) const
 void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
                                  RooArgSet pars1, RooArgSet pars2,
                                  TString categoryName1, TString categoryName2, unsigned int nSmearToy,
-                                 TH1F *hist) const
+                                 TH1F * hist) const
 {
 #ifdef CPU_DEBUG
 	//  myClock->Stop(); myClock->Start();
@@ -460,7 +461,7 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
 
 
 
-double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene, float scale, float alpha, float constant, const float *fixedSmearings) const
+double RooSmearer::smearedEnergy(double * smear, unsigned int nGen, float ene, float scale, float alpha, float constant, const float * fixedSmearings) const
 {
 	// sigmaMB = sigma Material Budget
 	// if I want to take into account the non perfet simulation of the
@@ -497,7 +498,7 @@ double RooSmearer::smearedEnergy(double *smear, unsigned int nGen, float ene, fl
 
 
 
-double RooSmearer::getLogLikelihood(TH1F* data, TH1F* prob) const
+double RooSmearer::getLogLikelihood(TH1F * data, TH1F * prob) const
 {
 	if (!data || !prob) {
 		std::cout << "ERROR: empty histograms given" << std::endl;
@@ -700,7 +701,7 @@ int RooSmearer::Trag_eq(int row, int col, int N) const
 
 
 
-void RooSmearer::SetAutoBin(ZeeCategory& category, double min, double max)
+void RooSmearer::SetAutoBin(ZeeCategory & category, double min, double max)
 {
 	category.hist_mc->SetBins(1000, min, max);
 	category.hist_mc->Reset();
@@ -728,7 +729,7 @@ void RooSmearer::SetAutoBin(ZeeCategory& category, double min, double max)
 	ResetBinning(category);
 }
 
-void RooSmearer::ResetBinning(ZeeCategory& category)
+void RooSmearer::ResetBinning(ZeeCategory & category)
 {
 	category.hist_mc->SetBins(category.nBins, category.invMass_min, category.invMass_max);
 	category.hist_mc->Reset();
@@ -745,7 +746,7 @@ void RooSmearer::ResetBinning(ZeeCategory& category)
 }
 
 
-void RooSmearer::AutoNBins(ZeeCategory& category)
+void RooSmearer::AutoNBins(ZeeCategory & category)
 {
 	if(!category.active) return;
 	if(category.hist_mc->Integral() > 30000) {
@@ -806,7 +807,7 @@ void RooSmearer::AutoNBins(ZeeCategory& category)
 	return;
 }
 
-void RooSmearer::AutoNSmear(ZeeCategory& category)
+void RooSmearer::AutoNSmear(ZeeCategory & category)
 {
 
 
@@ -1006,7 +1007,7 @@ void RooSmearer::AutoNSmear(ZeeCategory& category)
 
 
 
-bool RooSmearer::isCategoryChanged(ZeeCategory& category, bool updateVar) const
+bool RooSmearer::isCategoryChanged(ZeeCategory & category, bool updateVar) const
 {
 #ifdef DEBUG
 	std::cout << "[DEBUG] Checking if category changed: " << category.categoryName1 << "\t" << category.categoryName2 << std::endl;
@@ -1119,7 +1120,7 @@ void RooSmearer::Init(TString commonCut, TString eleID, Long64_t nEvents, bool m
 	return;
 }
 
-void RooSmearer::UpdateCategoryNLL(ZeeCategory& cat, unsigned int nLLtoy, bool multiSmearToy)
+void RooSmearer::UpdateCategoryNLL(ZeeCategory & cat, unsigned int nLLtoy, bool multiSmearToy)
 {
 	TH1F *data = GetSmearedHisto(cat, false, _isDataSmeared, true, false); ///-----> not need to repeate! 1 one smearing! otherwise bin errors are wrongly reduced
 

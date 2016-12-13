@@ -218,24 +218,8 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 		if(!ele_itr->ecalDriven())
 			continue;
-
-		reco::SuperCluster correctedSuperCluster;
-
-		if (ele_itr->parentSuperCluster().isAvailable())
-			correctedSuperCluster = *(ele_itr->parentSuperCluster());
-		else
-			correctedSuperCluster = *(ele_itr->superCluster()); //just to make it run also on MINIAOD...
-
 		if (ele_itr->pt() < 5) //clusters not available in MINIAOD
 			continue;
-
-		if (!correctedSuperCluster.clusters().isAvailable())
-			continue;
-
-		//  mustache_regr_.modifyObject(correctedSuperCluster);
-		//fill the vector with the energies
-		energySC_must[iEle] = correctedSuperCluster.correctedEnergy();
-		energySC_mustVar[iEle] = correctedSuperCluster.correctedEnergyUncertainty();
 
 		if(photonsHandle.isValid()) {
 			//now associate electron to photon via SC
@@ -248,6 +232,23 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 				}
 			}
 		}
+
+		reco::SuperCluster correctedSuperCluster;
+
+		if (ele_itr->parentSuperCluster().isAvailable())
+			correctedSuperCluster = *(ele_itr->parentSuperCluster());
+		else
+			continue;
+//			correctedSuperCluster = *(ele_itr->superCluster()); //just to make it run also on MINIAOD...
+
+		if (!correctedSuperCluster.clusters().isAvailable())
+			continue;
+
+		//  mustache_regr_.modifyObject(correctedSuperCluster);
+		//fill the vector with the energies
+		energySC_must[iEle] = correctedSuperCluster.correctedEnergy();
+		energySC_mustVar[iEle] = correctedSuperCluster.correctedEnergyUncertainty();
+
 	}
 
 	//prepare product

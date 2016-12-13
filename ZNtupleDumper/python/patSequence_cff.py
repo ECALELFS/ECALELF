@@ -175,7 +175,7 @@ prePatSequence = cms.Sequence() #(eleSelectionProducers ))
 postPatSequence = cms.Sequence(eleSelectionProducers * eleNewEnergiesProducer * slimmedECALELFElectrons )
 patTriggerMatchSeq = cms.Sequence( patTrigger * PatElectronTriggerMatchHLTEle_Ele20SC4Mass50v7 * PatElectronsTriggerMatch * patTriggerEvent ) 
 patSequence=cms.Sequence( prePatSequence * patElectrons * EIsequence* postPatSequence)
-#patSequence=cms.Sequence( prePatSequence * postPatSequence)
-patSequenceMC=cms.Sequence( electronMatch * prePatSequence * patElectrons * postPatSequence)
+
+
 
 

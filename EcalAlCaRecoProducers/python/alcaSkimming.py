@@ -315,13 +315,6 @@ if(len(options.jsonFile)>0): # this works only in local
 ################################# FILTERING EVENTS
 process.PUDumperSeq = cms.Sequence()
 #process.load('Calibration.EcalAlCaRecoProducers.trackerDrivenFinder_cff')
-if(MC):
-    # PUDumper
-    process.TFileService = cms.Service(
-        "TFileService",
-        fileName = cms.string("PUDumper.root")
-        )
-    process.PUDumperSeq *= process.PUDumper
     
 if(re.match("CMSSW_5_.*", CMSSW_VERSION)):
     process.load('Calibration.EcalAlCaRecoProducers.WZElectronSkims53X_cff')
@@ -424,9 +417,12 @@ if (options.skim=="ZmmgSkim"):
 
 if(options.type!="MINIAODNTUPLE"):
     if(MC):
-        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequenceMC)
-    else:
-        process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
+        process.prePatSequence *= process.electronMatch
+        process.alCaIsolatedElectrons.uncalibRecHitCollectionEB = cms.InputTag("")
+        process.alCaIsolatedElectrons.uncalibRecHitCollectionEE = cms.InputTag("")
+        process.alCaIsolatedElectrons.esRecHitsLabel = cms.InputTag("reducedEcalRecHitsES")
+
+    process.ntupleSeq = cms.Sequence(process.jsonFilter * process.patSequence)
 else:
     #process.load('PhysicsTools.PatAlgos.slimming.MiniAODfromMiniAOD_cff')
     process.ntupleSeq = cms.Sequence(process.jsonFilter  * process.patSequence)
@@ -659,12 +655,12 @@ elif(options.type=='ALCARECO' or options.type=='ALCARECOSIM'):
     else:
         if(doAnyTree==False):
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
-                                            process.pathALCARECOEcalCalZSCElectron, process.pathALCARECOEcalCalZmmgPhoton,
+                                            process.pathALCARECOEcalCalZSCElectron, #process.pathALCARECOEcalCalZmmgPhoton,
                                             process.ALCARECOoutput_step
                                             ) # fix the output modules
         else:
             process.schedule = cms.Schedule(process.pathALCARECOEcalCalZElectron,  process.pathALCARECOEcalCalWElectron,
-                                            process.pathALCARECOEcalCalZSCElectron, process.pathALCARECOEcalCalZmmgPhoton,
+                                            process.pathALCARECOEcalCalZSCElectron, #process.pathALCARECOEcalCalZmmgPhoton,
                                             #process.ALCARECOoutput_step,
                                             process.NtuplePath, process.NtupleEndPath
                                             ) # fix the output modules
@@ -729,11 +725,28 @@ process.alcaElectronTracksReducer.electronLabel = myEleCollection
 if(options.type!="MINIAODNTUPLE"):
     rechitsEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
     rechitsEE = cms.InputTag("alCaIsolatedElectrons", "alcaEndcapHits")
-    rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
+    rechitsES = cms.InputTag("alCaIsolatedElectrons", "alcaPreshowerHits")
+    #rechitsES = cms.InputTag('ecalPreshowerRecHit','EcalRecHitsES')
 
     process.eleNewEnergiesProducer.recHitCollectionEB = rechitsEB
     process.eleNewEnergiesProducer.recHitCollectionEE = rechitsEE
 
+    for ps in     process.egmGsfElectronIDs.physicsObjectIDs:
+        for cutflow in ps.idDefinition.cutFlow:
+            if(cutflow.cutName == cms.string('GsfEleCalPFClusterIsoCut') or 
+               cutflow.cutName == cms.string('GsfEleCalPFClusterIsoCut') or
+               cutflow.cutName == cms.string('GsfEleEffAreaPFIsoCut')
+               ):
+                cutflow.rho = cms.InputTag("kt6PFJetsForRhoCorrection:rho")
+    process.electronRegressionValueMapProducer.ebReducedRecHitCollection = rechitsEB
+    process.electronRegressionValueMapProducer.eeReducedRecHitCollection = rechitsEE
+    process.electronRegressionValueMapProducer.esReducedRecHitCollection = rechitsES
+    process.electronRegressionValueMapProducer.src = myEleCollection
+    process.electronRegressionValueMapProducer.ebReducedRecHitCollectionMiniAOD = rechitsEB
+    process.electronRegressionValueMapProducer.eeReducedRecHitCollectionMiniAOD = rechitsEE
+    process.electronRegressionValueMapProducer.esReducedRecHitCollectionMiniAOD = rechitsES
+    process.electronRegressionValueMapProducer.srcMiniAOD = cms.InputTag("patElectrons")
+    
 else:
     print "MINIAOD"
     process.patSequence.remove(process.patElectrons)
