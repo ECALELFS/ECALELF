@@ -98,64 +98,6 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 	return newtree;
 }
 
-TTree* addBranch_class::AddBranch_scaleEle(TChain* originalChain, TString treename, bool isMC){
-  //To do:
-  //Add flexibility in .dat file name
-  //Add flexibility in branch names
-  //how to change doScale BEFORE creating escaler (otherwise default is false and if doScale is false correction file is not parsed)-->can't we just change doScale=true by default
-  EnergyScaleCorrection_class eScaler("/afs/cern.ch/work/g/gfasanel/17_Moriond_ECALELF/CMSSW_8_0_24_patch1/src/Calibration/ZFitter/ScalesSmearings/Winter_2016_reReco_v1_ele",0,true,true);
-  originalChain->SetBranchStatus("*",0);
-  originalChain->SetBranchStatus("runNumber",1);
-  originalChain->SetBranchStatus("etaSCEle",1);
-  originalChain->SetBranchStatus("R9Ele",1);
-  originalChain->SetBranchStatus("energy_ECAL_ele",1);
-  originalChain->SetBranchStatus("energy_ECAL_pho",1);
-  originalChain->SetBranchStatus("energySCEle_corr",1);
-
-  unsigned int    runNumber;
-  Float_t         etaSCEle[3];
-  Float_t         R9Ele[3];
-  Float_t         energy_ECAL_ele[3];
-  Float_t         energy_ECAL_pho[3];
-  
-  originalChain->SetBranchAddress("runNumber", &runNumber);
-  originalChain->SetBranchAddress("etaSCEle", etaSCEle);
-  originalChain->SetBranchAddress("R9Ele", R9Ele);
-  //originalChain->SetBranchAddress("energy_ECAL_ele", energy_ECAL_ele);
-  originalChain->SetBranchAddress("energy_ECAL_pho", energy_ECAL_pho);
-  originalChain->SetBranchAddress("energySCEle_corr", energy_ECAL_ele);
-
-  Float_t scaleEle_[3];
-  TTree *newTree = new TTree(treename,""); //treeName is scaleEle
-  newTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
-  if(isMC){//dummy scale corr for MC -->probably there is a better way
-    scaleEle_[0]=-999;
-    scaleEle_[1]=-999;
-    return newTree;
-  }
-
-  Long64_t nentries = originalChain->GetEntries();
-  //for(Long64_t ientry = 0; ientry < nentries; ientry++) {
-  for(Long64_t ientry = 0; ientry < 1000; ientry++) {
-    originalChain->GetEntry(ientry);
-    //    scaleEle_[0]=1.;
-    scaleEle_[1]=1.;
-    //scaleEle_[0] = ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0],etaEle[0], energy_ECAL_Ele[0]/cosh(etaSCEle[0]));
-    //#ifdef DEBUG_scale
-    std::cout<<"[CHECK THIS]"<<runNumber<<" "<<etaSCEle[0]<<" "<<R9Ele[0]<<" "<<etaSCEle[0]<<" "<<energy_ECAL_ele[0]<<std::endl;
-    //#endif
-    scaleEle_[0]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy_ECAL_ele[0]/cosh(etaSCEle[0]));
-
-    //Quick and dirty: In case you want to categorize in energy                                                                                                        
-    //scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0],etaEle_[0], energySCEle_[0], nPV_, nPVmean);                         
-    newTree->Fill();
-  }
-  originalChain->SetBranchStatus("*", 1);
-  originalChain->ResetBranchAddresses();
-  return newTree;
-
-}
-
 TTree* addBranch_class::AddBranch_ZPt(TChain* originalChain, TString treename, TString energyBranchName, bool fastLoop)
 {
 	//sanity checks
@@ -573,7 +515,61 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 	return newtree;
 }
 
+TTree* addBranch_class::AddBranch_scaleEle(TChain* originalChain, TString treename, bool isMC){
+  //To do:
+  //Add flexibility in .dat file name
+  //Add flexibility in branch names
+  //how to change doScale BEFORE creating escaler (otherwise default is false and if doScale is false correction file is not parsed)-->can't we just change doScale=true by default
+  EnergyScaleCorrection_class eScaler("Calibration/ZFitter/ScalesSmearings/Winter_2016_reReco_v1_ele",0,true,false);
+  originalChain->SetBranchStatus("*",0);
+  originalChain->SetBranchStatus("runNumber",1);
+  originalChain->SetBranchStatus("etaSCEle",1);
+  originalChain->SetBranchStatus("R9Ele",1);
+  originalChain->SetBranchStatus("energy_ECAL_ele",1);
+  originalChain->SetBranchStatus("energy_ECAL_pho",1);
+  originalChain->SetBranchStatus("energySCEle_corr",1);
 
+  unsigned int    runNumber;
+  Float_t         etaSCEle[3];
+  Float_t         R9Ele[3];
+  Float_t         energy_ECAL_ele[3];
+  Float_t         energy_ECAL_pho[3];
+  
+  originalChain->SetBranchAddress("runNumber", &runNumber);
+  originalChain->SetBranchAddress("etaSCEle", etaSCEle);
+  originalChain->SetBranchAddress("R9Ele", R9Ele);
+  //originalChain->SetBranchAddress("energy_ECAL_ele", energy_ECAL_ele);
+  originalChain->SetBranchAddress("energy_ECAL_pho", energy_ECAL_pho);
+  originalChain->SetBranchAddress("energySCEle_corr", energy_ECAL_ele);
+
+  Float_t scaleEle_[3];
+  TTree *newTree = new TTree(treename,""); //treeName is scaleEle
+  newTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
+  if(isMC){//dummy scale corr for MC -->probably there is a better way
+    scaleEle_[0]=-999;
+    scaleEle_[1]=-999;
+    return newTree;
+  }
+
+  Long64_t nentries = originalChain->GetEntries();
+  //for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+  for(Long64_t ientry = 0; ientry < 1000; ientry++) {
+    originalChain->GetEntry(ientry);
+    //    scaleEle_[0]=1.;
+    //scaleEle_[0] = ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0],etaEle[0], energy_ECAL_Ele[0]/cosh(etaSCEle[0]));
+    //#ifdef DEBUG_scale
+    //#endif
+    scaleEle_[0]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy_ECAL_ele[0]/cosh(etaSCEle[0]));
+    scaleEle_[1]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy_ECAL_ele[1]/cosh(etaSCEle[1]));;
+    //Quick and dirty: In case you want to categorize in energy 
+    //scaleEle_[0] = ScaleCorrection(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0],etaEle_[0], energySCEle_[0]);                    
+    newTree->Fill();
+  }
+  originalChain->SetBranchStatus("*", 1);
+  originalChain->ResetBranchAddresses();
+  return newTree;
+
+}
 
 #ifdef shervinM
 
