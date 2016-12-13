@@ -62,7 +62,7 @@ void runDivide_class::LoadRunEventNumbers(TChain *tree, std::string runNumber_br
 	TStopwatch w;
 	w.Start();
 #endif
-	Int_t runNumber;
+	run_t runNumber;
 	time_t runTime;
 
 	tree->SetBranchStatus("*", 0);
@@ -80,7 +80,7 @@ void runDivide_class::LoadRunEventNumbers(TChain *tree, std::string runNumber_br
 		tree->GetEntry(ientry);
 		auto itr = _runMap.find(runNumber);
 		if( itr == _runMap.end()) {
-			_runMap.insert(itr, std::make_pair<run_t, line>(runNumber, line(runTime, runNumber)));
+			_runMap.insert(itr, std::make_pair(runNumber, line(runTime, runNumber)));
 		} else {
 			itr->second.update(runTime);
 		}
