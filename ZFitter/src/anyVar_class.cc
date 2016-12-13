@@ -247,7 +247,7 @@ void anyVar_class::TreeToTree(TChain *chain, TCut cut)
 		vtype.push_back(typ);
 	}
         //chain->Scan("runNumber:eventNumber:runTime:eleIDTree.runNumber:eleIDTree.eventNumber:eleIDTree.runTime", "runNumber > 276316");
-        Int_t ck_run, fr_run;
+        UInt_t ck_run, fr_run;
         ULong64_t ck_evt, fr_evt;
         chain->SetBranchAddress("runNumber", &ck_run);
         chain->SetBranchAddress("eventNumber", &ck_evt);

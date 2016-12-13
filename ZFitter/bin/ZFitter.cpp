@@ -156,6 +156,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 				if(chain->GetFriend(chain_itr->first) == NULL) {
 					std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
 					          << " to tag " << tag_chain_itr->first << std::endl;
+                                        chain_itr->second->BuildIndex("runNumber", "eventNumber");
 					chain->AddFriend(chain_itr->second);
 				} // already added
 			}
@@ -347,7 +348,7 @@ int main(int argc, char **argv)
 	//Note for users: whenever the eleID selection name has a "-" put a "|" instead here
 	//This is because ElectronCategory_class splits strings based on "-" and you don't want to split the eleID name!
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
-	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
+	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_ECAL_ele"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
 	("invMass_max", po::value<float>(&invMass_max)->default_value(115.), "")
 	("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25), "Smearing binning")
@@ -1122,17 +1123,17 @@ int main(int argc, char **argv)
 		std::vector<std::pair<TString, anyVar_class::kType> > branchListAny;
 #ifdef dump_root_tree
 		// first all the single variables
-		branchListAny.push_back(make_pair("runNumber",          anyVar_class::kInt_t));
+		branchListAny.push_back(make_pair("runNumber",          anyVar_class::kUInt_t));
 		branchListAny.push_back(make_pair("eventNumber",        anyVar_class::kULong64_t));
 		branchListAny.push_back(make_pair("lumiBlock",          anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("runTime",            anyVar_class::kUInt_t));
+		branchListAny.push_back(make_pair("eventTime",          anyVar_class::kUInt_t));
 		branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
 		branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("invMass_SC_must_regrCorr_ele", anyVar_class::kFloat_t));
+		branchListAny.push_back(make_pair("invMass_ECAL_ele", anyVar_class::kFloat_t));
 		// then all the array variables
 		branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("e5x5SCEle",          anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("energy_5x5SC",          anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 		branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
