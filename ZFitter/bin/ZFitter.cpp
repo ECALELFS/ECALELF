@@ -1129,11 +1129,13 @@ int main(int argc, char **argv)
 		branchListAny.push_back(make_pair("eventTime",          anyVar_class::kUInt_t));
 		branchListAny.push_back(make_pair("nBX",                anyVar_class::kInt_t));
 		branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
-		branchListAny.push_back(make_pair("invMass_ECAL_ele", anyVar_class::kFloat_t));
+		branchListAny.push_back(make_pair("invMass_ECAL_ele",   anyVar_class::kFloat_t));
+		branchListAny.push_back(make_pair("invMass_5x5SC",      anyVar_class::kFloat_t));
 		// then all the array variables
 		branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
-		branchListAny.push_back(make_pair("energy_5x5SC",          anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("energy_5x5SC",       anyVar_class::kAFloat_t));
+		branchListAny.push_back(make_pair("rawEnergySCEle",     anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 		branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
