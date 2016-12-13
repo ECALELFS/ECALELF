@@ -167,7 +167,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 			if(chain->GetEntries() != chain_itr->second->GetEntries() && chain_itr->first!="scaleEle") {//Not scaleEle: check data and MC
 			  std::cerr << "[ERROR] Not the same number of events: " << chain->GetEntries() << "\t" << chain_itr->second->GetEntries() << std::endl;
 			  exit(1);
-			}else if (chain->GetEntries() != chain_itr->second->GetEntries() && chain_itr->first!="scaleEle" && tag_chain_itr->first.Contains("d")) {
+			}else if (chain->GetEntries() != chain_itr->second->GetEntries() && chain_itr->first=="scaleEle" && tag_chain_itr->first.Contains("d")) {
 			  //scaleEle: check data only (MC has not scale root)
 			  std::cerr << "[ERROR] Not the same number of events: " << chain->GetEntries() << "\t" << chain_itr->second->GetEntries() << std::endl;
 			  exit(1);
@@ -815,7 +815,7 @@ int main(int argc, char **argv)
 	//read corrections directly from file
 	if (vm.count("corrEleType") && corrEleFile != "") {
 		std::cout << "------------------------------------------------------------" << std::endl;
-		std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
+		std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl; //corrEleFile path has to start from ${CMS_BASE}/src
 		TString treeName = "scaleEle_" + corrEleType;
 		EnergyScaleCorrection_class eScaler(corrEleFile, 0, true, false);
 
@@ -834,13 +834,39 @@ int main(int argc, char **argv)
 				std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 				exit(1);
 			}
-#ifdef toBeFixed
-			TTree *corrTree = eScaler.GetCorrTree(ch, "runNumber", "R9Eleprime");
-#else
-			TTree *corrTree = NULL;
-#endif
-			corrTree->SetName(TString("scaleEle_") + corrEleType.c_str());
-			corrTree->SetTitle(corrEleType.c_str());
+
+			////////////////////////////****///////////////////////////////////////
+			//-> Put this in a function?
+			//GetCorrTree does not exist anymore in EnergyScaleCorrection_class
+			Float_t scaleEle_[3];
+			TTree *corrTree = new TTree(treeName,""); //treeName is scaleEle_corrEleType
+			corrTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
+			ch->SetBranchStatus("*",0);
+			ch->SetBranchStatus("runNumber",1);
+			ch->SetBranchStatus("etaSCEle",1);
+			ch->SetBranchStatus("R9Ele",1);//or R9Eleprime
+			ch->SetBranchStatus(energyBranchName,1);
+
+			unsigned int    runNumber;
+			Float_t         etaSCEle[3];
+			Float_t         R9Ele[3];
+			Float_t         energy[3];
+
+			ch->SetBranchAddress("runNumber", &runNumber);
+			ch->SetBranchAddress("etaSCEle", etaSCEle);
+			ch->SetBranchAddress("R9Ele", R9Ele);//or R9Eleprime
+			ch->SetBranchAddress(energyBranchName, energy);
+			Long64_t nentries = ch->GetEntries();
+			for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+			//for(Long64_t ientry = 0; ientry < 1000; ientry++) {//quick test
+			  ch->GetEntry(ientry);
+			  scaleEle_[0]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0]/cosh(etaSCEle[0]));
+			  scaleEle_[1]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1]/cosh(etaSCEle[1]));;
+			  corrTree->Fill();
+			}
+			ch->SetBranchStatus("*", 1);
+			ch->ResetBranchAddresses();
+			////////////////////////////****///////////////////////////////////////
 			f.cd();
 			corrTree->Write();
 			std::cout << "[INFO] Data entries: "    << ch->GetEntries() << std::endl;
