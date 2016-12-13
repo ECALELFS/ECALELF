@@ -20,14 +20,14 @@ typedef enum { kEffSigma, kHSM, kREM, kMedian } Estimator;
 typedef enum { kMass = 0, kTime, kNPV, kR9, kSieie, kVars } Variable;
 
 typedef struct {
-        Int_t   run;
-        Int_t   bx;
-        UInt_t  ts;
-        Int_t   nPV;
-        Float_t mass;
-        Float_t etaSC[3];
-        Float_t r9[3];
-        Float_t sieie[3];
+        UInt_t   run;
+        UShort_t bx;
+        UInt_t   ts;
+        UChar_t  nPV;
+        Float_t  mass;
+        Float_t  etaSC[3];
+        Float_t  r9[3];
+        Float_t  sieie[3];
 } Event;
 Event e;
 
@@ -64,15 +64,15 @@ void set_branches(TTree * t)
 {
         t->SetBranchAddress("runNumber", &e.run);
         brlist.push_back("runNumber");
-        t->SetBranchAddress("runTime", &e.ts);
-        brlist.push_back("runTime");
+        t->SetBranchAddress("eventTime", &e.ts);
+        brlist.push_back("eventTime");
         t->SetBranchAddress("nBX", &e.bx);
         brlist.push_back("nBX");
         t->SetBranchAddress("nPV", &e.nPV);
         brlist.push_back("nPV");
-        t->SetBranchAddress("invMass_SC_must_regrCorr_ele", &e.mass);
-        brlist.push_back("invMass_SC_must_regrCorr_ele");
-        t->SetAlias("mass", "invMass_SC_must_regrCorr_ele");
+        t->SetBranchAddress("invMass_ECAL_ele", &e.mass);
+        brlist.push_back("invMass_ECAL_ele");
+        t->SetAlias("mass", "invMass_ECAL_ele");
         t->SetBranchAddress("R9Ele", e.r9);
         brlist.push_back("R9Ele");
         t->SetBranchAddress("etaSCEle", e.etaSC);
