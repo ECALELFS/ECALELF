@@ -150,7 +150,7 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 	        tag_chain_itr++) {
 		// take the selected tree of that tag
 		TChain * chain = (tag_chain_itr->second.find("selected"))->second.get();
-
+		
 		// loop over all the trees
 		for(chain_map_t::const_iterator chain_itr = tag_chain_itr->second.begin();
 		        chain_itr != tag_chain_itr->second.end();
@@ -160,13 +160,17 @@ void UpdateFriends(tag_chain_map_t& tagChainMap, TString regionsFileNameTag)
 				if(chain->GetFriend(chain_itr->first) == NULL) {
 					std::cout << "[STATUS] Adding friend branch: " << chain_itr->first
 					          << " to tag " << tag_chain_itr->first << std::endl;
-					chain->AddFriend(chain_itr->second.get());
+					  chain->AddFriend(chain_itr->second.get());
 				} // already added
 			}
 
-			if(chain->GetEntries() != chain_itr->second->GetEntries()) {
-				std::cerr << "[ERROR] Not the same number of events: " << chain->GetEntries() << "\t" << chain_itr->second->GetEntries() << std::endl;
-				exit(1);
+			if(chain->GetEntries() != chain_itr->second->GetEntries() && chain_itr->first!="scaleEle") {//Not scaleEle: check data and MC
+			  std::cerr << "[ERROR] Not the same number of events: " << chain->GetEntries() << "\t" << chain_itr->second->GetEntries() << std::endl;
+			  exit(1);
+			}else if (chain->GetEntries() != chain_itr->second->GetEntries() && chain_itr->first!="scaleEle" && tag_chain_itr->first.Contains("d")) {
+			  //scaleEle: check data only (MC has not scale root)
+			  std::cerr << "[ERROR] Not the same number of events: " << chain->GetEntries() << "\t" << chain_itr->second->GetEntries() << std::endl;
+			  exit(1);
 			}
 		}
 	}
@@ -347,7 +351,7 @@ int main(int argc, char **argv)
 	//
 	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "")
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
-	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
+	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_ECAL_ele"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
 	("invMass_max", po::value<float>(&invMass_max)->default_value(115.), "")
 	("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25), "Smearing binning")
@@ -936,11 +940,15 @@ int main(int argc, char **argv)
 			if(tag_chain_itr->second.count(treeName) != 0) continue; //skip if already present
 			if(t != "" && !tag_chain_itr->first.Contains(t)) continue;
 			TChain * ch = (tag_chain_itr->second.find("selected"))->second.get();
-
+			//addBranch for friend trees creation
 			//data
 			std::cout << "[STATUS] Adding branch " << branchName << " to " << tag_chain_itr->first << std::endl;
-			TString filename = "tmp/" + treeName + "_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
-
+			TString filename="";
+			if(treeName.CompareTo("scaleEle")==0){
+			  filename = "tmp/" + treeName+"_"+corrEleType+ "_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
+			}else{
+			  filename = "tmp/" + treeName+ "_" + tag_chain_itr->first + "-" + chainFileListTag + ".root";
+			}
 			TTree *newTree = newBrancher.AddBranch(ch, treeName, branchName, true, tag_chain_itr->first.Contains("s"));
 			if(newTree == NULL) {
 				std::cerr << "[ERROR] New tree for branch " << treeName << " is NULL" << std::endl;
