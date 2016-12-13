@@ -17,7 +17,7 @@
 #include "interface/Stats.hh"
 
 typedef enum { kEffSigma, kHSM, kREM, kMedian } Estimator;
-typedef enum { kMass = 0, kTime, kNPV, kR9, kSieie, kVars } Variable;
+typedef enum { kMass = 0, kMass5x5, kTime, kNPV, kR9, kSieie, kS4, kEtaWidth, k3x3o5x5, kVars } Variable;
 
 typedef struct {
         UInt_t   run;
@@ -25,9 +25,14 @@ typedef struct {
         UInt_t   ts;
         UChar_t  nPV;
         Float_t  mass;
+        Float_t  mass5x5;
         Float_t  etaSC[3];
         Float_t  r9[3];
         Float_t  sieie[3];
+        Float_t  s4[3];
+        Float_t  etaWidth[3];
+        Float_t  e5x5[3];
+        Float_t  eRawSC[3];
 } Event;
 Event e;
 
@@ -73,12 +78,20 @@ void set_branches(TTree * t)
         t->SetBranchAddress("invMass_ECAL_ele", &e.mass);
         brlist.push_back("invMass_ECAL_ele");
         t->SetAlias("mass", "invMass_ECAL_ele");
+        t->SetBranchAddress("invMass_5x5SC", &e.mass5x5);
+        brlist.push_back("invMass_5x5SC");
         t->SetBranchAddress("R9Ele", e.r9);
         brlist.push_back("R9Ele");
         t->SetBranchAddress("etaSCEle", e.etaSC);
         brlist.push_back("etaSCEle");
         t->SetBranchAddress("sigmaIEtaIEtaSCEle", e.sieie);
         brlist.push_back("sigmaIEtaIEtaSCEle");
+        t->SetBranchAddress("energy_5x5SC", e.e5x5);
+        brlist.push_back("energy_5x5SC");
+        t->SetBranchAddress("S4", e.s4);
+        brlist.push_back("S4");
+        t->SetBranchAddress("rawEnergySCEle", e.eRawSC);
+        brlist.push_back("rawEnergySCEle");
         //t->SetCacheSize(5000000000);
         enable_branches(t);
 }
@@ -506,12 +519,16 @@ int main(int argc, char ** argv)
         read_bunch_list("bunches.dat", runlist, bxlist);
 
         std::vector<std::unique_ptr<TH1F> > histos(kVars);
-        histos[kR9]    = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 1200, 0.0, 1.2));
-        histos[kSieie] = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0.002, 0.04));
-        //histos[kSieie] = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0., 0.075));
-        histos[kMass]  = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
-        histos[kTime]  = std::unique_ptr<TH1F>(new TH1F("htime", "time", 1000, 1456786800., 1478613587.));
-        histos[kNPV]   = std::unique_ptr<TH1F>(new TH1F("hnPV", "nPV", 100, 0., 100.));
+        histos[kR9]       = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 1200, 0.0, 1.2));
+        histos[kSieie]    = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0.002, 0.04));
+        histos[kS4]       = std::unique_ptr<TH1F>(new TH1F("hs4", "S4", 1200, 0.0, 1.2));
+        histos[kEtaWidth] = std::unique_ptr<TH1F>(new TH1F("hetawidth", "etaWidth", 1200, 0.0, 1.2));
+        histos[k3x3o5x5]  = std::unique_ptr<TH1F>(new TH1F("h3x3o5x5", "3x3over5x5", 1200, 0.0, 1.2));
+        //histos[kSieie]  = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0., 0.075));
+        histos[kMass]     = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
+        histos[kMass5x5]  = std::unique_ptr<TH1F>(new TH1F("hmass5x5", "mass5x5", 500, 20., 120.));
+        histos[kTime]     = std::unique_ptr<TH1F>(new TH1F("htime", "time", 1000, 1456786800., 1478613587.));
+        histos[kNPV]      = std::unique_ptr<TH1F>(new TH1F("hnPV", "nPV", 100, 0., 100.));
 
         std::map<int, std::unique_ptr<TH1F> > histos_bx;
         std::map<int, std::vector<std::unique_ptr<TH1F> > > histos_bx_sel;
@@ -521,11 +538,15 @@ int main(int argc, char ** argv)
         TFile * fout = TFile::Open(tmp, "recreate");
 
         std::vector<std::string> vars(kVars);
-        vars[kR9]    = "r9";
-        vars[kSieie] = "sieie";
-        vars[kMass]  = "mass";
-        vars[kTime]  = "time";
-        vars[kNPV]   = "nPV";
+        vars[kR9]       = "r9";
+        vars[kSieie]    = "sieie";
+        vars[kS4]       = "s4";
+        vars[kEtaWidth] = "etaWidth";
+        vars[k3x3o5x5]  = "3x3o5x5";
+        vars[kMass]     = "mass";
+        vars[kMass5x5]  = "mass5x5";
+        vars[kTime]     = "time";
+        vars[kNPV]      = "nPV";
 
         std::vector<std::map<std::string, stats> > data(kVars);
         for (size_t v = 0; v < kVars; ++v) {
@@ -546,6 +567,11 @@ int main(int argc, char ** argv)
                         data[kMass][category_run() + "_" + c].add(e.mass);
                         data[kMass][cat_run_inclusive + "_" + cat_nPV].add(e.mass);
                         data[kMass][cat_run_inclusive + "_" + category_bx()].add(e.mass);
+                        // 5x5 mass
+                        data[kMass5x5][cat_run_inclusive + "_" + c].add(e.mass5x5);
+                        data[kMass5x5][category_run() + "_" + c].add(e.mass5x5);
+                        data[kMass5x5][cat_run_inclusive + "_" + cat_nPV].add(e.mass5x5);
+                        data[kMass5x5][cat_run_inclusive + "_" + category_bx()].add(e.mass5x5);
                 }
                 data[kTime][category_run()].add(e.ts);
                 data[kTime][cat_run_inclusive].add(e.ts);
@@ -571,6 +597,9 @@ int main(int argc, char ** argv)
                                 //fprintf(stderr, "--> %lu %f --> %s\n", (size_t)e.run, e.etaSC[jel], s.c_str());
                                 data[kR9][s].add(e.r9[jel]);
                                 data[kSieie][s].add(e.sieie[jel]);
+                                data[kS4][s].add(e.s4[jel]);
+                                data[kEtaWidth][s].add(e.etaWidth[jel]);
+                                data[k3x3o5x5][s].add(e.r9[jel] * e.eRawSC[jel] / e.e5x5[jel]);
                         }
                 }
         }
