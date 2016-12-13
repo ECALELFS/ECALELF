@@ -92,6 +92,8 @@ void set_branches(TTree * t)
         brlist.push_back("S4");
         t->SetBranchAddress("rawEnergySCEle", e.eRawSC);
         brlist.push_back("rawEnergySCEle");
+        t->SetBranchAddress("etaWidth", e.etaWidth);
+        brlist.push_back("etaWidth");
         //t->SetCacheSize(5000000000);
         enable_branches(t);
 }
@@ -522,7 +524,7 @@ int main(int argc, char ** argv)
         histos[kR9]       = std::unique_ptr<TH1F>(new TH1F("hr9", "R9", 1200, 0.0, 1.2));
         histos[kSieie]    = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0.002, 0.04));
         histos[kS4]       = std::unique_ptr<TH1F>(new TH1F("hs4", "S4", 1200, 0.0, 1.2));
-        histos[kEtaWidth] = std::unique_ptr<TH1F>(new TH1F("hetawidth", "etaWidth", 1200, 0.0, 1.2));
+        histos[kEtaWidth] = std::unique_ptr<TH1F>(new TH1F("hetawidth", "etaWidth", 2000, 0.0, 0.1));
         histos[k3x3o5x5]  = std::unique_ptr<TH1F>(new TH1F("h3x3o5x5", "3x3over5x5", 1200, 0.0, 1.2));
         //histos[kSieie]  = std::unique_ptr<TH1F>(new TH1F("sieie", "sieie", 300, 0., 0.075));
         histos[kMass]     = std::unique_ptr<TH1F>(new TH1F("hmass", "mass", 300, 60., 120.));
