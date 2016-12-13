@@ -423,6 +423,10 @@ std::vector<std::string> category_electron(int idx)
         crun.push_back(category_run_inclusive());
         std::string r =  category_run();
         if (r != "") crun.push_back(r);
+        static char cat_nPV[16];
+        int bpv = e.nPV / 3;
+        sprintf(cat_nPV, "nPVf%02dt%02d", bpv * 3, (bpv + 1) * 3 - 1);
+        crun.push_back(cat_nPV);
         std::vector<std::string> ceta;
         float eta = fabs(e.etaSC[idx]);
         if (isEB(eta))      ceta.push_back("EB");
@@ -449,9 +453,22 @@ std::vector<std::string> category_dielectron()
 {
         std::vector<std::string> res;
         res.push_back("inclusive");
-        if (isEB(e.etaSC[0]) && isEB(e.etaSC[1])) res.push_back("EBEB");
-        else                                      res.push_back("notEBEB");
+        if (isEB(e.etaSC[0]) && isEB(e.etaSC[1])) {
+                res.push_back("EBEB");
+                if (std::max(fabs(e.etaSC[0]), fabs(e.etaSC[1])) < 1.) {
+                        res.push_back("LELE");
+                }
+        } else {
+                res.push_back("notEBEB");
+        }
         if (isEE(e.etaSC[0]) && isEE(e.etaSC[1])) res.push_back("EEEE");
+        //std::string bx = category_bx();
+        //std::vector<std::string> res_fin;
+        //for (auto & r : res) {
+        //        res_fin.push_back(r);
+        //        res_fin.push_back(r + "_" + bx);
+        //}
+        //return res_fin;
         return res;
 }
 
@@ -517,13 +534,18 @@ int main(int argc, char ** argv)
         size_t nentries = t->GetEntries();
         sprintf(tmp, "%lu_%lu", runs_meta_data.begin()->first, runs_meta_data.rbegin()->first);
         std::string cat_run_inclusive(category_run_inclusive());
+        static char cat_nPV[16];
         for (size_t ien = 0; ien < nentries; ++ien) {
                 t->GetEntry(ien);
                 if (ien % 12347 == 0) fprintf(stderr, " Processed events: %lu (%.2f%%)  run=%d  mass=%f\r", ien, (Float_t)ien / nentries * 100, e.run, e.mass);
                 if (!(e.mass >= 60 && e.mass <= 120)) continue;
+                int bpv = e.nPV / 3;
+                sprintf(cat_nPV, "nPVf%02dt%02d", bpv * 3, (bpv + 1) * 3 - 1);
                 for (auto & c : category_dielectron()) {
                         data[kMass][cat_run_inclusive + "_" + c].add(e.mass);
                         data[kMass][category_run() + "_" + c].add(e.mass);
+                        data[kMass][cat_run_inclusive + "_" + cat_nPV].add(e.mass);
+                        data[kMass][cat_run_inclusive + "_" + category_bx()].add(e.mass);
                 }
                 data[kTime][category_run()].add(e.ts);
                 data[kTime][cat_run_inclusive].add(e.ts);
