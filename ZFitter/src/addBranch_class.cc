@@ -102,8 +102,8 @@ TTree* addBranch_class::AddBranch_scaleEle(TChain* originalChain, TString treena
   //To do:
   //Add flexibility in .dat file name
   //Add flexibility in branch names
-  EnergyScaleCorrection_class eScaler("/afs/cern.ch/work/g/gfasanel/17_Moriond_ECALELF/CMSSW_8_0_24_patch1/src/Calibration/ZFitter/ScalesSmearings/Winter_2016_reReco_v1_ele_scales.dat");
-  eScaler.doScale=true;
+  //how to change doScale BEFORE creating escaler (otherwise default is false and if doScale is false correction file is not parsed)-->can't we just change doScale=true by default
+  EnergyScaleCorrection_class eScaler("/afs/cern.ch/work/g/gfasanel/17_Moriond_ECALELF/CMSSW_8_0_24_patch1/src/Calibration/ZFitter/ScalesSmearings/Winter_2016_reReco_v1_ele",0,true,true);
   originalChain->SetBranchStatus("*",0);
   originalChain->SetBranchStatus("runNumber",1);
   originalChain->SetBranchStatus("etaSCEle",1);
