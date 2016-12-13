@@ -1139,6 +1139,11 @@ int main(int argc, char **argv)
 		branchListAny.push_back(make_pair("chargeEle",          anyVar_class::kAInt_t));
 		branchListAny.push_back(make_pair("R9Ele",              anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("sigmaIEtaIEtaSCEle", anyVar_class::kAFloat_t));
+                branchListAny.push_back(make_pair("S4",                 anyVar_class::kAFloat_t));
+                branchListAny.push_back(make_pair("etaWidth",           anyVar_class::kAFloat_t));
+                branchListAny.push_back(make_pair("phiWidth",           anyVar_class::kAFloat_t));
+                branchListAny.push_back(make_pair("E2x2",               anyVar_class::kAFloat_t));
+                branchListAny.push_back(make_pair("E1x3",               anyVar_class::kAFloat_t));
 #endif
 		anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/");
 		//anyVar_class anyVar(mc, branchListAny, cutter, invMass_var, outDirFitResData + "/");
