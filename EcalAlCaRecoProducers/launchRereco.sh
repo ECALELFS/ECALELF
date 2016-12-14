@@ -16,10 +16,12 @@ for PERIOD in CAL_SEP2016_V2 RUN2016H
 do
 case $PERIOD in
 	CAL_SEP2016_V2)
-		tags=(config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py config/reRecoTags/Cal_Nov2016_{PS_v1,ped_v1,ped_v2,ref,ESMIP_v1}.py)
+		tags=(config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py config/reRecoTags/Cal_Nov2016_{PS_v1,ped_v1,ped_v2,ped_v3,ref,ESMIP_v1}.py)
+		tags=(config/reRecoTags/Cal_Nov2016_{ped_v3,time_v1}.py)
 		;;
 	RUN2016H)
-		tags=(config/reRecoTags/80X_dataRun2_Prompt_v14.py config/reRecoTags/Cal_Dec2016_{PS_v1,ped_v1,ped_v2,ref,ESMIP_v1}.py)
+		tags=(config/reRecoTags/80X_dataRun2_Prompt_v14.py config/reRecoTags/Cal_Dec2016_{PS_v1,ped_v1,ped_v2,ped_v3,ref,ESMIP_v1}.py)
+		tags=(config/reRecoTags/Cal_Dec2016_{ped_v3,time_v1}.py)
 		;;
 esac
 for tagfile in ${tags[@]}
@@ -45,7 +47,7 @@ do
 		esac
 	done
 
-	for CHECK in  --check
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_*2016_ref.py)
