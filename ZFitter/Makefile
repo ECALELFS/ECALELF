@@ -3,6 +3,12 @@ include MakeVars
 #### Make the list of modules from the list of .cc files in the SRC directory
 MODULES=$(shell ls $(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
 MODULES_EXT=-L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)/
+
+-include $(CMSSW_BASE)/.SCRAM/$(SCRAM_ARCH)/MakeData/Tools/cmssw.mk
+ifdef cmssw_EX_LIBDIR
+MODULES_EXT+=-L$(cmssw_EX_LIBDIR)
+endif
+
 MODULESEoP=$(shell ls $(EoPDir)/$(SRCDIR)/*.cc | sed "s|.cc|.o|;s|$(SRCDIR)|$(OBJ_DIR)|g")
 #### Make the list of dependencies for a particular module
 
