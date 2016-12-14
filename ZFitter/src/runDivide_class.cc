@@ -1,5 +1,5 @@
 #include "../interface/runDivide_class.hh"
-//#define DEBUG
+#define DEBUG
 #include <cassert>
 #ifdef DEBUG
 #include <TStopwatch.h>
@@ -37,7 +37,10 @@ void runDivide_class::ReadRunRangeLimits(std::string fileName)
 			file.get();
 			continue;
 		}
-
+		while(file.peek() == 32){ // space
+			file.get();
+			continue;
+		}
 		if(file.peek() == 35) { // comment, the rest of the line can be skipped
 			file.ignore(1000, 10);
 			continue;

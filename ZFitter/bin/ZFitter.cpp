@@ -347,7 +347,7 @@ int main(int argc, char **argv)
 	//
 	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "")
 	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
-	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_SC_must"), "")
+	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_ECAL_ele"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
 	("invMass_max", po::value<float>(&invMass_max)->default_value(115.), "")
 	("invMass_binWidth", po::value<float>(&invMass_binWidth)->default_value(0.25), "Smearing binning")
