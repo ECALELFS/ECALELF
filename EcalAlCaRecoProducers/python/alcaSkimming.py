@@ -804,6 +804,7 @@ if(options.type=="ALCARERECO"):
     #process.egmGsfElectronIDs.physicsObjectSrc = recalibElectronSrc
 
     process.patElectrons.electronSource                = recalibElectronSrc
+    process.alCaIsolatedElectrons.esRecHitsLabel = cms.InputTag("ecalPreshowerRecHit","EcalRecHitsES")
     process.eleSelectionProducers.chIsoVals = cms.InputTag('elPFIsoValueCharged03PFIdRecalib')
     process.eleSelectionProducers.emIsoVals = cms.InputTag('elPFIsoValueGamma03PFIdRecalib')
     process.eleSelectionProducers.nhIsoVals = cms.InputTag('elPFIsoValueNeutral03PFIdRecalib')
