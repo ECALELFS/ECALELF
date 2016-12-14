@@ -1131,6 +1131,7 @@ int main(int argc, char **argv)
 		branchListAny.push_back(make_pair("nPV",                anyVar_class::kInt_t));
 		branchListAny.push_back(make_pair("invMass_ECAL_ele",   anyVar_class::kFloat_t));
 		branchListAny.push_back(make_pair("invMass_5x5SC",      anyVar_class::kFloat_t));
+		branchListAny.push_back(make_pair("rho",                anyVar_class::kFloat_t));
 		// then all the array variables
 		branchListAny.push_back(make_pair("etaSCEle",           anyVar_class::kAFloat_t));
 		branchListAny.push_back(make_pair("phiSCEle",           anyVar_class::kAFloat_t));
