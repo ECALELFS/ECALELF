@@ -6,7 +6,7 @@
 #define GAP
 #include <TPRegexp.h>
 #include <stdlib.h>
-
+#include <memory>
 ElectronCategory_class::~ElectronCategory_class()
 {
 	return;
