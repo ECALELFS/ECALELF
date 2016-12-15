@@ -23,11 +23,6 @@ public:
 	~histoFunc() {
 	};
 
-	//norm histo
-	double GetIntegral() {
-		double nn = histo_p -> Integral();
-		return(nn);
-	}
 
 	//! operator()
 	double operator()(double* x, double* par) {

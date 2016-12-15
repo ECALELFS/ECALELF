@@ -63,11 +63,7 @@ int main(int argc, char** argv)
 
 
 	std::string configFileName = argv[1];
-#ifdef CMSSW_7_2_X
 	std::shared_ptr<edm::ParameterSet> parameterSet = edm::readConfig(configFileName);
-#else
-	boost::shared_ptr<edm::ParameterSet> parameterSet = edm::readConfig(configFileName);
-#endif
 	edm::ParameterSet Options = parameterSet -> getParameter<edm::ParameterSet>("Options");
 	//  parameterSet.reset();
 
@@ -160,7 +156,7 @@ int main(int argc, char** argv)
 
 	//--- weights for MC
 	TFile weightsFile (WeightforMC.c_str(), "READ");
-	TH1F* hweights = (TH1F*)weightsFile.Get("hweights");
+	TH1F* hweights = (TH1F*)weightsFile.Get("pileup");
 
 	float w[100];
 	for (int ibin = 1; ibin < hweights->GetNbinsX() + 1; ibin++) {
@@ -183,157 +179,78 @@ int main(int argc, char** argv)
 	std::cout << "     MC  : " << ntu_MC->GetEntries() << " entries in  MC  sample" << std::endl;
 
 	// observables
-	int isW;
-	float mZ;
-	float scEta,  scPhi;
-	float scEta2, scPhi2;
-	float eleEta,  elePhi;
-	float eleEta2, elePhi2;
-	float scEne,  scEneReg,  scEt,  scERaw,  e3x3,  R9;
-	float scEne2, scEneReg2, scEt2, scERaw2, e3x32, R92;
-	float charge, charge2;
-	float pTK, pTK2;
-	int iphiSeed,  ele1_ix, ele1_iy, ele1_iz;
-	int iphiSeed2, ele2_ix, ele2_iy, ele2_iz;
-	int npu;
+	//  int isW;
+	float invMass_SC;
+	float etaSCEle[3], phiSCEle[3];
+	float etaEle[3], phiEle[3];
+	float energySCEle[3], rawEnergySCEle[3], R9Ele[3];
+	int chargeEle[3];
+	float pAtVtxGsfEle[3];
+	float seedXSCEle[3], seedYSCEle[3];
+	int NPU[1];
+	float PtEle[3];
+	int ele1_iz, ele2_iz;
 
 	// Set branch addresses for Data
 	ntu_DA->SetBranchStatus("*", 0);
-	ntu_DA->SetBranchStatus("isW", 1);
-	ntu_DA->SetBranchAddress("isW", &isW);
-	ntu_DA->SetBranchStatus("ele1_eta", 1);
-	ntu_DA->SetBranchAddress("ele1_eta", &eleEta);
-	ntu_DA->SetBranchStatus("ele2_eta", 1);
-	ntu_DA->SetBranchAddress("ele2_eta", &eleEta2);
-	ntu_DA->SetBranchStatus("ele1_phi", 1);
-	ntu_DA->SetBranchAddress("ele1_phi", &elePhi);
-	ntu_DA->SetBranchStatus("ele2_phi", 1);
-	ntu_DA->SetBranchAddress("ele2_phi", &elePhi2);
-	ntu_DA->SetBranchStatus("ele1_scEta", 1);
-	ntu_DA->SetBranchAddress("ele1_scEta", &scEta);
-	ntu_DA->SetBranchStatus("ele2_scEta", 1);
-	ntu_DA->SetBranchAddress("ele2_scEta", &scEta2);
-	ntu_DA->SetBranchStatus("ele1_scPhi", 1);
-	ntu_DA->SetBranchAddress("ele1_scPhi", &scPhi);
-	ntu_DA->SetBranchStatus("ele2_scPhi", 1);
-	ntu_DA->SetBranchAddress("ele2_scPhi", &scPhi2);
-	ntu_DA->SetBranchStatus("ele1_scE", 1);
-	ntu_DA->SetBranchAddress("ele1_scE", &scEne);
-	ntu_DA->SetBranchStatus("ele2_scE", 1);
-	ntu_DA->SetBranchAddress("ele2_scE", &scEne2);
-	ntu_DA->SetBranchStatus("ele1_scE_regression", 1);
-	ntu_DA->SetBranchAddress("ele1_scE_regression", &scEneReg);
-	ntu_DA->SetBranchStatus("ele2_scE_regression", 1);
-	ntu_DA->SetBranchAddress("ele2_scE_regression", &scEneReg2);
-	ntu_DA->SetBranchStatus("ele1_scEt", 1);
-	ntu_DA->SetBranchAddress("ele1_scEt", &scEt);
-	ntu_DA->SetBranchStatus("ele2_scEt", 1);
-	ntu_DA->SetBranchAddress("ele2_scEt", &scEt2);
-	ntu_DA->SetBranchStatus("ele1_scERaw", 1);
-	ntu_DA->SetBranchAddress("ele1_scERaw", &scERaw);
-	ntu_DA->SetBranchStatus("ele2_scERaw", 1);
-	ntu_DA->SetBranchAddress("ele2_scERaw", &scERaw2);
-	ntu_DA->SetBranchStatus("ele1_e3x3", 1);
-	ntu_DA->SetBranchAddress("ele1_e3x3", &e3x3);
-	ntu_DA->SetBranchStatus("ele2_e3x3", 1);
-	ntu_DA->SetBranchAddress("ele2_e3x3", &e3x32);
-	ntu_DA->SetBranchStatus("ele1ele2_scM", 1);
-	ntu_DA->SetBranchAddress("ele1ele2_scM", &mZ);
-	ntu_DA->SetBranchStatus("ele1_charge", 1);
-	ntu_DA->SetBranchAddress("ele1_charge", &charge);
-	ntu_DA->SetBranchStatus("ele2_charge", 1);
-	ntu_DA->SetBranchAddress("ele2_charge", &charge2);
-	ntu_DA->SetBranchStatus("ele1_tkP", 1);
-	ntu_DA->SetBranchAddress("ele1_tkP", &pTK);
-	ntu_DA->SetBranchStatus("ele2_tkP", 1);
-	ntu_DA->SetBranchAddress("ele2_tkP", &pTK2);
-	ntu_DA->SetBranchStatus("ele1_seedIphi", 1);
-	ntu_DA->SetBranchAddress("ele1_seedIphi", &iphiSeed);
-	ntu_DA->SetBranchStatus("ele2_seedIphi", 1);
-	ntu_DA->SetBranchAddress("ele2_seedIphi", &iphiSeed2);
-	ntu_DA->SetBranchStatus("ele1_seedIx", 1);
-	ntu_DA->SetBranchAddress("ele1_seedIx", &ele1_ix);
-	ntu_DA->SetBranchStatus("ele2_seedIx", 1);
-	ntu_DA->SetBranchAddress("ele2_seedIx", &ele2_ix);
-	ntu_DA->SetBranchStatus("ele1_seedIy", 1);
-	ntu_DA->SetBranchAddress("ele1_seedIy", &ele1_iy);
-	ntu_DA->SetBranchStatus("ele2_seedIy", 1);
-	ntu_DA->SetBranchAddress("ele2_seedIy", &ele2_iy);
-	ntu_DA->SetBranchStatus("ele1_seedZside", 1);
-	ntu_DA->SetBranchAddress("ele1_seedZside", &ele1_iz);
-	ntu_DA->SetBranchStatus("ele2_seedZside", 1);
-	ntu_DA->SetBranchAddress("ele2_seedZside", &ele2_iz);
+	//  ntu_DA->SetBranchStatus("isW", 1);                 ntu_DA->SetBranchAddress("isW", &isW);
+	ntu_DA->SetBranchStatus("etaEle", 1);
+	ntu_DA->SetBranchAddress("etaEle", &etaEle);
+	ntu_DA->SetBranchStatus("phiEle", 1);
+	ntu_DA->SetBranchAddress("phiEle", &phiEle);
+	ntu_DA->SetBranchStatus("etaSCEle", 1);
+	ntu_DA->SetBranchAddress("etaSCEle", &etaSCEle);
+	ntu_DA->SetBranchStatus("phiSCEle", 1);
+	ntu_DA->SetBranchAddress("phiSCEle", &phiSCEle);
+	ntu_DA->SetBranchStatus("energySCEle", 1);
+	ntu_DA->SetBranchAddress("energySCEle", &energySCEle);
+	ntu_DA->SetBranchStatus("rawEnergySCEle", 1);
+	ntu_DA->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle);
+	ntu_DA->SetBranchStatus("PtEle", 1);
+	ntu_DA->SetBranchAddress("PtEle", &PtEle);
+	ntu_DA->SetBranchStatus("invMass_SC", 1);
+	ntu_DA->SetBranchAddress("invMass_SC", &invMass_SC);
+	ntu_DA->SetBranchStatus("chargeEle", 1);
+	ntu_DA->SetBranchAddress("chargeEle", &chargeEle);
+	ntu_DA->SetBranchStatus("pAtVtxGsfEle", 1);
+	ntu_DA->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
+	ntu_DA->SetBranchStatus("seedXSCEle", 1);
+	ntu_DA->SetBranchAddress("seedXSCEle", &seedXSCEle);
+	ntu_DA->SetBranchStatus("seedYSCEle", 1);
+	ntu_DA->SetBranchAddress("seedYSCEle", &seedYSCEle);
 
 
 	// Set branch addresses for MC
 	ntu_MC->SetBranchStatus("*", 0);
-	ntu_MC->SetBranchStatus("isW", 1);
-	ntu_MC->SetBranchAddress("isW", &isW);
-	ntu_MC->SetBranchStatus("ele1_eta", 1);
-	ntu_MC->SetBranchAddress("ele1_eta", &eleEta);
-	ntu_MC->SetBranchStatus("ele2_eta", 1);
-	ntu_MC->SetBranchAddress("ele2_eta", &eleEta2);
-	ntu_MC->SetBranchStatus("ele1_phi", 1);
-	ntu_MC->SetBranchAddress("ele1_phi", &elePhi);
-	ntu_MC->SetBranchStatus("ele2_phi", 1);
-	ntu_MC->SetBranchAddress("ele2_phi", &elePhi2);
-	ntu_MC->SetBranchStatus("ele1_scEta", 1);
-	ntu_MC->SetBranchAddress("ele1_scEta", &scEta);
-	ntu_MC->SetBranchStatus("ele2_scEta", 1);
-	ntu_MC->SetBranchAddress("ele2_scEta", &scEta2);
-	ntu_MC->SetBranchStatus("ele1_scPhi", 1);
-	ntu_MC->SetBranchAddress("ele1_scPhi", &scPhi);
-	ntu_MC->SetBranchStatus("ele2_scPhi", 1);
-	ntu_MC->SetBranchAddress("ele2_scPhi", &scPhi2);
-	ntu_MC->SetBranchStatus("ele1_scE", 1);
-	ntu_MC->SetBranchAddress("ele1_scE", &scEne);
-	ntu_MC->SetBranchStatus("ele2_scE", 1);
-	ntu_MC->SetBranchAddress("ele2_scE", &scEne2);
-	ntu_MC->SetBranchStatus("ele1_scE_regression", 1);
-	ntu_MC->SetBranchAddress("ele1_scE_regression", &scEneReg);
-	ntu_MC->SetBranchStatus("ele2_scE_regression", 1);
-	ntu_MC->SetBranchAddress("ele2_scE_regression", &scEneReg2);
-	ntu_MC->SetBranchStatus("ele1_scEt", 1);
-	ntu_MC->SetBranchAddress("ele1_scEt", &scEt);
-	ntu_MC->SetBranchStatus("ele2_scEt", 1);
-	ntu_MC->SetBranchAddress("ele2_scEt", &scEt2);
-	ntu_MC->SetBranchStatus("ele1_scERaw", 1);
-	ntu_MC->SetBranchAddress("ele1_scERaw", &scERaw);
-	ntu_MC->SetBranchStatus("ele2_scERaw", 1);
-	ntu_MC->SetBranchAddress("ele2_scERaw", &scERaw2);
-	ntu_MC->SetBranchStatus("ele1_e3x3", 1);
-	ntu_MC->SetBranchAddress("ele1_e3x3", &e3x3);
-	ntu_MC->SetBranchStatus("ele2_e3x3", 1);
-	ntu_MC->SetBranchAddress("ele2_e3x3", &e3x32);
-	ntu_MC->SetBranchStatus("ele1ele2_scM", 1);
-	ntu_MC->SetBranchAddress("ele1ele2_scM", &mZ);
-	ntu_MC->SetBranchStatus("ele1_charge", 1);
-	ntu_MC->SetBranchAddress("ele1_charge", &charge);
-	ntu_MC->SetBranchStatus("ele2_charge", 1);
-	ntu_MC->SetBranchAddress("ele2_charge", &charge2);
-	ntu_MC->SetBranchStatus("ele1_tkP", 1);
-	ntu_MC->SetBranchAddress("ele1_tkP", &pTK);
-	ntu_MC->SetBranchStatus("ele2_tkP", 1);
-	ntu_MC->SetBranchAddress("ele2_tkP", &pTK2);
-	ntu_MC->SetBranchStatus("ele1_seedIphi", 1);
-	ntu_MC->SetBranchAddress("ele1_seedIphi", &iphiSeed);
-	ntu_MC->SetBranchStatus("ele2_seedIphi", 1);
-	ntu_MC->SetBranchAddress("ele2_seedIphi", &iphiSeed2);
-	ntu_MC->SetBranchStatus("ele1_seedIx", 1);
-	ntu_MC->SetBranchAddress("ele1_seedIx", &ele1_ix);
-	ntu_MC->SetBranchStatus("ele2_seedIx", 1);
-	ntu_MC->SetBranchAddress("ele2_seedIx", &ele2_ix);
-	ntu_MC->SetBranchStatus("ele1_seedIy", 1);
-	ntu_MC->SetBranchAddress("ele1_seedIy", &ele1_iy);
-	ntu_MC->SetBranchStatus("ele2_seedIy", 1);
-	ntu_MC->SetBranchAddress("ele2_seedIy", &ele2_iy);
-	ntu_MC->SetBranchStatus("ele1_seedZside", 1);
-	ntu_MC->SetBranchAddress("ele1_seedZside", &ele1_iz);
-	ntu_MC->SetBranchStatus("ele2_seedZside", 1);
-	ntu_MC->SetBranchAddress("ele2_seedZside", &ele2_iz);
+	//  ntu_MC->SetBranchStatus("isW", 1);                  ntu_MC->SetBranchAddress("isW", &isW);
+	ntu_MC->SetBranchStatus("etaEle", 1);
+	ntu_MC->SetBranchAddress("etaEle", &etaEle);
+	ntu_MC->SetBranchStatus("phiEle", 1);
+	ntu_MC->SetBranchAddress("phiEle", &phiEle);
+	ntu_MC->SetBranchStatus("etaSCEle", 1);
+	ntu_MC->SetBranchAddress("etaSCEle", &etaSCEle);
+	ntu_MC->SetBranchStatus("phiSCEle", 1);
+	ntu_MC->SetBranchAddress("phiSCEle", &phiSCEle);
+	ntu_MC->SetBranchStatus("energySCEle", 1);
+	ntu_MC->SetBranchAddress("energySCEle", &energySCEle);
+	ntu_MC->SetBranchStatus("rawEnergySCEle", 1);
+	ntu_MC->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle);
+	ntu_MC->SetBranchStatus("PtEle", 1);
+	ntu_MC->SetBranchAddress("PtEle", &PtEle);
+	ntu_MC->SetBranchStatus("invMass_SC", 1);
+	ntu_MC->SetBranchAddress("invMass_SC", &invMass_SC);
+	ntu_MC->SetBranchStatus("chargeEle", 1);
+	ntu_MC->SetBranchAddress("chargeEle", &chargeEle);
+	ntu_MC->SetBranchStatus("pAtVtxGsfEle", 1);
+	ntu_MC->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
+	ntu_MC->SetBranchStatus("seedXSCEle", 1);
+	ntu_MC->SetBranchAddress("seedXSCEle", &seedXSCEle);
+	ntu_MC->SetBranchStatus("seedYSCEle", 1);
+	ntu_MC->SetBranchAddress("seedYSCEle", &seedYSCEle);
+
 	if(usePUweights) {
-		ntu_MC->SetBranchStatus("PUit_NumInteractions", 1);
-		ntu_MC->SetBranchAddress("PUit_NumInteractions", &npu);
+		ntu_MC->SetBranchStatus("NPU", 1);
+		ntu_MC->SetBranchAddress("NPU", &NPU);
 	}
 
 
@@ -520,130 +437,134 @@ int main(int argc, char** argv)
 
 		ntu_MC->GetEntry(entry);
 
-		if( isW == 1 )               continue;
-		if( fabs(scEta)  > etaMax )  continue;
-		if( fabs(scEta2) > eta2Max ) continue;
-		if( scEt  < 20. ) continue;
-		if( scEt2 < 20. ) continue;
+		//    if( isW == 1 )               continue;
+		if( fabs(etaSCEle[0])  > etaMax )  continue;
+		if( fabs(etaSCEle[1]) > eta2Max ) continue;
+		if( PtEle[0]  < 20. ) continue;
+		if( PtEle[1] < 20. ) continue;
 
-		R9  = e3x3  / scERaw;
-		R92 = e3x32 / scERaw2;
+		if ( fabs(etaEle[0]) < 1.479) ele1_iz = 0;
+		else if (etaEle[0] > 0) ele1_iz = 1;
+		else ele1_iz = -1;
 
+		if ( fabs(etaEle[1]) < 1.479) ele2_iz = 0;
+		else if (etaEle[1] > 0) ele2_iz = 1;
+		else ele2_iz = -1;
 
 		//--- PU weights
 		float ww = 1.;
-		if( usePUweights ) ww *= w[npu];
-
-
+		if( usePUweights ) ww *= w[NPU[0]];
 
 		//--- set the mass for ele1
-		var = ( mZ * sqrt(pTK / scEne) * sqrt(scEneReg2 / scEne2) ) / 91.19;
+		//    var = ( invMass_SC * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
+		var = ( invMass_SC * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
 		// simulate e+/e- asymmetry
-		//if( charge > 0 ) ww *= 1.*(6/5);
+		//if( chargeEle[0] > 0 ) ww *= 1.*(6/5);
 		//else             ww *= 1.*(4/5);
 
 		// MC - BARREL - ele1
-		if( ele1_iz == 0 ) {
+		if(  ele1_iz == 0 ) {
 			// fill MC templates
-			int modPhi = int(iphiSeed / (360. / nPhiBinsTempEB));
+			int modPhi = int(seedYSCEle[0] / (360. / nPhiBinsTempEB));
 			if( modPhi == nPhiBinsTempEB ) modPhi = 0;
 
-			int regionId = templIndexEB(typeEB, eleEta, charge, R9);
+			int regionId = templIndexEB(typeEB, etaEle[0], chargeEle[0], R9Ele[0]);
 			if( regionId == -1 ) continue;
 
 			(h_template_EB.at(modPhi)).at(regionId) -> Fill(var * var, ww);
 
 
 			// fill MC histos in eta bins
-			int PhibinEB = hPhiBinEB->FindBin(elePhi) - 1;
+			int PhibinEB = hPhiBinEB->FindBin(phiEle[0]) - 1;
 			if( PhibinEB == nPhiBinsEB ) PhibinEB = 0;
 
 			(h_EoP_EB.at(PhibinEB)).at(regionId) -> Fill(var * var, ww); // This is MC
-			h_phi_mc_EB[regionId] -> Fill(scPhi, ww);
+			h_phi_mc_EB[regionId] -> Fill(phiSCEle[0], ww);
 		}
 
 		// MC - ENDCAP - ele1
 		else {
-			int iphi = eRings->GetEndcapIphi(ele1_ix, ele1_iy, ele1_iz);
+			int iphi = eRings->GetEndcapIphi(seedXSCEle[0], seedYSCEle[0], ele1_iz);
 
-			if( ele1_iz ==  1 )mapConversionEEp -> SetBinContent(ele1_ix, ele1_iy, scEta);
-			if( ele1_iz == -1 )mapConversionEEm -> SetBinContent(ele1_ix, ele1_iy, scEta);
+			if( ele1_iz ==  1 )mapConversionEEp -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
+			if( ele1_iz == -1 )mapConversionEEm -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
 
 
 			// fill MC templates
 			int modPhi = int (iphi / (360. / nPhiBinsTempEE));
 			if( modPhi == nPhiBinsTempEE ) modPhi = 0;
 
-			int regionId =  templIndexEE(typeEE, eleEta, charge, R9);
+			int regionId =  templIndexEE(typeEE, etaEle[0], chargeEle[0], R9Ele[0]);
 			if( regionId == -1 ) continue;
 
 			(h_template_EE.at(modPhi)).at(regionId) -> Fill(var * var, ww);
 
 
 			// fill MC histos in eta bins
-			int PhibinEE = hPhiBinEE->FindBin(elePhi) - 1;
+			int PhibinEE = hPhiBinEE->FindBin(phiEle[0]) - 1;
 			if( PhibinEE == nPhiBinsEE ) PhibinEE = 0;
 
 			(h_EoP_EE.at(PhibinEE)).at(regionId) -> Fill(var * var, ww); // This is MC
-			h_phi_mc_EE[regionId] -> Fill(scPhi, ww);
+			h_phi_mc_EE[regionId] -> Fill(phiSCEle[0], ww);
 		}
 
 
 
 		//--- set the mass for ele2
-		var = ( mZ * sqrt(pTK2 / scEne2) * sqrt(scEneReg / scEne) ) / 91.19;
+		//    var = ( invMass_SC * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
+		var = ( invMass_SC * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
 		// simulate e+/e- asymmetry
-		//if( charge > 0 ) ww *= 1.*(6/5);
+		//if( chargeEle[0] > 0 ) ww *= 1.*(6/5);
 		//else             ww *= 1.*(4/5);
 
 		// MC - BARREL - ele2
 		if( ele2_iz == 0) {
 			// fill MC templates
-			int modPhi = int (iphiSeed2 / (360. / nPhiBinsTempEB));
+			int modPhi = int (seedYSCEle[1] / (360. / nPhiBinsTempEB));
 			if( modPhi == nPhiBinsTempEB ) modPhi = 0;
 
-			int regionId  = templIndexEB(typeEB, eleEta2, charge2, R92);
+			int regionId  = templIndexEB(typeEB, etaEle[1], chargeEle[1], R9Ele[1]);
 			if(regionId == -1) continue;
 
 			(h_template_EB.at(modPhi)).at(regionId)->Fill(var * var, ww);
 
 
 			// fill MC histos in eta bins
-			int PhibinEB = hPhiBinEB->FindBin(elePhi2) - 1;
+			int PhibinEB = hPhiBinEB->FindBin(phiEle[1]) - 1;
 			if( PhibinEB == nPhiBinsEB ) PhibinEB = 0;
 
 			(h_EoP_EB.at(PhibinEB)).at(regionId) -> Fill(var * var, ww); // This is MC
-			h_phi_mc_EB[regionId]->Fill(scPhi2, ww);
+			h_phi_mc_EB[regionId]->Fill(phiSCEle[1], ww);
 		}
 
 		// MC - ENDCAP - ele2
 		else {
-			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(ele2_ix, ele2_iy, scEta2);
-			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(ele2_ix, ele2_iy, scEta2);
+			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
+			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
 
-			int iphi = eRings->GetEndcapIphi(ele2_ix, ele2_iy, ele2_iz);
+			int iphi = eRings->GetEndcapIphi(seedXSCEle[1], seedYSCEle[1], ele2_iz);
 
 
 			// fill MC templates
 			int modPhi = int (iphi / (360. / nPhiBinsTempEE));
 			if( modPhi == nPhiBinsTempEE ) modPhi = 0;
 
-			int regionId =  templIndexEE(typeEE, eleEta2, charge2, R92);
+			int regionId =  templIndexEE(typeEE, etaEle[1], chargeEle[1], R9Ele[1]);
 			if(regionId == -1) continue;
 
 			(h_template_EE.at(modPhi)).at(regionId) ->  Fill(var * var, ww);
 
 
 			// fill MC histos in eta bins
-			int PhibinEE = hPhiBinEE->FindBin(elePhi2) - 1;
+			int PhibinEE = hPhiBinEE->FindBin(phiEle[1]) - 1;
 			if(PhibinEE == nPhiBinsEE) PhibinEE = 0;
 
 			(h_EoP_EE.at(PhibinEE)).at(regionId) -> Fill(var * var, ww); // This is MC
-			h_phi_mc_EE[regionId]->Fill(scPhi2, ww);
+			h_phi_mc_EE[regionId]->Fill(phiSCEle[1], ww);
 		}
 
-		h_et_mc ->Fill(scEt, ww);
-		h_et_mc ->Fill(scEt2, ww);
+		h_et_mc ->Fill(PtEle[0], ww);
+		h_et_mc ->Fill(PtEle[1], ww);
 	}
 
 
@@ -660,92 +581,100 @@ int main(int argc, char** argv)
 
 		ntu_DA->GetEntry(entry);
 
-		if( isW == 1 )               continue;
-		if( fabs(scEta)  > etaMax )  continue;
-		if( fabs(scEta2) > eta2Max ) continue;
-		if( scEt  < 20. ) continue;
-		if( scEt2 < 20. ) continue;
-
-		R9  = e3x3  / scERaw;
-		R92 = e3x32 / scERaw2;
+		//    if( isW == 1 )               continue;
+		if( fabs(etaSCEle[0])  > etaMax )  continue;
+		if( fabs(etaSCEle[1]) > eta2Max ) continue;
+		if( PtEle[0]  < 20. ) continue;
+		if( PtEle[1] < 20. ) continue;
 
 		float ww = 1.;
 
+		if ( fabs(etaEle[0]) < 1.479) ele1_iz = 0;
+		else if (etaEle[0] > 0) ele1_iz = 1;
+		else ele1_iz = -1;
+
+		if ( fabs(etaEle[1]) < 1.479) ele2_iz = 0;
+		else if (etaEle[1] > 0) ele2_iz = 1;
+		else ele2_iz = -1;
 
 
 		//--- set the mass for ele1
-		if( ele1_iz == 0 ) var = ( mZ * sqrt(pTK / scEne) * sqrt(scEneReg2 / scEne2) ) / 91.19;
-		else               var = ( mZ * sqrt(pTK / scEne) * sqrt(scEneReg2 / scEne2) ) / 91.19;
+		//    if( ele1_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
+		//    else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
+		if( ele1_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
+		else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
 		// simulate e+/e- asymmetry
-		//if( charge > 0 ) ww *= 1.*(6/5);
+		//if( chargeEle[0] > 0 ) ww *= 1.*(6/5);
 		//else             ww *= 1.*(4/5);
 
 		// DATA - BARREL - ele1
 		if( ele1_iz == 0 ) {
-			int PhibinEB = hPhiBinEB->FindBin(elePhi) - 1;
+			int PhibinEB = hPhiBinEB->FindBin(phiEle[0]) - 1;
 			if( PhibinEB == nPhiBinsEB ) PhibinEB = 0;
 
-			int regionId = templIndexEB(typeEB, eleEta, charge, R9);
+			int regionId = templIndexEB(typeEB, etaEle[0], chargeEle[0], R9Ele[0]);
 			if(regionId == -1) continue;
 
 			(h_EoC_EB.at(PhibinEB)).at(regionId) -> Fill(var * var, ww); // This is DATA
-			(h_Phi_EB.at(PhibinEB)).at(regionId) -> Fill(elePhi);
-			h_phi_data_EB[regionId]->Fill(elePhi);
+			(h_Phi_EB.at(PhibinEB)).at(regionId) -> Fill(phiEle[0]);
+			h_phi_data_EB[regionId]->Fill(phiEle[0]);
 		}
 
 		// DATA - ENDCAP - ele1
 		else {
-			if( ele1_iz ==  1 ) mapConversionEEp -> SetBinContent(ele1_ix, ele1_iy, scEta);
-			if( ele1_iz == -1 ) mapConversionEEm -> SetBinContent(ele1_ix, ele1_iy, scEta);
+			if( ele1_iz ==  1 ) mapConversionEEp -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
+			if( ele1_iz == -1 ) mapConversionEEm -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
 
-			int PhibinEE = hPhiBinEE->FindBin(elePhi) - 1;
+			int PhibinEE = hPhiBinEE->FindBin(phiEle[0]) - 1;
 			if( PhibinEE == nPhiBinsEE ) PhibinEE = 0;
 
-			int regionId = templIndexEE(typeEE, eleEta, charge, R9);
+			int regionId = templIndexEE(typeEE, etaEle[0], chargeEle[0], R9Ele[0]);
 			if( regionId == -1 ) continue;
 
 			(h_EoC_EE.at(PhibinEE)).at(regionId) -> Fill(var * var, ww); // This is DATA
-			(h_Phi_EE.at(PhibinEE)).at(regionId) -> Fill(elePhi);
-			h_phi_data_EE[regionId] -> Fill(elePhi);
+			(h_Phi_EE.at(PhibinEE)).at(regionId) -> Fill(phiEle[0]);
+			h_phi_data_EE[regionId] -> Fill(phiEle[0]);
 		}
 
 
 
 		//--- set the mass for ele2
-		if( ele2_iz == 0 ) var = ( mZ * sqrt(pTK2 / scEne2) * sqrt(scEneReg / scEne) ) / 91.19;
-		else               var = ( mZ * sqrt(pTK2 / scEne2) * sqrt(scEneReg / scEne) ) / 91.19;
+		//    if( ele2_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
+		//    else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
+		if( ele2_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
+		else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
 		// simulate e+/e- asymmetry
-		//if( charge2 > 0 ) ww *= 1.*(6/5);
+		//if( chargeEle[0]Ele[1] > 0 ) ww *= 1.*(6/5);
 		//else              ww *= 1.*(4/5);
 
 		// DATA - BARREL - ele2
 		if( ele2_iz == 0 ) {
-			int PhibinEB = hPhiBinEB->FindBin(elePhi2) - 1;
+			int PhibinEB = hPhiBinEB->FindBin(phiEle[1]) - 1;
 			if( PhibinEB == nPhiBinsEB ) PhibinEB = 0;
 
-			int regionId = templIndexEB(typeEB, eleEta2, charge2, R92);
+			int regionId = templIndexEB(typeEB, etaEle[1], chargeEle[1], R9Ele[1]);
 			if( regionId == -1 ) continue;
 
 			(h_EoC_EB.at(PhibinEB)).at(regionId) -> Fill(var * var, ww); // This is DATA
-			(h_Phi_EB.at(PhibinEB)).at(regionId) -> Fill(elePhi2);
-			h_phi_data_EB[regionId] -> Fill(elePhi2);
+			(h_Phi_EB.at(PhibinEB)).at(regionId) -> Fill(phiEle[1]);
+			h_phi_data_EB[regionId] -> Fill(phiEle[1]);
 		} else {
-			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(ele2_ix, ele2_iy, scEta2);
-			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(ele2_ix, ele2_iy, scEta2);
+			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
+			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
 
-			int PhibinEE = hPhiBinEE->FindBin(elePhi2) - 1;
+			int PhibinEE = hPhiBinEE->FindBin(phiEle[1]) - 1;
 			if( PhibinEE == nPhiBinsEE ) PhibinEE = 0;
 
-			int regionId = templIndexEE(typeEE, eleEta2, charge2, R92);
+			int regionId = templIndexEE(typeEE, etaEle[1], chargeEle[1], R9Ele[1]);
 			if( regionId == -1 ) continue;
 
 			(h_EoC_EE.at(PhibinEE)).at(regionId) -> Fill(var * var, ww); // This is DATA
-			(h_Phi_EE.at(PhibinEE)).at(regionId) -> Fill(elePhi2);
-			h_phi_data_EE[regionId] ->Fill(elePhi2);
+			(h_Phi_EE.at(PhibinEE)).at(regionId) -> Fill(phiEle[1]);
+			h_phi_data_EE[regionId] ->Fill(phiEle[1]);
 		}
 
-		h_et_data ->Fill(scEt);
-		h_et_data ->Fill(scEt2);
+		h_et_data ->Fill(PtEle[0]);
+		h_et_data ->Fill(PtEle[1]);
 	}
 
 	std::cout << "End loop: Analyze events " << endl;
@@ -843,6 +772,7 @@ int main(int argc, char** argv)
 				std::cout << "***** Fitting MC EB " << flPhi << " (" << i << "," << j << "):   ";
 				TFitResultPtr rp;
 				int fStatus;
+				std::cout << "entries: " << (h_EoP_EB.at(i)).at(j)->GetEntries() << std::endl;
 				for(int trial = 0; trial < 10; ++trial) {
 					(f_EoP_EB.at(i)).at(j) -> SetParameter(1, 0.99);
 					rp = (h_EoP_EB.at(i)).at(j) -> Fit(funcName, "QRWL+");

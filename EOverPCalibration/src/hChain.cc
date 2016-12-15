@@ -2,8 +2,6 @@
 #include "TStyle.h"
 #include "TROOT.h"
 #include "TCanvas.h"
-#include "THStack.h"
-#include "TH2F.h"
 
 hChain::hChain (TString baseName, TString baseTitle,
                 int nbins, double min, double max, int NUM) :

@@ -1,15 +1,18 @@
 #ifndef hChain_h
 #define hChain_h
 
-#include "TString.h"
-#include "TH1F.h"
+#include "TROOT.h"
+#include "TH1.h"
+#include "TH2.h"
 #include "TFile.h"
+#include "THStack.h"
+#include "TCanvas.h"
+#include "TNtuple.h"
 
 #include <vector>
 
 
 struct hChain {
-public:
 	hChain (TString baseName, TString baseTitle,
 	        int nbins, double min, double max, int NUM) ;
 	virtual ~hChain ();

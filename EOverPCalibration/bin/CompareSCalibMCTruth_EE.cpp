@@ -36,11 +36,7 @@ int main (int argc, char **argv)
 
 	std::string configFileName = argv[1];
 
-#ifdef CMSSW_7_2_X
 	std::shared_ptr<edm::ParameterSet> parameterSet = edm::readConfig(configFileName);
-#else
-	boost::shared_ptr<edm::ParameterSet> parameterSet = edm::readConfig(configFileName);
-#endif
 	edm::ParameterSet Options = parameterSet -> getParameter<edm::ParameterSet>("Options");
 
 	std::string inputFile = "NULL";

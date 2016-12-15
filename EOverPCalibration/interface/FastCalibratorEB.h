@@ -19,6 +19,7 @@
 #include "../interface/h2Chain.h"
 #include <TGraphErrors.h>
 
+#include <TLorentzVector.h>
 //#include "Math/PtEtaPhiE4D.h"
 //#include "Math/PtEtaPhiM4D.h"
 //#include "Math/LorentzVector.h"
@@ -33,7 +34,7 @@ public :
 
 	///! List of class methods
 
-	FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, const std::string& typeEB, TString outEPDistribution = "NULL");
+	FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEB, TString outEPDistribution = "NULL");
 
 	virtual ~FastCalibratorEB();
 
@@ -49,9 +50,9 @@ public :
 
 	virtual void     FillScalibMap (TString miscalibMap);
 
-	virtual void     Loop(int, int, int, int, int, bool, bool, bool, bool, float, bool, float, bool, float, bool, std::map<int, std::vector<std::pair<int, int> > >, float, TString);
+	virtual void     Loop(int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, float, float, int, bool, float, bool, float, bool, std::map<int, std::vector<std::pair<int, int> > >, float, TString);
 
-	virtual void     BuildEoPeta_ele(int, int, int, int, std::vector<float>, bool, bool, float, bool, float, bool, float, bool);
+	virtual void     BuildEoPeta_ele(int, int, int, int, bool, bool, int, std::vector<float>, bool, bool, float, bool, float, bool, float, bool);
 
 	virtual void     saveEoPeta(TFile * f2);
 
@@ -63,6 +64,7 @@ public :
 	// Public Variables
 
 	std::vector<TGraphErrors*> myMomentumScale;
+	std::vector<TGraphErrors*> myEnergyScale;
 	std::string myTypeEB;
 
 	TTree          *fChain;   //!pointer to the analyzed TTree or TChain

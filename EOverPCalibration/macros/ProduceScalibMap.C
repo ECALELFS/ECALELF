@@ -25,21 +25,21 @@
 void main(int argc, char **argv)
 {
 
-	TRandom3 genRand;
+  TRandom3 genRand;
 
-	std::ofstream io1;
-	io1.open ("scalibMap6.txt");
+  std::ofstream io1;
+  io1.open ("scalibMap6.txt");
+  
+  float eta, scalib;
 
-	float eta, scalib;
+  for (eta=-85; eta<86; eta++) {
 
-	for (eta = -85; eta < 86; eta++) {
-
-		if (fabs(eta) < 30)         scalib = genRand.Gaus(1, 0.06);
-		else if (fabs(eta) < 60)    scalib = genRand.Gaus(1, 0.07);
-		else if (fabs(eta) < 70)    scalib = genRand.Gaus(1, 0.08);
-		else                      scalib = genRand.Gaus(1, 0.09);
-
-		io1 << eta << "    " << scalib << "\n";
-	}
+    if (fabs(eta)<30)         scalib = genRand.Gaus(1,0.06);
+    else if (fabs(eta)<60)    scalib = genRand.Gaus(1,0.07);
+    else if (fabs(eta)<70)    scalib = genRand.Gaus(1,0.08);
+    else                      scalib = genRand.Gaus(1,0.09);
+ 
+    io1<<eta<<"    "<<scalib<<"\n";
+  }
 
 }

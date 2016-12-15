@@ -5,6 +5,259 @@
 
 
 
+void DrawCorr_EE(TH2F* h_scale_EEM, TH2F* h_scale_EEP,
+                 TH2F* hcmap_EEM, TH2F* hcmap_EEP,
+                 const std::vector< std::pair<int, int> >& TT_centre_EEM,
+                 const std::vector< std::pair<int, int> >& TT_centre_EEP,
+                 std::vector<std::vector<TGraphErrors*> >& correctionMomentum, TEndcapRings* eRings, bool skip , int nEtaBinsEE, float etaMin, float etaMax)
+{
+	std::map<int, TH2F*> h_scale_EE;
+	std::map<int, TH2F*> hcmap_EE;
+
+	h_scale_EE[0] = h_scale_EEM;
+	h_scale_EE[1] = h_scale_EEP;
+
+	hcmap_EE[0] = hcmap_EEM;
+	hcmap_EE[1] = hcmap_EEP;
+
+
+
+	std::map<int, std::vector<float> > sumIC;
+	std::map<int, std::vector<int> > numIC;
+
+	(sumIC[0]).assign(40, 0.);
+	(sumIC[1]).assign(40, 0.);
+
+	(numIC[0]).assign(40, 0);
+	(numIC[1]).assign(40, 0);
+
+
+
+	// mean over phi corrected skipping dead channel
+	for(int k = 0; k < 2; ++k)
+		for(int ix = 1; ix <= h_scale_EE[k] -> GetNbinsX(); ++ix)
+			for(int iy = 1; iy <= h_scale_EE[k] -> GetNbinsY(); ++iy) {
+				int ring = eRings->GetEndcapRing(ix, iy, k);
+				if( ring == -1 ) continue;
+
+				bool isGood = CheckxtalIC_EE(h_scale_EE[k], ix, iy, ring);
+				bool isGoodTT;
+				if( k == 0 ) isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEM);
+				else         isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEP);
+
+				if( isGoodTT && isGood ) {
+					(sumIC[k]).at(ring) += h_scale_EE[k]->GetBinContent(ix, iy);
+					(numIC[k]).at(ring) += 1;
+				}
+			}
+
+	// normalize IC skipping bad channels and bad TTs
+	for(int k = 0; k < 2; ++k)
+		for(int ix = 1; ix <= h_scale_EE[k]->GetNbinsX(); ++ix)
+			for(int iy = 1; iy <= h_scale_EE[k]->GetNbinsY(); ++iy) {
+				int ring = eRings->GetEndcapRing(ix, iy, k);
+				if( ring == -1 ) continue;
+
+				if( !skip ) {
+					if( ring > 33 ) {
+						hcmap_EE[k] -> Fill(ix, iy, 0.);
+						continue;
+					} else {
+						if( (numIC[k]).at(ring) != 0 && (sumIC[k]).at(ring) != 0 ) {
+							int zside = 0;
+							if (k == 0) zside = -1;
+							if (k == 1) zside = 1;
+							int iPhi = eRings->GetEndcapIphi(ix, iy, zside);
+							float phi = ((float)iPhi * 2.*TMath::Pi() / 360. - TMath::Pi());
+							//	      int iRing = 85 + eRings -> GetEndcapRing(ix,iy,zside);
+							//float eta = eRings -> GetEtaFromIRing(iRing);
+
+							//int etaBin = int((fabs(eta)-etaMin)/float((etaMax-etaMin)/nEtaBinsEE));
+							//if (fabs(eta)<etaMin)  etaBin=0;
+							//else if (fabs(eta)>etaMax)  etaBin=nEtaBinsEE-1;
+							//      std::cout<<ix<<" "<<iy<<" "<<zside<<" "<<iRing<<" "<<fabs(eta)<<" "<<etaBin<<std::endl;
+
+							hcmap_EE[k] -> Fill(ix, iy, correctionMomentum.at(0).at(k)->Eval(phi));
+						}
+					}
+				}
+
+				if( skip ) {
+					bool isGood = CheckxtalIC_EE(h_scale_EE[k], ix, iy, ring);
+					bool isGoodTT;
+
+					if( k == 0 ) isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEM);
+					else         isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEP);
+
+					if( isGood && isGoodTT ) {
+						if( ring > 33 ) {
+							hcmap_EE[k] -> Fill(ix, iy, 0.);
+							continue;
+						} else {
+							if( (numIC[k]).at(ring) != 0 && (sumIC[k]).at(ring) != 0 ) {
+								int zside = 0;
+								if (k == 0) zside = -1;
+								if (k == 1) zside = 1;
+								int iPhi = eRings->GetEndcapIphi(ix, iy, zside);
+								float phi = ((float)iPhi * 2.*TMath::Pi() / 360. - TMath::Pi());
+								/*
+								int iRing = 85 + eRings -> GetEndcapRing(ix,iy,zside);
+								float eta = eRings -> GetEtaFromIRing(iRing);
+
+								int etaBin = int((fabs(eta)-etaMin)/float((etaMax-etaMin)/nEtaBinsEE));
+								if (fabs(eta)<etaMin)  etaBin=0;
+								else if (fabs(eta)>etaMax)  etaBin=nEtaBinsEE-1;
+								//      std::cout<<ix<<" "<<iy<<" "<<zside<<" "<<iRing<<" "<<fabs(eta)<<" "<<etaBin<<std::endl;
+								*/
+								hcmap_EE[k] -> Fill(ix, iy, correctionMomentum.at(0).at(k)->Eval(phi));
+								if (ix == 30 && iy == 32 && k == 1)
+									std::cout << "corr: " << correctionMomentum.at(0).at(k)->Eval(phi) << std::endl;
+
+							}
+						}
+					}
+				}
+			}
+
+}
+
+
+
+
+
+void DrawICCorr_EE(TH2F* h_scale_EEM, TH2F* h_scale_EEP,
+                   TH2F* hcmap_EEM, TH2F* hcmap_EEP,
+                   const std::vector< std::pair<int, int> >& TT_centre_EEM,
+                   const std::vector< std::pair<int, int> >& TT_centre_EEP,
+                   std::vector<std::vector<TGraphErrors*> > & correctionMomentum, TEndcapRings* eRings, bool skip , int nEtaBinsEE, float etaMin, float etaMax,
+                   int shift)
+{
+	std::map<int, TH2F*> h_scale_EE;
+	std::map<int, TH2F*> hcmap_EE;
+
+	h_scale_EE[0] = h_scale_EEM;
+	h_scale_EE[1] = h_scale_EEP;
+
+	hcmap_EE[0] = hcmap_EEM;
+	hcmap_EE[1] = hcmap_EEP;
+
+
+
+	std::map<int, std::vector<float> > sumIC;
+	std::map<int, std::vector<int> > numIC;
+
+	(sumIC[0]).assign(40, 0.);
+	(sumIC[1]).assign(40, 0.);
+
+	(numIC[0]).assign(40, 0);
+	(numIC[1]).assign(40, 0);
+
+	// mean over phi corrected skipping dead channel
+	for(int k = 0; k < 2; ++k)
+		for(int ix = 1; ix <= h_scale_EE[k] -> GetNbinsX(); ++ix)
+			for(int iy = 1; iy <= h_scale_EE[k] -> GetNbinsY(); ++iy) {
+				int ring = eRings->GetEndcapRing(ix, iy, k);
+				if( ring == -1 ) continue;
+
+				bool isGood = CheckxtalIC_EE(h_scale_EE[k], ix, iy, ring);
+				bool isGoodTT;
+				if( k == 0 ) isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEM);
+				else         isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEP);
+
+				if( isGoodTT && isGood ) {
+					int zside = 0;
+					if (k == 0) zside = -1;
+					if (k == 1) zside = 1;
+					int iPhi = eRings->GetEndcapIphi(ix, iy, zside);
+					if (iPhi + shift >= 360)  iPhi -= 360;
+					/*
+					int iRing = 85 + eRings -> GetEndcapRing(ix,iy,zside);
+					float eta = eRings -> GetEtaFromIRing(iRing);
+
+					int etaBin = int((fabs(eta)-etaMin)/float((etaMax-etaMin)/nEtaBinsEE));
+					if (fabs(eta)<etaMin)  etaBin=0;
+					else if (fabs(eta)>etaMax)  etaBin=nEtaBinsEE-1;
+					//      std::cout<<ix<<" "<<iy<<" "<<zside<<" "<<iRing<<" "<<fabs(eta)<<" "<<etaBin<<std::endl;
+					*/
+					(sumIC[k]).at(ring) += h_scale_EE[k]->GetBinContent(ix, iy); ///correctionMomentum.at(etaBin).at(k)->Eval(iPhi+shift);
+					(numIC[k]).at(ring) += 1;
+				}
+			}
+
+	// normalize IC skipping bad channels and bad TTs
+	for(int k = 0; k < 2; ++k)
+		for(int ix = 1; ix <= h_scale_EE[k]->GetNbinsX(); ++ix)
+			for(int iy = 1; iy <= h_scale_EE[k]->GetNbinsY(); ++iy) {
+				int ring = eRings->GetEndcapRing(ix, iy, k);
+				if( ring == -1 ) continue;
+
+				if( !skip ) {
+					if( ring > 33 ) {
+						hcmap_EE[k] -> Fill(ix, iy, 0.);
+						continue;
+					} else {
+						if( (numIC[k]).at(ring) != 0 && (sumIC[k]).at(ring) != 0 ) {
+							int zside = 0;
+							if (k == 0) zside = -1;
+							if (k == 1) zside = 1;
+							int iPhi = eRings->GetEndcapIphi(ix, iy, zside);
+							float phi = ((float)iPhi * 2.*TMath::Pi() / 360. - TMath::Pi());
+							if (iPhi + shift >= 360)  iPhi -= 360;
+							/*
+							int iRing = 85 + eRings -> GetEndcapRing(ix,iy,zside);
+							float eta = eRings -> GetEtaFromIRing(iRing);
+
+							int etaBin = int((fabs(eta)-etaMin)/float((etaMax-etaMin)/nEtaBinsEE));
+							if (fabs(eta)<etaMin)  etaBin=0;
+							else if (fabs(eta)>etaMax)  etaBin=nEtaBinsEE-1;
+							//      std::cout<<ix<<" "<<iy<<" "<<zside<<" "<<iRing<<" "<<fabs(eta)<<" "<<etaBin<<std::endl;
+							*/
+							hcmap_EE[k] -> Fill(ix, iy, (h_scale_EE[k]->GetBinContent(ix, iy) / correctionMomentum.at(0).at(k)->Eval(phi)) / ((sumIC[k]).at(ring) / (numIC[k]).at(ring)));
+						}
+					}
+				}
+
+				if( skip ) {
+					bool isGood = CheckxtalIC_EE(h_scale_EE[k], ix, iy, ring);
+					bool isGoodTT;
+
+					if( k == 0 ) isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEM);
+					else         isGoodTT = CheckxtalTT_EE(ix, iy, ring, TT_centre_EEP);
+
+					if( isGood && isGoodTT ) {
+						if( ring > 33 ) {
+							hcmap_EE[k] -> Fill(ix, iy, 0.);
+							continue;
+						} else {
+							if( (numIC[k]).at(ring) != 0 && (sumIC[k]).at(ring) != 0 ) {
+								int zside = 0;
+								if (k == 0) zside = -1;
+								if (k == 1) zside = 1;
+								int iPhi = eRings->GetEndcapIphi(ix, iy, zside);
+								float phi = ((float)iPhi * 2.*TMath::Pi() / 360. - TMath::Pi());
+								if (iPhi + shift >= 360)  iPhi -= 360;
+								/*
+								int iRing = 85 + eRings -> GetEndcapRing(ix,iy,zside);
+								float eta = eRings -> GetEtaFromIRing(iRing);
+
+								int etaBin = int((fabs(eta)-etaMin)/float((etaMax-etaMin)/nEtaBinsEE));
+								if (fabs(eta)<etaMin)  etaBin=0;
+								else if (fabs(eta)>etaMax)  etaBin=nEtaBinsEE-1;
+								//      std::cout<<ix<<" "<<iy<<" "<<zside<<" "<<iRing<<" "<<fabs(eta)<<" "<<etaBin<<std::endl;
+								*/
+								hcmap_EE[k] -> Fill(ix, iy, (h_scale_EE[k]->GetBinContent(ix, iy) / correctionMomentum.at(0).at(k)->Eval(phi)) / ((sumIC[k]).at(ring) / (numIC[k]).at(ring)));
+								if (ix == 30 && iy == 32 && k == 1)
+									std::cout << "IC_corr: " << (h_scale_EE[k]->GetBinContent(ix, iy) / correctionMomentum.at(0).at(k)->Eval(phi)) / ((sumIC[k]).at(ring) / (numIC[k]).at(ring)) << std::endl;
+
+								//	      std::cout<<ix<<" "<<iy<<" "<<h_scale_EE[k]->GetBinContent(ix,iy)<<" "<<correctionMomentum.at(etaBin).at(k)->Eval(iPhi+shift)<<std::endl;
+							}
+						}
+					}
+				}
+			}
+
+}
+
 
 
 ///////////////////////////////////////////////////////////////
@@ -733,12 +986,15 @@ void InitializeDeadTT_EB(std::vector<std::pair<int, int> >& TT_centre)
 	TT_centre.push_back(std::pair<int, int> (-8, 53));
 	TT_centre.push_back(std::pair<int, int> (-3, 63));
 	TT_centre.push_back(std::pair<int, int> (-53, 128));
+	TT_centre.push_back(std::pair<int, int> (-28, 168));
 	TT_centre.push_back(std::pair<int, int> (-53, 183));
 	TT_centre.push_back(std::pair<int, int> (-83, 193));
 	TT_centre.push_back(std::pair<int, int> (-74, 218));
 	TT_centre.push_back(std::pair<int, int> (-8, 223));
+	TT_centre.push_back(std::pair<int, int> (-48, 273));
 	TT_centre.push_back(std::pair<int, int> (-68, 303));
 	TT_centre.push_back(std::pair<int, int> (-43, 328));
+	TT_centre.push_back(std::pair<int, int> (-43, 243));
 }
 
 void InitializeDeadTT_EB2012(std::vector<std::pair<int, int> >& TT_centre)
@@ -768,14 +1024,20 @@ void InitializeDeadTT_EB2012(std::vector<std::pair<int, int> >& TT_centre)
 
 void InitializeDeadTTEEP(std::vector<std::pair<int, int> >& TT_centre)
 {
+	//  TT_centre.push_back(std::pair<int,int> (78,78));
+	//  TT_centre.push_back(std::pair<int,int> (83,28));
+	//  TT_centre.push_back(std::pair<int,int> (83,23));
 	TT_centre.push_back(std::pair<int, int> (78, 78));
 	TT_centre.push_back(std::pair<int, int> (83, 28));
-	TT_centre.push_back(std::pair<int, int> (83, 23));
+	TT_centre.push_back(std::pair<int, int> (33, 18));
 }
 
 void InitializeDeadTTEEM(std::vector<std::pair<int, int> >& TT_centre)
 {
+	//  TT_centre.push_back(std::pair<int,int> (53,28));
 	TT_centre.push_back(std::pair<int, int> (53, 28));
+	TT_centre.push_back(std::pair<int, int> (28, 33));
+	TT_centre.push_back(std::pair<int, int> (89, 80));
 }
 
 void InitializeDeadTTEEP2012(std::vector<std::pair<int, int> >& TT_centre)

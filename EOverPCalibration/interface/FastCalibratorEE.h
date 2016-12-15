@@ -8,12 +8,24 @@
 #ifndef FastCalibratorEE_h
 #define FastCalibratorEE_h
 
-
+/* #include <TROOT.h> */
 #include <TChain.h>
+/* #include <TFile.h> */
+/* #include <TH1F.h> */
+/* #include <TMath.h> */
+/* #include <TProfile.h> */
+/* #include <vector> */
 #include "../interface/hChain.h"
 #include "../interface/h2Chain.h"
 #include <TGraphErrors.h>
 
+/* #include <TLorentzVector.h> */
+/* /\* #include "Math/PtEtaPhiE4D.h" *\/ */
+/* /\* #include "Math/PtEtaPhiM4D.h" *\/ */
+/* /\* #include "Math/LorentzVector.h" *\/ */
+
+/* #include "../interface/CalibrationUtils.h" */
+/* #include "../interface/readJSONFile.h" */
 #include "../interface/TEndcapRings.h"
 
 class FastCalibratorEE
@@ -22,7 +34,7 @@ class FastCalibratorEE
 public :
 
 	///! Class methods
-	FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, const std::string& typeEE, TString outEPDistribution = "NULL");
+	FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEE, TString outEPDistribution = "NULL");
 
 	virtual ~FastCalibratorEE();
 
@@ -38,8 +50,8 @@ public :
 
 	virtual void     FillScalibMap (TString miscalibMap);
 
-	virtual void     Loop(int, int, int, int, int, bool, bool, bool, bool, float, bool, float, bool, float, bool, std::map<int, std::vector<std::pair<int, int> > >, float, TString);
-	virtual void     BuildEoPeta_ele(int, int, int, int, std::vector<float> , bool, bool, float, bool, float, bool, float, bool);
+	virtual void     Loop(int, int, int, int, int, bool, bool, int, bool, bool, bool, bool, float, float, int, bool, float, bool, float, bool, std::map<int, std::vector<std::pair<int, int> > >, float, TString);
+	virtual void     BuildEoPeta_ele(int, int, int, int, bool, bool, int, std::vector<float> , bool, bool, float, bool, float, bool, float, bool);
 
 	virtual void     saveEoPeta(TFile * f2);
 
@@ -49,6 +61,7 @@ public :
 
 
 	std::vector<TGraphErrors*> myMomentumScale;
+	std::vector<TGraphErrors*> myEnergyScale;
 	std::string myTypeEE;
 
 	TTree          *fChain;   //!pointer to the analyzed TTree or TChain

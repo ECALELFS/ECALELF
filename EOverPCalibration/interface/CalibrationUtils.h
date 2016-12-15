@@ -6,7 +6,9 @@
 #include "../interface/TEndcapRings.h"
 
 
+void DrawCorr_EE(TH2F* h_scale_EEM, TH2F* h_scale_EEP, TH2F* hcmap_EEM, TH2F* hcmap_EEP, const std::vector< std::pair<int, int> > & TT_centre_EEM, const  std::vector< std::pair<int, int> > & TT_centre_EEP, std::vector<std::vector<TGraphErrors*> > & correctionMomentum, TEndcapRings *eRings, bool skip = true, int nEtaBinsEE = 5, float etaMin = 1.4, float etaMax = 2.5);
 
+void DrawICCorr_EE(TH2F* h_scale_EEM, TH2F* h_scale_EEP, TH2F* hcmap_EEM, TH2F* hcmap_EEP, const std::vector< std::pair<int, int> > & TT_centre_EEM, const  std::vector< std::pair<int, int> > & TT_centre_EEP, std::vector<std::vector<TGraphErrors*> > & correctionMomentum, TEndcapRings *eRings, bool skip = true, int nEtaBinsEE = 5, float etaMin = 1.4, float etaMax = 2.5, int shift = 0);
 //############## ECAL BARREL ####################
 
 /// Check if the crystal is near to a dead one

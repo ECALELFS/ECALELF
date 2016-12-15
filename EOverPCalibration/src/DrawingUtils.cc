@@ -85,44 +85,47 @@ void DrawSpreadGraph(TGraphErrors* g, const std::string& fileName, const std::st
 {
 	TCanvas* c;
 
-	SetLabelAndTitle(g);
+	SetLabelAndTitle(g_stat);
 
 	if( isEB == true ) {
 		c = new TCanvas("c", fileName.c_str(), 0, 0, 1000, 600);
 		c -> SetGridx();
 		c -> SetGridy();
 
-		g -> GetXaxis() -> SetRangeUser(0., 85.999);
-		g -> GetYaxis() -> SetRangeUser(0.00, 0.05);
-		g -> GetXaxis() -> SetTitle("|i#eta|");
-		g -> GetYaxis() -> SetTitle("#sigma");
-		g -> Draw("AP");
+		g_stat -> GetXaxis() -> SetRangeUser(0., 85.999);
+		g_stat -> GetYaxis() -> SetRangeUser(0.00, 0.05);
+		g_stat -> GetXaxis() -> SetTitle("|i#eta|");
+		g_stat -> GetYaxis() -> SetTitle("#sigma");
+		g_stat -> Draw("AP");
 	} else {
 		c = new TCanvas("c", fileName.c_str(), 0, 0, 700, 600);
 		c -> SetGridx();
 		c -> SetGridy();
 
-		g -> GetXaxis() -> SetRangeUser(-1., 38.999);
-		g -> GetYaxis() -> SetRangeUser(0.00, 0.30);
-		g -> GetXaxis() -> SetTitle("iRing");
-		g -> GetYaxis() -> SetTitle("#sigma");
-		g -> Draw("AP");
+		g_stat -> GetXaxis() -> SetRangeUser(-1., 38.999);
+		g_stat -> GetYaxis() -> SetRangeUser(0.00, 0.05);
+		g_stat -> GetXaxis() -> SetTitle("iRing");
+		g_stat -> GetYaxis() -> SetTitle("#sigma");
+		g_stat -> Draw("AP");
 	}
 
 	TLegend* leg = new TLegend(0.15, 0.74, 0.43, 0.89);
 	leg -> SetFillColor(0);
 	leg -> SetTextFont(42);
 	leg -> SetTextSize(0.05);
-	leg -> AddEntry(g, "IC spread", "P");
+	//  leg -> AddEntry(g,"IC spread","P");
+	leg -> AddEntry(g_stat, "Statistical precision", "P");
 
-	if( g_stat != NULL ) {
-		g_stat -> Draw("P,same");
-		leg -> AddEntry(g_stat, "statistical precision", "P");
+	/*  if( g_stat != NULL )
+	{
+	  g_stat -> Draw("P,same");
+	  leg -> AddEntry(g_stat,"statistical precision","P");
 	}
-
+	*/
 	leg -> Draw("same");
 
-	c -> Print((fileName + ".png").c_str(), "png");
+	c -> Print((fileName + "." + fileType).c_str(), fileType.c_str());
+	//  c -> Print((fileName+".png").c_str(),"png");
 
 	delete c;
 }

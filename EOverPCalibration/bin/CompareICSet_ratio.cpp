@@ -23,7 +23,7 @@ using namespace std;
 int main (int argc, char**argv)
 {
 
-	if(argc != 3) {
+	if(argc < 3) {
 		std::cerr << " Wrongs input " << std::endl;
 		return -1;
 	}
@@ -31,13 +31,21 @@ int main (int argc, char**argv)
 	std::string inputFile1 = argv[1];
 	std::string inputFile2 = argv[2];
 
+	std::string inputFile1p = argv[3];
+	std::string inputFile1d = argv[4];
+	std::string inputFile2p = argv[5];
+	std::string inputFile2d = argv[6];
+
 	std::cout << " InputFile1 = " << inputFile1 << std::endl;
 	std::cout << " InputFile2 = " << inputFile2 << std::endl;
 
 	std::ifstream File1 (inputFile1.c_str());
 	std::ifstream File2 (inputFile2.c_str());
-	std::ifstream File3 (inputFile1.c_str());
-	std::ifstream File4 (inputFile2.c_str());
+
+	std::ifstream File1p (inputFile1p.c_str());
+	std::ifstream File1d (inputFile1d.c_str());
+	std::ifstream File2p (inputFile2p.c_str());
+	std::ifstream File2d (inputFile2d.c_str());
 
 	if(!File1.is_open()) {
 		std::cerr << "** ERROR: Can't open '" << inputFile1 << "' for input" << std::endl;
@@ -85,11 +93,15 @@ int main (int argc, char**argv)
 	int iPhi, iEta, iz;
 	double ic, eic;
 
-	int iPhi1, iEta1, iz1;
+	/*int iPhi1, iEta1, iz1;
 	double ic1, eic1;
 	int iPhi2, iEta2, iz2;
 	double ic2, eic2;
-
+	int iPhi3, iEta3, iz3;
+	double ic3, eic3;
+	int iPhi4, iEta4, iz4;
+	double ic4, eic4;
+	*/
 /// Histo for first ic set
 	TString Name = Form("mapEB_%s", inputFile1.c_str());
 	TH2F * map1_EB = new TH2F(Name, Name, 360, 1, 361, 171, -85, 86);
@@ -125,15 +137,85 @@ int main (int argc, char**argv)
 	std::cout << " End second file " << std::endl;
 
 	int cont = 0;
-	while (!File3.eof() || !File4.eof()) {
-		File3 >> iEta1 >> iPhi1 >> iz1 >> ic1 >> eic1 ;
-		File4 >> iEta2 >> iPhi2 >> iz2 >> ic2 >> eic2;
-// if (ic1!=ic2)
-		//   std::cout<<"iEta: "<<iEta1<<" iPhi: "<<iPhi1<<" diff IC: "<<ic1-ic2<<std::endl;
-		if (iz1 == -1) cont++;
-	}
+	/* while (!File1p.eof() || !File1d.eof()){
+	File1p >> iEta1 >> iPhi1 >> iz1 >> ic1 >> eic1 ;
+	File1d >> iEta2 >> iPhi2 >> iz2 >> ic2 >> eic2;
+
+	File2p >> iEta3 >> iPhi3 >> iz3 >> ic3 >> eic3 ;
+	File2d >> iEta4 >> iPhi4 >> iz4 >> ic4 >> eic4;
+	// if (ic1!=ic2)
+	  //   std::cout<<"iEta: "<<iEta1<<" iPhi: "<<iPhi1<<" diff IC: "<<ic1-ic2<<std::endl;
+	if (iz1==-1) cont++;
+	} */
 	std::cout << "ciao " << cont << std::endl;
 // getchar();
+
+	Name = Form("mapEB_%s", inputFile1p.c_str());
+	TH2F * map1p_EB = new TH2F(Name, Name, 360, 1, 361, 171, -85, 86);
+	Name = Form("mapEEp_%s", inputFile1p.c_str());
+	TH2F * map1p_EEp = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+	Name = Form("mapEEm_%s", inputFile1p.c_str());
+	TH2F * map1p_EEm = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+
+	std::cout << " Opening first file ..... reading " << std::endl;
+	while (!File1p.eof()) {
+		File1p >> iEta >> iPhi >> iz >> ic >> eic ;
+		if(iz == 0) map1p_EB->Fill(iPhi, iEta, ic);
+		if(iz == 1) map1p_EEp->Fill(iEta, iPhi, ic);
+		if(iz == -1)map1p_EEm->Fill(iEta, iPhi, ic);
+// std::cout<<iEta<<" "<<iPhi<<" "<<iz<<" "<<ic<<" "<<eic<<std::endl;
+	}
+	std::cout << " End first file " << std::endl;
+	std::cout << " Opening second file ..... reading " << std::endl;
+
+	Name = Form("mapEB_%s", inputFile1d.c_str());
+	TH2F * map1d_EB = new TH2F(Name, Name, 360, 1, 361, 171, -85, 86);
+	Name = Form("mapEEp_%s", inputFile1d.c_str());
+	TH2F * map1d_EEp = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+	Name = Form("mapEEm_%s", inputFile1d.c_str());
+	TH2F * map1d_EEm = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+
+	std::cout << " Opening first file ..... reading " << std::endl;
+	while (!File1d.eof()) {
+		File1d >> iEta >> iPhi >> iz >> ic >> eic ;
+		if(iz == 0) map1d_EB->Fill(iPhi, iEta, ic);
+		if(iz == 1) map1d_EEp->Fill(iEta, iPhi, ic);
+		if(iz == -1)map1d_EEm->Fill(iEta, iPhi, ic);
+	}
+
+
+	Name = Form("mapEB_%s", inputFile2p.c_str());
+	TH2F * map2p_EB = new TH2F(Name, Name, 360, 1, 361, 171, -85, 86);
+	Name = Form("mapEEp_%s", inputFile2p.c_str());
+	TH2F * map2p_EEp = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+	Name = Form("mapEEm_%s", inputFile2p.c_str());
+	TH2F * map2p_EEm = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+
+	std::cout << " Opening first file ..... reading " << std::endl;
+	while (!File2p.eof()) {
+		File2p >> iEta >> iPhi >> iz >> ic >> eic ;
+		if(iz == 0) map2p_EB->Fill(iPhi, iEta, ic);
+		if(iz == 1) map2p_EEp->Fill(iEta, iPhi, ic);
+		if(iz == -1)map2p_EEm->Fill(iEta, iPhi, ic);
+	}
+	std::cout << " End first file " << std::endl;
+	std::cout << " Opening second file ..... reading " << std::endl;
+
+	Name = Form("mapEB_%s", inputFile2d.c_str());
+	TH2F * map2d_EB = new TH2F(Name, Name, 360, 1, 361, 171, -85, 86);
+	Name = Form("mapEEp_%s", inputFile2d.c_str());
+	TH2F * map2d_EEp = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+	Name = Form("mapEEm_%s", inputFile2d.c_str());
+	TH2F * map2d_EEm = new TH2F(Name, Name, 100, 1, 101, 100, 1, 101);
+
+	std::cout << " Opening first file ..... reading " << std::endl;
+	while (!File2d.eof()) {
+		File2d >> iEta >> iPhi >> iz >> ic >> eic ;
+		if(iz == 0) map2d_EB->Fill(iPhi, iEta, ic);
+		if(iz == 1) map2d_EEp->Fill(iEta, iPhi, ic);
+		if(iz == -1)map2d_EEm->Fill(iEta, iPhi, ic);
+	}
+
 
 // TApplication* theApp = new TApplication("Application",&argc, argv);
 
@@ -178,7 +260,7 @@ int main (int argc, char**argv)
 	absolutemap_EEm->Reset();
 
 	Name = Form("diffHistEB");
-	TH1F * diffHistEB = new TH1F(Name, Name, 500, -0.3, 0.3);
+	TH1F * diffHistEB = new TH1F(Name, Name, 500, 0.9, 1.1);
 	diffHistEB->SetLineWidth(2);
 
 	Name = Form("diffHistEB_0_20");
@@ -198,7 +280,7 @@ int main (int argc, char**argv)
 	diffHistEB_60_85->SetLineWidth(2);
 
 	Name = Form("diffHistEEp");
-	TH1F * diffHistEEp = new TH1F(Name, Name, 100, -0.4, 0.4);
+	TH1F * diffHistEEp = new TH1F(Name, Name, 200, 0.8, 1.2);
 	diffHistEEp->SetLineWidth(2);
 
 	Name = Form("diffHistEEp_0_5");
@@ -218,7 +300,7 @@ int main (int argc, char**argv)
 	diffHistEEp_25_35->SetLineWidth(2);
 
 	Name = Form("diffHistEEm");
-	TH1F * diffHistEEm = new TH1F(Name, Name, 100, -0.4, 0.4);
+	TH1F * diffHistEEm = new TH1F(Name, Name, 200, 0.8, 1.2);
 	diffHistEEm->SetLineWidth(2);
 
 	Name = Form("diffHistEEm_0_5");
@@ -290,7 +372,7 @@ int main (int argc, char**argv)
 			if (abs(eta) < 20) {
 				sumEB_0_20 += map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta);
 				sum2EB_0_20 += (map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta)) * (map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta));
-				diffHistEB_0_20->Fill(map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta));
+				diffHistEB_0_20->Fill(map1_EB->GetBinContent(iPhi, iEta) / map2_EB->GetBinContent(iPhi, iEta));
 			} else if (abs(eta) < 40) {
 				sumEB_20_40 += map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta);
 				sum2EB_20_40 += (map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta)) * (map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta));
@@ -306,10 +388,12 @@ int main (int argc, char**argv)
 			}
 
 			diffmap_EB->SetBinContent(iPhi, iEta, map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta));
-			diffHistEB->Fill(map1_EB->GetBinContent(iPhi, iEta) - map2_EB->GetBinContent(iPhi, iEta));
+			diffHistEB->Fill(map1_EB->GetBinContent(iPhi, iEta) / map2_EB->GetBinContent(iPhi, iEta));
 			ratiomap_EB->SetBinContent(iPhi, iEta, map1_EB->GetBinContent(iPhi, iEta) / map2_EB->GetBinContent(iPhi, iEta));
 			absolutemap_EB->SetBinContent(iPhi, iEta, map1_EB->GetBinContent(iPhi, iEta)*map2_EB->GetBinContent(iPhi, iEta));
-			FileRatio << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi, iEta) / map2_EB->GetBinContent(iPhi, iEta) << "\t" << -999. << std::endl;
+			FileRatio << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi, iEta) / map2_EB->GetBinContent(iPhi, iEta) << "\t" <<
+			          abs(map1p_EB->GetBinContent(iPhi, iEta) / map2p_EB->GetBinContent(iPhi, iEta) - map1d_EB->GetBinContent(iPhi, iEta) / map2d_EB->GetBinContent(iPhi, iEta)) /
+			          (map1p_EB->GetBinContent(iPhi, iEta) / map2p_EB->GetBinContent(iPhi, iEta) + map1d_EB->GetBinContent(iPhi, iEta) / map2d_EB->GetBinContent(iPhi, iEta)) << std::endl;
 			FileAbsolute << eta << "\t" << iPhi << "\t" << 0 << "\t" << map1_EB->GetBinContent(iPhi, iEta)*map2_EB->GetBinContent(iPhi, iEta) << "\t" << -999. << std::endl;
 			correlationEB->Fill(map1_EB->GetBinContent(iPhi, iEta), map2_EB->GetBinContent(iPhi, iEta));
 
@@ -364,10 +448,12 @@ int main (int argc, char**argv)
 			}
 
 			diffmap_EEp->SetBinContent(ix, iy, map1_EEp->GetBinContent(ix, iy) - map2_EEp->GetBinContent(ix, iy));
-			diffHistEEp->Fill(map1_EEp->GetBinContent(ix, iy) - map2_EEp->GetBinContent(ix, iy));
+			diffHistEEp->Fill(map1_EEp->GetBinContent(ix, iy) / map2_EEp->GetBinContent(ix, iy));
 			ratiomap_EEp->SetBinContent(ix, iy, map1_EEp->GetBinContent(ix, iy) / map2_EEp->GetBinContent(ix, iy));
 			absolutemap_EEp->SetBinContent(ix, iy, map1_EEp->GetBinContent(ix, iy)*map2_EEp->GetBinContent(ix, iy));
-			FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix, iy) / map2_EEp->GetBinContent(ix, iy) << "\t" << -999. << std::endl;
+			FileRatio << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix, iy) / map2_EEp->GetBinContent(ix, iy) << "\t" <<
+			          abs(map1p_EEp->GetBinContent(iPhi, iEta) / map2p_EEp->GetBinContent(iPhi, iEta) - map1d_EEp->GetBinContent(iPhi, iEta) / map2d_EEp->GetBinContent(iPhi, iEta)) /
+			          (map1p_EEp->GetBinContent(iPhi, iEta) / map2p_EEp->GetBinContent(iPhi, iEta) + map1d_EEp->GetBinContent(iPhi, iEta) / map2d_EEp->GetBinContent(iPhi, iEta)) << std::endl;
 			FileAbsolute << ix << "\t" << iy << "\t" << 1 << "\t" << map1_EEp->GetBinContent(ix, iy)*map2_EEp->GetBinContent(ix, iy) << "\t" << -999. << std::endl;
 			correlationEEp->Fill(map1_EEp->GetBinContent(ix, iy), map2_EEp->GetBinContent(ix, iy));
 
@@ -421,10 +507,12 @@ int main (int argc, char**argv)
 			}
 
 			diffmap_EEm->SetBinContent(ix, iy, map1_EEm->GetBinContent(ix, iy) - map2_EEm->GetBinContent(ix, iy));
-			diffHistEEm->Fill(map1_EEm->GetBinContent(ix, iy) - map2_EEm->GetBinContent(ix, iy));
+			diffHistEEm->Fill(map1_EEm->GetBinContent(ix, iy) / map2_EEm->GetBinContent(ix, iy));
 			ratiomap_EEm->SetBinContent(ix, iy, map1_EEm->GetBinContent(ix, iy) / map2_EEm->GetBinContent(ix, iy));
 			absolutemap_EEm->SetBinContent(ix, iy, map1_EEm->GetBinContent(ix, iy)*map2_EEm->GetBinContent(ix, iy));
-			FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix, iy) / map2_EEm->GetBinContent(ix, iy) << "\t" << -999. << std::endl;
+			FileRatio << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix, iy) / map2_EEm->GetBinContent(ix, iy) << "\t" <<
+			          abs(map1p_EEm->GetBinContent(iPhi, iEta) / map2p_EEm->GetBinContent(iPhi, iEta) - map1d_EEm->GetBinContent(iPhi, iEta) / map2d_EEm->GetBinContent(iPhi, iEta)) /
+			          (map1p_EEm->GetBinContent(iPhi, iEta) / map2p_EEm->GetBinContent(iPhi, iEta) + map1d_EEm->GetBinContent(iPhi, iEta) / map2d_EEm->GetBinContent(iPhi, iEta)) << std::endl;
 			FileAbsolute << ix << "\t" << iy << "\t" << -1 << "\t" << map1_EEm->GetBinContent(ix, iy)*map2_EEm->GetBinContent(ix, iy) << "\t" << -999. << std::endl;
 			correlationEEm->Fill(map1_EEm->GetBinContent(ix, iy), map2_EEm->GetBinContent(ix, iy));
 
@@ -720,13 +808,18 @@ int main (int argc, char**argv)
 	for(int iEta = 1; iEta < map1_EB->GetNbinsY() + 1; iEta++) {
 		double sumPhi = 0, nPhi = 0;
 
+		//    float prec = abs(map1p_EB->GetBinContent(iPhi,iEta)/map2p_EB->GetBinContent(iPhi,iEta) - map1d_EB->GetBinContent(iPhi,iEta)/map2d_EB->GetBinContent(iPhi,iEta))/(map1p_EB->GetBinContent(iPhi,iEta)/map2p_EB->GetBinContent(iPhi,iEta) + map1d_EB->GetBinContent(iPhi,iEta)/map2d_EB->GetBinContent(iPhi,iEta));
+
 		for(int iPhi = 1; iPhi < map1_EB->GetNbinsX() + 1; iPhi++) {
 			if(map1_EB->GetBinContent(iPhi, iEta) == -1.) continue;
-			sumPhi = sumPhi + map1_EB->GetBinContent(iPhi, iEta);
+			//    sumPhi=sumPhi+map1_EB->GetBinContent(iPhi,iEta);
+			sumPhi = sumPhi + abs(map1p_EB->GetBinContent(iPhi, iEta) / map2p_EB->GetBinContent(iPhi, iEta) - map1d_EB->GetBinContent(iPhi, iEta) / map2d_EB->GetBinContent(iPhi, iEta)) / (map1p_EB->GetBinContent(iPhi, iEta) / map2p_EB->GetBinContent(iPhi, iEta) + map1d_EB->GetBinContent(iPhi, iEta) / map2d_EB->GetBinContent(iPhi, iEta));
 			nPhi++;
 		}
+
+		//   std::cout<<iEta<<" "<<sumPhi<<" "<<nPhi<<" "<<sumPhi/nPhi<<std::endl;
 		etaProjectionEB1->SetPoint(iEta - 1, iEta - 1, sumPhi / nPhi);
-		etaProjectionEB1->SetPointError(iEta - 1, 0., 0.002);
+		etaProjectionEB1->SetPointError(iEta - 1, 0., 0.);
 	}
 
 
@@ -766,9 +859,12 @@ int main (int argc, char**argv)
 			if(map1_EEp->GetBinContent(ix, iy) == -1. || map1_EEp->GetBinContent(ix, iy) == 0.) continue;
 			int iEta = int(eRings->GetEndcapIeta(ix, iy, 1));
 			if(iEta < 0 || iEta > 360)continue;
-			vectSum.at(iEta) = vectSum.at(iEta) + map1_EEp->GetBinContent(ix, iy);
+			//      vectSum.at(iEta)=vectSum.at(iEta)+map1_EEp->GetBinContent(ix,iy);
+			vectSum.at(iEta) = vectSum.at(iEta) + abs(map1p_EEp->GetBinContent(ix, iy) / map2p_EEp->GetBinContent(ix, iy) - map1d_EEp->GetBinContent(ix, iy) / map2d_EEp->GetBinContent(ix, iy)) / (map1p_EEp->GetBinContent(ix, iy) / map2p_EEp->GetBinContent(ix, iy) + map1d_EEp->GetBinContent(ix, iy) / map2d_EEp->GetBinContent(ix, iy));
+
 			vectCounter.at(iEta) = vectCounter.at(iEta) + 1;
 		}
+
 	}
 
 	j = 0;
@@ -827,7 +923,8 @@ int main (int argc, char**argv)
 			if(map1_EEm->GetBinContent(ix, iy) == -1. || map1_EEm->GetBinContent(ix, iy) == 0.) continue;
 			int iEta = int(eRings->GetEndcapIeta(ix, iy, 1));
 			if(iEta < 0 || iEta > 360)continue;
-			vectSum.at(iEta) = vectSum.at(iEta) + map1_EEm->GetBinContent(ix, iy);
+			//      vectSum.at(iEta)=vectSum.at(iEta)+map1_EEm->GetBinContent(ix,iy);
+			vectSum.at(iEta) = vectSum.at(iEta) + abs(map1p_EEm->GetBinContent(ix, iy) / map2p_EEm->GetBinContent(ix, iy) - map1d_EEm->GetBinContent(ix, iy) / map2d_EEm->GetBinContent(ix, iy)) / (map1p_EEm->GetBinContent(ix, iy) / map2p_EEm->GetBinContent(ix, iy) + map1d_EEm->GetBinContent(ix, iy) / map2d_EEm->GetBinContent(ix, iy));
 			vectCounter.at(iEta) = vectCounter.at(iEta) + 1;
 		}
 	}
@@ -1282,12 +1379,13 @@ int main (int argc, char**argv)
 	c[15] = new TCanvas("etaProjectionEB", "etaProjectionEB");
 	c[15]->SetGridx();
 	c[15]->SetGridy();
-	etaProjectionEB1->GetHistogram()->GetYaxis()-> SetRangeUser(0.9, 1.1);
+// etaProjectionEB1->GetHistogram()->GetYaxis()-> SetRangeUser(0.9,1.1);
+	etaProjectionEB1->GetHistogram()->GetYaxis()-> SetRangeUser(0., 1.1);
 	etaProjectionEB1->GetHistogram()->GetXaxis()-> SetRangeUser(0, 171);
 	etaProjectionEB1->GetHistogram()->GetYaxis()-> SetTitle("Mean IC");
 	etaProjectionEB1->GetHistogram()->GetXaxis()-> SetTitle("i#eta");
 	etaProjectionEB1->Draw("apl");
-	etaProjectionEB2->Draw("plsame");
+// etaProjectionEB2->Draw("plsame");
 
 	TLegend * leg4 = new TLegend(0.75, 0.75, 0.89, 0.89);
 	leg4->AddEntry(etaProjectionEB1, "IC set 1", "LP");
@@ -1298,12 +1396,13 @@ int main (int argc, char**argv)
 	c[16] = new TCanvas("etaProjectionEEp", "etaProjectionEEp");
 	c[16]->SetGridx();
 	c[16]->SetGridy();
-	etaProjectionEEp1->GetHistogram()->GetYaxis()-> SetRangeUser(0.55, 1.5);
+// etaProjectionEEp1->GetHistogram()->GetYaxis()-> SetRangeUser(0.55,1.5);
+	etaProjectionEEp1->GetHistogram()->GetYaxis()-> SetRangeUser(0., 1.5);
 	etaProjectionEEp1->GetHistogram()->GetXaxis()-> SetRangeUser(85, 125);
 	etaProjectionEEp1->GetHistogram()->GetYaxis()-> SetTitle("Mean IC");
 	etaProjectionEEp1->GetHistogram()->GetXaxis()-> SetTitle("i#eta");
 	etaProjectionEEp1->Draw("apl");
-	etaProjectionEEp2->Draw("plsame");
+// etaProjectionEEp2->Draw("plsame");
 
 	TLegend * leg5 = new TLegend(0.75, 0.75, 0.89, 0.89);
 	leg5->AddEntry(etaProjectionEEp1, "IC set 1", "LP");
@@ -1315,12 +1414,13 @@ int main (int argc, char**argv)
 	c[17] = new TCanvas("etaProjectionEEm", "etaProjectionEEm");
 	c[17]->SetGridx();
 	c[17]->SetGridy();
-	etaProjectionEEm1->GetHistogram()->GetYaxis()-> SetRangeUser(0.55, 1.5);
+// etaProjectionEEm1->GetHistogram()->GetYaxis()-> SetRangeUser(0.55,1.5);
+	etaProjectionEEm1->GetHistogram()->GetYaxis()-> SetRangeUser(0., 1.5);
 	etaProjectionEEm1->GetHistogram()->GetXaxis()-> SetRangeUser(85, 125);
 	etaProjectionEEm1->GetHistogram()->GetYaxis()-> SetTitle("Mean IC");
 	etaProjectionEEm1->GetHistogram()->GetXaxis()-> SetTitle("i#eta");
 	etaProjectionEEm1->Draw("apl");
-	etaProjectionEEm2->Draw("plsame");
+// etaProjectionEEm2->Draw("plsame");
 
 	TLegend * leg6 = new TLegend(0.75, 0.75, 0.89, 0.89);
 	leg6->AddEntry(etaProjectionEEm1, "IC set 1", "LP");

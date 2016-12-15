@@ -14,7 +14,7 @@ TEndcapRings::TEndcapRings()
 				iEndcapRing[ix][iy][iz] = -1;
 
 	FILE *fRing;
-	fRing = fopen("../EOverPCalibration/CommonTools/eerings.dat", "r");
+	fRing = fopen("/afs/cern.ch/user/l/lbrianza/work/PHD/DEF_ECALELF/CHE_SUCCEDE_IN_ECALELF/CALIBRAZIONI/CMSSW_7_4_12/src/Calibration/EOverPCalibration/CommonTools/eerings.dat", "r");
 	std::cout << "Inizializing endcap geometry from: eerings.dat" << std::endl;
 	int ix, iy, iz, ir;
 	while(fscanf(fRing, "(%d,%d,%d) %d \n", &ix, &iy, &iz, &ir) != EOF ) {
