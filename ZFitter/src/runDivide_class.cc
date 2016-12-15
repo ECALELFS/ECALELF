@@ -37,7 +37,7 @@ void runDivide_class::ReadRunRangeLimits(std::string fileName)
 			file.get();
 			continue;
 		}
-		while(file.peek() == 32){ // space
+		while(file.peek() == 32) { // space
 			file.get();
 			continue;
 		}

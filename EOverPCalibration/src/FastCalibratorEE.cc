@@ -4,7 +4,6 @@
 #include <TRandom3.h>
 #include <TString.h>
 #include "../interface/CalibrationUtils.h"
-#include "../interface/readJSONFile.h"
 
 
 /// Default constructor
@@ -467,7 +466,7 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 /// L3 Loop method ----> Calibration Loop function
 void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, int nLoops, bool applyMomentumCorrection, bool applyEnergyCorrection, int useRawEnergy, bool isMiscalib, bool isSaveEPDistribution,
                              bool isEPselection, bool isR9selection, float R9Min, float EPMin, int smoothCut, bool isfbrem, float fbremMax, bool isPtCut, float PtMin,
-                             bool isMCTruth, std::map<int, std::vector<std::pair<int, int> > > jsonMap, float miscalibMethod, TString miscalibMap)
+                             bool isMCTruth, float miscalibMethod, TString miscalibMap)
 {
 
 	if (fChain == 0) return;

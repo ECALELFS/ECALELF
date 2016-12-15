@@ -446,7 +446,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 /// Calibration Loop over the ntu events
 void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, int nLoops, bool applyMomentumCorrection, bool applyEnergyCorrection, int useRawEnergy, bool isMiscalib, bool isSaveEPDistribution,
                              bool isEPselection, bool isR9selection, float R9Min, float EPMin, int smoothCut, bool isfbrem, float fbremMax, bool isPtCut, float PtMin,
-                             bool isMCTruth, std::map<int, std::vector<std::pair<int, int> > > jsonMap, float miscalibMethod, TString miscalibMap)
+                             bool isMCTruth, float miscalibMethod, TString miscalibMap)
 {
 	if (fChain == 0) return;
 

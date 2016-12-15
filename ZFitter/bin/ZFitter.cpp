@@ -5,7 +5,7 @@ The aim of the program is to provide a common interface to all the Z
 fitting algorithms reading and combining in the proper way the
 configuration files.
 
-   \todo
+\todo
    - remove commonCut from category name and add it in the ZFit_class in order to not repeate the cut
    - make alpha fitting more generic (look for alphaName)
    - Implement the iterative Et dependent scale corrections
@@ -19,15 +19,12 @@ configuration files.
 #include <fstream>
 #include <cstdio>
 #include <cstdlib>
-#include <string>
 #include <stdexcept>
 #include <memory>
 #include <boost/program_options.hpp>
 
 #include <TChain.h>
 #include <TStopwatch.h>
-#include <TF1.h>
-#include <TH2F.h>
 #include <TFriendElement.h>
 
 /// @cond SHOW
@@ -47,10 +44,11 @@ configuration files.
 #include "../interface/nllProfile.hh"
 #include "../interface/auxFunctions.hh"
 
-#include "../../EOverPCalibration/interface/ntpleUtils.h"
-#include "../../EOverPCalibration/interface/CalibrationUtils.h"
 #include "../../EOverPCalibration/interface/FastCalibratorEB.h"
 #include "../../EOverPCalibration/interface/FastCalibratorEE.h"
+#include "../../EOverPCalibration/interface/LaserMonitoringEoP.h"
+
+
 /// \endcode
 /// @endcond
 
@@ -84,7 +82,6 @@ configuration files.
 
 //#include "../macro/loop.C" // a way to use compiled macros with ZFitter
 
-using namespace RooStats;
 
 ///\endcond
 
@@ -276,9 +273,10 @@ int main(int argc, char **argv)
 	float scale;
 	unsigned int modulo;
 //options for E/p
-	std::string jsonFileName;
 	std::string miscalibMap;
 	bool isMiscalib;
+	bool applyPcorr;
+	bool applyEcorr;
 	bool isSaveEPDistribution;
 	bool isMCTruth;
 	bool isEPselection;
@@ -288,19 +286,33 @@ int main(int argc, char **argv)
 	float fbremMax;
 	bool isR9selection;
 	float R9Min;
+	float EPMin;
+	int smoothCut;
 	int miscalibMethod;
 	std::string inputMomentumScale;
+	std::string inputEnergyScale;
 	std::string typeEB;
 	std::string typeEE;
-	std::string outputPath;
 	std::string outputFile;
 	int numberOfEvents;
 	int useZ, useW;
-	int isBarrel;
+	int useRawEnergy;
 	int splitStat;
 	int nLoops;
 	bool isDeadTriggerTower;
 	std::string inputFileDeadXtal;
+	std::string EBEE;
+	std::string EBEEpu;
+	int evtsPerPoint;
+
+	int useRegression;
+	float yMIN;
+	float yMAX;
+	std::string dayMin;
+	std::string dayMax;
+	std::string dayZOOM;
+	std::string LUMI;
+	int EoPvsPU;
 
 	//------------------------------ setting option categories
 	po::options_description desc("Main options");
@@ -311,6 +323,7 @@ int main(int argc, char **argv)
 	po::options_description anyVarOption("anyVar options");
 	po::options_description toyOption("toyMC options");
 	po::options_description EoverPOption("EoverP options");
+	po::options_description laserMonitoringEPOption("laser monitoring with E/p options");
 
 	//po::options_description cmd_line_options;
 	//cmd_line_options.add(desc).add(fitOption).add(smearOption);
@@ -420,12 +433,22 @@ int main(int argc, char **argv)
 	("eventsPerToy", po::value<unsigned long long int>(&nEventsPerToy)->default_value(0), "=0: all events")
 	("modulo", po::value<unsigned int>(&modulo)->default_value(1), "=1: no splitting of events")
 	;
+	laserMonitoringEPOption.add_options()
+	("laserMonitoringEP", "call the laser monitoring with E/p")
+	("yMIN", po::value<float>(&yMIN)->default_value(0.65), "y min")
+	("yMAX", po::value<float>(&yMAX)->default_value(1.05), "y max")
+	("EBEE", po::value<string>(&EBEE)->default_value("EB"), "barrel or endcap")
+	("evtsPerPoint", po::value<int>(&evtsPerPoint)->default_value(1000), "events per point")
+	("useRegression", po::value<int>(&useRegression)->default_value(0), "use regression")
+	("dayMin", po::value<string>(&dayMin)->default_value("1-7-2015"), "day min")
+	("dayMax", po::value<string>(&dayMax)->default_value("15-11-2015"), "day max")
+	("dayZOOM", po::value<string>(&dayZOOM)->default_value("10-8-2015"), "day ZOOM")
+	("LUMI", po::value<string>(&LUMI)->default_value("1.9"), "LUMI")
+	("EoPvsPU", po::value<int>(&EoPvsPU)->default_value(0), "EoPvsPU")
+	;
 	EoverPOption.add_options()
 	("EOverPCalib",  "call the E/p calibration")
-	("isBarrel", po::value<int>(&isBarrel)->default_value(1), "1=barrel, 0=endcap")
 	("doEB", "do EoP IC calibration for EB")
-	("doEE", "do EoP IC calibration for EE")
-	("jsonFileName", po::value<string>(&jsonFileName)->default_value("../EOverPCalibration/json/Cert_190456-208686_8TeV_PromptReco_Collisions12_JSON.txt"), "jsonFileName")
 	("isMiscalib", po::value<bool>(&isMiscalib)->default_value(false), "apply the initial miscalibration")
 	("miscalibMethod", po::value<int>(&miscalibMethod)->default_value(1), "miscalibration method")
 	("miscalibMap", po::value<string>(&miscalibMap)->default_value("/gwteray/users/brianza/scalibMap2.txt"), "map for the miscalibration")
@@ -438,18 +461,23 @@ int main(int argc, char **argv)
 	("fbremMax", po::value<float>(&fbremMax)->default_value(100.), "fbrem treshold")
 	("isR9selection", po::value<bool>(&isR9selection)->default_value(false), "apply R9 selection")
 	("R9Min", po::value<float>(&R9Min)->default_value(-1.), "R9 treshold")
-	("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/EOverPCalibration/MomentumCalibration2012"), "input momentum scale")
+	("applyPcorr", po::value<bool>(&applyPcorr)->default_value(true), "apply momentum correction")
+	("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("/afs/cern.ch/user/l/lbrianza/work/public/EoP_additionalFiles/MomentumCalibration2015_eta1_eta1.root"), "input momentum scale")
+	("applyEcorr", po::value<bool>(&applyEcorr)->default_value(false), "apply energy correction")
+	("inputEnergyScale", po::value<string>(&inputEnergyScale)->default_value("/afs/cern.ch/user/l/lbrianza/work/public/EoP_additionalFiles/momentumCalibration2015_EB_scE.root"), "input energy scale")
 	("typeEB", po::value<string>(&typeEB)->default_value("eta1"), "")
 	("typeEE", po::value<string>(&typeEE)->default_value("eta1"), "")
-	("outputPath", po::value<string>(&outputPath)->default_value("output/output_runD/"), "output dir for E/P calibration")
-	("outputFile", po::value<string>(&outputFile)->default_value("FastCalibrator_Oct22_Run2012ABC_Cal_Dic2012"), "output file for E/P calibration")
+	("outputFile", po::value<string>(&outputFile)->default_value("FastCalibrator_Oct2015_runD"), "output file for E/P calibration")
 	("numberOfEvents", po::value<int>(&numberOfEvents)->default_value(-1), "number of events (-1=all)")
+	("useRawEnergy", po::value<int>(&useRawEnergy)->default_value(0), "use raw energy")
 	("useZ", po::value<int>(&useZ)->default_value(1), "use Z events")
 	("useW", po::value<int>(&useW)->default_value(1), "use W events")
 	("splitStat", po::value<int>(&splitStat)->default_value(1), "split statistic")
 	("nLoops", po::value<int>(&nLoops)->default_value(20), "number of iteration of the L3 algorithm")
 	("isDeadTriggerTower", po::value<bool>(&isDeadTriggerTower)->default_value(false), "")
 	("inputFileDeadXtal", po::value<string>(&inputFileDeadXtal)->default_value("NULL"), "")
+	("EPMin", po::value<float>(&EPMin)->default_value(100.), "E/p window")
+	("smoothCut", po::value<int>(&smoothCut)->default_value(0), "apply smooth cut on the E/p window")
 	;
 
 	desc.add(inputOption);
@@ -458,7 +486,8 @@ int main(int argc, char **argv)
 	desc.add(anyVarOption);
 	desc.add(smearerOption);
 	desc.add(toyOption);
-//	desc.add(EoverPOption);
+	desc.add(EoverPOption);
+	desc.add(laserMonitoringEPOption);
 	po::variables_map vm;
 	//
 	// po::store(po::parse_command_line(argc, argv, smearOption), vm);
@@ -493,6 +522,7 @@ int main(int argc, char **argv)
 	if(!vm.count("regionsFile") &&
 	        !vm.count("runDivide") && !vm.count("savePUTreeWeight") &&
 	        !vm.count("saveR9TreeWeight") && !vm.count("saveCorrEleTree") && !vm.count("EOverPCalib")
+	        && !vm.count("laserMonitoringEP")
 	        //&& !vm.count("saveRootMacro")
 	  ) {
 		std::cerr << "[ERROR] Missing mandatory option \"regionsFile\"" << std::endl;
@@ -522,21 +552,22 @@ int main(int argc, char **argv)
 	//============================== Check output folders
 	bool checkDirectories = true;
 	checkDirectories = checkDirectories && !system("[ -d " + TString(outDirFitResMC) + " ]");
-	if(!checkDirectories && !vm.count("EOverPCalib")) {
+	if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("laserMonitoringEP")) {
 		std::cerr << "[ERROR] Directory " << outDirFitResMC << " not found" << std::endl;
 	}
 	checkDirectories = checkDirectories && !system("[ -d " + TString(outDirFitResData) + " ]");
-	if(!checkDirectories && !vm.count("EOverPCalib")) {
+	if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("laserMonitoringEP")) {
 		std::cerr << "[ERROR] Directory " << outDirFitResData << " not found" << std::endl;
 	}
 	checkDirectories = checkDirectories &&   !system("[ -d " + TString(outDirImgMC) + " ]");
-	if(!checkDirectories && !vm.count("EOverPCalib")) {
+	if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("laserMonitoringEP")) {
 		std::cerr << "[ERROR] Directory " << outDirImgMC << " not found" << std::endl;
 	}
 	checkDirectories = checkDirectories && !system("[ -d " + TString(outDirImgData) + " ]");
-	if(!checkDirectories && !vm.count("EOverPCalib")) {
+	if(!checkDirectories && !vm.count("EOverPCalib") && !vm.count("laserMonitoringEP")) {
 		std::cerr << "[ERROR] Directory " << outDirImgData << " not found" << std::endl;
 	}
+
 	//   checkDirectories=checkDirectories && !system("[ -d "+TString(outDirTable)+" ]");
 	//   if(!checkDirectories){
 	//     std::cerr << "[ERROR] Directory " << outDirTable << " not found" << std::endl;
@@ -548,6 +579,8 @@ int main(int argc, char **argv)
 	        && !vm.count("saveR9TreeWeight")
 	        && !vm.count("saveRootMacro")
 	        && !vm.count("EOverPCalib")
+	        && !vm.count("laserMonitoringEP")
+
 	  ) return 1;
 
 	//============================== Reading the config file with the list of chains
@@ -594,6 +627,7 @@ int main(int argc, char **argv)
 		}
 
 		if(!tagChainMap.count(tag)) {
+
 #ifdef DEBUG
 			std::cout << "[DEBUG] Create new tag map for tag: " << tag << std::endl;
 #endif
@@ -990,7 +1024,6 @@ int main(int argc, char **argv)
 		// 	std::cout << *itr << "\t" << "-1" << "\t" << runDivider.GetRunRangeTime(*itr) << std::endl;
 		// }
 
-		return 0;
 	}
 
 
@@ -1100,17 +1133,145 @@ int main(int argc, char **argv)
 
 
 
-	if(vm.count("loop")) {
-//     TFile *file = new TFile("evList.root","read");
 
-//     Loop((tagChainMap["s1"])["selected"],file);
-		return 0;
+//------------------------------ LASER MONITORING WITH E/P  ------------------------------------------------------
+
+	if(vm.count("laserMonitoringEP")) {
+
+		std::cout << "start monitoring. " << std::endl;
+
+		LaserMonitoringEoP analyzer(data, mc, useRegression);
+		analyzer.Loop(yMIN, yMAX, EBEE, evtsPerPoint, useRegression, dayMin, dayMax, dayZOOM, LUMI, EoPvsPU);
+
 	}
 
+	///////////--------------------------- E/P calibration ----------------------------------------------------------------------
 
-	//------------------------------ ZFit_class declare and set the options
+	if(vm.count("EOverPCalib")) {
+		bool isEB = vm.count("doEB");
+		TString partition = (isEB) ? "EB" : "EE";
+		if(isEB) {
+			std::cout << "---- START E/P CALIBRATION: BARREL ----" << std::endl;
+		} else {
+			std::cout << "---- START E/P CALIBRATION: ENDCAP ----" << std::endl;
+		}
 
-	//------------------------------ anyVar_class declare and set the options
+		int nRegions = (isEB) ? GetNRegionsEB(typeEB) : GetNRegionsEE(typeEE);
+
+		system(("mkdir -p " + outDirFitResData).c_str());
+
+		/// open calibration momentum graph
+		TFile* momentumscale = new TFile((inputMomentumScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
+		std::vector<TGraphErrors*> g_EoC;
+
+		TString Name = (isEB) ? "g_EoC_EB_0" : "g_EoC_EE_0";
+		g_EoC.push_back( (TGraphErrors*)(momentumscale->Get(Name)) );
+
+		std::cout << "momentum calibration file correctly opened" << std::endl;
+
+		/// open calibration energy graph
+		TFile* energyscale = new TFile((inputEnergyScale.c_str()));
+		std::vector<TGraphErrors*> g_EoE;
+
+		for(int i = 0; i < nRegions; ++i) {
+			TString Name = "g_pData_" + partition + Form("_0_%d", i);
+			g_EoE.push_back( (TGraphErrors*)(energyscale->Get(Name)) );
+		}
+
+		std::cout << "energy calibration file correctly opened" << std::endl;
+
+		///Use the whole sample statistics if numberOfEvents < 0
+		if ( numberOfEvents < 0 ) numberOfEvents = data->GetEntries();
+
+		std::cout << "number of events: " << numberOfEvents << std::endl;
+
+		/// run in normal mode: full statistics
+		if ( splitStat == 0 ) {
+
+			TString name = Form("%s%s_%s.root", outDirFitResData.c_str(), outputFile.c_str(), partition.Data());
+			TFile *outputName = new TFile(name, "RECREATE");
+
+			TString outEPDistribution;
+			if(isSaveEPDistribution == true)
+				outEPDistribution = "Weight_" + name;
+			else
+				outEPDistribution = "NULL";
+
+			TString DeadXtal = inputFileDeadXtal.c_str();
+
+			std::cout << "start calibration. " << std::endl;
+
+			FastCalibratorEB analyzerEB(data, g_EoC, g_EoE, typeEB, outEPDistribution);
+			FastCalibratorEE analyzerEE(data, g_EoC, g_EoE, typeEE, outEPDistribution);
+			if(isEB) {
+				analyzerEB.bookHistos(nLoops);
+				analyzerEB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
+				analyzerEB.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, miscalibMethod, miscalibMap);
+				analyzerEB.saveHistos(outputName);
+			} else {
+				analyzerEE.bookHistos(nLoops);
+				analyzerEE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
+				analyzerEE.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
+				analyzerEE.saveHistos(outputName);
+			}
+
+		}
+
+		/// run in even-odd mode: half statistics
+		else if ( splitStat == 1 ) {
+
+			/// Prepare the outputs
+			TString name1;
+			TString name2;
+
+			name1 = Form("%s%s_%s_even.root", outDirFitResData.c_str(), outputFile.c_str(), partition.Data());
+			name2 = name1;
+			name2.ReplaceAll("even", "odd");
+
+			TFile *outputName1 = new TFile(outDirFitResData + name1, "RECREATE");
+			TFile *outputName2 = new TFile(outDirFitResData + name2, "RECREATE");
+
+			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
+
+			/// Run on odd
+			FastCalibratorEB analyzer_even_EB(data, g_EoC, g_EoE, typeEB);
+			FastCalibratorEB analyzer_odd_EB(data, g_EoC, g_EoE, typeEB);
+
+			FastCalibratorEE analyzer_even_EE(data, g_EoC, g_EoE, typeEE);
+			FastCalibratorEE analyzer_odd_EE(data, g_EoC, g_EoE, typeEE);
+			if(isEB) {
+				analyzer_even_EB.bookHistos(nLoops);
+				analyzer_even_EB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
+				analyzer_even_EB.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
+				analyzer_even_EB.saveHistos(outputName1);
+
+				analyzer_odd_EB.bookHistos(nLoops);
+				analyzer_odd_EB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
+				analyzer_odd_EB.Loop(numberOfEvents, useZ, useW, -splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
+				analyzer_odd_EB.saveHistos(outputName2);
+
+			} else {
+				analyzer_even_EE.bookHistos(nLoops);
+				analyzer_even_EE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
+				analyzer_even_EE.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
+				analyzer_even_EE.saveHistos(outputName1);
+
+
+				analyzer_odd_EE.bookHistos(nLoops);
+				analyzer_odd_EE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
+				analyzer_odd_EE.Loop(numberOfEvents, useZ, useW, -splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
+				analyzer_odd_EE.saveHistos(outputName2);
+
+			}
+
+		}
+
+	}
+///////////////////////////////////-------E/P calibration done!--------------////////////////////////
+
+
+
+//------------------------------ anyVar_class declare and set the options
 	if(vm.count("anyVar")) {
 		TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
 		std::vector<TString> branchListAny;
@@ -1597,3 +1758,5 @@ int main(int argc, char **argv)
 	return 0;
 }
 
+
+//  LocalWords:  etaSCEle

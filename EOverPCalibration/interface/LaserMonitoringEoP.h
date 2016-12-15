@@ -25,8 +25,6 @@
 
 #include "../interface/ntpleUtils.h"
 #include "../interface/CalibrationUtils.h"
-#include "../interface/FastCalibratorEB.h"
-#include "../interface/FastCalibratorEE.h"
 
 #include "../interface/TEndcapRings.h"
 #include "../CommonTools/histoFunc.h"
