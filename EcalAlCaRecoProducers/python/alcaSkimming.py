@@ -184,6 +184,9 @@ from RecoLocalCalo.EcalRecProducers.ecalLocalCustom import *
 
 process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 
+#Energy regression 2017
+process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+process.EGMenergyCorrection = cms.Path(process.regressionApplication)
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 
@@ -676,7 +679,7 @@ elif(options.type=='SKIMEFFTEST'):
                                     process.pathWElectronGen, process.pathZSCElectronGen, process.pathZElectronGen,
                                     )
 elif(options.type=='MINIAODNTUPLE'):
-    process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
+    process.schedule = cms.Schedule(process.EGMenergyCorrection,process.NtuplePath, process.NtupleEndPath)
 
 process.zNtupleDumper.foutName=options.secondaryOutput
 
