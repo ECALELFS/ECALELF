@@ -289,7 +289,7 @@ else:
 myEleCollection =  cms.InputTag("gedGsfElectrons")
 
 if(options.type=="MINIAODNTUPLE" ):
-    myEleCollection= cms.InputTag("slimmedElectrons")
+    myEleCollection= cms.InputTag("regressionElectrons")
 recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
 
 process.MinEleNumberFilter.src = myEleCollection
@@ -744,7 +744,7 @@ else:
     rechitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     #configure everything for MINIAOD
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('regressionElectrons')
 
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = rechitsEB
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = rechitsEE
