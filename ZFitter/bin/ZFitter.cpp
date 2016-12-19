@@ -1201,14 +1201,14 @@ int main(int argc, char **argv)
 
 			std::cout << "start calibration. " << std::endl;
 
-			FastCalibratorEB analyzerEB(data, g_EoC, g_EoE, typeEB, outEPDistribution);
-			FastCalibratorEE analyzerEE(data, g_EoC, g_EoE, typeEE, outEPDistribution);
 			if(isEB) {
+			        FastCalibratorEB analyzerEB(data, g_EoC, g_EoE, typeEB, outEPDistribution);
 				analyzerEB.bookHistos(nLoops);
 				analyzerEB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzerEB.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, miscalibMethod, miscalibMap);
 				analyzerEB.saveHistos(outputName);
 			} else {
+			        FastCalibratorEE analyzerEE(data, g_EoC, g_EoE, typeEE, outEPDistribution);
 				analyzerEE.bookHistos(nLoops);
 				analyzerEE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzerEE.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
@@ -1228,35 +1228,32 @@ int main(int argc, char **argv)
 			name2 = name1;
 			name2.ReplaceAll("even", "odd");
 
-			TFile *outputName1 = new TFile(outDirFitResData + name1, "RECREATE");
-			TFile *outputName2 = new TFile(outDirFitResData + name2, "RECREATE");
+			TFile *outputName1 = new TFile(name1, "RECREATE");
+			TFile *outputName2 = new TFile(name2, "RECREATE");
 
 			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
 
-			/// Run on odd
-			FastCalibratorEB analyzer_even_EB(data, g_EoC, g_EoE, typeEB);
-			FastCalibratorEB analyzer_odd_EB(data, g_EoC, g_EoE, typeEB);
-
-			FastCalibratorEE analyzer_even_EE(data, g_EoC, g_EoE, typeEE);
-			FastCalibratorEE analyzer_odd_EE(data, g_EoC, g_EoE, typeEE);
 			if(isEB) {
+			        FastCalibratorEB analyzer_even_EB(data, g_EoC, g_EoE, typeEB);
 				analyzer_even_EB.bookHistos(nLoops);
 				analyzer_even_EB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_even_EB.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
 				analyzer_even_EB.saveHistos(outputName1);
 
+				FastCalibratorEB analyzer_odd_EB(data, g_EoC, g_EoE, typeEB);
 				analyzer_odd_EB.bookHistos(nLoops);
 				analyzer_odd_EB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_odd_EB.Loop(numberOfEvents, useZ, useW, -splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
 				analyzer_odd_EB.saveHistos(outputName2);
 
 			} else {
+			        FastCalibratorEE analyzer_even_EE(data, g_EoC, g_EoE, typeEE);
 				analyzer_even_EE.bookHistos(nLoops);
 				analyzer_even_EE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_even_EE.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
 				analyzer_even_EE.saveHistos(outputName1);
 
-
+				FastCalibratorEE analyzer_odd_EE(data, g_EoC, g_EoE, typeEE);
 				analyzer_odd_EE.bookHistos(nLoops);
 				analyzer_odd_EE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_odd_EE.Loop(numberOfEvents, useZ, useW, -splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);

@@ -88,7 +88,7 @@ for b in range(len(split)):
                     for g in range(len(energyType)):
                         fn = "Job_"+ntupleName+""+nLoops+"2016_newPcorr/Job_"+"EB"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
                         outScript = open(fn+".sh","w");
-                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outputPath output_"+ntupleName+"_"+nLoops+"2016_newPcorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EB"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EB_scE.root"
+                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outDirFitResData output_"+ntupleName+"_"+nLoops+"2016_newPcorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EB"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EB_scE.root"
                         print command;
                         outScript.write('#!/bin/bash');
                         outScript.write("\n"+'cd '+CMSSWDir);
@@ -133,7 +133,7 @@ for b in range(len(split)):
                     for g in range(len(energyType)):
                         fn = "Job_"+ntupleName+""+nLoops+"2016_newPcorr/Job_"+"EE"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
                         outScript = open(fn+".sh","w");
-                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outputPath output_"+ntupleName+"_"+nLoops+"2016_newPcorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EE"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EE_scE.root"
+                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outDirFitResData output_"+ntupleName+"_"+nLoops+"2016_newPcorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EE_scE.root"
                         print command;
                         outScript.write('#!/bin/bash');
                         outScript.write("\n"+'cd '+CMSSWDir);
