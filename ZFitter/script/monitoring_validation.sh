@@ -1,19 +1,17 @@
 #!/bin/bash
 source script/functions.sh
 #tag_name=""
-commonCut=Et_25-trigger-noPF
-selection=loose
-invMass_var=invMass_SC_regrCorr_ele
+commonCut=Et_25
+selection=loose25nsRun2
+invMass_var=invMass_SC_must_regrCorr_ele
 invMass_min=65
 invMass_max=115
-#invMass_min=45
-#invMass_max=100
 configFile=data/validation/monitoring_2012_53X.dat
 
 runRangesFile=data/runRanges/monitoring.dat
-baseDir=test
+baseDir=test2
 updateOnly="--updateOnly"
-#extraOptions="--forceNewFit"
+extraOptions="--noPU"
 #extraOptions="--addBranch iSM --forceNewFit"
 
 # VALIDATION=y
@@ -43,6 +41,7 @@ usage(){
     echo " --commonCut arg (=${commonCut})"
     echo " --period RUN2012A, RUN2012AB, RUN2012C, RUN2012D"
     echo " --cruijff"
+	echo " --noPU"
 }
 
 desc(){
@@ -56,7 +55,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics:,slides,onlyTable,test,commonCut:,period:,cruijff,refreg,R9Ele -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,rereco:,validation,stability,etaScale,systematics:,slides,onlyTable,test,commonCut:,period:,cruijff,refreg,R9Ele,noPU -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -72,6 +71,7 @@ do
         -f) configFile=$2; shift;;
         --invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--puName) puName=$2; shift;;
+	--noPU) NOPU="yes";;
 	--runRangesFile) runRangesFile=$2; echo "[OPTION] runRangesFile = ${runRangesFile}"; shift;;
 	--baseDir) baseDir=$2; echo "[OPTION] baseDir = $baseDir"; shift;;
 	--rereco) rereco=$2; echo "[OPTION] rereco = $rereco"; shift;;
@@ -138,22 +138,6 @@ elif  [ -z "${configFile}" -a -n "${TEST}" ];then
     configFile=data/validation/test.dat
 fi
 
-case ${selection} in
-    WP80PU)
-        ;;
-    WP90PU)
-	;;
-    loose)
-	;;
-    medium)
-	;;
-    tight)
-	;;
-    *)
-	echo "[ERROR] Selection ${selection} not configured" >> /dev/stderr
-        exit 1
-        ;;
-esac
 
 
 
@@ -219,8 +203,10 @@ case $PERIOD in
 esac
 
 ## pileup reweight name
-puName ${configFile}
-echo "PUName: $puName"
+if [ -z "${NOPU}" ];then
+	puName ${configFile}
+	echo "PUName: $puName"
+fi
 
 mcName ${configFile}
 echo "mcName: ${mcName}"
@@ -233,12 +219,7 @@ else
     outDirData=$baseDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
 fi
 
-if [ "${invMass_var}" == "invMass_regrCorr_fra" ];then
-    extraOptions="${extraOptions} --isOdd"
-    outDirMC=$baseDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
-else
-    outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
-fi
+outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
 
 if [ -n "${signalType}" ];then
     case `echo ${signalType} | cut -d '=' -f 2` in
@@ -279,18 +260,17 @@ echo "$outDirMC" > $outDirData/whichMC.txt
 
 if [ -n "$VALIDATION" ];then
     regionFile=data/regions/validation.dat
-if [ -z "${ONLYTABLE}" ];then
-    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
-	${extraOptions} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	--commonCut=${commonCut}  --selection=${selection} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
-	--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/validation.log|| exit 1
-fi
-
+	if [ -z "${ONLYTABLE}" ];then
+		./bin/ZFitter.exe -f ${configFile} --zFit --regionsFile ${regionFile}  --invMass_var ${invMass_var} \
+			--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+			--commonCut=${commonCut}  --selection=${selection} --invMass_min=${invMass_min} --invMass_max=${invMass_max} \
+			--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img ${extraOptions} > ${outDirData}/log/validation.log|| exit 1
+	fi
+	
 
     ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
-	>  ${outDirTable}/$PERIOD/monitoring_summary-${invMass_var}-${selection}-${commonCut}.tex || exit 1
+		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
+		>  ${outDirTable}/$PERIOD/monitoring_summary-${invMass_var}-${selection}-${commonCut}.tex || exit 1
 fi
 
 ##################################################

@@ -1,0 +1,28 @@
+/**
+\page EoPcalibration EoP calibration instructions
+
+
+for the E/p calibration, run with: (from the ZFitter directory)
+
+\code
+ZFitter.exe -f data/validation/EoverPcalibration.dat --EOverPCalib --doEB
+\endcode
+Parameters:
+-  inputFileDeadXtal= Add dead Channel to evaluate the effect on the IC
+-  isMiscalib = Miscalibration 5% option
+-  isSaveEPDistribution = save E/p pdf
+-  isEPselection = apply E/p selection setted in the .cc
+-  isR9selection = apply R9 selection > 0.9
+-  isMCTruth = use calibration E/E_{Truth}
+-  outputFile = output file
+-  numberOfEvents = -1 (all statistic)
+-  useZ = 1 (use Z event) 0 (no Z event in IC procedure)
+-  useW = 1 (use W event) 0 (no W event in IC procedure)
+-  splitStat = 1 (split odd and even event) 0 (no split)
+-  nLoops = number of L3 iteration
+-  doEB: only barrel
+-  doEE: only endcaps
+
+
+
+*/

@@ -1,0 +1,61 @@
+/**
+  * \page NTUPLEPRODUCTION_  Ntuple production
+
+
+Ntuples are produced starting from:
+ - MINIAOD/MINIAODSIM
+ - ALCARERECO
+ - ALCARECO/ALCARECOSIM
+ - AOD/AODSIM
+
+
+For more informations about the difference between the dataformats see \subpage DATAFORMATS
+
+ 
+All commands should be executed from the Calibration/EcalAlCaRecoProducers directory.
+
+\par Inputs:
+  - File with list of datasets, run ranges, location: \b alcareco_datasets.dat or \b alcarereco_datasets.dat
+    For more information about the files see \subpage CONFIGFILES
+  - json file (needed only for data)
+
+
+\subpage NAMECONVENTIONS_ Convention for json name
+
+# Ntuple production
+The production is done by the \verbatim ./scripts/prodNtuples.sh \endverbatim script.
+
+For details about options, type \verbatim ./scripts/prodNtuples.sh --help \endverbatim
+
+\par Example for production from MINIAOD
+\verbatim
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {string to select your dataset}` --type=MINIAOD --json_name=<json_name> --json=<jsonfile.txt> 
+\endverbatim
+
+For MC you don't need the json related options but you need \verbatim --isMC \endverbatim
+
+By default only the "selected" ntuples is created.
+If you want any of the additional ntuples:
+\verbatim
+ --doExtraCalibTree
+ --doExtraStudyTree
+ --doEleIDTree
+\endverbatim
+
+Sometimes a fix in the ntuple producer needs to be tracked giving different names to the ntuples produced from the same dataset and with the same json.
+The option
+\verbatim --extraName=<string> \endverbatim can be used
+
+\section S Step-by-step guide for production from MINIAOD
+  -# fill the datasets in alcareco_data if not yet there
+  -# find the latest json file
+  -# define the right "json name" for the json as indicated in the \subpage NAMECONVENTIONS_
+  -# use CRAB3 to make the production
+  -# run the prodNtuples.sh script with the right options
+
+\section forExperts FOR EXPERTS: production from ALCARERECO
+Better to use the quick script, but if you want to process only one specific dataset:
+\code
+./scripts/prodNtuples.sh `parseDatasetFile.sh alcarereco_datasets.dat | grep {string to select your dataset}` --type=ALCARERECO 
+\endcode
+*/

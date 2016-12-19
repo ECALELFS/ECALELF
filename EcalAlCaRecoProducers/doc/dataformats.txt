@@ -1,0 +1,125 @@
+/**
+ * \page DATAFORMATS Dataformats
+
+ The calibration  with electrons (single and double electron
+samples) is performed using the alcareco data format that
+contains only relevant collections for the ECAL calibration with
+electrons. 
+
+ - \b EcalUncalElectron (ALCARAW): Special data format for rereco purpose
+	- officially produced starting from CMSSW_8_0_X release
+	- re-recoing ALCARAW you get a variant of the \b ALCARECO that is named \b ALCARERECO
+ - \b EcalCalElectron (ALCARECO): Reduced format for RECO data
+    - can be produced from ALCARAW (\b default and \b recommended!)
+
+	- this is the stardard format after rereco of data using
+      ECALELF (starting from ALCARAW)  
+
+	- can be produced starting from RECO or AOD formats
+ - \b MINIAOD (for monitoring, scales & smearings)
+
+*/
+
+/** \page CONFIGFILES Config files
+ALCARECO and ALCARAW private production logic.
+
+\subsection bookKeeping Files for book keeping: used to create, submit and book-keep the
+     production 
+ - alcaraw_datasets.dat
+ - alcareco_datasets.dat
+ - alcarereco_datasets.dat
+ - ntuple_datasets.dat
+
+
+\subsection bookKeepingFormat Book-keeping files content and syntax
+ - For each line one crab task is created.
+ - Their contents are not exactly the same.
+ - Lines can be commented with a # at the beginning of the line.
+ - Columns are separated by TAB.
+
+\section alcarawDatasetsFormat alcaraw_datasets.dat
+\verbatim
+# RUNRANGE     DATASETPATH                                                 DATASETNAME	                           STORE_PATH_BASE   USER_REMOTE_DIR_BASE                  VALIDITY   PERIOD
+190456-193621  /DoubleElectron/Run2012A-ZElectron-13Jul2012-v1/RAW-RECO    DoubleElectron-ZSkim-RUN2012A-13Jul-v1  caf               group/alca_ecalcalib/ecalelf/alcaraw  VALID      RUN2012ABC,Cal_Nov2012
+\endverbatim
+
+For each line a crab task is created
+ - RUNRANGE: only events in the indicated run range are processed
+ - DATASETPATH: This is the real DBS dataset path (full name)
+ - DATASETNAME: This is a short name which will be used now on to refer
+             to the specified DATASET. The DATASETNAME is used in the
+             construction of the output folders!
+ - STORE_PATH_BASE: indicates the storage element where to store the
+		 output
+		 it can be: caf or T2_IT_Rome (if other are needed,
+                 please contact cms-ecalelf-devel)
+ - USER_REMOTE_DIR: this is the directory on the Storage Element under
+                 the store/ folder
+		 Usually files are stored on the T2_CH_CERN EOS system
+		 in the ALCA group folders:
+		 group/alca_ecalcalib/ecalelf/alcaraw (private production)
+		 It can be "database" that indicates that the dataset
+                 is published and available in DBS (e.g. official ALCARECO) 
+ - VALIDITY (only meaningful for ALCARAW): 
+	  for each line in this file the corresponding ALCARAW 
+	  files are present on EOS. There can be the necessity to exclude
+ 	  from the RERECO process some ALCARAW datasets 
+	  because obsolete or superseeded by others. For example a new
+	  alcaraw can be produced on the same run range using a newer central
+	  rereco, in this way the RECO quantities in the alcaraw have better
+	  conditions, like eleID and iso variables. 
+	  Possible values are:
+	   - VALID (good for rereco)
+	   - INVALID (not used for rereco)
+	In this way it's not necessary to remove the files from EOS
+	and in the alcaraw_datasets.dat there is always the list of
+	folders and files present on EOS.
+ - PERIOD: in case of rereco, you want to run on more than one line (more
+	run ranges). 
+	To make life easier, a comma separated list of
+	"periods" can be associated to the line. In this way, when
+	launching a rereco, we can specify just the period and all the
+	lines associated to it will be rerecoed (if valid!)  
+
+
+\section alcarecoDatasetsFormat alcareco_datasets.dat
+
+In this file are reported all the datasets for which the ALCARECO is
+produced with the same sintax as alcaraw_datasets.dat .
+They can be produced centrally in ALCARECO format (prompt or
+rerecoes) or produced by the user from AOD or RECO or MC (AODSIM).
+For the official alcareco, it has to be indicated using the word "database" 
+instead of group/alca_ecalcalib/ecalelf/alcareco and ZAlcaSkim in the dataset
+name to keep memory of the origin of the ALCARECO (if you want to
+produce the same privately for example). 
+e.g. DoubleElectron-ZAlcaSkim-RUN2012D-22Jan-v1 (centrally produced)
+instead of DoubleElectron-ZSkim-RUN2012D-22Jan-v1 (private production)
+
+\section alcarerecoDatasetsFormat alcarereco_datasets.dat
+This file is filled automatically by the rereco scripts. 
+
+One example line is:
+\verbatim
+# RUNRANGE	DATASETPATH	DATASETNAME	STORE_PATH_BASE	USER_REMOTE_DIR	ALCARAW_REMOTE_DIR	TAG
+190456-193621   /DoubleElectron/Run2012A-ZElectron-13Jul2012-v1/RAW-RECO        DoubleElectron-ZSkim-RUN2012A-13Jul-v1  caf.cern.ch     group/alca_ecalcalib/ecalelf/alcarereco      group/alca_ecalcalib/ecalelf/alcaraw    Cal_Nov2012_ICEle_v1
+\endverbatim
+
+In this file there are two additional fields:
+
+ - ALCARAW_REMOTE_DIR: this is the output directory where of the ALCARAW
+                     production step, if for any reason the standard
+		     ALCARAW is produced elsewhere, this should be
+		     reported here by the rereco script (you should
+		     provide this information with the script option)
+ - TAG: this is the "rereco name". This will be explained better in the
+      rereco section
+
+
+#### OUTPUT DIRECTORIES:
+ The remote directory in the storage element is set as follows:
+\verbatim
+USER_REMOTE_DIR=$USER_REMOTE_DIR_BASE/${ENERGY}/${DATASETNAME}/${DATASETNAME}-${RUNRANGE:-allRange}
+\endverbatim
+where ENERGY is 7TeV for 2011 datasets and 8TeV for 2012 datasets
+
+*/

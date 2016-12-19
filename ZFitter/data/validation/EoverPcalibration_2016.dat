@@ -1,0 +1,18 @@
+#################input list for the E/p calibration ############################
+#d    selected            /afs/cern.ch/user/l/lbrianza/work/public/ntuple_numEvent100.root
+#d    extraCalibTree      /afs/cern.ch/user/l/lbrianza/work/public/extraCalibTree.root
+#d    selected            /afs/cern.ch/user/l/lbrianza/work/public/RUND_DoubleElectron.root
+
+#d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_multifit50ns.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit50ns.root
+#d    selected          root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/ntuple_multifit25ns.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_multifit25ns.root
+#d    selected 		root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DoubleEG-Run2016B-PromptReco-v2-miniAOD/273150-273730/271036-273450_noL1T_v1/unmerged-allRange.root
+#d    extraCalibTree    root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalMIBI/lbrianza/DoubleElectron/extraCalibTree_oldweight.root
+
+
+d1      selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DoubleEG-Run2016B-PromptReco-v1-miniAOD/272023-273146/271036-273450_noL1T_v1/unmerged-allRange.root
+d2      selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DoubleEG-Run2016B-PromptReco-v2-miniAOD/273150-273730/271036-273450_noL1T_v1/unmerged-allRange.root
+s1      selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/DYJets_madgraph-RunIISpring16-miniAOD/allRange/DYJets_madgraph-RunIISpring16-miniAOD-allRange.root
+#d      pileupHist	/afs/cern.ch/user/y/yhaddad/ECAL/CMSSW_8_0_7/src/Calibration/ZFitter/pileup_file.root
+#s      pileupHist	/afs/cern.ch/user/y/yhaddad/ECAL/CMSSW_8_0_7/src/Calibration/ZFitter/pileup_file.root

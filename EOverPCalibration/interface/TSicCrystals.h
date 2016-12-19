@@ -29,13 +29,14 @@
 
 
 /// SIC Crystals MAP ///
-class TSicCrystals {
- private:
-  int sicMap[100][100][3]; 
- public:
-  TSicCrystals(); 
-  virtual ~TSicCrystals();
-  int isSic(Int_t,Int_t,Int_t);
+class TSicCrystals
+{
+private:
+	int sicMap[100][100][3];
+public:
+	TSicCrystals();
+	virtual ~TSicCrystals();
+	int isSic(Int_t, Int_t, Int_t);
 };
 
 #endif

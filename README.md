@@ -13,50 +13,28 @@ Be sure to have a GitHub account and have followed the instructions here:
 ======
 Download instructions.
 
-`wget --no-check-certificate https://raw.github.com/ECALELFS/ECALELF/master/setup_git.sh`
-
-`chmod +x setup_git.sh`
-
-`./setup_git.sh CMSSW_5_3_14_patch2`
-
-`cd CMSSW_5_3_14_patch2/src/`
-
-`cmsenv`
-
-`cd Calibration/ZFitter && make && cd -`
+```
+wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/HEAD/setup_git.sh
+chmod +x setup_git.sh
+CMSSW_VERSION=CMSSW_8_0_24_patch1
+./setup_git.sh $CMSSW_VERSION
+cd $CMSSW_VERSION/src/
+cmsenv
+cd Calibration/ZFitter && make && cd -
+```
 
 If you are using a tcsh shell:
-`cd Calibration && source initCmsEnv.csh`
+`cd Calibration && source initCmsEnvCRAB2.csh`
 
 If you are using a bash shell:
-`cd Calibration && source initCmsEnv.sh`
+`cd Calibration && source initCmsEnvCRAB2.sh`
+
+(CRAB3 is not currently supported)
 
 Every time you enter in a new shell you have to do:
-`source initCmsEnv.csh`
+`source initCmsEnvCRAB2.csh`
 or
-`source initCmsEnv.sh`
-
-Problem:
-if you have an error in compilation like
-
-consider to edit the following file: `DataFormats/CaloRecHit/src/classes_def.xml`
-changing the following lines:
-
-` <class name="reco::CaloCluster" ClassVersion="11">`
-
-`   <version ClassVersion="11" checksum="3936140"/>`
-
-`  </class>`
-
-to 
-
-` <class name="reco::CaloCluster" ClassVersion="11">`
-
-`   <version ClassVersion="12" checksum="4003646624"/>`
-
-`</class>`
-
-
+`source initCmsEnvCRAB2.sh`
 
 
 ======

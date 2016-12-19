@@ -1,0 +1,157 @@
+/**
+* \page page5 Rereco production
+* 
+\section RERECO RERECO
+The ReReco and the ntuple production can be run with the script 
+EcalAlCaRecoProducers/scripts/RerecoQuick.sh
+from the directory EcalAlCaRecoProducers
+
+\subsection RERECO_inputFiles Input files
+-# EcalAlCaRecoProducers/config/reRecoTags/tag_name.py: 
+      is the file where the GT and the list of tags 
+      to be used for the rereco and the ntuple production 
+      have to be specified.
+      \b "tag_name" is the name that will be automatically 
+      assigned to all the directories created for the rereco 
+      and the ntuples (the crab directory in 
+      EcalAlCaRecoProducers/prod_alcarereco 
+      and the directories in eos with the reco files and the ntuples).
+      \b More info in \ref TAGFILES
+-# alcaraw_datasets.dat is the file with the list of the available alcaraw files
+
+\subsection RERECO_outputFiles Output files
+ 1. alcarereco_datasets.dat is the file with the list of all the
+   rerecos already done  
+
+ 2. ntuple_datasets.dat is the file with the list of all the ntuples
+   already produced 
+   These two files are updated automatically with a line that summarizes
+   all the relevant information about the rereco/ntuples (run range,
+   dataset name, alcaraw name, storage_element, user_remote_dir_base,
+   tag_name and, for ntuples, if they are produced from alcareco or
+   alcarecosim and ...) when the script RerecoQuick.sh is launched
+
+ 3. The rereco files produced are stored in
+\verbatim
+   /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/13TeV/tag_name
+\endverbatim
+
+ 4. The final merged ntuple is stored in: 
+   /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/tag_name/
+
+\subsection RERECO_instructions Instructions
+
+-# <b>CREATE</b> the tag_name.py in EcalAlCaRecoProducers/config/reRecoTags directory \n
+  Se more detailes below, in section \ref TAGFILES 
+-# check the syntax of the tag_name.py file
+\code
+\endcode
+-# commit the file in GITHUB:
+\code
+git add config/reRecoTags/tag_name.py
+git commit -m "...." config/reRecoTags/tag_name.py
+\endcode
+-# Add the period on which the ReReco has to be run in
+   alcaraw_datasets.dat, if not already defined (e.g. RUN2012AB)
+-# Run the script RerecoQuick.sh  
+\code
+   ./scripts/RerecoQuick.sh -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} 
+\endcode
+   where:
+    - config/reRecoTags/tag_name.py is the configuration file defined in step1
+    - jsonFile.txt is the version of the json file to be used (\ref pFindJson)
+    - json_name is the name that ECALELF gives to the json file used for the ntuple production. 
+
+- if you run this the system with ask you your PEM passphrase, which corresponds to
+the grid passphrase
+- if you don't have caf privilege add the option --scheduler=lsf at the end of
+the command 
+<B>
+Not yet tested!!!
+</B>
+
+
+\subsection rerecoExample Rereco example:
+\code 
+./scripts/RerecoQuick.sh -p RUN2012ABCD -t config/reRecoTags/Cal_Dic2013_ZeeIC_v1_mo_b.py --json=/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions12/8TeV/Reprocessing/Cert_190456-208686_8TeV_22Jan2013ReReco_Collisions12_JSON.txt --json_name=190456-208686_22JanReReco_v1  --tutorial
+\endcode
+The files alcarereco_datasets.dat  and ntuple_datasets.dat ae updated when this script is launched
+
+5. check the exit status of the jobs:
+\code
+./scripts/RerecoQuick.sh  -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} --check
+\endcode
+
+  This command will loop over all folders corresponding to the different
+  datasets and check if jobs are exited with status 0 
+  If jobs are finished, it merge all the produced ntuples and copy them to the right directory on EOS
+
+-# if all went fine, commit the alcarereco_datasets.dat and ntuple_datasets.dat files
+\code
+git pull --no-commit
+\endcode
+this will try to merge your local repository with the central one. If there are no conflicts you just need to commit the changes, otherwise you should go throu the files in conflict, resolve them by hand and do 
+\code git add file.cc \endcode
+to say that the confict on the file.cpp has been solved and now is staged for commit
+
+And then you must:
+\code
+git commit -m "rereco tag_name done" alcarereco_datasets.dat ntuple_datasets.dat
+\endcode
+
+
+\subsection RERECO_scriptOptions  Script options
+--singleEle : to rereco also single electron datasets
+
+\section TAGFILES TAG FILES
+To run the Rereco with a new set of conditions it is necessary to have a configuration file with the tags.
+
+An example of a configuration file can be found in Calibration/EcalAlCaRecoProducers/config/reRecoTags/test75x.py
+
+Here an example:
+\code
+##############################################################
+import FWCore.ParameterSet.Config as cms
+from CondCore.DBCommon.CondDBSetup_cfi import *
+
+#### Please fill with comments
+# Basic tag combination for 2012 end year seminar conditions
+# Laser, alpha tags are fixed: no time to improve them
+# A set of IC are derived on top of them and will be tested:
+# Cal_Nov2012_ICEle_v2:
+# description
+#
+
+RerecoGlobalTag = cms.ESSource("PoolDBESSource",
+                               CondDBSetup,
+                               connect = cms.string('frontier://FrontierProd/CMS_COND_31X_GLOBALTAG'),
+                               globaltag = cms.string('GR_R_53_V13::All'),
+                               toGet = cms.VPSet(
+    cms.PSet(record = cms.string("EcalLaserAPDPNRatiosRcd"),
+             tag = cms.string('EcalLaserAPDPNRatios_data_20120814_2011-2012_v3_upd20120919'),
+             connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_42X_ECAL_LAS")
+             )
+    ,cms.PSet(record = cms.string('EcalLaserAlphasRcd'),
+              tag = cms.string('EcalLaserAlphas_EB_sic1_btcp152_EE_sic1_btcp116'),
+              connect = cms.untracked.string('frontier://FrontierInt/CMS_COND_ECAL')
+              )
+    ,cms.PSet(record = cms.string("EcalIntercalibConstantsRcd"),
+              tag = cms.string('EcalIntercalibConstants_V20120922_Ele19092012_2012IncEtaScale8TeV'),
+              connect = cms.untracked.string("frontier://FrontierInt/CMS_COND_ECAL")
+              )
+    ),
+                               BlobStreamerName = cms.untracked.string('TBufferBlobStreamingService')
+                               )
+
+#############################################################
+\endcode
+
+
+The convention is to name these configuration files in this way: tag_name.py
+
+So, for the rereco production follow the steps below:
+
+
+
+*/
+

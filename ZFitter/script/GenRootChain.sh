@@ -2,11 +2,11 @@
 
 
 #tag_name=""
-commonCut=Et_25-trigger-noPF
-selection=loose
-invMass_var=invMass_SC_regrCorr_ele
-configFile=data/validation/monitoring_2012_53X.dat
-regionsFile=data/regions/scaleStep2smearing_9.dat
+commonCut=Et_25
+selection=
+invMass_var=invMass_SC
+configFile=data/validation/monitoring_2015.dat
+regionsFile=data/regions/validation.dat
 
 runRangesFile=data/runRanges/monitoring.dat
 baseDir=test
@@ -139,7 +139,7 @@ fi
 
 # saving the root files with the chains
 rm tmp/*_chain.root
-./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
+ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
 
 # adding all the chains in one file
 for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
@@ -156,20 +156,18 @@ done
 cat > tmp/load.C <<EOF
 {
   gROOT->ProcessLine(".L macro/PlotDataMC.C+");
-  gROOT->ProcessLine(".L src/setTDRStyle.C");
+//  gROOT->ProcessLine(".L src/setTDRStyle.C");
   gROOT->ProcessLine(".L macro/addChainWithFriends.C+");
 
-  setTDRStyle1();
+//  setTDRStyle();
 
 
-  TChain *data   = (TChain *) _file0->Get("selected");
-  TChain *signalA = (TChain *) _file1->Get("selected");
-  TChain *signalB = (TChain *) _file2->Get("selected");
+  TChain *signalA = (TChain *) _file0->Get("selected");
+  TChain *data   = (TChain *) _file1->Get("selected");
   //TChain *signalC = (TChain *) _file3->Get("selected");
 
-  ReassociateFriends(_file0, data);
-  ReassociateFriends(_file1, signalA);
-  ReassociateFriends(_file2, signalB);
+  ReassociateFriends(_file0, signalA);
+  ReassociateFriends(_file1, data);
 //  ReassociateFriends(_file3, signalC);
 
    TDirectory *curDir = new TDirectory("curDir","");
@@ -183,7 +181,9 @@ cat > tmp/load.C <<EOF
 EOF
 
 echo "Now you can run:"
-echo "root -l $filelist tmp/load.C tmp/standardDataMC.C" 
+echo "root -l -b $filelist tmp/load.C macro/standardDataMC.C" 
+echo "or, if you have MC only:"
+echo "root -l -b $filelist tmp/load.C macro/standardMCMC.C"
 #echo "root -l tmp/$filelist tmp/load.C tmp/standardDataMC.C" 
 echo "change the outputPath string in load.C to have the plots in the correct directory"
 

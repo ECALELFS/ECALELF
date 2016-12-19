@@ -18,31 +18,32 @@
 using namespace std;
 
 
-class ZPtWeights_class{
+class ZPtWeights_class
+{
 //------------------------------
 // All the weights are saved in this kind of map, where the key is the low edge of the bin,
 // and the content (the float) is the bin content of the histogram: the weight
 // There is one map of each histogram (for each electron category)
-  typedef std::map<double, float> ZPtweight_map_t; // this map corresponds to one histogram
-  typedef std::map<TString , ZPtweight_map_t> ZPtweights_map_t; // map of the histograms
+	typedef std::map<double, float> ZPtweight_map_t; // this map corresponds to one histogram
+	typedef std::map<TString , ZPtweight_map_t> ZPtweights_map_t; // map of the histograms
 
 public:
-  ZPtWeights_class(void);
-  ~ZPtWeights_class(void);
+	ZPtWeights_class(void);
+	~ZPtWeights_class(void);
 
-  void ReadFromFile(std::string filename);
-  
-  TTree *GetTreeWeight(TChain *tree,  TString ZPtBranchName, bool fastLoop=true);
+	void ReadFromFile(std::string filename);
 
-  double GetPtWeight(double ZPt_, int pdfWeightIndex); //all array of two elements (the two electrons)
+	TTree *GetTreeWeight(TChain *tree,  TString ZPtBranchName, bool fastLoop = true);
+
+	double GetPtWeight(double ZPt_, int pdfWeightIndex); //all array of two elements (the two electrons)
 private:
-  TFile *f_ZPt;
+	TFile *f_ZPt;
 
-  std::map<TString , ZPtweight_map_t> ZPtweights;
-  //map<int,double> ZPtweights;
-  std::map<TString,TH1F *> ZPtHistMap;
+	std::map<TString , ZPtweight_map_t> ZPtweights;
+	//map<int,double> ZPtweights;
+	std::map<TString, TH1F *> ZPtHistMap;
 
-  unsigned int warningCounter;
+	unsigned int warningCounter;
 };
 
 

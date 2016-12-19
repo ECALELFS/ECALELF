@@ -1,0 +1,77 @@
+/**
+* \page page2 Instructions for ALCARAW and ALCARECO production
+
+\section ALCARECO_production ALCARECO production
+
+Steps for the production using the CERN batch system (launch from lxplus):
+
+-# Check that there are no updates in the repository,
+   this will merge automatically the updates in the master branch
+   \code git pull \endcode 
+-# Fill the alcareco_datasets.dat with the information of the desired run range
+   It is convenient to add the new line at the bottom of the file.
+   Please refere to the \ref DATAFORMATS file for information 
+   about how the alcareco_datasets.dat file is structured. 
+   For this step, in case of update of a growing dataset, please have
+   a look to the "Production update" section below
+-# \code 
+   ./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat |grep 22Jan | grep Run2012A` --tutorial
+   \endcode
+   \code
+   ./scripts/prodAlcareco.sh `parseDatasetFile.sh alcareco_datasets.dat |grep RelVal22Jan | grep Run2012A` --tutorial
+   \endcode
+   - use the --tutorial if you are testing the machinery: it will save the files in a separate directory on EOS (not the central one)
+   - use grep commands to select the proper line from alcareco_datasets.dat 
+   the script will create the crab task and submit it
+   - use --createOnly or --submitOnly if needed
+   - use --check to launch the check of the job results 
+   - use the \b --isMC if the dataset is \b MC
+   - use the -s skim: ZSkim, WSkim, EleSkim for the preselection (ZSkim usually)
+   - use  --scheduler=remoteGlidein if the dataset is not at T2_CH_CERN and you want to use the grid 
+   see   ./scripts/prodAlcareco.sh --help  for more informations
+-# ./scripts/prodAlcaraw.sh `parseDatasetFile.sh alcaraw_datasets.dat |grep 22Jan | grep Run2012A` --tutorial --check
+   check the job status and output
+-# Commit the changes to alcaraw_datasets.dat!
+   \code 
+   git add alcareco_datasets.dat
+   git commit -m "message" 
+   \endcode
+-# The final output will be put:
+   in the storage element indicated in the alcaraw_datasets.dat or alcareco_datasets.dat file
+   in the subdir of the store/ directory indicated in the alcaraw_datasets.dat or alcareco_datasets.dat
+   and following the structure indicated below:
+   (STORAGE_ELEMENT)/(REMOTE_DIR)/ENERGY/(DATASETNAME)/(RUNRANGE)
+	where ENERGY is 7TeV for 2011 datasets and 8TeV for 2012 datasets
+        where the elements indicated in parethesys are taken from the alcaraw_datasets.dat file (or alcareco_datasets.dat)
+        the REMOTE_DIR ends with sandbox/ if you are producing ALCARAW and 
+        alcareco/ for ALCARECO 
+    by default the output dir is the T2_CH_CERN: 
+    /eos/cms/store/group/alca_ecalcalib/[alcareco/sandbox]/[7TeV/8TeV]/DATASETNAME/RUNRANGE
+
+*** EXPERT: where REMOTE_DIR is specified by the --remote_dir option, ENERGY is 8TeV or 7TeV depending on the datasetpath, NAME is specified by the -n option and RUN_RANGE by the -r option
+
+
+
+\subsection ALCARECO_growing UPDATE ALCARECO and ALCARAW for growing dataset
+
+In order to keep updated the ALCARECO and ALCARAW for Double and
+Single electron samples follow this instructions. The production will
+be in-sync with the availability of the new golden JSON file.
+
+-# check that the new JSON is available executing the script 
+   ./scripts/updateLastDataset.sh
+   The output gives the following informations:
+   - lastRun is the last run processed
+   - max(run.run_number) is the last run in database
+   - lastWeekRun is the last run not modified since four days at least
+   - the last JSON
+It has to be verified that the lastWeekRun is greater than the last run in JSON.
+If it is not verified it is better to wait before proceeding. 
+N.B: max(run.run_number) has to be always greater than the last run in JSON
+Then, copy and past the last updated line from the
+alcaraw_datasets.dat and change the run range accordingly
+
+
+
+\ref testingLocally
+*/

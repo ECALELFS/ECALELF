@@ -1,0 +1,41 @@
+% custom latex package
+% Author: Shervin Nourbakhsh
+% Co-autor: Priscilla Pani
+% comments:
+%
+%
+\def\fileversion{v0.5f}
+\def\filedate{2011/01/13}
+
+\NeedsTeXFormat{LaTeX2e}[1995/12/01]
+\ProvidesPackage{mathcommand}
+\usepackage{cancel}
+%======== MISCELLANEA ====================================%
+%\newcommand{\abs}[1]{\ensuremath{\left| #1 \right|}}
+\newcommand{\abs}[1]{\ensuremath{\lvert #1 \rvert}}
+
+% comando per le unita' di misura in ambiente matematico
+%\newcommand{\SI}[1]{\ensuremath{\mathsf{~#1}}}
+\newcommand{\SI}[1]{\ensuremath{\mathrm{~#1}}}
+
+\newcommand{\angstrom}{\ensuremath{\hbox{ \AA }}}
+% simbolo dei gradi
+\newcommand{\grad}{\ensuremath{^\circ}}
+%======== MATEMATICA =======================================%
+\newcommand{\dx}{\ensuremath{\frac{\partial}{\partial x}}} 
+
+%======== MECCANICA QUANTISTICA ============================%
+\newcommand{\ket}[1]{\ensuremath{\left| #1 \right\rangle}}
+\newcommand{\bra}[1]{\ensuremath{\left\langle #1 \right|}}
+\newcommand{\braket}[2]{\left\langle {#1
+	{\left| \vphantom{#1 #2} \right.} #2} \right\rangle}
+\newcommand{\mean}[3]{\left\langle%
+  {#1{\left| \vphantom{#1 #2 #3} \right.} %
+    #2 {\left.\vphantom{#1 #2 #3} \right|} #3} \right\rangle}
+
+
+%======== MQR ===============================================
+\newcommand{\dslash}{\cancel{\partial}}
+
+\newcommand{\lp}{\left(}
+\newcommand{\rp}{\right)}

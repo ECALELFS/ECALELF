@@ -1,0 +1,41 @@
+/**
+ *
+
+\page _testingLocally Run locally to test
+
+\section localAlcareco Alcareco production
+ - Find a AOD or AODSIM file with DAS: https://cmsweb.cern.ch/das/
+ \code
+dataset=/QCD_Pt_*_EMEnriched_TuneZ2star_8TeV_pythia6/Summer12_DR53X-PU_RD1_START53_V7N-v1/AODSIM
+\endcode
+ - click on one dataset of interest
+ - click on "file" to get the list of files for a particular dataset
+ - click on "download"
+ - download one file locally:
+ \code
+xrdcp root://xrootd.unl.edu//store/mc/Summer12_DR53X/QCD_Pt-40_doubleEMEnriched_TuneZ2star_8TeV-pythia6/AODSIM/PU_RD1_START53_V7N-v1/20000/000107B2-2FD2-E211-9956-00261894397B.root myFile.root
+\endcode
+
+ - Only alcareco:
+\code 
+cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=0 maxEvents=300 file=file://myFile.root
+\endcode
+ - Alcareco + ntuples
+\code 
+cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=1 doTreeOnly=0 maxEvents=300 file=file://myFile.root
+\endcode
+ - ntuples 
+\code 
+cmsRun python/alcaSkimming.py isCrab=0 type=ALCARECO  doTree=1 doTreeOnly=1 maxEvents=300 file=file://myFile.root
+\endcode
+ - ntuples from MINIAOD
+\code
+ cmsRun python/alcaSkimming.py type=MINIAODNTUPLE tagFile=config/reRecoTags/80X_mcRun2_asymptotic_2016_miniAODv2.py files=file:/tmp/shervin/007CFCE0-4E1A-E611-9E77-001E672489C1.root doTree=1 doTreeOnly=1 maxEvents=1000 isCrab=0
+\endcode
+
+the \code skim=ZSkim \endcode option can be added to select events passing the ZSkim or the ZSCSkim
+
+Filelist:
+ - CMSSW_7_0_X: root://cms-xrd-global.cern.ch//store/data/Run2012D/DoubleElectron/AOD/15Apr2014-v1/00000/0EA11D35-0CD5-E311-862E-0025905A6070.root
+
+*/

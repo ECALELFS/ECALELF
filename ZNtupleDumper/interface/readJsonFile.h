@@ -14,7 +14,7 @@
 
 
 std::map<int, std::vector<std::pair<int, int> > >
-  readJsonFile(const std::string& inFileName);
+readJsonFile(const std::string& inFileName);
 
 bool AcceptEventByRunAndLumiSection(const int& runId, const int& lumiId,
                                     std::map<int, std::vector<std::pair<int, int> > >& jsonMap);

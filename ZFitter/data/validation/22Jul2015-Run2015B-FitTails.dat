@@ -1,0 +1,12 @@
+# list of files to run on
+# type	treeName	fileName
+# files are added to the same chain if they have the same treeName and the same type
+# chain with the same type are added as friends
+# only three type are admitted: s (signal), b (bkg), d (data)
+# all treeName are admitted, but some are mandatory:
+# selected
+# some are special: pileup, scaleEleHggRunEta, scaleEleHggRunEtaR9
+d1	selected  root://eoscms//eos/cms//store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/test75x_21Jul2015/DoubleEG-ZSkim-RUN2015B-ALCARAW-21Jul15-v1/251022-251883/test75x_21Jul2015/DoubleEG-ZSkim-RUN2015B-ALCARAW-21Jul15-v1-251022-251883.root	
+#d	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/190456-204567-13Julv2_lastPrompt.69400.observed.root
+d	pileupHist	pufile_startupAsympt50ns_v2.root
+s1  selected root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3/allRange/v3/DYJetsToLL_M-50_13TeV-Asympt50ns-pythia8_16Jun15_v3-allRange.root

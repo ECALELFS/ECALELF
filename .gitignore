@@ -16,6 +16,7 @@ prod_alcarereco
 *.slo
 *.lo
 *.o
+*.d
 
 # Compiled Dynamic libraries
 *.so
@@ -43,3 +44,5 @@ prod_alcarereco
 *.png
 *.eps
 *.pdf
+
+EcalAlCaRecoProducers/bin/

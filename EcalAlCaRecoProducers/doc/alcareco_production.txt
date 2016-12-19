@@ -1,0 +1,17 @@
+/**
+ \page pAlcarecoProduction AlCaReco Production from AlCaRaw
+
+AlCaReco centrally produced have a bug, you need to run a reReco of the AlCaRaw with the Prompt GT: \ref pFindPromptGT
+
+Then follow the instructions for a rereco using as \b tag_name the name of the GT: \ref page5
+
+# Tips and tricks
+Case: you are producing alcareco and ntuples in the same job. You don't want to wait till the completion of all the alcareco jobs and want to start using the ntuples with ~90% of the jobs completed. In order to allow the following steps of the --check option, you should add manually a fine in the crab config directory:
+\verbatim
+touch prod_alcareco/DYJets_amctnlo-RunIISpring15DR74-Asym50ns-v2/allRange/res/finished
+\endverbatim
+
+At this point the ntuples will be merged and moved.
+You need to remove the file if you want then to proceed with the normal checks and resubmission of failing jobs
+*/
+

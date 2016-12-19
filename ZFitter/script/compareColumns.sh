@@ -42,22 +42,39 @@ fi
 ### sanity checks
 
 case $COLUMN in
-    10)
-	columnName="add. smear."
-	;;
-    5)
-	columnName="$\Delta P"
+    2)
+	columnName="events"
 	;;
     3|4)
 	columnName="$\Delta m$"
 	;;
-    8|9)
-	columnName="$\resol$"
+    5)
+	columnName="$\Delta P"
 	;;
     6)
 	columnName="$\sigma_{CB}$"
 	;;
+    8|9)
+	columnName="$\resol$"
+	;;
+    10)
+	columnName="add. smear."
+	;;
+    11)
+	columnName="$ \chi^2.$"
+	;;
+    15)
+	columnName="$\sigma_{eff} 68\%$"
+	;;
+    17)
+	columnName="$\sigma_{eff} 30\%$"
+	;;
+    19)
+	columnName="$\sigma_{eff} 50\%$"
+	;;
+
     *)
+		echo "[ERROR] column not implemented" >> /dev/stderr
 	exit 1
 	;;
 esac
@@ -73,6 +90,7 @@ if [ -n "${plusMC}" ];then
 	6)
 	    columnMC=7
 	    ;;
+		15) columnMC=16;;
 	*)
 	    echo "[ERROR] plusMC option with column number != 3,6,8" >> /dev/stderr
 	    exit 1
@@ -85,7 +103,7 @@ fi
 
 if [ ! -d "tmp/" ];then mkdir tmp/; fi
 
-tabLine="\begin{tabular}{|l|"
+tabLine="\tiny \begin{tabular}{|l|"
 index=0
 for file in $@
   do
@@ -104,7 +122,7 @@ for file in $@
       if [ -n "${SYNERROR}" -a "$file" != "$1" ];then
 	  tabLine=$tabLine'p{18pt}|'
       else
-	  tabLine=$tabLine'p{45pt}|'
+	  tabLine=$tabLine'p{30pt}|'
       fi  
   fi
   tagName=`dirname $file`
@@ -119,6 +137,7 @@ for file in $@
      grep -v '#' $file | cut -d '&' -f $COLUMN  | sed 's|\\pm.[ 0-9.]*||' >> tmp/${index}-data.tex
   else
       grep -v '#' $file | cut -d '&' -f $COLUMN  >> tmp/${index}-data.tex
+		 #cat tmp/${index}-data.tex
   fi
   sed -i 's|\\\\||' tmp/${index}-data.tex
 done
@@ -128,14 +147,14 @@ echo "ECAL Region" > tmp/region.tex
 echo " " >> tmp/region.tex
 echo '\hline' >> tmp/region.tex
 cut -d '&' -f 1 $file |grep -v '#'>> tmp/region.tex
-
+#cat tmp/region.tex
 if [ -n "${columnMC}" ];then
     tabLine=$tabLine'c|'
     echo ${columnName} > tmp/MC.tex
     echo "MC" >> tmp/MC.tex
     echo " " >> tmp/MC.tex
 #	cat $file
-    cut -d '&' -f ${columnMC} $file |grep -v '#'>> tmp/MC.tex
+    grep -v '#' $file | cut -d '&' -f ${columnMC} >> tmp/MC.tex
 fi
 
 echo "$tabLine} \hline" > tmp/file.tex

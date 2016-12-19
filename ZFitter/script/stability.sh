@@ -110,7 +110,7 @@ case $yVar in
 		;;
 	esac
 	yMin=1
-	yMax=2
+	yMax=4
 	;;
     chi2)
 	columns=11-13
@@ -180,12 +180,12 @@ fi
 cat > tmp/stability_macro.C <<EOF
 
 {
-  gROOT->ProcessLine(".L src/setTDRStyle.C+");
+  //gROOT->ProcessLine(".L src/setTDRStyle.C+");
   gROOT->ProcessLine(".L macro/stability.C+");
 
-  setTDRStyle1();
-  tdrStyle->SetOptTitle(0);
-   gROOT->SetStyle("tdrStyle");  
+  //setTDRStyle();
+  //tdrStyle->SetOptTitle(0);
+  //gROOT->SetStyle("tdrStyle");  
   TCanvas *c;
 
 std::vector<TString> filenameList;
@@ -317,7 +317,7 @@ if [ -n "${MULTIREGION}" ];then
       cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.png");
   delete c;
 
 EOF
@@ -328,7 +328,7 @@ EOF
       cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.png");
   delete c;
 
 EOF
@@ -454,7 +454,7 @@ cat > tmp/stability_macro.C <<EOF
   gROOT->ProcessLine(".L src/setTDRStyle.C+");
   gROOT->ProcessLine(".L macro/stability.C+");
 
-  setTDRStyle1();
+  setTDRStyle();
   tdrStyle->SetOptTitle(0);
    gROOT->SetStyle("tdrStyle");  
   TCanvas *c;
@@ -477,7 +477,7 @@ fi
   cat >> tmp/stability_macro.C<<EOF
   //------------------------------ 
   c = var_Stability("tmp/tmpFile.dat", "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName", "$tableTwo", "$titleOne", "$titleTwo");
-  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.eps");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.png");
   delete c;
 
 EOF

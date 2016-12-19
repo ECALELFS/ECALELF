@@ -92,6 +92,15 @@ case $invMass_var in
     invMass_rawSC)
 	invMassVarName="raw SC energy"
 	;;
+    invMass_SC_must)
+	invMassVarName="regression SC energy"
+	;;
+    invMass_SC_must_regrCorr_ele)
+	invMassVarName="regression SC energy (mustache)"
+	;;
+    invMass_rawSC_esSC)
+	invMassVarName="raw and es SC energy"
+	;;
     invMass_SC_corr)
 	invMassVarName="corrected ECAL energy"
 	;;
@@ -157,17 +166,32 @@ case ${TYPE} in
 	    echo 
 	    exit 1
 	fi
-
+	$dataSample=2012D_75x_rereco
+	$mcName=DYJetsToLL_M-50_3TeV_amcatnloFXFXpythia8_Asympt50ns
 	validationIntroSlide
 	validationTableSlides
 	validationFitSlides
+	validationBackupSlides
 	validationStabilitySlides
-	cat ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
+	if [ "$USER" == "lcorpe" -o "$USER" ==  "lbrianza" ];then
+	#cat tex/template.tex \
+	cat ${dirSlides}/intro.tex \
+			${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
 	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex \
-	    ${dirSlides}/validation-${invMass_var}-${selection}-stability_slide.tex \
-	    > ${dirSlides}/validation-${invMass_var}-slides.tex
+	    ${dirSlides}/validation-${invMass_var}-${selection}-backup_slide.tex \
+		 	tex/template_end.tex > ${dirSlides}/validation-${invMass_var}-slides.tex
 
+		else
+
+	cat ${dirSlides}/validation-${invMass_var}-${selection}-intro_slide.tex \
+	    ${dirSlides}/validation-${invMass_var}-${selection}-table_slide.tex \
+	    ${dirSlides}/validation-${invMass_var}-${selection}-fit_slide.tex > ${dirSlides}/validation-${invMass_var}-slides.tex
+
+
+	fi
+
+#	    ${dirSlides}/validation-${invMass_var}-${selection}-stability_slide.tex \ 
 	;;
     rereco)
 	rereco=$TAG
