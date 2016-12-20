@@ -744,13 +744,15 @@ else:
     rechitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     #configure everything for MINIAOD
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('regressionElectrons')
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('regressionElectrons') 
 
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = rechitsEB
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = rechitsEE
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.eleNewEnergiesProducer.electronCollection =  myEleCollection
-    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+    #process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+    #process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("regressionPhotons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("regressionPhotons") #what is @skipCurrentProcess and why if used invMass_ECAL_pho is crazy??
 
 #    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
     process.eleSelectionProducers.electronCollection =   myEleCollection
