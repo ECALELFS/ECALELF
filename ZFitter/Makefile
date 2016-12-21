@@ -36,7 +36,7 @@ lib/%.o: $(SRCDIR)/%.cc
 ###### Main program
 ZFitter.exe: $(BUILDDIR)/ZFitter.exe
 $(BUILDDIR)/ZFitter.exe:  $(BUILDDIR)/ZFitter.cpp $(MODULES)
-	cd $(EoPDir) && make
+	cd $(EoPDir) && $(MAKE)
 	@echo "---> Making ZFitter $(COMPILE.exe)"
 	@if [ "$(SCRAMTOOL)" == "1" ]; then g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES)  $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \
 	-lboost_program_options -lTreePlayer; else g++ $(CXXFLAGS) $(INCLUDE) $(MAKEDEPEND) -o $@ $< $(MODULES) $(MODULES_EXT) -lFWCoreParameterSet $(MODULESEoP) $(LIB) $(ROOT_LIB) $(ROOFIT_LIB) $(ROOSTAT_LIB) $(ROOT_FLAGS) \

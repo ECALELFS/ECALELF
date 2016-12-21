@@ -32,6 +32,7 @@ python script/generateMCPUHist.py PileupCFI=mix_2016_25ns_SpringMC_PUScenarioV1_
 scenario   | python file                                             | pileupHist root file 
 ---------- | ------------------------------------------------------- | -------------------------
 PUSpring16 | mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py | PUSpring16-nPUtrue.root
+PUMoriond17 | mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi.py | PUMoriond17-nPUtrue.root
 
 \subsection DATAPUtrue_ True PU distribution in data
 Instructions can be found in
