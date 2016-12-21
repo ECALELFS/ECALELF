@@ -17,3 +17,6 @@ d8 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/
 d8 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Dec2016_ref/DoubleEG-Run2016H-ZSkim-Prompt-v3/284036-284068/271036_284044-23Sep2016/newNtuples/eleIDTree-DoubleEG-Run2016H-ZSkim-Prompt-v3-284036-284068.root
 s1 selected  root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/80X_mcRun2_asymptotic_2016_v3/DYJets_madgraph-RunIISpring16-withES/allRange/newNtuples/DYJets_madgraph-RunIISpring16-withES-allRange.root
 s1 eleIDTree root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARECOSIM/80X_mcRun2_asymptotic_2016_v3/DYJets_madgraph-RunIISpring16-withES/allRange/newNtuples/eleIDTree-DYJets_madgraph-RunIISpring16-withES-allRange.root
+
+d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
+s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUSpring16-nPUtrue.root
