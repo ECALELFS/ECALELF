@@ -359,7 +359,7 @@ int main(int argc, char **argv)
 	("saveRootMacro", "")
 	//
 	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "")
-	("commonCut", po::value<string>(&commonCut)->default_value("Et_25"), "")
+	("commonCut", po::value<string>(&commonCut)->default_value("isEle-Et_25"), "")
 	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_ECAL_ele"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
 	("invMass_max", po::value<float>(&invMass_max)->default_value(115.), "")
@@ -409,9 +409,15 @@ int main(int argc, char **argv)
 	("nSmearToy", po::value<unsigned int>(&nSmearToy)->default_value(0), "")
 	("pdfSystWeightIndex", po::value<int>(&pdfSystWeightIndex)->default_value(-1), "Index of the weight to be used")
 	;
+
+
+	std::vector<std::string> branchListAny;
+	branchListAny.push_back(invMass_var);
 	anyVarOption.add_options()
-	("anyVar", "call the anyVar_class")
+		("anyVar", "call the anyVar_class")
+		("anyVarBranches", po::value<std::vector<std::string> >(&branchListAny),"list of branches")
 	;
+
 	inputOption.add_options()
 	("chainFileList,f", po::value< string >(&chainFileListName), "Configuration file with input file list")
 	("regionsFile", po::value< string >(&regionsFileName), "Configuration file with regions")
@@ -494,6 +500,12 @@ int main(int argc, char **argv)
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
+	if(vm.count("anyVarBranches")){
+		for(auto& b : branchListAny){
+			std::cout << b << std::endl;
+		}
+	}
+	branchListAny.push_back(invMass_var);
 
 	//------------------------------ checking options
 	if(!vm.count("invMass_binWidth") && !vm.count("smearerFit")) {
@@ -1274,25 +1286,6 @@ int main(int argc, char **argv)
 //------------------------------ anyVar_class declare and set the options
 	if(vm.count("anyVar")) {
 		TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
-		std::vector<TString> branchListAny;
-#ifdef dump_root_tree
-		// first all the single variables
-// 		branchListAny.push_back("runNumber");
-// 		branchListAny.push_back("eventNumber");
-// 		branchListAny.push_back("lumiBlock");
-// 		branchListAny.push_back("runTime");
-// 		branchListAny.push_back("nBX");
-// 		branchListAny.push_back("nPV");
-// 		// then all the array variables
-// 		branchListAny.push_back("etaSCEle");
-// 		branchListAny.push_back("phiSCEle");
-// 		branchListAny.push_back("chargeEle");
-// 		branchListAny.push_back("R9Ele")
-#endif
-// 		//branchListAny.push_back(make_pair("invMass_e5x5",          anyVar_class::kAFloat_t));
-// 		branchListAny.push_back("esEnergySCEle");
-// 		branchListAny.push_back("sigmaIEtaIEtaSCEle");
-		branchListAny.push_back(invMass_var);
 
 		TDirectory *dir = reduced_trees_file->GetDirectory("");
 		//TDirectory *dir = new TDirectory(); //

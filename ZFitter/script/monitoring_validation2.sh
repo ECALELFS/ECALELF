@@ -2,14 +2,14 @@
 source script/functions.sh
 #tag_name=""
 commonCut=isEle-Et_25
-selection=loose25nsRun2
-invMass_var=invMass_SC_must_regrCorr_ele
+selection=loose25nsRun22016Moriond
+invMass_var=invMass_ECAL_ele
 invMass_min=65
 invMass_max=115
 configFile=data/validation/monitoring_2016.dat
-runRangesFile=data/runRanges/monitoringRun2016.dat
+runRangesFile=data/runRanges/monitoringRun2016-v2.dat
 baseDir=testNew
-#extraOptions="--addBranch iSM --forceNewFit"
+#extraOptions="--anyVarBranches=timeSeedSC"
 
 # VALIDATION=y
 # STABILITY=y

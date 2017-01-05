@@ -20,7 +20,7 @@ anyVar_class::~anyVar_class(void)
 //	delete data_chain;
 }
 
-anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes, TDirectory* dir, bool updateOnly):
+anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::string> branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes, TDirectory* dir, bool updateOnly):
 	data_chain(data_chain_),
 	reduced_data(NULL),
 	_dir(dir),
@@ -32,7 +32,7 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<TString> branchNames
 
 	Long64_t entries = data_chain->GetEntriesFast();
 	for(auto& branch : _branchNames) {
-		TString& bname = branch;
+		TString bname = branch;
 		if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat", std::ofstream::app));
 		else _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat"));
 
@@ -59,7 +59,7 @@ void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 	system(("mkdir -p " + dirname).c_str());
 	_statfiles.clear(); ///momory leak?
 	for(auto& branch : _branchNames) {
-		TString& bname = branch;
+		TString bname = branch;
 		if(updateOnly) _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat", std::ofstream::app));
 		else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat"));
 	}
@@ -139,6 +139,7 @@ void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>&
 	chain_ecal->TECALChain::SetEntryList(elist);
 
 	std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
+	assert(chain_ecal->GetEntryList()->GetN()>0);
 	//chain = dynamic_cast<TChain*>(chain_ecal);
 	ts.Stop();
 	ts.Print();
@@ -285,7 +286,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	size_t nBranches = _branchNames.size();
 	for(unsigned int ibranch = 0; ibranch < nBranches; ++ibranch) {
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
-		TString& bname = _branchNames[ibranch];
+		TString bname = _branchNames[ibranch];
 		reduced_data->SetBranchAddress(bname, &branches_Float_t[ibranch]);
 		if(bname == massBranchName_) mll = &(branches_Float_t[ibranch][0]);
 	}

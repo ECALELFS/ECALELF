@@ -1,6 +1,7 @@
 #### This macro should be called as follows:
 #call 'macro/stability.gpl' 'tmp/file1.dat' 'legend 1' 'tmp/file2.dat' 'legend 2' 
 reset
+#set datafile missing "-"
 files=""
 titles=""
 
@@ -45,8 +46,8 @@ set y2label 'effective sigma/peak * MZ [%]' textcolor 'blue'
 
 set auto fix
 set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
-set y2range [0.03:0.05]
-set yrange  [87:93]
+set y2range [*:*]
+set yrange  [-0.5:0.5]
 
 set key outside above
 set grid
@@ -64,12 +65,14 @@ if(ARGC==1){
 	categories = system("grep '#' ".file." | awk '{print $2}' |  tr '\n' ' ' ")
 	
 	do for [category in categories]{
-
+	print category
 		set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
 
-		p for [yVar in "mean mean68"]  file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))):x2ticlabel(stringcolumn("runMin").'-'.stringcolumn("runMax")) i category w xyerr pt 5 ps 0.6 title yVar, \
+#		p for [yVar in "mean mean68"]  file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))):x2ticlabel(stringcolumn("timeMin").'-'.stringcolumn("runMax")) i category w xyerr pt 5 ps 0.6 title yVar #, \
+#, \
+#
+	p for [ yVar in "mean mean68" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
    '' u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width'
-
 	}
 } else {
 	file=value("ARG1")

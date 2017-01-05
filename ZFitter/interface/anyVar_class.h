@@ -71,7 +71,7 @@ public:
 	 *  \param updateOnly    if true opens the output files in append mode
 	 */
 	anyVar_class(TChain *data_chain_,
-	             std::vector<TString> branchNames, ElectronCategory_class& cutter,
+	             std::vector<std::string> branchNames, ElectronCategory_class& cutter,
 	             std::string massBranchName,
 	             std::string outDirFitRes,
 	             TDirectory* dir,
@@ -105,7 +105,7 @@ private:
 	std::vector<std::unique_ptr<TTree> > reduced_data_vec;
 	std::set<long long int> goodEntries;
 	TDirectory *_dir;
-	std::vector<TString> _branchNames; //fixed in the constructor, these are the branches with the variables to study
+	std::vector<std::string> _branchNames; //fixed in the constructor, these are the branches with the variables to study
 	ElectronCategory_class _cutter; // this class provides the TCut for the selections given simple category names coded in the ElectronCategory_class header file
 
 	std::vector<std::unique_ptr<std::ofstream> > _statfiles; ///< one file for each branch, here the stats are saved
