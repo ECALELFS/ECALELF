@@ -13,7 +13,7 @@ jsonName=271036_284044-23Sep2016
 
 ##
 PERIOD=LEGACY2016
-tags=config/reRecoTags/Cal_Jan2017_ref.py
+tags=(config/reRecoTags/Cal_Jan2017_ESMIP_v1.py) #{ref,Lin_v1}.py)
 for tagfile in ${tags[@]}
 do
 	echo
@@ -21,7 +21,7 @@ do
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in ''
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_*_ref.py)
@@ -37,7 +37,7 @@ do
 		esac
 	done
 continue
-	for CHECK in --check
+	for CHECK in '' --check
 	do
 		case $tagfile in 
 			*/Cal_*_ref.py)
@@ -51,6 +51,5 @@ continue
 		esac
 	done
 
-done
 done
 exit 0
