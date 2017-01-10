@@ -84,18 +84,34 @@ if [ ! -e "tmp/" ];then mkdir tmp/; fi
 
 tmpFile=tmp/tmpFile.dat
 
-xVar=runNumber
-IFS='\n'
-for line in `cat data/runRanges/*.dat | grep -v '#' | awk '(NF==3){print $0}' | sort | uniq`
-do
-	echo $line | awk '{print $1,"\t",$0}' |tr '-' ' '| sed 's|^|s/runNumber_|;s| \t\ |/|;s|\t[0-9]*\t|\t|;s| |_|;s|$|/|' | sort | uniq > sed/run2time.sed 
-done
+case $xVar in
+	runNumber)
+		IFS='\n'
+		for line in `cat data/runRanges/*.dat | grep -v '#' | awk '(NF==3){print $0}' | sort | uniq`
+		do
+			echo $line | awk '{print $1,"\t",$0}' |tr '-' ' '| sed 's|^|s/runNumber_|;s| \t\ |/|;s|\t[0-9]*\t|\t|;s| |_|;s|$|/|' | sort | uniq > sed/run2time.sed 
+		done
 
-IFS=' '
-for TABLEFILE in $TABLEFILES
-do
-	cat $TABLEFILE | sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|runMin\trunMax\ttimeMin\ttimeMax|}' | sed -f sed/run2time.sed | awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
-done
+		IFS=' '
+		for TABLEFILE in $TABLEFILES
+		do
+			cat $TABLEFILE | sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|\trunMin\trunMax\ttimeMin\ttimeMax|}' | sed -f sed/run2time.sed | awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
+		done
+		;;
+	*)
+		IFS=' '
+		for TABLEFILE in $TABLEFILES
+		do
+			cat $TABLEFILE | sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|\trunMin\trunMax|}' | sed "s|runMin|${xVar}Min|;s|runMax|${xVar}Max|" |  awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
+		done
+		;;
+esac
+
+cp $tmpFile $outDirData/table/
+gnuplot -c 'macro/stability.gpl' 'tmp/tmpFile.dat'
+if [ -n "${outDirImgData}" ];then
+	mv stability.pdf $outDirImgData/stability-${xVar}.pdf
+fi
 
 exit 0
 	grep -v '#' $TABLEFILE | grep -v '^%' | grep runNumber | sed "s|[-]*runNumber_\([^_]*\)_\([^- ]*\)\([^& ]*\)|\3\trunNumber\t\1\t\2|;s|^\trunNumber|noname\trunNumber|;s|^-||" |cut -d '&' -f 1,2,$columns  > $tmpFile

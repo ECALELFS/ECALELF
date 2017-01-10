@@ -47,7 +47,7 @@ set y2label 'effective sigma/peak * MZ [%]' textcolor 'blue'
 set auto fix
 set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
 set y2range [*:*]
-set yrange  [-0.5:0.5]
+#set yrange  [87:91]
 
 set key outside above
 set grid
@@ -84,7 +84,7 @@ if(ARGC==1){
 			titles=sprintf("%s '%s'", titles, value("ARG".argIndex))
 		}
 	}
-#	print files
+	print files
     print titles
 #	print categories
 	do for [category in categories]{

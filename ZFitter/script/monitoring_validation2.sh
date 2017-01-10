@@ -221,21 +221,15 @@ if [ -n "$STABILITY" ];then
 #	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 #			>  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}-${commonCut}.dat || exit 1
     fi
-	exit 0
 
 ###################### Make stability plots
-    if [ ! -d ${outDirData}/img/stability/$xVar/$PERIOD ];then
-	mkdir -p ${outDirData}/img/stability/$xVar/$PERIOD
+	imgDir=${outDirData}/img/stability/$xVar/$PERIOD
+    if [ ! -d ${imgDir} ];then
+		mkdir -p ${imgDir}
     fi
 
-    ./script/stability.sh -t  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}-${commonCut}.tex \
-	--outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y peak $xMin $xMax || exit 1
-    ./script/stability.sh -t  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}-${commonCut}.tex \
-	--outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y scaledWidth $xMin $xMax || exit 1
-
-    # create summary table for stabilities
-    paste -d '&' tmp/stability_sum_table-peak.tex tmp/stability_sum_table-scaledWidth.tex | \
-	cut -d '&' -f 1-4,6- | sed '/^&$/ d;s|\\\\||' > ${outDirTable}/$PERIOD/stability_sum_table.tex
+    ./script/stability2.sh -t  ${outDirData}/fitres/${invMass_var}.dat 
+#		--outDirImgData ${imgDir} -x $xVar -y peak $xMin $xMax || exit 1
 
 fi
 
@@ -243,41 +237,24 @@ fi
 if [ -n "$ETA" ];then
     regionFile=data/regions/absEta.dat
     xVar=absEta
-    if [ -n "$STEP4" ];then
-	tableFile=${outDirTable}/step2absEta-${invMass_var}-${selection}-${commonCut}.tex
-    else
-	tableFile=${outDirTable}/absEta-${invMass_var}-${selection}-${commonCut}.tex
-    fi
-    if [ -z "${ONLYTABLE}" ];then
-	if [ -n "$STEP4" ];then
-	    ./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
-		${extraOptions} \
-		--corrEleType HggRunEtaR9 \
-		--corrEleFile ${outDirTable}/step2-${invMass_var}-${selection}-Et_20-trigger-noPF-HggRunEtaR9.dat \
-		$updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} --selection=${selection} \
-		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step4/fitres \
-		--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/step4/img \
-		> ${outDirData}/log/step4_absEta.log || exit 1
-	else
-	    ./bin/ZFitter.exe ${otherOptions} -f ${configFile} --regionsFile ${regionFile}  \
-		${extraOptions} \
-		$updateOnly --invMass_var ${invMass_var} --commonCut=${commonCut} --selection=${selection} \
-		--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-		--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img > ${outDirData}/log/absEta.log || exit 1
-	fi
-    fi
-    ./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
-	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-	${tableCruijffOption} >  ${tableFile} || exit 1
+	if [ -z "${ONLYTABLE}" ];then
+		./bin/ZFitter.exe --anyVar -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
+			${extraOptions} \
+			$updateOnly --commonCut=${commonCut} \
+			--invMass_var ${invMass_var} --selection=${selection} \
+			--invMass_min=${invMass_min} --invMass_max=${invMass_max} \
+			--outDirFitResMC=${outDirMC}/fitres \
+			--outDirImgMC=${outDirMC}/img  \
+			--outDirFitResData=${outDirData}/fitres --outDirImgData=${outDirData}/img \
+			> ${outDirData}/log/absEta.log || exit 1
 
-    if [ ! -d ${outDirData}/img/stability/$xVar/$PERIOD ];then
-	mkdir -p ${outDirData}/img/stability/$xVar/$PERIOD
+		fi
+	imgDir=${outDirData}/img/stability/$xVar/$PERIOD
+    if [ ! -d ${imgDir} ];then
+		mkdir -p ${imgDir}
     fi
-
-    ./script/stability.sh -t ${tableFile} \
-	--outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y peak $xMin $xMax || exit 1
-    ./script/stability.sh -t ${tableFile} \
-	--outDirImgData ${outDirData}/img/stability/$xVar/$PERIOD/ -x $xVar -y scaledWidth $xMin $xMax || exit 1
+	
+    ./script/stability2.sh -t  ${outDirData}/fitres/${invMass_var}.dat --outDirImgData=$imgDir -x $xVar
     
 fi    
 

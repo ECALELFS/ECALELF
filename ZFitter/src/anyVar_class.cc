@@ -33,6 +33,7 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::string> branchN
 	Long64_t entries = data_chain->GetEntriesFast();
 	for(auto& branch : _branchNames) {
 		TString bname = branch;
+		std::cout << bname << std::endl;
 		if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat", std::ofstream::app));
 		else _statfiles.emplace_back(new std::ofstream(outDirFitRes + bname + ".dat"));
 
@@ -41,10 +42,10 @@ anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::string> branchN
 	}
 
 	//SetOutDirName(outDirFitRes, updateOnly);
-	if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat",  std::ofstream::app));
-	else _statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat"));
-	stats s(massBranchName_, entries);
-	_stats_vec.push_back(s);
+//	if(updateOnly) _statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat",  std::ofstream::app));
+//	else _statfiles.emplace_back(new std::ofstream(outDirFitRes + massBranchName_ + ".dat"));
+//	stats s(massBranchName_, entries);
+//	_stats_vec.push_back(s);
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];
@@ -64,8 +65,8 @@ void anyVar_class::SetOutDirName(std::string dirname, bool updateOnly)
 		else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + bname + ".dat"));
 	}
 
-	if(updateOnly) _statfiles.emplace_back(new std::ofstream(_outDirFitRes + massBranchName_ + ".dat",  std::ofstream::app));
-	else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + massBranchName_ + ".dat"));
+	// if(updateOnly) _statfiles.emplace_back(new std::ofstream(_outDirFitRes + massBranchName_ + ".dat",  std::ofstream::app));
+	// else _statfiles.emplace_back(new std::ofstream(_outDirFitRes + massBranchName_ + ".dat"));
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];
@@ -101,6 +102,7 @@ void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>&
 	chain->SetBranchStatus("*", 0);
 
 	for(auto& branch : commonCutBranches) {
+		if(branch.Sizeof()==0) continue;
 		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch << std::endl;
 		chain->SetBranchStatus(branch, 1);
 //		chain->AddBranchToCache(branch, kTRUE);
@@ -183,7 +185,7 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 		allBranches.insert(branch);
 	}
 
-	for(auto& branch : allBranches) {
+	for(auto branch : allBranches) {
 		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch << std::endl;
 		chain->SetBranchStatus(branch, 1);
 		TBranch * br = chain->GetBranch(branch);
@@ -284,11 +286,15 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	Float_t *mll = NULL;
 	Float_t branches_Float_t[MAXBRANCHES][3];
 	size_t nBranches = _branchNames.size();
+	size_t indexMassBranch =-1 ;
 	for(unsigned int ibranch = 0; ibranch < nBranches; ++ibranch) {
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
 		TString bname = _branchNames[ibranch];
 		reduced_data->SetBranchAddress(bname, &branches_Float_t[ibranch]);
-		if(bname == massBranchName_) mll = &(branches_Float_t[ibranch][0]);
+		if(bname == massBranchName_){
+			mll = &(branches_Float_t[ibranch][0]);
+			indexMassBranch = ibranch;
+		}
 	}
 
 	Float_t weight_ = 1 ;
@@ -375,7 +381,9 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 			bothPassing = bothPassing && passing_ele[iele]; //if all electrons are satisfying this category, the event is removed from the list
 			if(passing_ele[iele] == false) continue; // fill only the with the electron passing the selection
 
-			for(size_t i = 0; i < nBranches; ++i) {
+			for(size_t i = 0; i < _stats_vec.size(); ++i) {
+				auto& s = _stats_vec[i];
+				if(s.name().find("invMass")!=std::string::npos) continue;
 				_stats_vec[i].add(branches_Float_t[i][iele]*scale);
 #ifdef DEBUG
 				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
@@ -385,7 +393,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		}
 		//double mllNew = mll * scale;
 		*mll *= scale;
-		if(bothPassing && *mll > 60. && *mll < 120) 	_stats_vec[nBranches].add(*mll);
+		if(bothPassing && *mll > 60. && *mll < 120) 	_stats_vec[indexMassBranch].add(*mll);
 		if(_exclusiveCategories && bothPassing) goodEntries.erase(jentry);
 	}
 	//fprintf(stderr, "\n");
@@ -405,7 +413,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 	for(size_t i = 0; i < _stats_vec.size(); ++i) {
 		auto& s = _stats_vec[i];
-//		std::cout << "Start sorting " << s.name() << std::endl;
+		std::cout << "Start sorting " << s.name() << std::endl;
 		s.sort();
 		*(_statfiles[i]) << region << "\t" << s << std::endl;
 #ifdef DEBUG

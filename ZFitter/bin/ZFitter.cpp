@@ -502,10 +502,14 @@ int main(int argc, char **argv)
 
 	if(vm.count("anyVarBranches")){
 		for(auto& b : branchListAny){
-			std::cout << b << std::endl;
+			std::cout << "branches: " << b << std::endl;
 		}
+	}else branchListAny.clear();
+	for(auto& b : branchListAny){
+		std::cout << "branches: " << b << std::endl;
 	}
-	branchListAny.push_back(invMass_var);
+	
+	branchListAny.push_back(invMass_var); //not needed because the invMass is actually added
 
 	//------------------------------ checking options
 	if(!vm.count("invMass_binWidth") && !vm.count("smearerFit")) {
@@ -1090,6 +1094,7 @@ int main(int argc, char **argv)
 		TString r = *region_itr;
 		r.ReplaceAll(commonCut, "");
 		std::set<TString> tmpList = cutter.GetBranchNameNtuple(r);
+		assert(tmpList.size()>0);
 		activeBranchList.insert(tmpList.begin(), tmpList.end());
 		// add also the friend branches!
 	}
@@ -1293,7 +1298,7 @@ int main(int argc, char **argv)
 			//anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", reduced_trees_file->GetDirectory(""), true); // vm.count("updateOnly"));
 			anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", dir, true); // vm.count("updateOnly"));
 			anyVar._exclusiveCategories = false;
-			anyVar.Import(commonCut, eleID, activeBranchList, modulo);
+			anyVar.Import(commonCut, eleID, activeBranchList, modulo); //activeBranchList is the list of branches for category selections
 			///\todo allocating both takes too much memory
 			if(vm.count("runToy") && modulo > 0) {
 				// splitting the events by "modulo" and obtaining statistically indipendent subsamples
