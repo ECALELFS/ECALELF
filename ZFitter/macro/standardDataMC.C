@@ -11,23 +11,26 @@ mcLabel_vec.push_back("madgraph");
 
 dataLabel_vec.push_back("Data");
 
-//  c[i] =
-TCanvas *cc = new TCanvas (PlotDataMCs(MakeChainVector(data), MakeChainVector(signalA), "nPV", "(40,0,40)", "Et_25-eleID_loose25nsRun2", "", dataLabel_vec, mcLabel_vec, "nVtx ", "", outputPath, "nPV", false, puReweight, true, false));
-i++;
-
-delete cc;
-cc = new TCanvas (PlotDataMCs(MakeChainVector(data), MakeChainVector(signalA), "invMass_SC_must_regrCorr_ele", "(120,60,120)", "EB-eleID_medium25nsRun2-Et_25", "", dataLabel_vec, mcLabel_vec, "M_{ee} [GeV]", "", outputPath, "invMass_SC_must_regrCorr_ele-EB", false, puReweight, true, false));
-
-delete cc;
-cc = new TCanvas (PlotDataMCs(MakeChainVector(data), MakeChainVector(signalA), "invMass", "(120,60,120)", "EB-eleID_medium25nsRun2-Et_25", "", dataLabel_vec, mcLabel_vec, "M_{ee} [GeV]", "", outputPath, "invMass-EB", false, puReweight, true, false));
-
-delete cc;
-cc = new TCanvas (PlotDataMCs(MakeChainVector(data), MakeChainVector(signalA), "invMass_SC_must_regrCorr_ele", "(120,60,120)", "EE-eleID_medium25nsRun2-Et_25", "", dataLabel_vec, mcLabel_vec, "M_{ee} [GeV]", "", outputPath, "invMass_SC_must_regrCorr_ele-EE", false, puReweight, true, false));
+TString eleID("eleID_loose25nsRun22016Moriond");
 
 
-// 	i++;
+//TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchname, TString binning, 
+//		     TString category,  TString selection, 
+//		     TString dataLabel, std::vector<TString> mcLabel_vec, TString xLabel, TString yLabelUnit, TString outputPath, TString label4Print,
+//		     bool logy=false, bool usePU=true, bool ratio=true,bool smear=false, bool scale=false, bool useR9Weight=false, TString pdfIndex=""){
+PlotDataMCs(data, MakeChainVector(signalA),
+ 		  	"nPV", "(40,0,40)", "Et_25-" + eleID, "",
+ 		  	"Data", mcLabel_vec, "nVtx ", "", outputPath, "nPV",
+ 		  	false, puReweight, false, false);
 
-// 	c[i] = new TCanvas (PlotDataMCs(data, MakeChainVector(signalA), "invMass_SC_must_regrCorr_ele", "(120,60,120)", "EE-eleID_medium25nsRun2-Et_25", "", dataLabel, mcLabel_vec, "M_{ee} [GeV]", "", outputPath, "invMass_SC_must_regrCorr_ele-EE", false, puReweight, true, false));
-// 	i++;
+PlotDataMCs(data, MakeChainVector(signalA),
+ 		  	"R9Ele", "(100,0,1)", "Et_25-" + eleID, "",
+ 		  	"Data", mcLabel_vec, "R_9 Ele ", "", outputPath, "R9Ele",
+ 		  	false, puReweight, false, false);
+
+PlotDataMCs(data, MakeChainVector(signalA),
+ 		  	"etaSCEle", "(100,-2.5,2.5)", "Et_25-" + eleID, "",
+ 		  	"Data", mcLabel_vec, "#eta_{SC}", "", outputPath, "etaSCEle",
+ 		  	false, puReweight, false, false);
 
 // }

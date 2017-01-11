@@ -11,16 +11,16 @@
 #include <TLegend.h>
 #include <TPaveText.h>
 #include <TStopwatch.h>
-#include "src/ElectronCategory_class.cc"
+#include "../src/ElectronCategory_class.cc"
 #include <iostream>
 #include <fstream>
-#include "src/runDivide_class.cc"
+#include "../src/runDivide_class.cc"
 
-TString GetRunRangeTime(TChain *chain, TString runRange){
-  runDivide_class runDivide;
-  runDivide.LoadRunEventNumbers(chain);
-  return runDivide.GetRunRangeTime(runRange);
-}
+//TString GetRunRangeTime(TChain *chain, TString runRange){
+//  runDivide_class runDivide;
+//  runDivide.LoadRunEventNumbers(chain);
+//  return runDivide.GetRunRangeTime(runRange);
+//}
 
 std::vector<TString> ReadRegionsFromFile(TString fileName){
   ifstream file(fileName);
@@ -620,7 +620,7 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
      data->SetBranchStatus(*itr, 1);
    }
    data->SetBranchStatus(branchname, 1);
-   data->SetBranchStatus("scaleEle", 1);
+   //data->SetBranchStatus("scaleEle", 1);
 
   if(branchNameData.Contains("energySCEle_regrCorrSemiParV5_pho")) cutter.energyBranchName="energySCEle_regrCorrSemiParV5_pho";
   else if(branchNameData.Contains("energySCEle_regrCorrSemiParV5_ele")) cutter.energyBranchName="energySCEle_regrCorrSemiParV5_ele";
@@ -683,10 +683,10 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
  	  mc->SetBranchStatus(*itr, 1);
  	}
 	mc->SetBranchStatus(branchname, 1);
-	mc->SetBranchStatus("smearEle", 1);
+	//mc->SetBranchStatus("smearEle", 1);
 	mc->SetBranchStatus("puWeight",1);
 	mc->SetBranchStatus("mcGenWeight", 1);
-	mc->SetBranchStatus("r9Weight", 1);
+	//mc->SetBranchStatus("r9Weight", 1);
  	
 
 	TString mcHistName;  mcHistName+="hist_"; mcHistName+=mc_itr-mc_vec.begin();//better for .C generation
