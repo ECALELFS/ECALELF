@@ -20,3 +20,5 @@ s1 eleIDTree root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/
 
 d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUSpring16-nPUtrue.root
+
+s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/rereco/Cal_Nov2016/s1_Cal_Nov2016_ref.root

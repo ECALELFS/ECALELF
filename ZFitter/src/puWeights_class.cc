@@ -21,7 +21,7 @@ double puWeights_class::GetWeight(int nPU, int runNumber)
 		PUweights_itr = PUWeightsRunDepMap.find(runNumber);
 		if(PUweights_itr == PUWeightsRunDepMap.end() || PUweights_itr->second.empty()) {
 			warningCounter++;
-			if(warningCounter <= 1) {
+			if(warningCounter <= 10) {
 				std::cerr << "[WARNING] runNumber " << runNumber << " not found in PUWeightsRunDepMap" << std::endl;
 			}
 			return 1;
@@ -31,7 +31,7 @@ double puWeights_class::GetWeight(int nPU, int runNumber)
 	PUweights_t::const_iterator weight_itr = PUweights_itr->second.find(nPU);
 	if(weight_itr == PUweights_itr->second.end()) {
 		warningCounter++;
-		if(warningCounter == 1) {
+		if(warningCounter <= 10) {
 			std::cerr << "[WARNING] in-time nPU " << nPU << " not found in weight files" << std::endl;
 			std::cerr << "          Events dropped with applying weight=0" << std::endl;
 			std::cerr << (PUweights_itr->second.begin()->first) << std::endl;
@@ -179,15 +179,10 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
 	double puMCweight_int = 0;
 	for (int i = 0; i < nBins; i++) {
 		double binContent = puMC_hist->GetBinContent(i + 1);
+		//Give warnings if the Pileup bins are empty
 		if(binContent == 0 && puData_hist->GetBinContent(i + 1) != 0) {
-			if(puData_hist->GetBinContent(i + 1) < 1e-4) {
 				std::cerr << "[WARNING] mc bin empty while data not: iBin = " << i + 1 << std::endl;
 				std::cerr << "          data bin = " << puData_hist->GetBinContent(i + 1) << std::endl;
-			} else {
-				std::cerr << "[ERROR] mc bin empty while data not: iBin = " << i + 1 << std::endl;
-				std::cerr << "        data bin = " << puData_hist->GetBinContent(i + 1) << std::endl;
-				exit(1);
-			}
 		}
 		double weight = binContent > 0 ? puData_hist->GetBinContent(i + 1) / binContent : 0;
 		// the MC normalization should not change, so calculate the
