@@ -184,6 +184,9 @@ from RecoLocalCalo.EcalRecProducers.ecalLocalCustom import *
 
 process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 
+#Energy regression 2017
+process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+process.EGMenergyCorrection = cms.Path(process.regressionApplication)
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 
@@ -286,7 +289,7 @@ else:
 myEleCollection =  cms.InputTag("gedGsfElectrons")
 
 if(options.type=="MINIAODNTUPLE" ):
-    myEleCollection= cms.InputTag("slimmedElectrons")
+    myEleCollection= cms.InputTag("regressionElectrons")
 recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
 
 process.MinEleNumberFilter.src = myEleCollection
@@ -672,7 +675,7 @@ elif(options.type=='SKIMEFFTEST'):
                                     process.pathWElectronGen, process.pathZSCElectronGen, process.pathZElectronGen,
                                     )
 elif(options.type=='MINIAODNTUPLE'):
-    process.schedule = cms.Schedule(process.NtuplePath, process.NtupleEndPath)
+    process.schedule = cms.Schedule(process.EGMenergyCorrection,process.NtuplePath, process.NtupleEndPath)
 
 process.zNtupleDumper.foutName=options.secondaryOutput
 
@@ -754,13 +757,15 @@ else:
     rechitsEE = cms.InputTag("reducedEgamma", "reducedEERecHits")
     rechitsES = cms.InputTag("reducedEgamma", "reducedESRecHits")
     #configure everything for MINIAOD
-    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('slimmedElectrons')
+    process.egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('regressionElectrons') 
 
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEB = rechitsEB
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = rechitsEE
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.eleNewEnergiesProducer.electronCollection =  myEleCollection
-    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+    #process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+    #process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("regressionPhotons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("regressionPhotons") #what is @skipCurrentProcess and why if used invMass_ECAL_pho is crazy??
 
 #    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
     process.eleSelectionProducers.electronCollection =   myEleCollection

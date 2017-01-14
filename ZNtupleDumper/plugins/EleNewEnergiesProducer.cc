@@ -164,14 +164,15 @@ EleNewEnergiesProducer::EleNewEnergiesProducer(const edm::ParameterSet& iConfig)
 	photonsTAG ( consumes<edm::View<pat::Photon> >(iConfig.getParameter<edm::InputTag>( "photonCollection" ) ) )
 	//  electronsTAG(iConfig.getParameter<edm::InputTag>("electronCollection"))
 {
-	//	std::cout << electronsTAG << std::endl;
+        std::cout<<"[INFO: EleNewEnergiesProducer]"<<iConfig.getParameter<edm::InputTag>( "electronCollection" )<<std::endl;
+	std::cout<<"[INFO: EleNewEnergiesProducer]"<<iConfig.getParameter<edm::InputTag>( "photonCollection" )<<std::endl;
 	// this name are hard coded, should be put in the cfi
 	produces< NewEnergyMap >("energySCEleMust");
 	produces< NewEnergyMap >("energySCEleMustVar");
 	produces< NewEnergyMap >("energySCElePho");
 	produces< NewEnergyMap >("energySCElePhoVar");
 
-//now do what ever other initialization is needed
+        //now do whatever other initialization is needed
 	edm::ConsumesCollector iC = consumesCollector();
 	mustache_regr_.setTokens(iConfig.getParameterSet("scEnergyCorrectorSemiParm"), iC);
 }
