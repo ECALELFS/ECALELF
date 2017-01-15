@@ -202,6 +202,7 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
 	for (int i = 0; i < nBins; i++) {
 		weights_itr->second[i] /= puMCweight_int;
 	}
+
 	PUweights_itr = PUWeightsRunDepMap.begin();
 	if(TString(puMC_hist->GetName()).Contains("Hist")) delete puMC_hist;
 	return;
@@ -212,7 +213,6 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
 TTree *puWeights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString nPUbranchName)
 {
 	TString runNumberBranchName = "runNumber";
-
 	Float_t weight = 0;
 	TTree *newTree = new TTree("pileup", nPUbranchName);
 	newTree->Branch("puWeight", &weight, "puWeight/F");
@@ -223,14 +223,14 @@ TTree *puWeights_class::GetTreeWeight(TChain *tree,  bool fastLoop, TString nPUb
 		tree->SetBranchStatus(runNumberBranchName, 1);
 	}
 
-	Int_t nPU[5];
+	UChar_t nPU;
 	Int_t runNumber;
-	tree->SetBranchAddress(nPUbranchName, nPU);
+	tree->SetBranchAddress(nPUbranchName, &nPU);
 	tree->SetBranchAddress(runNumberBranchName, &runNumber);
 	// loop over tree
 	for(Long64_t ientry = 0; ientry < tree->GetEntriesFast(); ientry++) {
 		tree->GetEntry(ientry);
-		weight = GetWeight((int)nPU[0], runNumber); //only intime pu
+		weight = GetWeight((int)nPU, runNumber); //only intime pu
 		newTree->Fill();
 	}
 
