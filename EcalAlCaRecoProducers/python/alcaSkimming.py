@@ -187,6 +187,13 @@ process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 
+from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+process = regressionWeights(process)
+process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+process.prePatSequence*=process.regressionApplication
+
+
+#80X_mcRun2_asymptotic_2016_TrancheIV_v7
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 
 # define which IDs we want to produce
@@ -760,7 +767,8 @@ else:
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.ecalRecHitsEE = rechitsEE
     process.eleNewEnergiesProducer.scEnergyCorrectorSemiParm.vertexCollection = cms.InputTag('offlineSlimmedPrimaryVertices')
     process.eleNewEnergiesProducer.electronCollection =  myEleCollection
-    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+#    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","","@skipCurrentProcess")
+    process.eleNewEnergiesProducer.photonCollection =  cms.InputTag("slimmedPhotons","")
 
 #    process.eleSelectionProducers.electronCollection =   cms.InputTag("slimmedElectrons","","@skipCurrentProcess")
     process.eleSelectionProducers.electronCollection =   myEleCollection

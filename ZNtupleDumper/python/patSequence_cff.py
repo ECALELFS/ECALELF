@@ -24,6 +24,7 @@ from Calibration.ZNtupleDumper.muonselectionproducers_cfi import *
 from RecoEgamma.ElectronIdentification.egmGsfElectronIDs_cff import *
 egmGsfElectronIDs.physicsObjectSrc = cms.InputTag('patElectrons')
 
+
 #============================== Adding new energies to patElectrons
 # adding new float variables to the patElectron
 # this variables are produced with a specific producer: eleNewEnergiesProducer
@@ -129,7 +130,6 @@ modPSetEleIDBool =  cms.PSet(
     photon_config   = cms.PSet( )
     )
 
-
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEB")
 eleNewEnergiesProducer.recHitCollectionEE = cms.InputTag("alCaIsolatedElectrons", "alCaRecHitsEE")
 eleNewEnergiesProducer.recHitCollectionEB = cms.InputTag("alCaIsolatedElectrons", "alcaBarrelHits")
@@ -160,7 +160,7 @@ slimmedECALELFElectrons.modifierConfig  = cms.PSet(
         modPSet,
         modPSetEleIDFloat,
         modPSetEleIDBool,
-        modPSetSlewRate
+#        modPSetSlewRate
         )
     )
 
