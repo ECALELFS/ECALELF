@@ -187,8 +187,6 @@ process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 
-from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
-process = regressionWeights(process)
 process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
 process.prePatSequence*=process.regressionApplication
 
@@ -876,9 +874,13 @@ for modifier in process.slimmedECALELFElectrons.modifierConfig.modifications:
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 
+from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+process = regressionWeights(process)
+
 ############################
 ## Dump the output Python ##
 ############################
 #process.ecalRecHit.recoverEBIsolatedChannels = True
 processDumpFile = open('processDump.py', 'w')
 print >> processDumpFile, process.dumpPython()
+
