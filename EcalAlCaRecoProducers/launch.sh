@@ -7,22 +7,22 @@ jsonName=DCSONLY
 jsonName=271036-284044_23Sep2016_v1
 
 
-CHECK=--check
+#CHECK=--check
 #CHECK=--createOnly
 
 
 #where=remoteGlidein
 scheduler=caf
-tag_MC=config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py
+tag_MC=config/reRecoTags/80X_mcRun2_asymptotic_2016_TrancheIV_v7.py
 tag_Prompt=config/reRecoTags/80X_dataRun2_Prompt_v14.py
-tag_Rereco=config/reRecoTags/80X_dataRun2_2016SeptRepro_v4.py
+tag_Rereco=config/reRecoTags/80X_dataRun2_2016SeptRepro_v6.py
 
 fileList=alcareco_datasets.dat
 PERIOD=MORIOND2017
 
 IFS=$'\n'
 datasetsData=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`)
-datasetsMC=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "MCICHEP2016,"`)
+datasetsMC=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`)
 # set IFS to newline in order to divide using new line the datasets
 
 
@@ -33,15 +33,12 @@ do
 	echo $datasetName
 #	continue
 	case $datasetName in
-		*MINIAODSIM)
+		*miniAODv2)
 #			echo $datasetName
-			./scripts/prodNtuples.sh  --isMC --type=MINIAOD -t ${tag_MC} -s noSkim --scheduler=${scheduler} --doEleIDTree --extraName=newNtuples ${CHECK} $dataset
+			./scripts/prodNtuples.sh  --isMC --type=MINIAOD -t ${tag_MC} -s noSkim --scheduler=${scheduler} --doEleIDTree --extraName=regressionMoriond17v2 ${CHECK} $dataset
 			;;
-		*-withES)
-			echo "--> $datasetName"
-			./scripts/prodAlcareco.sh --isMC --type=ALCARECO -t ${tag_MC} -s ZSkim --scheduler=${scheduler}  ${CHECK} $dataset
-			./scripts/prodNtuples.sh  --isMC --type=ALCARECO -t ${tag_MC} -s ZSkim --scheduler=${scheduler} --doEleIDTree --extraName=newNtuples ${CHECK} $dataset
-			;;
+		*MINIAOD)
+			./scripts/prodNtuples.sh   --type=MINIAOD -t ${tag_Rereco} -s noSkim --scheduler=${scheduler} --doEleIDTree --extraName=regressionMoriond17v2 --json=$json --json_name=$jsonName ${CHECK} $dataset
 	esac
 done
 exit 0
