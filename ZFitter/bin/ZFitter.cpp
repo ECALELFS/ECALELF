@@ -358,7 +358,7 @@ int main(int argc, char **argv)
 	("useWEAKweight", "activate the WEAK interference weight in MC")
 	("saveRootMacro", "")
 	//
-	("selection", po::value<string>(&selection)->default_value("cutBasedElectronID-Spring15-25ns-V1-standalone-loose"), "")
+	("selection", po::value<string>(&selection)->default_value("loose25nsRun22016Moriond"), "") //"cutBasedElectronID-Spring15-25ns-V1-standalone-loose"
 	("commonCut", po::value<string>(&commonCut)->default_value("isEle-Et_25"), "")
 	("invMass_var", po::value<string>(&invMass_var)->default_value("invMass_ECAL_ele"), "")
 	("invMass_min", po::value<float>(&invMass_min)->default_value(65.), "")
