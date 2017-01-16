@@ -25,7 +25,6 @@ Description: class that provide flexible and simple way to fit the Zee invariant
 #include <TObjArray.h>
 #include <TChainElement.h>
 
-
 //#define DEBUG
 //#define FIT_DEBUG
 //#define NOIMPORT
@@ -154,7 +153,6 @@ void ZFit_class::Import(TString commonCut, TString eleID_, std::set<TString>& br
 
 TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TString>& branchList)
 {
-
 	if(branchList.size() > 0) {
 		std::cout << "[STATUS] Disabling branches to fast import" << std::endl;
 		chain->SetBranchStatus("*", 0);
@@ -173,17 +171,18 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 	if(chain->GetBranch("r9Weight")) chain->SetBranchStatus("r9Weight", 1);
 	chain->SetBranchStatus("R9Ele", 1);
 	chain->SetBranchStatus("etaEle", 1);
+	chain->SetBranchStatus("etaSCEle",1);
 	chain->SetBranchStatus("recoFlagsEle", 1);
 	chain->SetBranchStatus("eleID", 1);
 	chain->SetBranchStatus("eventNumber", 1);
 	std::cout << "[STATUS] Enabling branch: " << invMass.GetName() << std::endl;
 	chain->SetBranchStatus(invMass.GetName(), 1);
-	chain->SetBranchStatus("invMass_SC", 1);
+	chain->SetBranchStatus("energy_ECAL_ele", 1);
+	chain->SetBranchStatus("energy_ECAL_pho", 1);
 	chain->AddBranchToCache("*", kTRUE);
-
-	//std::cout << commonCut << std::endl;
 	TString evListName = "evList_";
 	evListName += chain->GetTitle();
+
 #ifdef DEBUG
 	std::cout << "[DEBUG] commonCut ::" << commonCut << std::endl;
 #endif
@@ -195,6 +194,9 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 	TECALChain *chain_ecal = (TECALChain*)chain;
 	chain_ecal->TECALChain::SetEntryList(elist);
 	assert(elist != NULL);
+#ifdef DEBUG
+	std::cout << "[DEBUG] elist is not null :\t" << std::endl;
+#endif
 	std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
 	chain = dynamic_cast<TChain*>(chain_ecal);
 #ifdef DEBUG
@@ -1263,30 +1265,8 @@ TString	ZFit_class::GetEnergyVarName(TString invMass_name)
 	TString invMass_var = invMass_name;
 	if(invMass_var == "invMass_SC_regrCorr_ele") energyBranchName = "energySCEle_regrCorr_ele";
 	else if(invMass_var == "invMass_SC_regrCorr_pho") energyBranchName = "energySCEle_regrCorr_pho";
-	else if(invMass_var == "invMass_regrCorr_fra") energyBranchName = "energyEle_regrCorr_fra";
-	else if(invMass_var == "invMass_regrCorr_egamma") energyBranchName = "energyEle_regrCorr_egamma";
-	else if(invMass_var == "invMass_rawSC") energyBranchName = "rawEnergySCEle";
-	else if(invMass_var == "invMass_rawSC_esSC") energyBranchName = "rawEnergySCEle+esEnergySCEle";
-	else if(invMass_var == "invMass_SC") energyBranchName = "energySCEle";
-	else if(invMass_var == "invMass_SC_corr") energyBranchName = "energySCEle_corr";
-	else if(invMass_var == "invMass_SC_must") energyBranchName = "energySCEle_must";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV4_ele") energyBranchName = "energySCEle_regrCorrSemiParV4_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV4_pho") energyBranchName = "energySCEle_regrCorrSemiParV4_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV5_ele") energyBranchName = "energySCEle_regrCorrSemiParV5_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV5_pho") energyBranchName = "energySCEle_regrCorrSemiParV5_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV6_ele") energyBranchName = "energySCEle_regrCorrSemiParV6_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV6_pho") energyBranchName = "energySCEle_regrCorrSemiParV6_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV7_ele") energyBranchName = "energySCEle_regrCorrSemiParV7_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV7_pho") energyBranchName = "energySCEle_regrCorrSemiParV7_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV8_ele") energyBranchName = "energySCEle_regrCorrSemiParV8_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiParV8_pho") energyBranchName = "energySCEle_regrCorrSemiParV8_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV6_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV6_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV6_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV7_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV7_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV7_pho";
-	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV8_ele") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_ele";
-	else if(invMass_var == "invMass_SC_regrCorrSemiPar7TeVtrainV8_pho") energyBranchName = "energySCEle_regrCorrSemiPar7TeVtrainV8_pho";
-	else if(invMass_var == "invMass_SC_must_regrCorr_ele") energyBranchName = "energySCEle_must_regrCorr_ele";
+	else if(invMass_var == "invMass_ECAL_ele") energyBranchName = "energy_ECAL_ele";
+	else if(invMass_var == "invMass_ECAL_pho") energyBranchName = "energy_ECAL_pho";
 	return energyBranchName;
 }
 
