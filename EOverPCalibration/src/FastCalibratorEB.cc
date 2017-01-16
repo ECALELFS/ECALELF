@@ -136,20 +136,20 @@ void FastCalibratorEB::Init(TTree *tree)
 	fChain->SetBranchAddress("chargeEle", chargeEle);
 	fChain->SetBranchStatus("etaEle", 1);
 	fChain->SetBranchAddress("etaEle", &etaEle, &b_etaEle);
-	fChain->SetBranchStatus("PtEle", 1);
-	fChain->SetBranchAddress("PtEle", &PtEle, &b_PtEle);
+	//	fChain->SetBranchStatus("PtEle", 1);
+	//fChain->SetBranchAddress("PtEle", &PtEle, &b_PtEle);
 	fChain->SetBranchStatus("phiEle", 1);
 	fChain->SetBranchAddress("phiEle", &phiEle, &b_phiEle);
 	fChain->SetBranchStatus("rawEnergySCEle", 1);
 	fChain->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle, &b_rawEnergySCEle);
-	fChain->SetBranchStatus("energySCEle_must", 1);
-	fChain->SetBranchAddress("energySCEle_must", &energySCEle, &b_energySCEle);
+	fChain->SetBranchStatus("energy_ECAL_ele", 1);
+	fChain->SetBranchAddress("energy_ECAL_ele", &energySCEle, &b_energySCEle); //OLD ENERGY: energySCEle_must
 	//  fChain->SetBranchStatus("energySCEle", 1);             fChain->SetBranchAddress("energySCEle", &energySCEle, &b_energySCEle);
 	fChain->SetBranchStatus("etaSCEle", 1);
 	fChain->SetBranchAddress("etaSCEle", &etaSCEle, &b_etaSCEle);
 	fChain->SetBranchStatus("esEnergySCEle", 1);
 	fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle, &b_esEnergySCEle);
-	fChain->SetBranchStatus("pAtVtxGsfEle", 1);
+	fChain->SetBranchStatus("pAtVtxGsfEle", 1); //please test also with: pModeGsfEle
 	fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle, &b_pAtVtxGsfEle);
 	fChain->SetBranchStatus("fbremEle", 1);
 	fChain->SetBranchAddress("fbremEle", &fbremEle, &b_fbremEle);
@@ -338,7 +338,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if( fabs(fbremEle[0]) > fbremMax  && isfbrem == true ) skipElectron = true;
 
 			/// fbrem Selection
-			if( PtEle[0] < PtMin  && isPtCut == true ) skipElectron = true;
+			if( (energySCEle[0]/cosh(etaEle[0])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 			/// Save electron E/p in a chain of histogramm each for eta bin
 			if(!skipElectron)    hC_EoP_eta_ele -> Fill(eta_seed + 85, thisE / pIn);
@@ -423,7 +423,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if( fabs(fbremEle[1]) > fbremMax  && isfbrem == true ) skipElectron = true;
 
 			/// fbrem Selection
-			if( PtEle[1] < PtMin  && isPtCut == true ) skipElectron = true;
+			if( (energySCEle[1]/cosh(etaEle[1])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 			/// Save E/p electron information
 			if(!skipElectron) hC_EoP_eta_ele -> Fill(eta_seed + 85, thisE / pIn);
@@ -653,7 +653,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if( fabs(thisE / pIn  - 1) > 0.3 && isEPselection == true ) skipElectron = true;
 				if( fabs(thisE3x3 / thisE) < R9Min && isR9selection == true ) skipElectron = true;
 				if( fabs(fbremEle[0]) > fbremMax  && isfbrem == true ) skipElectron = true;
-				if( PtEle[0] < PtMin  && isPtCut == true ) skipElectron = true;
+				if( (energySCEle[0]/cosh(etaEle[0])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 				if( thisE / pIn < EoPHisto->GetXaxis()->GetXmin() || thisE / pIn > EoPHisto->GetXaxis()->GetXmax()) skipElectron = true;
 				if( !skipElectron) {
@@ -794,7 +794,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if( fabs(thisE / pIn  - 1) > 0.3 && isEPselection == true ) skipElectron = true;
 				if( fabs(thisE3x3 / thisE) < R9Min && isR9selection == true ) skipElectron = true;
 				if( fabs(fbremEle[1]) > fbremMax  && isfbrem == true ) skipElectron = true;
-				if( PtEle[1] < PtMin  && isPtCut == true ) skipElectron = true;
+				if( (energySCEle[1]/cosh(etaEle[1])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 				if( !skipElectron ) {
 
