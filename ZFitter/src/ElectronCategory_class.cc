@@ -15,9 +15,7 @@ ElectronCategory_class::~ElectronCategory_class()
 ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAsNtuple_):
 	_isRooFit(isRooFit_),
 	_roofitNameAsNtuple(roofitNameAsNtuple_),
-	energyBranchName("energySCEle_corr"),
-	//energyBranchName("energySCEle_pho_regrCorr"),
-	//energyBranchName("energySCEle_must_regrCorr_ele"),
+	energyBranchName("energy_ECAL_ele"),
 	_corrEle(false)
 {
 
@@ -921,10 +919,10 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TString string1 = Objstring1->GetString();
 			TString string2 = Objstring2->GetString();
 
-			TCut cutEle1_1("seedEnergySCEle_ele1 >= " + string1);
-			TCut cutEle1_2("seedEnergySCEle_ele1 <  " + string2);
-			TCut cutEle2_1("seedEnergySCEle_ele2 >= " + string1);
-			TCut cutEle2_2("seedEnergySCEle_ele2 <  " + string2);
+			TCut cutEle1_1("energySeedSC_ele1 >= " + string1);
+			TCut cutEle1_2("energySeedSC_ele1 <  " + string2);
+			TCut cutEle2_1("energySeedSC_ele2 >= " + string1);
+			TCut cutEle2_2("energySeedSC_ele2 <  " + string2);
 
 			TCut ele1_cut = cutEle1_1 && cutEle1_2;
 			TCut ele2_cut = cutEle2_1 && cutEle2_2;
