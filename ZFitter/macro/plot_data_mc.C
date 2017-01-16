@@ -274,15 +274,12 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   }
   
   std::cout<<"*****************Saving the plots"<<std::endl;
-  TString eps_name=img_filename(filename, region, ".eps").ReplaceAll("EtLeading_40-EtSubLeading_20-EtLeading_32-EtSubLeading_20","EtLeading_40-EtSubLeading_20");
-  TString png_name=img_filename(filename, region, ".png").ReplaceAll("EtLeading_40-EtSubLeading_20-EtLeading_32-EtSubLeading_20","EtLeading_40-EtSubLeading_20");
-  TString C_name=img_filename(filename, region, ".C").ReplaceAll("EtLeading_40-EtSubLeading_20-EtLeading_32-EtSubLeading_20","EtLeading_40-EtSubLeading_20");
+  TString eps_name=img_filename(filename, region, ".eps");
+  TString png_name=img_filename(filename, region, ".png"); 
+  TString C_name=img_filename(filename, region, ".C"); 
   c->SaveAs(eps_name);
   c->SaveAs(png_name);
   c->SaveAs(C_name);
-  //c->SaveAs(img_filename(filename, region, ".eps")); //Like this it's not compiling
-  //c->SaveAs(img_filename(filename, region, ".png"));
-  //c->SaveAs(img_filename(filename, region, ".C"));
   delete mc;
   mc=NULL;
   delete data;
