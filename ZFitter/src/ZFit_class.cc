@@ -173,6 +173,7 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 	chain->SetBranchStatus("etaEle", 1);
 	chain->SetBranchStatus("etaSCEle",1);
 	chain->SetBranchStatus("recoFlagsEle", 1);
+	chain->SetBranchStatus("chargeEle", 1);
 	chain->SetBranchStatus("eleID", 1);
 	chain->SetBranchStatus("eventNumber", 1);
 	std::cout << "[STATUS] Enabling branch: " << invMass.GetName() << std::endl;
