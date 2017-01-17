@@ -693,13 +693,13 @@ TCanvas *PlotDataMCs(TChain *data, std::vector<TChain *> mc_vec, TString branchn
 	//TString mcHistName; mcHistName+=mc_itr-mc_vec.begin(); mcHistName+="_hist";//better for .C generation
 	
 	//decide this for MC
-	//TString weights="mcGenWeight";
+	TString weights="mcGenWeight";
 	//if(pdfIndex!="") weights+="*(pdfWeights_cteq66["+pdfIndex+"]/pdfWeights_cteq66[0])";
-	//if(usePU) weights+="*puWeight";
+	if(usePU) weights+="*puWeight";
 	//if(useR9Weight) weights+="*r9Weight";
-	//std::cout<<"Complete selection for MC is "<<selection_MC *weights.Data()<<std::endl;
-	//mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *weights.Data());
-	mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC);
+	std::cout<<"Complete selection for MC is "<<selection_MC *weights.Data()<<std::endl;
+	mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC *weights.Data());
+	//mc->Draw(branchNameMC+">>"+mcHistName+binning, selection_MC);
       }
     }
 
