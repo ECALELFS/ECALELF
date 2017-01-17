@@ -59,7 +59,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 
 	fChain->SetBranchStatus("*", 0);
 	fChain->SetBranchStatus("runNumber", 1);
-	fChain->SetBranchStatus("runTime", 1);
+	fChain->SetBranchStatus("eventTime", 1);
 	fChain->SetBranchStatus("nPU", 1);
 	fChain->SetBranchStatus("nPV", 1);
 	fChain->SetBranchStatus("avgLCSCEle", 1);
@@ -67,8 +67,8 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 	//  fChain->SetBranchStatus("ele1_EOverP",1);
 	fChain->SetBranchStatus("etaSCEle", 1);
 	fChain->SetBranchStatus("phiSCEle", 1);
-	fChain->SetBranchStatus("energySCEle_must", 1);
-	fChain->SetBranchStatus("energySCEle_corr", 1);
+	fChain->SetBranchStatus("energy_ECAL_ele", 1);
+	fChain->SetBranchStatus("energyEle", 1);
 	fChain->SetBranchStatus("esEnergySCEle", 1);
 	fChain->SetBranchStatus("pAtVtxGsfEle", 1);
 	fChain->SetBranchStatus("seedXSCEle", 1);
@@ -76,7 +76,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 	//  fChain->SetBranchStatus("ele1_seedZside",1);
 
 	fChain->SetBranchAddress("runNumber", &runNumber);
-	fChain->SetBranchAddress("runTime", &runTime);
+	fChain->SetBranchAddress("eventTime", &runTime);
 	fChain->SetBranchAddress("nPU", &nPU);
 	fChain->SetBranchAddress("nPV", &nPV);
 	fChain->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
@@ -85,9 +85,9 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 	fChain->SetBranchAddress("etaSCEle", &etaSCEle);
 	fChain->SetBranchAddress("phiSCEle", &phiSCEle);
 	if( useRegression < 1 )
-		fChain->SetBranchAddress("energySCEle_must", &energySCEle);
+		fChain->SetBranchAddress("energy_ECAL_ele", &energySCEle);
 	else
-		fChain->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
+		fChain->SetBranchAddress("energy_ECAL_ele", &energySCEle_corr);
 	//  fChain->SetBranchAddress("energySCEle_corr", &energySCEle);
 	fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
 	fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
@@ -108,7 +108,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 
 	fChainMC->SetBranchStatus("*", 0);
 	fChainMC->SetBranchStatus("runNumber", 1);
-	fChainMC->SetBranchStatus("runTime", 1);
+	fChainMC->SetBranchStatus("eventTime", 1);
 	fChainMC->SetBranchStatus("nPU", 1);
 	fChainMC->SetBranchStatus("nPV", 1);
 	fChainMC->SetBranchStatus("avgLCSCEle", 1);
@@ -116,8 +116,8 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 	//  fChainMC->SetBranchStatus("ele1_EOverP",1);
 	fChainMC->SetBranchStatus("etaSCEle", 1);
 	fChainMC->SetBranchStatus("phiSCEle", 1);
-	fChainMC->SetBranchStatus("energySCEle_must", 1);
-	fChainMC->SetBranchStatus("energySCEle_corr", 1);
+	fChainMC->SetBranchStatus("energy_ECAL_ele", 1);
+	fChainMC->SetBranchStatus("energyEle", 1);
 	fChainMC->SetBranchStatus("esEnergySCEle", 1);
 	fChainMC->SetBranchStatus("pAtVtxGsfEle", 1);
 	fChainMC->SetBranchStatus("seedXSCEle", 1);
@@ -125,7 +125,7 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 	//  fChainMC->SetBranchStatus("ele1_seedZside",1);
 
 	fChainMC->SetBranchAddress("runNumber", &runNumber);
-	fChainMC->SetBranchAddress("runTime", &runTime);
+	fChainMC->SetBranchAddress("eventTime", &runTime);
 	fChainMC->SetBranchAddress("nPU", &nPU);
 	fChainMC->SetBranchAddress("nPV", &nPV);
 	fChainMC->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
@@ -134,9 +134,9 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 	fChainMC->SetBranchAddress("etaSCEle", &etaSCEle);
 	fChainMC->SetBranchAddress("phiSCEle", &phiSCEle);
 	if( useRegression < 1 )
-		fChainMC->SetBranchAddress("energySCEle_must", &energySCEle);
+		fChainMC->SetBranchAddress("energy_ECAL_ele", &energySCEle);
 	else
-		fChainMC->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
+		fChainMC->SetBranchAddress("energy_ECAL_ele", &energySCEle_corr);
 	//  fChainMC->SetBranchAddress("energySCEle_corr", &energySCEle);
 	fChainMC->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
 	fChainMC->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
