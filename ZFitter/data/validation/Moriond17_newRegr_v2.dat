@@ -20,3 +20,10 @@ d7 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf
 d8 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_2016SeptRepro_v6/DoubleEG-Run2016H-noSkim-Prompt_v3-MINIAOD/284036-284068/271036-284044_23Sep2016_v1/regressionMoriond17v2/DoubleEG-Run2016H-noSkim-Prompt_v3-MINIAOD-284036-284068.root
 d8 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_2016SeptRepro_v6/DoubleEG-Run2016H-noSkim-Prompt_v3-MINIAOD/284036-284068/271036-284044_23Sep2016_v1/regressionMoriond17v2/eleIDTree-DoubleEG-Run2016H-noSkim-Prompt_v3-MINIAOD-284036-284068.root
 #
+
+d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
+s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
+
+#s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_newRegr_v2.root
+#s2 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_Moriond17_newRegr_v2.root
+
