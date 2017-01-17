@@ -1027,9 +1027,12 @@ int main(int argc, char **argv)
 		MergeSamples(tagChainMap, regionsFileNameTag, "d");
 	}
 
+	ElectronCategory_class cutter;
+	cutter.energyBranchName = energyBranchName;
+
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
-		runDivide_class runDivider;
+		runDivide_class runDivider(cutter.GetCut(commonCut, false,0), cutter.GetBranchNameNtuple(commonCut));
 		runDivider.Divide((tagChainMap["d"])["selected"].get(), "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		// std::vector<TString> runRanges;
@@ -1085,8 +1088,6 @@ int main(int argc, char **argv)
 
 
 	//------------------------------ Take the list of branches needed for the defined categories
-	ElectronCategory_class cutter;
-	cutter.energyBranchName = energyBranchName;
 	std::set<TString> activeBranchList;
 	for(std::vector<TString>::const_iterator region_itr = categories.begin();
 	        region_itr != categories.end();
