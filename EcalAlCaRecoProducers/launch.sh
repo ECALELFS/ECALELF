@@ -35,10 +35,11 @@ do
 	case $datasetName in
 		*miniAODv2)
 #			echo $datasetName
-			./scripts/prodNtuples.sh  --isMC --type=MINIAOD -t ${tag_MC} -s noSkim --scheduler=${scheduler} --doEleIDTree --extraName=regressionMoriond17v2 ${CHECK} $dataset
+			./scripts/prodNtuples.sh  --isMC --type=MINIAOD -t ${tag_MC} -s noSkim --scheduler=${scheduler}  --extraName=regressionOld ${CHECK} $dataset
 			;;
 		*MINIAOD)
-			./scripts/prodNtuples.sh   --type=MINIAOD -t ${tag_Rereco} -s noSkim --scheduler=${scheduler} --doEleIDTree --extraName=regressionMoriond17v2 --json=$json --json_name=$jsonName ${CHECK} $dataset
+			#extraName=regressionMoriond17v2
+			./scripts/prodNtuples.sh   --type=MINIAOD -t ${tag_Rereco} -s noSkim --scheduler=${scheduler}  --extraName=regressionOld --json=$json --json_name=$jsonName ${CHECK} $dataset
 	esac
 done
 exit 0
