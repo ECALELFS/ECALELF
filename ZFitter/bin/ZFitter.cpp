@@ -1032,7 +1032,7 @@ int main(int argc, char **argv)
 
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
-		runDivide_class runDivider(cutter.GetCut(commonCut, false,0), cutter.GetBranchNameNtuple(commonCut));
+		runDivide_class runDivider(cutter.GetCut(commonCut+"-eleID_"+selection, false,0), cutter.GetBranchNameNtuple(commonCut+"-eleID_"+selection));
 		runDivider.Divide((tagChainMap["d"])["selected"].get(), "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		// std::vector<TString> runRanges;
