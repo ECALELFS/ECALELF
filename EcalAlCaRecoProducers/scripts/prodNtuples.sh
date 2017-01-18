@@ -636,6 +636,7 @@ if [ -n "${CHECK}" ];then
 					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
 					;;
 				*)
+					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
 					;;
 			esac
 		done

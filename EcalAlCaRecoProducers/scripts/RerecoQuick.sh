@@ -176,7 +176,7 @@ for dataset in $datasets
 				${TUTORIAL} $dataset 
 		else
 			./scripts/prodAlcarereco.sh  -t ${TAGFILE} \
-			--scheduler=$SCHEDULER --doExtraCalibTree --doEleIDTree  ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --doExtraCalibTree --doEleIDTree --doExtraCalibTree ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   				${JSONFILE} ${JSONNAME} --crabVersion=${crabVersion} \
 				${TUTORIAL} $dataset 
 		fi
