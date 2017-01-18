@@ -148,6 +148,7 @@ for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_sele
   echo $name
   hadd tmp/${name}_chain.root tmp/${name}_*_chain.root
   filelist="$filelist tmp/${name}_chain.root"
+  python python/reassociate.py tmp/${name}_chain.root
 done
 #hadd tmp/s_chain.root tmp/s_*_chain.root
 #hadd tmp/d_chain.root tmp/d_*_chain.root
