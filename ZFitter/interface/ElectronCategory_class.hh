@@ -63,6 +63,7 @@ public:
 	//inline void SetExternalFile(TString fileName){_extFileName=fileName;};
 	//private:
 	std::set<TString> GetBranchNameNtuple(TString region); ///< returns the list of the branch names used by the cuts
+	std::vector<TString> GetBranchNameNtupleVec(TString region); ///< returns a vector for PyROOT
 
 private:
 	TString GetBranchNameRooFit(TString region);

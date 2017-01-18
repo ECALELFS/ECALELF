@@ -1528,3 +1528,10 @@ std::set<TString> ElectronCategory_class::GetBranchNameNtuple(TString region)
 #endif
 	return branchNames;
 }
+
+std::vector<TString> ElectronCategory_class::GetBranchNameNtupleVec(TString region)
+{
+	auto ret = GetBranchNameNtuple(region);
+	return std::vector<TString>(ret.begin(), ret.end());
+}
+
