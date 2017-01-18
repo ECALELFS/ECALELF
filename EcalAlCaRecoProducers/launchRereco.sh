@@ -37,7 +37,7 @@ do
 		esac
 	done
 
-	for CHECK in '' 
+	for CHECK in --check
 	do
 		case $tagfile in 
 			*/Cal_*_ref.py)

@@ -7,7 +7,7 @@ jsonName=DCSONLY
 jsonName=271036-284044_23Sep2016_v1
 
 
-#CHECK=--check
+CHECK=--check
 #CHECK=--createOnly
 
 
