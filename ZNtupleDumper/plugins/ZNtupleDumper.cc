@@ -1430,7 +1430,8 @@ void ZNtupleDumper::TreeSetSingleSCVar(const reco::SuperCluster& sc, int index)
 		sumE    += oneHit->energy();
 	}
 	avgLCSC[index] = sumLC_E / sumE;
-
+	
+	gainSeedSC[index]=0;
 	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain6)) gainSeedSC[index] |= 0x01;
 	if(seedRecHit->checkFlag(EcalRecHit::kHasSwitchToGain1)) gainSeedSC[index] |= 0x02;
 
