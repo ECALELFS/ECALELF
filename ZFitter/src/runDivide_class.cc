@@ -1,4 +1,5 @@
 #include "../interface/runDivide_class.hh"
+#include "TTreeFormula.h"
 #define DEBUG
 #include <cassert>
 #ifdef DEBUG
@@ -6,6 +7,12 @@
 #endif
 
 runDivide_class::runDivide_class(void)
+{
+}
+
+runDivide_class::runDivide_class(TCut region, std::set<TString> activeBranchList) :
+	_region(region),
+	_activeBranchList(activeBranchList)
 {
 }
 
@@ -79,13 +86,33 @@ void runDivide_class::LoadRunEventNumbers(TChain *tree, std::string runNumber_br
 
 	//loop over tree and count the events per run
 	tree->GetEntries();
+
+	for(std::set<TString>::const_iterator itr = _activeBranchList.begin();
+	        itr != _activeBranchList.end();
+	        itr++) {
+		std::cout << "[STATUS] Enabling branch: " << *itr << std::endl;
+		tree->SetBranchStatus(*itr, 1);
+	}
+
+	TTreeFormula * selector = (_region != "") ? new TTreeFormula("region", _region, tree) : NULL;
+	std::cout << "[STATUS] selecting events in region " << _region << std::endl;
+
+	Long64_t treenumber = -1;
 	for(Long64_t ientry = 0; ientry < tree->GetEntriesFast(); ++ientry) {
 		tree->GetEntry(ientry);
-		auto itr = _runMap.find(runNumber);
-		if( itr == _runMap.end()) {
-			_runMap.insert(itr, std::make_pair(runNumber, line(runTime, runNumber)));
-		} else {
-			itr->second.update(runTime);
+		if(tree->GetTreeNumber() != treenumber)
+		{
+			treenumber = tree->GetTreeNumber();
+			selector->UpdateFormulaLeaves();
+		}
+		if(selector != NULL && selector->EvalInstance() == true)
+		{
+			auto itr = _runMap.find(runNumber);
+			if( itr == _runMap.end()) {
+				_runMap.insert(itr, std::make_pair(runNumber, line(runTime, runNumber)));
+			} else {
+				itr->second.update(runTime);
+			}
 		}
 	}
 	tree->ResetBranchAddresses();

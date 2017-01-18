@@ -2,6 +2,7 @@
 #define runDivide_class_hh
 
 #include <TChain.h>
+#include <TCut.h>
 
 #include <iostream>
 #include <fstream>
@@ -27,6 +28,7 @@ class runDivide_class
 	typedef UInt_t time_t;
 public:
 	runDivide_class(void);
+	runDivide_class(TCut region, std::set<TString> activeBranchList);
 	~runDivide_class(void);
 
 	/*==================== define a sub-class to better handle some operations*/
@@ -85,6 +87,8 @@ public:
 
 private:
 
+	TCut _region;
+	std::set<TString> _activeBranchList;
 	std::set<run_t> limits; // set of limits given by source file
 
 	void ReadRunRangeLimits(std::string fileName); ///< read the file with the run limits: run ranges cannot go across the limits
