@@ -351,8 +351,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			else if(string1 == "6") string1 = "1";
 			else if(string1 == "1") string1 = "2";
 
-			TCut cutEle1("gainEle_ele1 ==" + string1);
-			TCut cutEle2("gainEle_ele2 ==" + string1);
+			TCut cutEle1("gainSeedSC_ele1 ==" + string1);
+			TCut cutEle2("gainSeedSC_ele2 ==" + string1);
 
 			if(string.Contains("SingleEle"))
 				cutSet.insert(TString(cutEle1 || cutEle2));
