@@ -4,6 +4,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 import subprocess
 import copy
 
+newRegression = True
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 from Calibration.EcalAlCaRecoProducers.customRereco import EcalRecal 
 
@@ -187,8 +188,9 @@ process.load("Calibration.EcalAlCaRecoProducers.PUDumper_cfi")
 # Tree production
 process.load('Calibration.ZNtupleDumper.ntupledumper_cff')
 
-#process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
-#process.prePatSequence*=process.regressionApplication
+if(newRegression):
+    process.load('EgammaAnalysis.ElectronTools.regressionApplication_cff')
+    process.prePatSequence*=process.regressionApplication
 
 
 #80X_mcRun2_asymptotic_2016_TrancheIV_v7
@@ -874,8 +876,9 @@ for modifier in process.slimmedECALELFElectrons.modifierConfig.modifications:
 if(options.type=="ALCARECOSIM"):
     process.zNtupleDumper.recHitCollectionES = cms.InputTag("reducedEcalRecHitsES")
 
-#from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
-#process = regressionWeights(process)
+if(newRegression):
+    from EgammaAnalysis.ElectronTools.regressionWeights_cfi import regressionWeights
+    process = regressionWeights(process)
 
 ############################
 ## Dump the output Python ##

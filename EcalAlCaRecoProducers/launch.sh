@@ -18,11 +18,11 @@ tag_Prompt=config/reRecoTags/80X_dataRun2_Prompt_v14.py
 tag_Rereco=config/reRecoTags/80X_dataRun2_2016SeptRepro_v6.py
 
 fileList=alcareco_datasets.dat
-PERIOD=MORIOND2017
+PERIOD=MORIOND17
 
 IFS=$'\n'
 datasetsData=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`)
-datasetsMC=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`)
+datasetsMC=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD}," | grep SIM`)
 # set IFS to newline in order to divide using new line the datasets
 
 
