@@ -318,6 +318,7 @@ if [ -n "${MULTIREGION}" ];then
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
   c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.png");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}${REGIONGREP}.pdf");
   delete c;
 
 EOF
@@ -329,6 +330,7 @@ EOF
   //------------------------------ 
   c = var_Stability(filenameList, labelList, "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName");
   c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.png");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.pdf");
   delete c;
 
 EOF
@@ -478,6 +480,7 @@ fi
   //------------------------------ 
   c = var_Stability("tmp/tmpFile.dat", "${region}",$yMin,$yMax, $color, $column, "$xVarName", "$yVarName", "$tableTwo", "$titleOne", "$titleTwo");
   c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.png");
+  c->SaveAs("${outDirImgData}/${yVar}_vs_${xVar}-${region}.pdf");
   delete c;
 
 EOF
