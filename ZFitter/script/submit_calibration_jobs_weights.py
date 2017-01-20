@@ -42,7 +42,7 @@ ntuplelist = [
 "DoubleEG-Run2016E-ZSkim-Prompt-v2-weightsReco-276830-277420.root",
 "DoubleEG-Run2016F-ZSkim-Prompt-v1-weightsReco-277820-278808.root",
 "DoubleEG-Run2016G-ZSkim-Prompt-v1-weightsReco-278817-280385.root",
-"DoubleEG-Run2016H-ZSkim-Prompt-v2-weightsReco-281207-284035.root",
+#"DoubleEG-Run2016H-ZSkim-Prompt-v2-weightsReco-281207-284035.root",
 "DoubleEG-Run2016H-ZSkim-Prompt-v3-weightsReco-284036-284068.root",
 "SingleElectron-Run2016B-WSkim-Prompt_v2-weightsReco-273150-275376.root",
 "SingleElectron-Run2016C-WSkim-Prompt_v2-weightsReco-275420-276283.root",
@@ -50,7 +50,7 @@ ntuplelist = [
 "SingleElectron-Run2016E-WSkim-Prompt-v2-weightsReco-276830-277420.root",
 "SingleElectron-Run2016F-WSkim-Prompt-v1-weightsReco-277820-278808.root",
 "SingleElectron-Run2016G-WSkim-Prompt-v1-weightsReco-278817-280385.root",
-"SingleElectron-Run2016H-WSkim-Prompt-v2-weightsReco-281207-284035.root",
+#"SingleElectron-Run2016H-WSkim-Prompt-v2-weightsReco-281207-284035.root",
 "SingleElectron-Run2016H-WSkim-Prompt-v3-weightsReco-284036-284068.root"
 ]
 
@@ -62,7 +62,7 @@ folderlist=[
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016E-ZSkim-Prompt-v2-weightsReco/276830-277420/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016F-ZSkim-Prompt-v1-weightsReco/277820-278808/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016G-ZSkim-Prompt-v1-weightsReco/278817-280385/271036_284044-23Sep2016/newNtuples/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016H-ZSkim-Prompt-v2-weightsReco/281207-284035/271036_284044-23Sep2016/newNtuples/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016H-ZSkim-Prompt-v2-weightsReco/281207-284035/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016H-ZSkim-Prompt-v3-weightsReco/284036-284068/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016B-WSkim-Prompt_v2-weightsReco/273150-275376/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016C-WSkim-Prompt_v2-weightsReco/275420-276283/271036_284044-23Sep2016/newNtuples/",
@@ -70,7 +70,7 @@ folderlist=[
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016E-WSkim-Prompt-v2-weightsReco/276830-277420/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016F-WSkim-Prompt-v1-weightsReco/277820-278808/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016G-WSkim-Prompt-v1-weightsReco/278817-280385/271036_284044-23Sep2016/newNtuples/",
-"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016H-WSkim-Prompt-v2-weightsReco/281207-284035/271036_284044-23Sep2016/newNtuples/",
+#"/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016H-WSkim-Prompt-v2-weightsReco/281207-284035/271036_284044-23Sep2016/newNtuples/",
 "/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/SingleElectron-Run2016H-WSkim-Prompt-v3-weightsReco/284036-284068/271036_284044-23Sep2016/newNtuples/"
 ]
 
