@@ -1645,6 +1645,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 
 	//ciao
 
+	/*
 	for(int i = 0; i < nBins; ++i) {
 		gStyle->SetOptFit(1111);
 
@@ -1656,6 +1657,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 		//
 		//  h_Cvl[i] -> Write();
 	}
+	*/
 
 	o -> Close();
 
