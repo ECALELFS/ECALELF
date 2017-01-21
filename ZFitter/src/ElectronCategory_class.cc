@@ -49,14 +49,6 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 		if(isMC && cut_string.Contains("lumiBlock")) continue;
 		//      std::cout << "[DEBUG] Skipping runNumber cut for MC " << isMC << "\t" << string << std::endl;
 
-		if(isMC == false && (corrEle || _corrEle)) {
-			//std::cerr << "[INFO] scaleEle for GetCut" << std::endl;
-			cut_string.ReplaceAll(energyBranchName + "_ele1", energyBranchName + "_ele1 * scaleEle_ele1");
-			cut_string.ReplaceAll(energyBranchName + "_ele2", energyBranchName + "_ele2 * scaleEle_ele2");
-			TString invMassName = energyBranchName;
-			invMassName.ReplaceAll("energySCEle", "invMass_SC");
-			cut_string.ReplaceAll(invMassName, invMassName + "*sqrt(scaleEle_ele1 * scaleEle_ele2)");
-		}
 		// se contiene solo ele2 rimuovi, altrimenti sostituisci
 		if(nEle != 0) {
 			if(nEle == 1) {
@@ -349,7 +341,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TString string1 = Objstring1->GetString();
 			if(string1 == "12") string1 = "0";
 			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "2";
+			else if(string1 == "1") string1 = "3"; //to-do: the definition is with a |=
 
 			TCut cutEle1("gainSeedSC_ele1 ==" + string1);
 			TCut cutEle2("gainSeedSC_ele2 ==" + string1);
