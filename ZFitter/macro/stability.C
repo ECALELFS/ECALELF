@@ -48,7 +48,7 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
   bool isDeltaG=false;
   std::vector<TString> xLabels;
   double rMin_=10, rMax_=-10;
-  TGraphErrors deltaM_data_graph(100), deltaM_MC_graph(100), deltaG_graph(100);
+  TGraphErrors deltaM_data_graph(200), deltaM_MC_graph(200), deltaG_graph(200);
   TH1F deltaM_data_hist("deltaM_data_hist", "#Delta m [GeV/c^{2}]",
 			1000, -5, 5);
 
@@ -130,7 +130,7 @@ TGraphErrors *columns_vs_var(TString filename, TString region_, int column, doub
 #endif
       //      deltaM_data_graph.GetXaxis()->SetBinLabel(i_point, rangeMin+"-"+rangeMax);
       i_point++;
-      if(i_point>99){
+      if(i_point>199){
 	std::cerr << "[ERROR] maximum number of points reached" << std::endl;
 	return NULL;
       }

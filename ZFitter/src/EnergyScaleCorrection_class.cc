@@ -15,7 +15,7 @@
 #include <sstream>
 
 //#define DEBUG
-//#define PEDANTIC_OUTPUT
+#define PEDANTIC_OUTPUT
 
 EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed, bool doScale_, bool doSmearings_):
 	doScale(doScale_), doSmearings(doSmearings_),
@@ -151,17 +151,13 @@ float EnergyScaleCorrection_class::getScaleOffset(unsigned int runNumber, bool i
  */
 void EnergyScaleCorrection_class::ReadFromFile(TString filename)
 {
-#ifdef PEDANTIC_OUTPUT
 	std::cout << "[STATUS] Reading energy scale correction  values from file: " << filename << std::endl;
-#endif
-	std::cout << "[STATUS] Reading energy scale correction  values from file: " << filename << std::endl;
-
 	//std::ifstream Ccufile(edm::FileInPath(Ccufilename).fullPath().c_str(),std::ios::in);
-#ifdef CMSSW
-	std::ifstream f_in(edm::FileInPath(filename).fullPath().c_str());
-#else
+	//#ifdef CMSSW
+	//std::ifstream f_in(edm::FileInPath(filename).fullPath().c_str()); //The ifdef is always true
+	//#else
 	std::ifstream f_in(filename.Data());
-#endif
+	//#endif
 	if(!f_in.good()) {
 		std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
 		exit(1);
@@ -240,13 +236,13 @@ void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, in
 	corr.Emean_err    = err_Emean;
 	smearings[cat] = corr;
 
-#ifdef PEDANTIC_OUTPUT
-#ifndef CMSSW
-	std::cout << "[INFO:smearings] " << cat << corr << std::endl;
-#else
-	edm::LogInfo("[INFO:smearings] ") << cat << corr;
-#endif
-#endif
+	//#ifdef PEDANTIC_OUTPUT
+	//#ifndef CMSSW
+	//std::cout << "[INFO:smearings] " << cat << corr << std::endl;
+	//#else
+	//	edm::LogInfo("[INFO:smearings] ") << cat << corr;
+	//#endif
+	//#endif
 
 	return;
 }
@@ -432,13 +428,13 @@ correctionCategory_class::correctionCategory_class(TString category_)
 #ifdef DEBUG
 	std::cout << "[DEBUG] correctionClass defined for category: " << category << std::endl;
 #endif
-	// default values (corresponding to an existing category -- the worst one)
+	// default values
 	runmin = 0;
 	runmax = 999999;
 	etamin = 2;
 	etamax = 7;
 	r9min = -1;
-	r9max = 0.94;
+	r9max = 2; //at the end of step1 you have no r9 categories: if you don't find any r9 boundaries, then r9 can be whatever
 	etmin = -1;
 	etmax = 99999.;
 
