@@ -345,8 +345,8 @@ if [ -n "${STEP1}" ];then
 	#save root files with step1 corrections
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
 	   --saveRootMacro --corrEleType HggRunEta \
-	    --corrEleFile ${outDirTable}/${outFile} || exit 1
-	
+	    --corrEleFile ${outDirTable}/${outFile/_scales.dat/} || exit 1 #EnergyScaleCorrection_class already puts at the end of the file name: _scales.dat
+
 	mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/    
 	echo "[STATUS] Step 1 done"
 	echo "time dep-scale corrections built from "${outDirTable}/${outFile}
@@ -360,7 +360,7 @@ if [ -n "${STEP1}" ];then
 ******************************************************************************
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile}  \
 	    $isOdd $updateOnly --selection=${selection}  --invMass_var ${invMass_var} --commonCut $commonCut \
-	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
+	    --zFit --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
 	    --outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img \
 	    |tee ${outDirData}/log/`basename ${outFile} .dat`.log || exit 1
 	
@@ -373,7 +373,7 @@ if [ -n "${STEP1}" ];then
 	#save root files with step1 corrections
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}   \
 	    --saveRootMacro --corrEleType HggRunEta \
-	    --corrEleFile ${outDirTable}/${outFile} || exit 1
+	    --corrEleFile ${outDirTable}/${outFile/_scales.dat/} || exit 1
 	
 	mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/
 ******************************************************************************"
@@ -468,6 +468,7 @@ echo "Initial scale vs run plots in ${outDirData}/step1/img/stability/before_run
     cp ${runRangesFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/  
     ##Inial summary
     mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/before_run_corr/runNumber/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
+    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/before_run_corr/runNumber/*.pdf ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
     ###Final summary (after applying step1 corrections)
     mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/runNumber/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/ 
 
