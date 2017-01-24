@@ -19,6 +19,7 @@ tag_Rereco=config/reRecoTags/80X_dataRun2_2016SeptRepro_v6.py
 
 fileList=alcareco_datasets.dat
 PERIOD=MORIOND17
+#PERIOD=MORIOND2017
 
 IFS=$'\n'
 datasetsData=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|' | grep "${PERIOD},"`)
