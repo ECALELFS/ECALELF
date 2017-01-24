@@ -16,5 +16,6 @@ RerecoGlobalTag = GlobalTag.clone(
         cms.PSet(record = cms.string("ESEEIntercalibConstantsRcd"),
                  tag = cms.string("ESEEIntercalibConstants_LG_offline_data_default"),
                  connect = cms.untracked.string("frontier://FrontierProd/CMS_CONDITIONS"),
+                 ),
         ),
     )
