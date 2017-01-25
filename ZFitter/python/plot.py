@@ -1,5 +1,5 @@
 import ROOT
-from ElectronCategory import cutter
+from ElectronCategory import cutter,defaultEnergyBranch
 
 colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan]
 ndraw_entries = 1000000000
@@ -7,10 +7,15 @@ ndraw_entries = 1000000000
 hist_index = 0
 
 def GetTH1(chain, branchname, isMC, binning="", category="", selection="", label="",
-		 usePU=True, smear=False, scale=False, useR9Weight=False):
+		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
 	global hist_index
 	#enable only used branches
 	chain.SetBranchStatus("*", 0)
+	if energyBranchName:
+		cutter.energyBranchName=energyBranchName
+	else:
+		cutter.energyBranchName=defaultEnergyBranch
+		
 	branchlist = cutter.GetBranchNameNtupleVec(category)
 	for b in branchlist:
 		print "[Status] Enabling branch:", b
@@ -54,14 +59,6 @@ def AsList(arg):
 		return [arg,]
 	except:
 		return arg
-
-def NormHists(data, signal):
-
-	try:
-		ndatas = len(data)
-		data_hists = data
-	except TypeError:
-		data_hists = [data]
 
 def ColorMCs(mcs):
 	mc_hists = AsList(mcs)
@@ -123,9 +120,9 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 	if(ratio):
 		print "[WARNING] ratio not implemented"
 
-	c = ROOT.TCanvas("c", "c", 600, 600)
+	c = ROOT.TCanvas("c", "c", 600, 480)
 
-	maximum = max( max([h.GetMaximum() for h in  data_list]), max([h.GetMaximum() for h in mc_list]))
+	maximum = max( [h.GetMaximum() for h in  data_list] + [h.GetMaximum() for h in mc_list])
 	if(logy):
 		minimum = 0.001
 		maximum *= 5
@@ -134,10 +131,16 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		minimum = 0.0
 		maximum *= 1.2
 	
-	data0 = data_list[0]
-	data0.SetXTitle(xlabel)
-	data0.SetYTitle(ylabel + " /(%.2f %s)" %(data0.GetBinWidth(2), ylabel_unit))
-	data0.GetYaxis().SetRangeUser(minimum, maximum)
+	if data_list: 
+		h0 = data_list[0]
+	elif mc_list:
+		h0 = mc_list[0]
+	else:
+		raise Exception("no histograms")
+
+	h0.SetXTitle(xlabel)
+	h0.SetYTitle(ylabel + " /(%.2f %s)" %(h0.GetBinWidth(2), ylabel_unit))
+	h0.GetYaxis().SetRangeUser(minimum, maximum)
 
 	same = ""
 	for h in data_list:

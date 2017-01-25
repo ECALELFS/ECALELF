@@ -20,6 +20,8 @@ adding the friends properly.
 To work with ntuples you can do (see practical example below):
 \verbatim
 root -l tmp/myConfigFile/d_chain.root tmp/myConfigFile/s_chain.root
+TTree * data = (TTree *) _file0->Get("selected");
+TTree * signalA = (TTree *) _file1->Get("selected");
 data    -> Draw("*");
 signalA -> Draw("*");
 \endverbatim
@@ -31,9 +33,27 @@ macro/standardDataMC.py
 
 In the following you can find an example of production of data/MC plots with a config file with 
 Moriond17 new regression
+
+Simple:
+
 \verbatim
 ./script/GenRootChains.sh -f data/validation/Moriond17_newRegr_v2.dat
-python macro/standardDataMC.py  invMass invMass_ECAL_ele -d tmp/Moriond17_newRegr_v2/d_chain.root -s tmp/Moriond17_newRegr_v2/s2_chain.root
+python macro/standardDataMC.py absEta_0_1-gold "(160,80,100)" -d tmp/Moriond17_oldRegr/d_chain.root,"Moriond Data" -s tmp/Moriond17_oldRegr/s1_chain.root,"Moriond17 Madgraph MC"
+\endverbatim
+
+\verbatim
+./script/GenRootChains.sh -f data/validation/Moriond17_oldRegr.dat -f data/validation/Winter_2016_reReco_v1.dat
+
+category="absEta_0_1-gold-EtLeading_32-EtSubLeading_20-noPF-isEle-eleID_cutBasedElectronID|Spring15|25ns|V1|standalone|loose"
+binning="(160,80,100)"
+
+WinterPow=tmp/Winter_2016_reReco_v1/s1_chain.root,"Winter2016 Powheg MC",invMass_SC_corr,energySCEle_corr
+WinterMadgraph=tmp/Winter_2016_reReco_v1/s2_chain.root,"Winter2016 Madgraph MC",invMass_SC_corr,energySCEle_corr
+MoriondMadgraph=tmp/Moriond17_oldRegr/s1_chain.root,"Moriond17 Madgraph MC",invMass_ECAL_ele,energy_ECAL_ele
+MoriondHerwig=tmp/Moriond17_oldRegr/s2_chain.root,"Moriond17 Herwig MC",invMass_ECAL_ele,energy_ECAL_ele
+MoriondData=tmp/Moriond17_oldRegr/d_chain.root,"Moriond17 Data",invMass_ECAL_ele
+
+python macro/standardDataMC.py $category $binning -s "$WinterPow" -s "$WinterMadgraph" -s "$MoriondMadgraph" -d "$MoriondData" -x InvMass -n WinterMoriondComp_InvMass
 \endverbatim
 
 
