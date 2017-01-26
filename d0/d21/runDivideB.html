@@ -42,13 +42,14 @@
 <div class="title">How to produce runRanges .dat files </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The idea is to produce a file with the run ranges with 100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
+<div class="textblock"><p>The idea is to produce a file with the run ranges with ~100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
 <p>The run ranges:</p>
 <ul>
 <li>put in the data/runRanges/runRangeLimits.dat the runNumber that should start a new run range (TSs for example)</li>
 <li>run the command <div class="fragment"><div class="line">./bin/ZFitter.exe -f file.dat --runDivide </div>
 </div><!-- fragment --></li>
 </ul>
+<p>This way you will be using the default commonCut and default eleID. The commonCut and eleID options can be used to pre-select the number of events in the run range.</p>
 <p>The ZFitter.exe options are: </p>
 <div class="fragment"><div class="line">--runDivide                                  execute the run division</div>
 <div class="line">--nEvents_runDivide arg (=100000)            Minimum number of events in a </div>
