@@ -1,26 +1,16 @@
 import ROOT
-from ElectronCategory import cutter,defaultEnergyBranch
+from ElectronCategory import cutter,defaultEnergyBranch,ReduceFormula
 
 colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan]
 ndraw_entries = 1000000000
 
 hist_index = 0
 
-def GetTH1(chain, branchname, isMC, binning="", category="", selection="", label="",
+def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
 	global hist_index
 	#enable only used branches
-	chain.SetBranchStatus("*", 0)
-	if energyBranchName:
-		cutter.energyBranchName=energyBranchName
-	else:
-		cutter.energyBranchName=defaultEnergyBranch
-		
-	branchlist = cutter.GetBranchNameNtupleVec(category)
-	for b in branchlist:
-		print "[Status] Enabling branch:", b
-		chain.SetBranchStatus(b.Data(), 1)
-	chain.SetBranchStatus(branchname, 1)
+	ActivateBranches(chain, branchname, category, energyBranchName)
 
 	selection = ROOT.TCut("")
 	if(category):
@@ -34,8 +24,6 @@ def GetTH1(chain, branchname, isMC, binning="", category="", selection="", label
 	if(useR9Weight):
 		print "[WARNING] R9weight not implemented"
 
-
-
 	weights = ROOT.TCut("")
 	if(isMC):
 		chain.SetBranchStatus("mcGenWeight", 1)
@@ -43,7 +31,6 @@ def GetTH1(chain, branchname, isMC, binning="", category="", selection="", label
 		if(usePU):
 			chain.SetBranchStatus("puWeight", 1)
 			weights *= "puWeight"
-	
 
 	histname = "hist%d" % hist_index
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
@@ -53,12 +40,39 @@ def GetTH1(chain, branchname, isMC, binning="", category="", selection="", label
 	hist_index += 1
 	return h
 
+def ActivateBranches(chain, branchnames, category, energyBranchName):
+	chain.SetBranchStatus("*", 0)
+	if energyBranchName:
+		cutter.energyBranchName=energyBranchName
+	else:
+		cutter.energyBranchName=defaultEnergyBranch
+		
+	if category:
+		branchlist = cutter.GetBranchNameNtupleVec(category)
+	else:
+		branchlist = []
+	for b in branchlist:
+		print "[Status] Enabling branch:", b
+		chain.SetBranchStatus(b.Data(), 1)
+	for branchname in AsList(branchnames):
+		for br in ReduceFormula(branchname):
+			if not br: continue
+			print "[Status] Enabling branch:", br
+			chain.SetBranchStatus(br, 1)
+
 def AsList(arg):
 	try:
 		ROOT.TObject(arg)
 		return [arg,]
 	except:
-		return arg
+		if(isinstance(arg,str)):
+			return [arg]
+		else:
+			try:
+				iter(arg)
+				return arg
+			except:
+				return [arg]
 
 def ColorMCs(mcs):
 	mc_hists = AsList(mcs)
@@ -107,9 +121,6 @@ def Normalize(data, mc):
 			h.Scale(1./h.Integral())
 	else:
 		print "[WARNING] No normalization defind for (ndata=%d, nmc%d)" % (ndata, nmc)
-		
-	
-
 
 def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		ylabel_unit="", logy=False, ratio=True):
