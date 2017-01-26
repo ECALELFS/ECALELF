@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>ECALELF: Page Index</title>
+<title>ECALELF: EoP calibration instructions</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -20,27 +20,26 @@
   </div>
 </div>
 <div class="contents">
-<h1>Related Pages</h1>Here is a list of all related documentation pages:<ul>
-<li><a class="el" href="page2.html">Instructions for ALCARAW and ALCARECO production</a>
-</li>
-<li><a class="el" href="pAlcarecoProduction.html">AlCaReco Production from AlCaRaw</a>
-</li>
-<li><a class="el" href="Devel.html">Guide for ECALELF development</a>
-</li>
-<li><a class="el" href="EcalAlcarecoProducers.html">Package Calibration/EcalAlCaRecoProducers</a>
-</li>
-<li><a class="el" href="pFindInfos.html">How to find infos</a>
-</li>
-<li><a class="el" href="page5.html">Rereco production</a>
-</li>
-<li><a class="el" href="_testingLocally.html">Run locally to test</a>
-</li>
-<li><a class="el" href="EoPcalibration.html">EoP calibration instructions</a>
-</li>
-<li><a class="el" href="runDivideB.html">How to produce runRanges .dat files</a>
-</li>
-<li><a class="el" href="todo.html">Todo List</a>
-</li>
+
+
+<h1><a class="anchor" id="EoPcalibration">EoP calibration instructions </a></h1><p>for the E/p calibration, run with: (from the ZFitter directory)</p>
+<div class="fragment"><pre class="fragment">ZFitter.exe -f data/validation/EoverPcalibration.dat --EOverPCalib --doEB
+</pre></div><p> Parameters:</p>
+<ul>
+<li>inputFileDeadXtal= Add dead Channel to evaluate the effect on the IC</li>
+<li>isMiscalib = Miscalibration 5% option</li>
+<li>isSaveEPDistribution = save E/p pdf</li>
+<li>isEPselection = apply E/p selection setted in the .cc</li>
+<li>isR9selection = apply R9 selection &gt; 0.9</li>
+<li>isMCTruth = use calibration E/E_{Truth}</li>
+<li>outputFile = output file</li>
+<li>numberOfEvents = -1 (all statistic)</li>
+<li>useZ = 1 (use Z event) 0 (no Z event in IC procedure)</li>
+<li>useW = 1 (use W event) 0 (no W event in IC procedure)</li>
+<li>splitStat = 1 (split odd and even event) 0 (no split)</li>
+<li>nLoops = number of L3 iteration</li>
+<li>doEB: only barrel</li>
+<li>doEE: only endcaps </li>
 </ul>
 </div>
 <hr size="1"/><address style="text-align: right;"><small>Generated on 26 Jan 2017 for ECALELF by&nbsp;

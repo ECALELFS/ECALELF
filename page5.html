@@ -13,9 +13,9 @@
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
 </div>
@@ -24,23 +24,26 @@
 
 <h1><a class="anchor" id="page5">Rereco production </a></h1><h2><a class="anchor" id="RERECO">
 RERECO</a></h2>
-<p>The ReReco and the ntuple production can be run with the script ALCARAW_RECO/scripts/RerecoQuick.sh from the directory ALCARAW_RECO</p>
+<p>The ReReco and the ntuple production can be run with the script EcalAlCaRecoProducers/scripts/RerecoQuick.sh from the directory EcalAlCaRecoProducers</p>
 <h3><a class="anchor" id="RERECO_inputFiles">
 Input files</a></h3>
 <ol type="1">
-<li>ALCARAW_RECO/config/reRecoTags/tag_name.py: is the file where the GT and the list of tags to be used for the rereco and the ntuple production have to be specified. "tag_name" is the name that will be automatically assigned to all the directories created for the rereco and the ntuples (the crab directory in ALCARAW_RECO/prod_alcarereco and the directories in eos with the reco files and the ntuples). <b>More</b> info in <a class="el" href="page5.html#TAGFILES">TAG FILES</a></li>
+<li>EcalAlCaRecoProducers/config/reRecoTags/tag_name.py: is the file where the GT and the list of tags to be used for the rereco and the ntuple production have to be specified. <b>"tag_name"</b> is the name that will be automatically assigned to all the directories created for the rereco and the ntuples (the crab directory in EcalAlCaRecoProducers/prod_alcarereco and the directories in eos with the reco files and the ntuples). <b>More</b> info in <a class="el" href="page5.html#TAGFILES">TAG FILES</a></li>
 <li>alcaraw_datasets.dat is the file with the list of the available alcaraw files</li>
 </ol>
 <h3><a class="anchor" id="RERECO_outputFiles">
 Output files</a></h3>
 <p>1. alcarereco_datasets.dat is the file with the list of all the rerecos already done</p>
 <p>2. ntuple_datasets.dat is the file with the list of all the ntuples already produced These two files are updated automatically with a line that summarizes all the relevant information about the rereco/ntuples (run range, dataset name, alcaraw name, storage_element, user_remote_dir_base, tag_name and, for ntuples, if they are produced from alcareco or alcarecosim and ...) when the script RerecoQuick.sh is launched</p>
-<p>3. The rereco files produced are stored in /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/8TeV/tag_name</p>
-<p>4. The final merged ntuple is stored in: /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/8TeV/ALCARERECO/tag_name/</p>
+<p>3. The rereco files produced are stored in </p>
+<div class="fragment"><pre class="fragment">
+   /eos/cms/store/group/alca_ecalcalib/ecalelf/alcarereco/13TeV/tag_name
+</pre></div><p>4. The final merged ntuple is stored in: /eos/cms/store/group/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/tag_name/</p>
 <h3><a class="anchor" id="RERECO_instructions">
 Instructions</a></h3>
 <ol type="1">
-<li>create the tag_name.py in ALCARAW_RECO/config/reRecoTags directory Se more detailes below, in section "TAG FILE"</li>
+<li><b>CREATE</b> the tag_name.py in EcalAlCaRecoProducers/config/reRecoTags directory <br/>
+ Se more detailes below, in section <a class="el" href="page5.html#TAGFILES">TAG FILES</a></li>
 <li>check the syntax of the tag_name.py file <div class="fragment"><pre class="fragment"></pre></div></li>
 <li>commit the file in GITHUB: <div class="fragment"><pre class="fragment">git add config/reRecoTags/tag_name.py
 git commit -m <span class="stringliteral">&quot;....&quot;</span> config/reRecoTags/tag_name.py
@@ -49,7 +52,7 @@ git commit -m <span class="stringliteral">&quot;....&quot;</span> config/reRecoT
 <li>Run the script RerecoQuick.sh <div class="fragment"><pre class="fragment">   ./scripts/RerecoQuick.sh -p period -t config/reRecoTags/tag_name.py --json=jsonFile.txt --json_name={runMin}-{runMax}_{prompt,rereconame}_{jsonVersion} 
 </pre></div> where:<ul>
 <li>config/reRecoTags/tag_name.py is the configuration file defined in step1</li>
-<li>jsonFile.txt is the version of the json file to be used</li>
+<li>jsonFile.txt is the version of the json file to be used (<a class="el" href="pFindInfos.html#pFindJson">Where to find the golden json</a>)</li>
 <li>json_name is the name that ECALELF gives to the json file used for the ntuple production.</li>
 </ul>
 </li>
@@ -78,7 +81,7 @@ Script options</a></h3>
 <h2><a class="anchor" id="TAGFILES">
 TAG FILES</a></h2>
 <p>To run the Rereco with a new set of conditions it is necessary to have a configuration file with the tags.</p>
-<p>An example of a configuration file can be found in Calibration/ALCARAW_RECO/config/reRecoTags/test.py</p>
+<p>An example of a configuration file can be found in Calibration/EcalAlCaRecoProducers/config/reRecoTags/test75x.py</p>
 <p>Here an example: </p>
 <div class="fragment"><pre class="fragment"><span class="preprocessor">##############################################################</span>
 <span class="preprocessor"></span><span class="keyword">import</span> FWCore.ParameterSet.Config as cms
@@ -117,7 +120,7 @@ RerecoGlobalTag = cms.ESSource(<span class="stringliteral">&quot;PoolDBESSource&
 </pre></div><p>The convention is to name these configuration files in this way: tag_name.py</p>
 <p>So, for the rereco production follow the steps below: </p>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Sep 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 26 Jan 2017 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

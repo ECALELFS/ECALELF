@@ -13,28 +13,29 @@
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
 </div>
 <div class="contents">
 
 
-<h1><a class="anchor" id="runDivideB">How to produce runRanges .dat files </a></h1><p>The idea is to produce a file with the run ranges with 100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
+<h1><a class="anchor" id="runDivideB">How to produce runRanges .dat files </a></h1><p>The idea is to produce a file with the run ranges with ~100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
 <p>The run ranges:</p>
 <ul>
 <li>put in the data/runRanges/runRangeLimits.dat the runNumber that should start a new run range (TSs for example)</li>
 <li>run the command <div class="fragment"><pre class="fragment"> ./bin/ZFitter.exe -f file.dat --runDivide 
 </pre></div></li>
 </ul>
+<p>This way you will be using the default commonCut and default eleID. The commonCut and eleID options can be used to pre-select the number of events in the run range.</p>
 <p>The ZFitter.exe options are: </p>
 <div class="fragment"><pre class="fragment">  --runDivide                                  execute the run division
   --nEvents_runDivide arg (=100000)            Minimum number of events in a 
                                                run range
 </pre></div> </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Sep 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 26 Jan 2017 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

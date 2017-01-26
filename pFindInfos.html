@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>ECALELF: Page Index</title>
+<title>ECALELF: How to find infos</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -20,29 +20,20 @@
   </div>
 </div>
 <div class="contents">
-<h1>Related Pages</h1>Here is a list of all related documentation pages:<ul>
-<li><a class="el" href="page2.html">Instructions for ALCARAW and ALCARECO production</a>
-</li>
-<li><a class="el" href="pAlcarecoProduction.html">AlCaReco Production from AlCaRaw</a>
-</li>
-<li><a class="el" href="Devel.html">Guide for ECALELF development</a>
-</li>
-<li><a class="el" href="EcalAlcarecoProducers.html">Package Calibration/EcalAlCaRecoProducers</a>
-</li>
-<li><a class="el" href="pFindInfos.html">How to find infos</a>
-</li>
-<li><a class="el" href="page5.html">Rereco production</a>
-</li>
-<li><a class="el" href="_testingLocally.html">Run locally to test</a>
-</li>
-<li><a class="el" href="EoPcalibration.html">EoP calibration instructions</a>
-</li>
-<li><a class="el" href="runDivideB.html">How to produce runRanges .dat files</a>
-</li>
-<li><a class="el" href="todo.html">Todo List</a>
-</li>
-</ul>
-</div>
+
+
+<h1><a class="anchor" id="pFindInfos">How to find infos </a></h1><h2><a class="anchor" id="pFindPromptGT">
+How to find the Prompt GT</a></h2>
+<p>Prompt GT is not any more in the file metadata. You need to access the DB to verify the GT used in Prompt recoing the dataset using DAS.</p>
+<p>You can do it from the command line using the following command: </p>
+<div class="fragment"><pre class="fragment">das_client.py --query=<span class="stringliteral">&quot;config dataset=/DoubleEG/Run2015C-EcalUncalZElectron-PromptReco-v1/ALCARECO | grep config.global_tag&quot;</span> | tail -1
+</pre></div><h2><a class="anchor" id="pFindJson">
+Where to find the golden json</a></h2>
+<p>The Golden Json is published by the certification group. Find the relative HN and subscribe if you are a regular user of ECALELF.</p>
+<p>The official json files are put in </p>
+<div class="fragment"><pre class="fragment">
+/afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/
+</pre></div> </div>
 <hr size="1"/><address style="text-align: right;"><small>Generated on 26 Jan 2017 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>

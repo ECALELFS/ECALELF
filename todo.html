@@ -13,9 +13,9 @@
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
   </div>
 </div>
@@ -26,12 +26,17 @@
 <dl>
 <dt>Namespace <a class="el" href="d8/dcc/namespacestd.html">std</a>  </dt>
 <dd><ul>
-<li>move addbranch_pt to private and correct the usage in <a class="el" href="dd/d99/ZFitter_8cpp.html" title="Zee Fit program.">ZFitter.cpp</a></li>
+<li>move addbranch_pt to private and correct the usage in <a class="el" href="dd/d99/ZFitter_8cpp.html" title="General program for Z fit (monitoring, calibration validation).">ZFitter.cpp</a></li>
 <li>move scaler to private </li>
 </ul>
 </dd>
 </dl>
-<p><a class="anchor" id="_todo000002"></a> </p>
+<p><a class="anchor" id="_todo000004"></a> </p>
+<dl>
+<dt>Member <a class="el" href="d8/dfa/classZFit__class.html#a4e6d11d88a1547adc65defe46cebd413">ZFit_class::~ZFit_class</a> (void) </dt>
+<dd></dd>
+</dl>
+<p><a class="anchor" id="_todo000005"></a> </p>
 <dl>
 <dt>File <a class="el" href="dd/d99/ZFitter_8cpp.html">ZFitter.cpp</a>  </dt>
 <dd><ul>
@@ -59,8 +64,13 @@
 <p class="enddd"></p>
 </dd>
 </dl>
+<p><a class="anchor" id="_todo000002"></a> </p>
+<dl>
+<dt>Member <a class="el" href="da/df9/classZNtupleDumper.html#ac3d56e34bc86d5228cad1513491a8c2e">ZNtupleDumper::GetESPlaneRawEnergy</a> (const reco::SuperCluster &amp;sc, unsigned int planeIndex) </dt>
+<dd>highly inefficient: instead of the loop over the recHits should use a -&gt;find() method, it should return both energies of both planes </dd>
+</dl>
 </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Sep 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 26 Jan 2017 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>

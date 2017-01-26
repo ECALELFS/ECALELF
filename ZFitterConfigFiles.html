@@ -13,10 +13,12 @@
     <ul>
       <li><a href="index.html"><span>Main&nbsp;Page</span></a></li>
       <li class="current"><a href="pages.html"><span>Related&nbsp;Pages</span></a></li>
+      <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="files.html"><span>Files</span></a></li>
-      <li><a href="dirs.html"><span>Directories</span></a></li>
     </ul>
+  </div>
+  <div class="navpath"><a class="el" href="index.html">index</a>&nbsp;&raquo&nbsp;<a class="el" href="WORKNTUPLES.html">How to work with ECALELF ntuples</a>
   </div>
 </div>
 <div class="contents">
@@ -25,16 +27,48 @@
 <h1><a class="anchor" id="ZFitterConfigFiles">Config files syntax and generation </a></h1><p>In order to work with ECALELF ntuples you should move to the Calibration/ZFitter directory. Now on the paths are relative to the Calibration/ZFitter directory.</p>
 <p>There are three important directories where the proper .dat files should be put:</p>
 <ul>
-<li>data/validation/ <br/>
- For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation: ./data/validation/rereco/rerecoGroupName/ where rerecoGroupName is a name that you assign to a group of rerecoes that you want to test for example: you can use ./data/validation/rereco/Cal_Dic2013/ or ./data/validation/rereco/ungrouped/ this way the fit results will be put under the subdirectory rerecoGroupName and you will be able to move or remove it when the set of validations has finished. <br/>
- The logic of the validation .dat files is reported below in a dedicated section.</li>
+<li><b>data/validation/</b> <br/>
+ For the validation of rerecoes, the .dat files has to be put in a subdirectory of data/validation: ./data/validation/rereco/rerecoGroupName/ where <b>rerecoGroupName</b> is a name that you assign to a group of rerecoes that you want to test for example: you can use ./data/validation/rereco/Cal_Dic2013/ or ./data/validation/rereco/ungrouped/ this way the fit results will be put under the subdirectory rerecoGroupName and you will be able to move or remove it when the set of validations has finished. <br/>
+ The logic of the validation .dat files is reported below in a dedicated section: <a class="el" href="ZFitterConfigFiles.html#validationConfig">Validation config files</a>.</li>
+<li><b>data/regions/</b> <br/>
+ the fits are done in categories, the conditions that the electrons have to fulfil are defined in .dat files in this directory. In each .dat file, a set of categories are defined, one category for each line: see <a class="el" href="d5/d11/classElectronCategory__class.html" title="Di-electron events are selected using a short special syntax defined in this class...">ElectronCategory_class</a> for more information about the syntax</li>
 </ul>
-<p>For standard validations you can use the data/regions/validation.dat that is set in the scripts as the default one.</p>
-<ul>
-<li>data/regions/ the fits are done in categories, the conditions that the electrons have to fulfil are defined in .dat files in this directory. In each .dat file, a set of categories are defined, one category for each line: see <a class="el" href="d5/d11/classElectronCategory__class.html" title="Di-electron events are selected using a short special syntax defined in this class...">ElectronCategory_class</a> for more information about the syntax</li>
+<p>------ Di-electron events are selected using a short special syntax defined in this class. One di-electron category is difined by a series of cuts to be applied to both electrons<dl class="user"><dt><b>Syntax:</b></dt><dd><ul>
+<li>'-' is the cut separator <br/>
+ es. &lt;cut1&gt;-&lt;cut2&gt;-&lt;cut3&gt; <br/>
+ es. EB-absEta_0_1-gold: <br/>
+ three cuts are applied:<ul>
+<li>EB -&gt; no parameters,</li>
+<li>absEta_0_1 -&gt; two parameters 0 and 1 (parameters are separated by _,</li>
+<li>gold -&gt; no parameters</li>
 </ul>
+</li>
+<li>List of possible cuts without parameter: EB EE EB_EE EBp (EB+) EBm (EB-) EE EEp EEm RefReg</li>
+<li>List of possible cuts with 1 parameter:<ul>
+<li>Et_X: Et_</li>
+<li>eleID_X: eleID == X</li>
+<li>gainEle_X: 12, 6, 1, 6and1</li>
+</ul>
+</li>
+<li>List of possible cuts with 2 parameters: <br/>
+ <b> ATTENTION! Same syntax but different meaning! </b> <br/>
 <ul>
-<li>data/runRanges/ contains files that define a set of run ranges in order to perform the fits for the stability plots. The default one to be used is data/runRanges/monitoring.dat</li>
+<li><b>runNumber_X_Y:</b> X &lt;= runNumber &lt;= Y</li>
+<li><b>IEta_X_Y:</b> X &lt;= ieta (or iX) &lt;= Y</li>
+<li><b>absIEta_X_Y:</b> X &lt;= abs(ieta) &lt;= Y</li>
+<li><b>distIEta_X_Y:</b> X-Y &lt;= ieta &lt;= X+Y</li>
+<li><b>absEta_X_Y:</b> X &lt;= |eta| &lt; Y</li>
+<li><b>energySC_X_Y:</b> X &lt;= energySCEle &lt; Y</li>
+<li><b>nPV_X_Y:</b> X &lt;= nPV &lt; Y </li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+</p>
+<p>------ For standard validations you can use the data/regions/validation.dat that is set in the scripts as the default one.</p>
+<ul>
+<li><b>data/runRanges/</b> <br/>
+ contains files that define a set of run ranges in order to perform the fits for the stability plots. The default one to be used is data/runRanges/monitoring.dat</li>
 </ul>
 <p>The syntax is the following: </p>
 <div class="fragment"><pre class="fragment">
@@ -63,7 +97,7 @@ s	pileupHist	/afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/nPU-Sum
 <p>For each <b>tag</b> (e.g. s1) one can have multiple chains with different <b>treeName</b> (e.g. selected, pileup, r9Weight, etc.), a chain with treeName=="selected" is mandatory since it is the main tree, all the other chains are considered as friends of the "selected".</p>
 <h3><a class="anchor" id="pileupHist">
 How to get the pileup histogram</a></h3>
-<p>When running the alcareco production for the MC, an additional file called PUDumper.root is produced for each job. It contains the</p>
+<p>Please see the dedicated page <a class="el" href="PUFILES_.html">Generating PU weight files</a></p>
 <h3><a class="anchor" id="pileup">
 How to produce ntuples with pileup weights</a></h3>
 <p>In the config file the pileupHist must be indicated. When running the ZFitter.exe it will automatically calculate the weights and create the additional ntuples in the </p>
@@ -74,16 +108,7 @@ How to produce ntuples with pileup weights</a></h3>
 <div class="fragment"><pre class="fragment"> /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/ 
 </pre></div><p>The tree name of the pileup weight files is <b>pileup:</b> </p>
 <div class="fragment"><pre class="fragment">s1    pileup    /afs/cern.ch/cms/CAF/CMSALCA/ALCA_ECALCALIB/ECALELF/puFiles/s1_pileupTrue....root
-</pre></div><h3><a class="anchor" id="scaleSmearing">
-Energy scale and smearing corrections</a></h3>
-<p>Energy scale and smearings can be applied to the already existing ntuples. One can have different sets of energy scales and smearings, depending on</p>
-<ul>
-<li>the particular energy used for the invariant mass,</li>
-<li>the particular algorithm</li>
-<li>the number of steps in iterative procedure</li>
-</ul>
-<p>For more details see the section dedicated to the energy scale and smearing derivation.</p>
-<p>Each set of energy scale and smearing corrections is defined by a "type" name. You can add all the wanted set of scale and smearing correction files to the same validation config file, but only the one specified by the --corrEleType and --smearEleType options are used. The name of the trees of the corrections are defined as follows: &lt;basename&gt;_&lt;type&gt;, where &lt;basename&gt; is scaleEle for energy scale corrections and smearEle for energy smearings. This way you don't need to modify your validation config file each time you want to run with a different set of corrections, you just need to pass the appropriate type name at the command line.</p>
+</pre></div><p>The pileupHist root files should be generated as indicated in <a class="el" href="PUFILES_.html">Generating PU weight files</a></p>
 <h2><a class="anchor" id="runDivide">
 How to produce runRanges .dat files</a></h2>
 <p>The idea is to produce a file with the run ranges with 100k Zee events (to have enough statistics in the EE), but taking into account also that some run ranges should not be between to TSs or two era (RUN A and B).</p>
@@ -98,7 +123,7 @@ How to produce runRanges .dat files</a></h2>
   --nEvents_runDivide arg (=100000)            Minimum number of events in a 
                                                run range
 </pre></div> </div>
-<hr size="1"/><address style="text-align: right;"><small>Generated on 8 Sep 2014 for ECALELF by&nbsp;
+<hr size="1"/><address style="text-align: right;"><small>Generated on 26 Jan 2017 for ECALELF by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.6.1 </small></address>
 </body>
