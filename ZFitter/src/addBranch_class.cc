@@ -28,9 +28,60 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 	if(BranchName.CompareTo("smearerCat") == 0)       return AddBranch_smearerCat(originalChain, treename, isMC);
 	if(BranchName.CompareTo("R9Eleprime") == 0)       return AddBranch_R9Eleprime(originalChain, treename, isMC); //after r9 transformation
 	if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_", ""), fastLoop);
+	if(BranchName.CompareTo("LTweight") == 0) return AddBranch_LTweight(originalChain, treename);
 	std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
 	return NULL;
 }
+
+TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treename)
+{
+
+	originalChain->SetBranchStatus("*",0);
+
+	TTree* newtree = new TTree(treename, treename);
+	Float_t LTweight=0.;
+	newtree->Branch("LTweight", &LTweight, "LTweight/F");
+
+	Long64_t nentries = originalChain->GetEntries();
+	TString oldfilename="";
+	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+		originalChain->GetEntry(ientry);
+		TString filename = originalChain->GetFile()->GetName();
+		if(filename!=oldfilename){
+			oldfilename=filename;
+			if(!filename.Contains("LT")){
+				LTweight=1.;
+			} else if(filename.Contains("LT_5To75")){
+				LTweight=0.4977;
+			} else if(filename.Contains("LT_75To80")){
+				LTweight=0.4072;
+			} else if(filename.Contains("LT_80To85")){
+				LTweight=0.4118;
+			} else if(filename.Contains("LT_85To90")){
+				LTweight=0.3982;
+			} else if(filename.Contains("LT_90To95")){
+				LTweight=0.3213;
+			} else if(filename.Contains("LT_95To100")){
+				LTweight=0.1674;
+			} else if(filename.Contains("LT_100To200")){
+				LTweight=0.1403;
+			} else if(filename.Contains("LT_200To400")){
+				LTweight=0.0679;
+			} else if(filename.Contains("LT_400To800")){
+				LTweight=0.0588;
+			} else if(filename.Contains("LT_800To2000")){
+				LTweight=0.0633;
+			}
+			std::cout << LTweight << "\t" << filename << std::endl;
+
+		}
+		newtree->Fill();
+	}
+
+	return newtree;
+			
+}
+
 
 TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString treename, bool isMC)
 {
