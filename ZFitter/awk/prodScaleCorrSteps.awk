@@ -26,9 +26,9 @@ BEGIN{
       if(cat == a[1]){
 	e=err[cat,a[2]];
 	if(cat==a[2])
-	  printf("%s\t%s\t%s\t%s\t%.4f\t%.4f\n", cat,  $2, $3,$4,(2-scale[cat,a[2]])*$5, sqrt($6*$6+e*e));
+	    printf("%s\t%s\t%s\t%s\t%.4f\t%.4f\t%.1f\t%.1f\n", cat,  $2, $3,$4,(2-scale[cat,a[2]])*$5, sqrt($6*$6+e*e), 0, 0); #two extra columns needed (tot stat, tot syst)
 	else
-	  printf("%s-%s\t%s\t%s\t%s\t%.4f\t%.4f\n", cat, a[2], $2, $3,$4,(2-scale[cat,a[2]])*$5, sqrt($6*$6+e*e));
+	    printf("%s-%s\t%s\t%s\t%s\t%.4f\t%.4f\t%.1f\t%.1f\n", cat, a[2], $2, $3,$4,(2-scale[cat,a[2]])*$5, sqrt($6*$6+e*e), 0, 0); #two extra columns needed (tot stat, tot syst)
       }
     }
   } else{

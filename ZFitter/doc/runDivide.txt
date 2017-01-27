@@ -1,7 +1,7 @@
 /**
  * \page runDivideB How to produce runRanges .dat files 
 
-The idea is to produce a file with the run ranges with 100k Zee events
+The idea is to produce a file with the run ranges with ~100k Zee events
 (to have enough statistics in the EE), but taking into account also
 that some run ranges should not be between to TSs or two era (RUN A
 and B).
@@ -11,6 +11,9 @@ The run ranges:
  - put in the data/runRanges/runRangeLimits.dat the runNumber that should start a new run range (TSs for example)
  - run the command
 \code ./bin/ZFitter.exe -f file.dat --runDivide \endcode
+
+This way you will be using the default commonCut and default eleID.
+The commonCut and eleID options can be used to pre-select the number of events in the run range.
 
 The ZFitter.exe options are:
 \code
