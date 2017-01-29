@@ -34,12 +34,14 @@ macro/standardDataMC.py
 In the following you can find an example of production of data/MC plots with a config file with 
 Moriond17 new regression
 
-Simple:
+## Simple:
 
 \verbatim
 ./script/GenRootChains.sh -f data/validation/Moriond17_newRegr_v2.dat
 python macro/standardDataMC.py absEta_0_1-gold "(160,80,100)" -d tmp/Moriond17_oldRegr/d_chain.root,"Moriond Data" -s tmp/Moriond17_oldRegr/s1_chain.root,"Moriond17 Madgraph MC"
 \endverbatim
+
+## Extended:
 
 \verbatim
 ./script/GenRootChains.sh -f data/validation/Moriond17_oldRegr.dat -f data/validation/Winter_2016_reReco_v1.dat
@@ -56,6 +58,33 @@ MoriondData=tmp/Moriond17_oldRegr/d_chain.root,"Moriond17 Data",invMass_ECAL_ele
 python macro/standardDataMC.py $category $binning -s "$WinterPow" -s "$WinterMadgraph" -s "$MoriondMadgraph" -d "$MoriondData" -x InvMass -n WinterMoriondComp_InvMass
 \endverbatim
 
+## Validation Plots
+\verbatim
+categories=$(sed -e 's/#.*$//' -e '/^$/d' data/regions/validation.dat)
+mkdir -p plots/validation
+for category in $categories
+do 
+	python macro/standardDataMC.py $category "(100,.5,1)" R9Ele -s "$MoriondMadgraph" -d "$MoriondData" -x R_9 -n validation/MoriondNewRegr_R9_$category
+done
+\endverbatim
 
 
+# 2D Plots for choosing 2 Electron binning
+
+The two macros are `macro/Ele2Plot.py` and `macro/Ele2Bins.py` (see respective usage)
+
+ - \b `Ele2Plot.py`: creates a rootfile in \c tmp/ containing one histogram \c
+ 	hist0 with the specified binning. Default branch is E_T
+ 	`energy_ECAL_ele[0]/cosh(etaSCEle[0]))`. The macro automatically sets the
+ 	yaxis branch with `[0] -> [1]`. 
+ - \b `Ele2Bin.py`: Draws the histogram `hist0` in the specfied rootfile and
+ 	reports bin sizes for diagonal categories containing the specified number of
+ 	events
+
+## Example
+
+\verbatim
+python macro/Ele2Plot.py "(1000,0,200,1000,0,200)" tmp/Moriond17_newRegr_v2/d_chain.root EtPlot
+python macro/Ele2Bins.py tmp/EtPlot.root 10000 -l E_{T}
+\endverbatim
 */

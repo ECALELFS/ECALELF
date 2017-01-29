@@ -28,9 +28,75 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 	if(BranchName.CompareTo("smearerCat") == 0)       return AddBranch_smearerCat(originalChain, treename, isMC);
 	if(BranchName.CompareTo("R9Eleprime") == 0)       return AddBranch_R9Eleprime(originalChain, treename, isMC); //after r9 transformation
 	if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_", ""), fastLoop);
+	if(BranchName.CompareTo("LTweight") == 0) return AddBranch_LTweight(originalChain, treename);
 	std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
 	return NULL;
 }
+
+TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treename)
+{
+
+	originalChain->SetBranchStatus("*", 0);
+
+	TTree* newtree = new TTree(treename, treename);
+	Float_t LTweight = 0.;
+	newtree->Branch("LTweight", &LTweight, "LTweight/F");
+
+	Float_t lumi = 1000; // to normalize to 1fb-1
+	Long64_t Nevents[10] = {
+		5061547, 1915515, 2853483, 2987343,
+		1960045, 1310896, 2280265, 1194817,
+		1023888, 933956
+	};
+
+	Float_t LTweights[10] = { // cross-sections in pb
+		8.670e+02, 1.345e+02, 1.599e+02, 2.295e+02,
+		1.654e+02, 4.896e+01, 9.401e+01, 3.588e+00,
+		2.012e-01, 8.329e-03
+	}; //After Filter
+	//Float_t LTweights[10] = {0.4977, 0.4072, 0.4118, 0.3982, 0.3213, 0.1674, 0.1403, 0.0679, 0.0588, 0.0633};
+
+	Long64_t nentries = originalChain->GetEntries();
+	TString oldfilename = "";
+	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+		originalChain->GetEntry(ientry);
+		TString filename = originalChain->GetFile()->GetName();
+		if(filename != oldfilename) {
+			oldfilename = filename;
+			if(!filename.Contains("LT")) {
+				LTweight = 1.;
+			} else if(filename.Contains("LT_5To75")) {
+				LTweight = LTweights[0] / Nevents[0];
+			} else if(filename.Contains("LT_75To80")) {
+				LTweight = LTweights[1] / Nevents[1];
+			} else if(filename.Contains("LT_80To85")) {
+				LTweight = LTweights[2] / Nevents[2];
+			} else if(filename.Contains("LT_85To90")) {
+				LTweight = LTweights[3] / Nevents[3];
+			} else if(filename.Contains("LT_90To95")) {
+				LTweight = LTweights[4] / Nevents[4];
+			} else if(filename.Contains("LT_95To100")) {
+				LTweight = LTweights[5] / Nevents[5];
+			} else if(filename.Contains("LT_100To200")) {
+				LTweight = LTweights[6] / Nevents[6];
+			} else if(filename.Contains("LT_200To400")) {
+				LTweight = LTweights[7] / Nevents[7];
+			} else if(filename.Contains("LT_400To800")) {
+				LTweight = LTweights[8] / Nevents[8];
+			} else if(filename.Contains("LT_800To2000")) {
+				LTweight = LTweights[9] / Nevents[9];
+			}
+			if(LTweight != 1) LTweight *= lumi;
+			std::cout << LTweight << "\t" << filename << std::endl;
+
+		}
+		newtree->Fill();
+	}
+
+	return newtree;
+
+}
+
 
 TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString treename, bool isMC)
 {

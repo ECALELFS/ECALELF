@@ -63,7 +63,7 @@ case $COLUMN in
     11)
 	columnName="$ \chi^2.$"
 	;;
-    15)
+    15|16)
 	columnName="$\sigma_{eff} 68\%$"
 	;;
     17)
