@@ -32,6 +32,9 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 			chain.SetBranchStatus("puWeight", 1)
 			weights *= "puWeight"
 
+	if CheckForBranch(chain, "LTweight"):
+		weights *= "LTweight"
+
 	histname = "hist%d" % hist_index
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
 	chain.Draw(branchname + ">>" + histname + binning, selection * weights, "", ndraw_entries)
@@ -39,6 +42,15 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 	h.SetTitle(label)
 	hist_index += 1
 	return h
+
+def CheckForBranch(chain, branch):
+	chain.GetEntry(0)
+	try:
+		chain.__getattr__(branch)
+	except AttributeError:
+		return False
+	return True
+
 
 def ActivateBranches(chain, branchnames, category, energyBranchName):
 	chain.SetBranchStatus("*", 0)
@@ -51,6 +63,10 @@ def ActivateBranches(chain, branchnames, category, energyBranchName):
 		branchlist = cutter.GetBranchNameNtupleVec(category)
 	else:
 		branchlist = []
+
+	if CheckForBranch(chain, "LTweight"):
+		branchlist.append("LTweight")
+
 	for b in branchlist:
 		print "[Status] Enabling branch:", b
 		chain.SetBranchStatus(b.Data(), 1)
@@ -59,6 +75,7 @@ def ActivateBranches(chain, branchnames, category, energyBranchName):
 			if not br: continue
 			print "[Status] Enabling branch:", br
 			chain.SetBranchStatus(br, 1)
+
 
 def AsList(arg):
 	try:
