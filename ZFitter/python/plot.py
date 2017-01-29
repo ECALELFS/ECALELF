@@ -3,6 +3,7 @@ from ElectronCategory import cutter,defaultEnergyBranch,ReduceFormula
 
 colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan]
 ndraw_entries = 1000000000
+#ndraw_entries = 100000
 
 hist_index = 0
 
@@ -11,7 +12,56 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 	global hist_index
 	#enable only used branches
 	ActivateBranches(chain, branchname, category, energyBranchName)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU)
 
+	histname = "hist%d" % hist_index
+	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
+	chain.Draw(branchname + ">>" + histname + binning, selection * weights, "", ndraw_entries)
+	h = ROOT.gDirectory.Get(histname)
+	h.SetTitle(label)
+	hist_index += 1
+	return h
+
+def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label="",
+		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+	global hist_index
+	ActivateBranches(chain, branchname, category, energyBranchName)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU)
+
+	#print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
+	
+	stack_labels = ["LT_5To75", "LT_75To80", "LT_80To85", "LT_85To90", "LT_90To95", "LT_95To100", "LT_100To200", "LT_200To400", "LT_400To800", "LT_800To2000",]
+
+	nbins, low_b, hi_b = eval(binning)
+	# Make histograms
+	stack = [ ROOT.TH1F(label + stack_labels[i], stack_labels[i], nbins, low_b, hi_b) for i in range(len(stack_labels))]
+
+	oldfilename = ""
+	index = -1
+	selector = ROOT.TTreeFormula("selector", selection.GetTitle(), chain)
+	weighter = ROOT.TTreeFormula("weighter", weights.GetTitle(), chain)
+	brancher = ROOT.TTreeFormula("brancher", branchname, chain)
+	for event in chain:
+		selector.UpdateFormulaLeaves()
+		if not selector.EvalInstance(): continue
+		filename = event.GetTree().GetName()
+		if filename is not oldfilename:
+			for nlabel, label in enumerate(stack_labels):
+				if label in filename:
+					index = nlabel
+			oldfilename = filename
+
+		weighter.UpdateFormulaLeaves()
+		weight = float(weighter.EvalInstance())
+
+		brancher.UpdateFormulaLeaves()
+		value = brancher.EvalInstance()
+		stack[index].Fill(value, weight)
+
+	hist_index += 1
+	return stack
+
+def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU):
 	selection = ROOT.TCut("")
 	if(category):
 		selection = cutter.GetCut(category, False, 0 , scale)
@@ -28,17 +78,23 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 	if(isMC):
 		chain.SetBranchStatus("mcGenWeight", 1)
 		weights *= "mcGenWeight"
-		if(usePU):
+		if(usePU and CheckForBranch(chain, "puWeight")):
 			chain.SetBranchStatus("puWeight", 1)
 			weights *= "puWeight"
 
-	histname = "hist%d" % hist_index
-	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
-	chain.Draw(branchname + ">>" + histname + binning, selection * weights, "", ndraw_entries)
-	h = ROOT.gDirectory.Get(histname)
-	h.SetTitle(label)
-	hist_index += 1
-	return h
+	if CheckForBranch(chain, "LTweight"):
+		weights *= "LTweight"
+
+	return selection, weights
+
+def CheckForBranch(chain, branch):
+	chain.GetEntry(0)
+	try:
+		chain.__getattr__(branch)
+	except AttributeError:
+		return False
+	return True
+
 
 def ActivateBranches(chain, branchnames, category, energyBranchName):
 	chain.SetBranchStatus("*", 0)
@@ -51,6 +107,10 @@ def ActivateBranches(chain, branchnames, category, energyBranchName):
 		branchlist = cutter.GetBranchNameNtupleVec(category)
 	else:
 		branchlist = []
+
+	if CheckForBranch(chain, "LTweight"):
+		branchlist.push_back("LTweight")
+
 	for b in branchlist:
 		print "[Status] Enabling branch:", b
 		chain.SetBranchStatus(b.Data(), 1)
@@ -59,6 +119,7 @@ def ActivateBranches(chain, branchnames, category, energyBranchName):
 			if not br: continue
 			print "[Status] Enabling branch:", br
 			chain.SetBranchStatus(br, 1)
+
 
 def AsList(arg):
 	try:
@@ -123,7 +184,7 @@ def Normalize(data, mc):
 		print "[WARNING] No normalization defind for (ndata=%d, nmc%d)" % (ndata, nmc)
 
 def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
-		ylabel_unit="", logy=False, ratio=True):
+		ylabel_unit="", logy=False, ratio=True, stack_data=False, stack_mc=False):
 
 	mc_list = AsList(mc)
 	data_list = AsList(data)
