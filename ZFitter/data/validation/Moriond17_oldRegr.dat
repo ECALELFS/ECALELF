@@ -1,3 +1,4 @@
+# ntuples done with samples for Moriond17 but using 74X version of the energy regression, just for Hgg
 d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_2016SeptRepro_v6/DoubleEG-Run2016B-23Sep2016-v3-MINIAOD/273150-275376/271036-284044_23Sep2016_v1/regressionOld/DoubleEG-Run2016B-23Sep2016-v3-MINIAOD-273150-275376.root
 d2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_2016SeptRepro_v6/DoubleEG-Run2016C-23Sep2016-v1-MINIAOD/275656-276283/271036-284044_23Sep2016_v1/regressionOld/DoubleEG-Run2016C-23Sep2016-v1-MINIAOD-275656-276283.root
 d3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_2016SeptRepro_v6/DoubleEG-Run2016D-23Sep2016-v1-MINIAOD/276315-276811/271036-284044_23Sep2016_v1/regressionOld/DoubleEG-Run2016D-23Sep2016-v1-MINIAOD-276315-276811.root
@@ -10,7 +11,6 @@ s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/n
 
 d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
-
 
 s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_oldRegr.root
 
