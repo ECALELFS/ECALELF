@@ -1,5 +1,3 @@
-s1 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_herwigpp-RunIISummer16-miniAODv2/allRange/regressionMoriond17v2/DYJets_herwigpp-RunIISummer16-miniAODv2-allRange.root
-s1 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_herwigpp-RunIISummer16-miniAODv2/allRange/regressionMoriond17v2/eleIDTree-DYJets_herwigpp-RunIISummer16-miniAODv2-allRange.root
 s2 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-RunIISummer16-miniAODv2/allRange/regressionMoriond17v2/DYJets_madgraph-RunIISummer16-miniAODv2-allRange.root
 s2 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-RunIISummer16-miniAODv2/allRange/regressionMoriond17v2/eleIDTree-DYJets_madgraph-RunIISummer16-miniAODv2-allRange.root
 #
@@ -24,6 +22,5 @@ d8 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf
 d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
 
-s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_newRegr_v2.root
 s2 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_Moriond17_newRegr_v2.root
 
