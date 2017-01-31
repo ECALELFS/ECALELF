@@ -1,7 +1,7 @@
 import ROOT
 from ElectronCategory import cutter,defaultEnergyBranch,ReduceFormula
 
-colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan]
+colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan, ROOT.kMagenta, ROOT.kOrange-6, ROOT.kViolet-6, ROOT.kGray+1, ROOT.kOrange-3, ROOT.kViolet-9]
 ndraw_entries = 1000000000
 #ndraw_entries = 100000
 
@@ -41,14 +41,20 @@ def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label=
 	selector = ROOT.TTreeFormula("selector", selection.GetTitle(), chain)
 	weighter = ROOT.TTreeFormula("weighter", weights.GetTitle(), chain)
 	brancher = ROOT.TTreeFormula("brancher", branchname, chain)
+	maxevents = chain.GetEntries()
+	i = 0
 	for event in chain:
+		if not (i % (maxevents/100)): print 100*i/maxevents, "%"
+		i += 1
 		selector.UpdateFormulaLeaves()
-		if not selector.EvalInstance(): continue
-		filename = event.GetTree().GetName()
-		if filename is not oldfilename:
+		sv = selector.EvalInstance()
+		if not sv > 0: continue
+		filename = event.GetFile().GetName()
+		if filename != oldfilename:
 			for nlabel, label in enumerate(stack_labels):
 				if label in filename:
 					index = nlabel
+			print index, filename
 			oldfilename = filename
 
 		weighter.UpdateFormulaLeaves()
@@ -57,8 +63,7 @@ def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label=
 		brancher.UpdateFormulaLeaves()
 		value = brancher.EvalInstance()
 		stack[index].Fill(value, weight)
-
-	hist_index += 1
+		
 	return stack
 
 def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU):
@@ -123,8 +128,13 @@ def ActivateBranches(chain, branchnames, category, energyBranchName):
 
 def AsList(arg):
 	try:
-		ROOT.TObject(arg)
-		return [arg,]
+		if 'TH1' in arg.ClassName():
+			return [arg,]
+		elif "Array" in arg.ClassName():
+			return arg
+		else:
+			print "[WARNING] AsList() encountered unhandled ROOT Class" + arg.ClassName()
+			raise
 	except:
 		if(isinstance(arg,str)):
 			return [arg]
@@ -141,10 +151,10 @@ def ColorMCs(mcs):
 	for i, h in enumerate(mc_hists):
 		h.SetMarkerStyle(20)
 		h.SetMarkerSize(1)
-		h.SetMarkerColor(colors[i])
+		h.SetMarkerColor(colors[i % len(colors)])
 		h.SetFillStyle(0)
-		h.SetFillColor(colors[i])
-		h.SetLineColor(colors[i])
+		h.SetFillColor(colors[i % len(colors)])
+		h.SetLineColor(colors[i % len(colors)])
 		h.SetLineWidth(2)
 
 def ColorData(data):
@@ -193,6 +203,12 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		print "[WARNING] ratio not implemented"
 
 	c = ROOT.TCanvas("c", "c", 600, 480)
+	c.SetLeftMargin(.14)
+
+	nhists = len(data_list) + len(mc_list)
+	ncolumns = min(4,nhists)
+	nrows = (nhists+1)/ncolumns
+	c.SetTopMargin(.05*nrows)
 
 	maximum = max( [h.GetMaximum() for h in  data_list] + [h.GetMaximum() for h in mc_list])
 	if(logy):
@@ -213,6 +229,7 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 	h0.SetXTitle(xlabel)
 	h0.SetYTitle(ylabel + " /(%.2f %s)" %(h0.GetBinWidth(2), ylabel_unit))
 	h0.GetYaxis().SetRangeUser(minimum, maximum)
+	h0.GetYaxis().SetTitleOffset(1.5)
 
 	same = ""
 	for h in data_list:
@@ -222,24 +239,35 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		h.Draw("hist" + same)
 		if not same: same = "same" 
 
-	x0 = .60
-	y0 = .7
-	xw = .24
-	yw = .15
-	leg = ROOT.TLegend(x0, y0, x0+xw, y0+yw)
+	x0 = c.GetLeftMargin()
+	y0 = 1 - c.GetTopMargin()
+	x1 = 1 - c.GetRightMargin()
+	y1 = 1 - c.GetTopMargin()*.1
+	leg = ROOT.TLegend(x0, y0, x1, y1)
 	for h in data_list:
 		leg.AddEntry(h, h.GetTitle(), "p")
 	for h in mc_list:
-		leg.AddEntry(h, h.GetTitle(), "lf")
+		leg.AddEntry(h, h.GetTitle(), "l")
+	leg.SetNColumns(ncolumns)
 	leg.Draw()
 
-	pv = ROOT.TPaveText(0.25, 0.92, 0.65, .97, "NDC")
-	pv.AddText("CMS Preliminary 2016")
-	pv.SetFillColor(0)
-	pv.SetBorderSize(0)
-	pv.Draw()
+	#pv = ROOT.TPaveText(0.25, 0.92, 0.65, .97, "NDC")
+	#pv.AddText("CMS Preliminary 2016")
+	#pv.SetFillColor(0)
+	#pv.SetBorderSize(0)
+	#pv.Draw()
 
 	c.SaveAs(file_path + '/' + file_basename + ".png")
 	c.SaveAs(file_path + '/' + file_basename + ".pdf")
 	c.SaveAs(file_path + '/' + file_basename + ".eps")
 	c.SaveAs(file_path + '/' + file_basename + ".C")
+
+def NormalizeStack(stack, normalizeTo=1):
+
+	stack_sum = sum([h.Integral() for h in stack])
+	hstack = ROOT.THStack("hs","")
+	for h in stack:
+		h.Scale(1./stack_sum)
+		hstack.Add(h)
+	
+	return hstack.GetStack(), hstack
