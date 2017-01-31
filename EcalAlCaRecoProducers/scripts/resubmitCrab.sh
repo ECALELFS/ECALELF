@@ -79,12 +79,14 @@ for jobID in `seq 1 $nJobs`
 
   case ${ExitStatusJOB[${jID}]} in
       8028) intervals="$intervals $jobID";;
+      8020) intervals="$intervals $jobID";;
       24) intervals="$intervals $jobID";;
       8021) intervals="$intervals $jobID";;
       50664) intervals="$intervals $jobID";;
 	  50669) intervals="$intervals $jobID";;
       50700) intervals="$intervals $jobID";;
       50800) intervals="$intervals $jobID";;
+      60303) intervals="$intervals $jobID";;
       60307) intervals="$intervals $jobID";;
       60317) intervals="$intervals $jobID";;
       60318) intervals="$intervals $jobID";;
