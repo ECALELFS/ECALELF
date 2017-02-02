@@ -880,14 +880,40 @@ int main(int argc, char **argv)
 				std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 				exit(1);
 			}
-#ifdef toBeFixed
-			TTree *corrTree = eScaler.GetCorrTree(ch, "runNumber", "R9Eleprime");
-#else
-			TTree *corrTree = NULL;
-#endif
-			corrTree->SetName(TString("scaleEle_") + corrEleType.c_str());
-			corrTree->SetTitle(corrEleType.c_str());
-			f.cd();
+			////////////////////////////****///////////////////////////////////////
+			//-> Put this in a function?//
+			//GetCorrTree does not exist anymore in EnergyScaleCorrection_class
+			Float_t scaleEle_[3];
+			scaleEle_[0]=1.;
+			scaleEle_[1]=1.;
+			scaleEle_[2]=1.;
+			TTree *corrTree = new TTree(treeName,""); //treeName is scaleEle_corrEleType
+			corrTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
+			ch->SetBranchStatus("*",0);
+			ch->SetBranchStatus("runNumber",1);
+			ch->SetBranchStatus("etaSCEle",1);
+			ch->SetBranchStatus("R9Ele",1);//or R9Eleprime
+			ch->SetBranchStatus(energyBranchName,1);
+
+			unsigned int    runNumber;
+			Float_t         etaSCEle[3];
+			Float_t         R9Ele[3];
+			Float_t         energy[3];
+
+			ch->SetBranchAddress("runNumber", &runNumber);
+			ch->SetBranchAddress("etaSCEle", etaSCEle);
+			ch->SetBranchAddress("R9Ele", R9Ele);//or R9Eleprime
+			ch->SetBranchAddress(energyBranchName, energy);
+			Long64_t nentries = ch->GetEntries();
+			for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+			  ch->GetEntry(ientry);
+			  scaleEle_[0]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0]/cosh(etaSCEle[0]));
+			  scaleEle_[1]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1]/cosh(etaSCEle[1]));;
+			  corrTree->Fill();
+			}
+			ch->SetBranchStatus("*", 1);
+			ch->ResetBranchAddresses();
+			////////////////////////////****///////////////////////////////////////
 			corrTree->Write();
 			std::cout << "[INFO] Data entries: "    << ch->GetEntries() << std::endl;
 			std::cout << "       corrEle entries: " << corrTree->GetEntries() << std::endl;

@@ -16,6 +16,7 @@ ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAs
 	_isRooFit(isRooFit_),
 	_roofitNameAsNtuple(roofitNameAsNtuple_),
 	energyBranchName("energy_ECAL_ele"),
+	//energyBranchName("energySCEle_corr"),
 	_corrEle(false)
 {
 
@@ -341,7 +342,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TString string1 = Objstring1->GetString();
 			if(string1 == "12") string1 = "0";
 			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "3"; //to-do: the definition is with a |=
+			else if(string1 == "1") string1 = "2"; 
+			else if(string1 == "61") string1 = "3"; 
 
 			TCut cutEle1("gainSeedSC_ele1 ==" + string1);
 			TCut cutEle2("gainSeedSC_ele2 ==" + string1);
