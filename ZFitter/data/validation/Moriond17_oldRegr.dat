@@ -14,5 +14,3 @@ s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtr
 
 s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_oldRegr.root
 
-
-

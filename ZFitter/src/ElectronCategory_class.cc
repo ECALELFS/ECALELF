@@ -341,7 +341,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TString string1 = Objstring1->GetString();
 			if(string1 == "12") string1 = "0";
 			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "3"; //to-do: the definition is with a |=
+			else if(string1 == "1") string1 = "2"; 
+			else if(string1 == "61") string1 = "3";
 
 			TCut cutEle1("gainSeedSC_ele1 ==" + string1);
 			TCut cutEle2("gainSeedSC_ele2 ==" + string1);
@@ -1519,3 +1520,10 @@ std::set<TString> ElectronCategory_class::GetBranchNameNtuple(TString region)
 #endif
 	return branchNames;
 }
+
+std::vector<TString> ElectronCategory_class::GetBranchNameNtupleVec(TString region)
+{
+	auto ret = GetBranchNameNtuple(region);
+	return std::vector<TString>(ret.begin(), ret.end());
+}
+

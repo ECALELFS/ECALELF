@@ -635,7 +635,11 @@ if [ -n "${CHECK}" ];then
 				*eleIDTree*)
 					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
 					;;
+				*extraCalibTree*)
+					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
+					;;
 				*)
+#					time mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --noRemove || exit 1
 					;;
 			esac
 		done
