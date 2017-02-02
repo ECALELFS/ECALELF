@@ -461,7 +461,7 @@ void RooSmearer::SetSmearedHisto(const zee_events_t& cache,
 
 
 
-double RooSmearer::smearedEnergy(double * smear, unsigned int nGen, float ene, float scale, float alpha, float constant, const float * fixedSmearings) const
+double RooSmearer::smearedEnergy(double * smear, unsigned int nGen, float ene, float scale, float alpha, float constant, const half_float::half * fixedSmearings) const
 {
 	// sigmaMB = sigma Material Budget
 	// if I want to take into account the non perfet simulation of the

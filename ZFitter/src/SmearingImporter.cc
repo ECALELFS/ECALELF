@@ -402,17 +402,17 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 #ifdef FIXEDSMEARINGS
 		if(isMC) {
-			event.smearings_ele1 = new float[NSMEARTOYLIM];
-			event.smearings_ele2 = new float[NSMEARTOYLIM];
+			event.smearings_ele1 = new half_float::half[NSMEARTOYLIM];
+			event.smearings_ele2 = new half_float::half[NSMEARTOYLIM];
 			for(int i = 0; i < NSMEARTOYLIM; i++) {
-				event.smearings_ele1[i] = (float) gen.Gaus(0, 1);
-				event.smearings_ele2[i] = (float) gen.Gaus(0, 1);
+				event.smearings_ele1[i] = (half_float::half) gen.Gaus(0, 1);
+				event.smearings_ele2[i] = (half_float::half) gen.Gaus(0, 1);
 			}
 		} else {
-			event.smearings_ele1 = new float[1];
-			event.smearings_ele2 = new float[1];
-			event.smearings_ele1[0] = (float) gen.Gaus(0, 1);
-			event.smearings_ele2[0] = (float) gen.Gaus(0, 1);
+			event.smearings_ele1 = new half_float::half[1];
+			event.smearings_ele2 = new half_float::half[1];
+			event.smearings_ele1[0] = (half_float::half) gen.Gaus(0, 1);
+			event.smearings_ele2[0] = (half_float::half) gen.Gaus(0, 1);
 		}
 #endif
 		includedEvents++;

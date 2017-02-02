@@ -1,6 +1,8 @@
 #ifndef zeeevent_hh
 #define zeeevent_hh
 
+#include "../../half-1.11.0/include/half.hpp"
+
 /// class ZeeEvent ZeeEvent.h "interface/ZeeEvent.h"
 
 class ZeeEvent
@@ -10,7 +12,8 @@ public:
 	float energy_ele2;
 	float invMass;
 	float weight;
-	float *smearings_ele1, *smearings_ele2;
+	half_float::half *smearings_ele1, *smearings_ele2;
+
 };
 
 typedef std::vector<ZeeEvent> zee_events_t;
