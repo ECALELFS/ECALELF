@@ -1,22 +1,23 @@
 import ROOT
 from ElectronCategory import cutter,defaultEnergyBranch,ReduceFormula
 
-colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan]
+colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan, ROOT.kYellow, ROOT.kBlack, ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan, ROOT.kYellow, ROOT.kBlack ]
 ndraw_entries = 1000000000
 #ndraw_entries = 100000
 
 hist_index = 0
 
 def GetTH1(chain, branchname, isMC, binning="", category="", label="",
-		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None, norm="1"):
 	global hist_index
+	normfactor = ROOT.TCut("",str(norm))
 	#enable only used branches
 	ActivateBranches(chain, branchname, category, energyBranchName)
 	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU)
 
 	histname = "hist%d" % hist_index
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
-	chain.Draw(branchname + ">>" + histname + binning, selection * weights, "", ndraw_entries)
+	chain.Draw(branchname + ">>" + histname + binning, selection * weights * normfactor, "", ndraw_entries)
 	h = ROOT.gDirectory.Get(histname)
 	h.SetTitle(label)
 	hist_index += 1

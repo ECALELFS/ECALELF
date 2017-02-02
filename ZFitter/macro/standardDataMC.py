@@ -6,7 +6,7 @@ parser.add_argument("category", help="category string")
 parser.add_argument("binning", help="(nbins,low,hi)")
 parser.add_argument("branch",nargs="*", help="Branch names to plot")
 parser.add_argument("-d", "--data", action="append", help="specify data files, labels [and branches]. FILE,LABEL[,BRANCH[,ENERGYBRANCH]]")
-parser.add_argument("-s", "--mc",   action="append", help="specify mc files, labels [and branches]. FILE,LABEL[,BRANCH[,ENERGYBRANCH]]")
+parser.add_argument("-s", "--mc",   action="append", help="specify mc files, labels [and branches]. FILE,LABEL[,NORM,BRANCH[,ENERGYBRANCH]]")
 parser.add_argument("-n", "--name", help="outfile base name (default=branchname)")
 parser.add_argument("-x", "--xlabel", help="x axis label (default=branchname)")
 parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
@@ -25,20 +25,25 @@ ROOT.gStyle.SetOptTitle(0)
 
 def MakeTH1s(arg, branchname, isMC, binning, category):
 	hs = []
+	norm=1
 	for a in arg:
 		parse = a.split(',')
 		filename, label = parse[:2]
-		if len(parse) >2: branchname = parse[2]
+		
+		if len(parse) >2: norm = parse[2]
+		elif not norm:
+			raise Exception("norm not defined for " + filename + ' ' + label)
+		if len(parse) >3: branchname = parse[3]
 		elif not branchname:
 			raise Exception("branch not defined for " + filename + ' ' + label)
-		if len(parse) >3:
-			energybranchname = parse[3]
+		if len(parse) >4:
+			energybranchname = parse[4]
 		else:
 			energybranchname = None
 
 
 		chain = ROOT.TFile.Open(filename).Get("selected")
-		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU))
+		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU, norm=norm))
 	return hs
 
 #eleID = "eleID_loose25nsRun22016Moriond"
@@ -73,6 +78,6 @@ for branchname in args.branch:
 	else:
 		mc_hs = []
 
-	plot.Normalize(data_hs, mc_hs)
+#	plot.Normalize(data_hs, mc_hs)
 	plot.PlotDataMC(data_hs, mc_hs, args.plotdir, args.name, xlabel=args.xlabel, ylabel="Events", ylabel_unit="GeV", logy = False)
 	print "[STATUS] Done: " + branchname
