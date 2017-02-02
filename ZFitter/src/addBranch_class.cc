@@ -46,16 +46,20 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 	originalChain->SetBranchAddress("R9Ele", R9Ele);
 
 	//2015
-//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
-//  //root file with r9 transformation:
-//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
-//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
+	//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
+	//  //root file with r9 transformation:
+	//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
+	//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
 
 	//2016
-	TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
-	//root file with r9 transformation for 2016 MC:
-	TGraph* gR9EB = (TGraph*) f->Get("TGraphtransffull5x5R9EB");
-	TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
+	//TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
+	//TGraph* gR9EB = (TGraph*) f->Get("TGraphtransffull5x5R9EB");
+	//TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
+	//f->Close();
+
+	TFile* f = TFile::Open("/eos/project/c/cms-ecal-calibration/data/R9transf/transformation_Moriond17_v1.root");
+	TGraph* gR9EB = (TGraph*) f->Get("transffull5x5R9EB");
+	TGraph* gR9EE = (TGraph*) f->Get("transffull5x5R9EE");
 	f->Close();
 
 	TTree* newtree = new TTree(treename, treename);
