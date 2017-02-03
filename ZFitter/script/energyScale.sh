@@ -15,9 +15,10 @@ source script/bash_functions_calibration.sh
 # - gain study (step9)
 
 index= #useless?
-#eos_path=/eos/project/c/cms-ecal-calibration
+eos_path=/eos/project/c/cms-ecal-calibration
 tmp_path=`pwd`
 baseDir=${tmp_path}/test
+eosDir=${eos_path}/test
 updateOnly="--updateOnly --fit_type_value=1" # --profileOnly --initFile=init.txt"
 commonCut=EtLeading_32-EtSubLeading_20-noPF-isEle #Hgg trigger emulation (2 GeV above the trigger)
 #commonCut=Et_20-noPF #Standard common Cuts for Z calibration
@@ -268,13 +269,17 @@ if [ -n "${STEP0}" ];then
 
     if [ "${invMass_var}" == "invMass_regrCorr_egamma" ];then
 	outDirMC=$baseDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
+	outDirMC_eos=$eosDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
 	isOdd="--isOddMC"
     else
 	outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
+	outDirMC_eos=$eosDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
     fi
     echo "outDirMC is ${outDirMC}"
     outDirData=$baseDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
+    outDirData_eos=$eosDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
     outDirTable=${outDirData}/table
+    outDirTable_eos=${outDirData_eos}/table
 fi
 
 ## pileup reweight name
@@ -288,20 +293,21 @@ echo "mcName: ${mcName}"
 
 if [ "${invMass_var}" == "invMass_regrCorr_egamma" ];then
     outDirMC=$baseDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
+    outDirMC_eos=$eosDir/MCodd/${mcName}/${puName}/${selection}/${invMass_var}
     isOdd="--isOddMC"
 else
     outDirMC=$baseDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
+    outDirMC_eos=$eosDir/MC/${mcName}/${puName}/${selection}/${invMass_var}
 fi
 echo "outDirMC is ${outDirMC}"
 outDirData=$baseDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
+outDirData_eos=$eosDir/dato/`basename ${configFile} .dat`/${selection}/${invMass_var}
 outDirTable=${outDirData}/table
-
-outDirTable=${outDirData}/table
-
-#if [ ! -e "${outDirTable}/${selection}/${invMass_var}" ];then mkdir -p ${outDirTable}/${selection}/${invMass_var}; fi
+outDirTable_eos=${outDirData_eos}/table
 
 if [ ! -e "${outDirData}/table" ];then mkdir ${outDirData}/table -p; fi
 if [ ! -e "${outDirData}/log" ];then mkdir ${outDirData}/log -p; fi
+if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
 
 if [ "${extension}" == "weight" ];then
     tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
@@ -331,6 +337,7 @@ if [ -n "${STEP1}" ];then
 	if [ ! -e "${outDirData}/img" ];then mkdir ${outDirData}/img -p; fi
 	if [ ! -e "${outDirData}/step1" ];then mkdir ${outDirData}/step1 -p; fi
 	if [ ! -e "tmp/step1_outDir.log" ];then echo ${outDirMC} > tmp/step1_outDir.log; fi #check on the outDirMC name (write it better)
+
 	./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile}  \
 	    $isOdd $updateOnly --zFit --selection=${selection}  --invMass_var ${invMass_var} --commonCut $commonCut \
 	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
@@ -351,6 +358,12 @@ if [ -n "${STEP1}" ];then
 	mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/    
 	echo "[STATUS] Step 1 done"
 	echo "time dep-scale corrections built from "${outDirTable}/${outFile}
+
+#	if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+#	if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+#	rsync -ahuv ${outDirData} ${outDirData_eos}
+#	rsync -ahuv ${outDirMC} ${outDirMC_eos}
+
     else 
 	echo "${outDirTable}/${outFile} exists, so:"
 	echo "[STATUS] Step 1 already done"
@@ -400,16 +413,18 @@ if [ -n "${STEP1Stability}" ];then
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
 	>  ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex || exit 1
 
-    #Nel caso NON vuoi i cumulati EB e EE:
     mv ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex ${outDirTable}/step1_stability-${invMass_var}-${selection}_with_cumulative.tex 
-
+    ##In case you prefer not to plot cumulative EB and EE:
     cat ${outDirTable}/step1_stability-${invMass_var}-${selection}_with_cumulative.tex| grep -v EB-runNumber | grep -v EE-runNumber > ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex
 
+#    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+#    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+#    rsync -ahuv ${outDirData} ${outDirData_eos}
+#    rsync -ahuv ${outDirMC} ${outDirMC_eos}
 fi
 
 if [ -n "${STEP1Plotter}" ];then
 ##################################################
-
     xVar=runNumber
 
     if [ ! -d ${outDirData}/step1/img/stability/before_run_corr/$xVar ];then
@@ -425,14 +440,15 @@ if [ -n "${STEP1Plotter}" ];then
     ./script/stability.sh -t  ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta_scales.tex \
 	--outDirImgData ${outDirData}/step1/img/stability/before_run_corr/$xVar/ -x $xVar -y scaledWidth --allRegions || exit 1
 
-echo "Initial scale vs run plots in ${outDirData}/step1/img/stability/before_run_corr/$xVar/"
-
+    echo "Initial scale vs run plots in ${outDirData_eos}/step1/img/stability/before_run_corr/$xVar/"
+    
 ##What you have after corr, i.e. now, at the end of step1stability
     xVar=runNumber
     if [ ! -d ${outDirData}/step1/img/stability/$xVar ];then
 	mkdir -p ${outDirData}/step1/img/stability/$xVar
     fi
 
+    echo "OOH" ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex
     if [ -e ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex ];then
 	./script/stability.sh -t  ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex \
 	    --outDirImgData ${outDirData}/step1/img/stability/$xVar/ -x $xVar -y peak || exit 1
@@ -464,21 +480,21 @@ echo "Initial scale vs run plots in ${outDirData}/step1/img/stability/before_run
 
 ##############Summary plots
     #Copy the runRangesFile so it's easier to read the summary plot
-#    cp ${runRangesFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
-#    cp ${runRangesFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/  
-#    ##Inial summary
-#    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/before_run_corr/runNumber/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
-#    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/before_run_corr/runNumber/*.pdf ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
-#    ###Final summary (after applying step1 corrections)
-#    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/runNumber/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/ 
-#
+    cp ${runRangesFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
+    cp ${runRangesFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/  
+    ##Inial summary
+    mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/before_run_corr/runNumber/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
+    mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/before_run_corr/runNumber/*.pdf ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/  
+    ###Final summary (after applying step1 corrections)
+    mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/stability/runNumber/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/ 
+
 ################Fit plots
-#    ###MC Fits
-#    mv ${eos_path}/test/MC/${mcName}/${puName}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/MC/  
-#    ###Initial Data Fits
-#    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/data/
-#    ###Final Data Fits (after appyting step1 corrections}
-#    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/Fits/data/
+    ###MC Fits
+    mv ${tmp_path}/test/MC/${mcName}/${puName}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/MC/  
+    ###Initial Data Fits
+    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/data/
+    ###Final Data Fits (after appyting step1 corrections}
+    mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/Fits/data/
 fi
 
 

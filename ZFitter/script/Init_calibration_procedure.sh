@@ -9,16 +9,16 @@ if [[ $1 = "" ]]; then
 fi
 
 #add branch r9 => do not use it until the r9 corrections are available
-##./script/addBranch.sh data/validation/${file}.dat R9Eleprime
+#./script/addBranch.sh data/validation/${file}.dat R9Eleprime
 #make pileupHist: they are used to make pileupTrees, and also they are required for step1
 ##pileupHist #if possible use the official ones, not the quick and dirty reweight
 ##make pileupTree
-pileupTrees
+#pileupTrees
 #
-
-if [[ $2 = "" ]]; then
-    echo "you should specify the interval if you want to divide the runs"; exit;
-fi
+#It is useless to split all dat files -> use 1 good run division 
+#if [[ $2 = "" ]]; then
+#    echo "you should specify the interval if you want to divide the runs"; exit;
+#fi
 interval=$2
 echo "Splitting in runNumbers: events ~ $2"
 echo "During the splitting the range limits in data/runRanges/runRangeLimits.dat are considered"

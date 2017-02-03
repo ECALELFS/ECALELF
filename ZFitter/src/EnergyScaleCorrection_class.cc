@@ -99,7 +99,7 @@ correctionValue_class EnergyScaleCorrection_class::getScaleCorrection(unsigned i
 		// }
 		// corr_itr = scales_not_defined.find(category);
 		/// \todo this can be switched to an exeption
-		std::cout << "[ERROR] Scale category not found: " << std::endl;
+		std::cout << "[ERROR] Scale category not found: " << std::endl; 
 		std::cout << category << std::endl;
 		//     exit(1);
 	}
@@ -128,8 +128,8 @@ float EnergyScaleCorrection_class::getScaleOffset(unsigned int runNumber, bool i
 		// }
 		// corr_itr = scales_not_defined.find(category);
 		/// \todo this can be switched to an exeption
-		std::cout << "[ERROR] Scale offset category not found: " << std::endl;
-		std::cout << category << std::endl;
+		////std::cout << "[ERROR] Scale offset category not found: " << std::endl; -->rimetterlo
+		////std::cout << category << std::endl; -->rimetterlo
 		//     exit(1);
 	}
 
