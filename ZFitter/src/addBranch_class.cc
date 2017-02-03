@@ -102,6 +102,7 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 {
 	//to have a branch with r9prime
 	//From the original tree take R9 and eta
+	///\todo put the filename and the graph names in the .dat file and activate the parsing as for the pileupHist
 	Float_t         R9Ele[3];
 	Float_t         etaEle[3];
 
@@ -112,16 +113,19 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 	originalChain->SetBranchAddress("R9Ele", R9Ele);
 
 	//2015
-//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
-//  //root file with r9 transformation:
-//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
-//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
-
+	//  TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation.root");
+	//  //root file with r9 transformation:
+	//  TGraph* gR9EB = (TGraph*) f->Get("transformR90");
+	//  TGraph* gR9EE = (TGraph*) f->Get("transformR91");
 	//2016
-	TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
-	//root file with r9 transformation for 2016 MC:
-	TGraph* gR9EB = (TGraph*) f->Get("TGraphtransffull5x5R9EB");
-	TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
+	//TFile* f = TFile::Open("~gfasanel/public/R9_transformation/transformation_80X_v1.root");
+	//TGraph* gR9EB = (TGraph*) f->Get("TGraphtransffull5x5R9EB");
+	//TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
+	//f->Close();
+	//2017
+	TFile* f = TFile::Open("/eos/project/c/cms-ecal-calibration/data/R9transf/transformation_Moriond17_v1.root");
+	TGraph* gR9EB = (TGraph*) f->Get("transffull5x5R9EB");
+	TGraph* gR9EE = (TGraph*) f->Get("transffull5x5R9EE");
 	f->Close();
 
 	TTree* newtree = new TTree(treename, treename);
@@ -135,8 +139,8 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 			//electron 0
 			if(abs(etaEle[0]) < 1.4442) { //barrel
 				R9Eleprime[0] = gR9EB->Eval(R9Ele[0]);
-			} else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5) { //endcap
-				R9Eleprime[0] = gR9EE->Eval(R9Ele[0]);;
+			} else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5 && R9Ele[0]>0.8) { //endcap
+				R9Eleprime[0] = gR9EE->Eval(R9Ele[0]);
 			} else {
 				R9Eleprime[0] = R9Ele[0];
 			}
@@ -144,8 +148,8 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 			//electron 1
 			if(abs(etaEle[1]) < 1.4442) { //barrel
 				R9Eleprime[1] = gR9EB->Eval(R9Ele[1]);
-			} else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5) { //endcap
-				R9Eleprime[1] = gR9EE->Eval(R9Ele[1]);;
+			} else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5 && R9Ele[1]>0.8) { //endcap
+				R9Eleprime[1] = gR9EE->Eval(R9Ele[1]);
 			} else {
 				R9Eleprime[1] = R9Ele[1];
 			}

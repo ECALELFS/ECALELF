@@ -1,5 +1,8 @@
 #!/bin/bash
+revision=`git rev-parse HEAD`
 DOCCONF=fulldoc
+sed -i "s|NAN|${revision}|"  $DOCCONF
+
 mainDir=$PWD
 docDir=doc/doxygen/${DOCCONF}/
 remote="git@github.com:ECALELFS/ECALELF.git"
