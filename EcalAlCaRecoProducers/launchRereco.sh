@@ -13,7 +13,7 @@ jsonName=271036_284044-23Sep2016
 
 ##
 PERIOD=LEGACY2016
-tags=(config/reRecoTags/Cal_Jan2017_Alpha_v{1,2,3}.py) #{ref,Lin_v1}.py)
+tags=(config/reRecoTags/Cal_Jan2017_Alpha_v{4,5}.py) #{ref,Lin_v1}.py)
 for tagfile in ${tags[@]}
 do
 	echo
