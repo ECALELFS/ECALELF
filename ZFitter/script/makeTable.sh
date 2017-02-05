@@ -170,11 +170,7 @@ for category in $categories
       deltaM_Data="`grep ${var} $fileData | cut -d '&' -f 2 | sed 's|GeV.*|$|'`"
       deltaM_MC="`grep ${var} $fileMC | cut -d '&' -f 2 | sed 's|GeV.*|$|'`"
   fi
-#old definition  
-  deltaP=`echo "${deltaM_Data} ${deltaM_MC}" | sed 's|\\$||g;s|\\\\pm||g;s|&||g' | awk '{print "$",(\$1-\$3)/91.188*100,"\\\\pm",sqrt($2 * $2 + $4 * $4)/91.188*100,"$"}'`
-#   deltaP=`echo "${deltaM_Data} ${deltaM_MC}" | sed 's|\\$||g;s|\\\\pm||g;s|&||g' | awk '{print "$",(\$1-\$3)/\$3*100,"\\\\pm",sqrt($2 * $2 + $4 * $4)/91.188*100,"$"}'`
-# definition linear with injected variable 
-#  deltaP=`"${deltaM_Data} ${deltaM_MC}" | sed 's|\\$||g;s|\\\\pm||g;s|&||g' | awk '{print "$",(\$1/\$3 -1) *100,"\\\\pm",sqrt($2 * $2 + $4 * $4 * ($1*$1)/($3*$3) )/$3 *100,"$"}'`
+  deltaP=`echo "${deltaM_Data} ${deltaM_MC}" | sed 's|\\$||g;s|\\\\pm||g;s|&||g' | awk '{print "$",(\$1-\$3)/(91.188+$1)*100,"\\\\pm",sqrt($2 * $2 + $4 * $4)/91.188*100,"$"}'`
 
 
 ## Width
