@@ -1,7 +1,6 @@
 #!/bin/bash
 #1 is the validation file with the full data/validation/xx.dat
 #2 the interval
-##file=$(echo $1 |sed "s|data/validation/||"| sed "s|.dat||" ) #so you can tab the name of the file :-)
 file=`basename $1 .dat`
 interval=$2
 echo "[INFO] data/runRanges/runRangeLimits.dat is used to fix the limits; you can change this in bin/ZFitter.cpp"

@@ -355,7 +355,7 @@ if [ -n "${STEP1}" ];then
 	   --saveRootMacro --corrEleType HggRunEta \
 	    --corrEleFile ${outDirTable}/${outFile/_scales.dat/} || exit 1 #EnergyScaleCorrection_class already puts at the end of the file name: _scales.dat
 
-	mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/    
+	#mv tmp/scaleEle_HggRunEta_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/step1/    
 	echo "[STATUS] Step 1 done"
 	echo "time dep-scale corrections built from "${outDirTable}/${outFile}
 
@@ -448,7 +448,6 @@ if [ -n "${STEP1Plotter}" ];then
 	mkdir -p ${outDirData}/step1/img/stability/$xVar
     fi
 
-    echo "OOH" ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex
     if [ -e ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex ];then
 	./script/stability.sh -t  ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex \
 	    --outDirImgData ${outDirData}/step1/img/stability/$xVar/ -x $xVar -y peak || exit 1
@@ -492,7 +491,7 @@ if [ -n "${STEP1Plotter}" ];then
     ###MC Fits
     mv ${tmp_path}/test/MC/${mcName}/${puName}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/MC/  
     ###Initial Data Fits
-    mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/data/
+    mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/Fits/data/
     ###Final Data Fits (after appyting step1 corrections}
     mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step1/img/*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1_stab/Fits/data/
 fi
