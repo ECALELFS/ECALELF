@@ -39,7 +39,7 @@ public:
 	~addBranch_class(void);
 
 	/// specify the new branch you want in BranchName
-	TTree *AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop = true, bool isMC = false);
+	TTree *AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop = true, bool isMC = false, TString energyBranchName = "");
 	TTree* AddBranch_R9Eleprime(TChain* originalTree, TString treename, bool isMC);
 	TTree* AddBranch_ZPt(TChain* originalTree, TString treename, TString energyBranchName, bool fastLoop = true);
 
@@ -50,6 +50,7 @@ public:
 
 private:
 	TTree* AddBranch_LTweight(TChain* originalChain, TString treename);
+	TTree* AddBranch_EleIDSF(TChain* originalChain, TString treename, TString branchname, TString energyBranchName, bool isMC);
 	TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop = true, bool isMC = true);
 	TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);
 	TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
