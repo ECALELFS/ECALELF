@@ -32,4 +32,4 @@ mc_inc.SetLineColor(ROOT.kBlack)
 
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptTitle(0)
-plot.PlotDataMC([], [mc_inc] +  list(stack), "plots/validation/LTBinned/",  "LT_stack", xlabel="L_{T}", ylabel="Events", ylabel_unit="GeV", logy = False)
+plot.PlotDataMC([], [mc_inc] +  list(stack), "plots/validation/LTBinned/",  "LT_stack", xlabel="L_{T}", ylabel="Events", ylabel_unit="GeV", logy = False, ratio=True)
