@@ -271,3 +271,12 @@ def NormalizeStack(stack, normalizeTo=1):
 		hstack.Add(h)
 	
 	return hstack.GetStack(), hstack
+
+def FoldTH2(h):
+	for i in range(h.GetNbinsX() + 2):
+		for j in range(0,i):
+			c = h.GetBinContent(i,j)
+			co = h.GetBinContent(j,i)
+			h.SetBinContent(j,i, c + co)
+			h.SetBinContent(i,j, 0)
+
