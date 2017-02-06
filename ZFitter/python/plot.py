@@ -8,11 +8,11 @@ ndraw_entries = 1000000000
 hist_index = 0
 
 def GetTH1(chain, branchname, isMC, binning="", category="", label="",
-		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+		 usePU=True, useEleIDSF=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
 	global hist_index
 	#enable only used branches
 	ActivateBranches(chain, branchname, category, energyBranchName)
-	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF)
 
 	histname = "hist%d" % hist_index
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
@@ -23,10 +23,10 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 	return h
 
 def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label="",
-		 usePU=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+		 usePU=True, useEleIDSF=True,smear=False, scale=False, useR9Weight=False, energyBranchName = None):
 	global hist_index
 	ActivateBranches(chain, branchname, category, energyBranchName)
-	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF)
 
 	#print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
 	
@@ -66,7 +66,7 @@ def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label=
 		
 	return stack
 
-def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU):
+def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF):
 	selection = ROOT.TCut("")
 	if(category):
 		selection = cutter.GetCut(category, False, 0 , scale)
@@ -86,6 +86,19 @@ def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU)
 		if(usePU and CheckForBranch(chain, "puWeight")):
 			chain.SetBranchStatus("puWeight", 1)
 			weights *= "puWeight"
+		if(useEleIDSF):
+			start = category.find("eleID_") + 6
+			end = category.find("-",start)
+			if end > 0:
+				EleIDSF = "EleIDSF_" + category[start:end]
+			else: 
+				EleIDSF = "EleIDSF_" + category[start:]
+
+			if CheckForBranch(chain, EleIDSF):
+				weights *= "{id}[0]*{id}[1]".format(id=EleIDSF)
+				chain.SetBranchStatus(EleIDSF, 1)
+			else:
+				print EleIDSF + " branch not present"
 
 	if CheckForBranch(chain, "LTweight"):
 		weights *= "LTweight"

@@ -4,6 +4,7 @@
 #include <TLorentzVector.h>
 #include <TGraph.h>
 #include <iostream>
+#include "TH2F.h"
 
 //#define DEBUG
 //#define NOFRIEND
@@ -21,7 +22,7 @@ addBranch_class::~addBranch_class(void)
  *  \param treename name of the new tree (not important)
  *  \param BranchName invMassSigma or iSMEle (important, define which new branch you want)
  */
-TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop, bool isMC)
+TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TString BranchName, bool fastLoop, bool isMC, TString energyBranchName)
 {
 	if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
 	if(BranchName.CompareTo("iSM") == 0)       return AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
@@ -29,10 +30,68 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 	if(BranchName.CompareTo("R9Eleprime") == 0)       return AddBranch_R9Eleprime(originalChain, treename, isMC); //after r9 transformation
 	if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_", ""), fastLoop);
 	if(BranchName.CompareTo("LTweight") == 0) return AddBranch_LTweight(originalChain, treename);
+	if(BranchName.Contains("EleIDSF")) return AddBranch_EleIDSF(originalChain, treename, BranchName, energyBranchName, isMC);
 	std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
 	return NULL;
 }
 
+TTree* addBranch_class::AddBranch_EleIDSF(TChain* originalChain, TString treename, TString branchname, TString energyBranchName, bool isMC)
+{
+	Float_t etaSCEle[] = {0,0,0}; 
+	Float_t energy[] = {0,0,0}; 
+	originalChain->SetBranchStatus("*", 0);
+	if(isMC) {
+		originalChain->SetBranchStatus("etaSCEle", 1);
+		originalChain->SetBranchStatus(energyBranchName, 1);
+		originalChain->SetBranchAddress("etaSCEle", etaSCEle);
+		originalChain->SetBranchAddress(energyBranchName, energy);
+	}
+
+	std::cout << gDirectory->GetName() << std::endl;
+	TTree* newtree = new TTree(treename, treename);
+	newtree->SetDirectory(gDirectory);
+	Float_t EleIDSF[] = {1,1,1};
+	newtree->Branch(branchname, EleIDSF, branchname + "[3]/F");
+
+	TH2F * sf = NULL;
+
+	sf = (TH2F *) TFile::Open("/eos/project/c/cms-ecal-calibration/data/EleIDSF/" + branchname + ".root")->Get("EGamma_SF2D");
+	if (sf == NULL) {
+		std::cerr << "[ERROR] Request to add branch " << branchname << " but does not contain valid ID" << std::endl;
+		return NULL;
+	}
+
+	Float_t max_pT = sf->GetYaxis()->GetBinCenter(sf->GetYaxis()->GetLast());
+	Float_t min_pT = sf->GetYaxis()->GetBinCenter(sf->GetYaxis()->GetFirst());
+	Float_t max_eta = sf->GetXaxis()->GetBinCenter(sf->GetXaxis()->GetLast());
+	Float_t min_eta = sf->GetXaxis()->GetBinCenter(sf->GetXaxis()->GetFirst());
+
+	Long64_t nentries = originalChain->GetEntries();
+	TString oldfilename = "";
+	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+		originalChain->GetEntry(ientry);
+
+		for(Int_t i = 0; i < 3; ++i) {
+			EleIDSF[i] = 0;
+			if(etaSCEle[i] == -999 || energy[i] == -999) continue;
+			Float_t pT = energy[i]/cosh(etaSCEle[i]);
+			//if outside TH2F then move values to highest bin
+			pT = min(pT, max_pT);
+			pT = max(pT, min_pT);
+			etaSCEle[i] = min(etaSCEle[i], max_eta);
+			etaSCEle[i] = max(etaSCEle[i], min_eta);
+
+			Int_t bin = sf->FindBin(etaSCEle[i], pT);
+			EleIDSF[i] = sf->GetBinContent(bin);
+			if(EleIDSF[i] == 0)
+				std::cout << Form("[DEBUG] etaSCEle[%d]=%.1f pT=%.1f energy=%.1f", i, etaSCEle[i], pT, energy[i]) << std::endl;
+		}
+		newtree->Fill();
+	}
+	originalChain->SetBranchStatus("*", 1);
+	originalChain->ResetBranchAddresses();
+	return newtree;
+}
 TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treename)
 {
 

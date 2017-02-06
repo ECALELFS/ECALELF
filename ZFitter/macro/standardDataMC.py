@@ -11,6 +11,7 @@ parser.add_argument("-n", "--name", help="outfile base name (default=branchname)
 parser.add_argument("-x", "--xlabel", help="x axis label (default=branchname)")
 parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
 parser.add_argument("--noPU", help="no pileup weights", default=False, action="store_true")
+parser.add_argument("--noEleIDSF", help="no EleIDSF weights", default=False, action="store_true")
 
 args = parser.parse_args()
 
@@ -38,7 +39,7 @@ def MakeTH1s(arg, branchname, isMC, binning, category):
 
 
 		chain = ROOT.TFile.Open(filename).Get("selected")
-		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU))
+		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU, useEleIDSF = not args.noEleIDSF))
 	return hs
 
 #eleID = "eleID_loose25nsRun22016Moriond"
