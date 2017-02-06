@@ -8,7 +8,7 @@ defaultEnergyBranch = cutter.energyBranchName
 
 def ReduceFormula(formula):
 	import re
-	reg = ["[|&!:]+"]
+	reg = ["[|&!:,]+"]
 	reg += ["[><=%]+"]
 	reg += ["\\[[01]\\]"]
 	reg += ["[- .0-9]{2,}"]
@@ -18,6 +18,8 @@ def ReduceFormula(formula):
 	reg += ["[*/+-]{1,}"]
 	reg += ["[ ]{1,}"]
 	reg += ["SingleEle"]
+	reg += ["max"]
+	reg += ["min"]
 	for r in reg:
 		formula = re.sub(r, " ", formula)
 	formula.replace("scaleEle", "");
