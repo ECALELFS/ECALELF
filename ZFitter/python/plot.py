@@ -24,6 +24,7 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="",
 
 def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label="",
 		 usePU=True, useEleIDSF=True,smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+	''' Unused, use PlotDataMC with stack_mc=True '''
 	global hist_index
 	ActivateBranches(chain, branchname, category, energyBranchName)
 	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF)
@@ -166,7 +167,7 @@ def ColorMCs(mcs):
 		h.SetMarkerSize(1)
 		h.SetMarkerColor(colors[i % len(colors)])
 		h.SetFillStyle(0)
-		h.SetFillColor(colors[i % len(colors)])
+		h.SetFillColorAlpha(colors[i % len(colors)], 1)
 		h.SetLineColor(colors[i % len(colors)])
 		h.SetLineWidth(2)
 
@@ -207,55 +208,95 @@ def Normalize(data, mc):
 		print "[WARNING] No normalization defind for (ndata=%d, nmc%d)" % (ndata, nmc)
 
 def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
-		ylabel_unit="", logy=False, ratio=True, stack_data=False, stack_mc=False):
+		ylabel_unit="", logy=False, ratio=False, stack_data=False, stack_mc=False):
 
 	mc_list = AsList(mc)
 	data_list = AsList(data)
 
-	if(ratio):
-		print "[WARNING] ratio not implemented"
 
-	c = ROOT.TCanvas("c", "c", 600, 480)
+	c = ROOT.TCanvas("c", "c", 600, 600)
 	c.SetLeftMargin(.14)
+	if(ratio):
+		c.Divide(1,2)
+		c.cd(1)
+		ROOT.gPad.SetPad("normal", "normal", 0, .3, 1, 1, ROOT.kWhite, 0, 0);
+		ROOT.gPad.SetBottomMargin(0.01)
 
 	nhists = len(data_list) + len(mc_list)
 	ncolumns = min(4,nhists)
 	nrows = (nhists+1)/ncolumns
-	c.SetTopMargin(.05*nrows)
+	ROOT.gPad.SetTopMargin(.06*nrows)
 
 	maximum = max( [h.GetMaximum() for h in  data_list] + [h.GetMaximum() for h in mc_list])
 	if(logy):
 		minimum = 0.001
 		maximum *= 5
-		c.SetLogy()
+		ROOT.gPad.SetLogy()
 	else:
 		minimum = 0.0
 		maximum *= 1.2
 	
-	if data_list: 
+	dstack = None
+	if stack_data:
+		dstack = ROOT.THStack("dstack","")
+		for h in data_list:
+			dstack.Add(h)
+		dstack.Draw()
+
+	mcstack = None
+	if stack_mc:
+		mcstack = ROOT.THStack("mcstack","")
+		for h in mc_list:
+			mcstack.Add(h)
+		mcstack.Draw()
+
+	if dstack:
+		h0 = dstack
+	elif mcstack:
+		h0 = mcstack
+	elif data_list:
 		h0 = data_list[0]
 	elif mc_list:
 		h0 = mc_list[0]
 	else:
 		raise Exception("no histograms")
 
-	h0.SetXTitle(xlabel)
-	h0.SetYTitle(ylabel + " /(%.2f %s)" %(h0.GetBinWidth(2), ylabel_unit))
+	if not ratio:
+		print xlabel
+		h0.GetXaxis().SetTitle(xlabel)
+	else:
+		h0.GetXaxis().SetTitleOffset(3)
+		h0.GetXaxis().SetLabelOffset(3)
+
+	h0.GetYaxis().SetTitle(ylabel + " /(%.2f %s)" %(h0.GetXaxis().GetBinWidth(2), ylabel_unit))
 	h0.GetYaxis().SetRangeUser(minimum, maximum)
 	h0.GetYaxis().SetTitleOffset(1.5)
 
 	same = ""
-	for h in data_list:
-		h.Draw("p" + same)
-		if not same: same = "same" 
-	for h in mc_list:
-		h.Draw("hist" + same)
-		if not same: same = "same" 
+	#draw stacks
+	if dstack:
+		dstack.Draw("p" + same)
+		same = "same"
 
-	x0 = c.GetLeftMargin()
-	y0 = 1 - c.GetTopMargin()
-	x1 = 1 - c.GetRightMargin()
-	y1 = 1 - c.GetTopMargin()*.1
+	if mcstack:
+		mcstack.Draw("hist" + same)
+		same = "same"
+
+	#draw not stacks
+	if not stack_data:
+		for h in data_list:
+			h.Draw("p" + same)
+			same = "same" 
+
+	if not stack_mc:
+		for h in mc_list:
+			h.Draw("hist" + same)
+			same = "same" 
+
+	x0 = ROOT.gPad.GetLeftMargin()
+	y0 = 1 - ROOT.gPad.GetTopMargin()
+	x1 = 1 - ROOT.gPad.GetRightMargin()
+	y1 = 1 - ROOT.gPad.GetTopMargin()*.1
 	leg = ROOT.TLegend(x0, y0, x1, y1)
 	for h in data_list:
 		leg.AddEntry(h, h.GetTitle(), "p")
@@ -270,11 +311,45 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 	#pv.SetBorderSize(0)
 	#pv.Draw()
 
+	htemp = ROOT.TH1F("dummy","",1,h0.GetXaxis().GetXmin(),h0.GetXaxis().GetXmax())
+	if(ratio):
+		if not mc_list or not data_list:
+			print "[ERROR] Ratio plot with either no MC or no data"
+			return
+		c.cd(2)
+		ROOT.gPad.SetPad("ratio", "ratio", 0.0,  0.0,  1.0,  0.3, ROOT.kWhite, 0, 0 )
+		ROOT.gPad.SetTopMargin(0.02)
+		ROOT.gPad.SetBottomMargin(0.2)
+		if(stack_mc):
+			ratio_mc = mcstack.GetStack().Last().Clone()
+			ratio_mc.SetLineColor(ROOT.kRed)
+		else:
+			ratio_mc = [h.Clone() for h in mc_list]
+
+		ratio_mc = AsList(ratio_mc)
+		ratio_mc[0].GetXaxis().SetTitle(xlabel)
+		ratio_mc[0].GetYaxis().SetTitle("MC/Data")
+		ratio_mc[0].GetXaxis().SetTitleSize(1.2*.072)
+		ratio_mc[0].GetXaxis().SetLabelSize(.072)
+		ratio_mc[0].GetYaxis().SetTitleSize(1.2*.072)
+		ratio_mc[0].GetYaxis().SetLabelSize(.072)
+		ratio_mc[0].GetYaxis().SetRangeUser(0.8, 1.2)
+		same = ""
+		for h in ratio_mc:
+			h.Divide(data_list[0])
+			h.Draw(same)
+			same = "same"
+		htemp.SetBinContent(1, 1)
+		htemp.SetLineColor(data_list[0].GetMarkerColor())
+		htemp.SetLineWidth(2)
+		htemp.Draw("hist" + same)
+
 	c.SaveAs(file_path + '/' + file_basename + ".png")
 	c.SaveAs(file_path + '/' + file_basename + ".pdf")
 	c.SaveAs(file_path + '/' + file_basename + ".C")
 
 def NormalizeStack(stack, normalizeTo=1):
+	''' Unused replaced with PlotDataMC with stack_mc=True '''
 
 	stack_sum = sum([h.Integral() for h in stack])
 	hstack = ROOT.THStack("hs","")
