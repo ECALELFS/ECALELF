@@ -7,27 +7,31 @@ ndraw_entries = 1000000000
 
 hist_index = 0
 
-def GetTH1(chain, branchname, isMC, binning="", category="", label="",
-		 usePU=True, useEleIDSF=True, smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+def GetTH1(chain, branchname, isMC, binning="", category="", label="", histname="",
+		 usePU=True, useEleIDSF=2, smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT=True):
 	global hist_index
 	#enable only used branches
 	ActivateBranches(chain, branchname, category, energyBranchName)
-	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT)
 
-	histname = "hist%d" % hist_index
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
-	chain.Draw(branchname + ">>" + histname + binning, selection * weights, "", ndraw_entries)
+	if histname:
+		chain.Draw(branchname + ">>" + histname, selection * weights, "", ndraw_entries)
+	else:
+		histname = "hist%d" % hist_index
+		chain.Draw(branchname + ">>" + histname + binning, selection * weights, "", ndraw_entries)
+		hist_index += 1
+
 	h = ROOT.gDirectory.Get(histname)
 	h.SetTitle(label)
-	hist_index += 1
 	return h
 
 def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label="",
-		 usePU=True, useEleIDSF=True,smear=False, scale=False, useR9Weight=False, energyBranchName = None):
+		 usePU=True, useEleIDSF=2,smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT = True):
 	''' Unused, use PlotDataMC with stack_mc=True '''
 	global hist_index
 	ActivateBranches(chain, branchname, category, energyBranchName)
-	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT)
 
 	#print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
 	
@@ -67,7 +71,7 @@ def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label=
 		
 	return stack
 
-def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF):
+def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT):
 	selection = ROOT.TCut("")
 	if(category):
 		selection = cutter.GetCut(category, False, 0 , scale)
@@ -96,12 +100,17 @@ def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU,
 				EleIDSF = "EleIDSF_" + category[start:]
 
 			if CheckForBranch(chain, EleIDSF):
-				weights *= "{id}[0]*{id}[1]".format(id=EleIDSF)
+				if useEleIDSF == 2:
+					weights *= "{id}[0]*{id}[1]".format(id=EleIDSF)
+				elif useEleIDSF == 1:
+					weights *= EleIDSF 
 				chain.SetBranchStatus(EleIDSF, 1)
 			else:
 				print EleIDSF + " branch not present"
 
-	if CheckForBranch(chain, "LTweight"):
+
+	if useLT and CheckForBranch(chain, "LTweight"):
+		chain.SetBranchStatus("LTweight", 1)
 		weights *= "LTweight"
 
 	return selection, weights
@@ -126,9 +135,6 @@ def ActivateBranches(chain, branchnames, category, energyBranchName):
 		branchlist = cutter.GetBranchNameNtupleVec(category)
 	else:
 		branchlist = []
-
-	if CheckForBranch(chain, "LTweight"):
-		branchlist.push_back("LTweight")
 
 	for b in branchlist:
 		print "[Status] Enabling branch:", b
@@ -208,7 +214,7 @@ def Normalize(data, mc):
 		print "[WARNING] No normalization defind for (ndata=%d, nmc%d)" % (ndata, nmc)
 
 def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
-		ylabel_unit="", logy=False, ratio=False, stack_data=False, stack_mc=False):
+		ylabel_unit="", logx = False, logy=False, ratio=False, stack_data=False, stack_mc=False):
 
 	mc_list = AsList(mc)
 	data_list = AsList(data)
@@ -226,6 +232,8 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 	ncolumns = min(4,nhists)
 	nrows = (nhists+1)/ncolumns
 	ROOT.gPad.SetTopMargin(.06*nrows)
+	ROOT.gPad.SetLogx(logx)
+	ROOT.gPad.SetLogy(logy)
 
 	maximum = max( [h.GetMaximum() for h in  data_list] + [h.GetMaximum() for h in mc_list])
 	if(logy):
@@ -320,6 +328,7 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		ROOT.gPad.SetPad("ratio", "ratio", 0.0,  0.0,  1.0,  0.3, ROOT.kWhite, 0, 0 )
 		ROOT.gPad.SetTopMargin(0.02)
 		ROOT.gPad.SetBottomMargin(0.2)
+		ROOT.gPad.SetLogx(logx)
 		if(stack_mc):
 			ratio_mc = mcstack.GetStack().Last().Clone()
 			ratio_mc.SetLineColor(ROOT.kRed)
@@ -333,7 +342,10 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		ratio_mc[0].GetXaxis().SetLabelSize(.072)
 		ratio_mc[0].GetYaxis().SetTitleSize(1.2*.072)
 		ratio_mc[0].GetYaxis().SetLabelSize(.072)
-		ratio_mc[0].GetYaxis().SetRangeUser(0.8, 1.2)
+		try:
+			ratio_mc[0].GetYaxis().SetRangeUser(*ratio)
+		except:
+			pass
 		same = ""
 		for h in ratio_mc:
 			h.Divide(data_list[0])
@@ -367,3 +379,64 @@ def FoldTH2(h):
 			h.SetBinContent(j,i, c + co)
 			h.SetBinContent(i,j, 0)
 
+def Draw2D(h, label, name, makeDiagBins=False, nevents=None, plotdir="plots/", logx=False, logy=False):
+	c = ROOT.TCanvas("c","c", 800, 500)
+
+	c.SetRightMargin(.3)
+
+	h.SetStats()
+	ROOT.gStyle.SetOptStat(1111111)
+	h.SetYTitle("Ele. 1 " + label)
+	h.SetXTitle("Ele. 2 " + label)
+	h.Draw("colz")
+
+	print "###", name, h.Integral(0, h.GetNbinsX() + 1, 0, h.GetNbinsY()+1), h.GetEntries()
+
+	c.Modified()
+	c.Update()
+	ps = h.GetListOfFunctions().FindObject("stats")
+	ps.SetX1NDC(0.8);
+	c.Modified()
+	c.Update()
+	if logx: c.SetLogx()
+	if logy: c.SetLogy()
+
+	if makeDiagBins and nevents:
+		xbins = h.GetXaxis().GetNbins()
+		ybins = h.GetYaxis().GetNbins()
+
+		i = 0
+		bins = [i]
+		values = [h.GetXaxis().GetBinLowEdge(i+1)]
+		integrals = []
+		while i <= xbins and i <= ybins:
+			i += 1
+			integral = h.Integral(bins[-1]+1, i, bins[-1]+1, i)
+			if not i % (xbins/10): print i,"/",xbins
+			if integral > nevents:
+				bins.append(i)
+				values.append(h.GetXaxis().GetBinLowEdge(i+1))
+				integrals.append(integral)
+		bins.append(i)
+		values.append(h.GetXaxis().GetBinLowEdge(i))
+
+		print label + " bins"
+		for low,hi,integral in zip(values[:-1], values[1:], integrals):
+			print "%10.3f < %s < %10.3f : %f" % (low, label, hi, integral)
+		print "[RESULT]", values
+
+		boxes = []
+		for i in xrange(len(values)-1):
+			boxes.append(ROOT.TBox( values[i], values[i], values[i+1], values[i+1]))
+
+		for b in boxes:
+			b.SetFillStyle(0)
+			b.SetLineColor(ROOT.kRed)
+			b.Draw()
+	elif makeDiagBins:
+		print "[WARNING] makeDiagBins=True but nevents=None"
+
+
+	c.SaveAs(plotdir + name + ".png")
+	c.SaveAs(plotdir + name + ".pdf")
+	c.SaveAs(plotdir + name + ".eps")
