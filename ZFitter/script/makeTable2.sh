@@ -1,21 +1,28 @@
 #!/bin/bash
-column_peak=3
-column_resolution=4
+# this script selects the one column for the peak estimator and one
+# for the resolution estimator and returns a .dat and a .tex files
+commonCut=isEle-Et_25
+column_peak=4
+column_resolution=5
+var=invMass_ECAL_ele
 usage(){
-    echo "`basename $0`"
-    echo " --help"
-    echo " ------- Mandatory"
-    echo " --regionsFile arg"
-    echo " --outDirFitResMC arg"
-    echo " --outDirFitResData arg"
-    echo " ------- Optional"
-    echo " --runRangesFile arg"
-    echo " --commonCut arg"
-    echo " --cruijff"
+	echo "************************************************************"
+    echo "* `basename $0`                                          "
+	echo "************************************************************"
+    echo "* --help: return this message                               "
+    echo "* ***** Mandatory ------------------------------------------"
+    echo "* --regionsFile <arg>      : file with the regions to be reported in table"
+    echo "* --fitResFile <arg> (=$fitResFile): .dat file with the fit results"
+    echo "* ***** Optional -------------------------------------------"
+    echo "* --runRangesFile <arg>                                     "
+    echo "* --commonCut <arg>     (=$commonCut)"
+	echo "* --peakVar <arg>       (=$column_peak)       : column containing the peak estimator"
+	echo "* --resolutionVar <arg> (=$column_resolution) : column containing the resolution estimator"
+	echo "************************************************************"
 }
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf:s: -l help,regionsFile:,runRangesFile:,outDirFitResMC:,outDirFitResData:,commonCut:,cruijff,selEff: -- "$@")
+if ! options=$(getopt -u -o hf:s: -l help,regionsFile:,runRangesFile:,fitResFile:,commonCut:,selEff:,peakVar:,resolutionVar: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -26,23 +33,24 @@ set -- $options
 while [ $# -gt 0 ]
 do
     case $1 in
-	-h|--help) usage; exit 0;;
-	--regionsFile) regionsFile=$2; shift;;
-	--runRangesFile) runRangesFile=$2; shift;;
-	--commonCut) commonCut=$2; shift;;
-	--outDirFitResMC) outDirFitResMC=$2; shift;;
-	--outDirFitResData) outDirFitResData=$2; shift;;
-	-s|--step) STEP=$2; shift;;
-	--cruijff) varVar=cruijff;;
-	--selEff) SELEFF=y;;
-	(--) shift; break;;
-	(-*) usage; echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
-	(*) break;;
+		-h|--help) usage; exit 0;;
+		--regionsFile) regionsFile=$2; shift;;
+		--runRangesFile) runRangesFile=$2; shift;;
+		--commonCut) commonCut=$2; shift;;
+		--fitResFile) fitResFile=$2; shift;;
+		--peakVar)    column_peak=$2; shift;;
+		--resolutionVar) column_resolution=$2; shift;;
+		-s|--step) STEP=$2; shift;;
+		#	--cruijff) varVar=cruijff;;
+		--selEff) SELEFF=y;;
+		(--) shift; break;;
+		(-*) usage; echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
+		(*) break;;
     esac
     shift
 done
 
-
+columns="1,3,${column_peak},${column_resolution}"
 #------------------------------ check mandatory options
 if [ -z "${regionsFile}" ];then
     exit 1
@@ -51,17 +59,11 @@ if [ ! -r "${regionsFile}" ];then
     exit 1
 fi
 
-if [ -z "${outDirFitResData}" -o -z "${outDirFitResMC}" ];then
-    echo "[ERROR] outDirFitResData or outDirFitResMC not defined"
-    exit 1
-fi
-if [ ! -d "${outDirFitResData}" -o ! -d "${outDirFitResMC}" ];then
-    echo "[ERROR] outDirFitResData or outDirFitResMC not found or not directories"
+if [ ! -r "${fitResFile}" ];then
     exit 1
 fi
 
-
-
+############################## Start getting the list of regions
 regions=`cat $regionsFile | grep -v '#'`
 if [ -n "${runRangesFile}" ];then
     runRanges=`cat $runRangesFile | grep -v '#' | awk '{print $1}'`
@@ -86,16 +88,30 @@ else
 	done
 fi
 
-for branch in $outDirFitResData/*.dat
+
+# taking the wanted lines and header and parsing the output to the wanted format
+# prints only the columns wanted and transfor .dat in .tex removing the commonCut in the category names
+{
+	# get header
+	head -1 $fitResFile
+	# get results
+	for category in $categories
+	do
+		grep $category $fitResFile
+	done
+} | cut -f $columns| sed 's|[\t ]| \& |g;s|$| \\\\|' |sed "s|[-]$commonCut||" | sed -f sed/tex.sed
+
+exit 0
+
+
+for branch in $outDirFitResData/$var.dat
 do
 	fileData=$branch
 	branch=`basename $branch .dat`
-	fileMC=$outDirFitResMC/$branch.dat
-	if [ ! -r "${fileMC}" ];then
-		echo "[ERROR] ${fileMC} not found" >> /dev/stderr
-		exit 1
-	fi
+#	echo "# data and MC are pasted side-by-side for each column"
+	paste $fileData $fileMC | awk '(NF!=0){printf("%s\t%s", $1, $2); for(i=3; i<=NF/2;i++){printf("\t%s\t%s", $i, $(i+NF/2))};printf("\n")}' > tmp/makeTable2.dat
 
-	paste $fileData $fileMC | awk '(NF!=0){printf("%s\t%s", $1, $2); for(i=3; i<=NF/2;i++){printf("\t%s\t%s", $i, $(i+NF/2))};printf("\n")}'
-	
+
+	columns="\$1, \$3,\$4, \$(($column_peak-1)*2+1), \$(($column_peak-1)*2+2), \$(($column_resolution-1)*2+1), \$(($column_resolution-1)*2+2)"
+
 done

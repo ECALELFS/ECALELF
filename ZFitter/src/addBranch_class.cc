@@ -450,12 +450,12 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 TTree* addBranch_class::AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop)
 {
 
-	TString seedXSCEleBranchName = "seedXSCEle", seedYSCEleBranchName = "seedYSCEle";
+	TString seedXSCEleBranchName = "xSeedSC", seedYSCEleBranchName = "ySeedSC";
 
 	TTree *newtree = new TTree(treename, treename);
 
-	Float_t       seedXSCEle_[2];
-	Float_t       seedYSCEle_[2];
+	Short_t       seedXSCEle_[2];
+	Short_t       seedYSCEle_[2];
 
 
 	if(fastLoop) {

@@ -19,3 +19,14 @@ d9 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/
 d9 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016H-ZSkim-Prompt-v2/281207-284035/271036_284044-23Sep2016/newNtuples/eleIDTree-DoubleEG-Run2016H-ZSkim-Prompt-v2-281207-284035.root
 d10 	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016H-ZSkim-Prompt-v3/284036-284068/271036_284044-23Sep2016/newNtuples/DoubleEG-Run2016H-ZSkim-Prompt-v3-284036-284068.root
 d10 	eleIDTree	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/ALCARERECO/Cal_Jan2017_ref/DoubleEG-Run2016H-ZSkim-Prompt-v3/284036-284068/271036_284044-23Sep2016/newNtuples/eleIDTree-DoubleEG-Run2016H-ZSkim-Prompt-v3-284036-284068.root
+
+d1	iSM	data/iSM_d1-Cal_Jan2017_ref.root
+d2	iSM	data/iSM_d2-Cal_Jan2017_ref.root
+d3	iSM	data/iSM_d3-Cal_Jan2017_ref.root
+d4	iSM	data/iSM_d4-Cal_Jan2017_ref.root
+d5	iSM	data/iSM_d5-Cal_Jan2017_ref.root
+d6	iSM	data/iSM_d6-Cal_Jan2017_ref.root
+d7	iSM	data/iSM_d7-Cal_Jan2017_ref.root
+d9	iSM	data/iSM_d9-Cal_Jan2017_ref.root
+d10	iSM	data/iSM_d10-Cal_Jan2017_ref.root
+s1	iSM	data/iSM_s1-Cal_Jan2017_ref.root

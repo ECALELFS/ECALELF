@@ -9,7 +9,7 @@ invMass_max=115
 configFile=data/validation/monitoring_2016.dat
 runRangesFile=data/runRanges/monitoringRun2016-v2.dat
 baseDir=testNew
-#extraOptions="--anyVarBranches=timeSeedSC"
+extraOptions="--anyVarBranches=S4 --anyVarBranches=etaWidth --anyVarBranches=sigmaIEtaIEtaSCEle --anyVarBranches=R9Ele"
 
 # VALIDATION=y
 # STABILITY=y
@@ -29,6 +29,7 @@ usage(){
 	echo "----- what to do"
     echo " --validation: run the validation only, not the history and etaScale fits"
     echo " --stability:  run the stability fits only"
+	echo " --alphaStudies: "
     echo " --etaScale:   run the fits in |eta| only"
     echo " --R9Ele:      run the fits in bin of R9 only"
     echo " --onlyTable:  do not run the fits, recreate only the tables and the stability plots"
@@ -52,7 +53,7 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,validation,stability,etaScale,systematics:,slides,onlyTable,test,commonCut:,period:,cruijff,refreg,R9Ele,noPU -- "$@")
+if ! options=$(getopt -u -o hf: -l help,runRangesFile:,selection:,invMass_var:,puName:,baseDir:,validation,stability,alphaStudies,etaScale,systematics:,slides,onlyTable,test,commonCut:,period:,cruijff,refreg,R9Ele,noPU -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -73,6 +74,7 @@ do
 	--baseDir) baseDir=$2; echo "[OPTION] baseDir = $baseDir"; shift;;
 	--validation)  VALIDATION=y;;
 	--stability)   STABILITY=y;;
+	--alphaStudies) ALPHA=y;;
 	--etaScale)    ETA=y;;
 	--R9Ele)       R9ELE=y;;
 	--refreg)      REFREG=y;;
@@ -108,7 +110,7 @@ do
     shift
 done
 
-if [ -z "${VALIDATION}" -a -z "${STABILITY}" -a -z "${SLIDES}" -a -z "${SYSTEMATICS}" -a -z "${ETA}" -a -z "${REFREG}" -a -z "${R9ELE}" ];then
+if [ -z "${VALIDATION}" -a -z "${STABILITY}" -a -z "${SLIDES}" -a -z "${SYSTEMATICS}" -a -z "${ETA}" -a -z "${REFREG}" -a -z "${R9ELE}" -a -z "${ALPHA}" ];then
     # if no option selected, run all the sequence
     VALIDATION=y
     STABILITY=y
@@ -189,17 +191,14 @@ if [ -n "$VALIDATION" ];then
 			--outDirImgMC=${outDirMC}/img    --outDirImgData=${outDirData}/img ${extraOptions} > ${outDirData}/log/validation.log|| exit 1
 	fi
 
-
-#    ./script/makeTable2.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
-#	 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres ${tableCruijffOption} \
-#	 	>  ${outDirTable}/$PERIOD/monitoring_summary-${invMass_var}-${selection}-${commonCut}.dat || exit 1
+    ./script/makeTable2.sh --regionsFile ${regionFile}  --commonCut=${commonCut} \
+	 	--fitResFile=${outDirData}/fitres/${invMass_var}.dat \
+	 	>  ${outDirTable}/$PERIOD/monitoring_summary-${invMass_var}-${selection}-${commonCut}.dat || exit 1
 fi
 
 ##################################################
 if [ -n "$STABILITY" ];then
     regionFile=data/regions/stability.dat
-    #mkdir ${outDirData}/{fitres,img}/{floating,invMass_range,invMass_range2} -p
-
     xVar=runNumber
     if [ -z "$PERIOD" ];then
 		if [ -z "${ONLYTABLE}" ];then
@@ -214,23 +213,53 @@ if [ -n "$STABILITY" ];then
 				> ${outDirData}/log/monitoring_stability.log || exit 1
 
 		fi
-		#./script/makeTable.sh --regionsFile ${regionFile}  --commonCut=${commonCut} --runRangesFile ${runRangesFile} \
-		#    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres/floating ${tableCruijffOption} \
-		#    >  ${outDirTable}/monitoring_stability_floating-${invMass_var}-${selection}.tex || exit 1
-#		./script/makeTable2.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
-#	    --outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/fitres \
-#			>  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}-${commonCut}.dat || exit 1
+
+		./script/makeTable2.sh --regionsFile ${regionFile} --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
+	 		--fitResFile=${outDirData}/fitres/${invMass_var}.dat \
+			>  ${outDirTable}/monitoring_stability-${invMass_var}-${selection}.tex || exit 1
     fi
 
-###################### Make stability plots
+	###################### Make stability plots
 	imgDir=${outDirData}/img/stability/$xVar/$PERIOD
     if [ ! -d ${imgDir} ];then
 		mkdir -p ${imgDir}
     fi
 
-    ./script/stability2.sh -t  ${outDirData}/fitres/${invMass_var}.dat 
-#		--outDirImgData ${imgDir} -x $xVar -y peak $xMin $xMax || exit 1
+    ./script/stability2.sh -t  ${outDirData}/fitres/${invMass_var}.dat \
+		--outDirImgData ${imgDir} -x $xVar -y peak $xMin $xMax || exit 1
+fi
 
+##################################################
+if [ -n "$ALPHA" ];then
+    regionFile=data/regions/alphaStudies.dat
+    xVar=runNumber
+    if [ -z "$PERIOD" ];then
+		if [ -z "${ONLYTABLE}" ];then
+			./bin/ZFitter.exe --anyVar -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
+				${extraOptions} \
+				$updateOnly --commonCut=${commonCut} \
+				--invMass_var ${invMass_var} --selection=${selection} \
+				--invMass_min=${invMass_min} --invMass_max=${invMass_max} \
+				--outDirFitResMC=${outDirMC}/fitres \
+				--outDirImgMC=${outDirMC}/img  \
+				--outDirFitResData=${outDirData}/fitres --outDirImgData=${outDirData}/img \
+				> ${outDirData}/log/monitoring_alpha.log || exit 1
+
+		fi
+
+		./script/makeTable2.sh --regionsFile ${regionFile} --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
+	 		--fitResFile=${outDirData}/fitres/${invMass_var}.dat \
+			>  ${outDirTable}/monitoring_alphaStudies-${invMass_var}-${selection}.tex || exit 1
+    fi
+
+	###################### Make stability plots
+	imgDir=${outDirData}/img/stability/$xVar/$PERIOD
+    if [ ! -d ${imgDir} ];then
+		mkdir -p ${imgDir}
+    fi
+
+    ./script/stability2.sh -t  ${outDirData}/fitres/${invMass_var}.dat \
+		--outDirImgData ${imgDir} -x $xVar -y peak $xMin $xMax || exit 1
 fi
 
 

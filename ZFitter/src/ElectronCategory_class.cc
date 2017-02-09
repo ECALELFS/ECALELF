@@ -212,9 +212,10 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	TCut TB_ele2_cut = "(iSM_ele2 == 1 || iSM_ele2 == 2 || iSM_ele2 == 10 || iSM_ele2 == 11 || iSM_ele2 == 15 || iSM_ele2 == 19 || iSM_ele2 == 20 || iSM_ele2 == 21 || iSM_ele2 == 24)";
 	TCut TB_cut = TB_ele1_cut && TB_ele2_cut;
 
-	TCut alphaSM_ele1_cut = "iSM_ele1==2 || iSM_ele1==4 || iSM_ele1==5 || iSM_ele1==8 || iSM_ele1==11 || iSM_ele1==25 || iSM_ele1==27 || iSM_ele1==28 || iSM_ele1==34 || iSM_ele1==35";
-	TCut alphaSM_ele2_cut = "iSM_ele2==2 || iSM_ele2==4 || iSM_ele2==5 || iSM_ele2==8 || iSM_ele2==11 || iSM_ele2==25 || iSM_ele2==27 || iSM_ele2==28 || iSM_ele2==34 || iSM_ele2==35";
-
+	TCut alphaSM_ele1_cut = "(iSM_ele1==10 || iSM_ele1==12 || iSM_ele1==32)";
+	TCut alphaSM_ele2_cut = "(iSM_ele2==10 || iSM_ele2==12 || iSM_ele2==32)";
+	//TCut alphaSM_ele2_cut = "iSM_ele2==2 || iSM_ele2==4 || iSM_ele2==5 || iSM_ele2==8 || iSM_ele2==11 || iSM_ele2==25 || iSM_ele2==27 || iSM_ele2==28 || iSM_ele2==34 || iSM_ele2==35";
+//	TCut alphaSM_ele2_cut = TCut(TString(alphaSM_ele1_cut.GetTitle()).ReplaceAll("ele1","ele2"));
 
 	//  EB+ : 2, 4, 5, 8, 11
 	//   (17:58:27) Riccardo Paramatti: EB- : 7, 9, 10, 16, 17
@@ -924,6 +925,41 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TCut cutEle1_2("energySeedSC_ele1 <  " + string2);
 			TCut cutEle2_1("energySeedSC_ele2 >= " + string1);
 			TCut cutEle2_2("energySeedSC_ele2 <  " + string2);
+
+			TCut ele1_cut = cutEle1_1 && cutEle1_2;
+			TCut ele2_cut = cutEle2_1 && cutEle2_2;
+
+			if(string.Contains("SingleEle")) {
+				cut_string += ele1_cut || ele2_cut;
+				cutSet.insert(TString(ele1_cut || ele2_cut));
+			} else {
+				cut_string += ele1_cut && ele2_cut;
+				cutSet.insert(TString(ele1_cut && ele2_cut));
+			}
+
+			delete splitted;
+			continue;
+		}
+
+
+
+		//--------------- alpha of the seed crystal
+		if(string.Contains("alphaSeedSC")) {
+			TObjArray *splitted = string.Tokenize("_");
+			if(splitted->GetEntries() < 3) {
+				std::cerr << "ERROR: incomplete energySC region definition" << std::endl;
+				continue;
+			}
+			TObjString *Objstring1 = (TObjString *) splitted->At(1);
+			TObjString *Objstring2 = (TObjString *) splitted->At(2);
+
+			TString string1 = Objstring1->GetString();
+			TString string2 = Objstring2->GetString();
+
+			TCut cutEle1_1("alphaSeedSC_ele1 >= " + string1);
+			TCut cutEle1_2("alphaSeedSC_ele1 <  " + string2);
+			TCut cutEle2_1("alphaSeedSC_ele2 >= " + string1);
+			TCut cutEle2_2("alphaSeedSC_ele2 <  " + string2);
 
 			TCut ele1_cut = cutEle1_1 && cutEle1_2;
 			TCut ele2_cut = cutEle2_1 && cutEle2_2;

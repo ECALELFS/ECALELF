@@ -22,21 +22,24 @@ set output 'stability.pdf'
 
 xVar="((column(\"timeMax\")+column(\"timeMin\"))/2)"
 xVarDelta="((column(\"timeMax\")-column(\"timeMin\"))/2)"
+xVar="((column(\"runMax\")+column(\"runMin\"))/2)"
+xVarDelta="((column(\"runMax\")-column(\"runMin\"))/2)"
+
 yVarDelta="((column(\"effSigma\")/sqrt(column(\"nEvents\"))/2)"
-yRes="(column(\"effSigma\")/column(\"mean68\")*91.2/100)"
+yRes="(column(\"effSigma30\")/column(\"mean68\")*91.2/100)"
 #yRes="(column(\"effSigmaScaled\")*91.2/100)"
 
 # Other settings
-set timefmt "%s"
-set xdata time
-set format x "%d/%m"
+#set timefmt "%s"
+#set xdata time
+#set format x "%d/%m"
 set link x
 
 set xtics rotate by 45 offset -2., -1.5 nomirror
 set x2tics rotate by 30 offset 0, 0 left font ',10' 
 
 set ytics nomirror
-set y2tics textcolor 'blue'
+set y2tics 0.001 textcolor 'blue'
 set autoscale y2
 
 #set x2label 'Run range [..., ...)' offset 0, -1.75
@@ -46,11 +49,11 @@ set y2label 'effective sigma/peak * MZ [%]' textcolor 'blue'
 
 set auto fix
 set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
-set y2range [*:*]
+set y2range [0.01:0.015]
 #set yrange  [87:91]
 
 set key outside above
-set grid
+set grid y2
 
 #set bmargin 5
 set tmargin 6
@@ -71,7 +74,7 @@ if(ARGC==1){
 #		p for [yVar in "mean mean68"]  file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))):x2ticlabel(stringcolumn("timeMin").'-'.stringcolumn("runMax")) i category w xyerr pt 5 ps 0.6 title yVar #, \
 #, \
 #
-	p for [ yVar in "mean mean68" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
+	p for [ yVar in "median mean68" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
    '' u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width'
 	}
 } else {

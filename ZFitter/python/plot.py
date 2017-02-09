@@ -272,7 +272,6 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 
 	c.SaveAs(file_path + '/' + file_basename + ".png")
 	c.SaveAs(file_path + '/' + file_basename + ".pdf")
-	c.SaveAs(file_path + '/' + file_basename + ".eps")
 	c.SaveAs(file_path + '/' + file_basename + ".C")
 
 def NormalizeStack(stack, normalizeTo=1):
