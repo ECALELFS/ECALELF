@@ -104,6 +104,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 		break;
 
 	case 1:
+	  std::cout<<"you are in case 1"<<std::endl;
 		if(name.Contains("scale")) {
 			bin_width = 0.005;
 		} else if(name.Contains("const") || (rho == 0 && Emean != 0)) {
@@ -114,8 +115,10 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 		if((var == NULL || name.Contains("alpha") || name.Contains("const")) && (Emean != 0 && rho != 0)) bin_width = 0.025;
 		break;
 	case 2:
+	  std::cout<<"you are in case 2"<<std::endl;
 		if(name.Contains("scale")) {
-			bin_width = 0.0005; // level1/10
+		  bin_width = 0.0005; // level1/10
+		  //bin_width = 0.00002; // level1/10
 			sigma = 10 * bin_width; //
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
 			bin_width = 0.0005; //level1/10
@@ -131,11 +134,14 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 		range_max = std::min(range_max, minValue +  sigma);
 		break;
 	case 3:
+	  std::cout<<"you are in case 3"<<std::endl;
 		if(name.Contains("scale")) {
-			bin_width = 0.0001;   // level2/5
+		  //bin_width = 0.0001;   // level2/5
+		  bin_width = 0.0001;   // level2/5
 			sigma = 8 * bin_width; //
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
-			bin_width = 0.0002;  // level2 /3
+		  //bin_width = 0.0002;  // level2 /3
+		  bin_width = 0.00002;  // level2 /3
 			sigma = 6 * bin_width;
 		} else if(name.Contains("alpha")) {
 			bin_width = 0.003;
@@ -146,11 +152,14 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 		range_max = std::min(range_max, minValue + sigma);
 		break;
 	case 4:
+	  std::cout<<"you are in case 4"<<std::endl;
 		if(name.Contains("scale")) {
-			bin_width = 0.0001; // level1/10
+		  //bin_width = 0.0001; // level1/10
+			bin_width = 0.00005;   // level3/2
 			sigma = 5 * bin_width; // +/- 0.5%
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
-			bin_width = 0.0001; //level1/10
+		  //bin_width = 0.0001; //level1/10
+		  bin_width = 0.00002;   // level2/5
 			sigma = 10 * bin_width; // +/- 0.5%
 		} else if(name.Contains("alpha")) {
 			bin_width = 0.001;
@@ -162,10 +171,14 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 		break;
 
 	case 5:
+	  std::cout<<"you are in case 5"<<std::endl;
 		if(name.Contains("scale")) {
-			bin_width = 0.0001; // level1/10
+		  //bin_width = 0.0001; // level1/10
+		  bin_width = 0.00002;//level4/2.5
+		  //bin_width = 0.00002;   // level2/5
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
-			bin_width = 0.0001; //level1/10
+		  //bin_width = 0.0001; //level1/10
+		  bin_width = 0.0005;   // level2/5
 		} else if(name.Contains("alpha")) {
 			bin_width = 0.001;
 		}
@@ -201,6 +214,7 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 //       nBin=(int)((range_max-range_min)/bin_width);
 //     }
 //     }
+	std::cout<<"PROFILE_NBINS "<<PROFILE_NBINS<<std::endl;
 	double chi2[PROFILE_NBINS];
 	double xValues[PROFILE_NBINS];
 	if(trueEval) std::cout << "------------------------------" << std::endl;
@@ -1018,6 +1032,7 @@ ShervinMinuit::ShervinMinuit(int nBurnSteps, RooSmearer& smearer):
 	RooArgList argList(smearer.GetParams());
 	TIterator *it = argList.createIterator();
 	std::cout << "###############################" << std::endl;
+	std::cout << "#############SHERWIN MINUIT#################" << std::endl;
 	for(RooRealVar *v = (RooRealVar*)it->Next(); v != NULL; v = (RooRealVar*)it->Next()) {
 		if(! v->isConstant()) {
 			_paramSet.add((*v));

@@ -58,7 +58,7 @@
 #define ITER_MAX 20
 //#define DEBUG
 #define MEM_DEBUG
-#define PROFILE_NBINS 2000
+#define PROFILE_NBINS 10000
 
 using namespace RooStats;
 

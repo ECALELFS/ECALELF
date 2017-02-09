@@ -12,3 +12,5 @@ s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/n
 d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
 
+s1	pileup	/eos/project/c/cms-ecal-calibration/data/puTree/s1_reg_80X_2017_01_23.root
+

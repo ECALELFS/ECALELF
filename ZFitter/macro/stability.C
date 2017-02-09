@@ -774,6 +774,7 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
     g_dataMC->SaveAs("tmp/g_dataMC.root");
 
     if(updateRange){
+      std::cout<<"updating range"<<std::endl;
       rMin-=(rMax-rMin)*0.1;
     }
 
@@ -915,11 +916,15 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
   g_multi->GetYaxis()->SetLabelSize(g_multi->GetYaxis()->GetLabelSize()*labelScale);
 
   if( rMax == rMin || rMax < rMin){
-    std::cout << g_multi->GetYaxis()->GetXmin() << "\t" <<  g_multi->GetYaxis()->GetXmax() *1.1 << std::endl;
+    std::cout <<"printing y ranges "<< g_multi->GetYaxis()->GetXmin() << "\t" <<  g_multi->GetYaxis()->GetXmax() *1.1 << std::endl;
     g_multi->GetYaxis()->SetRangeUser(g_multi->GetYaxis()->GetXmin(), g_multi->GetYaxis()->GetXmax() *1.1);
   } else {
+    std::cout<<"adjusting y range"<<std::endl;
     if(rMin > g_multi->GetYaxis()->GetXmin()) rMin=g_multi->GetYaxis()->GetXmin();
     if(rMax < g_multi->GetYaxis()->GetXmax()) rMax=g_multi->GetYaxis()->GetXmax();
+    rMin=-1.; //--> just in case ;-)
+    rMax=+0.1;
+    std::cout<<"rMin "<<rMin<<" rMax "<<rMax<<std::endl;
     g_multi->GetYaxis()->SetRangeUser(rMin,rMax);
   }
 

@@ -575,7 +575,7 @@ TGraphErrors *MeanGraphNew(TGraphErrors *graph){
   y_min=1e10;
   for(graphic_t::iterator itr=graphic.begin(); itr!=graphic.end(); itr++){
     
-    if(itr->second.n < n_max*0.30){std::cout << "Removing point " << itr->first << "\t" << itr->second.n << "\t" << n_max << std::endl; continue;}
+    if(itr->second.n < n_max*0.30){std::cout << "Removing point " << itr->first << "\t" << itr->second.n << "\t" << n_max << std::endl; continue;}//CHECK-THIS
     double ym = itr->second.y/itr->second.n;
     if(itr->second.n>1 && itr->second.y2/itr->second.n >= ym*ym)
       dev_st[n] =  sqrt( (itr->second.y2/itr->second.n - ym*ym)/(double)(itr->second.n)); //errore sulla media
