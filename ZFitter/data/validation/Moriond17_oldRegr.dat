@@ -11,9 +11,15 @@ s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/n
 d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
 
-
 s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_oldRegr.root
 
-
-
+s1 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_s1-Moriond17_oldRegr.root
+d1 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d1-Moriond17_oldRegr.root
+d2 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d2-Moriond17_oldRegr.root
+d3 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d3-Moriond17_oldRegr.root
+d4 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d4-Moriond17_oldRegr.root
+d5 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d5-Moriond17_oldRegr.root
+d6 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d6-Moriond17_oldRegr.root
+d7 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d7-Moriond17_oldRegr.root
+d8 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d8-Moriond17_oldRegr.root
 

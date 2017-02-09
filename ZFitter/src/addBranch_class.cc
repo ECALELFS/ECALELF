@@ -73,11 +73,8 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 			//electron 0
 			if(abs(etaEle[0]) < 1.4442) { //barrel
 				R9Eleprime[0] = gR9EB->Eval(R9Ele[0]);
-			} else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5) { //endcap
+			} else if(abs(etaEle[0]) > 1.566 && abs(etaEle[0]) < 2.5 && R9Ele[0]>0.8) { //endcap
 				R9Eleprime[0] = gR9EE->Eval(R9Ele[0]);
-				if(R9Ele[0]<0.8){
-				  std::cout<<R9Ele[0]<<R9Ele[0]<<" "<<R9Eleprime[0]<<std::endl;
-				}
 			} else {
 				R9Eleprime[0] = R9Ele[0];
 			}
@@ -85,7 +82,7 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 			//electron 1
 			if(abs(etaEle[1]) < 1.4442) { //barrel
 				R9Eleprime[1] = gR9EB->Eval(R9Ele[1]);
-			} else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5) { //endcap
+			} else if(abs(etaEle[1]) > 1.566 && abs(etaEle[1]) < 2.5 && R9Ele[0]>0.8) { //endcap
 				R9Eleprime[1] = gR9EE->Eval(R9Ele[1]);
 			} else {
 				R9Eleprime[1] = R9Ele[1];
