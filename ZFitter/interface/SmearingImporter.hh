@@ -44,6 +44,9 @@ public:
 	inline void SetPuWeight(bool value) {
 		_usePUweight = value;
 	};
+	inline void SetIDSFWeight(bool value) {
+	        _useIDSFweight = value;
+	};
 	inline void SetMCWeight(bool value) {
 		_useMCweight = value;
 	};
@@ -94,6 +97,7 @@ private:
 	bool _isMC;
 	bool _odd;
 	bool _usePUweight;
+	bool _useIDSFweight;
 	bool _useMCweight;
 	bool _useR9weight;
 	bool _usePtweight;

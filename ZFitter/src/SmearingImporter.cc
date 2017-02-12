@@ -14,7 +14,7 @@
 #include <TObjArray.h>
 #include <TChainElement.h>
 //#define DEBUG
-
+#define DEBUG_IDSF
 
 #define SELECTOR
 #define FIXEDSMEARINGS
@@ -27,6 +27,7 @@ SmearingImporter::SmearingImporter(std::vector<TString> regionList, TString ener
 	_commonCut(commonCut),
 	_eleID("loose"),
 	_usePUweight(true),
+	_useIDSFweight(true),
 	_useMCweight(true),
 	_useR9weight(false),
 	_usePtweight(false),
@@ -105,6 +106,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 	// for the weight calculation
 	Float_t         weight = 1.;
+	Float_t         EleIDSF_loose25nsRun22016Moriond_[2] = {1, 1};
 	Float_t         r9weight[2] = {1, 1};
 	Float_t         ptweight[2] = {1, 1};
 	Float_t         FSRweight = 1.;
@@ -141,6 +143,12 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 			hasSmearEle = true;
 		}
 	}
+
+	if(chain->GetBranch("EleIDSF_loose25nsRun22016Moriond") != NULL) {
+	  chain->SetBranchStatus("EleIDSF_loose25nsRun22016Moriond", 1);
+	  std::cout << "[STATUS] Adding ele ID SFs branch from friend for tree: " << chain->GetTitle() << std::endl;
+	  chain->SetBranchAddress("EleIDSF_loose25nsRun22016Moriond", EleIDSF_loose25nsRun22016Moriond_);
+       	}
 
 	if(!isMC && chain->GetBranch("pdfWeights_cteq66") != NULL && _pdfWeightIndex > 0) {
 		std::cout << "[STATUS] Adding pdfWeight_ctec66 branch from friend" << std::endl;
@@ -317,11 +325,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 		//------------------------------
 		if(_swap) {
-			event.energy_ele2 = energyEle[0] * corrEle_[0] * smearEle_[0];
-			event.energy_ele1 = energyEle[1] * corrEle_[1] * smearEle_[1];
+		  event.energy_ele2 = energyEle[0] * corrEle_[0] * smearEle_[0] ;
+		  event.energy_ele1 = energyEle[1] * corrEle_[1] * smearEle_[1] ;
 		} else {
-			event.energy_ele1 = energyEle[0] * corrEle_[0] * smearEle_[0];
-			event.energy_ele2 = energyEle[1] * corrEle_[1] * smearEle_[1];
+		  event.energy_ele1 = energyEle[0] * corrEle_[0] * smearEle_[0] ;
+		  event.energy_ele2 = energyEle[1] * corrEle_[1] * smearEle_[1] ;
 		}
 		//event.angle_eta_ele1_ele2=  (1-((1-t1q)*(1-t2q)+4*t1*t2*cos(phiEle[0]-phiEle[1]))/((1+t1q)*(1+t2q)));
 		event.invMass = sqrt(2 * event.energy_ele1 * event.energy_ele2 *
@@ -341,6 +349,13 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 		event.weight = 1.;
 		if(_usePUweight) event.weight *= weight;
+		if(_useIDSFweight) event.weight *= EleIDSF_loose25nsRun22016Moriond_[0] * EleIDSF_loose25nsRun22016Moriond_[1];
+#ifdef DEBUG_IDSF
+		if(jentry<30 && _useIDSFweight){
+		  std::cout<<"[CHECK ID SFs]: isMC:  "<<isMC<<" ID SF[0]: "<<EleIDSF_loose25nsRun22016Moriond_[0]<<std::endl;
+		  std::cout<<"[CHECK ID SFs]: isMC:  "<<isMC<<" ID SF[1]: "<<EleIDSF_loose25nsRun22016Moriond_[1]<<std::endl;
+		}
+#endif
 		if(_useR9weight) event.weight *= r9weight[0] * r9weight[1];
 		if(_usePtweight) event.weight *= ptweight[0] * ptweight[1];
 		if(_useFSRweight) event.weight *= FSRweight;
@@ -444,6 +459,10 @@ SmearingImporter::regions_cache_t SmearingImporter::GetCache(TChain *_chain, boo
 	_chain->SetBranchStatus("etaEle", 1);
 	_chain->SetBranchStatus("phiEle", 1);
 	_chain->SetBranchStatus(_energyBranchName, 1);
+	_chain->SetBranchStatus("eleID", 1);
+	_chain->SetBranchStatus("chargeEle", 1);
+	_chain->SetBranchStatus("etaSCEle", 1);
+	_chain->SetBranchStatus("recoFlagsEle", 1);
 	if(isToy) _chain->SetBranchStatus("eventNumber", 1);
 	//  std::cout << _chain->GetBranchStatus("seedXSCEle") <<  std::endl;
 	//  std::cout << _chain->GetBranchStatus("etaEle") <<  std::endl;
