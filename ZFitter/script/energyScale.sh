@@ -44,8 +44,8 @@ regionFileStep4EE_93=data/regions/scaleStep4smearing_2_R9_93.dat
 regionFileStep4EB_95=data/regions/scaleStep4smearing_1_R9_95.dat
 regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9_95.dat
 
-regionFileStep5EB=data/regions/scaleStep2smearing_9.dat
-regionFileStep5EE=data/regions/scaleStep2smearing_10.dat
+regionFileStep5EB=data/regions/scaleStep2smearing_6.dat
+regionFileStep5EE=data/regions/scaleStep2smearing_7.dat
 
 regionFileStep6EB=data/regions/scaleStep6smearing_1.dat
 regionFileStep6EE=data/regions/scaleStep6smearing_2.dat
@@ -732,10 +732,12 @@ if [ -n "${STEP2}" ];then
 	mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step2${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2${extension}/DataMC/
     fi
 
-#    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
-#    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
-#    rsync -ahuv ${outDirData} ${outDirData_eos}
-#    rsync -ahuv ${outDirMC} ${outDirMC_eos}
+    if [[ $scenario = rsynch ]]; then
+	if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+	if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+	rsync -ahuv ${outDirData} ${outDirData_eos}
+	rsync -ahuv ${outDirMC} ${outDirMC_eos}
+    fi
 #Here step2 is closed	
 fi
 
@@ -1032,10 +1034,12 @@ if [ -n "${STEP4}" ];then
 	mv ${tmp_path}/test/dato/${file}/${selection}/${oldMass}/step4${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/DataMC/
     fi
 
-#    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
-#    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
-#    rsync -ahuv ${outDirData} ${outDirData_eos}
-#    rsync -ahuv ${outDirMC} ${outDirMC_eos}
+    if [[ $scenario = rsynch ]]; then
+	if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+	if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+	rsync -ahuv ${outDirData} ${outDirData_eos}
+	rsync -ahuv ${outDirMC} ${outDirMC_eos}
+    fi
 fi #step4_is_closed
 
 #######Et steps begin!#######
@@ -1070,21 +1074,21 @@ if [ -n "${STEP5}" ];then
 #
 #	    #Set constTerm excursion from 0 - 0.03 in the profile
 	    #Since you are running with constTermFix: smearings are NOT organized in Et bins
-	    grep constTerm ${outDirData}/step4/img/outProfile-`basename ${regionFileStep4EB} .dat`-${commonCut}-FitResult-.config |sed -r 's|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.03)|' > ${outDirTable}/params-step5-${commonCut}.txt
+	    grep constTerm ${outDirData_eos}/step4/img/outProfile-`basename ${regionFileStep4EB} .dat`-${commonCut}-FitResult-.config |sed -r 's|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.03)|' > ${outDirTable}/params-step5-${commonCut}.txt
 #	    #Create init for alpha (to be fixed)
 #	    #grep constTerm ${outDirData}/step4/img/outProfile-`basename ${regionFileStep4EB} .dat`-${commonCut}-FitResult-.config |sed -r 's|constTerm|alpha|;s|= [0-9]+.+/- [.0-9]+ |= 1.0000 +/- 0.0100 |;s|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.20)|' >> ${outDirTable}/params-step5-${commonCut}.txt
 #	    #s|L|C L|
 	    if [ "${Et_smear}" == "" ];then
 	    #if not smearing Et -> put alpha constant at 0
-	    grep constTerm ${outDirData}/step4/img/outProfile-`basename ${regionFileStep4EB} .dat`-${commonCut}-FitResult-.config |sed -r 's|constTerm|alpha|;s|[.0-9]* [+]/- [.0-9]*|0.0000 +/- 0.0100 C|;s|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.20)|' >> ${outDirTable}/params-step5-${commonCut}.txt
+	    grep constTerm ${outDirData_eos}/step4/img/outProfile-`basename ${regionFileStep4EB} .dat`-${commonCut}-FitResult-.config |sed -r 's|constTerm|alpha|;s|[.0-9]* [+]/- [.0-9]*|0.0000 +/- 0.0100 C|;s|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.20)|' >> ${outDirTable}/params-step5-${commonCut}.txt
 	    fi
 ################EE
-	    grep constTerm ${outDirData}/step4/img/outProfile-`basename ${regionFileStep4EE} .dat`-${commonCut}-FitResult-.config |grep -v absEta_0_1 |sed -r 's|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.03)|' >> ${outDirTable}/params-step5-${commonCut}.txt
+	    grep constTerm ${outDirData_eos}/step4/img/outProfile-`basename ${regionFileStep4EE} .dat`-${commonCut}-FitResult-.config |grep -v absEta_0_1 |sed -r 's|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.03)|' >> ${outDirTable}/params-step5-${commonCut}.txt
 #	    #Create init for alpha
 #	    #grep constTerm ${outDirData}/step4/img/outProfile-`basename ${regionFileStep4EE} .dat`-${commonCut}-FitResult-.config |grep -v absEta_0_1 |sed -r 's|constTerm|alpha|;s|= [0-9]+.+/- [.0-9]+ |= 1.0000 +/- 0.0100 |;s|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.20)|' >> ${outDirTable}/params-step5-${commonCut}.txt
 	    if [ "${Et_smear}" == "" ];then
 	    #if not smearing Et -> put alpha constant at 0
-	    grep constTerm ${outDirData}/step4/img/outProfile-`basename ${regionFileStep4EE} .dat`-${commonCut}-FitResult-.config |grep -v absEta_0_1 |sed -r 's|constTerm|alpha|;s|[.0-9]* [+]/- [.0-9]*|0.0000 +/- 0.0100 C|;s|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.20)|' >> ${outDirTable}/params-step5-${commonCut}.txt
+	    grep constTerm ${outDirData_eos}/step4/img/outProfile-`basename ${regionFileStep4EE} .dat`-${commonCut}-FitResult-.config |grep -v absEta_0_1 |sed -r 's|constTerm|alpha|;s|[.0-9]* [+]/- [.0-9]*|0.0000 +/- 0.0100 C|;s|\([.0-9]*[ ]+-[ ]+[.0-9]+\)|(0 - 0.20)|' >> ${outDirTable}/params-step5-${commonCut}.txt
 	    fi
 	    cat ${outDirTable}/params-step5-${commonCut}.txt
 	    initFile="--initFile=${outDirTable}/params-step5-${commonCut}.txt"; 
@@ -1198,7 +1202,7 @@ if [ -n "${STEP5}" ];then
 
     if [[ $scenario = "finalize_step5" ]] || [[ $scenario = "" ]]; then
 	if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5" ];then 
-	    echo "~gfasanel/scratch1/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5 is being created"
+	    echo "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5 is being created"
 	    www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/ -p
 	    www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/DataMC/ -p
 	fi
