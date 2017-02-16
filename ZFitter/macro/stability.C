@@ -922,8 +922,8 @@ TCanvas *var_Stability(std::vector<TString> filenameList, std::vector<TString> l
     std::cout<<"adjusting y range"<<std::endl;
     if(rMin > g_multi->GetYaxis()->GetXmin()) rMin=g_multi->GetYaxis()->GetXmin();
     if(rMax < g_multi->GetYaxis()->GetXmax()) rMax=g_multi->GetYaxis()->GetXmax();
-    rMin=-1.; //--> just in case ;-)
-    rMax=+0.1;
+    //rMin=-1.; //--> just in case ;-)
+    //rMax=+0.1;
     std::cout<<"rMin "<<rMin<<" rMax "<<rMax<<std::endl;
     g_multi->GetYaxis()->SetRangeUser(rMin,rMax);
   }

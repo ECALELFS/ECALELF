@@ -136,12 +136,12 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 	case 3:
 	  std::cout<<"you are in case 3"<<std::endl;
 		if(name.Contains("scale")) {
-		  //bin_width = 0.0001;   // level2/5
 		  bin_width = 0.0001;   // level2/5
+		  //bin_width = 0.0001;   // level2/5
 			sigma = 8 * bin_width; //
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
-		  //bin_width = 0.0002;  // level2 /3
-		  bin_width = 0.00002;  // level2 /3
+		  bin_width = 0.0002;  // level2 /3
+		  //bin_width = 0.00002;  // level2 /3
 			sigma = 6 * bin_width;
 		} else if(name.Contains("alpha")) {
 			bin_width = 0.003;
@@ -154,12 +154,12 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 	case 4:
 	  std::cout<<"you are in case 4"<<std::endl;
 		if(name.Contains("scale")) {
-		  //bin_width = 0.0001; // level1/10
-			bin_width = 0.00005;   // level3/2
+		  bin_width = 0.0001; // level1/10
+		  //bin_width = 0.00005;   // level3/2
 			sigma = 5 * bin_width; // +/- 0.5%
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
-		  //bin_width = 0.0001; //level1/10
-		  bin_width = 0.00002;   // level2/5
+		  bin_width = 0.0001; //level1/10
+		  //bin_width = 0.00002;   // level2/5
 			sigma = 10 * bin_width; // +/- 0.5%
 		} else if(name.Contains("alpha")) {
 			bin_width = 0.001;
@@ -173,12 +173,11 @@ TGraph *GetProfile(RooRealVar *var, RooSmearer& compatibility, int level, bool w
 	case 5:
 	  std::cout<<"you are in case 5"<<std::endl;
 		if(name.Contains("scale")) {
-		  //bin_width = 0.0001; // level1/10
-		  bin_width = 0.00002;//level4/2.5
-		  //bin_width = 0.00002;   // level2/5
+		  bin_width = 0.0001; // level1/10
+		  //bin_width = 0.00002;//level4/2.5
 		} else  if(name.Contains("const") || (rho == 0 && Emean != 0)) {
-		  //bin_width = 0.0001; //level1/10
-		  bin_width = 0.0005;   // level2/5
+		  bin_width = 0.0001; //level1/10
+		  //bin_width = 0.0005;   // level2/5
 		} else if(name.Contains("alpha")) {
 			bin_width = 0.001;
 		}

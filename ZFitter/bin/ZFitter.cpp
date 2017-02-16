@@ -902,7 +902,8 @@ int main(int argc, char **argv)
 
 			ch->SetBranchAddress("runNumber", &runNumber);
 			ch->SetBranchAddress("etaSCEle", etaSCEle);
-			ch->SetBranchAddress("R9Ele", R9Ele);//or R9Eleprime
+			TString bName= (ch->GetBranch("R9Eleprime")!=NULL) ? "R9Eleprime" : "R9Ele";
+			ch->SetBranchAddress(bName, R9Ele);
 			ch->SetBranchAddress(energyBranchName, energy);
 			Long64_t nentries = ch->GetEntries();
 			for(Long64_t ientry = 0; ientry < nentries; ientry++) {

@@ -33,24 +33,12 @@ regionFileStep1=data/regions/scaleStep1.dat
 
 regionFileStep2EB=data/regions/scaleStep2smearing_1.dat
 regionFileStep2EE=data/regions/scaleStep2smearing_2.dat
-#regionFileStep2EB=data/regions/scaleStep2smearing_1_R9prime.dat
-#regionFileStep2EE=data/regions/scaleStep2smearing_2_R9prime.dat
-
 regionFileStep4EBEE=data/regions/scaleStep4smearing_0.dat
 regionFileStep4EBEE_Hgg=data/regions/scaleStep0_Hgg.dat
 regionFileStep4EBEE_r9=data/regions/scaleStep0_r9.dat
 regionFileStep4Inclusive=data/regions/scaleStep4_Inclusive.dat
 regionFileStep4EB=data/regions/scaleStep4smearing_1.dat
 regionFileStep4EE=data/regions/scaleStep4smearing_2.dat
-##with R9 reweight
-#regionFileStep4EB=data/regions/scaleStep4smearing_1_R9prime.dat
-#regionFileStep4EE=data/regions/scaleStep4smearing_2_R9prime.dat
-#regionFileStep4EB=data/regions/scaleStep0.dat
-#regionFileStep4EE=data/regions/scaleStep0_bis.dat
-#regionFileStep4EB_93=data/regions/scaleStep4smearing_1_R9prime_93.dat
-#regionFileStep4EE_93=data/regions/scaleStep4smearing_2_R9prime_93.dat
-#regionFileStep4EB_95=data/regions/scaleStep4smearing_1_R9prime_95.dat
-#regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9prime_95.dat
 regionFileStep4EB_93=data/regions/scaleStep4smearing_1_R9_93.dat
 regionFileStep4EE_93=data/regions/scaleStep4smearing_2_R9_93.dat
 regionFileStep4EB_95=data/regions/scaleStep4smearing_1_R9_95.dat
@@ -79,7 +67,7 @@ usage(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf:s: -l help,regionFile:,runRangesFile:,selection:,invMass_var:,scenario:,step:,baseDir:,commonCut:,index:,force -- "$@")
+if ! options=$(getopt -u -o hf:s: -l help,regionFile:,runRangesFile:,selection:,invMass_var:,scenario:,step:,baseDir:,commonCut:,index:,force,r9_transf -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
@@ -94,6 +82,7 @@ do
 	-f) configFile=$2; shift;;
 	-s|--step) STEP=$2; shift;;
 	--force) FORCE=y;;
+	--r9_transf) r9_transf=y;;
 	--invMass_var) invMass_var=$2; echo "[OPTION] invMass_var = ${invMass_var}"; shift;;
 	--scenario) scenario=$2; echo "[OPTION] scenario = ${scenario}"; shift;;
 	--index) index=$2; shift;;
@@ -107,6 +96,22 @@ do
     esac
     shift
 done
+
+##Using files with R9 reweight
+if [ -n "${r9_transf}" ];then
+    echo "[INFO] You are using the r9_transformed-files"
+    regionFileStep2EB=data/regions/scaleStep2smearing_1_R9prime.dat
+    regionFileStep2EE=data/regions/scaleStep2smearing_2_R9prime.dat
+    regionFileStep4EB=data/regions/scaleStep4smearing_1_R9prime.dat
+    regionFileStep4EE=data/regions/scaleStep4smearing_2_R9prime.dat
+    #regionFileStep4EB=data/regions/scaleStep0.dat
+    #regionFileStep4EE=data/regions/scaleStep0_bis.dat
+    #regionFileStep4EB_93=data/regions/scaleStep4smearing_1_R9prime_93.dat
+    #regionFileStep4EE_93=data/regions/scaleStep4smearing_2_R9prime_93.dat
+    #regionFileStep4EB_95=data/regions/scaleStep4smearing_1_R9prime_95.dat
+    #regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9prime_95.dat
+fi
+
 
 file=`basename ${configFile} .dat`
 
@@ -359,10 +364,10 @@ if [ -n "${STEP1}" ];then
 	echo "[STATUS] Step 1 done"
 	echo "time dep-scale corrections built from "${outDirTable}/${outFile}
 
-#	if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
-#	if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
-#	rsync -ahuv ${outDirData} ${outDirData_eos}
-#	rsync -ahuv ${outDirMC} ${outDirMC_eos}
+	if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+	if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+	rsync -ahuv ${outDirData} ${outDirData_eos}
+	rsync -ahuv ${outDirMC} ${outDirMC_eos}
 
     else 
 	echo "${outDirTable}/${outFile} exists, so:"
@@ -402,12 +407,12 @@ if [ -n "${STEP1Stability}" ];then
     if [ ! -e "${outDirData}/step1/fitres" ];then mkdir ${outDirData}/step1/fitres -p; fi
     if [ ! -e "${outDirData}/step1/img" ];then mkdir ${outDirData}/step1/img -p; fi
 
-#    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
-#	$updateOnly --zFit --invMass_var ${invMass_var} --commonCut=${commonCut} \
-#	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
-#	--corrEleType HggRunEta \
-#	--corrEleFile ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta \
-#	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step1/img |tee ${outDirData}/log/step1-stability.log || exit 1
+    ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} \
+	$updateOnly --zFit --invMass_var ${invMass_var} --commonCut=${commonCut} \
+	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
+	--corrEleType HggRunEta \
+	--corrEleFile ${outDirTable}/step1-${invMass_var}-${selection}-${commonCut}-HggRunEta \
+	--outDirImgMC=${outDirMC}/img --outDirImgData=${outDirData}/step1/img |tee ${outDirData}/log/step1-stability.log || exit 1
 
     ./script/makeTable.sh --regionsFile ${regionFile}  --runRangesFile ${runRangesFile} --commonCut=${commonCut} \
 	--outDirFitResMC=${outDirMC}/fitres --outDirFitResData=${outDirData}/step1/fitres \
@@ -417,10 +422,10 @@ if [ -n "${STEP1Stability}" ];then
     ##In case you prefer not to plot cumulative EB and EE:
     cat ${outDirTable}/step1_stability-${invMass_var}-${selection}_with_cumulative.tex| grep -v EB-runNumber | grep -v EE-runNumber > ${outDirTable}/step1_stability-${invMass_var}-${selection}.tex
 
-#    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
-#    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
-#    rsync -ahuv ${outDirData} ${outDirData_eos}
-#    rsync -ahuv ${outDirMC} ${outDirMC_eos}
+    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+    rsync -ahuv ${outDirData} ${outDirData_eos}
+    rsync -ahuv ${outDirMC} ${outDirMC_eos}
 fi
 
 if [ -n "${STEP1Plotter}" ];then
@@ -465,7 +470,7 @@ if [ -n "${STEP1Plotter}" ];then
     if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/" ];then 
 	www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/
     fi
-    if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/" ];then 
+    if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1/" ];then 
 	echo "~gfasanel/scratch1/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/ is being created"
 	www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/ 
 	www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step1 
@@ -643,6 +648,7 @@ if [ -n "${STEP2}" ];then
     fi #Submit_jobs
 
     if [[ $scenario = Fit_Likelihood_1 ]] || [[ $scenario = "" ]]; then
+	rm *core* #remove these stupid dumps, which are incredibly heavy
 	echo "[STATUS] Adding jobs together from ${outDirData_eos}/step2/*/fitres/"
 	./script/haddTGraph.sh -o ${outDirData_eos}/step2/fitres/outProfile-${basenameEB}-${commonCut}.root ${outDirData_eos}/step2/*/fitres/outProfile-${basenameEB}-${commonCut}.root
 	./script/haddTGraph.sh -o ${outDirData_eos}/step2/fitres/outProfile-${basenameEE}-${commonCut}.root ${outDirData_eos}/step2/*/fitres/outProfile-${basenameEE}-${commonCut}.root
@@ -673,8 +679,8 @@ if [ -n "${STEP2}" ];then
     if [[ $scenario = write_down_corr_step1_step2 ]] || [[ $scenario = "" ]] || [[ $scenario = Fit_Likelihood ]]; then
 	###scale
 	sed -i 's|^EB-||;s|^EE-||' ${outDirTable}/${outFileStep1}
-	grep scale ${outDirData}/step2/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\([^ \t]*\)-gold|\1 gold|; s|\([^ \t]*\)-bad|\1 bad|;s|\([^ \t]*\)-highR9|\1 highR9|; s|\([^ \t]*\)-lowR9|\1 lowR9|'  > tmp/res_corr.dat 
-        grep scale ${outDirData}/step2/img/outProfile-${basenameEE}-${commonCut}-FitResult-.config | grep -v absEta_0_1| sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\([^ \t]*\)-gold|\1 gold|; s|\([^ \t]*\)-bad|\1 bad|;s|\([^ \t]*\)-highR9|\1 highR9|; s|\([^ \t]*\)-lowR9|\1 lowR9|'  >> tmp/res_corr.dat 
+	grep scale ${outDirData_eos}/step2/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config |  sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\([^ \t]*\)-gold|\1 gold|; s|\([^ \t]*\)-bad|\1 bad|;s|\([^ \t]*\)-highR9|\1 highR9|; s|\([^ \t]*\)-lowR9|\1 lowR9|'  > tmp/res_corr.dat 
+        grep scale ${outDirData_eos}/step2/img/outProfile-${basenameEE}-${commonCut}-FitResult-.config | grep -v absEta_0_1| sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\([^ \t]*\)-gold|\1 gold|; s|\([^ \t]*\)-bad|\1 bad|;s|\([^ \t]*\)-highR9|\1 highR9|; s|\([^ \t]*\)-lowR9|\1 lowR9|'  >> tmp/res_corr.dat 
 	
 	awk -f awk/prodScaleCorrSteps.awk tmp/res_corr.dat ${outDirTable}/${outFileStep1} > ${outDirTable}/${outFileStep2}
 
@@ -725,6 +731,11 @@ if [ -n "${STEP2}" ];then
 	./script/plot_histos_validation.sh ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step2${extension}/fitres/histos-${file2EE}-${commonCut}.root
 	mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step2${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step2${extension}/DataMC/
     fi
+
+#    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+#    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+#    rsync -ahuv ${outDirData} ${outDirData_eos}
+#    rsync -ahuv ${outDirMC} ${outDirMC_eos}
 #Here step2 is closed	
 fi
 
@@ -902,6 +913,7 @@ if [ -n "${STEP4}" ];then
 	while [ "`bjobs -J \"${basenameEB} step4${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
 	while [ "`bjobs -J \"${basenameEE} step4${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
 	
+	rm *core* #remove these stupid dumps, which are incredibly heavy
 	./script/haddTGraph.sh -o ${outDirData_eos}/step4${extension}/fitres/outProfile-$basenameEB-${commonCut}.root ${outDirData_eos}/step4${extension}/*/fitres/outProfile-$basenameEB-${commonCut}.root
 	./script/haddTGraph.sh -o ${outDirData_eos}/step4${extension}/fitres/outProfile-$basenameEE-${commonCut}.root ${outDirData_eos}/step4${extension}/*/fitres/outProfile-$basenameEE-${commonCut}.root
 #    
@@ -998,6 +1010,8 @@ if [ -n "${STEP4}" ];then
 	cp ${tmp_path}/test/dato/${file}/${selection}/${oldMass}/table/outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/
 	cp ${tmp_path}/test/dato/${file}/${selection}/${oldMass}/table/outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9-smearEle_err.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/
 	./script/latex_table_writer.sh ${tmp_path}/test/dato/${file}/${selection}/${oldMass}/table/outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9.dat -${commonCut}
+	echo "
+	mv tmp/table_outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9_scale_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/"
 	mv tmp/table_outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9_scale_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/
 	mv tmp/table_outFile-step4${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9_smear_tex.dat ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/
 
@@ -1017,6 +1031,11 @@ if [ -n "${STEP4}" ];then
 	#./script/plot_histos_validation.sh ${eos_path}/test/dato/${file}/${selection}/${oldMass}/step4${extension}/fitres/histos-${file4Inclusive}-${commonCut}.root
 	mv ${tmp_path}/test/dato/${file}/${selection}/${oldMass}/step4${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${oldMass}/step4${extension}/DataMC/
     fi
+
+#    if [ ! -e "${outDirMC_eos}" ];then mkdir ${outDirMC_eos} -p; fi
+#    if [ ! -e "${outDirData_eos}" ];then mkdir ${outDirData_eos} -p; fi
+#    rsync -ahuv ${outDirData} ${outDirData_eos}
+#    rsync -ahuv ${outDirMC} ${outDirMC_eos}
 fi #step4_is_closed
 
 #######Et steps begin!#######
@@ -1727,7 +1746,7 @@ if [ -n "${GAINSWITCH}" ];then
 	  mkdir ${outDirData}/step9${extension}/${index}/img -p 
 	done
 
-   	./bin/ZFitter.exe -f $outDirData/step9${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step9${extension}/img/ --outDirFitResData=${outDirData}/step9${extension}/fitres  ${Et_smear} --autoNsmear ${initFile} --corrEleType=HggRunEtaR9 --smearerFit --nEventsMinDiag=150 --nEventsMinOffDiag=150| tee ${outDirData}/step9${extension}/fitres/debug_fit.dat;# --autoBin --constTermFix $updateOnly --initFile=params_gain.dat --onlyScale;
+   	./bin/ZFitter.exe -f $outDirData/step9${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step9${extension}/img/ --outDirFitResData=${outDirData}/step9${extension}/fitres  ${Et_smear} --autoNsmear ${initFile} --corrEleType=HggRunEtaR9 --smearerFit --nEventsMinDiag=150 --nEventsMinOffDiag=150 --initFile=initGain.dat --plotOnly | tee ${outDirData}/step9${extension}/fitres/debug_fit.dat;# --autoBin --constTermFix $updateOnly --onlyScale;
 
 	#exit 0
 	#bsub -q 2nd \
@@ -1761,10 +1780,10 @@ if [ -n "${GAINSWITCH}" ];then
 	    www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step9${extension}/DataMC/ -p
 	fi
 	echo "copying the likelihood"
-	mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step9${extension}/img/outProfile-*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step9${extension}/
+	mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step9${extension}/img/outProfile-*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step9${extension}/
 	mv ${outFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step9${extension}/
-	./script/plot_histos_validation.sh ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step9${extension}/fitres/histos-${basenameEB}-${commonCut}.root
-	mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step9${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step9${extension}/DataMC/
+	./script/plot_histos_validation.sh ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step9${extension}/fitres/histos-${basenameEB}-${commonCut}.root
+	mv ${tmp_path}/test/dato/${file}/${selection}/${invMass_var}/step9${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step9${extension}/DataMC/
     fi
     
     #echo "[STATUS] Making data/MC plots"
