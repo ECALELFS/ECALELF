@@ -4,7 +4,7 @@ titleTwo=""
 color=false
 column=3
 
-tmpFile=tmp/tmpFile.dat
+tmpFileBase=tmp/tmpFile.dat
 usage(){
     echo "`basename $0` -t tableFile -x xVar -y yVar --outDirImgData dir"
     echo " xVar: runNumber | absEta"
@@ -86,26 +86,41 @@ case $xVar in
 		done
 
 		IFS=' '
+		index=0
 		for TABLEFILE in $TABLEFILES
 		do
+			tmpFile=`dirname $tmpFileBase`/`basename $tmpFileBase .dat`_${LEGENDS[$index]}.dat
 			{
 				head -1 $TABLEFILE 
-				grep $xVar $TABLEFILE | grep -v SingleEle 
-			} | sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|\trunMin\trunMax\ttimeMin\ttimeMax|};/^catName/ d' | sed -f sed/run2time.sed | sort -t '-' -k 1,2| uniq | awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
+				grep $xVar $TABLEFILE | grep -v SingleEle | awk '($3>0){print $0}'
+			} |   sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|\trunMin\trunMax\ttimeMin\ttimeMax|};/^catName/ d' | sed -f sed/run2time.sed | sort -t '-' -k 1,2| uniq | awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
+			let index=$index+1
 		done
 		;;
 	*)
 		IFS=' '
 		for TABLEFILE in $TABLEFILES
 		do
-			cat $TABLEFILE | sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|\trunMin\trunMax|}' | sed "s|runMin|${xVar}Min|;s|runMax|${xVar}Max|" |  awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
+			cat $TABLEFILE | awk '($3>0){print $0}' | sed "2,10000 { s|\([a-zA-Z]*\)[-]*${xVar}_\([0-9_]*\)\([-._a-zA-Z0-9\t[:space:]]*\)|\1\3\t${xVar}_\2|; }" | sed '1 { s|^|AA|; s|$|\trunMin\trunMax|}' | sed "s|runMin|${xVar}Min|;s|runMax|${xVar}Max|" |  awk -f awk/splitCategory.awk | sed '1,2 d' > $tmpFile 
 		done
 		;;
 esac
 
-cp $tmpFile $outDirImgData/
-gnuplot -c 'macro/stability.gpl' 'tmp/tmpFile.dat'
-if [ -n "${outDirImgData}" ];then
-	mv stability.pdf $outDirImgData/stability-${xVar}.pdf
+
+if [ -z "$index" ]; then
+	cp $tmpFile $outDirImgData/
+	gnuplot -c 'macro/stability.gpl' 'tmp/tmpFile.dat'
+	if [ -n "${outDirImgData}" ];then
+		mv stability.pdf $outDirImgData/stability-${xVar}.pdf
+	fi
+else
+	for legend in ${LEGENDS[@]}
+	do
+		file="tmp/tmpFile_$legend.dat $legend"
+		echo $file
+		files=(${files[@]} $file)
+	done
+	echo ${files[@]}
+	gnuplot -c macro/stability.gpl ${files[@]} 
 fi
 

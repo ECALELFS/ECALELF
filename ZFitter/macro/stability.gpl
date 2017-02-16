@@ -22,17 +22,17 @@ set output 'stability.pdf'
 
 xVar="((column(\"timeMax\")+column(\"timeMin\"))/2)"
 xVarDelta="((column(\"timeMax\")-column(\"timeMin\"))/2)"
-xVar="((column(\"runMax\")+column(\"runMin\"))/2)"
-xVarDelta="((column(\"runMax\")-column(\"runMin\"))/2)"
+#xVar="((column(\"runMax\")+column(\"runMin\"))/2)"
+#xVarDelta="((column(\"runMax\")-column(\"runMin\"))/2)"
 
 yVarDelta="((column(\"effSigma\")/sqrt(column(\"nEvents\"))/2)"
 yRes="(column(\"effSigma30\")/column(\"mean68\")*91.2/100)"
 #yRes="(column(\"effSigmaScaled\")*91.2/100)"
 
 # Other settings
-#set timefmt "%s"
-#set xdata time
-#set format x "%d/%m"
+set timefmt "%s"
+set xdata time
+set format x "%d/%m"
 set link x
 
 set xtics rotate by 45 offset -2., -1.5 nomirror

@@ -13,8 +13,8 @@ echo "#######################"
 echo "DATASETPATH=$DATASETPATH"
 #echo "lastRun=`echo $line | cut -d ' ' -f 1 | cut -d '-' -f 2`"
 
-das_client --query="run dataset=$DATASETPATH | min(run.run_number)" 
-das_client --query="run dataset=$DATASETPATH | max(run.run_number)" 
+runMin=`das_client --query="run dataset=$DATASETPATH | min(run.run_number)" | tail -1 | cut -d '=' -f 2`
+runMax=`das_client --query="run dataset=$DATASETPATH | max(run.run_number)" | tail -1 | cut -d '=' -f 2`
 das_client --query="site dataset=$DATASETPATH" 
 das_client --query="run dataset=$DATASETPATH | grep  run.modification_time, run.run_number" --limit=1000 | sed '/Showing/ d' | sort | awk '(NF!=0){print $2}' > das.time
 #| awk '(NF!=0){printf("%d\t",$2); system("date -u -d "$1" +%s")}' > das.time
@@ -37,3 +37,4 @@ rm das.time
 das_client --query="config dataset=${DATASETPATH} | grep config.global_tag"
 ./scripts/lastJSON.sh
 
+echo -e "$runMin-$runMax\t$DATASETPATH"

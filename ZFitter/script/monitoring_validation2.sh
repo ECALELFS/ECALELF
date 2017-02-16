@@ -10,7 +10,7 @@ configFile=data/validation/monitoring_2016.dat
 runRangesFile=data/runRanges/monitoringRun2016-v2.dat
 baseDir=testNew
 extraOptions="--anyVarBranches=S4 --anyVarBranches=etaWidth --anyVarBranches=sigmaIEtaIEtaSCEle --anyVarBranches=R9Ele"
-
+updateOnly="--updateOnly" 
 # VALIDATION=y
 # STABILITY=y
 # SLIDES=y
