@@ -1050,6 +1050,21 @@ if [ -n "${STEP5}" ];then
     else
 	newSelection=${selection}
     fi
+    # root files for corrections have already been created in step2 and checked in step4
+    # include them in the dat file for step5
+    configFile_step5=$outDirData/step5${extension}/`basename $configFile`
+    cp $configFile $configFile_step5
+    data_tags=`grep -v '#' $configFile_step5 | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [d][1-9]`
+    is_scale_cat=`grep scaleEle_HggRunEtaR9_ $configFile_step5 | wc -l`
+    if [ "${is_scale_cat}" == "0" ]; then # you don't want to write the scale cat if they are already written
+	echo "[STATUS] Writing the scale root files in ${configFile_step5}"
+	for tag in $data_tags; do
+	    echo -e "${tag}\tscaleEle_HggRunEtaR9\t${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile_step5
+	done
+    fi
+    
+    echo "config File used for jobs in step5 is " $outDirData/step5${extension}/`basename $configFile`
+
     #eta x Et with smearing method (use step4 as initialization)
     regionFileEB=${regionFileStep5EB}
     regionFileEE=${regionFileStep5EE}
@@ -1058,8 +1073,7 @@ if [ -n "${STEP5}" ];then
     outFile=${outDirTable}/step5${extension}-${invMass_var}-${newSelection}-${commonCut}-HggRunEtaR9Et.dat
 
     if [ ! -e "${outDirTable}/${outFileStep2}" ];then
-	echo "[ERROR] Impossible to run step5 without step2" >> /dev/stderr
-	exit 1
+	echo "[WARNING] You are running step5 without having step2"
     fi
     
     #leave iniFile empty (or built it form step4 (to be checked)
@@ -1109,43 +1123,26 @@ if [ -n "${STEP5}" ];then
 	fi
 
 	#Categorize in Et X Eta
-	echo "configFile for step5 is " ${configFile}
 	if [[ $scenario = "Categorize" ]] || [[ $scenario = "" ]]; then
-	      ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFileEB} --saveRootMacro --addBranch=smearerCat  --smearerFit
-	      ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFileEE} --saveRootMacro --addBranch=smearerCat  --smearerFit
+	      ./bin/ZFitter.exe -f ${configFile_step5} --regionsFile ${regionFileEB} --saveRootMacro --addBranch=smearerCat  --smearerFit  --corrEleType=HggRunEtaR9
+	      ./bin/ZFitter.exe -f ${configFile_step5} --regionsFile ${regionFileEE} --saveRootMacro --addBranch=smearerCat  --smearerFit  --corrEleType=HggRunEtaR9 
 
-	tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
+	tags=`grep -v '#' $configFile_step5 | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
 	baseName=`basename $regionFileEB .dat`
 	echo ${baseName}
 	for tag in $tags
 	  do
-	  if [ "`grep -v '#' $configFile | grep \"^$tag\" | cut -f 2 | grep -c smearerCat_${baseName}`" == "0" ];then
+	  if [ "`grep -v '#' $configFile_step5 | grep \"^$tag\" | cut -f 2 | grep -c smearerCat_${baseName}`" == "0" ];then
 
-	      mv tmp/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile .dat`.root data/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile .dat`.root || exit 1
-	      echo -e "$tag\tsmearerCat_`basename $regionFileEB .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile .dat`.root" >> $configFile
-	      mv tmp/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile .dat`.root data/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile .dat`.root || exit 1
+	      mv tmp/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root data/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root || exit 1
+	      echo -e "$tag\tsmearerCat_`basename $regionFileEB .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile_step5
+	      mv tmp/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root data/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root || exit 1
 
-	      echo -e "$tag\tsmearerCat_`basename $regionFileEE .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile .dat`.root" >> $configFile
+	      echo -e "$tag\tsmearerCat_`basename $regionFileEE .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile
 
 	  fi
 	done
 	fi #closes categorization in Et X eta X R9 categories
-
-	
-	# root files for corrections have already been created in step2 and checked in step4
-	# include them in the dat file for step5
-	cp $configFile $outDirData/step5${extension}/`basename $configFile`
-	data_tags=`grep -v '#' $configFile | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [d][1-9]`
-	conf_step5=$outDirData/step5${extension}/`basename $configFile`
-	echo "ConfigFile for step5 is " $outDirData/step6${extension}/`basename $configFile`
-	is_scale_cat= `grep scaleEle_HggRunEtaR9_ $conf_step5`
-	if [ "${is_scale_cat}" == "" ]; then # you don't want to write the scale cat several times
-	    for tag in $data_tags; do
-		echo -e "${tag}\tscaleEle_HggRunEtaR9\t${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile .dat`.root" >> $outDirData/step5${extension}/`basename $configFile`
-	    done
-	fi
-
-	echo "config File used for jobs in step5 is " $outDirData/step5${extension}/`basename $configFile`
 
 	for index in `seq 1 50`
 	  do
