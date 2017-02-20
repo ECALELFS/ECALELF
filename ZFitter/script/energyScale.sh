@@ -1050,17 +1050,23 @@ if [ -n "${STEP5}" ];then
     else
 	newSelection=${selection}
     fi
+    if [ ! -e "${outDirData_eos}/step5${extension}/fitres" ];then mkdir ${outDirData_eos}/step5${extension}/fitres -p; fi
+    if [ ! -e "${outDirData_eos}/step5${extension}/img" ];then    mkdir ${outDirData_eos}/step5${extension}/img -p; fi
+
+    configFile_step5=$outDirData/step5${extension}/`basename $configFile`
+    if [ ! -e "${configFile_step5}" ];then
     # root files for corrections have already been created in step2 and checked in step4
     # include them in the dat file for step5
-    configFile_step5=$outDirData/step5${extension}/`basename $configFile`
-    cp $configFile $configFile_step5
-    data_tags=`grep -v '#' $configFile_step5 | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [d][1-9]`
-    is_scale_cat=`grep scaleEle_HggRunEtaR9_ $configFile_step5 | wc -l`
-    if [ "${is_scale_cat}" == "0" ]; then # you don't want to write the scale cat if they are already written
-	echo "[STATUS] Writing the scale root files in ${configFile_step5}"
-	for tag in $data_tags; do
-	    echo -e "${tag}\tscaleEle_HggRunEtaR9\t${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile_step5
-	done
+	echo "[STATUS] Creating dat file for step5"
+	cp $configFile $configFile_step5
+	data_tags=`grep -v '#' $configFile_step5 | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [d][1-9]`
+	is_scale_cat=`grep scaleEle_HggRunEtaR9_ $configFile_step5 | wc -l`
+	if [ "${is_scale_cat}" == "0" ]; then # you don't want to write the scale cat if they are already written
+	    echo "[STATUS] Writing the scale root files in ${configFile_step5}"
+	    for tag in $data_tags; do
+		echo -e "${tag}\tscaleEle_HggRunEtaR9\t${outDirData}/step2/scaleEle_HggRunEtaR9_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile_step5
+	    done
+	fi
     fi
     
     echo "config File used for jobs in step5 is " $outDirData/step5${extension}/`basename $configFile`
@@ -1109,8 +1115,6 @@ if [ -n "${STEP5}" ];then
 	    #exit 0 #-> don't exit: first create the file, then run !
 	fi
 
-    echo "Categorization and job submission in step5 is done if ${outFile} does NOT exist"
-    if [ ! -e "${outFile}" ];then
 
 	if [ ! -e "${outDirMC}/${extension}/fitres" ];then mkdir ${outDirMC}/${extension}/fitres -p; fi
 	if [ ! -e "${outDirMC}/${extension}/img" ];then    mkdir ${outDirMC}/${extension}/img -p; fi
@@ -1123,79 +1127,92 @@ if [ -n "${STEP5}" ];then
 	fi
 
 	#Categorize in Et X Eta
-	if [[ $scenario = "Categorize" ]] || [[ $scenario = "" ]]; then
-	      ./bin/ZFitter.exe -f ${configFile_step5} --regionsFile ${regionFileEB} --saveRootMacro --addBranch=smearerCat  --smearerFit  --corrEleType=HggRunEtaR9
-	      ./bin/ZFitter.exe -f ${configFile_step5} --regionsFile ${regionFileEE} --saveRootMacro --addBranch=smearerCat  --smearerFit  --corrEleType=HggRunEtaR9 
+	mkSmearerCatSignal $regionFileEB $outDirData/step5${extension}/`basename $configFile`
+	mkSmearerCatSignal $regionFileEE $outDirData/step5${extension}/`basename $configFile`
+	mkSmearerCatData   $regionFileEB ${outDirData_eos}/step5${extension} $outDirData/step5${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
+	mkSmearerCatData   $regionFileEE ${outDirData_eos}/step5${extension} $outDirData/step5${extension}/`basename $configFile` --corrEleType=HggRunEtaR9
 
-	tags=`grep -v '#' $configFile_step5 | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
-	baseName=`basename $regionFileEB .dat`
-	echo ${baseName}
-	for tag in $tags
+#	if [[ $scenario = "Categorize" ]] || [[ $scenario = "" ]]; then
+#	      #./bin/ZFitter.exe -f ${configFile_step5} --regionsFile ${regionFileEB} --saveRootMacro --addBranch=smearerCat  --smearerFit  --corrEleType=HggRunEtaR9
+#	      #./bin/ZFitter.exe -f ${configFile_step5} --regionsFile ${regionFileEE} --saveRootMacro --addBranch=smearerCat  --smearerFit  --corrEleType=HggRunEtaR9 
+#
+#	tags=`grep -v '#' $configFile_step5 | sed -r 's|[ ]+|\t|g; s|[\t]+|\t|g' | cut -f 1  | sort | uniq | grep [s,d][1-9]`
+#	baseName=`basename $regionFileEB .dat`
+#	echo ${baseName}
+#	for tag in $tags
+#	  do
+#	  if [ "`grep -v '#' $configFile_step5 | grep \"^$tag\" | cut -f 2 | grep -c smearerCat_${baseName}`" == "0" ];then
+#
+	      #mv tmp/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root data/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root || exit 1
+#	      echo -e "$tag\tsmearerCat_`basename $regionFileEB .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile_step5
+	      #mv tmp/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root data/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root || exit 1
+
+#	      echo -e "$tag\tsmearerCat_`basename $regionFileEE .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile
+
+#	  fi
+#	done
+#	fi #closes categorization in Et X eta X R9 categories
+
+	if [[ $scenario = "test_jobs_step5" ]]; then
+	    echo "./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 --profileOnly --plotOnly"
+	fi
+
+	if [[ $scenario = "jobs_step5" ]] || [[ $scenario = "" ]]; then
+	echo "[STATUS] SENDING JOBS @step5"
+	for index in `seq 1 10`
 	  do
-	  if [ "`grep -v '#' $configFile_step5 | grep \"^$tag\" | cut -f 2 | grep -c smearerCat_${baseName}`" == "0" ];then
-
-	      mv tmp/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root data/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root || exit 1
-	      echo -e "$tag\tsmearerCat_`basename $regionFileEB .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEB .dat`_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile_step5
-	      mv tmp/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root data/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root || exit 1
-
-	      echo -e "$tag\tsmearerCat_`basename $regionFileEE .dat`\tdata/smearerCat/smearerCat_`basename $regionFileEE .dat`_${tag}-`basename $configFile_step5 .dat`.root" >> $configFile
-
-	  fi
-	done
-	fi #closes categorization in Et X eta X R9 categories
-
-	for index in `seq 1 50`
-	  do
-	  mkdir ${outDirData}/step5${extension}/${index}/fitres/ -p 
-	  mkdir ${outDirData}/step5${extension}/${index}/img -p 
+	  mkdir ${outDirData_eos}/step5${extension}/${index}/fitres/ -p 
+	  mkdir ${outDirData_eos}/step5${extension}/${index}/img -p 
 	done
 
-## --profileOnly --plotOnly
+        ## --profileOnly --plotOnly -->step5 is to see the likelihood profiles
 	bsub -q cmscaf1nd \
-	    -oo ${outDirData}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stdout.log \
-	    -eo ${outDirData}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stderr.log \
-	    -J "${basenameEB} step5${extension}[1-50]" \
+	    -oo ${outDirData_eos}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stdout.log \
+	    -eo ${outDirData_eos}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stderr.log \
+	    -J "${basenameEB} step5${extension}[1-10]" \
 	      "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
-./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step5${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step5${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 --profileOnly --plotOnly || exit 1; touch ${outDirData}/step5${extension}/\$LSB_JOBINDEX/`basename $regionFileEB .dat`-done"
+./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 --profileOnly --plotOnly || exit 1; touch ${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/`basename $regionFileEB .dat`-done"
 
 	bsub -q cmscaf1nd \
-	    -oo ${outDirData}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stdout.log \
-	    -eo ${outDirData}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stderr.log \
-	    -J "${basenameEE} step5${extension}[1-50]" \
+	    -oo ${outDirData_eos}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stdout.log \
+	    -eo ${outDirData_eos}/step5${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stderr.log \
+	    -J "${basenameEE} step5${extension}[1-10]" \
 	      "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
-./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step5${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/step5${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 --profileOnly --plotOnly || exit 1; touch ${outDirData}/step5${extension}/\$LSB_JOBINDEX/`basename $regionFileEE .dat`-done"
+./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 --profileOnly --plotOnly || exit 1; touch ${outDirData_eos}/step5${extension}/\$LSB_JOBINDEX/`basename $regionFileEE .dat`-done"
 
     
-    while [ "`bjobs -J \"${basenameEB} step5${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
-    while [ "`bjobs -J \"${basenameEE} step5${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
+	while [ "`bjobs -J \"${basenameEB} step5${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
+	while [ "`bjobs -J \"${basenameEE} step5${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done
 
-    ./script/haddTGraph.sh -o ${outDirData}/step5${extension}/fitres/outProfile-$basenameEB-${commonCut}.root ${outDirData}/step5${extension}/*/fitres/outProfile-$basenameEB-${commonCut}.root
-    ./script/haddTGraph.sh -o ${outDirData}/step5${extension}/fitres/outProfile-$basenameEE-${commonCut}.root ${outDirData}/step5${extension}/*/fitres/outProfile-$basenameEE-${commonCut}.root
-
+	fi #scenario=jobs_step5
     
-	######################################################33
+    if [[ $scenario = "fit" ]] || [[ $scenario = "" ]]; then
+	######################################################
+	./script/haddTGraph.sh -o ${outDirData_eos}/step5${extension}/fitres/outProfile-$basenameEB-${commonCut}.root ${outDirData_eos}/step5${extension}/*/fitres/outProfile-$basenameEB-${commonCut}.root
+	./script/haddTGraph.sh -o ${outDirData_eos}/step5${extension}/fitres/outProfile-$basenameEE-${commonCut}.root ${outDirData_eos}/step5${extension}/*/fitres/outProfile-$basenameEE-${commonCut}.root
     echo "{" > tmp/fitProfiles.C
     echo "gROOT->ProcessLine(\".include $ROOFITSYS/include\");" >> tmp/fitProfiles.C
     echo "gROOT->ProcessLine(\".L macro/macro_fit.C+\");" >> tmp/fitProfiles.C
     echo "gROOT->ProcessLine(\".L macro/plot_data_mc.C+\");" >> tmp/fitProfiles.C
-    echo "FitProfile2(\"${outDirData}/step5${extension}/fitres/outProfile-$basenameEB-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
-    echo "FitProfile2(\"${outDirData}/step5${extension}/fitres/outProfile-$basenameEE-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
+    echo "FitProfile2(\"${outDirData_eos}/step5${extension}/fitres/outProfile-$basenameEB-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
+    echo "FitProfile2(\"${outDirData_eos}/step5${extension}/fitres/outProfile-$basenameEE-${commonCut}.root\",\"\",\"\",true,true,false);" >> tmp/fitProfiles.C
     echo "}" >> tmp/fitProfiles.C
     root -l -b -q tmp/fitProfiles.C
 
-    fi #all of this is done only if ${outFile} doesn't exist
-
-    echo "InitFile is "${initFile}
-    echo "Fit results of step5 in " ${outDirData}/step5${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config
-    cat ${outDirData}/step5${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config > ${outFile}
+    #Write the dat file with fit results
+    echo "Fit results of step5 in " ${outDirData_eos}/step5${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config
+    cat ${outDirData_eos}/step5${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config > ${outFile}
     ##it was commented before
-    grep -v absEta_0_1 ${outDirData}/step5${extension}/img/outProfile-${basenameEE}-${commonCut}-FitResult-.config >> ${outFile}
+    grep -v absEta_0_1 ${outDirData_eos}/step5${extension}/img/outProfile-${basenameEE}-${commonCut}-FitResult-.config >> ${outFile}
 
     cat "`echo $initFile | sed 's|.*=||'`" |grep "C L" >>  ${outFile}
     echo "outFile of step5 is " ${outFile} " (this will be the initFile of the plots)"
+    fi #fit scenario
 
-    ./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step5${extension}/img/ --outDirFitResData=${outDirData}/step5${extension}/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  || exit 1
-    ./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/step5${extension}/img/ --outDirFitResData=${outDirData}/step5${extension}/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  || exit 1
+    if [[ $scenario = "plot" ]] || [[ $scenario = "" ]]; then
+    ./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData_eos}/step5${extension}/img/ --outDirFitResData=${outDirData_eos}/step5${extension}/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  || exit 1
+    ./bin/ZFitter.exe -f $outDirData/step5${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData_eos}/step5${extension}/img/ --outDirFitResData=${outDirData_eos}/step5${extension}/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin --initFile=${outFile} --corrEleType=HggRunEtaR9 --plotOnly  || exit 1
+    fi
 
     if [[ $scenario = "finalize_step5" ]] || [[ $scenario = "" ]]; then
 	if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5" ];then 
@@ -1204,9 +1221,9 @@ if [ -n "${STEP5}" ];then
 	    www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/DataMC/ -p
 	fi
 	cp ${outFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/
-	cp test/dato/${file}/${selection}/${invMass_var}/step5/img/outProfile-*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/
-	./script/plot_histos_validation.sh test/dato/${file}/${selection}/${invMass_var}/step5/fitres/histos-${basenameEB}-${commonCut}.root
-	cp test/dato/${file}/${selection}/${invMass_var}/step5/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/DataMC/
+	mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step5/img/outProfile-*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/
+	./script/plot_histos_validation.sh ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step5/fitres/histos-${basenameEB}-${commonCut}.root
+	mv ${eos_path}/test/dato/${file}/${selection}/${invMass_var}/step5/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/step5/DataMC/
     fi
 
 fi
