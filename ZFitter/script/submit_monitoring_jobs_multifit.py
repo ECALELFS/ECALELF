@@ -70,7 +70,7 @@ for i in range(len(categories)):
     outScript.write("\n"+'eval `scram runtime -sh`');
     outScript.write("\n"+'cd -');
     outScript.write("\necho $PWD");
-    outScript.write("mkdir "+categories[i]+"__");
+    outScript.write("\nmkdir "+categories[i]+"__");
     outScript.write("\nll");
 
     for j in range(len(ntuplelist)):
