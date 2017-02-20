@@ -263,6 +263,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 	// Define in/outfiles
 
 	std::string folderName = std::string(EBEE) + "_" + dayMinLabel + "_" + dayMaxLabel;
+	/*
 	if( (absEtaMin != -1.) && (absEtaMax != -1.) ) {
 		char absEtaBuffer[50];
 		sprintf(absEtaBuffer, "_%.2f-%.2f", absEtaMin, absEtaMax);
@@ -274,7 +275,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 		sprintf(absEtaBuffer, "_Ieta_%d-%d_Iphi_%d-%d", IetaMin, IetaMax, IphiMin, IphiMax);
 		folderName += std::string(absEtaBuffer);
 	}
-
+	*/
 	gSystem->mkdir(folderName.c_str());
 	TFile* o = new TFile((folderName + "/" + folderName + "_histos.root").c_str(), "RECREATE");
 
