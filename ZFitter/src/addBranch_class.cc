@@ -57,7 +57,7 @@ TTree* addBranch_class::AddBranch_R9Eleprime(TChain* originalChain, TString tree
 	//TGraph* gR9EE = (TGraph*) f->Get("TGraphtransffull5x5R9EE");
 	//f->Close();
 
-	TFile* f = TFile::Open("/eos/project/c/cms-ecal-calibration/data/R9transf/transformation_Moriond17_v2.root");
+	TFile* f = TFile::Open("/eos/project/c/cms-ecal-calibration/data/R9transf/transformation_Moriond17_AfterPreApr_v1.root");
 	TGraph* gR9EB = (TGraph*) f->Get("transffull5x5R9EB");
 	TGraph* gR9EE = (TGraph*) f->Get("transffull5x5R9EE");
 	f->Close();
@@ -392,7 +392,6 @@ TTree* addBranch_class::AddBranch_iSM(TChain* originalChain, TString treename, T
 // branch with the smearing category index
 TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC)
 {
-
 	ElectronCategory_class cutter;
 	if(originalChain->GetBranch("scaleEle") != NULL) {
 		cutter._corrEle = true;
