@@ -1029,6 +1029,7 @@ int main(int argc, char **argv)
 	}
 
 	ElectronCategory_class cutter;
+	cutter.invMassBranchName = invMass_var;
 	cutter.energyBranchName = energyBranchName;
 
 	///------------------------------ to obtain run ranges
@@ -1379,9 +1380,9 @@ int main(int argc, char **argv)
 			args.add(*scale_);
 
 			TString varName = *region_itr;
-			TPRegexp reg("Et_[0-9]*_[0-9]*");
+			TPRegexp reg("Et_[0-9.]*_[0-9.]*");
 			reg.Substitute(varName, "");
-			TPRegexp reg2("energySC_[0-9]*_[0-9]*");
+			TPRegexp reg2("energySC_[0-9.]*_[0-9.]*");
 			reg2.Substitute(varName, "");
 			varName.ReplaceAll("--", "-");
 			if(varName.First("-") == 0) varName.Remove(0, 1);

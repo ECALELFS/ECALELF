@@ -15,6 +15,7 @@ ElectronCategory_class::~ElectronCategory_class()
 ElectronCategory_class::ElectronCategory_class(bool isRooFit_, bool roofitNameAsNtuple_):
 	_isRooFit(isRooFit_),
 	_roofitNameAsNtuple(roofitNameAsNtuple_),
+	invMassBranchName(""),
 	energyBranchName("energy_ECAL_ele"),
 	_corrEle(false)
 {
@@ -53,9 +54,7 @@ TCut ElectronCategory_class::GetCut(TString region, bool isMC, int nEle, bool co
 			//std::cerr << "[INFO] scaleEle for GetCut" << std::endl;
 			cut_string.ReplaceAll(energyBranchName + "_ele1", energyBranchName + "_ele1 * scaleEle_ele1");
 			cut_string.ReplaceAll(energyBranchName + "_ele2", energyBranchName + "_ele2 * scaleEle_ele2");
-			TString invMassName = energyBranchName;
-			invMassName.ReplaceAll("energySCEle", "invMass_SC");
-			cut_string.ReplaceAll(invMassName, invMassName + "*sqrt(scaleEle_ele1 * scaleEle_ele2)");
+			cut_string.ReplaceAll(invMassBranchName, invMassBranchName + "*sqrt(scaleEle_ele1 * scaleEle_ele2)");
 		}
 		// se contiene solo ele2 rimuovi, altrimenti sostituisci
 		if(nEle != 0) {
@@ -788,7 +787,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			if(ismass_dep == "Mass") {
 				std::cout << "mass dep cut" << std::endl;
 				TString fraction = ((TObjString *) splitted_string1->At(1))->GetString();
-				string1 = "invMass_SC_pho_regrCorr/" + fraction;
+				string1 = invMassBranchName + "/" + fraction;
 			}
 			TCut cutEle1("" + energyBranchName + "_ele1/cosh(etaSCEle_ele1) >= " + "( " + energyBranchName + "_ele1/cosh(etaSCEle_ele1) >" + energyBranchName + "_ele2/cosh(etaSCEle_ele2) )*" + string1);
 			TCut cutEle2("" + energyBranchName + "_ele2/cosh(etaSCEle_ele2) >= " + "( " + energyBranchName + "_ele2/cosh(etaSCEle_ele2) >" + energyBranchName + "_ele1/cosh(etaSCEle_ele1) )*" + string1);
@@ -814,7 +813,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			if(ismass_dep == "Mass") {
 				std::cout << "mass dep cut" << std::endl;
 				TString fraction = ((TObjString *) splitted_string1->At(1))->GetString();
-				string1 = "invMass_SC_pho_regrCorr/" + fraction;
+				string1 = invMassBranchName + "/" + fraction;
 			}
 			TCut cutEle1("" + energyBranchName + "_ele1/cosh(etaSCEle_ele1) >= " + "( " + energyBranchName + "_ele1/cosh(etaSCEle_ele1) <" + energyBranchName + "_ele2/cosh(etaSCEle_ele2) )*" + string1);
 			TCut cutEle2("" + energyBranchName + "_ele2/cosh(etaSCEle_ele2) >= " + "( " + energyBranchName + "_ele2/cosh(etaSCEle_ele2) <" + energyBranchName + "_ele1/cosh(etaSCEle_ele1) )*" + string1);
@@ -1523,6 +1522,8 @@ std::set<TString> ElectronCategory_class::GetBranchNameNtuple(TString region)
 	reg = TPRegexp("[- .0-9]{2,}");
 	reg.Substitute(cut, " ", "g");
 	reg = TPRegexp("abs[ ]*\\(");
+	reg.Substitute(cut, " ", "g");
+	reg = TPRegexp("sqrt[ ]*\\(");
 	reg.Substitute(cut, " ", "g");
 	reg = TPRegexp("cosh[ ]*\\(");
 	reg.Substitute(cut, " ", "g");

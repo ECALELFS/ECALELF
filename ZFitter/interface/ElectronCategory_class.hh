@@ -55,6 +55,7 @@ public:
 	//--------------- flags
 	bool _isRooFit; // defines if the cuts are defined for RooFit or not
 	bool _roofitNameAsNtuple;
+	TString invMassBranchName;
 	TString energyBranchName;
 	bool _corrEle;
 	//------------------------------
