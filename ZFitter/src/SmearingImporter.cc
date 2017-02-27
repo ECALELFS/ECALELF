@@ -107,6 +107,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	// for the weight calculation
 	Float_t         weight = 1.;
 	Float_t         EleIDSF_loose25nsRun22016Moriond_[2] = {1, 1};
+	Float_t         LTweight_ = 1.;
 	Float_t         r9weight[2] = {1, 1};
 	Float_t         ptweight[2] = {1, 1};
 	Float_t         FSRweight = 1.;
@@ -148,6 +149,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	  chain->SetBranchStatus("EleIDSF_loose25nsRun22016Moriond", 1);
 	  std::cout << "[STATUS] Adding ele ID SFs branch from friend for tree: " << chain->GetTitle() << std::endl;
 	  chain->SetBranchAddress("EleIDSF_loose25nsRun22016Moriond", EleIDSF_loose25nsRun22016Moriond_);
+       	}
+	if(chain->GetBranch("LTweight") != NULL) {
+	  chain->SetBranchStatus("LTweight", 1);
+	  std::cout << "[STATUS] LTweight branch from friend for tree: " << chain->GetTitle() << std::endl;
+	  chain->SetBranchAddress("LTweight", &LTweight_);
        	}
 
 	if(!isMC && chain->GetBranch("pdfWeights_cteq66") != NULL && _pdfWeightIndex > 0) {
@@ -349,6 +355,10 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 		event.weight = 1.;
 		if(_usePUweight) event.weight *= weight;
+		event.weight *= LTweight_;
+		if(jentry<10){
+		  std::cout<<"[CHECK LT weight]: isMC:  "<<isMC<<"LT weight: "<<LTweight_<<std::endl;
+		}
 		if(_useIDSFweight) event.weight *= EleIDSF_loose25nsRun22016Moriond_[0] * EleIDSF_loose25nsRun22016Moriond_[1];
 #ifdef DEBUG_IDSF
 		if(jentry<30 && _useIDSFweight){

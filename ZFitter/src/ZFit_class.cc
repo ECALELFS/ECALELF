@@ -641,10 +641,10 @@ RooFitResult *ZFit_class::FitData(TString region, bool doPlot, RooFitResult *fit
 {
 	RooAbsData *data_red   = ReduceDataset(data, region, false, _isDataUnbinned);
 	nEvents_region_data = data_red->sumEntries();
-	if(nEvents_region_data < 100) {
-		data_red   = ReduceDataset(data, region, false, true);
+	////if(nEvents_region_data < 100) {
+	////	data_red   = ReduceDataset(data, region, false, true);
 		//   nEvents_region_data=data_red->sumEntries();
-	}
+	////}
 	// if(nEvents_region_data < 100) return NULL;
 	int numcpu = 4;
 	if(_isDataUnbinned) numcpu = 1; //this is because in previous versions of ROOT, the unbinned fit did not support nCPU>1 (to be checked in newer versions)
@@ -690,7 +690,7 @@ RooFitResult *ZFit_class::FitMC(TString region, bool doPlot)
 {
 	RooAbsData *signal_red = ReduceDataset(signal, region, true, _isMCUnbinned);
 	nEvents_region_MC = signal_red->sumEntries();
-	if( nEvents_region_MC < 30) return NULL;
+	////if( nEvents_region_MC < 30) return NULL;
 	int numcpu = 4;
 	if(!_isMCUnbinned) numcpu = 2; // would prefer 1, but bug in RooFit: wrong error estimation for weighted datahist if 1 cpu
 

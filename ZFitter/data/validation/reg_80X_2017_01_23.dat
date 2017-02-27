@@ -17,3 +17,12 @@ s1      EleIDSF_loose25nsRun22016Moriond        /eos/project/c/cms-ecal-calibrat
 
 
 
+s1 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_s1-reg_80X_2017_01_23.root
+d1 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d1-reg_80X_2017_01_23.root
+d2 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d2-reg_80X_2017_01_23.root
+d3 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d3-reg_80X_2017_01_23.root
+d4 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d4-reg_80X_2017_01_23.root
+d5 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d5-reg_80X_2017_01_23.root
+d6 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d6-reg_80X_2017_01_23.root
+d7 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d7-reg_80X_2017_01_23.root
+d8 R9Eleprime /eos/project/c/cms-ecal-calibration/friends/others/R9Eleprime_d8-reg_80X_2017_01_23.root
