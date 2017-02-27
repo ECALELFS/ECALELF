@@ -111,6 +111,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	Float_t         WEAKweight = 1.;
 	Float_t         zptweight[45] = {1};
 	Float_t         mcGenWeight = 1;
+	Float_t         LTweight = -1;
 	std::vector<double> *pdfWeights = NULL;
 
 	Int_t           smearerCat[2];
@@ -182,6 +183,11 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 	if(chain->GetBranch("mcGenWeight") != NULL) {
 		std::cout << "[STATUS] Getting mcGenWeight branch for tree: " <<  chain->GetTitle() << std::endl;
 		chain->SetBranchAddress("mcGenWeight", &mcGenWeight);
+	}
+
+	if(chain->GetBranch("LTweight") != NULL) {
+		std::cout << "[STATUS] Getting LTweight for tree: " <<  chain->GetTitle() << std::endl;
+		chain->SetBranchAddress("LTweight", &LTweight);
 	}
 
 	if(chain->GetBranch("smearerCat") != NULL) {
@@ -341,6 +347,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 
 		event.weight = 1.;
 		if(_usePUweight) event.weight *= weight;
+		if(LTweight >= 0) event.weight *= LTweight;
 		if(_useR9weight) event.weight *= r9weight[0] * r9weight[1];
 		if(_usePtweight) event.weight *= ptweight[0] * ptweight[1];
 		if(_useFSRweight) event.weight *= FSRweight;
@@ -358,7 +365,7 @@ void SmearingImporter::Import(TTree *chain, regions_cache_t& cache, TString oddS
 				          //<< "\t" << (*pdfWeights)[_pdfWeightIndex]/(*pdfWeights)[0] << "\t" << (*pdfWeights)[_pdfWeightIndex] << "\t" << (*pdfWeights)[0]
 				          << "\t" << r9weight[0] << " " << r9weight[1]
 				          << "\t" << ptweight[0] << " " << ptweight[1]
-				          << "\t" << WEAKweight << "\t" << FSRweight
+				          << "\t" << WEAKweight << "\t" << FSRweight << "\t" << LTweight
 				          << std::endl;
 			}
 #endif
