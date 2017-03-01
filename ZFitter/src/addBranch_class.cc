@@ -115,19 +115,19 @@ TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treena
   Float_t lumi = 1000; // to normalize to 1fb-1
   Long64_t Nevents[10] = {
     5061547, 1915515, 2853483, 2987343,
-    1960045, 1310896, 2280265, 1194817,
+    1960045, 1310896, 2280265, 1194817, 
     1023888, 933956
   };
 
   Float_t LTweights[10] = { // cross-sections in pb
+    8.670e+02, 1.345e+02, 1.599e+02, 2.295e+02,
+    1.654e+02, 4.896e+01, 9.401e+01, 3.588e+00, 
+    2.012e-01, 8.329e-03}; //After Filter
+
+
+  Float_t SF[10] = { // SF to match the inclusive one
   9.93694e-01, 9.72633e-01, 9.90570e-01, 9.89391e-01, 9.92841e-01, 8.56845e-01, 8.91049e-01, 9.04437e-01, 1,1
-  }; //After fitting
-//  Float_t LTweights[10] = { // cross-sections in pb
-//    8.670e+02, 1.345e+02, 1.599e+02, 2.295e+02,
-//    1.654e+02, 4.896e+01, 9.401e+01, 3.588e+00,
-//    2.012e-01, 8.329e-03
-//  }; //After Filter
-  //Float_t LTweights[10] = {0.4977, 0.4072, 0.4118, 0.3982, 0.3213, 0.1674, 0.1403, 0.0679, 0.0588, 0.0633};
+  }; //After fitting 
 
   Long64_t nentries = originalChain->GetEntries();
   TString oldfilename = "";
@@ -139,25 +139,25 @@ TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treena
       if(!filename.Contains("LT")) {
 	LTweight = 1.;
       } else if(filename.Contains("LT_5To75")) {
-	LTweight = LTweights[0] / Nevents[0];
+	LTweight = LTweights[0] * SF[0] / Nevents[0];
       } else if(filename.Contains("LT_75To80")) {
-	LTweight = LTweights[1] / Nevents[1];
+	LTweight = LTweights[1] * SF[1] / Nevents[1];
       } else if(filename.Contains("LT_80To85")) {
-	LTweight = LTweights[2] / Nevents[2];
+	LTweight = LTweights[2] * SF[2] / Nevents[2];
       } else if(filename.Contains("LT_85To90")) {
-	LTweight = LTweights[3] / Nevents[3];
+	LTweight = LTweights[3] * SF[3] / Nevents[3];
       } else if(filename.Contains("LT_90To95")) {
-	LTweight = LTweights[4] / Nevents[4];
+	LTweight = LTweights[4] * SF[4] / Nevents[4];
       } else if(filename.Contains("LT_95To100")) {
-	LTweight = LTweights[5] / Nevents[5];
+	LTweight = LTweights[5] * SF[5] / Nevents[5];
       } else if(filename.Contains("LT_100To200")) {
-	LTweight = LTweights[6] / Nevents[6];
+	LTweight = LTweights[6] * SF[6] / Nevents[6];
       } else if(filename.Contains("LT_200To400")) {
-	LTweight = LTweights[7] / Nevents[7];
+	LTweight = LTweights[7] * SF[7] / Nevents[7];
       } else if(filename.Contains("LT_400To800")) {
-	LTweight = LTweights[8] / Nevents[8];
+	LTweight = LTweights[8] * SF[8] / Nevents[8];
       } else if(filename.Contains("LT_800To2000")) {
-	LTweight = LTweights[9] / Nevents[9];
+	LTweight = LTweights[9] * SF[9] / Nevents[9];
       }
       if(LTweight != 1) LTweight *= lumi;
       std::cout << LTweight << "\t" << filename << std::endl;
