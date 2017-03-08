@@ -108,12 +108,20 @@ TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treena
 		1023888, 933956
 	};
 
-	Float_t LTweights[10] = { // cross-sections in pb
+	Float_t official_xs[10] = { // cross-sections in pb
 		8.670e+02, 1.345e+02, 1.599e+02, 2.295e+02,
 		1.654e+02, 4.896e+01, 9.401e+01, 3.588e+00,
 		2.012e-01, 8.329e-03
 	}; //After Filter
-	//Float_t LTweights[10] = {0.4977, 0.4072, 0.4118, 0.3982, 0.3213, 0.1674, 0.1403, 0.0679, 0.0588, 0.0633};
+	Float_t Fit_SF[10] = {
+		9.93694e-01, 9.72633e-01, 9.90570e-01, 9.89391e-01,
+		9.92841e-01, 8.56845e-01, 8.91049e-01, 9.04437e-01, 
+		1.0, 1.0
+	};
+
+	Float_t LTweights[10];
+	for(size_t i = 0; i < 10; ++i)
+		LTweights[i] = official_xs[i] / Nevents[i] * Fit_SF[i];
 
 	Long64_t nentries = originalChain->GetEntries();
 	TString oldfilename = "";
@@ -125,25 +133,25 @@ TTree* addBranch_class::AddBranch_LTweight(TChain* originalChain, TString treena
 			if(!filename.Contains("LT")) {
 				LTweight = 1.;
 			} else if(filename.Contains("LT_5To75")) {
-				LTweight = LTweights[0] / Nevents[0];
+				LTweight = LTweights[0];
 			} else if(filename.Contains("LT_75To80")) {
-				LTweight = LTweights[1] / Nevents[1];
+				LTweight = LTweights[1];
 			} else if(filename.Contains("LT_80To85")) {
-				LTweight = LTweights[2] / Nevents[2];
+				LTweight = LTweights[2];
 			} else if(filename.Contains("LT_85To90")) {
-				LTweight = LTweights[3] / Nevents[3];
+				LTweight = LTweights[3];
 			} else if(filename.Contains("LT_90To95")) {
-				LTweight = LTweights[4] / Nevents[4];
+				LTweight = LTweights[4];
 			} else if(filename.Contains("LT_95To100")) {
-				LTweight = LTweights[5] / Nevents[5];
+				LTweight = LTweights[5];
 			} else if(filename.Contains("LT_100To200")) {
-				LTweight = LTweights[6] / Nevents[6];
+				LTweight = LTweights[6];
 			} else if(filename.Contains("LT_200To400")) {
-				LTweight = LTweights[7] / Nevents[7];
+				LTweight = LTweights[7];
 			} else if(filename.Contains("LT_400To800")) {
-				LTweight = LTweights[8] / Nevents[8];
+				LTweight = LTweights[8];
 			} else if(filename.Contains("LT_800To2000")) {
-				LTweight = LTweights[9] / Nevents[9];
+				LTweight = LTweights[9];
 			}
 			if(LTweight != 1) LTweight *= lumi;
 			std::cout << LTweight << "\t" << filename << std::endl;
@@ -544,6 +552,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 	        region_ele1_itr != _regionList.end();
 	        region_ele1_itr++) {
 
+		std::cout << "region " << *region_ele1_itr << std::endl;
 		// \todo activating branches // not efficient in this loop
 		std::set<TString> branchNames = cutter.GetBranchNameNtuple(*region_ele1_itr);
 		for(std::set<TString>::const_iterator itr = branchNames.begin();
@@ -568,6 +577,16 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 				std::cout << cutter.GetCut(region + oddString, isMC) << std::endl;
 				//exit(0);
 			} else {
+
+				std::set<TString> branchNames2 = cutter.GetBranchNameNtuple(*region_ele2_itr);
+				for(std::set<TString>::const_iterator itr = branchNames2.begin();
+						itr != branchNames2.end(); itr++) {
+					if(branchNames.count(*itr) != 0 ) continue;
+					std::cout << "Activating branches in addBranch_class.cc" << std::endl;
+					std::cout << "Branch is " << *itr << std::endl;
+					originalChain->SetBranchStatus(*itr, 1);
+				}
+
 				TString region1 = *region_ele1_itr;
 				TString region2 = *region_ele2_itr;
 				region1.ReplaceAll(_commonCut, "");
@@ -602,6 +621,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 		originalChain->GetEntry(jentry);
 		if (originalChain->GetTreeNumber() != treenumber) {
 			treenumber = originalChain->GetTreeNumber();
+			std::cout << "\n[DEBUG] new tree filename " << originalChain->GetFile()->GetName() << "\n";
 			for(std::vector< std::pair<TTreeFormula*, TTreeFormula*> >::const_iterator catSelector_itr = catSelectors.begin();
 			        catSelector_itr != catSelectors.end();
 			        catSelector_itr++) {
@@ -634,7 +654,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 		smearerCat[0] = evIndex;
 		smearerCat[1] = _swap ? 1 : 0;
 		newtree->Fill();
-		if(jentry % (entries / 100) == 0) std::cerr << "\b\b\b\b" << std::setw(2) << jentry / (entries / 100) << "%]";
+		if(jentry % (entries / 100) == 0) std::cerr << "\b\b\b\b\b[" << std::setw(2) << jentry / (entries / 100) << "%]";
 	}
 	std::cout << std::endl;
 
