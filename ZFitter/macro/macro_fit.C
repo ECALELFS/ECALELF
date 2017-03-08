@@ -87,7 +87,7 @@ void ShiftYGraph(TGraphErrors *graph, double y){
 }
 
 
-TString img_filename(TString filename, TString prefix, TString region, TString ext=".eps"){
+TString fit_img_filename(TString filename, TString prefix, TString region, TString ext=".eps"){
   if(filename.Contains("toys")){
     filename.ReplaceAll(".root",TString("-")+prefix+region+ext);
   }else{
@@ -1133,7 +1133,7 @@ void Plot(TCanvas *c, TGraphErrors *g, TF1 *fun, TPaveText *pt, bool isScale, bo
 
 void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", bool doScale=true, bool doResolution=true, bool doPhi=false, TString singleRegion="All", TString variable_to_fit="All", double delta_min=2., double delta_max=2.){
   gStyle->SetOptFit(0);  
-  std::ofstream ffout(img_filename(filename,"FitResult","",".dat"));  
+  std::ofstream ffout(fit_img_filename(filename,"FitResult","",".dat"));  
   typedef std::vector<TGraph *> g_vec_t;
   typedef  std::map<TString, g_vec_t> map_region_t;
   std::map<TString, map_region_t> graph_map;
@@ -1277,9 +1277,9 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
 
       pave.Draw();
       gPad->Update();
-      gPad->SaveAs(img_filename(filename, variable, region));
-      gPad->SaveAs(img_filename(filename, variable, region,".C"));
-      gPad->SaveAs(img_filename(filename, variable, region,".png"));
+      gPad->SaveAs(fit_img_filename(filename, variable, region));
+      gPad->SaveAs(fit_img_filename(filename, variable, region,".C"));
+      gPad->SaveAs(fit_img_filename(filename, variable, region,".png"));
 
       RooRealVar *var_ = new RooRealVar(variable+"_"+region,variable+"_"+region, fun->GetParameter(1), fun->GetParameter(1)-1./(sqrt(2* fun->GetParameter(2))) , fun->GetParameter(1) + 1./(sqrt(2* fun->GetParameter(3))));  
       var_->setError((1./(sqrt(2* fun->GetParameter(2))) + 1./(sqrt(2* fun->GetParameter(3))))/2);
@@ -1290,9 +1290,9 @@ void FitProfile2(TString filename, TString energy="13 TeV", TString lumi="", boo
   }
   
   vars->Print();
-  vars->writeToFile(img_filename(filename,"FitResult-","",".config"));
+  vars->writeToFile(fit_img_filename(filename,"FitResult-","",".config"));
   //std::cout << fixed << "Shift = " << fun->GetParameter(1) << " + " << 1./(sqrt(2* fun->GetParameter(3))) << " - " << 1./(sqrt(2* fun->GetParameter(2))) << "" << std::endl;
-  //system("cat "+img_filename(filename,"FitResult-","",".config")+" |awk '{printf(\"%s = %.4f +/- %.6f \", $1, $3, $5);print $6,$7,$8}' > "+img_filename(filename,"FitResult","",".config"));
+  //system("cat "+fit_img_filename(filename,"FitResult-","",".config")+" |awk '{printf(\"%s = %.4f +/- %.6f \", $1, $3, $5);print $6,$7,$8}' > "+fit_img_filename(filename,"FitResult","",".config"));
  
   delete vars;
   delete pt;
