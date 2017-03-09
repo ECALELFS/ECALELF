@@ -21,7 +21,7 @@ CMSSWDir = currentDir+"/../";
 applyPcorr = ["True"]; #decide if you want to apply momentum correction or not         
 applyEcorr = ["False"]; #decide if you want to apply energy correction or not                                                                               
 split = ["0","1"]; #0=full statistics, 1=even/odd                                                                                                             
-cut = ["0.15","0.20","0.30","100."];#size of the E/p cut window (default is 0.15)    
+cut = ["0.15","0.20","100."];#size of the E/p cut window (default is 0.15)    
 #cut = ["0.15"]
 smoothCut = ["1"]; #0=use step-function to reweight, 1=use the E/p distribution                                                                                 
 energyType = ["0"]; #0=regression, 1=raw energy
@@ -79,9 +79,9 @@ TOP=currentDir
 #cmscaf1nd
 
 #os.system("mkdir Job_"+ntupleName+""+nLoops+"loop__pCorr2016")
-os.system("mkdir Job_"+ntupleName+""+nLoops+"_pCorr2016")
-os.system("mkdir cfg_"+ntupleName+"_"+nLoops+"_pCorr2016")
-os.system("mkdir ICset_"+ntupleName+"_"+nLoops+"_pCorr2016")
+os.system("mkdir Job_"+ntupleName+""+nLoops+"_separateElePosCorr")
+os.system("mkdir cfg_"+ntupleName+"_"+nLoops+"_separateElePosCorr")
+os.system("mkdir ICset_"+ntupleName+"_"+nLoops+"_separateElePosCorr")
 
 ##RUN CALIBRATION ON BARREL
 for b in range(len(split)):
@@ -90,9 +90,9 @@ for b in range(len(split)):
             for e in range(len(applyPcorr)):
                 for f in range(len(applyEcorr)):
                     for g in range(len(energyType)):
-                        fn = "Job_"+ntupleName+""+nLoops+"_pCorr2016/Job_"+"EB"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
+                        fn = "Job_"+ntupleName+""+nLoops+"_separateElePosCorr/Job_"+"EB"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
                         outScript = open(fn+".sh","w");
-                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outDirFitResData output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EB"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EB_scE.root"
+                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outDirFitResData output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --do"+"EB"+" --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScaleElectrons ELECTRONS_MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputMomentumScalePositrons POSITRONS_MomentumCalibration2016_eta1_eta1.root"
                         print command;
                         outScript.write('#!/bin/bash');
                         outScript.write("\n"+'cd '+CMSSWDir);
@@ -112,14 +112,15 @@ for b in range(len(split)):
                         outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EB_pTk.root ./")
                         outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EB_scE.root ./")
                         outScript.write("\ncmsStage "+folder_dat+"EoverPcalibration_batch_"+ntupleName+".dat ./")
-                        outScript.write("\ncmsStage "+folder_dat+"MomentumCalibration2016_eta1_eta1.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"ELECTRONS_MomentumCalibration2016_eta1_eta1.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"POSITRONS_MomentumCalibration2016_eta1_eta1.root ./")
                         outScript.write("\necho \"end copy\" ");
 
                         outScript.write("\nls")
                         outScript.write("\necho \"eseguo: "+command+"\" ")
                         outScript.write("\n"+command);
                         outScript.write("\nls")
-                        outScript.write("\ncp -v -r output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ "+currentDir)
+                        outScript.write("\ncp -v -r output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ "+currentDir)
                         outScript.close();
                         os.system("chmod 777 "+currentDir+"/"+fn+".sh");
                         command2 = "bsub -q cmscaf1nw -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
@@ -135,9 +136,9 @@ for b in range(len(split)):
             for e in range(len(applyPcorr)):
                 for f in range(len(applyEcorr)):
                     for g in range(len(energyType)):
-                        fn = "Job_"+ntupleName+""+nLoops+"_pCorr2016/Job_"+"EE"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
+                        fn = "Job_"+ntupleName+""+nLoops+"_separateElePosCorr/Job_"+"EE"+"_"+split[b]+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g];
                         outScript = open(fn+".sh","w");
-                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outDirFitResData output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScale MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputEnergyScale momentumCalibration2015_EE_scE.root"
+                        command = "ZFitter.exe -f EoverPcalibration_batch_"+ntupleName+".dat --EOverPCalib --outDirFitResData output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ --splitStat "+split[b]+" --nLoops "+nLoops+" --EPMin "+cut[c]+" --noPU --smoothCut "+smoothCut[d]+" --applyPcorr "+applyPcorr[e]+" --inputMomentumScaleElectrons ELECTRONS_MomentumCalibration2016_eta1_eta1.root --applyEcorr "+applyEcorr[f]+" useRawEnergy "+energyType[g]+" --inputMomentumScalePositrons POSITRONS_MomentumCalibration2016_eta1_eta1.root"
                         print command;
                         outScript.write('#!/bin/bash');
                         outScript.write("\n"+'cd '+CMSSWDir);
@@ -157,13 +158,14 @@ for b in range(len(split)):
                         outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EE_pTk.root ./")
                         outScript.write("\ncmsStage "+folder_dat+"momentumCalibration2015_EE_scE.root ./")
                         outScript.write("\ncmsStage "+folder_dat+"EoverPcalibration_batch_"+ntupleName+".dat ./")
-                        outScript.write("\ncmsStage "+folder_dat+"MomentumCalibration2016_eta1_eta1.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"ELECTRONS_MomentumCalibration2016_eta1_eta1.root ./")
+                        outScript.write("\ncmsStage "+folder_dat+"POSITRONS_MomentumCalibration2016_eta1_eta1.root ./")
                         outScript.write("\necho \"end copy\" ");
                         outScript.write("\nls")
                         outScript.write("\necho \"eseguo: "+command+"\" ")
                         outScript.write("\n"+command);
                         outScript.write("\nls")
-                        outScript.write("\ncp -v -r output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ "+currentDir)
+                        outScript.write("\ncp -v -r output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/ "+currentDir)
                         outScript.close();
                         os.system("chmod 777 "+currentDir+"/"+fn+".sh");
                         command2 = "bsub -q cmscaf1nw -cwd "+currentDir+" "+currentDir+"/"+fn+".sh";
@@ -174,7 +176,7 @@ for b in range(len(split)):
 
 ##CREATE CFG FILES TO PRODUCE CALIBRATION PLOTS LATER
 
-createAndPlotIC = "createAndPlotIC_"+ntupleName+"_"+nLoops+"_pCorr2016.sh"
+createAndPlotIC = "createAndPlotIC_"+ntupleName+"_"+nLoops+"_separateElePosCorr.sh"
 out2 = open(createAndPlotIC,"w")
                             
 #for b in range(len(split)):
@@ -184,8 +186,8 @@ for c in range(len(cut)):
             for f in range(len(applyEcorr)):
                 for g in range(len(energyType)):
                     name = "EB"+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
-                    fn = "cfg_"+ntupleName+"_"+nLoops+"_pCorr2016/calibrationPlots_"+name+".py";
-                    folder =  "output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
+                    fn = "cfg_"+ntupleName+"_"+nLoops+"_separateElePosCorr/calibrationPlots_"+name+".py";
+                    folder =  "output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
                     outScript = open(fn,"w");
                     outScript.write("import FWCore.ParameterSet.Config as cms");
                     outScript.write("\nprocess = cms.Process(\"calibrationPlotsEBparameters\")")
@@ -215,8 +217,8 @@ for c in range(len(cut)):
             for f in range(len(applyEcorr)):
                 for g in range(len(energyType)):
                     name = "EE"+"_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
-                    fn = "cfg_"+ntupleName+"_"+nLoops+"_pCorr2016/calibrationPlots_"+name+".py";
-                    folder =  "output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
+                    fn = "cfg_"+ntupleName+"_"+nLoops+"_separateElePosCorr/calibrationPlots_"+name+".py";
+                    folder =  "output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
                     outScript = open(fn,"w");
                     outScript.write("import FWCore.ParameterSet.Config as cms");
                     outScript.write("\nprocess = cms.Process(\"calibrationPlotsEEparameters\")")
@@ -238,7 +240,7 @@ for c in range(len(cut)):
 
 ##CREATE FOLDER CONTAINING THE FINAL SET OF IC (EB+EE)
 
-newFolder = "ICset_"+ntupleName+"_"+nLoops+"_pCorr2016"
+newFolder = "ICset_"+ntupleName+"_"+nLoops+"_separateElePosCorr"
 
 for c in range(len(cut)):
     for d in range(len(smoothCut)):
@@ -246,6 +248,6 @@ for c in range(len(cut)):
             for f in range(len(applyEcorr)):
                 for g in range(len(energyType)):
                     name = "IC_"+cut[c]+"_smoothCut"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]
-                    folder =  "output_"+ntupleName+"_"+nLoops+"_pCorr2016_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
+                    folder =  "output_"+ntupleName+"_"+nLoops+"_separateElePosCorr_"+cut[c]+"_smooth"+smoothCut[d]+"_pCorr_"+applyPcorr[e]+"_ECorr_"+applyEcorr[f]+"_useRaw"+energyType[g]+"/"
                     out2.write("\ncat "+folder+"IC_EB*txt "+folder+"IC_EE*txt > "+newFolder+"/"+name+".txt")
                     

@@ -16,7 +16,7 @@ void DrawICMap(TH2F* h2, const std::string& fileName, const std::string& fileTyp
 		h2 -> GetXaxis() -> SetNdivisions(418);
 		h2 -> GetXaxis() -> SetTitle("i#phi");
 		h2 -> GetYaxis() -> SetTitle("i#eta");
-		h2 -> GetZaxis() -> SetRangeUser(0.90, 1.10);
+		h2 -> GetZaxis() -> SetRangeUser(0.95, 1.05);
 	} else {
 		c = new TCanvas("c", fileName.c_str(), 0, 0, 700, 600);
 		c -> SetGridx();
@@ -25,7 +25,7 @@ void DrawICMap(TH2F* h2, const std::string& fileName, const std::string& fileTyp
 		h2 -> GetXaxis() -> SetNdivisions(510);
 		h2 -> GetXaxis() -> SetTitle("ix");
 		h2 -> GetYaxis() -> SetTitle("iy");
-		h2 -> GetZaxis() -> SetRangeUser(0.70, 1.30);
+		h2 -> GetZaxis() -> SetRangeUser(0.90, 1.10);
 	}
 
 	h2 -> Draw("COLZ");

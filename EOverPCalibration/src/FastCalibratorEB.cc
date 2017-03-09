@@ -16,7 +16,7 @@
 
 ///==== Default constructor Contructor
 
-FastCalibratorEB::FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEB, TString outEPDistribution):
+FastCalibratorEB::FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScaleElectrons, std::vector<TGraphErrors*> & inputMomentumScalePositrons, const std::string& typeEB, TString outEPDistribution):
 	outEPDistribution_p(outEPDistribution)
 {
 
@@ -32,8 +32,8 @@ FastCalibratorEB::FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inp
 	Init(tree);
 
 	// Set my momentum scale using the input graphs
-	myMomentumScale = inputMomentumScale;
-	myEnergyScale = inputEnergyScale;
+	myMomentumScaleElectrons = inputMomentumScaleElectrons;
+	myMomentumScalePositrons = inputMomentumScalePositrons;
 	myTypeEB = typeEB;
 }
 
@@ -269,8 +269,8 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			FdiEta = energySCEle[0] / rawEnergySCEle[0]; /// FEta approximation
 			if (useRawEnergy == 1)
 				FdiEta = 1.;
-			if (applyEnergyCorrection)
-				FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
+			//			if (applyEnergyCorrection)
+			//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
 
 			float thisE = 0;
 			int   iseed = 0 ;
@@ -323,8 +323,10 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if(!isMCTruth)  {
 				pIn = pAtVtxGsfEle[0];
 				//       int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
-				if (applyMomentumCorrection)
-					pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+				if (applyMomentumCorrection) {
+				  if (chargeEle[0]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[0] );
+				  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[0] );
+				}
 			} else {
 				pIn = energyMCEle[0];
 				ele1_DR     = TMath::Sqrt((etaMCEle[0] - etaEle[0]) * (etaMCEle[0] - etaEle[0]) + (phiMCEle[0] - phiEle[0]) * (phiMCEle[0] - phiEle[0])) ;
@@ -352,8 +354,8 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			FdiEta = energySCEle[1] / rawEnergySCEle[1]; /// FEta approximation
 			if (useRawEnergy == 1)
 				FdiEta = 1.;
-			if (applyEnergyCorrection)
-				FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
+			//			if (applyEnergyCorrection)
+			//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
 
 			float thisE = 0;
 			int   iseed = 0 ;
@@ -407,9 +409,10 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if(!isMCTruth)  {
 				pIn = pAtVtxGsfEle[1];
 				//	 int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
-				if (applyMomentumCorrection)
-					pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
-				//         pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+				if (applyMomentumCorrection) {
+				  if (chargeEle[1]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[1] );
+				  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[1] );
+				}
 			} else {
 				pIn = energyMCEle[1];
 				ele2_DR     = TMath::Sqrt((etaMCEle[1] - etaEle[1]) * (etaMCEle[1] - etaEle[1]) + (phiMCEle[1] - phiEle[1]) * (phiMCEle[1] - phiEle[1])) ;
@@ -582,8 +585,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				FdiEta = energySCEle[0] / rawEnergySCEle[0];
 				if (useRawEnergy == 1)
 					FdiEta = 1.;
-				if (applyEnergyCorrection)
-					FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
+				//				if (applyEnergyCorrection)
+				//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
 
 				float thisE = 0;
 				int iseed = 0 ;
@@ -636,8 +639,10 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if(!isMCTruth)  {
 					pIn = pAtVtxGsfEle[0];
 					//	    int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
-					if (applyMomentumCorrection)
-						pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+					if (applyMomentumCorrection) {
+					  if (chargeEle[0]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[0] );
+					  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[0] );
+					}
 				} else {
 					pIn = energyMCEle[0];
 					ele1_DR     = TMath::Sqrt((etaMCEle[0] - etaEle[0]) * (etaMCEle[0] - etaEle[0]) + (phiMCEle[0] - phiEle[0]) * (phiMCEle[0] - phiEle[0]));
@@ -722,8 +727,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				FdiEta = energySCEle[1] / rawEnergySCEle[1];
 				if (useRawEnergy == 1)
 					FdiEta = 1.;
-				if (applyEnergyCorrection)
-					FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
+				//				if (applyEnergyCorrection)
+				//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
 
 				// Electron energy
 				float thisE = 0;
@@ -779,8 +784,10 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if(!isMCTruth) {
 					pIn = pAtVtxGsfEle[1];
 					//	    int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
-					if (applyMomentumCorrection)
-						pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
+					if (applyMomentumCorrection) {
+					  if (chargeEle[1]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[1] );
+					  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[1] );
+					}
 				} else {
 					pIn = energyMCEle[1];
 					ele2_DR     = TMath::Sqrt((etaMCEle[1] - etaEle[1]) * (etaMCEle[1] - etaEle[1]) + (phiMCEle[1] - phiEle[1]) * (phiMCEle[1] - phiEle[1]));

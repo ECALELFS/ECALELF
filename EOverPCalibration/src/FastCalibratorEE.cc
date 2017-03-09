@@ -7,7 +7,7 @@
 
 
 /// Default constructor
-FastCalibratorEE::FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEE, TString outEPDistribution):
+FastCalibratorEE::FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScaleElectrons, std::vector<TGraphErrors*> & inputMomentumScalePositrons, const std::string& typeEE, TString outEPDistribution):
 	outEPDistribution_p(outEPDistribution)
 {
 
@@ -34,8 +34,8 @@ FastCalibratorEE::FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inp
 	Init(tree);
 
 	// Set my momentum scale using the input graphs
-	myMomentumScale = inputMomentumScale;
-	myEnergyScale = inputEnergyScale;
+	myMomentumScaleElectrons = inputMomentumScaleElectrons;
+	myMomentumScalePositrons = inputMomentumScalePositrons;
 	myTypeEE = typeEE;
 }
 
@@ -279,10 +279,10 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			FdiEta = energySCEle[0] / (rawEnergySCEle[0] + esEnergySCEle[0]); /// Cluster containment approximation using ps infos
 			if (useRawEnergy == 1)
 				FdiEta = 1.;
-			if (applyEnergyCorrection) {
-				int regionId = templIndexEE(myTypeEE, etaEle[0], chargeEle[0], 1.);
-				FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[0] );
-			}
+			//			if (applyEnergyCorrection) {
+			//	int regionId = templIndexEE(myTypeEE, etaEle[0], chargeEle[0], 1.);
+			//	FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[0] );
+			//}
 
 			float thisE = 0;
 			int   iseed = 0 ;
@@ -338,8 +338,8 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if(!isMCTruth) {
 				pIn = pAtVtxGsfEle[0];
 				if (applyMomentumCorrection) {
-					//	 int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
-					pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+				  if (chargeEle[0]<0)                                   pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[0] );
+				  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[0] );
 				}
 			} else {
 				pIn = energyMCEle[0];
@@ -368,10 +368,10 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			FdiEta = energySCEle[1] / (rawEnergySCEle[1] + esEnergySCEle[1]);
 			if (useRawEnergy == 1)
 				FdiEta = 1.;
-			if (applyEnergyCorrection) {
-				int regionId = templIndexEE(myTypeEE, etaEle[1], chargeEle[1], 1.);
-				FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[1] );
-			}
+			//			if (applyEnergyCorrection) {
+			//	int regionId = templIndexEE(myTypeEE, etaEle[1], chargeEle[1], 1.);
+			//	FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[1] );
+			//}
 
 			float thisE = 0;
 			int   iseed = 0 ;
@@ -424,8 +424,8 @@ void FastCalibratorEE::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if(!isMCTruth) {
 				pIn = pAtVtxGsfEle[1];
 				if (applyMomentumCorrection) {
-					// int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
-					pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
+				  if (chargeEle[1]<0)                                   pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[1] );
+				  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[1] );
 				}
 			} else {
 				pIn = energyMCEle[1];
@@ -596,10 +596,10 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 				FdiEta = energySCEle[0] / (rawEnergySCEle[0] + esEnergySCEle[0]);
 				if (useRawEnergy == 1)
 					FdiEta = 1.;
-				if (applyEnergyCorrection) {
-					int regionId = templIndexEE(myTypeEE, etaEle[0], chargeEle[0], 1.);
-					FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[0] );
-				}
+				//				if (applyEnergyCorrection) {
+				//	int regionId = templIndexEE(myTypeEE, etaEle[0], chargeEle[0], 1.);
+				//	FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[0] );
+				//}
 
 				float thisE = 0;
 				float thisE3x3 = 0 ;
@@ -659,8 +659,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if(!isMCTruth) {
 					pIn = pAtVtxGsfEle[0];
 					if (applyMomentumCorrection) {
-						//	   int regionId = templIndexEE(myTypeEE,etaEle[0],chargeEle[0],thisE3x3/thisE);
-						pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+					  if (chargeEle[0]<0)                                   pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[0] );
+					  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[0] );
 					}
 				} else {
 					pIn = energyMCEle[0];
@@ -795,10 +795,10 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 				FdiEta = energySCEle[1] / (rawEnergySCEle[1] + esEnergySCEle[1]);
 				if (useRawEnergy == 1)
 					FdiEta = 1.;
-				if (applyEnergyCorrection) {
-					int regionId = templIndexEE(myTypeEE, etaEle[1], chargeEle[1], 1.);
-					FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[1] );
-				}
+				//				if (applyEnergyCorrection) {
+				//	int regionId = templIndexEE(myTypeEE, etaEle[1], chargeEle[1], 1.);
+				//	FdiEta /= myEnergyScale[regionId] -> Eval( phiEle[1] );
+				//}
 
 				float thisE = 0;
 				float thisE3x3 = 0 ;
@@ -854,8 +854,8 @@ void FastCalibratorEE::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if(!isMCTruth)  {
 					pIn = pAtVtxGsfEle[1];
 					if (applyMomentumCorrection) {
-						//	    int regionId = templIndexEE(myTypeEE,etaEle[1],chargeEle[1],thisE3x3/thisE);
-						pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
+					  if (chargeEle[1]<0)                                   pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[1] );
+					  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[1] );
 					}
 				} else {
 					pIn = energyMCEle[1];

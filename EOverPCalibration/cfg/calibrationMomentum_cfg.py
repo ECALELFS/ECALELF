@@ -17,9 +17,10 @@ process.Options = cms.PSet(
     nPhiBinsTempEE = cms.int32(1),
     rebinEB = cms.int32(10),
     rebinEE = cms.int32(20),
-    outputFile = cms.string("output/MomentumCalibration2016.root"),
+    outputFile = cms.string("output/MomentumCalibration2016"),
     typeEB = cms.string("eta1"),
-    typeEE = cms.string("eta1")
+    typeEE = cms.string("eta1"),
+    chargeValue = cms.int32(-1)
 
 )
 

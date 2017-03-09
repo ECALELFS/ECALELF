@@ -131,6 +131,10 @@ int main(int argc, char** argv)
 	if(Options.existsAs<bool>("usePUweights"))
 		usePUweights = Options.getParameter<bool>("usePUweights");
 
+	int chargeValue = -1;
+	if(Options.existsAs<int>("chargeValue"))
+		chargeValue = Options.getParameter<int>("chargeValue");
+
 	cout << " Basic Configuration " << endl;
 	cout << " Tree Name = " << TreeName << endl;
 	cout << " infileDATA = " << infileDATA << endl;
@@ -145,6 +149,7 @@ int main(int argc, char** argv)
 	cout << " rebinEB = " << rebinEB << endl;
 	cout << " rebinEE = " << rebinEE << endl;
 	cout << " usePUweights = " << usePUweights << endl;
+	cout << " chargeValue = " << chargeValue << endl;
 
 	cout << "Making calibration plots for Momentum scale studies " << endl;
 
@@ -155,15 +160,15 @@ int main(int argc, char** argv)
 	float eta2Max = 2.5;
 
 	//--- weights for MC
-	TFile weightsFile (WeightforMC.c_str(), "READ");
-	TH1F* hweights = (TH1F*)weightsFile.Get("pileup");
+	//	TFile weightsFile (WeightforMC.c_str(), "READ");
+	//	TH1F* hweights = (TH1F*)weightsFile.Get("pileup");
 
-	float w[100];
+	/*	float w[100];
 	for (int ibin = 1; ibin < hweights->GetNbinsX() + 1; ibin++) {
 		w[ibin - 1] = hweights->GetBinContent(ibin); // bin 1 --> nvtx = 0
 	}
 	weightsFile.Close();
-
+	*/
 	//histos to get the bin in phi given the electron phi
 	TH1F* hPhiBinEB = new TH1F("hphiEB", "hphiEB", nPhiBinsEB, -1.*TMath::Pi(), 1.*TMath::Pi());
 	TH1F* hPhiBinEE = new TH1F("hphiEE", "hphiEE", nPhiBinsEE, -1.*TMath::Pi(), 1.*TMath::Pi());
@@ -180,15 +185,14 @@ int main(int argc, char** argv)
 
 	// observables
 	//  int isW;
-	float invMass_SC;
+	float invMass_ECAL_ele;
 	float etaSCEle[3], phiSCEle[3];
 	float etaEle[3], phiEle[3];
 	float energySCEle[3], rawEnergySCEle[3], R9Ele[3];
 	int chargeEle[3];
 	float pAtVtxGsfEle[3];
-	float seedXSCEle[3], seedYSCEle[3];
+	float xSeedSC[3], ySeedSC[3];
 	int NPU[1];
-	float PtEle[3];
 	int ele1_iz, ele2_iz;
 
 	// Set branch addresses for Data
@@ -202,22 +206,20 @@ int main(int argc, char** argv)
 	ntu_DA->SetBranchAddress("etaSCEle", &etaSCEle);
 	ntu_DA->SetBranchStatus("phiSCEle", 1);
 	ntu_DA->SetBranchAddress("phiSCEle", &phiSCEle);
-	ntu_DA->SetBranchStatus("energySCEle", 1);
-	ntu_DA->SetBranchAddress("energySCEle", &energySCEle);
+	ntu_DA->SetBranchStatus("energy_ECAL_ele", 1);
+	ntu_DA->SetBranchAddress("energy_ECAL_ele", &energySCEle);
 	ntu_DA->SetBranchStatus("rawEnergySCEle", 1);
 	ntu_DA->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle);
-	ntu_DA->SetBranchStatus("PtEle", 1);
-	ntu_DA->SetBranchAddress("PtEle", &PtEle);
-	ntu_DA->SetBranchStatus("invMass_SC", 1);
-	ntu_DA->SetBranchAddress("invMass_SC", &invMass_SC);
+	ntu_DA->SetBranchStatus("invMass_ECAL_ele", 1);
+	ntu_DA->SetBranchAddress("invMass_ECAL_ele", &invMass_ECAL_ele);
 	ntu_DA->SetBranchStatus("chargeEle", 1);
 	ntu_DA->SetBranchAddress("chargeEle", &chargeEle);
 	ntu_DA->SetBranchStatus("pAtVtxGsfEle", 1);
 	ntu_DA->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
-	ntu_DA->SetBranchStatus("seedXSCEle", 1);
-	ntu_DA->SetBranchAddress("seedXSCEle", &seedXSCEle);
-	ntu_DA->SetBranchStatus("seedYSCEle", 1);
-	ntu_DA->SetBranchAddress("seedYSCEle", &seedYSCEle);
+	ntu_DA->SetBranchStatus("xSeedSC", 1);
+	ntu_DA->SetBranchAddress("xSeedSC", &xSeedSC);
+	ntu_DA->SetBranchStatus("ySeedSC", 1);
+	ntu_DA->SetBranchAddress("ySeedSC", &ySeedSC);
 
 
 	// Set branch addresses for MC
@@ -231,22 +233,20 @@ int main(int argc, char** argv)
 	ntu_MC->SetBranchAddress("etaSCEle", &etaSCEle);
 	ntu_MC->SetBranchStatus("phiSCEle", 1);
 	ntu_MC->SetBranchAddress("phiSCEle", &phiSCEle);
-	ntu_MC->SetBranchStatus("energySCEle", 1);
-	ntu_MC->SetBranchAddress("energySCEle", &energySCEle);
+	ntu_MC->SetBranchStatus("energy_ECAL_ele", 1);
+	ntu_MC->SetBranchAddress("energy_ECAL_ele", &energySCEle);
 	ntu_MC->SetBranchStatus("rawEnergySCEle", 1);
 	ntu_MC->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle);
-	ntu_MC->SetBranchStatus("PtEle", 1);
-	ntu_MC->SetBranchAddress("PtEle", &PtEle);
-	ntu_MC->SetBranchStatus("invMass_SC", 1);
-	ntu_MC->SetBranchAddress("invMass_SC", &invMass_SC);
+	ntu_MC->SetBranchStatus("invMass_ECAL_ele", 1);
+	ntu_MC->SetBranchAddress("invMass_ECAL_ele", &invMass_ECAL_ele);
 	ntu_MC->SetBranchStatus("chargeEle", 1);
 	ntu_MC->SetBranchAddress("chargeEle", &chargeEle);
 	ntu_MC->SetBranchStatus("pAtVtxGsfEle", 1);
 	ntu_MC->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
-	ntu_MC->SetBranchStatus("seedXSCEle", 1);
-	ntu_MC->SetBranchAddress("seedXSCEle", &seedXSCEle);
-	ntu_MC->SetBranchStatus("seedYSCEle", 1);
-	ntu_MC->SetBranchAddress("seedYSCEle", &seedYSCEle);
+	ntu_MC->SetBranchStatus("xSeedSC", 1);
+	ntu_MC->SetBranchAddress("xSeedSC", &xSeedSC);
+	ntu_MC->SetBranchStatus("ySeedSC", 1);
+	ntu_MC->SetBranchAddress("ySeedSC", &ySeedSC);
 
 	if(usePUweights) {
 		ntu_MC->SetBranchStatus("NPU", 1);
@@ -440,8 +440,8 @@ int main(int argc, char** argv)
 		//    if( isW == 1 )               continue;
 		if( fabs(etaSCEle[0])  > etaMax )  continue;
 		if( fabs(etaSCEle[1]) > eta2Max ) continue;
-		if( PtEle[0]  < 20. ) continue;
-		if( PtEle[1] < 20. ) continue;
+		if( (energySCEle[0]/cosh(etaEle[0]))  < 20. ) continue;
+		if( (energySCEle[1]/cosh(etaEle[1])) < 20. ) continue;
 
 		if ( fabs(etaEle[0]) < 1.479) ele1_iz = 0;
 		else if (etaEle[0] > 0) ele1_iz = 1;
@@ -453,11 +453,12 @@ int main(int argc, char** argv)
 
 		//--- PU weights
 		float ww = 1.;
-		if( usePUweights ) ww *= w[NPU[0]];
+		//		if( usePUweights ) ww *= w[NPU[0]];
 
+		if( (chargeEle[1]<0 && chargeValue<0) || (chargeEle[1]>0 && chargeValue>0)) {
 		//--- set the mass for ele1
-		//    var = ( invMass_SC * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
-		var = ( invMass_SC * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
+		//    var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
+		var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
 		// simulate e+/e- asymmetry
 		//if( chargeEle[0] > 0 ) ww *= 1.*(6/5);
 		//else             ww *= 1.*(4/5);
@@ -465,7 +466,7 @@ int main(int argc, char** argv)
 		// MC - BARREL - ele1
 		if(  ele1_iz == 0 ) {
 			// fill MC templates
-			int modPhi = int(seedYSCEle[0] / (360. / nPhiBinsTempEB));
+			int modPhi = int(ySeedSC[0] / (360. / nPhiBinsTempEB));
 			if( modPhi == nPhiBinsTempEB ) modPhi = 0;
 
 			int regionId = templIndexEB(typeEB, etaEle[0], chargeEle[0], R9Ele[0]);
@@ -484,10 +485,10 @@ int main(int argc, char** argv)
 
 		// MC - ENDCAP - ele1
 		else {
-			int iphi = eRings->GetEndcapIphi(seedXSCEle[0], seedYSCEle[0], ele1_iz);
+			int iphi = eRings->GetEndcapIphi(xSeedSC[0], ySeedSC[0], ele1_iz);
 
-			if( ele1_iz ==  1 )mapConversionEEp -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
-			if( ele1_iz == -1 )mapConversionEEm -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
+			if( ele1_iz ==  1 )mapConversionEEp -> SetBinContent(xSeedSC[0], ySeedSC[0], etaSCEle[0]);
+			if( ele1_iz == -1 )mapConversionEEm -> SetBinContent(xSeedSC[0], ySeedSC[0], etaSCEle[0]);
 
 
 			// fill MC templates
@@ -507,12 +508,13 @@ int main(int argc, char** argv)
 			(h_EoP_EE.at(PhibinEE)).at(regionId) -> Fill(var * var, ww); // This is MC
 			h_phi_mc_EE[regionId] -> Fill(phiSCEle[0], ww);
 		}
+		}
 
 
-
+		else{
 		//--- set the mass for ele2
-		//    var = ( invMass_SC * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
-		var = ( invMass_SC * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
+		//    var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
+		var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
 		// simulate e+/e- asymmetry
 		//if( chargeEle[0] > 0 ) ww *= 1.*(6/5);
 		//else             ww *= 1.*(4/5);
@@ -520,7 +522,7 @@ int main(int argc, char** argv)
 		// MC - BARREL - ele2
 		if( ele2_iz == 0) {
 			// fill MC templates
-			int modPhi = int (seedYSCEle[1] / (360. / nPhiBinsTempEB));
+			int modPhi = int (ySeedSC[1] / (360. / nPhiBinsTempEB));
 			if( modPhi == nPhiBinsTempEB ) modPhi = 0;
 
 			int regionId  = templIndexEB(typeEB, etaEle[1], chargeEle[1], R9Ele[1]);
@@ -539,10 +541,10 @@ int main(int argc, char** argv)
 
 		// MC - ENDCAP - ele2
 		else {
-			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
-			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
+			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(xSeedSC[1], ySeedSC[1], etaSCEle[1]);
+			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(xSeedSC[1], ySeedSC[1], etaSCEle[1]);
 
-			int iphi = eRings->GetEndcapIphi(seedXSCEle[1], seedYSCEle[1], ele2_iz);
+			int iphi = eRings->GetEndcapIphi(xSeedSC[1], ySeedSC[1], ele2_iz);
 
 
 			// fill MC templates
@@ -562,9 +564,10 @@ int main(int argc, char** argv)
 			(h_EoP_EE.at(PhibinEE)).at(regionId) -> Fill(var * var, ww); // This is MC
 			h_phi_mc_EE[regionId]->Fill(phiSCEle[1], ww);
 		}
+		}
 
-		h_et_mc ->Fill(PtEle[0], ww);
-		h_et_mc ->Fill(PtEle[1], ww);
+		h_et_mc ->Fill((energySCEle[0]/cosh(etaEle[0])), ww);
+		h_et_mc ->Fill((energySCEle[1]/cosh(etaEle[1])), ww);
 	}
 
 
@@ -584,8 +587,8 @@ int main(int argc, char** argv)
 		//    if( isW == 1 )               continue;
 		if( fabs(etaSCEle[0])  > etaMax )  continue;
 		if( fabs(etaSCEle[1]) > eta2Max ) continue;
-		if( PtEle[0]  < 20. ) continue;
-		if( PtEle[1] < 20. ) continue;
+		if( (energySCEle[0]/cosh(etaEle[0]))  < 20. ) continue;
+		if( (energySCEle[1]/cosh(etaEle[1])) < 20. ) continue;
 
 		float ww = 1.;
 
@@ -597,12 +600,12 @@ int main(int argc, char** argv)
 		else if (etaEle[1] > 0) ele2_iz = 1;
 		else ele2_iz = -1;
 
-
+		if( (chargeEle[1]<0 && chargeValue<0) || (chargeEle[1]>0 && chargeValue>0)) {
 		//--- set the mass for ele1
-		//    if( ele1_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
-		//    else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
-		if( ele1_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
-		else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
+		//    if( ele1_iz == 0 ) var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
+		//    else               var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[0]/energySCEle[0]) * sqrt(scEneReg2/energySCEle[1]) ) / 91.19;
+		if( ele1_iz == 0 ) var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
+		else               var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[0] / energySCEle[0]) ) / 91.19;
 		// simulate e+/e- asymmetry
 		//if( chargeEle[0] > 0 ) ww *= 1.*(6/5);
 		//else             ww *= 1.*(4/5);
@@ -622,8 +625,8 @@ int main(int argc, char** argv)
 
 		// DATA - ENDCAP - ele1
 		else {
-			if( ele1_iz ==  1 ) mapConversionEEp -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
-			if( ele1_iz == -1 ) mapConversionEEm -> SetBinContent(seedXSCEle[0], seedYSCEle[0], etaSCEle[0]);
+			if( ele1_iz ==  1 ) mapConversionEEp -> SetBinContent(xSeedSC[0], ySeedSC[0], etaSCEle[0]);
+			if( ele1_iz == -1 ) mapConversionEEm -> SetBinContent(xSeedSC[0], ySeedSC[0], etaSCEle[0]);
 
 			int PhibinEE = hPhiBinEE->FindBin(phiEle[0]) - 1;
 			if( PhibinEE == nPhiBinsEE ) PhibinEE = 0;
@@ -635,14 +638,14 @@ int main(int argc, char** argv)
 			(h_Phi_EE.at(PhibinEE)).at(regionId) -> Fill(phiEle[0]);
 			h_phi_data_EE[regionId] -> Fill(phiEle[0]);
 		}
+		}
 
-
-
+		else{
 		//--- set the mass for ele2
-		//    if( ele2_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
-		//    else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
-		if( ele2_iz == 0 ) var = ( invMass_SC * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
-		else               var = ( invMass_SC * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
+		//    if( ele2_iz == 0 ) var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
+		//    else               var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[1]/energySCEle[1]) * sqrt(scEneReg/energySCEle[0]) ) / 91.19;
+		if( ele2_iz == 0 ) var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
+		else               var = ( invMass_ECAL_ele * sqrt(pAtVtxGsfEle[1] / energySCEle[1]) ) / 91.19;
 		// simulate e+/e- asymmetry
 		//if( chargeEle[0]Ele[1] > 0 ) ww *= 1.*(6/5);
 		//else              ww *= 1.*(4/5);
@@ -659,8 +662,8 @@ int main(int argc, char** argv)
 			(h_Phi_EB.at(PhibinEB)).at(regionId) -> Fill(phiEle[1]);
 			h_phi_data_EB[regionId] -> Fill(phiEle[1]);
 		} else {
-			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
-			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(seedXSCEle[1], seedYSCEle[1], etaSCEle[1]);
+			if( ele2_iz ==  1 ) mapConversionEEp -> SetBinContent(xSeedSC[1], ySeedSC[1], etaSCEle[1]);
+			if( ele2_iz == -1 ) mapConversionEEm -> SetBinContent(xSeedSC[1], ySeedSC[1], etaSCEle[1]);
 
 			int PhibinEE = hPhiBinEE->FindBin(phiEle[1]) - 1;
 			if( PhibinEE == nPhiBinsEE ) PhibinEE = 0;
@@ -672,9 +675,10 @@ int main(int argc, char** argv)
 			(h_Phi_EE.at(PhibinEE)).at(regionId) -> Fill(phiEle[1]);
 			h_phi_data_EE[regionId] ->Fill(phiEle[1]);
 		}
+		}
 
-		h_et_data ->Fill(PtEle[0]);
-		h_et_data ->Fill(PtEle[1]);
+		h_et_data ->Fill((energySCEle[0]/cosh(etaEle[0])));
+		h_et_data ->Fill((energySCEle[1]/cosh(etaEle[1])));
 	}
 
 	std::cout << "End loop: Analyze events " << endl;
