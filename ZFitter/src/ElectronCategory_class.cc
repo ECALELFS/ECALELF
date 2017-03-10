@@ -1513,7 +1513,7 @@ std::set<TString> ElectronCategory_class::GetBranchNameNtuple(TString region)
 
 	TString cut(GetCut(region, false, 1, false));
 
-	TPRegexp reg("[|&!]+");
+	TPRegexp reg("[|&!,]+");
 	reg.Substitute(cut, " ", "g");
 	reg = TPRegexp("[><=%]+");
 	reg.Substitute(cut, " ", "g");
@@ -1522,6 +1522,10 @@ std::set<TString> ElectronCategory_class::GetBranchNameNtuple(TString region)
 	reg = TPRegexp("[- .0-9]{2,}");
 	reg.Substitute(cut, " ", "g");
 	reg = TPRegexp("abs[ ]*\\(");
+	reg.Substitute(cut, " ", "g");
+	reg = TPRegexp("max[ ]*\\(");
+	reg.Substitute(cut, " ", "g");
+	reg = TPRegexp("min[ ]*\\(");
 	reg.Substitute(cut, " ", "g");
 	reg = TPRegexp("sqrt[ ]*\\(");
 	reg.Substitute(cut, " ", "g");
