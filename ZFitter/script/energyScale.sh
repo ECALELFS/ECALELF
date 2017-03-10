@@ -1048,8 +1048,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" ];then
 	thisstep=step$STEP
 	laststep=step$(( $STEP-1 ))
 	if [ "$STEP" == "5" ]; then
-		step_args="--profileOnly --plotOnly"
-		#step_args=""
+		step_args="--profileOnly --plotOnly "
 		last_regions_EB=${regionFileStep4EB}
 		last_regions_EE=${regionFileStep4EE}
 	fi
@@ -1157,13 +1156,18 @@ if [ -n "${STEP5}" -o -n "${STEP6}" ];then
 	#Categorize in Et X Eta, if files already exist, do not remake them
 	# to force remaking of files, add -f to end of each of these
 	mkSmearerCatSignal $regionFileEB ${eos_path}/data/smearerCat $outDirData/${thisstep}${extension}/`basename $configFile` &> tmp/mkSmearer_s_EB.log
-	mkSmearerCatSignal $regionFileEE ${eos_path}/data/smearerCat $outDirData/${thisstep}${extension}/`basename $configFile` &> tmp/mkSmearer_s_EB.log
-	mkSmearerCatData   $regionFileEB ${outDirData}/${thisstep}${extension} $outDirData/${thisstep}${extension}/`basename $configFile` --corrEleType=HggRunEtaR9 &> tmp/mkSmearer_d_EB.log
-	mkSmearerCatData   $regionFileEE ${outDirData}/${thisstep}${extension} $outDirData/${thisstep}${extension}/`basename $configFile` --corrEleType=HggRunEtaR9 &> tmp/mkSmearer_d_EE.log
+	mkSmearerCatSignal $regionFileEE ${eos_path}/data/smearerCat $outDirData/${thisstep}${extension}/`basename $configFile` &> tmp/mkSmearer_s_EE.log
+	mkSmearerCatData   $regionFileEB ${outDirData}/step5${extension} $outDirData/${thisstep}${extension}/`basename $configFile` --corrEleType=HggRunEtaR9 >> tmp/mkSmearer_d_EB.log 2>&1
+	mkSmearerCatData   $regionFileEE ${outDirData}/step5${extension} $outDirData/${thisstep}${extension}/`basename $configFile` --corrEleType=HggRunEtaR9 >> tmp/mkSmearer_d_EE.log 2>&1
 
 
+	job_args="-f $outDirData/${thisstep}${extension}/`basename $configFile` $isOdd $updateOnly"
+	job_args="$job_args --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut}"
+	job_args="$job_args --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img"
+	job_args="$job_args --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin --onlyScale"
+	job_args="$job_args ${initFile} --corrEleType=HggRunEtaR9 ${step_args}"
 	if [[ $scenario = "test_jobs_${thisstep}" ]]; then
-	    echo "./bin/ZFitter.exe -f $outDirData/${thisstep}${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 $step_args"
+	    echo "./bin/ZFitter.exe ${job_args} --regionsFile ${regionFileEB} --outDirImgData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/fitres"
 	fi
 
 	if [[ $scenario = "jobs_${thisstep}" ]] || [[ $scenario = "" ]]; then
@@ -1180,14 +1184,14 @@ if [ -n "${STEP5}" -o -n "${STEP6}" ];then
 	    -eo ${outDirData}/${thisstep}${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEB}-stderr.log \
 	    -J "${basenameEB} ${thisstep}${extension}[1-10]" \
 	      "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
-./bin/ZFitter.exe -f $outDirData/${thisstep}${extension}/`basename $configFile` --regionsFile ${regionFileEB} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${step_args} || exit 1; touch ${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/`basename $regionFileEB .dat`-done"
+./bin/ZFitter.exe ${job_args} --regionsFile ${regionFileEB} --outDirImgData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/fitres || exit 1; touch ${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/`basename $regionFileEB .dat`-done"
 
 	bsub -q cmscaf1nd \
 	    -oo ${outDirData}/${thisstep}${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stdout.log \
 	    -eo ${outDirData}/${thisstep}${extension}/%I/fitres/`basename ${outFile} .dat`-${basenameEE}-stderr.log \
 	    -J "${basenameEE} ${thisstep}${extension}[1-10]" \
 	      "cd $PWD; eval \`scramv1 runtime -sh\`; uname -a;  echo \$CMSSW_VERSION; 
-./bin/ZFitter.exe -f $outDirData/${thisstep}${extension}/`basename $configFile` --regionsFile ${regionFileEE} $isOdd $updateOnly --selection=${newSelection}  --invMass_var ${invMass_var} --commonCut ${commonCut} --outDirFitResMC=${outDirMC}/${extension}/fitres --outDirImgMC=${outDirMC}/${extension}/img --outDirImgData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/fitres --constTermFix  --smearerFit  ${Et_smear} --autoNsmear --autoBin ${initFile}  --corrEleType=HggRunEtaR9 ${step_args} || exit 1; touch ${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/`basename $regionFileEE .dat`-done"
+./bin/ZFitter.exe ${job_args} --regionsFile ${regionFileEE} --outDirImgData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/img/ --outDirFitResData=${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/fitres || exit 1; touch ${outDirData}/${thisstep}${extension}/\$LSB_JOBINDEX/`basename $regionFileEE .dat`-done"
 
     
 	while [ "`bjobs -J \"${basenameEB} ${thisstep}${extension}\" | grep -v JOBID | grep -v found | wc -l`" != "0" ]; do /bin/sleep 2m; done

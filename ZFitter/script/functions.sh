@@ -108,7 +108,9 @@ mkSmearerCatX() {
 		force=$5
 	fi
 
-   if [ ! -e "${outFolder}/${outFileForm/DDD/${dORs}1}" ] || [ "$force" = "-f" ]; then
+	file1=${outFolder}/${outFileForm/DDD/${dORs}1}
+	echo "[STATUS] checking for $file1"
+   if [ ! -e "$file1" ] || [ "$force" = "-f" ]; then
 		echo "[STATUS] Creating smearerCat for $dORs : ${basenameConfig} ${basenameRegion}"
 
 		echo "[DEBUG] ./bin/ZFitter.exe -f $configFile --regionsFile=$regionFile  \
