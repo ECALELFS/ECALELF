@@ -28,7 +28,7 @@ datasetsMC=(`./scripts/parseDatasetFile.sh $fileList | grep VALID | sed 's|$|,|'
 
 
 
-for dataset in ${datasetsData[@]} #${datasetsMC[@]}
+for dataset in ${datasetsMC[@]} #${datasetsData[@]} #
 do
 	datasetName=`echo $dataset | awk '{print $6}'`
 	echo $datasetName

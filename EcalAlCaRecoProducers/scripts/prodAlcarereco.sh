@@ -435,7 +435,10 @@ if [ -n "${SUBMIT}" ]; then
 	fi
 	case ${CRABVERSION} in
 		2)  
-			crab -c ${UI_WORKING_DIR} -submit all;
+			crab -c ${UI_WORKING_DIR} -submit all || {
+				crab -c ${UI_WORKING_DIR} -submit 450 || exit 1
+				crab -c ${UI_WORKING_DIR} -submit 450 &
+				}
 #    if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
 #	echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 #	if [ "${DOTREE}" == "1" ]; then

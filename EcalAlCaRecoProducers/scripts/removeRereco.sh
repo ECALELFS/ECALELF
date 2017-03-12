@@ -37,7 +37,7 @@ do
 	-h|--help) usage; exit 0;;
 	-r|--runrange) RUNRANGE=$2; shift;;
 	-d|--datasetpath) DATASETPATH=$2; shift ;;
-	-n|--datasetname) DATASETNAME=$2; shift ;;
+	-n|--datasetname) datasetname=$2; shift ;;
 	--store) STORAGE_ELEMENT=$2; shift;;
 	--remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
  	--type) TYPE=$2; shift;;
@@ -117,7 +117,9 @@ for dataset in $datasets
       TYPE=`echo $dataset | awk '{for(i=1; i<=NF;i++){if(match($i,"type")){print $(i+1)}}}'`
       JSONNAME=`echo $dataset | awk '{for(i=1; i<=NF;i++){if(match($i,"json_name")){print $(i+1)}}}'`
   fi
-  
+  if [ -n "${datasetname}" -a "${datasetname}" != "${DATASETNAME}" ]; then
+	  continue
+  fi
   setEnergy $DATASETPATH 
   
   echo ${USER_REMOTE_DIR_BASE}
