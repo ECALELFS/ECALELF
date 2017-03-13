@@ -37,6 +37,17 @@ mcName(){
 	    mcName=`basename $mcFile  | sed 's|\(.*\)-\([0-9]*-[0-9]*\).root|\1 \2|;s|\(.*\)-\(allRange\).root|\1 \2|'`
 	    extraName=`dirname $mcFile`
 	    extraName=`basename $extraName`
+		 #only add the LTbinned names once
+		 if [[ "$mcName" == *"DYJets_madgraph-LT_"* ]]
+		 then
+			 if [[ -z "$first_LT" ]]
+			 then
+				 mcName=$(echo $mcName | sed 's/_[[:digit:]]\+To[[:digit:]]\+//')
+				 first_LT=true
+			 else
+				 continue
+			 fi
+		 fi
 	    mcNames="$mcNames $mcName $extraName"
 	    #echo "---> " $mcFile $mcName $extraName
 
@@ -51,67 +62,85 @@ mcName(){
 
 
 
-mkSmearerCatSignal(){
-   basenameConfig=`basename $1 .dat`
-   if [ ! -e "${eos_path}/data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ] || [ "$3" = "-f" ];then
-		if [ "$3" = "-f" ]; then
-			echo "[INFO] Force categorization for MC"
-		fi
-		echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
-		echo "./bin/ZFitter.exe -f ${configFile} --regionsFile=$1 --saveRootMacro  --addBranch=smearerCat_s"
- 		./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
- 	    	--saveRootMacro  --addBranch=smearerCat_s || exit 1 
-		for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
-		do
-	    	mv tmp/smearerCat_${basenameConfig}_${tag}-`basename $configFile .dat`.root ${eos_path}/data/smearerCat/ || exit 1
-		done
+#mkSmearerCatSignal(){
+#   basenameRegion=`basename $1 .dat`
+#   if [ ! -e "${eos_path}/data/smearerCat/smearerCat_`basename $1 .dat`_s1-`basename $configFile .dat`.root" ] || [ "$3" = "-f" ];then
+#		if [ "$3" = "-f" ]; then
+#			echo "[INFO] Force categorization for MC"
+#		fi
+#		echo "[STATUS] Creating smearerCat for signal: `basename $configFile .dat` `basename $1 .dat`"
+#		echo "./bin/ZFitter.exe -f ${configFile} --regionsFile=$1 --saveRootMacro  --addBranch=smearerCat_s"
+# 		./bin/ZFitter.exe -f ${configFile} --regionsFile=$1  \
+# 	    	--saveRootMacro  --addBranch=smearerCat_s || exit 1 
+#		for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
+#		do
+#	    	mv tmp/smearerCat_${basenameRegion}_${tag}-`basename $configFile .dat`.root ${eos_path}/data/smearerCat/ || exit 1
+#		done
+#   fi
+#
+#   #Once cat root files are created, just write them in the validation file and be sure they are unique
+#   for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
+#   do
+#		is_already_written=$(cat $2 |grep smearerCat_${basenameRegion}_${tag}|wc -l)
+#		if [ "${is_already_written}" = "1" ]; then
+#	    	echo "[CHECK NEEDED] The categorization root file was already written for tag ${tag}. Be sure of what you are doing"
+#		elif [ "${is_already_written}" = "0" ]; then  
+#	    	echo "[INFO] You are writing the categorization file in the validation file for tag ${tag}"
+#	    	echo -e "${tag}\tsmearerCat_${basenameRegion}\t${eos_path}/data/smearerCat/smearerCat_${basenameRegion}_${tag}-$(basename $configFile .dat).root" >> $2
+#		else
+#	    	echo "[ERROR] you have written multiple times the same categorization file! There must be a mistake"
+#		fi
+#   done
+#}
+
+mkSmearerCatX() {
+	dORs=$1	
+	regionFile=$2
+   basenameRegion=`basename $2 .dat`
+	configFile=$4
+	basenameConfig=`basename $4 .dat`
+	outFolder=$3
+	outFileForm=smearerCat_${basenameRegion}_DDD-${basenameConfig}.root
+	if [ "$6" ]; then
+		corrEleType=$5 #optional
+		force=$6
+	else
+		force=$5
+	fi
+
+	file1=${outFolder}/${outFileForm/DDD/${dORs}1}
+	echo "[STATUS] checking for $file1"
+   if [ ! -e "$file1" ] || [ "$force" = "-f" ]; then
+		echo "[STATUS] Creating smearerCat for $dORs : ${basenameConfig} ${basenameRegion}"
+
+		echo "[DEBUG] ./bin/ZFitter.exe -f $configFile --regionsFile=$regionFile  \
+	    	--saveRootMacro  --addBranch=smearerCat_$dORs $corrEleType"
+		./bin/ZFitter.exe -f $configFile --regionsFile=$regionFile  \
+	    	--saveRootMacro  --addBranch=smearerCat_$dORs $corrEleType || exit 1 
+		mv tmp/${outFileForm/DDD/${dORs}*} ${outFolder}/ || exit 1
    fi
 
+   #TO-DO -> be sure that the writing is unique to avoid stupid crashes
    #Once cat root files are created, just write them in the validation file and be sure they are unique
-   for tag in `grep "^s" ${configFile} | grep selected | awk -F" " ' { print $1 } '`
+   for tag in `grep "^$dORs" $configFile | grep selected | awk -F" " ' { print $1 } '`
    do
-		is_already_written=$(cat $2 |grep smearerCat_${basenameConfig}_${tag}|wc -l)
+		is_already_written=$(cat $configFile |grep smearerCat_${basenameRegion}_${tag}|wc -l)
 		if [ "${is_already_written}" = "1" ]; then
 	    	echo "[CHECK NEEDED] The categorization root file was already written for tag ${tag}. Be sure of what you are doing"
 		elif [ "${is_already_written}" = "0" ]; then  
 	    	echo "[INFO] You are writing the categorization file in the validation file for tag ${tag}"
-	    	echo -e "${tag}\tsmearerCat_${basenameConfig}\t${eos_path}/data/smearerCat/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $2
+	    	echo -e "${tag}\tsmearerCat_${basenameRegion}\t${outFolder}/${outFileForm/DDD/${tag}}" >> $configFile
 		else
 	    	echo "[ERROR] you have written multiple times the same categorization file! There must be a mistake"
 		fi
    done
 }
 
-
-mkSmearerCatData(){
-   #$1: regionFile
-   #$2: outDirData/step...
-   #$3: configFile
-   #$4: corrEleType
-   ##echo "Inside mkSmearerCatData"
-   basenameConfig=`basename $1 .dat`
-   if [ ! -e "$2/smearerCat_`basename $1 .dat`_d1-`basename $configFile .dat`.root" ] || [ "$5" = "-f" ] || [ "$4" = "-f" ];then
-		echo "[STATUS] Creating smearerCat for data: `basename $configFile .dat` `basename $1 .dat`"
-
-		./bin/ZFitter.exe -f $3 --regionsFile=$1  \
-	    	--saveRootMacro  --addBranch=smearerCat_d $4 || exit 1 
-		mv tmp/smearerCat_`basename $1 .dat`_d*-`basename $configFile .dat`.root $2/ || exit 1
-   fi
-
-   #TO-DO -> be sure that the writing is unique to avoid stupid crashes
-   #Once cat root files are created, just write them in the validation file and be sure they are unique
-   for tag in `grep "^d" $3 | grep selected | awk -F" " ' { print $1 } '`
-   do
-		is_already_written=$(cat $3 |grep smearerCat_${basenameConfig}_${tag}|wc -l)
-		if [ "${is_already_written}" = "1" ]; then
-	    	echo "[CHECK NEEDED] The categorization root file was already written for tag ${tag}. Be sure of what you are doing"
-		elif [ "${is_already_written}" = "0" ]; then  
-	    	echo "[INFO] You are writing the categorization file in the validation file for tag ${tag}"
-	    	echo -e "${tag}\tsmearerCat_${basenameConfig}\t$2/smearerCat_${basenameConfig}_${tag}-$(basename $configFile .dat).root" >> $3
-		else
-	    	echo "[ERROR] you have written multiple times the same categorization file! There must be a mistake"
-		fi
-   done
+mkSmearerCatSignal() {
+	mkSmearerCatX s "$@"
+}
+mkSmearerCatData() {
+	mkSmearerCatX d "$@"
 }
 	
 
