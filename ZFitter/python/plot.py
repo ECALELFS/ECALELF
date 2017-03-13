@@ -8,11 +8,11 @@ ndraw_entries = 1000000000
 hist_index = 0
 
 def GetTH1(chain, branchname, isMC, binning="", category="", label="", histname="",
-		 usePU=True, useEleIDSF=2, smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT=True):
+		 usePU=True, useEleIDSF=2, smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT=True, noWeights = False):
 	global hist_index
 	#enable only used branches
 	ActivateBranches(chain, branchname, category, energyBranchName)
-	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT, noWeights)
 
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
 	if histname:
@@ -71,7 +71,7 @@ def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label=
 		
 	return stack
 
-def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT):
+def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT, noWeights):
 	selection = ROOT.TCut("")
 	if(category):
 		selection = cutter.GetCut(category, False, 0 , scale)
@@ -85,6 +85,7 @@ def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU,
 		print "[WARNING] R9weight not implemented"
 
 	weights = ROOT.TCut("")
+	if(noWeights): return selection, weights
 	if(isMC):
 		chain.SetBranchStatus("mcGenWeight", 1)
 		weights *= "mcGenWeight"
@@ -372,14 +373,16 @@ def NormalizeStack(stack, normalizeTo=1):
 	return hstack.GetStack(), hstack
 
 def FoldTH2(h):
+	entries = h.GetEntries()
 	for i in range(h.GetNbinsX() + 2):
 		for j in range(0,i):
 			c = h.GetBinContent(i,j)
 			co = h.GetBinContent(j,i)
 			h.SetBinContent(j,i, c + co)
 			h.SetBinContent(i,j, 0)
+	h.SetEntries(entries)
 
-def Draw2D(h, label, name, makeDiagBins=False, nevents=None, plotdir="plots/", logx=False, logy=False):
+def Draw2D(h, label, name, diagBins=None, plotdir="plots/", logx=False, logy=False):
 	c = ROOT.TCanvas("c","c", 800, 500)
 
 	c.SetRightMargin(.3)
@@ -390,7 +393,7 @@ def Draw2D(h, label, name, makeDiagBins=False, nevents=None, plotdir="plots/", l
 	h.SetXTitle("Ele. 2 " + label)
 	h.Draw("colz")
 
-	print "###", name, h.Integral(0, h.GetNbinsX() + 1, 0, h.GetNbinsY()+1), h.GetEntries()
+	#print "###", name, h.Integral(0, h.GetNbinsX() + 1, 0, h.GetNbinsY()+1), h.GetEntries()
 
 	c.Modified()
 	c.Update()
@@ -401,42 +404,91 @@ def Draw2D(h, label, name, makeDiagBins=False, nevents=None, plotdir="plots/", l
 	if logx: c.SetLogx()
 	if logy: c.SetLogy()
 
-	if makeDiagBins and nevents:
-		xbins = h.GetXaxis().GetNbins()
-		ybins = h.GetYaxis().GetNbins()
-
-		i = 0
-		bins = [i]
-		values = [h.GetXaxis().GetBinLowEdge(i+1)]
-		integrals = []
-		while i <= xbins and i <= ybins:
-			i += 1
-			integral = h.Integral(bins[-1]+1, i, bins[-1]+1, i)
-			if not i % (xbins/10): print i,"/",xbins
-			if integral > nevents:
-				bins.append(i)
-				values.append(h.GetXaxis().GetBinLowEdge(i+1))
-				integrals.append(integral)
-		bins.append(i)
-		values.append(h.GetXaxis().GetBinLowEdge(i))
-
-		print label + " bins"
-		for low,hi,integral in zip(values[:-1], values[1:], integrals):
-			print "%10.3f < %s < %10.3f : %f" % (low, label, hi, integral)
-		print "[RESULT]", values
-
+	if diagBins:
 		boxes = []
-		for i in xrange(len(values)-1):
-			boxes.append(ROOT.TBox( values[i], values[i], values[i+1], values[i+1]))
+		for i in xrange(len(diagBins)-1):
+			boxes.append(ROOT.TBox( diagBins[i], diagBins[i], diagBins[i+1], diagBins[i+1]))
 
 		for b in boxes:
 			b.SetFillStyle(0)
 			b.SetLineColor(ROOT.kRed)
 			b.Draw()
-	elif makeDiagBins:
-		print "[WARNING] makeDiagBins=True but nevents=None"
-
 
 	c.SaveAs(plotdir + name + ".png")
 	c.SaveAs(plotdir + name + ".pdf")
 	c.SaveAs(plotdir + name + ".eps")
+
+def makeDiagBins(h, nevents=10000, startbin = None, min_value = None):
+	if not startbin:
+		xbin = ROOT.Long()
+		ybin = ROOT.Long()
+		zbin = ROOT.Long()
+		maxbin = h.GetMaximumBin()
+		h.GetBinXYZ(maxbin, xbin, ybin, zbin)
+
+		startbin = (xbin + ybin)/2
+		if h.GetBinContent(startbin, startbin) < h.GetBinContent(startbin + 1, startbin + 1):
+			startbin += 1
+
+	if min_value:
+		minbin = h.GetXaxis().FindBin(min_value)
+	else:
+		minbin = 1
+
+	xbins = h.GetXaxis().GetNbins()
+	ybins = h.GetYaxis().GetNbins()
+
+	#get center bin
+	i = 0
+	integral = 0
+	while True:
+		lowbin = startbin - i 
+		hibin = startbin + i 
+		if lowbin >= minbin:
+			integral += h.Integral(lowbin, lowbin, lowbin, hibin)	# vertical
+			did_vert = True
+		else:
+			lowbin = minbin
+			did_vert = False
+
+		if hibin <= xbins:
+			#if we did the vertical integral, shift lowbin by 1
+			integral += h.Integral(lowbin + did_vert, hibin, hibin, hibin)   # horizontal
+		else:
+			hibin = xbins
+
+		if integral > nevents: break
+		if (hibin == xbins and lowbin == minbin): break
+		i += 1
+
+	bins = [lowbin, hibin+1]
+	values = [h.GetXaxis().GetBinLowEdge(lowbin), h.GetXaxis().GetBinUpEdge(hibin)]
+	integrals = [integral]
+
+	# do top
+	i = bins[-1]
+	integral = 0
+	while i <= xbins and i <= ybins:
+		integral += h.Integral(bins[-1], i, i, i)
+		#print "top", bins[-1], i, integral,  h.Integral(bins[-1], i, bins[-1], i)
+		if integral > nevents or i == xbins:
+			bins.append(i+1)
+			values.append(h.GetXaxis().GetBinLowEdge(i+1))
+			integrals.append(integral)
+			integral = 0
+		i += 1
+
+	# do bottom
+	i = bins[0]-1
+	integral = 0
+	while i > 0:
+		integral += h.Integral(i, i, i, bins[0]-1)
+		#print "bot", i, bins[0]-1, integral, h.Integral(i, bins[0]-1, i, bins[0]-1)
+		if integral > nevents or i == minbin:
+			bins = [i] + bins
+			values = [h.GetXaxis().GetBinLowEdge(i)] + values
+			integrals = [integral] + integrals
+			integral = 0
+		i -= 1
+	#print values, bins, integrals	
+	return values, bins, integrals

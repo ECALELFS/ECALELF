@@ -88,7 +88,6 @@ def comp(branchname, filename, binning, xlabel, ratio, nele, logx=False, remake=
 	#	h.Scale(1./lt_sum)
 	inclusive.Scale(1000*4.957e+03/49144274.0)
 	
-
 	lt_hists.reverse()
 	plot.PlotDataMC(inclusive, lt_hists, "plots/validation/LTBinned/", "LT_comparison_" + filename, xlabel=xlabel + " [GeV]", ylabel="Fraction", ylabel_unit="GeV", stack_mc=True, ratio=ratio, logx=logx)
 
@@ -138,7 +137,6 @@ filename = "R9"
 binning = "(100,.3,1)"
 xlabel  = "R_{9}"
 comp(branchname, filename, binning, xlabel, True, 1)
-
 
 sys.exit()
 # 2d ET data
