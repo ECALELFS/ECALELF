@@ -1,11 +1,48 @@
 s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_5To75-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_5To75-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_75To80-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_75To80-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2-allRange.root
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2-allRange.root
+s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_75To80-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_75To80-RunIISummer16-miniAODv2-allRange.root
+s3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2-allRange.root
+s4	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2-allRange.root
+s5	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2-allRange.root
+s6	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2-allRange.root
+s7	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2-allRange.root
+s8	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2-allRange.root
+s9	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2-allRange.root
+s10	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2-allRange.root
 d1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_2016SeptRepro_v4/DoubleEG-Run2016B-23Sep2016-v3-MINIAOD/273150-275376/json_PromptReco_Nov2016/DoubleEG-Run2016B-23Sep2016-v3-MINIAOD-273150-275376.root
+
+s1  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s1-LTregrOld.root
+s2  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s2-LTregrOld.root
+s3  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s3-LTregrOld.root
+s4  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s4-LTregrOld.root
+s5  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s5-LTregrOld.root
+s6  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s6-LTregrOld.root
+s7  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s7-LTregrOld.root
+s8  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s8-LTregrOld.root
+s9  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s9-LTregrOld.root
+s10 LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s10-LTregrOld.root
+
+
+s1  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s1-LTregrOld.root
+s2  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s2-LTregrOld.root
+s3  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s3-LTregrOld.root
+s4  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s4-LTregrOld.root
+s5  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s5-LTregrOld.root
+s6  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s6-LTregrOld.root
+s7  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s7-LTregrOld.root
+s8  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s8-LTregrOld.root
+s9  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s9-LTregrOld.root
+s10 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s10-LTregrOld.root
+
+d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
+s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
+
+s1  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_LTregrOld.root
+s2  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_LTregrOld.root
+s3  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s3_LTregrOld.root
+s4  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s4_LTregrOld.root
+s5  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s5_LTregrOld.root
+s6  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s6_LTregrOld.root
+s7  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s7_LTregrOld.root
+s8  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s8_LTregrOld.root
+s9  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s9_LTregrOld.root
+s10 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s10_LTregrOld.root
