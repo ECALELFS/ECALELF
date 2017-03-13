@@ -608,7 +608,7 @@ TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString tree
 
 				std::set<TString> branchNames2 = cutter.GetBranchNameNtuple(*region_ele2_itr);
 				for(std::set<TString>::const_iterator itr = branchNames2.begin();
-				        itr != branchNames2.end(); itr++) {
+						itr != branchNames2.end(); itr++) {
 					if(branchNames.count(*itr) != 0 ) continue;
 					std::cout << "Activating branches in addBranch_class.cc" << std::endl;
 					std::cout << "Branch is " << *itr << std::endl;
