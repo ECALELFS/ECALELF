@@ -25,7 +25,7 @@
 //typedef std::vector<bin_t>  hist_t;
 typedef TH1F*  hist_t;
 
-TString img_filename(TString filename, TString region, TString ext=".eps"){
+TString plot_img_filename(TString filename, TString region, TString ext=".eps"){
   //  TString filename=file->GetName(); //"testing"+region+"_Histos.root";
   //  TFile file(filename,"open");
   
@@ -34,7 +34,7 @@ TString img_filename(TString filename, TString region, TString ext=".eps"){
   if(region.Length()!=0) region.Insert(0,"_");
   
   filename.ReplaceAll(".root",ext);
-  filename.Insert(filename.Length()-4,region);
+  filename.Insert(filename.Length()-ext.Length(),region);
   return filename;
 }
 
@@ -274,9 +274,9 @@ void Plot(TCanvas *c, TH1F *data, TH1F *mc, TH1F *mcSmeared=NULL, TLegend *legen
   }
   
   std::cout<<"*****************Saving the plots"<<std::endl;
-  TString eps_name=img_filename(filename, region, ".eps");
-  TString png_name=img_filename(filename, region, ".png"); 
-  TString C_name=img_filename(filename, region, ".C"); 
+  TString eps_name=plot_img_filename(filename, region, ".eps");
+  TString png_name=plot_img_filename(filename, region, ".png");
+  TString C_name=plot_img_filename(filename, region, ".C");
   c->SaveAs(eps_name);
   c->SaveAs(png_name);
   c->SaveAs(C_name);
@@ -373,7 +373,7 @@ void PlotMeanHist(TString filename, TString energy="13 TeV", TString lumi="36.4"
   //legend->SetMargin(0.4);  // percentuale della larghezza del simbolo
   //    SetLegendStyle(legend);
 
-  TH1F *mc_all[3]={NULL}, *data_all[3]={NULL}, *mcSmeared_all[3]={NULL};
+  //TH1F *mc_all[3]={NULL}, *data_all[3]={NULL}, *mcSmeared_all[3]={NULL};
  
   std::cout<<"looping over histos to plot them"<<std::endl;
   for(std::map<TString, hist_t>::const_iterator itr = dataHist.begin();
