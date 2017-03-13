@@ -8,11 +8,13 @@ defaultEnergyBranch = cutter.energyBranchName
 
 def ReduceFormula(formula):
 	import re
-	reg = ["[|&!:]+"]
+	reg = ["[|&!:,]+"]
 	reg += ["[><=%]+"]
 	reg += ["\\[[01]\\]"]
 	reg += ["[- .0-9]{2,}"]
 	reg += ["abs[ ]*\\("]
+	reg += ["max[ ]*\\("]
+	reg += ["min[ ]*\\("]
 	reg += ["cosh[ ]*\\("]
 	reg += ["[\\(\\)]{1,}"]
 	reg += ["[*/+-]{1,}"]
