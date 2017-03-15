@@ -13,7 +13,7 @@ jsonName=271036_284044-23Sep2016
 
 ##
 PERIOD=LEGACY2016
-tags=(config/reRecoTags/Cal_Mar2017_PNcorr_v2.py)
+tags=(config/reRecoTags/Cal_Mar2017_PNcorr_v2_noPed.py)
 
 for tagfile in ${tags[@]}
 do

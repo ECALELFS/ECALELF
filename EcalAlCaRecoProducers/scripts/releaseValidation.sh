@@ -107,7 +107,7 @@ testStep 2 "Testing local production of ntuples from MINIAODSIM (DATA)" $logName
 
 ################
 logName=alcarereco_data
-testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 files=$fileALCARAWData outputAll=False jsonFile=$json isCrab=0" || {
+testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/Cal_Mar2017_PNcorr_v2_noPed.py type=ALCARERECO maxEvents=-1 doTree=0 doEleIDTree=0 files=$fileALCARAWData outputAll=False jsonFile=$json isCrab=0" || {
 	echo "OK"
 	touch $dir/done
 #	rm $dir/*.root

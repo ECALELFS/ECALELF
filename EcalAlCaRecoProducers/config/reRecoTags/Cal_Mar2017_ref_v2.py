@@ -18,7 +18,7 @@ RerecoGlobalTag = GlobalTag.clone(
     globaltag = cms.string('80X_dataRun2_2016LegacyRepro_Candidate_v2'),
     toGet = cms.VPSet(
         cms.PSet(record = cms.string("EcalPedestalsRcd"),
-                 tag = cms.string("EcalPedestals_timestamp_2016_1IOV_v1"),
+                 tag = cms.string("EcalPedestals_timestamp_2016"),
                  connect = cms.string("frontier://FrontierPrep/CMS_CONDITIONS"),
                  ),
         cms.PSet(
@@ -38,5 +38,9 @@ RerecoGlobalTag = GlobalTag.clone(
                  tag = cms.string("EcalIntercalibConstants_Cal_Mar2017_PNcorrection_eop_v2"),
                  connect = cms.string('frontier://FrontierPrep/CMS_CONDITIONS')
                  ),
+        cms.PSet(record = cms.string("EcalLinearCorrectionsRcd"),
+                 tag = cms.string("EcalLinearCorrections_from2011_offline"),
+                 connect = cms.string("frontier://FrontierPrep/CMS_CONDITIONS"),
+                  ),
         ),
     )
