@@ -154,8 +154,8 @@ fi
 
 #tmpDir=/tmp/$USER/tmpHadd/$FILENAME_BASE/
 #mkdir -p $tmpDir
-#hadd -fk -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
-fastHadd.sh /tmp/$USER/${MERGEDFILE} filelist/${FILENAME_BASE}.list || exit 1
+hadd -fk -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
+#fastHadd.sh /tmp/$USER/${MERGEDFILE} filelist/${FILENAME_BASE}.list || exit 1
 #rm -Rf $tmpDir
 
 # copy the merged file to the repository

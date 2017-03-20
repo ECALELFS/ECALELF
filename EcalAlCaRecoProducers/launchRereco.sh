@@ -13,7 +13,7 @@ jsonName=271036_284044-23Sep2016
 
 ##
 PERIOD=LEGACY2016
-tags=(config/reRecoTags/Cal_Mar2017_PNcorr_v2_noPed.py)
+tags=(config/reRecoTags/Cal_Mar2017_ref_v2.py)
 
 for tagfile in ${tags[@]}
 do
@@ -22,10 +22,10 @@ do
 #	./scripts/removeRereco.sh -t $tagfile -f ntuple_datasets.dat --json_name=$jsonName
 #	continue
 
-	for CHECK in  --check
+	for CHECK in --check
 	do
 		case $tagfile in 
-			*/Cal_*_ref.py)
+			*/Cal_*_ref*.py)
 				#./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly  --singleEle --weightsReco
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly  --singleEle
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile  --json=$json25ns --json_name="noJSON" ${CHECK} --alcarerecoOnly 
@@ -41,7 +41,7 @@ do
 	for CHECK in   --check
 	do
 		case $tagfile in 
-			*/Cal_*_ref.py)
+			*/Cal_*_ref*.py)
 #				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK --singleEle --weightsReco
 				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK --singleEle
 #				./scripts/RerecoQuick.sh -p ${PERIOD} -t $tagfile --json=$json25ns --json_name=$jsonName --ntupleOnly  $CHECK --weightsReco #| grep 'root;//' |sort |uniq > tmp/`basename $tagfile .py`.dat
