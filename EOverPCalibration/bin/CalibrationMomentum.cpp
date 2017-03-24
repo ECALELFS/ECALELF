@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 	float etaSCEle[3], phiSCEle[3];
 	float etaEle[3], phiEle[3];
 	float energySCEle[3], rawEnergySCEle[3], R9Ele[3];
-	int chargeEle[3];
+	Short_t chargeEle[3];
 	float pAtVtxGsfEle[3];
 	float xSeedSC[3], ySeedSC[3];
 	int NPU[1];
