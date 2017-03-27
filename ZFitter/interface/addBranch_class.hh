@@ -55,6 +55,7 @@ private:
 	TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);
 	TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
 	TTree* AddBranch_scaleEle(TChain * ch, TString treename, TString energyBranchName);
+	TTree* AddBranch_smearEle(TChain * ch, TString treename, TString energyBranchName);
 
 };
 

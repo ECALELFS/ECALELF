@@ -18,7 +18,7 @@
 //#define PEDANTIC_OUTPUT
 
 EnergyScaleCorrection_class::EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed):
-	smearingType_(ECALELF), min_Et(1000), max_Et(0)
+	smearingType_(ECALELF)
 {
 
 	if(correctionFileName.size() > 0) {
