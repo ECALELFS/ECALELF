@@ -929,7 +929,7 @@ int main(int argc, char **argv)
 			}
 			TTree *corrTree = eScaler.GetSmearTree(ch, true, energyBranchName );
 #else
-			TTree *corrTree = NULL;
+			TTree * corrTree = newBrancher.AddBranch(ch, treeName, "smearEle", true, false, energyBranchName);
 #endif
 
 			f.cd();

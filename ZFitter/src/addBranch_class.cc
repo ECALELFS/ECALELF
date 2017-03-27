@@ -32,6 +32,7 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 	if(BranchName.CompareTo("LTweight") == 0) return AddBranch_LTweight(originalChain, treename);
 	if(BranchName.Contains("EleIDSF")) return AddBranch_EleIDSF(originalChain, treename, BranchName, energyBranchName, isMC);
 	if(BranchName.CompareTo("scaleEle") == 0) return AddBranch_scaleEle(originalChain, treename, energyBranchName);
+	if(BranchName.CompareTo("smearEle") == 0) return AddBranch_smearEle(originalChain, treename, energyBranchName);
 	std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
 	return NULL;
 }
@@ -681,22 +682,25 @@ TTree * addBranch_class::AddBranch_scaleEle(TChain * ch, TString treeName, TStri
 	ch->SetBranchStatus("runNumber", 1);
 	ch->SetBranchStatus("etaSCEle", 1);
 	ch->SetBranchStatus("R9Ele", 1); //or R9Eleprime
+	ch->SetBranchStatus("gainSeedSC", 1); //or R9Eleprime
 	ch->SetBranchStatus(energyBranchName, 1);
 
 	unsigned int    runNumber;
 	Float_t         etaSCEle[3];
 	Float_t         R9Ele[3];
 	Float_t         energy[3];
+	Float_t         gainSeedSC[3];
 
 	ch->SetBranchAddress("runNumber", &runNumber);
 	ch->SetBranchAddress("etaSCEle", etaSCEle);
 	ch->SetBranchAddress("R9Ele", R9Ele);//or R9Eleprime
+	ch->SetBranchAddress("gainSeedSC", gainSeedSC);//or R9Eleprime
 	ch->SetBranchAddress(energyBranchName, energy);
 	Long64_t nentries = ch->GetEntries();
 	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
 		ch->GetEntry(ientry);
-		scaleEle_[0] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0] / cosh(etaSCEle[0]));
-		scaleEle_[1] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1] / cosh(etaSCEle[1]));;
+		scaleEle_[0] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0] / cosh(etaSCEle[0]), gainSeedSC[0]);
+		scaleEle_[1] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1] / cosh(etaSCEle[1]), gainSeedSC[1]);;
 		corrTree->Fill();
 	}
 	ch->SetBranchStatus("*", 1);
@@ -704,9 +708,68 @@ TTree * addBranch_class::AddBranch_scaleEle(TChain * ch, TString treeName, TStri
 	return corrTree;
 }
 
+TTree * addBranch_class::AddBranch_smearEle(TChain * ch, TString treeName, TString energyBranchName)
+{
+	if(scaler == NULL) {
+		std::cerr << "[ERROR] EnergyScaleCorrection class not initialized" << std::endl;
+		exit(1);
+	}
+	Int_t runNumber_;
+	Float_t energyEle_[2];
+	Float_t etaSCEle_[2];
+	Float_t R9Ele_[2];
+	Float_t gainSeedSC_[2];
+
+	Float_t smearEle_[2];
+	Float_t smearSigmaEle_[2];
+
+	TTree *newTree = new TTree(treeName, "");
+	newTree->Branch("smearEle", smearEle_, "smearEle[2]/F");
+	newTree->Branch("smearSigmaEle", smearSigmaEle_, "smearSigmaEle[2]/F");
+
+	if(ch == NULL) {
+		std::cerr << "[ERROR] original chain in GetSmearTree is NULL" << std::endl;
+		exit(1);
+	}
+
+	ch->SetBranchStatus("*", 0);
+	ch->SetBranchStatus("runNumber", 1);
+	ch->SetBranchStatus("etaSCEle", 1);
+	ch->SetBranchStatus("R9Ele", 1);
+	ch->SetBranchStatus("gainSeedSC", 1);
+	ch->SetBranchStatus(energyBranchName, 1);
+
+	ch->SetBranchAddress("runNumber", &runNumber_);
+	ch->SetBranchAddress("etaSCEle", etaSCEle_);
+	ch->SetBranchAddress("R9Ele", R9Ele_);
+	ch->SetBranchAddress("gainSeedSC", gainSeedSC_);
+	ch->SetBranchAddress(energyBranchName, energyEle_);
+
+	// loop over tree
+	std::cerr << "Adding smearEle branch \t";
+	std::cerr << "[00%]";
+
+	TRandom3 r3;
+	Long64_t nentries = ch->GetEntries();
+	for(Long64_t ientry = 0; ientry < ch->GetEntriesFast(); ientry++) {
+		ch->GetEntry(ientry);
+		smearSigmaEle_[0] = scaler->getSmearingSigma(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0], etaSCEle_[0], energyEle_[0] / cosh(etaSCEle_[0]), gainSeedSC_[0], EnergyScaleCorrection_class::kNone, 0);
+		smearSigmaEle_[1] = scaler->getSmearingSigma(runNumber_, fabs(etaSCEle_[1]) < 1.4442, R9Ele_[1], etaSCEle_[1], energyEle_[1] / cosh(etaSCEle_[1]), gainSeedSC_[1], EnergyScaleCorrection_class::kNone, 0);
+		smearEle_[0] = r3.Gaus(1, smearSigmaEle_[0]);
+		smearEle_[1] = r3.Gaus(1, smearSigmaEle_[1]);
+
+		newTree->Fill();
+		if(ientry % (nentries / 100) == 0) std::cerr << "\b\b\b\b" << std::setw(2) << ientry / (nentries / 100) << "%]";
+
+	}
+	std::cerr << std::endl;
+
+	ch->ResetBranchAddresses();
+	ch->GetEntry(0);
+	return newTree;
+}
+
 #ifdef shervinM
-
-
 
 TTree *addBranch_class::GetTreeDistIEtaDistiPhi(TChain *tree,  bool fastLoop, int xDist, int yDist, TString iEtaBranchName, TString iPhiBranchName)
 {
