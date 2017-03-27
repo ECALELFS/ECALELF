@@ -346,8 +346,8 @@ int main(int argc, char **argv)
 
 	("smearEleFile", po::value<string>(&smearEleFile), "File with energy smearings")
 	("smearEleType", po::value<string>(&smearEleType), "Correction type/step")
-				("smearingCBAlpha", po::value<double>(&smearingCBAlpha), "Correction type/step")
-			("smearingCBPower", po::value<double>(&smearingCBPower), "Correction type/step")
+		("smearingCBAlpha", po::value<double>(&smearingCBAlpha), "Correction type/step")
+		("smearingCBPower", po::value<double>(&smearingCBPower), "Correction type/step")
 	//
 	("r9WeightFile", po::value<string>(&r9WeightFile), "File with r9 photon-electron weights")
 	("useR9weight", "use r9 photon-electron weights")
