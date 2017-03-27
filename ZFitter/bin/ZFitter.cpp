@@ -345,7 +345,7 @@ int main(int argc, char **argv)
 	("saveCorrEleTree", "")
 
 	("smearEleFile", po::value<string>(&smearEleFile), "File with energy smearings")
-	("smearEleType", po::value<string>(&smearEleType), "Correction type/step")
+				("smearEleType", po::value<string>(&smearEleType), "Correction type/step")
 	("smearingCBAlpha", po::value<double>(&smearingCBAlpha), "Correction type/step")
 	("smearingCBPower", po::value<double>(&smearingCBPower), "Correction type/step")
 	//
