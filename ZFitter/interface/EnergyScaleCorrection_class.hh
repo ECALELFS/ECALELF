@@ -1,5 +1,5 @@
-#ifndef EnergyScaleCorrection_class_hh
-#define EnergyScaleCorrection_class_hh
+#ifndef EgammaAnalysis_ElectronTools_EnergyScaleCorrection_class_h
+#define EgammaAnalysis_ElectronTools_EnergyScaleCorrection_class_h
 /// Read and get energy scale and smearings from .dat files
 /**\class EnergyScaleCorrection_class EnergyScaleCorrection_class.cc Calibration/ZFitter/src/EnergyScaleCorrection_class.cc
  *  \author Shervin Nourbakhsh
@@ -25,13 +25,14 @@
 #include <TChain.h>
 #include <TRandom3.h>
 #include <string>
+#include <bitset>
 
 //============================== First auxiliary class
 class correctionValue_class
 {
 public:
 	// values
-	float scale, scale_err, scale_err_syst;
+	float scale, scale_err, scale_err_syst, scale_err_gain;
 	float rho, rho_err;
 	float phi, phi_err;
 	float Emean, Emean_err;
@@ -40,6 +41,7 @@ public:
 		scale = 1;
 		scale_err = 0;
 		scale_err_syst = 0;
+		scale_err_gain = 0;
 		rho = 0;
 		rho_err = 0;
 		phi = 0;
@@ -50,7 +52,7 @@ public:
 
 	friend std::ostream& operator << (std::ostream& os, const correctionValue_class a) {
 		os <<  "( "
-		   << a.scale << " +/- " << a.scale_err << " +/- " << a.scale_err_syst << ")"
+		   << a.scale << " +/- " << a.scale_err << " +/- " << a.scale_err_syst << " +/- " << a.scale_err_gain << ")"
 		   <<  "\t"
 		   << a.rho << " +/- " << a.rho_err
 		   <<  "\t"
@@ -77,6 +79,7 @@ private:
 	float etmax;  ///< max Et value for the bin
 	float etamin; ///< min eta value for the bin
 	float etamax; ///< max eta value for the bin
+	unsigned int gain; ///< 12, 6, 1, 61 (double gain switch)
 
 
 public:
@@ -92,7 +95,7 @@ public:
 	correctionCategory_class(TString category_); ///< constructor with name of the category according to ElectronCategory_class
 
 	/// this constructor is used to assign a category to the electron/photon given values in input
-	inline  correctionCategory_class(const unsigned int runNumber, const float etaEle, const float R9Ele, const float EtEle) {
+	inline  correctionCategory_class(const unsigned int runNumber, const float etaEle, const float R9Ele, const float EtEle, const unsigned int gainSeed) {
 		runmin = runNumber;
 		runmax = runNumber;
 		etamin = fabs(etaEle);
@@ -101,6 +104,7 @@ public:
 		r9max = R9Ele;
 		etmin = EtEle;
 		etmax = EtEle;
+		gain  = gainSeed;
 	}
 
 	/// for ordering of the categories
@@ -111,7 +115,9 @@ public:
 		os <<  a.runmin << " " << a.runmax
 		   << "\t" << a.etamin << " " << a.etamax
 		   << "\t" << a.r9min << " " << a.r9max
-		   << "\t" << a.etmin << " " << a.etmax;
+		   << "\t" << a.etmin << " " << a.etmax
+		   << "\t" << a.gain;
+
 		return os;
 	};
 };
@@ -142,37 +148,49 @@ public:
 		kNParamSmear
 	};
 
-	bool doScale, doSmearings;
+	enum scaleNuisances_t {
+		scNone = 0,
+		scStat,
+		scSyst,
+		scStatSyst,
+		scGain,
+		scStatGain,
+		scAll
+	};
 
 public:
-	EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed = 0, bool doScale_ = false, bool doSmearings_ = false);
+	EnergyScaleCorrection_class(std::string correctionFileName, unsigned int genSeed = 0);
 	EnergyScaleCorrection_class() {}; ///< dummy constructor needed in ElectronEnergyCalibratorRun2
 	~EnergyScaleCorrection_class(void);
 
 
 //------------------------------ scales
 	float ScaleCorrection(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle,
-	                      double EtEle ) const; ///< method to get energy scale corrections
+	                      double EtEle, unsigned int gainSeed = 12, std::bitset<scAll> uncBitMask = scNone ) const; ///< method to get energy scale corrections
 
 	float ScaleCorrectionUncertainty(unsigned int runNumber, bool isEBEle,
-	                                 double R9Ele, double etaSCEle, double EtEle) const; ///< method to get scale correction uncertainties: it's stat+syst in eta x R9 categories
+	                                 double R9Ele, double etaSCEle, double EtEle, unsigned int gainSeed,
+	                                 std::bitset<scAll> uncBitMask = scAll) const; ///< method to get scale correction uncertainties: it is:
+	/**
+	 * bit 0 = stat
+	 * bit 1 = syst
+	 * but 2 = gain
+	 */
 
 private:
-	correctionValue_class getScaleCorrection(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; ///< returns the correction value class
-	float getScaleOffset(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; // returns the correction value
-	float getScaleStatUncertainty(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; // returns the stat uncertainty
-	float getScaleSystUncertainty(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle) const; // technical implementation
+	correctionValue_class getScaleCorrection(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle, unsigned int gainSeed) const; ///< returns the correction value class
+	float getScaleOffset(unsigned int runNumber, bool isEBEle, double R9Ele, double etaSCEle, double EtEle, unsigned int gainSeed) const; // returns the correction value
 
 
 	void ReadFromFile(TString filename); ///<   category  "runNumber"   runMin  runMax   deltaP  err_deltaP_per_bin err_deltaP_stat err_deltaP_syst
 
 	// this method adds the correction values read from the txt file to the map
-	void AddScale(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_, double err_syst_deltaP);
+	void AddScale(TString category_, int runMin_, int runMax_, double deltaP_, double err_deltaP_, double err_syst_deltaP, double err_deltaP_gain);
 
 	//============================== smearings
 public:
-	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, paramSmear_t par, float nSigma = 0.) const;
-	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, float nSigma_rho, float nSigma_phi) const;
+	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, unsigned int gainSeed, paramSmear_t par, float nSigma = 0.) const;
+	float getSmearingSigma(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, unsigned int gainSeed, float nSigma_rho, float nSigma_phi) const;
 
 
 private:
@@ -193,7 +211,7 @@ public:
 		}
 	};
 
-	float getSmearingRho(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle) const; ///< public for sigmaE estimate
+	float getSmearingRho(int runNumber, bool isEBEle, float R9Ele, float etaSCEle, float EtEle, unsigned int gainSeed) const; ///< public for sigmaE estimate
 
 
 
