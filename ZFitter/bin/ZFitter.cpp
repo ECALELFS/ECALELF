@@ -414,8 +414,8 @@ int main(int argc, char **argv)
 	std::vector<std::string> branchListAny;
 	branchListAny.push_back(invMass_var);
 	anyVarOption.add_options()
-		("anyVar", "call the anyVar_class")
-		("anyVarBranches", po::value<std::vector<std::string> >(&branchListAny),"list of branches")
+	("anyVar", "call the anyVar_class")
+	("anyVarBranches", po::value<std::vector<std::string> >(&branchListAny), "list of branches")
 	;
 
 	inputOption.add_options()
@@ -500,15 +500,15 @@ int main(int argc, char **argv)
 	po::store(po::parse_command_line(argc, argv, desc), vm);
 	po::notify(vm);
 
-	if(vm.count("anyVarBranches")){
-		for(auto& b : branchListAny){
+	if(vm.count("anyVarBranches")) {
+		for(auto& b : branchListAny) {
 			std::cout << "branches: " << b << std::endl;
 		}
-	}else branchListAny.clear();
-	for(auto& b : branchListAny){
+	} else branchListAny.clear();
+	for(auto& b : branchListAny) {
 		std::cout << "branches: " << b << std::endl;
 	}
-	
+
 	branchListAny.push_back(invMass_var); //not needed because the invMass is actually added
 
 	//------------------------------ checking options
@@ -858,12 +858,17 @@ int main(int argc, char **argv)
 		}
 	}
 
+	addBranch_class newBrancher;
+	newBrancher._commonCut = commonCut.c_str();
+	newBrancher._regionList = categories;
+
 	//read corrections directly from file
 	if (vm.count("corrEleType") && corrEleFile != "") {
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[STATUS] Getting energy scale corrections from file: " << corrEleFile << std::endl;
 		TString treeName = "scaleEle_" + corrEleType;
-		EnergyScaleCorrection_class eScaler(corrEleFile, 0, true, false);
+		EnergyScaleCorrection_class eScaler(corrEleFile, 0);
+		newBrancher.scaler = &eScaler;
 
 		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
@@ -880,40 +885,7 @@ int main(int argc, char **argv)
 				std::cerr << "[ERROR] File for scale corrections: " << filename << " not opened" << std::endl;
 				exit(1);
 			}
-			////////////////////////////****///////////////////////////////////////
-			//-> Put this in a function?//
-			//GetCorrTree does not exist anymore in EnergyScaleCorrection_class
-			Float_t scaleEle_[3];
-			scaleEle_[0]=1.;
-			scaleEle_[1]=1.;
-			scaleEle_[2]=1.;
-			TTree *corrTree = new TTree(treeName,""); //treeName is scaleEle_corrEleType
-			corrTree->Branch("scaleEle", scaleEle_, "scaleEle[3]/F");
-			ch->SetBranchStatus("*",0);
-			ch->SetBranchStatus("runNumber",1);
-			ch->SetBranchStatus("etaSCEle",1);
-			ch->SetBranchStatus("R9Ele",1);//or R9Eleprime
-			ch->SetBranchStatus(energyBranchName,1);
-
-			unsigned int    runNumber;
-			Float_t         etaSCEle[3];
-			Float_t         R9Ele[3];
-			Float_t         energy[3];
-
-			ch->SetBranchAddress("runNumber", &runNumber);
-			ch->SetBranchAddress("etaSCEle", etaSCEle);
-			ch->SetBranchAddress("R9Ele", R9Ele);//or R9Eleprime
-			ch->SetBranchAddress(energyBranchName, energy);
-			Long64_t nentries = ch->GetEntries();
-			for(Long64_t ientry = 0; ientry < nentries; ientry++) {
-				ch->GetEntry(ientry);
-				scaleEle_[0]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0]/cosh(etaSCEle[0]));
-				scaleEle_[1]=eScaler.ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1]/cosh(etaSCEle[1]));;
-				corrTree->Fill();
-			}
-			ch->SetBranchStatus("*", 1);
-			ch->ResetBranchAddresses();
-			////////////////////////////****///////////////////////////////////////
+			TTree * corrTree = newBrancher.AddBranch(ch, treeName, "scaleEle", true, false, energyBranchName);
 			corrTree->Write();
 			std::cout << "[INFO] Data entries: "    << ch->GetEntries() << std::endl;
 			std::cout << "       corrEle entries: " << corrTree->GetEntries() << std::endl;
@@ -934,7 +906,7 @@ int main(int argc, char **argv)
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[STATUS] Getting energy smearings from file: " << smearEleFile << std::endl;
 		TString treeName = "smearEle_" + smearEleType;
-		EnergyScaleCorrection_class eScaler(smearEleFile, 0, false, true);
+		EnergyScaleCorrection_class eScaler(smearEleFile, 0);
 		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
@@ -976,11 +948,6 @@ int main(int argc, char **argv)
 		}
 		// \todo need the data part in case of needs
 	}
-
-
-	addBranch_class newBrancher;
-	newBrancher._commonCut = commonCut.c_str();
-	newBrancher._regionList = categories;
 
 	for( std::vector<string>::const_iterator branch_itr = branchList.begin();
 	        branch_itr != branchList.end();
@@ -1060,7 +1027,7 @@ int main(int argc, char **argv)
 
 	///------------------------------ to obtain run ranges
 	if(vm.count("runDivide")) {
-		runDivide_class runDivider(cutter.GetCut(commonCut+"-eleID_"+selection, false,0), cutter.GetBranchNameNtuple(commonCut+"-eleID_"+selection));
+		runDivide_class runDivider(cutter.GetCut(commonCut + "-eleID_" + selection, false, 0), cutter.GetBranchNameNtuple(commonCut + "-eleID_" + selection));
 		runDivider.Divide((tagChainMap["d"])["selected"].get(), "data/runRanges/runRangeLimits.dat", nEvents_runDivide);
 		runDivider.PrintRunRangeEvents();
 		// std::vector<TString> runRanges;
@@ -1123,7 +1090,7 @@ int main(int argc, char **argv)
 		TString r = *region_itr;
 		r.ReplaceAll(commonCut, "");
 		std::set<TString> tmpList = cutter.GetBranchNameNtuple(r);
-		assert(tmpList.size()>0);
+		assert(tmpList.size() > 0);
 		activeBranchList.insert(tmpList.begin(), tmpList.end());
 		// add also the friend branches!
 	}
