@@ -1315,7 +1315,7 @@ int main(int argc, char **argv)
 					for(auto& region : categories) {
 						std::cout << "------------------------------------------------------------" << std::endl;
 						std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-						anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+						anyVar.TreeAnalyzeShervin(region.Data(),  cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), std::vector<TString>(), "", scale);
 					}
 					break;
 #else
@@ -1336,18 +1336,19 @@ int main(int argc, char **argv)
 					anyVar.ChangeModulo(0);
 					if(runRanges.size() > 0) {
 						for(auto& runRange : runRanges) {
-							TString token1, token2;
+							TString runMin, runMax;
 							TObjArray *tx = runRange.Tokenize("-");
-							token1 = ((TObjString *)(tx->At(0)))->String();
-							token2 = ((TObjString *)(tx->At(1)))->String();
-							TString category = region + "-runNumber_" + token1 + "_" + token2;
+							runMin = ((TObjString *)(tx->At(0)))->String();
+							runMax = ((TObjString *)(tx->At(1)))->String();
+							TString category = region + "-runNumber_" + runMin + "_" + runMax;
 							TString c = category + "-" + commonCut.c_str();
-							anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
+//							anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2), runRanges, commonCut);
 						}
+						anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), runRanges, commonCut);
 					} else {
 						TString category = region;
 						TString c = category + "-" + commonCut.c_str();
-						anyVar.TreeAnalyzeShervin(c.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
+						anyVar.TreeAnalyzeShervin(c.Data(),  cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
 					}
 //				anyVarMC.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, true, 1), cutter.GetCut(region, true, 2), scale);
 				}
