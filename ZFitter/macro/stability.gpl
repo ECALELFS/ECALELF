@@ -58,7 +58,7 @@ set y2label resolutionLabel textcolor 'blue'
 
 set auto fix
 set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
-set y2range [0.01:0.013]
+set y2range [0.01:0.012]
 #set yrange  [87:91]
 
 set key outside above
@@ -83,8 +83,8 @@ if(ARGC==1){
 #		p for [yVar in "mean mean68"]  file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))):x2ticlabel(stringcolumn("timeMin").'-'.stringcolumn("runMax")) i category w xyerr pt 5 ps 0.6 title yVar #, \
 #, \
 #
-	p for [ yVar in "median mean68" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
-   '' u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width'
+	p for [ yVar in "median" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
+   '' u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 lc 2 axes x1y2 title 'scaled width'
 	}
 } else {
 	file=value("ARG1")
@@ -106,7 +106,7 @@ if(ARGC==1){
   set grid y
 	do for [category in categories]{
 	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
-	 	yVar="mean68"
+	 	yVar="median"
 		set ylabel peakLabel
 	 	p for [id=1:words(files)] word(files,id) u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title word(titles,id)
 		set ylabel resolutionLabel

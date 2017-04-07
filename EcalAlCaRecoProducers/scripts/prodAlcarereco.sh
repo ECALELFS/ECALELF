@@ -316,7 +316,7 @@ if [ -n "${CREATE}" ];then
 	
 
 #==============================
-	crabFile=tmp/alcarereco.cfg
+	crabFile=tmp/`echo $UI_WORKING_DIR | sed 's|/|_|g'`.cfg
 	cat > $crabFile <<EOF
 [CRAB]
 #use_server = 0

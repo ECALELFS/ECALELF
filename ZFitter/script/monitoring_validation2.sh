@@ -199,7 +199,7 @@ fi
 ##################################################
 if [ -n "$STABILITY" ];then
     regionFile=data/regions/stability.dat
-    regionFile=data/regions/test.dat
+#    regionFile=data/regions/test.dat
     xVar=runNumber
     if [ -z "$PERIOD" ];then
 		if [ -z "${ONLYTABLE}" ];then

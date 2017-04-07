@@ -93,6 +93,7 @@ for jobID in `seq 1 $nJobs`
 	  50115) intervals="$intervals $jobID";;
 	  50669) intervals="$intervals $jobID";;
 	  50660) intervals="$intervals $jobID";;
+	  10040) intervals="$intervals $jobID";;
   esac
 
 #  echo ${intervals}

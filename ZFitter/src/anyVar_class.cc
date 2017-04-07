@@ -4,7 +4,7 @@
 #include <TBranchElement.h>
 #include <TFriendElement.h>
 #include <TStopwatch.h>
-#define DEBUG
+//#define DEBUG
 #define MAXENTRIES 100000000
 #define MAXBRANCHES  20
 #define BUFSIZE 12 /* bytes */
@@ -268,7 +268,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	_stats_vec.reset();
 	//vector of stats vect, one for each run
 	std::map<UInt_t, statsCollection> stats_run_map;
-//	stats_run_map.insert(std::pair<UInt_t, statsCollection>(0, _stats_vec));
+	stats_run_map.insert(std::pair<UInt_t, statsCollection>(0, _stats_vec));
 
 	for(auto& runRange : runRanges) {
 		TString runMin, runMax;
@@ -278,6 +278,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		std::cout << "[anyVar_class:DEBUG] " << "runMin = " << runMin << std::endl;
 #endif
 		stats_run_map.insert(std::pair<UInt_t, statsCollection>(runMin.Atoll(), _stats_vec));
+		std::cout << runMin << "\t" << stats_run_map.size() << std::endl;
 	}
 	if(reduced_data == NULL) {
 		std::cerr << "[ERROR] reduced_data is NULL. Maybe you have to call the Import() method" << std::endl;
@@ -318,8 +319,8 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
 	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
-	UInt_t  runNumber;
-	reduced_data->SetBranchAddress("runNumber", &runNumber);
+	UInt_t  runNumber=0;
+	if(reduced_data->GetBranch("runNumber")!=NULL) reduced_data->SetBranchAddress("runNumber", &runNumber);
 
 	if(reduced_data->GetBranch("puWeight") != NULL) {
 		std::cout << "[anyVar_class][STATUS] Adding pileup weight branch from friend" << std::endl;
@@ -394,8 +395,9 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 		bool bothPassing = true;
 		auto ptr = (stats_run_map.upper_bound(runNumber));
-		ptr--;
+		if(ptr != stats_run_map.begin()) ptr--;
 		auto &sv = ptr->second;
+		//std::cout << ptr->first << "\t" << runNumber << std::endl;
 		for(size_t iele = 0; iele < passing_ele.size(); ++iele) {
 			bothPassing = bothPassing && passing_ele[iele]; //if all electrons are satisfying this category, the event is removed from the list
 			if(passing_ele[iele] == false) continue; // fill only the with the electron passing the selection
@@ -430,9 +432,18 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		std::cout << "Reduced number of events: " << entries << " -> " <<  goodEntries.size() << std::endl;
 	}
 
-	auto &sv = stats_run_map.begin()->second;
-	sv[indexMassBranch].sort();
-	std::cout << region << "\t" << stats_run_map.begin()->first << "\t" << sv[indexMassBranch] << std::endl;
+
+	// auto &sv = stats_run_map.begin()->second;
+	// sv[indexMassBranch].sort();
+	// std::cout << region << "\t" << stats_run_map.begin()->first << "\t" << sv[indexMassBranch] << std::endl;
+	if(runRanges.size()==0){
+	   	auto &sv = stats_run_map.begin()->second;
+		for(size_t i = 0; i < sv.size(); ++i) {
+			auto& s = sv[i];
+			s.sort();
+			*(_statfiles[i]) << region+"-"+commonCut << "\t" << s << std::endl;
+		}
+	}else{		
 	for(auto& runRange : runRanges) {
 		TString runMin, runMax;
 		TObjArray *tx = runRange.Tokenize("-");
@@ -440,18 +451,19 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		runMax = ((TObjString *)(tx->At(1)))->String();
 		std::string category = region + "-runNumber_" + runMin.Data() + "_" + runMax.Data() + "-" + commonCut;
 
-		auto ptr = (stats_run_map.upper_bound(runNumber));
-		ptr--;
+		auto ptr = (stats_run_map.upper_bound(runMin.Atoll()));
+		if(ptr != stats_run_map.begin()) ptr--;
 		auto &sv = ptr->second;
 		for(size_t i = 0; i < sv.size(); ++i) {
 			auto& s = sv[i];
-			std::cout << "Start sorting " << s.name() << "\t" << runMin << " " << ptr->first << std::endl;
+//			std::cout << "Start sorting " << s.name() << "\t" << runMin << " " << ptr->first << std::endl;
 			s.sort();
 			*(_statfiles[i]) << category << "\t" << s << std::endl;
 #ifdef DEBUG
 		std::cout << category << "\t" << s << std::endl;
 #endif
 		}
+	}
 	}
 	std::cout << "[INFO] Region fully processed" << "\t" << count << std::endl;
 //	_stats_vec.dump("testfile.dat");

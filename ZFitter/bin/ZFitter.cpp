@@ -1287,14 +1287,21 @@ int main(int argc, char **argv)
 //------------------------------ anyVar_class declare and set the options
 	if(vm.count("anyVar")) {
 		TFile *reduced_trees_file = new TFile((outDirFitResData + "/reduced_trees_file.root").c_str(), "RECREATE");
-
+		TFile *reduced_trees_fileMC = new TFile((outDirFitResMC + "/reduced_trees_file.root").c_str(), "RECREATE");
 		TDirectory *dir = reduced_trees_file->GetDirectory("");
+		TDirectory *dirMC = reduced_trees_fileMC->GetDirectory("");
 		//TDirectory *dir = new TDirectory(); //
 		{
 			//anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", reduced_trees_file->GetDirectory(""), true); // vm.count("updateOnly"));
 			anyVar_class anyVar(data, branchListAny, cutter, invMass_var, outDirFitResData + "/", dir, true); // vm.count("updateOnly"));
 			anyVar._exclusiveCategories = false;
 			anyVar.Import(commonCut, eleID, activeBranchList, modulo); //activeBranchList is the list of branches for category selections
+
+			system(("mkdir -p "+outDirFitResMC).c_str()); 
+			anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", dirMC, true); // vm.count("updateOnly"));
+			anyVarMC._exclusiveCategories = false;
+			anyVarMC.Import(commonCut, eleID, activeBranchList, modulo); //activeBranchList is the list of branches for category selections
+
 			///\todo allocating both takes too much memory
 			if(vm.count("runToy") && modulo > 0) {
 				// splitting the events by "modulo" and obtaining statistically indipendent subsamples
@@ -1325,30 +1332,20 @@ int main(int argc, char **argv)
 				reduced_trees_file->Write();
 				reduced_trees_file->Close();
 			} else {
-				// anyVar_class anyVarMC(mc, branchListAny, cutter, invMass_var, outDirFitResMC + "/", vm.count("updateOnly"));
-				// anyVarMC._exclusiveCategories = false;
-				// anyVarMC.Import(commonCut, eleID, activeBranchList);
 
 //			anyVar.SaveReducedTree(reduced_trees_file);
 #ifndef dump_root_tree
-				anyVar._exclusiveCategories = true;
+				//anyVar._exclusiveCategories = true;
 				for(auto& region : regions) { //categories
 					anyVar.ChangeModulo(0);
+					anyVarMC.ChangeModulo(0);
 					if(runRanges.size() > 0) {
-						for(auto& runRange : runRanges) {
-							TString runMin, runMax;
-							TObjArray *tx = runRange.Tokenize("-");
-							runMin = ((TObjString *)(tx->At(0)))->String();
-							runMax = ((TObjString *)(tx->At(1)))->String();
-							TString category = region + "-runNumber_" + runMin + "_" + runMax;
-							TString c = category + "-" + commonCut.c_str();
-//							anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2), runRanges, commonCut);
-						}
 						anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), runRanges, commonCut);
 					} else {
 						TString category = region;
 						TString c = category + "-" + commonCut.c_str();
 						anyVar.TreeAnalyzeShervin(c.Data(),  cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
+						anyVarMC.TreeAnalyzeShervin(c.Data(),  cutter.GetCut(category, false, 1), cutter.GetCut(category, false, 2));
 					}
 //				anyVarMC.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, true, 1), cutter.GetCut(region, true, 2), scale);
 				}
