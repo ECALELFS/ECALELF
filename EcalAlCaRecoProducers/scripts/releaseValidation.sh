@@ -142,8 +142,8 @@ testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName
 logName=alcareco_mc
 testStep 5 "Testing local production of ALCARECOSIM from AODSIM (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py type=ALCARECOSIM maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileAODSIM outputAll=False jsonFile= skim=ZSkim isCrab=0" || {
 
-	echo -n "[`basename $0`] Checking difference in dump of alcarecosim content ... "
-	edmEventSize -v $dir/alcareco.root > $logName.dump || exit 1
+	echo -n "[`basename $0`][STEP5] Checking difference in dump of alcarecosim content ... "
+	edmEventSize -v $dir/alcareco.root > $dir/$logName.dump || exit 1
 
 	diff -q {$dir,test}/${logName}.dump > /dev/null || {
 		echo "${bold}ERROR${normal}"
