@@ -39,24 +39,24 @@ done
 
 
 #------------------------------ checking
+config=${UI_WORKING_DIR}/share/config
 if [ ! -d "${UI_WORKING_DIR}" ];then
     echo "[ERROR] crab working directory ${UI_WORKING_DIR} not found" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
-elif [ ! -r "${UI_WORKING_DIR}/share/crab.cfg" ];then
-    echo "[ERROR] crab config {UI_WORKING_DIR}/share/crab.cfg not found" >> /dev/stderr
+elif [ ! -r "$config" ];then
+    echo "[ERROR] config $config not found" >> /dev/stderr
     usage >> /dev/stderr
     exit 1
 fi
 
 ### taking the output directory (also possible directly from the crab.cfg file
+source $config
+USER_REMOTE_DIR=$user_remote_dir
+STORAGE_PATH=$storage_path
 
-USER_REMOTE_DIR=`grep '^user_remote_dir=' ${UI_WORKING_DIR}/share/crab.cfg |cut -d '=' -f 2` 
-STORAGE_PATH=`grep 'storage_path=' ${UI_WORKING_DIR}/share/crab.cfg  | sed 's|/srm/v2/server?SFN=|root://eoscms/|' | cut -d '=' -f 2 `
-NJOBS=`grep 'number_of_jobs='  ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
-#echo $STORAGE_PATH $USER_REMOTE_DIR
-#echo "RUNRANGE=${RUNRANGE:=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`}"
-RUNRANGE=`grep 'runselection=' ${UI_WORKING_DIR}/share/crab.cfg  |cut -d '=' -f 2`
+echo $STORAGE_PATH $USER_REMOTE_DIR
+echo "RUNRANGE=${RUNRANGE}"
 if [ -z "$RUNRANGE" ];then 
     echo "RUNRANGE=${RUNRANGE:=allRange}"
 fi
@@ -146,11 +146,6 @@ fi
 #     exit 1
 # }
 
-# if [ "`cat filelist/unmerged.list | wc -l`" != "${NJOBS}" ];then 
-#     echo "[ERROR `basename $0`] Number of files to merge differs with respect to number of jobs: " >> /dev/stderr
-#     echo "                      `cat filelist/unmerged.list | wc -l` != ${NJOBS}" >> /dev/stderr
-#     exit 1
-# fi
 
 #tmpDir=/tmp/$USER/tmpHadd/$FILENAME_BASE/
 #mkdir -p $tmpDir
