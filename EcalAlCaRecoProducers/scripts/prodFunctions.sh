@@ -62,8 +62,25 @@ setStoragePath(){
 # checking the release
 checkRelease(){
     #$1 = DATASETPATH
-    RELEASE=`das_client --query="release dataset=$1"`
-    echo "[INFO] Dataset release: $RELEASE"
+    RELEASE=`das_client --limit=0 --query="release dataset=$1"`
+	m1=`echo $CMSSW_VERSION | cut -d '_' -f 2`
+	m2=`echo $CMSSW_VERSION | cut -d '_' -f 3`
+	m3=`echo $CMSSW_VERSION | cut -d '_' -f 4`
+	mp=`echo $CMSSW_VERSION | cut -d '_' -f 5`
+	for release in $RELEASE
+	do
+		echo "[INFO] Dataset release: $release"
+		M1=`echo $release | cut -d '_' -f 2`
+		M2=`echo $release | cut -d '_' -f 3`
+		M3=`echo $release | cut -d '_' -f 4`
+		MP=`echo $release | cut -d '_' -f 5`
+		if  (( "${m1}" < "${M1}" )) || (( "${m2}" < "${M2}" )) || (( "${m3}" < "${M3}" )) ; then
+			echo "[WARNING `basename $0`] Current release is older than the one used to produce the dataset!" >> /dev/stderr
+			echo "                        Current release: $CMSSW_VERSION" >> /dev/stderr
+			echo "                        Dataset release: $release" >> /dev/stderr
+			exit 1
+		fi
+	done
     echo "       Actual relase: $CMSSW_VERSION"
 }
 
@@ -207,4 +224,18 @@ checkIfRerecoed(){
 		return 0; 
 	fi
 	#return is true if not-rerecoed
+}
+
+checkVerboseOption(){
+	set -- $options
+	while [ $# -gt 0 ]
+	do
+		case $1 in
+			-v|--verbose)    VERBOSE=y;;
+			(--) shift; break;;
+#		(-*) echo "$0: error - unrecognized option $1" 1>&2; usage >> /dev/stderr; exit 1;;
+			(*) break;;
+		esac
+		shift
+	done
 }
