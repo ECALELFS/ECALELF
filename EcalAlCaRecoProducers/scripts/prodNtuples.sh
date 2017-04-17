@@ -475,6 +475,7 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 		if [ "$isMC" != "1" ];then
         cat >> ${crab2File} <<EOF
 dataset=${DATASETPATH}
+datasetname=${DATASETNAME}
 runrange=${RUNRANGE}
 #dbs_url = phys03
 use_dbs3 = 1
@@ -482,6 +483,7 @@ EOF
 		else
 			cat >> ${crab2File} <<EOF
 dataset=${DATASETPATH}
+datasetname=${DATASETNAME}
 runrange=allRange
 EOF
 		fi
@@ -489,6 +491,7 @@ EOF
         *)
         cat >> ${crab2File} <<EOF
 dataset=None
+datasetname=${DATASETNAME}
 runrange=${RUNRANGE}
 EOF
 	;;

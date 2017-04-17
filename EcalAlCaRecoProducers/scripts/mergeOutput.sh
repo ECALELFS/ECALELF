@@ -60,8 +60,7 @@ echo "RUNRANGE=${RUNRANGE}"
 if [ -z "$RUNRANGE" ];then 
     echo "RUNRANGE=${RUNRANGE:=allRange}"
 fi
-DATASETNAME=`echo ${USER_REMOTE_DIR} | sed "s|${RUNRANGE}.*||"`
-DATASETNAME=`basename $DATASETNAME`
+DATASETNAME=${datasetname}
 
 #echo "DATASETNAME=${DATASETNAME}"
 #echo ${USER_REMOTE_DIR}
@@ -120,16 +119,16 @@ fi
 #echo "MERGED_REMOTE_DIR=${MERGED_REMOTE_DIR:=${USER_REMOTE_DIR}}"
 rm filelist/ -Rf
 if [ -n "${FILENAME_BASE}" ];then
-    makefilelist.sh -g ${FILENAME_BASE} ${FILENAME_BASE} ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
+    makefilelist.sh -f $UI_WORKING_DIR/ -g ${FILENAME_BASE} ${FILENAME_BASE} ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
 else
 	FILENAME_BASE=unmerged
-    makefilelist.sh unmerged ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
+    makefilelist.sh -f $UI_WORKING_DIR/ unmerged ${STORAGE_PATH}/${USER_REMOTE_DIR} || exit 1
 fi
 
-if [ "`wc -l filelist/${FILENAME_BASE}.list`" == "0" ];then
-	echo "[ERROR `basename $0`] file list is empty" >> /dev/stderr
-	exit 1
-fi
+# if [ "`wc -l filelist/${FILENAME_BASE}.list`" == "0" ];then
+# 	echo "[ERROR `basename $0`] file list is empty" >> /dev/stderr
+# 	exit 1
+# fi
 
 if [ ! -d "/tmp/$USER" ];then
     mkdir -p /tmp/$USER
@@ -149,14 +148,14 @@ fi
 
 #tmpDir=/tmp/$USER/tmpHadd/$FILENAME_BASE/
 #mkdir -p $tmpDir
-hadd -fk -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
-#fastHadd.sh /tmp/$USER/${MERGEDFILE} filelist/${FILENAME_BASE}.list || exit 1
+#hadd -fk -f /tmp/$USER/${MERGEDFILE} `cat filelist/${FILENAME_BASE}.list` || exit 1
+fastHadd.sh /tmp/$USER/$UI_WORKING_DIR/${MERGEDFILE} $UI_WORKING_DIR/${FILENAME_BASE}.list || exit 1
 #rm -Rf $tmpDir
 
 # copy the merged file to the repository
 # dirname is needed to remove "unmerged" subdir from the path
-xrdcp -Nv /tmp/$USER/${MERGEDFILE} ${eosFile} || exit 1
-rm /tmp/$USER/${MERGEDFILE}
+xrdcp -Nv /tmp/$USER/$UI_WORKING_DIR/${MERGEDFILE} ${eosFile} || exit 1
+rm /tmp/$USER/$UI_WORKING_DIR/${MERGEDFILE}
 
 # let's remove the files
 if [ -z "${NOREMOVE}" ];then
