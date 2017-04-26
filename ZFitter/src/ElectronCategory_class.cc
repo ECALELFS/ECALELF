@@ -1339,6 +1339,22 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			continue;
 		}
 
+		//--------------- smearerCat
+		if(string.Contains("smearerCat")) {
+			TObjArray *splitted = string.Tokenize("_");
+			if(splitted->GetEntries() < 2) {
+				std::cerr << "ERROR: incomplete smearerCat region definition" << std::endl;
+				continue;
+			}
+			TObjString *Objstring1 = (TObjString *) splitted->At(1);
+			TString string1 = Objstring1->GetString();
+
+			TCut cut("smearerCat[0] == " + string1);
+			cutSet.insert(TString(cut));
+			delete splitted;
+			continue;
+		}
+
 //     if(string.Contains("CenterModule")){
 //       cut_string+=EB_cut;
 //       if(string.Contains("SingleEle")) cut_string+= (CenterModule_ele1_cut && !CenterModule_ele2_cut) || (CenterModule_ele2_cut && !CenterModule_ele1_cut);

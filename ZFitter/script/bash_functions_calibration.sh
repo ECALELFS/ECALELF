@@ -26,6 +26,61 @@ do
 done
 }
 
+addBranch(){
+	sORds=
+	branchnames=
+	addbranch=
+	while [[ "$1" != "--" ]] && [[ "$1" != "" ]]
+	do
+		sORds="$sORds $1"
+		branchnames="$branchnames $2"
+		if [[ $2 != "pileup" ]]; then addbranch="$addbranch --addBranch $2"
+		fi
+		echo $1 $2 $addbranch
+		shift 2
+	done
+	shift
+	options="$@"
+	echo $options
+	#region name is there just because it's mandatory for ZFitter
+	echo ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/scaleStep0.dat $addbranch $options
+	./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/scaleStep0.dat $addbranch $options
+
+	branchnames=($branchnames)
+	sORds=($sORds)
+	for i in $(seq 0 $(( ${#branchnames[@]} - 1 )) )
+	do
+		branchname=${branchnames[$i]}
+		sORd=${sORds[$i]}
+		echo $sORd $branchname
+		#handle pileup slightly differently
+		if [[ $branchname == "pileup" ]]
+		then
+			for tag in `grep "^s" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
+			do
+				#tag is s1, s2, ...
+				mv tmp/mcPUtree${tag}.root ${eos_path}/data/puTree/${tag}_${file}.root &&
+					echo "${tag} pileup ${eos_path}/data/puTree/${tag}_${file}.root" >> data/validation/${file}.dat 
+			done
+		else
+			#all EleIDSF branches go in EleIDSF/
+			branchname_dir=$branchname
+			if [[ "$branchname" == *"EleIDSF"* ]]
+			then
+				branchname_dir=EleIDSF
+			fi
+			for tag in `grep "^[${sORd}]" data/validation/${file}.dat | grep selected | awk -F" " ' { print $1 } '`
+			do
+				#tag is s1, s2, ...
+				tagfile=${branchname}_${tag}-${file}.root
+				mv tmp/${tagfile} ${eos_path}/data/${branchname_dir}/ &&
+					echo "${tag} $branchname ${eos_path}/data/$branchname_dir/${tagfile}" >> data/validation/${file}.dat ||
+					echo "[ERROR] moving tmp/${tagfile} to ${eos_path}/data/${branchname_dir}/"
+			done
+		fi
+	done
+}
+
 Categorize(){
     ./bin/ZFitter.exe -f data/validation/${file}.dat --regionsFile=data/regions/${region1}.dat --addBranch=smearerCat invMass_var=${invMass_type} --saveRootMacro
     mv tmp/smearerCat_${region1}_*${file}* friends/smearerCat/ 

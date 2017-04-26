@@ -15,3 +15,18 @@ std::string energyBranchNameFromInvMassName(std::string invMass_var)
 	}
 	return energyBranchName;
 }
+
+std::string invMassNameFromEnergyBranchName(std::string energyBranchName)
+{
+	std::string invMass_var = "";
+	if( energyBranchName == "energy_ECAL_ele") invMass_var = "invMass_ECAL_ele";
+	else if(energyBranchName == "energy_ECAL_pho") invMass_var = "invMass_ECAL_pho";
+	else if(energyBranchName == "energy_5x5SC") invMass_var = "invMass_5x5SC";
+	else if(energyBranchName == "energyEle") invMass_var = "invMass";
+	else if(energyBranchName == "rawEnergySCEle") invMass_var = "invMass_rawSC";
+	else {
+		std::cerr << "invMass branch name not define for energy branch: " << energyBranchName << std::endl;
+		exit(1);
+	}
+	return invMass_var;
+}

@@ -35,7 +35,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
 	_paramSet("paramSet", "Set of parameters", this),
 	invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
 	deltaNLLMaxSmearToy(330),
-	_deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(1500), _nSmearToy(20),
+	_deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(20),
 	nllBase(0),
 	nllVar("nll", "", 0, 1e20),
 	_isDataSmeared(false),
@@ -1148,21 +1148,13 @@ void RooSmearer::DumpNLL(void) const
 	for(std::vector<ZeeCategory>::const_iterator cat_itr = ZeeCategories.begin();
 	        cat_itr != ZeeCategories.end();
 	        cat_itr++) {
-		if(!cat_itr->active)
-			std::cout << "[DUMP NLL] " << std::setprecision(10)
-			          << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2
-			          << "\t" << cat_itr->nll
-			          << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size()
-			          << "\t1"
-			          << "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
-			          << std::endl;
-		else
-			std::cout << "[DUMP NLL] " << std::setprecision(10)
-			          << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2
-			          << "\t" << cat_itr->nll
-			          << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() << "\t0"
-			          << "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
-			          << std::endl;
+		std::cout << "[DUMP NLL] " << std::setprecision(10)
+		          << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2
+		          << "\t" << cat_itr->nll
+		          << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size()
+		          << "\t" << cat_itr->active
+		          << "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
+		          << std::endl;
 	}
 	return;
 }
