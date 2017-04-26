@@ -28,14 +28,14 @@ desc(){
 
 
 # options may be followed by one colon to indicate they have a required argument
-if ! options=$(getopt -u -o hf: -l help,addBranch:,regionsFile:,corrEleType:,corrEleFile:,fitterOptions: -- "$@")
+if ! options=$(getopt -o hf: -l help,addBranch:,regionsFile:,outDir:,corrEleType:,corrEleFile:,fitterOptions: -- "$@")
 then
     # something went wrong, getopt will put out an error message for us
     exit 1
 fi
 
 
-set -- $options
+eval set -- "$options"
 
 while [ $# -gt 0 ]
 do
@@ -47,10 +47,12 @@ do
 	--regionsFile) regionsFile=$2; shift;;
 	--corrEleType) corrEleType="--corrEleType=$2"; shift;;
 	--corrEleFile) corrEleFile="--corrEleFile=$2"; shift;;
-	--fitterOptions) fitterOptions="$fitterOptions $2"; shift;;
+	--outDir) outdir=$2; shift;;
+	--fitterOptions) fitterOptions="$2"; shift;;
     esac
     shift
 done
+echo "zfitter Options" $fitterOptions
 
 let nFiles=${#configFiles[@]}-1
 
@@ -63,7 +65,10 @@ echo "Create Chains for ${configFile}"
 # saving the root files with the chains
 rm tmp/*_chain.root
 
-outdir=tmp/`basename $configFile .dat`/
+if [ "$outdir" == "" ]
+then
+	outdir=tmp/`basename $configFile .dat`/
+fi
 mkdir -p $outdir
 rm $outdir/*_chain.root
 echo storing in $outdir

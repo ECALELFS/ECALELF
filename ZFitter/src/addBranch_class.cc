@@ -1,6 +1,8 @@
 #include "../interface/addBranch_class.hh"
 #include "../interface/ElectronCategory_class.hh"
+#include "../interface/auxFunctions.hh"
 #include <TTreeFormula.h>
+#include <TTree.h>
 #include <TLorentzVector.h>
 #include <TGraph.h>
 #include <iostream>
@@ -33,6 +35,7 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 	if(BranchName.Contains("EleIDSF")) return AddBranch_EleIDSF(originalChain, treename, BranchName, energyBranchName, isMC);
 	if(BranchName.CompareTo("scaleEle") == 0) return AddBranch_scaleEle(originalChain, treename, energyBranchName);
 	if(BranchName.CompareTo("smearEle") == 0) return AddBranch_smearEle(originalChain, treename, energyBranchName);
+	if(BranchName.Contains("overSmear")) return AddBranch_overSmear(originalChain, treename, BranchName, isMC);
 	std::cerr << "[ERROR] Request to add branch " << BranchName << " but not defined" << std::endl;
 	return NULL;
 }
@@ -769,6 +772,43 @@ TTree * addBranch_class::AddBranch_smearEle(TChain * ch, TString treeName, TStri
 	return newTree;
 }
 
+TTree * addBranch_class::AddBranch_overSmear(TChain * ch, TString treeName, TString BranchName, bool isMC)
+{
+	if(!isMC) {
+		std::cerr << "[WARNING] Do not make oversmear for Data" << std::endl;
+		return NULL;
+	}
+	TString invMass_var = BranchName(0, BranchName.Length() - 10); // Get invmass name from treename
+	const int N_SAMPLES = 100;
+	Float_t invMass_overSmear[N_SAMPLES];
+	TTree *overSmearTree = new TTree(treeName, "");
+	overSmearTree->Branch(BranchName, invMass_overSmear, TString::Format(BranchName + "[%d]/F", N_SAMPLES));
+	ch->SetBranchStatus("*", 0);
+	ch->SetBranchStatus("smearSigmaEle", 1);
+	ch->SetBranchStatus(invMass_var, 1);
+
+	Float_t         invMass;
+	Float_t         smearSigmaEle[2];
+
+	ch->SetBranchAddress(invMass_var, &invMass);
+	if( ch->SetBranchAddress("smearSigmaEle", smearSigmaEle) < 0) {
+		std::cerr << "[WARNING] overSmear branch requires smearSigmaEle branch" << std::endl;
+		delete overSmearTree;
+		return NULL;
+	}
+	Long64_t nentries = ch->GetEntries();
+	TRandom3 r3;
+	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
+		ch->GetEntry(ientry);
+		for(size_t isample = 0; isample < N_SAMPLES; isample++) {
+			invMass_overSmear[isample] = invMass * sqrt(r3.Gaus(1, smearSigmaEle[0]) * r3.Gaus(1, smearSigmaEle[1]));
+		}
+		overSmearTree->Fill();
+	}
+	ch->SetBranchStatus("*", 1);
+	ch->ResetBranchAddresses();
+	return overSmearTree;
+}
 #ifdef shervinM
 
 TTree *addBranch_class::GetTreeDistIEtaDistiPhi(TChain *tree,  bool fastLoop, int xDist, int yDist, TString iEtaBranchName, TString iPhiBranchName)
