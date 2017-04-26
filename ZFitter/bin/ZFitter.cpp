@@ -266,6 +266,7 @@ int main(int argc, char **argv)
 	unsigned int nEventsMinDiag = 0;
 	unsigned int nEventsMinOffDiag = 0;
 	unsigned int nSmearToy = 1;
+	float smearMassMin, smearMassMax;
 
 	int pdfSystWeightIndex = -1;
 	std::string minimType;
@@ -368,7 +369,6 @@ int main(int argc, char **argv)
 	("isOddData", "Activate if use only odd events in data")
 	("scale", po::value<float>(&scale)->default_value(1.), "scale shift for tests")
 	//
-	("readDirect", "") //read correction directly from config file instead of passing as a command line arg
 	//("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
 	("addBranch", po::value< std::vector<string> >(&branchList), "")
 	("saveAddBranchTree", "")
@@ -392,6 +392,8 @@ int main(int argc, char **argv)
 	smearerOption.add_options()
 	("smearerFit",  "call the smearing")
 	("smearerType", po::value<string>(&minimType)->default_value("profile"), "minimization algo")
+	("smearMassMin", po::value<float>(&smearMassMin)->default_value(80),  "RooSmearer invmass minimum")
+	("smearMassMax", po::value<float>(&smearMassMax)->default_value(100), "RooSmearer invmass maximum")
 	("onlyDiagonal", "if want to use only diagonal categories")
 	("autoBin", "")
 	("autoNsmear", "")
@@ -554,16 +556,6 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-
-	//if((vm.count("corrEleType") != vm.count("corrEleFile"))&&(vm.count("corrEleType") != vm.count("readDirect")) ){
-	//std::cout << "[ERROR] Either provide correction file name, or provide read direct option" << std::endl;
-	//return 1;
-	//}
-
-	if( vm.count("corrEleType") && vm.count("corrEleFile") && vm.count("readDirect") ) {
-		std::cout << "[ERROR] Either provide correction file name, or provide read direct option - choose only one" << std::endl;
-		return 1;
-	}
 
 	//============================== Check output folders
 	bool checkDirectories = true;
@@ -902,11 +894,12 @@ int main(int argc, char **argv)
 
 
 	//read corrections directly from file
-	if (vm.count("smearEleType")) {
+	if (vm.count("smearEleType") && smearEleFile != "" ) {
 		std::cout << "------------------------------------------------------------" << std::endl;
 		std::cout << "[STATUS] Getting energy smearings from file: " << smearEleFile << std::endl;
 		TString treeName = "smearEle_" + smearEleType;
 		EnergyScaleCorrection_class eScaler(smearEleFile, 0);
+		newBrancher.scaler = &eScaler;
 		for(tag_chain_map_t::iterator tag_chain_itr = tagChainMap.begin();
 		        tag_chain_itr != tagChainMap.end();
 		        tag_chain_itr++) {
@@ -967,6 +960,7 @@ int main(int argc, char **argv)
 		TString branchName = treeName;
 		std::cout << "#### --> " << treeName << "\t" << t << "\t" << *branch_itr << std::endl;
 		if(branchName == "smearerCat") treeName += "_" + regionsFileNameTag;
+		if(branchName.Contains("overSmear")) treeName += "_" + smearEleType;
 #ifdef invMassSigma
 		if(treeName.Contains("invMassSigma")) {
 			newBrancher.scaler = new EnergyScaleCorrection_class("", smearEleFile);
@@ -1464,7 +1458,7 @@ int main(int argc, char **argv)
 		smearer._autoBin = vm.count("autoBin");
 		smearer._autoNsmear = vm.count("autoNsmear");
 		smearer.smearscan = vm.count("smearscan");
-		//smearer.nEventsMinDiag = nEventsMinDiag;
+		smearer._deactive_minEventsDiag = nEventsMinDiag;
 		smearer._deactive_minEventsOffDiag = nEventsMinOffDiag;
 		smearer.SetSmearingEt(vm.count("smearingEt"));
 		smearer.SetR9Weight(vm.count("useR9weight"));
@@ -1476,7 +1470,7 @@ int main(int argc, char **argv)
 		if(nSmearToy > 0) smearer._nSmearToy = nSmearToy;
 
 
-		smearer.SetHistBinning(80, 100, invMass_binWidth); // to do before Init
+		smearer.SetHistBinning(smearMassMin, smearMassMax, invMass_binWidth); // to do before Init
 		if(vm.count("runToy")) {
 			smearer.SetPuWeight(false);
 

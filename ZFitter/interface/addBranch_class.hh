@@ -56,6 +56,7 @@ private:
 	TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
 	TTree* AddBranch_scaleEle(TChain * ch, TString treename, TString energyBranchName);
 	TTree* AddBranch_smearEle(TChain * ch, TString treename, TString energyBranchName);
+	TTree* AddBranch_overSmear(TChain * ch, TString treeName, TString BranchName, bool isMC);
 
 };
 

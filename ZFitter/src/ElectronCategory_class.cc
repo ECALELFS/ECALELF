@@ -349,7 +349,7 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TString string1 = Objstring1->GetString();
 			if(string1 == "12") string1 = "0";
 			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "2"; 
+			else if(string1 == "1") string1 = "2";
 			else if(string1 == "61") string1 = "3";
 
 			TCut cutEle1("gainSeedSC_ele1 ==" + string1);
@@ -1336,6 +1336,22 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 		if(string.CompareTo("EERefReg", TString::kIgnoreCase) == 0) {
 			cutSet.insert(TString(EE_cut));
 			cutSet.insert(TString(EERefReg_cut));
+			continue;
+		}
+
+		//--------------- smearerCat
+		if(string.Contains("smearerCat")) {
+			TObjArray *splitted = string.Tokenize("_");
+			if(splitted->GetEntries() < 2) {
+				std::cerr << "ERROR: incomplete smearerCat region definition" << std::endl;
+				continue;
+			}
+			TObjString *Objstring1 = (TObjString *) splitted->At(1);
+			TString string1 = Objstring1->GetString();
+
+			TCut cut("smearerCat[0] == " + string1);
+			cutSet.insert(TString(cut));
+			delete splitted;
 			continue;
 		}
 
