@@ -294,6 +294,7 @@ myEleCollection =  cms.InputTag("gedGsfElectrons")
 
 if(options.type=="MINIAODNTUPLE" ):
     myEleCollection= cms.InputTag("slimmedElectrons")
+    process.zNtupleDumper.fixRecalToNTuple= cms.bool(False)
 recalibElectronSrc = cms.InputTag("electronRecalibSCAssociator") #now done by EcalRecal(process)
 
 process.MinEleNumberFilter.src = myEleCollection
@@ -821,8 +822,8 @@ if(options.type=="ALCARERECO"):
     process.outputALCARECO.outputCommands += process.OutALCARECOEcalRecalElectron.outputCommands
     process.outputALCARECO.fileName=cms.untracked.string('EcalRecalElectron.root')
 #    process.MinEleNumberFilter.src = recalibElectronSrc
-    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
-
+#    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults::RECO') ## how and why and where is it used?
+    process.zNtupleDumper.WZSkimResultsCollection = cms.InputTag('TriggerResults')
     for ps in     process.egmGsfElectronIDs.physicsObjectIDs:
         for cutflow in ps.idDefinition.cutFlow:
             if(cutflow.cutName == cms.string('GsfEleCalPFClusterIsoCut') or 

@@ -224,7 +224,7 @@ private:
 	std::vector< std::string> hltPaths, SelectEvents;
 private:
 	std::string ntupleFileName;
-
+	bool fixRecalToNTuple_;
 	bool doExtraCalibTree; ///< bool to activate the dump of the extra calib tree for E/p ICs
 	bool doExtraStudyTree; ///< bool to activate the dump of the extra tree for study with values for single recHits
 	bool doEleIDTree;      ///< bool to activate the dump of the electronID variables in a separate tree
@@ -486,6 +486,7 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	hltPaths(iConfig.getParameter< std::vector<std::string> >("hltPaths")),
 	SelectEvents(iConfig.getParameter<std::vector<std::string> >("SelectEvents")),
 	ntupleFileName(iConfig.getParameter<std::string>("foutName")),
+	fixRecalToNTuple_(iConfig.getParameter<bool>("fixRecalToNTuple")),
 	doExtraCalibTree(iConfig.getParameter<bool>("doExtraCalibTree")),
 	doExtraStudyTree(iConfig.getParameter<bool>("doExtraStudyTree")),
 	doEleIDTree(iConfig.getParameter<bool>("doEleIDTree")),
@@ -688,10 +689,11 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			//std::cout << "skip event: " << skipEvent << "\t" << eventType << std::endl;
 			//assert(!skipEvent);
 			eventTypeCounter[eventType]++;
-			if(skipEvent) return; // event not coming from any skim or paths
+			if(skipEvent && !fixRecalToNTuple_) return; // event not coming from any skim or paths
 		}
 	}
-
+//	std::cout<<std::endl<<" Event Type = "<<eventType<<std::endl;
+	if(fixRecalToNTuple_) eventType = UNKNOWN;
 	//------------------------------ CONVERSIONS
 	iEvent.getByToken(conversionsProducerToken_, conversionsHandle);
 
