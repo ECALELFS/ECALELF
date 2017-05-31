@@ -9,6 +9,7 @@ parser.add_argument("-d", "--data", action="append", help="specify data files, l
 parser.add_argument("-s", "--mc",   action="append", help="specify mc files, labels [and branches]. FILE,LABEL[,BRANCH[,ENERGYBRANCH]]")
 parser.add_argument("-n", "--name", help="outfile base name (default=branchname)")
 parser.add_argument("-x", "--xlabel", help="x axis label (default=branchname)")
+parser.add_argument("--no-ratio", dest="noratio", help="no ratio", default=False, action="store_true")
 parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
 parser.add_argument("--noPU", help="no pileup weights", default=False, action="store_true")
 parser.add_argument("--noEleIDSF", help="no EleIDSF weights", default=False, action="store_true")
@@ -75,5 +76,5 @@ for branchname in args.branch:
 		mc_hs = []
 
 	plot.Normalize(data_hs, mc_hs)
-	plot.PlotDataMC(data_hs, mc_hs, args.plotdir, args.name, xlabel=args.xlabel, ylabel="Events", ylabel_unit="GeV", logy = False)
+	plot.PlotDataMC(data_hs, mc_hs, args.plotdir, args.name, xlabel=args.xlabel, ylabel="Events", ylabel_unit="GeV", logy = False, ratio=not args.noratio)
 	print "[STATUS] Done: " + branchname
