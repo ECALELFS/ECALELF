@@ -28,7 +28,7 @@ TTree *addBranch_class::AddBranch(TChain* originalChain, TString treename, TStri
 {
 	if(BranchName.Contains("invMassSigma")) return AddBranch_invMassSigma(originalChain, treename, BranchName, fastLoop, isMC);
 	if(BranchName.CompareTo("iSM") == 0)       return AddBranch_iSM(originalChain, treename, BranchName, fastLoop);
-	if(BranchName.CompareTo("smearerCat") == 0)       return AddBranch_smearerCat(originalChain, treename, isMC);
+	if(BranchName.CompareTo("smearerCat") == 0)       return AddBranch_smearerCat(originalChain, treename, isMC, energyBranchName);
 	if(BranchName.CompareTo("R9Eleprime") == 0)       return AddBranch_R9Eleprime(originalChain, treename, isMC); //after r9 transformation
 	if(BranchName.Contains("ZPt"))   return AddBranch_ZPt(originalChain, treename, BranchName.ReplaceAll("ZPt_", ""), fastLoop);
 	if(BranchName.CompareTo("LTweight") == 0) return AddBranch_LTweight(originalChain, treename);
@@ -533,10 +533,11 @@ TTree* addBranch_class::AddBranch_iSM(TChain* originalChain, TString treename, T
 
 
 // branch with the smearing category index
-TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC)
+TTree* addBranch_class::AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC, TString energyBranchName)
 {
 
 	ElectronCategory_class cutter;
+	cutter.energyBranchName = energyBranchName;
 	if(originalChain->GetBranch("scaleEle") != NULL) {
 		cutter._corrEle = true;
 		std::cout << "[INFO] Activating scaleEle for smearerCat" << std::endl;
