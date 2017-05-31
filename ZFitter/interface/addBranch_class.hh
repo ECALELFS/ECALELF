@@ -53,7 +53,7 @@ private:
 	TTree* AddBranch_EleIDSF(TChain* originalChain, TString treename, TString branchname, TString energyBranchName, bool isMC);
 	TTree* AddBranch_invMassSigma(TChain* originalChain, TString treename, TString invMassBranchName, bool fastLoop = true, bool isMC = true);
 	TTree* AddBranch_iSM(TChain* originalChain, TString treename, TString iSMEleName, bool fastLoop);
-	TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC);
+	TTree* AddBranch_smearerCat(TChain* originalChain, TString treename, bool isMC, TString energyBranchName);
 	TTree* AddBranch_scaleEle(TChain * ch, TString treename, TString energyBranchName);
 	TTree* AddBranch_smearEle(TChain * ch, TString treename, TString energyBranchName);
 	TTree* AddBranch_overSmear(TChain * ch, TString treeName, TString BranchName, bool isMC);
