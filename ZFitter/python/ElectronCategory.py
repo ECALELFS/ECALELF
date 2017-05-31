@@ -13,6 +13,7 @@ def ReduceFormula(formula):
 	reg += ["\\[[01]\\]"]
 	reg += ["[- .0-9]{2,}"]
 	reg += ["abs[ ]*\\("]
+	reg += ["sqrt[ ]*\\("]
 	reg += ["max[ ]*\\("]
 	reg += ["min[ ]*\\("]
 	reg += ["cosh[ ]*\\("]

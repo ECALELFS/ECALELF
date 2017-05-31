@@ -6,7 +6,7 @@ commonCut = "Et_25-isEle-eleID_loose25nsRun22016Moriond"
 parser = argparse.ArgumentParser(description='Standard Data MC plots', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("name", help="outfile base name")
 parser.add_argument("--binning", help="(nbins,low,hi)")
-parser.add_argument("--file", help="specify data file")
+parser.add_argument("--file", help="specify chain file")
 parser.add_argument("-c", "--category", help="special category", default="")
 parser.add_argument("--commonCut", help="commonCut", default=commonCut)
 #specify the branch for electron [0], second axis will replace [0] with [1]
@@ -17,6 +17,7 @@ parser.add_argument("--nevents", help="number of events in diagonal bins", type=
 parser.add_argument("-l","--label", help="axis label", default="")
 parser.add_argument("--makeDiagBins", action="store_true", help="draw and calculate the Diagonal bins using nevents", default=False)
 parser.add_argument("--noSym", action="store_true", help="fold histogram over x=y", default=False)
+parser.add_argument("--noWeights", action="store_true", help="don't apply anyweights", default=False)
 
 args = parser.parse_args()
 
@@ -49,7 +50,7 @@ if not args.fromFile or not h:
 	else:
 		branchname = "{0}:{1}".format(args.branch, args.branch.replace("[0]", "[1]") )
 
-	h = plot.GetTH1(chain, branchname, args.isMC, binning, category)
+	h = plot.GetTH1(chain, branchname, args.isMC, binning, category, noWeights=args.noWeights)
 
 	f = ROOT.TFile.Open("tmp/" + args.name + ".root", "RECREATE")
 	h.Write()
@@ -62,4 +63,4 @@ if args.makeDiagBins:
 			datfile.write(args.category + "-ET_%.2f_%.2f # nevents %d\n" % (low, hi, integral))
 else:
 	values = None
-plot.Draw2D(h, args.label, args.name, diagBins = values, logy=True, logx=True)
+plot.Draw2D(h, args.label, args.name, diagBins = values, logy=True, logx=True, logz=True)
