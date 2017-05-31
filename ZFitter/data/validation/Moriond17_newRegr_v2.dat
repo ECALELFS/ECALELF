@@ -23,4 +23,4 @@ d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23S
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
 
 s2 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_Moriond17_newRegr_v2.root
-
+s2 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s2-Moriond17_newRegr_v2.root
