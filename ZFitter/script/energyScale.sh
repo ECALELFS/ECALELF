@@ -1332,12 +1332,11 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 		echo "[STATUS] Combining ${scalesfromstepConfig}"
 		echo "[STATUS] with      ${outFile}"
 		grep scale ${outFile} | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\(Et_[0-9]*_[0-9]*\)-\([^ \t]*\)|\2 \1 |' > tmp/res_corr_${thisstep}.dat
-		#awk -f awk/prodScaleCorrSteps.awk tmp/res_corr_${thisstep}.dat ${scalesfromstepConfig} > ${thisstepConfig}
-		awk -f awk/prodScaleCorrSteps.awk tmp/res_corr_${thisstep}.dat ${scalesfromstepConfig}
+		awk -f awk/prodScaleCorrSteps.awk tmp/res_corr_${thisstep}.dat ${scalesfromstepConfig} > ${thisstepConfig}
 		#save root files with step6 corrections
 		#echo ${regionFile}
-		echo ./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile} --saveRootMacro --corrEleType ${newCorrEleType} --corrEleFile ${thisstepConfig/_scales.dat/} &> $outDirData/${thisstep}${extension}/zfitter_corr.log || exit 1
-		echo mv tmp/scaleEle_${newCorrEleType}_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/${thisstep}/
+		./bin/ZFitter.exe -f ${configFile} --regionsFile ${regionFile} --saveRootMacro --corrEleType ${newCorrEleType} --corrEleFile ${thisstepConfig/_scales.dat/} &> $outDirData/${thisstep}${extension}/zfitter_corr.log || exit 1
+		mv tmp/scaleEle_${newCorrEleType}_[s,d][1-9]-`basename $configFile .dat`.root ${outDirData}/${thisstep}/
 		echo "[STATUS] Writing scaleEle ${thisstep} done"
 	fi
 
