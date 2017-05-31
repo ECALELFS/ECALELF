@@ -232,19 +232,19 @@ void RooSmearer::InitCategories(bool mcToy)
 			unsigned int deactiveMinEvents = _deactive_minEventsDiag;//default is 1000
 			unsigned int deactiveMinEvents_off = _deactive_minEventsOffDiag;//default is 2000
 			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
-				if(cat.hist_data->Integral() < deactiveMinEvents) {
+				if(cat.mc_events->size() < deactiveMinEvents) {
 					std::cout << "[INFO] Diagonal Category: " << ZeeCategories.size()
 					          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
 					          << " has been deactivated: events in data less " << deactiveMinEvents
-					          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+					          << "; Integral is " << cat.mc_events->size() << std::endl;
 					cat.active = false;
 				}
 			} else { //not diagonal category
-				if(cat.hist_data->Integral() < deactiveMinEvents_off) {
+				if(cat.mc_events->size() < deactiveMinEvents_off) {
 					std::cout << "[INFO] Off-Diag Category: " << ZeeCategories.size()
 					          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
 					          << " has been deactivated: events in data less " << deactiveMinEvents_off
-					          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+					          << "; Integral is " << cat.mc_events->size() << std::endl;
 					cat.active = false;
 				}
 			}
