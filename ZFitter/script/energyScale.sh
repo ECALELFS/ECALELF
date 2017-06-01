@@ -1069,6 +1069,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et_step5_EB
 			laststep_EB_config=${outDirData}/step2/img/outProfile-`basename ${regionFileStep2EB} .dat`-${commonCut}-FitResult-.config
 			laststep_EE_config=${outDirData}/step2/img/outProfile-`basename ${regionFileStep2EE} .dat`-${commonCut}-FitResult-.config
+			scales_config=${laststep_EE_config}
 			;;
 		5EE)
 			step_args="--profileOnly --plotOnly  --onlyScale"
@@ -1077,6 +1078,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step2/img/outProfile-`basename ${regionFileStep2EE} .dat`-${commonCut}-FitResult-.config
+			scales_config=${laststep_EB_config}
 			;;
 		6EB)
 			step_args=" --onlyScale"
@@ -1085,6 +1087,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et_step6_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
+			scales_config=${outDirData}/step2/img/outProfile-`basename ${regionFileStep2EE} .dat`-${commonCut}-FitResult-.config
 			;;
 		6EE)
 			step_args=" --onlyScale"
@@ -1093,6 +1096,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et
 			laststep_EB_config=${outDirData}/step6EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
+			scales_config=${laststep_EB_config}
 			;;
 		7EB)
 			step_args=""
@@ -1101,6 +1105,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et_step7_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
+			scales_config=${outDirData}/step2/img/outProfile-`basename ${regionFileStep2EE} .dat`-${commonCut}-FitResult-.config
 			;;
 		7EE)
 			step_args=""
@@ -1109,6 +1114,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et
 			laststep_EB_config=${outDirData}/step7EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
+			scales_config=${laststep_EB_config}
 			;;
 		8EB)
 			step_args=""
@@ -1117,6 +1123,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et_step8_EB
 			laststep_EB_config=${outDirData}/step7EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step7EE/img/${step5EEconfig}
+			scales_config=${laststep_EE_config}
 			;;
 		8EE)
 			step_args=""
@@ -1125,6 +1132,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			newCorrEleType=HggRunEtaR9Et
 			laststep_EB_config=${outDirData}/step8EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step7EE/img/${step5EEconfig}
+			scales_config=${laststep_EB_config}
 			;;
 	esac
 
@@ -1290,26 +1298,28 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 
    #Write the dat file with fit results
 	FitResult_thisstep=${outDirData}/${thisstep}${extension}/img/outProfile-${basenameRegionFile}-${commonCut}-FitResult-.config
-	case ${STEP} in
-		*EB) FitResult_laststep=${laststep_EE_config} ;;
-		*EE) FitResult_laststep=${laststep_EB_config} ;;
-	esac
 	rm ${outFile}
-	case ${STEP} in
-		5EB)
-			sort -V $FitResult_thisstep >> ${outFile}
-			sort -V $FitResult_laststep | grep -v absEta_0_1 >> ${outFile}
+
+	case ${scales_config} in
+		*step2*)
+			remove_barrel_cat="grep -v absEta_0_1"
 			;;
 		*)
-			for cf in $FitResult_laststep $FitResult_thisstep
-			do
-				if grep phi ${cf} &> /dev/null
-				then
-					awk -f awk/rhophi_to_constalpha.awk ${cf} |sort -V | grep -v EB >> ${outFile}
-				else
-					sort -V ${cf} | grep -v EB >> ${outFile}
-				fi
-			done
+			remove_barrel_cat="grep -v EB"
+	esac
+
+	case ${STEP} in
+		*EB)
+			#EB file
+			awk -f awk/rhophi_to_constalpha.awk ${FitResult_thisstep} | sort -V >> ${outFile}
+			#EE file
+			awk -f awk/rhophi_to_constalpha.awk ${scales_config}      | sort -V | $remove_barrel_cat >> ${outFile}
+			;;
+		*EE)
+			#EB file
+			awk -f awk/rhophi_to_constalpha.awk ${scales_config}      | sort -V >> ${outFile}
+			#EE file
+			awk -f awk/rhophi_to_constalpha.awk ${FitResult_thisstep} | sort -V | $remove_barrel_cat >> ${outFile}
 			;;
 	esac
     #echo "Fit results of ${thisstep}${extension} in " ${outDirData}/${thisstep}${extension}/img/outProfile-${basenameEB}-${commonCut}-FitResult-.config

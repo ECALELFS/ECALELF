@@ -3,11 +3,11 @@ import sys
 
 parser = argparse.ArgumentParser(description='Tex summary table of steps 5 to 8.')
 parser.add_argument('dir', type=str,
-		                    help='directory with step outfiles')
+								  help='directory with step outfiles')
 parser.add_argument('invMass', type=str,
-		                    help='invMass variable')
+								  help='invMass variable')
 parser.add_argument('source', type=str,
-		                    help='fitresult or outfile')
+								  help='fitresult or outfile')
 
 args = parser.parse_args()
 
@@ -15,11 +15,27 @@ args = parser.parse_args()
 import re
 from distutils.version import LooseVersion
 from collections import defaultdict
+
 def CategorySort(s):
 	s = s.replace("bad","0")
 	s = s.replace("good","1")
 	s = re.split(r"\D", s)
 	return map(float,filter(None,s))
+
+def sort_method(s):
+	digits = "1234567890."
+	key = [""]
+	n = s[0] in digits
+	for c in s:
+		ni = c in digits
+		if n == ni:
+			key[-1] += c
+		else:
+			if n:
+				key[-1] = float(key[-1])
+			key.append(c)
+			n = ni
+	return key
 
 class Step:
 	pattern = re.compile("([^_]*)_(.*)\s*=\s* ([-0-9.e]*) \+/- ([-]?inf|[0-9.e]*).*")
@@ -77,7 +93,7 @@ class Table:
 							continue
 						self.map[cat_string] = category
 						self.categories.append(cat_string)
-		self.categories.sort(key=CategorySort)
+		self.categories.sort(key=sort_method)
 		self.CountCategories()
 	def CountCategories(self):
 		self.print_row = [ [0] for i in range(self.n_bins) ]
