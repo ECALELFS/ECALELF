@@ -49,8 +49,8 @@ regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9_95.dat
 regionFileStep5EB=data/regions/scaleStep2smearing_6.dat
 regionFileStep5EE=data/regions/scaleStep2smearing_7.dat
 #echo "Test of finer Et Bins"
-#regionFileStep5EB=data/regions/scaleStep6_FineET1.dat
-#regionFileStep5EE=data/regions/scaleStep6_FineET2.dat
+regionFileStep5EB=data/regions/scaleStep5_FineET1.dat
+regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
 
 regionFileStep6EB=data/regions/scaleStep6smearing_1.dat
 regionFileStep6EE=data/regions/scaleStep6smearing_2.dat
@@ -1082,8 +1082,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			;;
 		6EB)
 			step_args=" --onlyScale"
-			scalesfromstep=step2
-			corrEleType=HggRunEtaR9
+			scalesfromstep=Moriond17
+			corrEleType=Moriond1723JanPhoScales
 			newCorrEleType=HggRunEtaR9Et_step6_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
@@ -1313,7 +1313,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			#EB file
 			awk -f awk/rhophi_to_constalpha.awk ${FitResult_thisstep} | sort -V >> ${outFile}
 			#EE file
-			awk -f awk/rhophi_to_constalpha.awk ${scales_config}      | sort -V | $remove_barrel_cat >> ${outFile}
+			#awk -f awk/rhophi_to_constalpha.awk ${scales_config}      | sort -V | $remove_barrel_cat >> ${outFile}
 			;;
 		*EE)
 			#EB file
