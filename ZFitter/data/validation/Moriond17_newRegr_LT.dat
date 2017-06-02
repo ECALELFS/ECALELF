@@ -53,3 +53,21 @@ s7 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s7_Moriond17_newRegr_L
 s8 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s8_Moriond17_newRegr_LT.root
 s9 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s9_Moriond17_newRegr_LT.root
 s10 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s10_Moriond17_newRegr_LT.root
+
+d1 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d1-Moriond17_newRegr_LT.root
+d2 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d2-Moriond17_newRegr_LT.root
+d3 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d3-Moriond17_newRegr_LT.root
+d4 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d4-Moriond17_newRegr_LT.root
+d5 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d5-Moriond17_newRegr_LT.root
+d6 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d6-Moriond17_newRegr_LT.root
+d7 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d7-Moriond17_newRegr_LT.root
+d8 scaleEle_Moriond1723JanEleScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanEleScales_d8-Moriond17_newRegr_LT.root
+
+d1 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d1-Moriond17_newRegr_LT.root
+d2 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d2-Moriond17_newRegr_LT.root
+d3 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d3-Moriond17_newRegr_LT.root
+d4 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d4-Moriond17_newRegr_LT.root
+d5 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d5-Moriond17_newRegr_LT.root
+d6 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d6-Moriond17_newRegr_LT.root
+d7 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d7-Moriond17_newRegr_LT.root
+d8 scaleEle_Moriond1723JanPhoScales /eos/project/c/cms-ecal-calibration/data/scales/scaleEle_Moriond1723JanPhoScales_d8-Moriond17_newRegr_LT.root
