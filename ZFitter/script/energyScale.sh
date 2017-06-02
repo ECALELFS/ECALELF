@@ -49,8 +49,8 @@ regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9_95.dat
 regionFileStep5EB=data/regions/scaleStep2smearing_6.dat
 regionFileStep5EE=data/regions/scaleStep2smearing_7.dat
 #echo "Test of finer Et Bins"
-#regionFileStep5EB=data/regions/scaleStep6_FineET1.dat
-#regionFileStep5EE=data/regions/scaleStep6_FineET2.dat
+regionFileStep5EB=data/regions/scaleStep5_FineET1.dat
+regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
 
 regionFileStep6EB=data/regions/scaleStep6smearing_1.dat
 regionFileStep6EE=data/regions/scaleStep6smearing_2.dat
@@ -1082,8 +1082,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			;;
 		6EB)
 			step_args=" --onlyScale"
-			scalesfromstep=step2
-			corrEleType=HggRunEtaR9
+			scalesfromstep=Moriond17
+			corrEleType=Moriond1723JanPhoScales
 			newCorrEleType=HggRunEtaR9Et_step6_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
@@ -1283,6 +1283,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 		fi
 	fi #scenario=jobs_step5
 
+	FitResult_thisstep=${outDirData}/${thisstep}${extension}/img/outProfile-${basenameRegionFile}-${commonCut}-FitResult-.config
     if [[ $scenario = "fit" ]] || [[ $scenario = "" ]]; then
 		 echo "Doing Fits $thisstep"
 	######################################################
@@ -1297,7 +1298,6 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 	 echo "Doing Fits $thisstep done"
 
    #Write the dat file with fit results
-	FitResult_thisstep=${outDirData}/${thisstep}${extension}/img/outProfile-${basenameRegionFile}-${commonCut}-FitResult-.config
 	rm ${outFile}
 
 	case ${scales_config} in
@@ -1313,7 +1313,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			#EB file
 			awk -f awk/rhophi_to_constalpha.awk ${FitResult_thisstep} | sort -V >> ${outFile}
 			#EE file
-			awk -f awk/rhophi_to_constalpha.awk ${scales_config}      | sort -V | $remove_barrel_cat >> ${outFile}
+			#awk -f awk/rhophi_to_constalpha.awk ${scales_config}      | sort -V | $remove_barrel_cat >> ${outFile}
 			;;
 		*EE)
 			#EB file
@@ -1340,8 +1340,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 	if [[ $scenario = "write_corr" ]] || [[ $scenario = "" ]]; then
 		echo "[STATUS] Writing scaleEle ${thisstep}"
 		echo "[STATUS] Combining ${scalesfromstepConfig}"
-		echo "[STATUS] with      ${outFile}"
-		grep scale ${outFile} | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\(Et_[0-9]*_[0-9]*\)-\([^ \t]*\)|\2 \1 |' > tmp/res_corr_${thisstep}.dat
+		echo "[STATUS] with      ${FitResult_thisstep}"
+		grep scale ${FitResult_thisstep} | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\(Et_[0-9]*_[0-9]*\)-\([^ \t]*\)|\2 \1 |' > tmp/res_corr_${thisstep}.dat
 		awk -f awk/prodScaleCorrSteps.awk tmp/res_corr_${thisstep}.dat ${scalesfromstepConfig} > ${thisstepConfig}
 		#save root files with step6 corrections
 		#echo ${regionFile}
