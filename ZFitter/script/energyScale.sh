@@ -1283,6 +1283,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 		fi
 	fi #scenario=jobs_step5
 
+	FitResult_thisstep=${outDirData}/${thisstep}${extension}/img/outProfile-${basenameRegionFile}-${commonCut}-FitResult-.config
     if [[ $scenario = "fit" ]] || [[ $scenario = "" ]]; then
 		 echo "Doing Fits $thisstep"
 	######################################################
@@ -1297,7 +1298,6 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 	 echo "Doing Fits $thisstep done"
 
    #Write the dat file with fit results
-	FitResult_thisstep=${outDirData}/${thisstep}${extension}/img/outProfile-${basenameRegionFile}-${commonCut}-FitResult-.config
 	rm ${outFile}
 
 	case ${scales_config} in
@@ -1340,8 +1340,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 	if [[ $scenario = "write_corr" ]] || [[ $scenario = "" ]]; then
 		echo "[STATUS] Writing scaleEle ${thisstep}"
 		echo "[STATUS] Combining ${scalesfromstepConfig}"
-		echo "[STATUS] with      ${outFile}"
-		grep scale ${outFile} | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\(Et_[0-9]*_[0-9]*\)-\([^ \t]*\)|\2 \1 |' > tmp/res_corr_${thisstep}.dat
+		echo "[STATUS] with      ${FitResult_thisstep}"
+		grep scale ${FitResult_thisstep} | sed -r 's|[ ]+|\t|g;' | cut -f 1,3,5 | sed "s|scale_||;s|-${commonCut}||" | sed 's|\(Et_[0-9]*_[0-9]*\)-\([^ \t]*\)|\2 \1 |' > tmp/res_corr_${thisstep}.dat
 		awk -f awk/prodScaleCorrSteps.awk tmp/res_corr_${thisstep}.dat ${scalesfromstepConfig} > ${thisstepConfig}
 		#save root files with step6 corrections
 		#echo ${regionFile}
