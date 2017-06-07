@@ -9,15 +9,15 @@
 #define MAXBRANCHES  20
 #define BUFSIZE 12 /* bytes */
 #include <cassert>
-
+#include <iomanip>
 
 anyVar_class::~anyVar_class(void)
 {
 	std::cerr << "[anyVar_class DESTROYING]" << std::endl;
-//	data_chain->SetEntryList(NULL);
-//	reduced_data_vec.clear();
+	//	data_chain->SetEntryList(NULL);
+	//	reduced_data_vec.clear();
 	std::cerr << "[anyVar_class DESTROY]" << std::endl;
-//	delete data_chain;
+	//	delete data_chain;
 }
 
 anyVar_class::anyVar_class(TChain *data_chain_, std::vector<std::string> branchNames, ElectronCategory_class& cutter, std::string massBranchName, std::string outDirFitRes, TDirectory* dir, bool updateOnly):
@@ -102,7 +102,7 @@ void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>&
 	chain->SetBranchStatus("*", 0);
 
 	for(auto& branch : commonCutBranches) {
-		if(branch.Sizeof()==0) continue;
+		if(branch.Sizeof() == 0) continue;
 		std::cout << "[anyVar_class][STATUS] Enabling branch: " << branch << std::endl;
 		chain->SetBranchStatus(branch, 1);
 //		chain->AddBranchToCache(branch, kTRUE);
@@ -141,7 +141,7 @@ void anyVar_class::ImportTree(TChain *chain, TCut& commonCut, std::set<TString>&
 	chain_ecal->TECALChain::SetEntryList(elist);
 
 	std::cout << "[INFO] Selected events: " <<  chain_ecal->GetEntryList()->GetN() << std::endl;
-	assert(chain_ecal->GetEntryList()->GetN()>0);
+	assert(chain_ecal->GetEntryList()->GetN() > 0);
 	//chain = dynamic_cast<TChain*>(chain_ecal);
 	ts.Stop();
 	ts.Print();
@@ -215,10 +215,10 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 		if(i % (nentries / 100) == 0) std::cerr << "\b\b\b\b\b\b[" << std::setw(3) << i / (nentries / 100) << "%]";
 
 		Long64_t ientry = chain->GetEntryNumber(i);
-		//Long64_t jentry = 
+		//Long64_t jentry =
 		chain->LoadTree(ientry);// entry in the tree
 
-		//Long64_t nb = 
+		//Long64_t nb =
 		chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
 			treenumber = chain->GetTreeNumber();
@@ -295,19 +295,19 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 //		doProcess = doProcess && (system(s.c_str()));
 //			if(doProcess==false) break;
 //		}
-	
+
 //	if(doProcess == true) return;
 
-	
+
 	Float_t *mll = NULL;
 	Float_t branches_Float_t[MAXBRANCHES][3];
 	size_t nBranches = _branchNames.size();
-	size_t indexMassBranch =-1 ;
+	size_t indexMassBranch = -1 ;
 	for(unsigned int ibranch = 0; ibranch < nBranches; ++ibranch) {
 		//std::cout << "[DEBUG] " << ibranch << std::endl;
 		TString bname = _branchNames[ibranch];
 		reduced_data->SetBranchAddress(bname, &branches_Float_t[ibranch]);
-		if(bname == massBranchName_){
+		if(bname == massBranchName_) {
 			mll = &(branches_Float_t[ibranch][0]);
 			indexMassBranch = ibranch;
 		}
@@ -319,8 +319,8 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
 	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
-	UInt_t  runNumber=0;
-	if(reduced_data->GetBranch("runNumber")!=NULL) reduced_data->SetBranchAddress("runNumber", &runNumber);
+	UInt_t  runNumber = 0;
+	if(reduced_data->GetBranch("runNumber") != NULL) reduced_data->SetBranchAddress("runNumber", &runNumber);
 
 	if(reduced_data->GetBranch("puWeight") != NULL) {
 		std::cout << "[anyVar_class][STATUS] Adding pileup weight branch from friend" << std::endl;
@@ -404,7 +404,7 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 			for(size_t i = 0; i < sv.size(); ++i) {
 				auto& s = sv[i];
-				if(s.name().find("invMass")!=std::string::npos) continue;
+				if(s.name().find("invMass") != std::string::npos) continue;
 				sv[i].add(branches_Float_t[i][iele]*scale);
 #ifdef DEBUG
 				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
@@ -436,34 +436,34 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	// auto &sv = stats_run_map.begin()->second;
 	// sv[indexMassBranch].sort();
 	// std::cout << region << "\t" << stats_run_map.begin()->first << "\t" << sv[indexMassBranch] << std::endl;
-	if(runRanges.size()==0){
-	   	auto &sv = stats_run_map.begin()->second;
+	if(runRanges.size() == 0) {
+		auto &sv = stats_run_map.begin()->second;
 		for(size_t i = 0; i < sv.size(); ++i) {
 			auto& s = sv[i];
 			s.sort();
-			*(_statfiles[i]) << region+"-"+commonCut << "\t" << s << std::endl;
+			*(_statfiles[i]) << region + "-" + commonCut << "\t" << s << std::endl;
 		}
-	}else{		
-	for(auto& runRange : runRanges) {
-		TString runMin, runMax;
-		TObjArray *tx = runRange.Tokenize("-");
-		runMin = ((TObjString *)(tx->At(0)))->String();
-		runMax = ((TObjString *)(tx->At(1)))->String();
-		std::string category = region + "-runNumber_" + runMin.Data() + "_" + runMax.Data() + "-" + commonCut;
+	} else {
+		for(auto& runRange : runRanges) {
+			TString runMin, runMax;
+			TObjArray *tx = runRange.Tokenize("-");
+			runMin = ((TObjString *)(tx->At(0)))->String();
+			runMax = ((TObjString *)(tx->At(1)))->String();
+			std::string category = region + "-runNumber_" + runMin.Data() + "_" + runMax.Data() + "-" + commonCut;
 
-		auto ptr = (stats_run_map.upper_bound(runMin.Atoll()));
-		if(ptr != stats_run_map.begin()) ptr--;
-		auto &sv = ptr->second;
-		for(size_t i = 0; i < sv.size(); ++i) {
-			auto& s = sv[i];
+			auto ptr = (stats_run_map.upper_bound(runMin.Atoll()));
+			if(ptr != stats_run_map.begin()) ptr--;
+			auto &sv = ptr->second;
+			for(size_t i = 0; i < sv.size(); ++i) {
+				auto& s = sv[i];
 //			std::cout << "Start sorting " << s.name() << "\t" << runMin << " " << ptr->first << std::endl;
-			s.sort();
-			*(_statfiles[i]) << category << "\t" << s << std::endl;
+				s.sort();
+				*(_statfiles[i]) << category << "\t" << s << std::endl;
 #ifdef DEBUG
-		std::cout << category << "\t" << s << std::endl;
+				std::cout << category << "\t" << s << std::endl;
 #endif
+			}
 		}
-	}
 	}
 	std::cout << "[INFO] Region fully processed" << "\t" << count << std::endl;
 //	_stats_vec.dump("testfile.dat");

@@ -100,13 +100,11 @@ void runDivide_class::LoadRunEventNumbers(TChain *tree, std::string runNumber_br
 	Long64_t treenumber = -1;
 	for(Long64_t ientry = 0; ientry < tree->GetEntriesFast(); ++ientry) {
 		tree->GetEntry(ientry);
-		if(tree->GetTreeNumber() != treenumber)
-		{
+		if(tree->GetTreeNumber() != treenumber) {
 			treenumber = tree->GetTreeNumber();
 			selector->UpdateFormulaLeaves();
 		}
-		if(selector != NULL && selector->EvalInstance() == true)
-		{
+		if(selector != NULL && selector->EvalInstance() == true) {
 			auto itr = _runMap.find(runNumber);
 			if( itr == _runMap.end()) {
 				_runMap.insert(itr, std::make_pair(runNumber, line(runTime, runNumber)));

@@ -1,7 +1,7 @@
 #ifndef ConvoluteTemplate_h
 #define ConvoluteTemplate_h
 
-#include "histoFunc.h"
+#include "Calibration/EOverPCalibration/interface/histoFunc.h"
 
 #include "TH1.h"
 #include "TF1.h"

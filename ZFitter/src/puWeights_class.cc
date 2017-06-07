@@ -181,8 +181,8 @@ void puWeights_class::ReadFromFiles(std::string mcPUFile, std::string dataPUFile
 		double binContent = puMC_hist->GetBinContent(i + 1);
 		//Give warnings if the Pileup bins are empty
 		if(binContent == 0 && puData_hist->GetBinContent(i + 1) != 0) {
-				std::cerr << "[WARNING] mc bin empty while data not: iBin = " << i + 1 << std::endl;
-				std::cerr << "          data bin = " << puData_hist->GetBinContent(i + 1) << std::endl;
+			std::cerr << "[WARNING] mc bin empty while data not: iBin = " << i + 1 << std::endl;
+			std::cerr << "          data bin = " << puData_hist->GetBinContent(i + 1) << std::endl;
 		}
 		double weight = binContent > 0 ? puData_hist->GetBinContent(i + 1) / binContent : 0;
 		// the MC normalization should not change, so calculate the
