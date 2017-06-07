@@ -110,6 +110,7 @@ mkSmearerCatX() {
 		corrEleType=$5
 	fi
 
+	mkdir -p ${outFolder}
 	file1=${outFolder}/${outFileForm/DDD/${dORs}1}
 	echo "[STATUS] checking for $file1"
    if [ ! -e "$file1" ] || [ "$force" = "-f" ]; then
