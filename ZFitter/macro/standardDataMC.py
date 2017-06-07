@@ -13,6 +13,7 @@ parser.add_argument("--no-ratio", dest="noratio", help="no ratio", default=False
 parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
 parser.add_argument("--noPU", help="no pileup weights", default=False, action="store_true")
 parser.add_argument("--noEleIDSF", help="no EleIDSF weights", default=False, action="store_true")
+parser.add_argument("--noScales", help="no scales on data", default=False, action="store_true")
 
 args = parser.parse_args()
 
@@ -40,7 +41,7 @@ def MakeTH1s(arg, branchname, isMC, binning, category):
 
 
 		chain = ROOT.TFile.Open(filename).Get("selected")
-		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU, useEleIDSF = not args.noEleIDSF))
+		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU, useEleIDSF = not args.noEleIDSF, scale=not args.noScales))
 	return hs
 
 #eleID = "eleID_loose25nsRun22016Moriond"
