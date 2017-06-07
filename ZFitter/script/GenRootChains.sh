@@ -52,7 +52,6 @@ do
     esac
     shift
 done
-echo "zfitter Options" $fitterOptions
 
 let nFiles=${#configFiles[@]}-1
 
@@ -73,11 +72,13 @@ mkdir -p $outdir
 rm $outdir/*_chain.root
 echo storing in $outdir
 
+echo ./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
 ./bin/ZFitter.exe --saveRootMacro -f ${configFile} --regionsFile=${regionsFile} ${noPU} ${addBranchList} ${corrEleFile} ${corrEleType} ${fitterOptions} || exit 1
 
 # adding all the chains in one file
 for file in tmp/s[0-9]*_selected_chain.root tmp/d_selected_chain.root tmp/s_selected_chain.root 
-  do
+do
+  echo "hadding $file"
   name=`basename $file .root | sed 's|_.*||'`
   echo $name
   hadd $outdir/${name}_chain.root tmp/${name}_*_chain.root
