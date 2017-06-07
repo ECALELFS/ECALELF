@@ -44,8 +44,8 @@ void AlCaElectronTracksReducer::produce (edm::Event& iEvent,
 	iEvent.getByToken(generalTracksExtraToken_, generalTracksExtraHandle);
 
 	//Create empty output collections
-	std::auto_ptr< TrackCollection > redGeneralTracksCollection (new TrackCollection) ;
-	std::auto_ptr< TrackExtraCollection > redGeneralTracksExtraCollection (new TrackExtraCollection) ;
+	std::unique_ptr< TrackCollection > redGeneralTracksCollection (new TrackCollection) ;
+	std::unique_ptr< TrackExtraCollection > redGeneralTracksExtraCollection (new TrackExtraCollection) ;
 
 	reco::GsfElectronCollection::const_iterator eleIt;
 

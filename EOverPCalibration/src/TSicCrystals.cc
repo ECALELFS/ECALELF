@@ -1,4 +1,4 @@
-#include "../interface/TSicCrystals.h"
+#include "Calibration/EOverPCalibration/interface/TSicCrystals.h"
 
 // default constructor, reading the map from file
 TSicCrystals::TSicCrystals()

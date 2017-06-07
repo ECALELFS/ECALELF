@@ -1,5 +1,5 @@
-#include "../interface/XtalAlphaEE.h"
-#include "../interface/GetHashedIndexEE.h"
+#include "Calibration/EOverPCalibration/interface/XtalAlphaEE.h"
+#include "Calibration/EOverPCalibration/interface/GetHashedIndexEE.h"
 #include <TH2.h>
 #include <TF1.h>
 #include <TStyle.h>

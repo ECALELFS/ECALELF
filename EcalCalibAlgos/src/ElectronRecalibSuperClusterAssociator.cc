@@ -55,8 +55,8 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 	iSetup.get<CaloGeometryRecord>().get(_theGeometry);
 
 	// Create the output collections
-	std::auto_ptr<reco::GsfElectronCollection> pOutEle(new reco::GsfElectronCollection);
-	std::auto_ptr<reco::GsfElectronCoreCollection> pOutEleCore(new reco::GsfElectronCoreCollection);
+	std::unique_ptr<reco::GsfElectronCollection> pOutEle(new reco::GsfElectronCollection);
+	std::unique_ptr<reco::GsfElectronCoreCollection> pOutEleCore(new reco::GsfElectronCoreCollection);
 
 	// Get SuperClusters in EB
 	edm::Handle<reco::SuperClusterCollection> superClusterEBHandle;
@@ -208,8 +208,8 @@ void ElectronRecalibSuperClusterAssociator::produce(edm::Event& e, const edm::Ev
 
 	// put result into the Event
 
-	e.put(pOutEle);
-	e.put(pOutEleCore);
+	e.put(std::move( pOutEle ));
+	e.put(std::move( pOutEleCore ));
 
 	//  e.put(pOutNewEndcapSC);
 

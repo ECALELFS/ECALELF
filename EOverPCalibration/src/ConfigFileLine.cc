@@ -28,7 +28,7 @@
  * for it.
 */
 
-#include "../interface/ConfigFileLine.h"
+#include "Calibration/EOverPCalibration/interface/ConfigFileLine.h"
 #include <iostream>
 
 using namespace std;

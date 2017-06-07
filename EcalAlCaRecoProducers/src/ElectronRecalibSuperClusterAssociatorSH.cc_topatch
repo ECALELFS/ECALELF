@@ -56,8 +56,8 @@ void ElectronRecalibSuperClusterAssociatorSH::produce(edm::Event& e, const edm::
   std::cout<< "ElectronRecalibSuperClusterAssociatorSH::produce" << std::endl;
 #endif
   // Create the output collections   
-  std::auto_ptr<GsfElectronCollection> pOutEle(new GsfElectronCollection);
-  std::auto_ptr<GsfElectronCoreCollection> pOutEleCore(new GsfElectronCoreCollection);
+  std::unique_ptr<GsfElectronCollection> pOutEle(new GsfElectronCollection);
+  std::unique_ptr<GsfElectronCoreCollection> pOutEleCore(new GsfElectronCoreCollection);
   //  std::auto_ptr<SuperClusterCollection> pOutNewEndcapSC(new SuperClusterCollection);
 
 //   reco::SuperClusterRefProd rSC = e.getRefBeforePut<SuperClusterCollection>();

@@ -1,6 +1,6 @@
 //Class for the monitoring of laser corrections with E/p
 
-#include "../interface/LaserMonitoringEoP.h"
+#include "Calibration/EOverPCalibration/interface/LaserMonitoringEoP.h"
 #include <TH2.h>
 #include <TF1.h>
 #include <TStyle.h>
