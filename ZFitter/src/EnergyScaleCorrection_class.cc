@@ -96,7 +96,21 @@ correctionValue_class EnergyScaleCorrection_class::getScaleCorrection(unsigned i
 		exit(1);
 	}
 	// buld the category based on the values of the object
-	correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, gainSeed);
+	unsigned int gain_id;
+	//FROM ZNTupleDumper: //< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
+	switch(gainSeed) {
+	case 2:
+		gain_id = 1;
+		break;
+	case 1:
+		gain_id = 6;
+		break;
+	case 0:
+	default:
+		gain_id = 12;
+		break;
+	}
+	correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, gain_id);
 	correction_map_t::const_iterator corr_itr = scales.find(category); // find the correction value in the map that associates the category to the correction
 
 	if(corr_itr == scales.end()) { // if not in the standard classes, add it in the list of not defined classes
@@ -134,8 +148,22 @@ float EnergyScaleCorrection_class::getScaleOffset(unsigned int runNumber, bool i
 		std::cerr << "[ERROR] scales correction map empty" << std::endl;
 		exit(1);
 	}
+	unsigned int gain_id;
+	//FROM ZNTupleDumper: //< Gain switch 0==gain12, 1==gain6, 2==gain1; gain status of the seed of the SC
+	switch(gainSeed) {
+	case 2:
+		gain_id = 1;
+		break;
+	case 1:
+		gain_id = 6;
+		break;
+	case 0:
+	default:
+		gain_id = 12;
+		break;
+	}
 	// buld the category based on the values of the object
-	correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, gainSeed);
+	correctionCategory_class category(runNumber, etaSCEle, R9Ele, EtEle, gain_id);
 	correction_map_t::const_iterator corr_itr = scales.find(category); // find the correction value in the map that associates the category to the correction
 
 	if(corr_itr == scales.end()) { // if not in the standard classes, add it in the list of not defined classes

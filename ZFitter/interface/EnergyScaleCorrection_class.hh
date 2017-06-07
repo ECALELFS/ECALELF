@@ -112,11 +112,11 @@ public:
 
 	/// for DEBUG
 	friend std::ostream& operator << (std::ostream& os, const correctionCategory_class a) {
-		os <<  a.runmin << " " << a.runmax
-		   << "\t" << a.etamin << " " << a.etamax
-		   << "\t" << a.r9min << " " << a.r9max
-		   << "\t" << a.etmin << " " << a.etmax
-		   << "\t" << a.gain;
+		os <<         "RUN("  << a.runmin << ", " << a.runmax << ")"
+		   << "\t" << "eta("  << a.etamin << ", " << a.etamax << ")"
+		   << "\t" << "r9("   << a.r9min  << ", " << a.r9max  << ")"
+		   << "\t" << "Et("   << a.etmin  << ", " << a.etmax  << ")"
+		   << "\t" << "gain(" << a.gain   << ")";
 
 		return os;
 	};
