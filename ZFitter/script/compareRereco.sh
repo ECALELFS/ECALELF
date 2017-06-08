@@ -1,4 +1,32 @@
 #!/bin/bash
+
+configfiles="data/validation/rereco/Moriond2017.dat data/validation/rereco/Cal_Mar2017/Cal_Mar2017_Legacy.dat"
+# for file in $configfiles
+# do
+# 	./script/GenRootChains.sh -f $file
+# done
+
+# categories="EB EE EB-gold EB-bad EE-gold EE-bad"
+# for category in $categories
+# do
+# 	python macro/standardDataMC.py  -s tmp/Cal_Mar2017_Legacy//s_chain.root,MC -d tmp/Cal_Mar2017_Legacy//d_chain.root,Legacy16 -d tmp/Moriond2017/d_chain.root,Moriond17 --plotdir=tmp/ --noPU "$category" "(80,80,100)" invMass_ECAL_ele  -x "M_{ee} must SC [GeV]" -n "invMass_ECAL_ele-$category"
+# done
+
+./script/stability2.sh -x runNumber -y peak \
+	-t testNew/dato/Cal_Mar2017_Legacy/loose25nsRun22016Moriond/invMass_ECAL_ele/anyVar/fitres/invMass_ECAL_ele.dat  -l Legacy \ 
+    -t testNew/dato/Moriond2017/loose25nsRun22016Moriond/invMass_ECAL_ele/anyVar/fitres/invMass_ECAL_ele.dat -l Moriond17 \
+    -t testNew/MC/selected_s1_newNtuples_allRange_DYJets_madgraph-RunIISpring16-withES_./loose25nsRun22016Moriond/invMass_ECAL_ele/anyVar/fitres/invMass_ECAL_ele.dat  -l MC
+
+gnuplot -c macro/stability.gpl "tmp/tmpFile_Legacy.dat" Legacy tmp/tmpFile_Moriond17.dat Moriond17
+
+
+
+
+
+
+
+exit 0
+
 OUTDIR=comparison
 
 usage(){
