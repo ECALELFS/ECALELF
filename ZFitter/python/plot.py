@@ -239,6 +239,9 @@ def Normalize(data, mc):
 	nmc = len(mc_list)
 
 	if nmc > 0:
+                if ndata > 1:
+                        for h in data_list:
+                                h.Scale(1./h.Integral())
 		if ndata:
 			for h in mc_list:
 				h.Scale(data_list[0].Integral()/h.Integral())
@@ -250,6 +253,8 @@ def Normalize(data, mc):
 	if ndata > 1 and mc == 0:
 		for h in data_list:
 			h.Scale(1./h.Integral())
+                # for h in mc_list:
+		# 	h.Scale(1./h.Integral())
 	else:
 		print "[WARNING] No normalization defind for (ndata=%d, nmc%d)" % (ndata, nmc)
 
