@@ -59,7 +59,7 @@ set y2label resolutionLabel textcolor 'blue'
 set auto fix
 set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
 set y2range [0.01:0.012]
-#set yrange  [87:91]
+set yrange  [88:92]
 
 set key outside above
 set grid y2
@@ -105,9 +105,9 @@ if(ARGC==1){
   set ylabel peakLabel
   set grid y
 	do for [category in categories]{
-	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
+	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.82 center
 	 	yVar="median"
-		set ylabel peakLabel
+		set ylabel peakLabel.' : '.yVar
 	 	p for [id=1:words(files)] word(files,id) u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title word(titles,id)
 		set ylabel resolutionLabel
 		p for [id=1:words(files)] word(files,id) u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width '.word(titles,id)
