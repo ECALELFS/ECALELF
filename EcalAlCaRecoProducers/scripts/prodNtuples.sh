@@ -4,7 +4,8 @@ source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.s
 ############################### OPTIONS
 #------------------------------ default
 USESERVER=0
-SCHEDULER=grid
+SCHEDULER=caf
+QUEUE=cmscaf1nd
 STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
@@ -273,6 +274,10 @@ case $SCHEDULER in
 	CAF|caf)
 		CRABVERSION=2
 		;;
+	LSF|lsf)
+		CRABVERSION=2
+		QUEUE=1nd
+		;;
 	*)
 		CRABVERSION=3
 		;;
@@ -454,7 +459,7 @@ psetparams="type=${TYPE} doTree=${DOTREE} doExtraCalibTree=${DOEXTRACALIBTREE} d
 
 outFiles=${OUTFILES}
 use_parent=${USEPARENT}
-queue=cmscaf1nd
+queue=${QUEUE}
 
 user_remote_dir="$USER_REMOTE_DIR"
 storage_path="$STORAGE_PATH"
