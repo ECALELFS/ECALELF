@@ -56,9 +56,9 @@ class EleSelectionProducers : public edm::EDProducer
 
 public:
 	explicit EleSelectionProducers(const edm::ParameterSet&);
-	~EleSelectionProducers();
+        ~EleSelectionProducers() = default;
 
-	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+	static void fillDescriptions(edm::ConfigurationDescriptions&);
 
 private:
 	virtual void beginJob() ;
@@ -183,13 +183,13 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
 }
 
 
-EleSelectionProducers::~EleSelectionProducers()
-{
+//EleSelectionProducers::~EleSelectionProducers()
+//{
 
 	// do anything here that needs to be done at desctruction time
 	// (e.g. close files, deallocate resources etc.)
 
-}
+//}
 
 
 //
@@ -205,34 +205,34 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	std::vector<SelectionValue_t>  WP70_PU_vec;
 	std::vector<SelectionValue_t>  WP80_PU_vec;
 	std::vector<SelectionValue_t>  WP90_PU_vec;
-	std::auto_ptr<SelectionMap> fiducialMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> WP70_PUMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> WP80_PUMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> WP90_PUMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> fiducialMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> WP70_PUMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> WP80_PUMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> WP90_PUMap(new SelectionMap());
 	std::vector<SelectionValue_t>  loose_vec;
 	std::vector<SelectionValue_t>  medium_vec;
 	std::vector<SelectionValue_t>  tight_vec;
-	std::auto_ptr<SelectionMap> looseMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> mediumMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> tightMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> looseMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> mediumMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> tightMap(new SelectionMap());
 	std::vector<SelectionValue_t>  loose25nsRun2_vec;
 	std::vector<SelectionValue_t>  medium25nsRun2_vec;
 	std::vector<SelectionValue_t>  tight25nsRun2_vec;
-	std::auto_ptr<SelectionMap> looseMap_run2_25ns(new SelectionMap());
-	std::auto_ptr<SelectionMap> mediumMap_run2_25ns(new SelectionMap());
-	std::auto_ptr<SelectionMap> tightMap_run2_25ns(new SelectionMap());
+	std::unique_ptr<SelectionMap> looseMap_run2_25ns(new SelectionMap());
+	std::unique_ptr<SelectionMap> mediumMap_run2_25ns(new SelectionMap());
+	std::unique_ptr<SelectionMap> tightMap_run2_25ns(new SelectionMap());
 	std::vector<SelectionValue_t>  loose50nsRun2_vec;
 	std::vector<SelectionValue_t>  medium50nsRun2_vec;
 	std::vector<SelectionValue_t>  tight50nsRun2_vec;
-	std::auto_ptr<SelectionMap> looseMap50nsRun2(new SelectionMap());
-	std::auto_ptr<SelectionMap> mediumMap50nsRun2(new SelectionMap());
-	std::auto_ptr<SelectionMap> tightMap50nsRun2(new SelectionMap());
+	std::unique_ptr<SelectionMap> looseMap50nsRun2(new SelectionMap());
+	std::unique_ptr<SelectionMap> mediumMap50nsRun2(new SelectionMap());
+	std::unique_ptr<SelectionMap> tightMap50nsRun2(new SelectionMap());
 
 	std::vector<SelectionValue_t>  medium25nsRun2Boff_vec;
-	std::auto_ptr<SelectionMap> mediumMap25nsRun2Boff(new SelectionMap());
+	std::unique_ptr<SelectionMap> mediumMap25nsRun2Boff(new SelectionMap());
 
 	std::vector<SelectionValue_t>  loose25nsRun2V2016_vec;
-	std::auto_ptr<SelectionMap> looseMap_run2_25nsV2016(new SelectionMap());
+	std::unique_ptr<SelectionMap> looseMap_run2_25nsV2016(new SelectionMap());
 
 	//------------------------------ ELECTRON
 	iEvent.getByToken(electronsToken_, electronsHandle);
@@ -437,21 +437,21 @@ void EleSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 
 	//------------------------------
 	// put the ValueMap in the event
-	iEvent.put(fiducialMap, "fiducial");
-	iEvent.put(WP70_PUMap, "WP70PU");
-	iEvent.put(WP80_PUMap, "WP80PU");
-	iEvent.put(WP90_PUMap, "WP90PU");
-	iEvent.put(looseMap, "loose");
-	iEvent.put(mediumMap, "medium");
-	iEvent.put(tightMap, "tight");
-	iEvent.put(looseMap_run2_25ns, "loose25nsRun2");
-	iEvent.put(mediumMap_run2_25ns, "medium25nsRun2");
-	iEvent.put(tightMap_run2_25ns, "tight25nsRun2");
-	iEvent.put(looseMap50nsRun2, "loose50nsRun2");
-	iEvent.put(mediumMap50nsRun2, "medium50nsRun2");
-	iEvent.put(tightMap50nsRun2, "tight50nsRun2");
-	iEvent.put(mediumMap25nsRun2Boff, "medium25nsRun2Boff");
-	iEvent.put(looseMap_run2_25nsV2016, "loose25nsRun2V2016");
+	iEvent.put(std::move(fiducialMap), "fiducial");
+	iEvent.put(std::move(WP70_PUMap), "WP70PU");
+	iEvent.put(std::move(WP80_PUMap), "WP80PU");
+	iEvent.put(std::move(WP90_PUMap), "WP90PU");
+	iEvent.put(std::move(looseMap), "loose");
+	iEvent.put(std::move(mediumMap), "medium");
+	iEvent.put(std::move(tightMap), "tight");
+	iEvent.put(std::move(looseMap_run2_25ns), "loose25nsRun2");
+	iEvent.put(std::move(mediumMap_run2_25ns), "medium25nsRun2");
+	iEvent.put(std::move(tightMap_run2_25ns), "tight25nsRun2");
+	iEvent.put(std::move(looseMap50nsRun2), "loose50nsRun2");
+	iEvent.put(std::move(mediumMap50nsRun2), "medium50nsRun2");
+	iEvent.put(std::move(tightMap50nsRun2), "tight50nsRun2");
+	iEvent.put(std::move(mediumMap25nsRun2Boff), "medium25nsRun2Boff");
+	iEvent.put(std::move(looseMap_run2_25nsV2016), "loose25nsRun2V2016");
 }
 
 // ------------ method called once each job just before starting event loop  ------------

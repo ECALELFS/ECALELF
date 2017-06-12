@@ -196,12 +196,12 @@ void
 EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
+	
 
-
-	std::auto_ptr<NewEnergyMap> energySC_mustMap(new NewEnergyMap());
-	std::auto_ptr<NewEnergyMap> energySC_mustVarMap(new NewEnergyMap());
-	std::auto_ptr<NewEnergyMap> energySC_phoMap(new NewEnergyMap());
-	std::auto_ptr<NewEnergyMap> energySC_phoVarMap(new NewEnergyMap());
+	std::unique_ptr<NewEnergyMap> energySC_mustMap(new NewEnergyMap());
+	std::unique_ptr<NewEnergyMap> energySC_mustVarMap(new NewEnergyMap());
+	std::unique_ptr<NewEnergyMap> energySC_phoMap(new NewEnergyMap());
+	std::unique_ptr<NewEnergyMap> energySC_phoVarMap(new NewEnergyMap());
 
 	iEvent.getByToken(electronsTAG, electronsHandle);
 	iEvent.getByToken(photonsTAG, photonsHandle);
@@ -271,10 +271,10 @@ EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
 	//------------------------------
 	// put the ValueMap in the event
-	iEvent.put(energySC_mustMap, "energySCEleMust");
-	iEvent.put(energySC_mustVarMap, "energySCEleMustVar");
-	iEvent.put(energySC_phoMap, "energySCElePho");
-	iEvent.put(energySC_phoVarMap, "energySCElePhoVar");
+	iEvent.put(std::move(energySC_mustMap), "energySCEleMust");
+	iEvent.put(std::move(energySC_mustVarMap), "energySCEleMustVar");
+	iEvent.put(std::move(energySC_phoMap), "energySCElePho");
+	iEvent.put(std::move(energySC_phoVarMap), "energySCElePhoVar");
 
 }
 

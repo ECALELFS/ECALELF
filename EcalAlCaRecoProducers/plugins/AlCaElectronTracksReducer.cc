@@ -65,8 +65,8 @@ void AlCaElectronTracksReducer::produce (edm::Event& iEvent,
 	}
 
 	//Put selected information in the event
-	iEvent.put( redGeneralTracksCollection, alcaTrackCollection_ );
-	iEvent.put( redGeneralTracksExtraCollection, alcaTrackExtraCollection_ );
+	iEvent.put( std::move(redGeneralTracksCollection), alcaTrackCollection_ );
+	iEvent.put( std::move(redGeneralTracksExtraCollection), alcaTrackExtraCollection_ );
 }
 
 
