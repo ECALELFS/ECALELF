@@ -1,0 +1,21 @@
+# regions defined for condition validation
+Et_27_33-absEta_0_1
+Et_33_39-absEta_0_1
+Et_39_50-absEta_0_1
+Et_50_75-absEta_0_1
+Et_75_100-absEta_0_1
+Et_100_200-absEta_0_1
+Et_200_300-absEta_0_1
+Et_300_400-absEta_0_1
+Et_400_10000-absEta_0_1
+##Outer Barrel
+Et_27_33-absEta_1_1.4442
+Et_33_39-absEta_1_1.4442
+Et_39_50-absEta_1_1.4442
+Et_50_65-absEta_1_1.4442
+Et_65_80-absEta_1_1.4442
+Et_80_100-absEta_1_1.4442
+Et_100_200-absEta_1_1.4442
+Et_200_300-absEta_1_1.4442
+Et_300_400-absEta_1_1.4442
+Et_400_10000-absEta_1_1.4442
