@@ -567,7 +567,7 @@ fi  #This is the end of the option createOnly
 
 if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
     if [[ ${CRABVERSION} = "2" ]]; then
-		submit ${UI_WORKING_DIR} 
+		submit ${UI_WORKING_DIR} ${DATASETNAME} ${QUEUE}
     fi
 
     if [[ ${CRABVERSION} = "3" ]]; then
