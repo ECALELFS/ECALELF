@@ -17,6 +17,9 @@ checkVERSION(){
 		 CMSSW_8_0_26_patch1)
 			echo "[INFO] Installing for $CMSSW_VERSION (2016 13TeV)"
 			;;
+		CMSSW_9_2_3_patch2)
+			echo "[INFO] Installing for $CMSSW_VERSION (2017 13TeV)"
+			;;
 		*)
 			echo "[`basename $0` ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
 			echo "                      Supported releases are:"
@@ -91,6 +94,9 @@ case $CMSSW_VERSION in
 #		git cms-merge-topic 16790  || exit 1
 #		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
 #		git cms-merge-topic shervin86:slewrate || exit 1
+		;;
+    CMSSW_9_2_*)
+	        echo "[STATUS] cms-merge-topics"
 		;;
 esac
 
