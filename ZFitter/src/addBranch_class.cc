@@ -325,7 +325,7 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 	Float_t         phiEle[2];
 	Float_t         etaEle[2];
 	Float_t         energyEle[2];
-	Float_t         gainSeedSC[2];
+	UChar_t         gainSeedSC[2];
 	Float_t         sigmaEnergyEle[2];
 	Float_t         invMass;
 	Float_t         corrEle[2] = {1., 1.};
@@ -413,10 +413,28 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 
 		originalChain->GetEntry(ientry);
 		float smearEle_[2];
+		UChar_t g[2] = {0,0};
+		for(size_t i=0; i <2; ++i){
+			switch (gainSeedSC[i]){
+			case 0: 
+				g[i]=12;
+				break;
+			case 1:
+				g[i]=6;
+				break;
+			case 2:
+				g[i]=1;
+				break;
+			case 3:
+				g[i]=1;
+				break;
+			}
+		}
+
 		smearEle_[0] = scaler->getSmearingRho(runNumber, energyEle[0], fabs(etaSCEle_[0]) < 1.4442,
-		                                      R9Ele_[0], etaSCEle_[0], gainSeedSC[0]);
+		                                      R9Ele_[0], etaSCEle_[0], g[0]);
 		smearEle_[1] = scaler->getSmearingRho(runNumber, energyEle[1], fabs(etaSCEle_[1]) < 1.4442,
-		                                      R9Ele_[1], etaSCEle_[1], gainSeedSC[1]);
+		                                      R9Ele_[1], etaSCEle_[1], g[1]);
 		if(smearEle_[0] == 0 || smearEle_[1] == 0) {
 			std::cerr << "[ERROR] Smearing = 0 " << "\t" << smearEle_[0] << "\t" << smearEle_[1] << std::endl;
 			std::cout << "E_0: " << runNumber << "\t" << energyEle[0] << "\t"
@@ -430,10 +448,10 @@ TTree* addBranch_class::AddBranch_invMassSigma(TChain* originalChain, TString tr
 // paramSmear_t par, float nSigma) const
 		if(isMC) invMass *= sqrt(///\todo it should not be getSmearingSigma, but getSmearing with already the Gaussian. to be implemented into EnergyScaleCorrection_class.cc
 			                        scaler->getSmearingSigma(runNumber, fabs(etaSCEle_[0]) < 1.4442,
-			                                R9Ele_[0], etaSCEle_[0], energyEle[0] / cosh(etaSCEle_[0]), gainSeedSC[0], EnergyScaleCorrection_class::kNone, 0)
+			                                R9Ele_[0], etaSCEle_[0], energyEle[0] / cosh(etaSCEle_[0]), g[0], EnergyScaleCorrection_class::kNone, 0)
 			                        *
 			                        scaler->getSmearingSigma(runNumber, fabs(etaSCEle_[1]) < 1.4442,
-			                                R9Ele_[1], etaSCEle_[1], energyEle[1] / cosh(etaSCEle_[1]), gainSeedSC[1], EnergyScaleCorrection_class::kNone, 0)
+			                                R9Ele_[1], etaSCEle_[1], energyEle[1] / cosh(etaSCEle_[1]), g[1], EnergyScaleCorrection_class::kNone, 0)
 			                    );
 
 		invMass *= sqrt(corrEle[0] * corrEle[1]);
@@ -693,7 +711,7 @@ TTree * addBranch_class::AddBranch_scaleEle(TChain * ch, TString treeName, TStri
 	Float_t         etaSCEle[3];
 	Float_t         R9Ele[3];
 	Float_t         energy[3];
-	Float_t         gainSeedSC[3];
+	UChar_t         gainSeedSC[3];
 
 	ch->SetBranchAddress("runNumber", &runNumber);
 	ch->SetBranchAddress("etaSCEle", etaSCEle);
@@ -703,8 +721,25 @@ TTree * addBranch_class::AddBranch_scaleEle(TChain * ch, TString treeName, TStri
 	Long64_t nentries = ch->GetEntries();
 	for(Long64_t ientry = 0; ientry < nentries; ientry++) {
 		ch->GetEntry(ientry);
-		scaleEle_[0] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0] / cosh(etaSCEle[0]), gainSeedSC[0]);
-		scaleEle_[1] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1] / cosh(etaSCEle[1]), gainSeedSC[1]);;
+		UChar_t g[2] = {0,0};
+		for(size_t i=0; i <2; ++i){
+			switch (gainSeedSC[i]){
+			case 0: 
+				g[i]=12;
+				break;
+			case 1:
+				g[i]=6;
+				break;
+			case 2:
+				g[i]=1;
+				break;
+			case 3:
+				g[i]=1;
+				break;
+			}
+		}
+		scaleEle_[0] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[0]) < 1.4442, R9Ele[0], etaSCEle[0], energy[0] / cosh(etaSCEle[0]), g[0]);
+		scaleEle_[1] = scaler->ScaleCorrection(runNumber, fabs(etaSCEle[1]) < 1.4442, R9Ele[1], etaSCEle[1], energy[1] / cosh(etaSCEle[1]), g[1]);;
 		corrTree->Fill();
 	}
 	ch->SetBranchStatus("*", 1);
@@ -722,7 +757,7 @@ TTree * addBranch_class::AddBranch_smearEle(TChain * ch, TString treeName, TStri
 	Float_t energyEle_[2];
 	Float_t etaSCEle_[2];
 	Float_t R9Ele_[2];
-	Float_t gainSeedSC_[2];
+	UChar_t gainSeedSC_[2];
 
 	Float_t smearEle_[2];
 	Float_t smearSigmaEle_[2];
@@ -757,8 +792,26 @@ TTree * addBranch_class::AddBranch_smearEle(TChain * ch, TString treeName, TStri
 	Long64_t nentries = ch->GetEntries();
 	for(Long64_t ientry = 0; ientry < ch->GetEntriesFast(); ientry++) {
 		ch->GetEntry(ientry);
-		smearSigmaEle_[0] = scaler->getSmearingSigma(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0], etaSCEle_[0], energyEle_[0] / cosh(etaSCEle_[0]), gainSeedSC_[0], EnergyScaleCorrection_class::kNone, 0);
-		smearSigmaEle_[1] = scaler->getSmearingSigma(runNumber_, fabs(etaSCEle_[1]) < 1.4442, R9Ele_[1], etaSCEle_[1], energyEle_[1] / cosh(etaSCEle_[1]), gainSeedSC_[1], EnergyScaleCorrection_class::kNone, 0);
+		UChar_t g[2] = {0,0};
+		for(size_t i=0; i <2; ++i){
+			switch (gainSeedSC_[i]){
+			case 0: 
+				g[i]=12;
+				break;
+			case 1:
+				g[i]=6;
+				break;
+			case 2:
+				g[i]=1;
+				break;
+			case 3:
+				g[i]=1;
+				break;
+			}
+		}
+
+		smearSigmaEle_[0] = scaler->getSmearingSigma(runNumber_, fabs(etaSCEle_[0]) < 1.4442, R9Ele_[0], etaSCEle_[0], energyEle_[0] / cosh(etaSCEle_[0]), g[0], EnergyScaleCorrection_class::kNone, 0);
+		smearSigmaEle_[1] = scaler->getSmearingSigma(runNumber_, fabs(etaSCEle_[1]) < 1.4442, R9Ele_[1], etaSCEle_[1], energyEle_[1] / cosh(etaSCEle_[1]), g[1], EnergyScaleCorrection_class::kNone, 0);
 		smearEle_[0] = r3.Gaus(1, smearSigmaEle_[0]);
 		smearEle_[1] = r3.Gaus(1, smearSigmaEle_[1]);
 
