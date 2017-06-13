@@ -56,7 +56,7 @@ class EleSelectionProducers : public edm::EDProducer
 
 public:
 	explicit EleSelectionProducers(const edm::ParameterSet&);
-        ~EleSelectionProducers() = default;
+	~EleSelectionProducers() = default;
 
 	static void fillDescriptions(edm::ConfigurationDescriptions&);
 
@@ -186,8 +186,8 @@ EleSelectionProducers::EleSelectionProducers(const edm::ParameterSet& iConfig):
 //EleSelectionProducers::~EleSelectionProducers()
 //{
 
-	// do anything here that needs to be done at desctruction time
-	// (e.g. close files, deallocate resources etc.)
+// do anything here that needs to be done at desctruction time
+// (e.g. close files, deallocate resources etc.)
 
 //}
 

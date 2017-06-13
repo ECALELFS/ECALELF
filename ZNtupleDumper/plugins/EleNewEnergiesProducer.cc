@@ -196,7 +196,7 @@ void
 EleNewEnergiesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
-	
+
 
 	std::unique_ptr<NewEnergyMap> energySC_mustMap(new NewEnergyMap());
 	std::unique_ptr<NewEnergyMap> energySC_mustVarMap(new NewEnergyMap());

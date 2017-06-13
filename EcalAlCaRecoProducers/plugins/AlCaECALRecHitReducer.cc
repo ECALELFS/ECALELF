@@ -32,7 +32,7 @@ AlCaECALRecHitReducer::AlCaECALRecHitReducer(const edm::ParameterSet& iConfig)
 
 	std::vector<edm::InputTag> srcLabels = iConfig.getParameter< std::vector<edm::InputTag> >("srcLabels");
 	for ( auto inputTag = srcLabels.begin(); inputTag != srcLabels.end(); ++inputTag) {
-	  eleViewTokens_.push_back(consumes<edm::View <reco::RecoCandidate> >(*inputTag));
+		eleViewTokens_.push_back(consumes<edm::View <reco::RecoCandidate> >(*inputTag));
 	}
 
 	//eleViewToken_ = consumes<edm::View <reco::RecoCandidate> > (iConfig.getParameter< edm::InputTag > ("electronLabel"));
@@ -272,7 +272,7 @@ void AlCaECALRecHitReducer::AddMiniRecHitCollection(const reco::SuperCluster& sc
 
 	if (sc.preshowerClusters().isAvailable()) {
 //		std::cout << "[DEBUG] Preshower available!" << std::endl;
-	  for( auto iES = sc.preshowerClustersBegin(); iES != sc.preshowerClustersEnd(); ++iES) {
+		for( auto iES = sc.preshowerClustersBegin(); iES != sc.preshowerClustersEnd(); ++iES) {
 			const std::vector< std::pair<DetId, float> >& hits = (*iES)->hitsAndFractions();
 			for(std::vector<std::pair<DetId, float> >::const_iterator rh = hits.begin(); rh != hits.end(); ++rh) {
 				reducedESRecHitMap.insert(rh->first);

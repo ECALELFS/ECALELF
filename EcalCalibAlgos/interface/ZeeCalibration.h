@@ -114,16 +114,16 @@ private:
 	int ringNumberCorrector(int k);
 	double getEtaCorrection(const reco::GsfElectron*);
 
-	
+
 	void fillEleInfo(std::vector<HepMC::GenParticle*>&,
-			 std::map<HepMC::GenParticle*,
-			 const reco::GsfElectron*>&);
+	                 std::map<HepMC::GenParticle*,
+	                 const reco::GsfElectron*>&);
 	void fillMCInfo(HepMC::GenParticle*);
 
 	void fillMCmap(const std::vector<const reco::GsfElectron*>*,
-		       const std::vector<HepMC::GenParticle*>&,
-		       std::map<HepMC::GenParticle*,
-		       const reco::GsfElectron*>&);
+	               const std::vector<HepMC::GenParticle*>&,
+	               std::map<HepMC::GenParticle*,
+	               const reco::GsfElectron*>&);
 	//  void fillMCmap(const reco::ElectronCollection* electronCollection, const std::vector<HepMC::GenParticle*>& mcEle,std::map<HepMC::GenParticle*,const reco::Electron*>& myMCmap);
 
 	float EvalDPhi(float Phi, float Phi_ref);
@@ -139,8 +139,8 @@ private:
 	void printStatistics();
 
 	std::pair<DetId, double> getHottestDetId(const std::vector<std::pair<DetId, float> >&,
-						 const EBRecHitCollection*,
-						 const EERecHitCollection*);
+	        const EBRecHitCollection*,
+	        const EERecHitCollection*);
 
 	bool xtalIsOnModuleBorder( EBDetId myEBDetId );
 
