@@ -14,6 +14,7 @@ parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
 parser.add_argument("--noPU", help="no pileup weights", default=False, action="store_true")
 parser.add_argument("--noEleIDSF", help="no EleIDSF weights", default=False, action="store_true")
 parser.add_argument("--noScales", help="no scales on data", default=False, action="store_true")
+parser.add_argument("--selection", dest="selection", help="additional selection cuts", default="")
 
 args = parser.parse_args()
 
@@ -26,7 +27,7 @@ ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetOptTitle(0)
 
-def MakeTH1s(arg, branchname, isMC, binning, category):
+def MakeTH1s(arg, branchname, isMC, binning, category, selection=""):
 	hs = []
 	for a in arg:
 		parse = a.split(',')
@@ -39,9 +40,9 @@ def MakeTH1s(arg, branchname, isMC, binning, category):
 		else:
 			energybranchname = None
 
-
+		print "selection=",selection
 		chain = ROOT.TFile.Open(filename).Get("selected")
-		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, label=label , energyBranchName = energybranchname, usePU= not args.noPU, useEleIDSF = not args.noEleIDSF, scale=not args.noScales))
+		hs.append( plot.GetTH1(chain, branchname, isMC, binning, category, selection, label=label , energyBranchName = energybranchname, usePU= not args.noPU, useEleIDSF = not args.noEleIDSF, scale=not args.noScales))
 	return hs
 
 #eleID = "eleID_loose25nsRun22016Moriond"
@@ -50,7 +51,8 @@ def MakeTH1s(arg, branchname, isMC, binning, category):
 category = "absEta_0_1-gold-EtLeading_32-EtSubLeading_20-noPF-isEle-eleID_cutBasedElectronID|Spring15|25ns|V1|standalone|loose"
 category = args.category
 binning = args.binning
-
+selection = args.selection
+print "* selection = ", selection
 if not args.branch:
 	args.branch = [""]
 
@@ -63,7 +65,7 @@ for branchname in args.branch:
 	if args.data:
 		print "[STATUS] Data: " + branchname
 		isMC = False
-		data_hs = MakeTH1s(args.data, branchname, isMC, binning, category)
+		data_hs = MakeTH1s(args.data, branchname, isMC, binning, category, selection)
 		plot.ColorData(data_hs)
 	else:
 		data_hs = []
@@ -71,7 +73,7 @@ for branchname in args.branch:
 	if args.mc:
 		print "[STATUS] MC: " +  branchname
 		isMC = True
-		mc_hs = MakeTH1s(args.mc, branchname, isMC, binning, category)
+		mc_hs = MakeTH1s(args.mc, branchname, isMC, binning, category, selection)
 		plot.ColorMCs(mc_hs)
 	else:
 		mc_hs = []

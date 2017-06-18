@@ -18,7 +18,7 @@ ndraw_entries = 1000000000
 
 hist_index = 0
 
-def GetTH1(chain, branchname, isMC, binning="", category="", label="", histname="",
+def GetTH1(chain, branchname, isMC, binning="", category="", sel="", label="", histname="",
 		 usePU=True, useEleIDSF=2, smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT=True, noWeights = False):
 	global hist_index
 
@@ -29,7 +29,8 @@ def GetTH1(chain, branchname, isMC, binning="", category="", label="", histname=
 
 	ActivateBranches(chain, branchname, category, energyBranchName, scale, smear)
 	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT, noWeights)
-
+	if(sel!=""):
+		selection = ROOT.TCut(str(selection) + "&&" +  sel)
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
 	if histname:
 		chain.Draw(branchname + ">>" + histname, selection * weights, "", ndraw_entries)
