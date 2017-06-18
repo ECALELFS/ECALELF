@@ -1,0 +1,116 @@
+#### This macro should be called as follows:
+#call 'macro/stability.gpl' 'tmp/file1.dat' 'legend 1' 'tmp/file2.dat' 'legend 2' 
+reset
+#set datafile missing "-"
+files=""
+titles=""
+
+# Settings that maybe want to change
+set style line 1 pt 2 lc 1
+set style line 2 pt 2 lc 2
+set style line 3 pt 2 lc 3
+set style line 4 pt 2 lc 4
+set style line 5 pt 2 lc 0
+set style line 6 pt 2 lc 1
+set style line 7 pt 2 lc 2
+set style line 8 pt 2 lc 3
+set style line 9 pt 2 lc 4
+set style line 10 pt 2 lc 5
+
+set terminal pdfcairo enhanced color font "Helvetica,16" size 5,5
+set output 'stability.pdf'
+
+xVar="((column(\"timeMax\")+column(\"timeMin\"))/2)"
+xVarDelta="((column(\"timeMax\")-column(\"timeMin\"))/2)"
+yVarDelta="((column(\"effSigma\")/sqrt(column(\"nEvents\"))/2)"
+yRes="(column(\"effSigma\")/column(\"mean68\")*91.2/100)"
+#yRes="(column(\"effSigmaScaled\")*91.2/100)"
+
+# Other settings
+set timefmt "%s"
+set xdata time
+set format x "%d/%m"
+set link x
+
+set xtics rotate by 45 offset -2., -1.5 nomirror
+set x2tics rotate by 30 offset 0, 0 left font ',10' 
+
+set ytics nomirror
+set y2tics textcolor 'blue'
+set autoscale y2
+
+#set x2label 'Run range [..., ...)' offset 0, -1.75
+set xlabel 'Time (day/month)' offset 0, -.5
+set ylabel 'peak estimator [GeV]' 
+set ylabel 'mean time of SC seed recHit [ns]' 
+set y2label 'effective sigma/peak * MZ [%]' textcolor 'blue'
+
+set auto fix
+set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
+
+set yrange  [-0.5:0.5]
+
+set key outside above
+set grid
+
+#set bmargin 5
+set tmargin 6
+
+unset x2label
+unset x2tics
+set xtics mirror
+unset y2label
+exunset y2tics
+set ytics mirror
+#unset key
+unset margin
+#load 'data/runRanges/runRangeLimits2.dat.label'
+
+##### The real plots!
+
+if(ARGC==1){
+	file=value("ARG".ARGC)
+	categories = system("grep '#' ".file." | awk '{print $2}' |  tr '\n' ' ' ")
+	
+	do for [category in categories]{
+	print category
+#		set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
+		set label 1 "Both electrons in Ecal Endcap" at screen 0.5, screen 0.8 center
+	p for [ yVar in "mean median" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar
+	}
+} else {
+	file=value("ARG1")
+	categories = system("grep '#' ".file." | awk '{print $2}' |  tr '\n' ' ' ")
+	do for[argIndex=1:ARGC]{
+        if(argIndex%2==1){
+			files=sprintf("%s '%s'", files, value("ARG".argIndex))
+		} else{
+			titles=sprintf("%s '%s'", titles, value("ARG".argIndex))
+		}
+	}
+#	print files
+    print titles
+#	print categories
+	do for [category in categories]{
+	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
+	 	yVar="mean68"
+
+	 	p for [id=1:words(files)] word(files,id) u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title word(titles,id)
+		p for [id=1:words(files)] word(files,id) u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width '.word(titles,id)
+	
+	}
+
+}
+
+
+#12:(column(int(word(obscols, k)))):17:18:x2ticlabel(stringcolumn(1)) t reg w xerr pt 7 lt 6 ps .75
+
+set output
+set term x11
+
+
+# p for [yVar in "mean mean68"]  file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))):x2ticlabel(stringcolumn("runMin").'-'.stringcolumn("runMax")) i category w xyerr pt 5 ps 0.6 title yVar, \
+	   # '' u @xVar:@yRes:@xVarDelta i category w xerr pt 5 ps 0.6 axes x1y2 title 'scaled width'
+
+	
+	#   p for [yVar in "(column(\"effSigma\")/column(\"mean68\")*91.2/100)"]  file u @xVar:@yVar:@xVarDelta:x2ticlabel(stringcolumn("runMin").'-'.stringcolumn("runMax")) i category w xerr pt 5 ps 0.6 title yVar

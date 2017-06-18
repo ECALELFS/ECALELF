@@ -12,13 +12,7 @@
 #include <TChain.h>
 #include <TString.h>
 #include <TCut.h>
-#include <TCanvas.h>
-#include <TAttText.h>
-#include <TH1F.h>
 #include <TDirectory.h>
-#include <THStack.h>
-#include <TLegend.h>
-#include <TStyle.h>
 #include <TROOT.h>
 #include <TSystem.h>
 #include <TFile.h>
@@ -80,7 +74,7 @@ public:
 
 	~anyVar_class(void);
 	void Import(TString commonCut, TString eleID_, std::set<TString>& branchList, unsigned int modulo = 1); ///< to be called in the main
-	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale = 1., float smearing = 0.); ///<
+	void TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, std::vector<TString> runRanges = std::vector<TString>(), std::string commonCut = "", float scale = 1., float smearing = 0.); ///<
 	void SetOutDirName(std::string dirname, bool updateOnly = true);
 	void ChangeModulo(unsigned int moduloIndex) {
 		reduced_data = reduced_data_vec[moduloIndex].get();

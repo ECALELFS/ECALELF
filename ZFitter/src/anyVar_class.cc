@@ -5,7 +5,7 @@
 #include <TFriendElement.h>
 #include <TStopwatch.h>
 //#define DEBUG
-#define MAXENTRIES 100000
+#define MAXENTRIES 100000000
 #define MAXBRANCHES  20
 #define BUFSIZE 12 /* bytes */
 #include <cassert>
@@ -173,7 +173,7 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 		sprintf(title, "%s_mod_%d", chain->GetName(), i);
 
 		reduced_data_vec.emplace_back(new TTree(title, title));
-		TTree *reduced_data = reduced_data_vec[i].get();
+//		TTree *reduced_data = reduced_data_vec[i].get();
 //		reduced_data->SetDirectory(_dir);
 	}
 
@@ -215,9 +215,11 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
 		if(i % (nentries / 100) == 0) std::cerr << "\b\b\b\b\b\b[" << std::setw(3) << i / (nentries / 100) << "%]";
 
 		Long64_t ientry = chain->GetEntryNumber(i);
-		Long64_t jentry = chain->LoadTree(ientry);// entry in the tree
+		//Long64_t jentry = 
+		chain->LoadTree(ientry);// entry in the tree
 
-		Long64_t nb = chain->GetEntry(ientry);
+		//Long64_t nb = 
+		chain->GetEntry(ientry);
 		if (chain->GetTreeNumber() != treenumber) {
 			treenumber = chain->GetTreeNumber();
 			if(selector != NULL) selector->UpdateFormulaLeaves();
@@ -261,28 +263,42 @@ void anyVar_class::TreeToTree(TChain *chain, std::set<TString>& branchList, unsi
  *         The name of the output file is the same as the branch used to collect the stat.
  *         Refer to stats to see what is the print format
  */
-void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, float scale, float smearing)
+void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cut_ele2, std::vector<TString> runRanges, std::string commonCut, float scale, float smearing)
 {
 	_stats_vec.reset();
+	//vector of stats vect, one for each run
+	std::map<UInt_t, statsCollection> stats_run_map;
+	stats_run_map.insert(std::pair<UInt_t, statsCollection>(0, _stats_vec));
+
+	for(auto& runRange : runRanges) {
+		TString runMin, runMax;
+		TObjArray *tx = runRange.Tokenize("-");
+		runMin = ((TObjString *)(tx->At(0)))->String();
+#ifdef DEBUG
+		std::cout << "[anyVar_class:DEBUG] " << "runMin = " << runMin << std::endl;
+#endif
+		stats_run_map.insert(std::pair<UInt_t, statsCollection>(runMin.Atoll(), _stats_vec));
+		std::cout << runMin << "\t" << stats_run_map.size() << std::endl;
+	}
 	if(reduced_data == NULL) {
 		std::cerr << "[ERROR] reduced_data is NULL. Maybe you have to call the Import() method" << std::endl;
 		return;
 	}
 
 // this makes sure that the same category is not processed twice
-	bool doProcess = true;
+//	bool doProcess = true;
 	std::string file = _outDirFitRes + "/" + massBranchName_ + ".dat";
-	std::string s = "grep -q  " + region + " " + file;
-	doProcess = doProcess && !(system(s.c_str()));
-	if(doProcess == true) {
+//	std::string s = "grep -q  " + region + " " + file;
+//	doProcess = doProcess && !(system(s.c_str()));
+//	if(doProcess == true) {
 //		for(auto& branch : _branchNames) {
-		doProcess = doProcess && (system(s.c_str()));
+//		doProcess = doProcess && (system(s.c_str()));
 //			if(doProcess==false) break;
 //		}
-	}
-	if(doProcess == true) return;
+	
+//	if(doProcess == true) return;
 
-
+	
 	Float_t *mll = NULL;
 	Float_t branches_Float_t[MAXBRANCHES][3];
 	size_t nBranches = _branchNames.size();
@@ -303,7 +319,8 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 
 	Float_t corrEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
 	Float_t smearEle_[2] = {1, 1}; //corrEle_[0]=1; corrEle_[1]=1;
-
+	UInt_t  runNumber=0;
+	if(reduced_data->GetBranch("runNumber")!=NULL) reduced_data->SetBranchAddress("runNumber", &runNumber);
 
 	if(reduced_data->GetBranch("puWeight") != NULL) {
 		std::cout << "[anyVar_class][STATUS] Adding pileup weight branch from friend" << std::endl;
@@ -377,23 +394,28 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 		// smearMass->setVal(mll * sqrt(corrEle_[0] * corrEle_[1] * (smearEle_[0]) * (smearEle_[1])));
 
 		bool bothPassing = true;
+		auto ptr = (stats_run_map.upper_bound(runNumber));
+		if(ptr != stats_run_map.begin()) ptr--;
+		auto &sv = ptr->second;
+		//std::cout << ptr->first << "\t" << runNumber << std::endl;
 		for(size_t iele = 0; iele < passing_ele.size(); ++iele) {
 			bothPassing = bothPassing && passing_ele[iele]; //if all electrons are satisfying this category, the event is removed from the list
 			if(passing_ele[iele] == false) continue; // fill only the with the electron passing the selection
 
-			for(size_t i = 0; i < _stats_vec.size(); ++i) {
-				auto& s = _stats_vec[i];
+			for(size_t i = 0; i < sv.size(); ++i) {
+				auto& s = sv[i];
 				if(s.name().find("invMass")!=std::string::npos) continue;
-				_stats_vec[i].add(branches_Float_t[i][iele]*scale);
+				sv[i].add(branches_Float_t[i][iele]*scale);
 #ifdef DEBUG
 				if(i == 0 && jentry % (entries / 100) == 0) std::cout << i << "\t" << iele << "\t" << branches_Float_t[i][iele] << std::endl;
 #endif
 			}
 
 		}
+
 		//double mllNew = mll * scale;
 		*mll *= scale;
-		if(bothPassing && *mll > 60. && *mll < 120) 	_stats_vec[indexMassBranch].add(*mll);
+		if(bothPassing && *mll > 60. && *mll < 120) 	sv[indexMassBranch].add(*mll);
 		if(_exclusiveCategories && bothPassing) goodEntries.erase(jentry);
 	}
 	//fprintf(stderr, "\n");
@@ -411,14 +433,37 @@ void anyVar_class::TreeAnalyzeShervin(std::string region, TCut cut_ele1, TCut cu
 	}
 
 
-	for(size_t i = 0; i < _stats_vec.size(); ++i) {
-		auto& s = _stats_vec[i];
-		std::cout << "Start sorting " << s.name() << std::endl;
-		s.sort();
-		*(_statfiles[i]) << region << "\t" << s << std::endl;
+	// auto &sv = stats_run_map.begin()->second;
+	// sv[indexMassBranch].sort();
+	// std::cout << region << "\t" << stats_run_map.begin()->first << "\t" << sv[indexMassBranch] << std::endl;
+	if(runRanges.size()==0){
+	   	auto &sv = stats_run_map.begin()->second;
+		for(size_t i = 0; i < sv.size(); ++i) {
+			auto& s = sv[i];
+			s.sort();
+			*(_statfiles[i]) << region+"-"+commonCut << "\t" << s << std::endl;
+		}
+	}else{		
+	for(auto& runRange : runRanges) {
+		TString runMin, runMax;
+		TObjArray *tx = runRange.Tokenize("-");
+		runMin = ((TObjString *)(tx->At(0)))->String();
+		runMax = ((TObjString *)(tx->At(1)))->String();
+		std::string category = region + "-runNumber_" + runMin.Data() + "_" + runMax.Data() + "-" + commonCut;
+
+		auto ptr = (stats_run_map.upper_bound(runMin.Atoll()));
+		if(ptr != stats_run_map.begin()) ptr--;
+		auto &sv = ptr->second;
+		for(size_t i = 0; i < sv.size(); ++i) {
+			auto& s = sv[i];
+//			std::cout << "Start sorting " << s.name() << "\t" << runMin << " " << ptr->first << std::endl;
+			s.sort();
+			*(_statfiles[i]) << category << "\t" << s << std::endl;
 #ifdef DEBUG
-		std::cout << region << "\t" << s << std::endl;
+		std::cout << category << "\t" << s << std::endl;
 #endif
+		}
+	}
 	}
 	std::cout << "[INFO] Region fully processed" << "\t" << count << std::endl;
 //	_stats_vec.dump("testfile.dat");

@@ -7,7 +7,7 @@ titles=""
 
 # Settings that maybe want to change
 set style line 1 pt 2 lc 1
-set style line 2 pt 2 lc 2
+set style line 2 pt 2 lc 7
 set style line 3 pt 2 lc 3
 set style line 4 pt 2 lc 4
 set style line 5 pt 2 lc 0
@@ -16,6 +16,13 @@ set style line 7 pt 2 lc 2
 set style line 8 pt 2 lc 3
 set style line 9 pt 2 lc 4
 set style line 10 pt 2 lc 5
+
+set arrow 2 from 1466739151,graph 0 to 1466739151, graph 1 nohead dt 2 # run2016C
+set arrow 3 from 1467631160,graph 0 to 1467631160, graph 1 nohead dt 2 # run2016D
+set arrow 4 from 1468568895,graph 0 to 1468568895, graph 1 nohead dt 2 # run2016F
+set arrow 5 from 1470052448,graph 0 to 1470052448, graph 1 nohead dt 2 # run2016F
+set arrow 6 from 1471172473,graph 0 to 1471172473, graph 1 nohead dt 2 # run2016G
+set arrow 7 from 1474783497,graph 0 to 1474783497, graph 1 nohead dt 2 # run2016H
 
 set terminal pdfcairo enhanced color font "Helvetica,16" size 5,5
 set output 'stability.pdf'
@@ -44,13 +51,15 @@ set autoscale y2
 
 #set x2label 'Run range [..., ...)' offset 0, -1.75
 set xlabel 'Time (day/month)' offset 0, -.5
-set ylabel 'peak estimator [GeV]' 
-set y2label 'effective sigma/peak * MZ [%]' textcolor 'blue'
+peakLabel="peak estimator [GeV]"
+resolutionLabel="effective sigma/peak * MZ [%] "
+set ylabel peakLabel
+set y2label resolutionLabel textcolor 'blue'
 
 set auto fix
 set offsets graph 0.05, graph 0.05, graph 0.05, graph 0.05
-set y2range [0.01:0.015]
-#set yrange  [87:91]
+set y2range [0.01:0.012]
+set yrange  [88:92]
 
 set key outside above
 set grid y2
@@ -74,8 +83,8 @@ if(ARGC==1){
 #		p for [yVar in "mean mean68"]  file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))):x2ticlabel(stringcolumn("timeMin").'-'.stringcolumn("runMax")) i category w xyerr pt 5 ps 0.6 title yVar #, \
 #, \
 #
-	p for [ yVar in "median mean68" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
-   '' u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width'
+	p for [ yVar in "median" ] file u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title yVar,\
+   '' u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 lc 2 axes x1y2 title 'scaled width'
 	}
 } else {
 	file=value("ARG1")
@@ -90,11 +99,17 @@ if(ARGC==1){
 	print files
     print titles
 #	print categories
+	unset y2tics
+  unset y2label
+  unset x2tics
+  set ylabel peakLabel
+  set grid y
 	do for [category in categories]{
-	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.92 center
-	 	yVar="mean68"
-
+	  	set label 1 "Category: ".category noenhanced at screen 0.5, screen 0.82 center
+	 	yVar="median"
+		set ylabel peakLabel.' : '.yVar
 	 	p for [id=1:words(files)] word(files,id) u @xVar:yVar:@xVarDelta:(column("stdDev")/sqrt(0.68*column("nEvents"))) i category w xyerr pt 5 ps 0.6 title word(titles,id)
+		set ylabel resolutionLabel
 		p for [id=1:words(files)] word(files,id) u @xVar:@yRes:@xVarDelta i category w xerr pt 6 ps 0.6 axes x1y2 title 'scaled width '.word(titles,id)
 	
 	}

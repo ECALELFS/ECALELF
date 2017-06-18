@@ -111,7 +111,7 @@ correctionValue_class EnergyScaleCorrection_class::getScaleCorrection(unsigned i
 #ifdef PEDANTIC_OUTPUT
 		std::cout << "[ERROR] Scale category not found: ";
 		std::cout << category << std::endl;
-		//exit(1);
+		exit(1);
 #endif
 		correctionValue_class nocorr;
 		//std::cout << "Returning uncorrected value.";
@@ -150,7 +150,7 @@ float EnergyScaleCorrection_class::getScaleOffset(unsigned int runNumber, bool i
 #ifdef PEDANTIC_OUTPUT
 		std::cout << "[ERROR] Scale offset category not found: ";
 		std::cout << category << std::endl;
-		//exit(1);
+		exit(1);
 #endif
 		correctionValue_class nocorr;
 		//std::cout << "Returning uncorrected value." << std::endl;
@@ -191,7 +191,8 @@ void EnergyScaleCorrection_class::ReadFromFile(TString filename)
 	}
 	std::ifstream f_in(path);
 	if(!f_in.good()) {
-		std::cerr << "[WARNING] file " << filename << " not readable" << std::endl;
+		std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
+		exit(1);
 		return;
 	}
 
@@ -269,7 +270,11 @@ void EnergyScaleCorrection_class::AddSmearing(TString category_, int runMin_, in
 	smearings[cat] = corr;
 
 #ifdef PEDANTIC_OUTPUT
+#ifndef CMSSW
 	std::cout << "[INFO:smearings] " << cat << corr << std::endl;
+#else
+	edm::LogInfo("[INFO:smearings] ") << cat << corr;
+#endif
 #endif
 
 	return;
@@ -298,7 +303,7 @@ void EnergyScaleCorrection_class::ReadSmearingFromFile(TString filename)
 	//std::ifstream f_in(edm::FileInPath(filename).fullPath().c_str());
 	std::ifstream f_in(filename.Data());
 	if(!f_in.good()) {
-		std::cerr << "[WARNING] file " << filename << " not readable" << std::endl;
+		std::cerr << "[ERROR] file " << filename << " not readable" << std::endl;
 		return;
 	}
 

@@ -11,7 +11,8 @@ NTUPLE=y  #not used
 RERECO=y  #not used
 fileList=alcaraw_datasets.dat
 crabVersion=2
-DOEXTRACALIBTREE=" "
+#DOEXTRACALIBTREE="--doExtraCalibTree --doEleIDTree"
+DOEXTRACALIBTREE=""
 JSONNAME=""
 JSONFILE=""
 
@@ -176,7 +177,7 @@ for dataset in $datasets
 				${TUTORIAL} $dataset 
 		else
 			./scripts/prodAlcarereco.sh  -t ${TAGFILE} \
-			--scheduler=$SCHEDULER --doExtraCalibTree --doEleIDTree --doExtraCalibTree ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
+			--scheduler=$SCHEDULER --doEleIDTree --doExtraCalibTree ${DOEXTRACALIBTREE} ${EXTRAOPTION} ${EXTRAEXTRAOPTION} \
   				${JSONFILE} ${JSONNAME} --crabVersion=${crabVersion} \
 				${TUTORIAL} $dataset 
 		fi
