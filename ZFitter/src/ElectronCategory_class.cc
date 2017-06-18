@@ -225,6 +225,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	TCut isEle_ele2_cut = "chargeEle_ele2 == 1 || chargeEle_ele2 == -1";
 	TCut isEle_cut = isEle_ele1_cut && isEle_ele2_cut;
 
+	TCut isSC_cut = "chargeEle_ele2 == 0";
+
 	/*
 	  se region contiene runNumber:
 	  prendi il primo range dal primo _ _ dopo runNumber
@@ -254,6 +256,11 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 		if(string.CompareTo("isEle") == 0) {
 			cut_string += isEle_cut;
 			cutSet.insert(TString(isEle_cut));
+			continue;
+		}
+		if(string.CompareTo("isSC") == 0){
+			cut_string += isSC_cut;
+			cutSet.insert(TString(isSC_cut));
 			continue;
 		}
 
