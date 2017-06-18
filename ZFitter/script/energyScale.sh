@@ -52,6 +52,9 @@ regionFileStep5EE=data/regions/scaleStep2smearing_7.dat
 regionFileStep5EB=data/regions/scaleStep5_FineET1.dat
 regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
 
+regionFileStep5EB=data/regions/scaleStep5_JetMetCheck2.dat
+regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
+
 regionFileStep6EB=data/regions/scaleStep6smearing_1.dat
 regionFileStep6EE=data/regions/scaleStep6smearing_2.dat
 
@@ -1084,6 +1087,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			step_args=" --onlyScale"
 			scalesfromstep=Moriond17
 			corrEleType=Moriond1723JanPhoScales
+			corrEleType=Moriond1723JanEleScales
 			newCorrEleType=HggRunEtaR9Et_step6_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
@@ -1101,7 +1105,9 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 		7EB)
 			step_args=""
 			scalesfromstep=step2
+			scalesfromstep=Moriond17
 			corrEleType=HggRunEtaR9
+			corrEleType=Moriond1723JanEleScales
 			newCorrEleType=HggRunEtaR9Et_step7_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
