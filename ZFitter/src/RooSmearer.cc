@@ -248,6 +248,10 @@ void RooSmearer::InitCategories(bool mcToy)
 					cat.active = false;
 				}
 			}
+			if(cat.data_events->size()<10){
+				cat.active = false;
+				std::cout << "[INFO] Category disabled because less than 10 events in data" << std::endl;
+			}
 
 			//Shoulder in the invariant mass spectra (if the mass spectrum is too much asymmetric, the category is de-activated)
 
