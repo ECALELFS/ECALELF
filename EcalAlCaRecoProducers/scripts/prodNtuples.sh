@@ -483,7 +483,6 @@ dataset=${DATASETPATH}
 datasetname=${DATASETNAME}
 runrange=${RUNRANGE}
 #dbs_url = phys03
-use_dbs3 = 1
 EOF
 		else
 			cat >> ${crab2File} <<EOF

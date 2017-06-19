@@ -19,12 +19,12 @@ ndraw_entries = 1000000000
 hist_index = 0
 
 def GetTH1(chain, branchname, isMC, binning="", category="", sel="", label="", histname="",
-		 usePU=True, useEleIDSF=2, smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT=True, noWeights = False):
+		 usePU=True, useEleIDSF=2, smear=True, scale=True, useR9Weight=False, energyBranchName = None, useLT=True, noWeights = False):
 	global hist_index
 
-	if scale and not isMC:
+	if scale and not isMC and CheckForBranch(chain, "scaleEle"):
 		branchname = ApplyScaleSmear(branchname, "scaleEle")
-	if smear and isMC:
+	if smear and isMC and CheckForBranch(chain, "smearEle"):
 		branchname = ApplyScaleSmear(branchname, "smearEle")
 
 	ActivateBranches(chain, branchname, category, energyBranchName, scale, smear)

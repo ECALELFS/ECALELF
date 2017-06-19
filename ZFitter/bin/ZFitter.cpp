@@ -370,7 +370,7 @@ int main(int argc, char **argv)
 	("scale", po::value<float>(&scale)->default_value(1.), "scale shift for tests")
 	//
 	//("addPtBranches", "")  //add new pt branches ( 3 by default, fra, ele, pho)
-	("addBranch", po::value< std::vector<string> >(&branchList), "")
+	("addBranch", po::value< std::vector<string> >(&branchList), "LTweight|EleIDSF_loose25nsRun22016Moriond")
 	("saveAddBranchTree", "")
 	//    ("signal,s", po::value< std::vector <string> >(&signalFiles), "Signal file (can be called multiple times putting the files in a chain")
 	//    ("bkg,b", po::value< std::vector <string> >(&bkgFiles), "Bkg file (can be called multiple times putting the files in a chain")
@@ -1309,7 +1309,8 @@ int main(int argc, char **argv)
 					for(auto& region : categories) {
 						std::cout << "------------------------------------------------------------" << std::endl;
 						std::cout << "[DEBUG ZFitter] category is: " << region << std::endl;
-						anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), scale);
+						anyVar.TreeAnalyzeShervin(region.Data(), cutter.GetCut(region, false, 1), cutter.GetCut(region, false, 2), std::vector<TString>(), "", scale);
+
 					}
 					break;
 #else
