@@ -412,9 +412,9 @@ private:
 	//  void Tree_output(TString filename);
 	void TreeSetEventSummaryVar(const edm::Event& iEvent);
 	void TreeSetPileupVar(void);
-	float GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex);
+	float GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex) const;
 
-	bool elePreselection(const pat::Electron& electron);
+	bool elePreselection(const pat::Electron& electron) const;
 	//puWeights_class puWeights;
 
 private:
@@ -453,6 +453,7 @@ private:
 	unsigned int eventTypeCounter[DEBUG_T] = {0};
 
 	bool _isMINIAOD;
+	const bool _isMINIAOD_;
 };
 
 
@@ -494,9 +495,11 @@ ZNtupleDumper::ZNtupleDumper(const edm::ParameterSet& iConfig):
 	eleID_loose(iConfig.getParameter< std::string>("eleID_loose")),
 	eleID_medium(iConfig.getParameter< std::string>("eleID_medium")),
 	eleID_tight(iConfig.getParameter< std::string>("eleID_tight")),
-	eventType(ZEE)
+	eventType(ZEE),
+	_isMINIAOD(!(iConfig.getParameter<edm::InputTag>("recHitCollectionEB") == edm::InputTag("alCaIsolatedElectrons", "alcaBarrelHits"))),
+	_isMINIAOD_(!(iConfig.getParameter<edm::InputTag>("recHitCollectionEB") == edm::InputTag("alCaIsolatedElectrons", "alcaBarrelHits")))
 {
-	_isMINIAOD = !(iConfig.getParameter<edm::InputTag>("recHitCollectionEB") == edm::InputTag("alCaIsolatedElectrons", "alcaBarrelHits"));
+
 	if(_isMINIAOD) std::cout << "[INFO ZntupleDumper] running on MINIAOD" << std::endl;
 	//  current_dir.cd();
 
@@ -1018,7 +1021,7 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 }
 
 
-bool ZNtupleDumper::elePreselection(const pat::Electron& electron)
+bool ZNtupleDumper::elePreselection(const pat::Electron& electron) const
 {
 	if(electron.et() < 10) return false; // minimum Et cut in preselection
 
@@ -1310,8 +1313,15 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron, int 
 	assert(sc.isNonnull()); // at least one of the SCs has to be defined!
 
 	TreeSetSingleSCVar(*sc, index);
-
+	if(_isMINIAOD != _isMINIAOD_){
+		_isMINIAOD = _isMINIAOD_;
+	}
 	energy_ECAL_ele[index]			  = (_isMINIAOD) ? electron.correctedEcalEnergy()     : electron.userFloat("energySCEleMust");
+	if(eventNumber==96020403 || eventNumber == 96020411 || eventNumber == 98010168){
+		std::cout << electron.eta() << "\t" << electron.phi() << "\t" << electron.superCluster()->rawEnergy() << "\t" << electron.energy() << "\t" << electron.correctedEcalEnergy() << "\t" << (bool) _isMINIAOD << "\t" << energy_ECAL_ele[index] << "\t" << index << std::endl;
+		assert(_isMINIAOD);
+	}
+	//assert(!(energy_ECAL_ele[index]<0 && recoFlagsEle[index]>1));
 	energyUncertainty_ECAL_ele[index] = (_isMINIAOD) ? electron.correctedEcalEnergyError() : electron.userFloat("energySCEleMustVar");
 
 	energy_ECAL_pho[index]			  = electron.userFloat("energySCElePho");
@@ -1722,7 +1732,7 @@ void ZNtupleDumper:: TreeSetMuMuGammaVar(const pat::Photon& photon, const pat::M
 
 // method to get the raw energy of one plane of ES summing the energy of only recHits associated to the electron SC
 ///\todo highly inefficient: instead of the loop over the recHits should use a ->find() method, it should return both energies of both planes
-float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex)
+float ZNtupleDumper::GetESPlaneRawEnergy(const reco::SuperCluster& sc, unsigned int planeIndex) const
 {
 	double RawenergyPlane = 0.;
 	double pfRawenergyPlane = 0.;

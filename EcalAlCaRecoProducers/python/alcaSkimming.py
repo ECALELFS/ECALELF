@@ -4,7 +4,7 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 import subprocess
 import copy
 
-newRegression = False
+newRegression = True
 from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
 from Calibration.EcalAlCaRecoProducers.customRereco import EcalRecal 
 
