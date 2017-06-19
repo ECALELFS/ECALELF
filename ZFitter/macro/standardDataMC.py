@@ -10,6 +10,7 @@ parser.add_argument("-s", "--mc",   action="append", help="specify mc files, lab
 parser.add_argument("-n", "--name", help="outfile base name (default=branchname)")
 parser.add_argument("-x", "--xlabel", help="x axis label (default=branchname)")
 parser.add_argument("--no-ratio", dest="noratio", help="no ratio", default=False, action="store_true")
+parser.add_argument("--ratio", dest="ratio", help="ratio range --ratio=LOW,HI")
 parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
 parser.add_argument("--noPU", help="no pileup weights", default=False, action="store_true")
 parser.add_argument("--noEleIDSF", help="no EleIDSF weights", default=False, action="store_true")
@@ -18,6 +19,14 @@ parser.add_argument("--noSmearings", help="no smearings on MC", default=False, a
 parser.add_argument("--selection", dest="selection", help="additional selection cuts", default="")
 
 args = parser.parse_args()
+ratio = True
+if args.noratio:
+	ratio = False
+elif args.ratio:
+	ratio = eval(args.ratio)
+	if len(ratio) != 2:
+		print "Invalid ratio", args.ratio, "use --ratio=LOW,HI"
+		sys.exit(1)
 
 sys.path.insert(0, os.getcwd() + '/python')
 import plot
@@ -80,5 +89,5 @@ for branchname in args.branch:
 		mc_hs = []
 
 	plot.Normalize(data_hs, mc_hs)
-	plot.PlotDataMC(data_hs, mc_hs, args.plotdir, args.name, xlabel=args.xlabel, ylabel="Events", ylabel_unit="GeV", logy = False, ratio=not args.noratio)
+	plot.PlotDataMC(data_hs, mc_hs, args.plotdir, args.name, xlabel=args.xlabel, ylabel="Events", ylabel_unit="GeV", logy = False, ratio=ratio)
 	print "[STATUS] Done: " + branchname
