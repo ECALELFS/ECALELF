@@ -450,7 +450,6 @@ private:
 
 
 	eventType_t eventType;
-	unsigned int eventTypeCounter[DEBUG_T] = {0};
 
 	bool _isMINIAOD;
 	const bool _isMINIAOD_;
@@ -580,10 +579,6 @@ void ZNtupleDumper::beginJob()
 		InitEleIDTree();
 	}
 
-	//for(int i = ZEE; i <= DEBUG_T && i <= 7; i++) {
-	//	eventTypeCounter[i] = 0;
-	//}
-
 #ifdef DEBUG
 	std::cout << "[DEBUG] End creation of ntuples" << std::endl;
 #endif
@@ -690,7 +685,6 @@ void ZNtupleDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 			//}
 			//std::cout << "skip event: " << skipEvent << "\t" << eventType << std::endl;
 			//assert(!skipEvent);
-			eventTypeCounter[eventType]++;
 			if(skipEvent) return; // event not coming from any skim or paths
 		}
 	}
@@ -1067,11 +1061,6 @@ void ZNtupleDumper::endJob()
 		eleIDTree->Write();
 		eleIDTreeFile->Close();
 	}
-
-	std::cout << DEBUG_T << std::endl;
-//	for(size_t i = 0; i < 8; ++i) {
-//		std::cout << "[NTUPLEDUMPER] EventTypeCounter[" << i << "]\t" << eventTypeCounter[i] << std::endl;
-//	}
 }
 
 // ------------ method called when starting to processes a run  ------------
@@ -1313,9 +1302,6 @@ void ZNtupleDumper::TreeSetSingleElectronVar(const pat::Electron& electron, int 
 	assert(sc.isNonnull()); // at least one of the SCs has to be defined!
 
 	TreeSetSingleSCVar(*sc, index);
-	if(_isMINIAOD != _isMINIAOD_){
-		_isMINIAOD = _isMINIAOD_;
-	}
 	energy_ECAL_ele[index]			  = (_isMINIAOD) ? electron.correctedEcalEnergy()     : electron.userFloat("energySCEleMust");
 	if(eventNumber==96020403 || eventNumber == 96020411 || eventNumber == 98010168){
 		std::cout << electron.eta() << "\t" << electron.phi() << "\t" << electron.superCluster()->rawEnergy() << "\t" << electron.energy() << "\t" << electron.correctedEcalEnergy() << "\t" << (bool) _isMINIAOD << "\t" << energy_ECAL_ele[index] << "\t" << index << std::endl;
