@@ -3,13 +3,12 @@
 configFile=data/validation/monitoring_2015.dat
 regionsFile=data/regions/validation.dat
 
-outDirImg="tmp"
 usage(){
     echo "`basename $0` [options]" 
     echo "----- optional paramters"
     echo " -f arg (=${configFile})"
     echo " --noPU"
-    echo " --outDirImg arg (=${outDirImg})"
+    echo " --outDir arg "
     echo " --addBranch arg" 
     echo " --regionsFile arg (=${regionsFile})"
     echo " --corrEleType arg"
@@ -20,8 +19,7 @@ usage(){
 desc(){
     echo "#####################################################################"
     echo "## This creates root files in tmp/[configFile] to simplify plotting"
-    echo "## "
-    echo "#####################################################################"
+    echo "## " echo "#####################################################################"
 }
 
 #------------------------------ parsing
