@@ -14,14 +14,14 @@
 #include <TH1F.h>
 #include <TProfile.h>
 #include <vector>
-#include "../interface/hChain.h"
-#include "../interface/h2Chain.h"
+#include "Calibration/EOverPCalibration/interface/hChain.h"
+#include "Calibration/EOverPCalibration/interface/h2Chain.h"
 #include <TGraphErrors.h>
 
 #include <TLorentzVector.h>
 
-#include "../interface/CalibrationUtils.h"
-#include "../interface/readJSONFile.h"
+#include "Calibration/EOverPCalibration/interface/CalibrationUtils.h"
+#include "Calibration/EOverPCalibration/interface/readJSONFile.h"
 
 class XtalAlphaEB
 {

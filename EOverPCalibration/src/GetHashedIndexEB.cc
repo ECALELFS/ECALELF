@@ -1,4 +1,4 @@
-#include "../interface/GetHashedIndexEB.h"
+#include "Calibration/EOverPCalibration/interface/GetHashedIndexEB.h"
 
 int GetHashedIndexEB(int iEta, int iPhi, int Zside)
 {

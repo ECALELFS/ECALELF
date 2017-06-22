@@ -162,19 +162,19 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 	using namespace edm;
 
 	std::vector<SelectionValue_t>  fiducial_vec;
-	std::auto_ptr<SelectionMap> fiducialMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> fiducialMap(new SelectionMap());
 	std::vector<SelectionValue_t>  loose_vec;
 	std::vector<SelectionValue_t>  medium_vec;
 	std::vector<SelectionValue_t>  tight_vec;
 	std::vector<SelectionValue_t>  loose25nsRun2_vec;
 	std::vector<SelectionValue_t>  medium25nsRun2_vec;
 	std::vector<SelectionValue_t>  tight25nsRun2_vec;
-	std::auto_ptr<SelectionMap> looseMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> mediumMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> tightMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> loose25nsRun2Map(new SelectionMap());
-	std::auto_ptr<SelectionMap> medium25nsRun2Map(new SelectionMap());
-	std::auto_ptr<SelectionMap> tight25nsRun2Map(new SelectionMap());
+	std::unique_ptr<SelectionMap> looseMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> mediumMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> tightMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> loose25nsRun2Map(new SelectionMap());
+	std::unique_ptr<SelectionMap> medium25nsRun2Map(new SelectionMap());
+	std::unique_ptr<SelectionMap> tight25nsRun2Map(new SelectionMap());
 
 	//------------------------------ PHOTON
 	iEvent.getByLabel(photonsTAG, photonsHandle);
@@ -288,13 +288,13 @@ void PhoSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& i
 
 	//------------------------------
 	// put the ValueMap in the event
-	iEvent.put(fiducialMap, "fiducial");
-	iEvent.put(looseMap, "loose");
-	iEvent.put(mediumMap, "medium");
-	iEvent.put(tightMap, "tight");
-	iEvent.put(loose25nsRun2Map, "loose25nsRun2");
-	iEvent.put(medium25nsRun2Map, "medium25nsRun2");
-	iEvent.put(tight25nsRun2Map, "tight25nsRun2");
+	iEvent.put(std::move(fiducialMap), "fiducial");
+	iEvent.put(std::move(looseMap), "loose");
+	iEvent.put(std::move(mediumMap), "medium");
+	iEvent.put(std::move(tightMap), "tight");
+	iEvent.put(std::move(loose25nsRun2Map), "loose25nsRun2");
+	iEvent.put(std::move(medium25nsRun2Map), "medium25nsRun2");
+	iEvent.put(std::move(tight25nsRun2Map), "tight25nsRun2");
 
 }
 

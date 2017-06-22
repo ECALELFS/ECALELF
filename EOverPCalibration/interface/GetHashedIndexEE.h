@@ -4,8 +4,8 @@
 #include <TH1F.h>
 #include <TProfile.h>
 #include <vector>
-#include "../interface/hChain.h"
-#include "../interface/h2Chain.h"
+#include "Calibration/EOverPCalibration/interface/hChain.h"
+#include "Calibration/EOverPCalibration/interface/h2Chain.h"
 #include <TGraphErrors.h>
 
 #include <TLorentzVector.h>

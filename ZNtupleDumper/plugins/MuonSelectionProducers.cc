@@ -154,15 +154,15 @@ void MuonSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& 
 	using namespace edm;
 
 	std::vector<SelectionValue_t>  fiducial_vec;
-	std::auto_ptr<SelectionMap> fiducialMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> fiducialMap(new SelectionMap());
 	std::vector<SelectionValue_t>  loose_vec;
 	std::vector<SelectionValue_t>  soft_vec;
 	std::vector<SelectionValue_t>  tight_vec;
 	std::vector<SelectionValue_t>  highPT_vec;
-	std::auto_ptr<SelectionMap> looseMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> softMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> tightMap(new SelectionMap());
-	std::auto_ptr<SelectionMap> highPTMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> looseMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> softMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> tightMap(new SelectionMap());
+	std::unique_ptr<SelectionMap> highPTMap(new SelectionMap());
 
 	//------------------------------ MUON
 	iEvent.getByLabel(muonsTAG, muonsHandle);
@@ -256,11 +256,11 @@ void MuonSelectionProducers::produce(edm::Event& iEvent, const edm::EventSetup& 
 
 	//------------------------------
 	// put the ValueMap in the event
-	iEvent.put(fiducialMap, "fiducial");
-	iEvent.put(looseMap, "loose");
-	iEvent.put(softMap, "soft");
-	iEvent.put(tightMap, "tight");
-	iEvent.put(highPTMap, "highPT");
+	iEvent.put(std::move(fiducialMap), "fiducial");
+	iEvent.put(std::move(looseMap), "loose");
+	iEvent.put(std::move(softMap), "soft");
+	iEvent.put(std::move(tightMap), "tight");
+	iEvent.put(std::move(highPTMap), "highPT");
 
 }
 

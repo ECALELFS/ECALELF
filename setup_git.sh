@@ -10,8 +10,11 @@ checkVERSION(){
 			echo "[`basename $0` ERROR] $CMSSW_VERSION (2015 13TeV analysis) is not anymore supported by ECALELF"
 			exit 1
 			;;
-		 CMSSW_8_0_24_patch1)
+		CMSSW_8_0_24_patch1)
 			echo "[INFO] Installing for $CMSSW_VERSION (2016 13TeV)"
+			;;
+		CMSSW_9_2_0_patch5)
+			echo "[INFO] Installing for $CMSSW_VERSION (2017 13TeV)"
 			;;
 		*)
 			echo "[`basename $0` ERROR] Sorry, $CMSSW_VERSION not configured for ECALELF"
@@ -72,6 +75,9 @@ case $CMSSW_VERSION in
 		git cms-merge-topic 16790  || exit 1
 		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
 		git cms-merge-topic shervin86:slewrate || exit 1
+		;;
+    CMSSW_9_2_*)
+	        echo "[STATUS] cms-merge-topics"
 		;;
 esac
 

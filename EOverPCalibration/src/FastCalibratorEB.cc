@@ -1,7 +1,7 @@
 //adapting it to ECALELF ntuple
 
-#include "../interface/FastCalibratorEB.h"
-#include "../interface/GetHashedIndexEB.h"
+#include "Calibration/EOverPCalibration/interface/FastCalibratorEB.h"
+#include "Calibration/EOverPCalibration/interface/GetHashedIndexEB.h"
 #include <TH2.h>
 #include <TF1.h>
 #include <TStyle.h>

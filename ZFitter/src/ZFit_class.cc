@@ -171,7 +171,7 @@ TChain *ZFit_class::ImportTree(TChain *chain, TString commonCut, std::set<TStrin
 	if(chain->GetBranch("r9Weight")) chain->SetBranchStatus("r9Weight", 1);
 	chain->SetBranchStatus("R9Ele", 1);
 	chain->SetBranchStatus("etaEle", 1);
-	chain->SetBranchStatus("etaSCEle",1);
+	chain->SetBranchStatus("etaSCEle", 1);
 	chain->SetBranchStatus("recoFlagsEle", 1);
 	chain->SetBranchStatus("chargeEle", 1);
 	chain->SetBranchStatus("eleID", 1);

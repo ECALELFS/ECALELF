@@ -1,4 +1,4 @@
-#include "../interface/h2Chain.h"
+#include "Calibration/EOverPCalibration/interface/h2Chain.h"
 
 h2Chain::h2Chain (TString baseName, TString baseTitle,
                   int nbinsx, double minx, double maxx,

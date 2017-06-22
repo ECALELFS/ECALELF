@@ -75,19 +75,19 @@ class ZeeCalibration : public edm::ESProducerLooper
 public:
 
 	/// Constructor
-	ZeeCalibration( const edm::ParameterSet& iConfig );
+	ZeeCalibration( const edm::ParameterSet& );
 
 	/// Destructor
-	~ZeeCalibration();
+	~ZeeCalibration() = default;
 
 	/// Dummy implementation (job done in duringLoop)
 	virtual void produce(edm::Event&, const edm::EventSetup&) {};
 
 	/// Called at beginning of job
-	virtual void beginOfJob();
+	virtual void beginOfJob() override;
 
 	/// Called at end of job
-	virtual void endOfJob();
+	virtual void endOfJob() override;
 
 	/// Called at beginning of loop
 	virtual void startingNewLoop( unsigned int iLoop );
@@ -99,7 +99,7 @@ public:
 	virtual Status duringLoop( const edm::Event&, const edm::EventSetup& );
 
 	/// Produce Ecal interCalibrations
-	virtual boost::shared_ptr<EcalIntercalibConstants> produceEcalIntercalibConstants( const EcalIntercalibConstantsRcd& iRecord );
+	virtual std::shared_ptr<EcalIntercalibConstants> produceEcalIntercalibConstants( const EcalIntercalibConstantsRcd& );
 
 private:
 
@@ -114,11 +114,16 @@ private:
 	int ringNumberCorrector(int k);
 	double getEtaCorrection(const reco::GsfElectron*);
 
-	\
-	void fillEleInfo(std::vector<HepMC::GenParticle*>& a, std::map<HepMC::GenParticle*, const reco::GsfElectron*>& b);
-	void fillMCInfo(HepMC::GenParticle* mcele);
 
-	void fillMCmap(const std::vector<const reco::GsfElectron*>* electronCollection, const std::vector<HepMC::GenParticle*>& mcEle, std::map<HepMC::GenParticle*, const reco::GsfElectron*>& myMCmap);
+	void fillEleInfo(std::vector<HepMC::GenParticle*>&,
+	                 std::map<HepMC::GenParticle*,
+	                 const reco::GsfElectron*>&);
+	void fillMCInfo(HepMC::GenParticle*);
+
+	void fillMCmap(const std::vector<const reco::GsfElectron*>*,
+	               const std::vector<HepMC::GenParticle*>&,
+	               std::map<HepMC::GenParticle*,
+	               const reco::GsfElectron*>&);
 	//  void fillMCmap(const reco::ElectronCollection* electronCollection, const std::vector<HepMC::GenParticle*>& mcEle,std::map<HepMC::GenParticle*,const reco::Electron*>& myMCmap);
 
 	float EvalDPhi(float Phi, float Phi_ref);
@@ -133,7 +138,9 @@ private:
 
 	void printStatistics();
 
-	std::pair<DetId, double> getHottestDetId(const std::vector<std::pair<DetId, float> >& mySCRecHits, const EBRecHitCollection* ebhits , const EERecHitCollection* eehits);
+	std::pair<DetId, double> getHottestDetId(const std::vector<std::pair<DetId, float> >&,
+	        const EBRecHitCollection*,
+	        const EERecHitCollection*);
 
 	bool xtalIsOnModuleBorder( EBDetId myEBDetId );
 
@@ -193,7 +200,7 @@ private:
 	float calibCoeffError[nMaxChannels];
 	float initCalibCoeff[nMaxChannels];
 
-	boost::shared_ptr<EcalIntercalibConstants> ical;
+	std::shared_ptr<EcalIntercalibConstants> ical;
 
 	ZIterativeAlgorithmWithFit* theAlgorithm_;
 

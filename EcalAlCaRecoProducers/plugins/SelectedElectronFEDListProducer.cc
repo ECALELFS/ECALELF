@@ -567,7 +567,7 @@ void SelectedElectronFEDListProducer<TEle, TCand>::produce(edm::Event & iEvent, 
 	}
 
 	// make the final raw data collection
-	std::auto_ptr<FEDRawDataCollection> streamFEDRawProduct(new FEDRawDataCollection());
+	std::unique_ptr<FEDRawDataCollection> streamFEDRawProduct(new FEDRawDataCollection());
 	std::sort(fedList_.begin(), fedList_.end());
 	std::vector<uint32_t>::const_iterator itfedList = fedList_.begin();
 	for( ; itfedList != fedList_.end() ; ++itfedList) {
@@ -580,7 +580,7 @@ void SelectedElectronFEDListProducer<TEle, TCand>::produce(edm::Event & iEvent, 
 		}
 	}
 
-	iEvent.put(streamFEDRawProduct, outputLabelModule_);
+	iEvent.put(std::move( streamFEDRawProduct ), outputLabelModule_);
 
 	if(!fedList_.empty())   fedList_.clear();
 

@@ -1,9 +1,9 @@
-#include "../interface/FastCalibratorEE.h"
-#include "../interface/GetHashedIndexEE.h"
+#include "Calibration/EOverPCalibration/interface/FastCalibratorEE.h"
+#include "Calibration/EOverPCalibration/interface/GetHashedIndexEE.h"
 #include <fstream>
 #include <TRandom3.h>
 #include <TString.h>
-#include "../interface/CalibrationUtils.h"
+#include "Calibration/EOverPCalibration/interface/CalibrationUtils.h"
 
 
 /// Default constructor
