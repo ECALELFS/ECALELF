@@ -34,7 +34,7 @@ public :
 
 	///! List of class methods
 
-	FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEB, TString outEPDistribution = "NULL");
+	FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScaleElectrons, std::vector<TGraphErrors*> & inputMomentumScalePositrons, const std::string& typeEB, TString outEPDistribution = "NULL");
 
 	virtual ~FastCalibratorEB();
 
@@ -63,8 +63,8 @@ public :
 
 	// Public Variables
 
-	std::vector<TGraphErrors*> myMomentumScale;
-	std::vector<TGraphErrors*> myEnergyScale;
+	std::vector<TGraphErrors*> myMomentumScaleElectrons;
+	std::vector<TGraphErrors*> myMomentumScalePositrons;
 	std::string myTypeEB;
 
 	TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -78,7 +78,7 @@ public :
 	Int_t           isW;
 	Int_t           isZ;
 
-	Int_t           chargeEle[3];
+	Short_t           chargeEle[3];
 	Float_t         etaEle[3];
 	Float_t         PtEle[3];
 	Float_t         phiEle[3];

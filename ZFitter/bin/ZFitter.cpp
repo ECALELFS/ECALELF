@@ -289,8 +289,8 @@ int main(int argc, char **argv)
 	float EPMin;
 	int smoothCut;
 	int miscalibMethod;
-	std::string inputMomentumScale;
-	std::string inputEnergyScale;
+	std::string inputMomentumScaleElectrons;
+	std::string inputMomentumScalePositrons;
 	std::string typeEB;
 	std::string typeEE;
 	std::string outputFile;
@@ -468,9 +468,9 @@ int main(int argc, char **argv)
 	("isR9selection", po::value<bool>(&isR9selection)->default_value(false), "apply R9 selection")
 	("R9Min", po::value<float>(&R9Min)->default_value(-1.), "R9 treshold")
 	("applyPcorr", po::value<bool>(&applyPcorr)->default_value(true), "apply momentum correction")
-	("inputMomentumScale", po::value<string>(&inputMomentumScale)->default_value("/afs/cern.ch/user/l/lbrianza/work/public/EoP_additionalFiles/MomentumCalibration2015_eta1_eta1.root"), "input momentum scale")
+	("inputMomentumScaleElectrons", po::value<string>(&inputMomentumScaleElectrons)->default_value("/afs/cern.ch/user/l/lbrianza/work/public/EoP_additionalFiles/MomentumCalibration2015_eta1_eta1.root"), "input momentum scale for electrons")
 	("applyEcorr", po::value<bool>(&applyEcorr)->default_value(false), "apply energy correction")
-	("inputEnergyScale", po::value<string>(&inputEnergyScale)->default_value("/afs/cern.ch/user/l/lbrianza/work/public/EoP_additionalFiles/momentumCalibration2015_EB_scE.root"), "input energy scale")
+	("inputMomentumScalePositrons", po::value<string>(&inputMomentumScalePositrons)->default_value("/afs/cern.ch/user/l/lbrianza/work/public/EoP_additionalFiles/momentumCalibration2015_EB_scE.root"), "input momentum scale for positrons")
 	("typeEB", po::value<string>(&typeEB)->default_value("eta1"), "")
 	("typeEE", po::value<string>(&typeEE)->default_value("eta1"), "")
 	("outputFile", po::value<string>(&outputFile)->default_value("FastCalibrator_Oct2015_runD"), "output file for E/P calibration")
@@ -1169,29 +1169,32 @@ int main(int argc, char **argv)
 			std::cout << "---- START E/P CALIBRATION: ENDCAP ----" << std::endl;
 		}
 
-		int nRegions = (isEB) ? GetNRegionsEB(typeEB) : GetNRegionsEE(typeEE);
+		//		int nRegions = (isEB) ? GetNRegionsEB(typeEB) : GetNRegionsEE(typeEE);
 
 		system(("mkdir -p " + outDirFitResData).c_str());
 
-		/// open calibration momentum graph
-		TFile* momentumscale = new TFile((inputMomentumScale.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
+		/// open calibration momentum graph (electrons)
+		TFile* momentumscaleElectrons = new TFile((inputMomentumScaleElectrons.c_str()));//+"_"+typeEB+"_"+typeEE+".root").c_str());
 		std::vector<TGraphErrors*> g_EoC;
 
 		TString Name = (isEB) ? "g_EoC_EB_0" : "g_EoC_EE_0";
-		g_EoC.push_back( (TGraphErrors*)(momentumscale->Get(Name)) );
+		g_EoC.push_back( (TGraphErrors*)(momentumscaleElectrons->Get(Name)) );
 
-		std::cout << "momentum calibration file correctly opened" << std::endl;
+		std::cout << "momentum calibration file for electrons correctly opened" << std::endl;
 
-		/// open calibration energy graph
-		TFile* energyscale = new TFile((inputEnergyScale.c_str()));
+		/// open calibration momentum graph (positrons)
+		TFile* momentumscalePositrons = new TFile((inputMomentumScalePositrons.c_str()));
 		std::vector<TGraphErrors*> g_EoE;
 
+		g_EoE.push_back( (TGraphErrors*)(momentumscalePositrons->Get(Name)) );
+
+		std::cout << "momentum calibration file for positrons correctly opened" << std::endl;
+
+		/*
 		for(int i = 0; i < nRegions; ++i) {
 			TString Name = "g_pData_" + partition + Form("_0_%d", i);
-			g_EoE.push_back( (TGraphErrors*)(energyscale->Get(Name)) );
-		}
-
-		std::cout << "energy calibration file correctly opened" << std::endl;
+			g_EoE.push_back( (TGraphErrors*)(momentumscalePositrons->Get(Name)) );
+			} */
 
 		///Use the whole sample statistics if numberOfEvents < 0
 		if ( numberOfEvents < 0 ) numberOfEvents = data->GetEntries();
@@ -1214,14 +1217,14 @@ int main(int argc, char **argv)
 
 			std::cout << "start calibration. " << std::endl;
 
-			FastCalibratorEB analyzerEB(data, g_EoC, g_EoE, typeEB, outEPDistribution);
-			FastCalibratorEE analyzerEE(data, g_EoC, g_EoE, typeEE, outEPDistribution);
 			if(isEB) {
+			        FastCalibratorEB analyzerEB(data, g_EoC, g_EoE, typeEB, outEPDistribution);
 				analyzerEB.bookHistos(nLoops);
 				analyzerEB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzerEB.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth, miscalibMethod, miscalibMap);
 				analyzerEB.saveHistos(outputName);
 			} else {
+			        FastCalibratorEE analyzerEE(data, g_EoC, g_EoE, typeEE, outEPDistribution);
 				analyzerEE.bookHistos(nLoops);
 				analyzerEE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzerEE.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
@@ -1241,35 +1244,32 @@ int main(int argc, char **argv)
 			name2 = name1;
 			name2.ReplaceAll("even", "odd");
 
-			TFile *outputName1 = new TFile(outDirFitResData + name1, "RECREATE");
-			TFile *outputName2 = new TFile(outDirFitResData + name2, "RECREATE");
+			TFile *outputName1 = new TFile(name1, "RECREATE");
+			TFile *outputName2 = new TFile(name2, "RECREATE");
 
 			TString DeadXtal = Form("%s", inputFileDeadXtal.c_str());
 
-			/// Run on odd
-			FastCalibratorEB analyzer_even_EB(data, g_EoC, g_EoE, typeEB);
-			FastCalibratorEB analyzer_odd_EB(data, g_EoC, g_EoE, typeEB);
-
-			FastCalibratorEE analyzer_even_EE(data, g_EoC, g_EoE, typeEE);
-			FastCalibratorEE analyzer_odd_EE(data, g_EoC, g_EoE, typeEE);
 			if(isEB) {
+			        FastCalibratorEB analyzer_even_EB(data, g_EoC, g_EoE, typeEB);
 				analyzer_even_EB.bookHistos(nLoops);
 				analyzer_even_EB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_even_EB.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
 				analyzer_even_EB.saveHistos(outputName1);
 
+				FastCalibratorEB analyzer_odd_EB(data, g_EoC, g_EoE, typeEB);
 				analyzer_odd_EB.bookHistos(nLoops);
 				analyzer_odd_EB.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_odd_EB.Loop(numberOfEvents, useZ, useW, -splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
 				analyzer_odd_EB.saveHistos(outputName2);
 
 			} else {
+			        FastCalibratorEE analyzer_even_EE(data, g_EoC, g_EoE, typeEE);
 				analyzer_even_EE.bookHistos(nLoops);
 				analyzer_even_EE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_even_EE.Loop(numberOfEvents, useZ, useW, splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);
 				analyzer_even_EE.saveHistos(outputName1);
 
-
+				FastCalibratorEE analyzer_odd_EE(data, g_EoC, g_EoE, typeEE);
 				analyzer_odd_EE.bookHistos(nLoops);
 				analyzer_odd_EE.AcquireDeadXtal(DeadXtal, isDeadTriggerTower);
 				analyzer_odd_EE.Loop(numberOfEvents, useZ, useW, -splitStat, nLoops, applyPcorr, applyEcorr, useRawEnergy, isMiscalib, isSaveEPDistribution, isEPselection, isR9selection, R9Min, EPMin, smoothCut, isfbrem, fbremMax, isPtCut, PtMin, isMCTruth,  miscalibMethod, miscalibMap);

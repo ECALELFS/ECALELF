@@ -16,7 +16,7 @@
 
 ///==== Default constructor Contructor
 
-FastCalibratorEB::FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEB, TString outEPDistribution):
+FastCalibratorEB::FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScaleElectrons, std::vector<TGraphErrors*> & inputMomentumScalePositrons, const std::string& typeEB, TString outEPDistribution):
 	outEPDistribution_p(outEPDistribution)
 {
 
@@ -32,8 +32,8 @@ FastCalibratorEB::FastCalibratorEB(TTree *tree, std::vector<TGraphErrors*> & inp
 	Init(tree);
 
 	// Set my momentum scale using the input graphs
-	myMomentumScale = inputMomentumScale;
-	myEnergyScale = inputEnergyScale;
+	myMomentumScaleElectrons = inputMomentumScaleElectrons;
+	myMomentumScalePositrons = inputMomentumScalePositrons;
 	myTypeEB = typeEB;
 }
 
@@ -136,20 +136,20 @@ void FastCalibratorEB::Init(TTree *tree)
 	fChain->SetBranchAddress("chargeEle", chargeEle);
 	fChain->SetBranchStatus("etaEle", 1);
 	fChain->SetBranchAddress("etaEle", &etaEle, &b_etaEle);
-	fChain->SetBranchStatus("PtEle", 1);
-	fChain->SetBranchAddress("PtEle", &PtEle, &b_PtEle);
+	//	fChain->SetBranchStatus("PtEle", 1);
+	//fChain->SetBranchAddress("PtEle", &PtEle, &b_PtEle);
 	fChain->SetBranchStatus("phiEle", 1);
 	fChain->SetBranchAddress("phiEle", &phiEle, &b_phiEle);
 	fChain->SetBranchStatus("rawEnergySCEle", 1);
 	fChain->SetBranchAddress("rawEnergySCEle", &rawEnergySCEle, &b_rawEnergySCEle);
-	fChain->SetBranchStatus("energySCEle_must", 1);
-	fChain->SetBranchAddress("energySCEle_must", &energySCEle, &b_energySCEle);
+	fChain->SetBranchStatus("energy_ECAL_ele", 1);
+	fChain->SetBranchAddress("energy_ECAL_ele", &energySCEle, &b_energySCEle); //OLD ENERGY: energySCEle_must
 	//  fChain->SetBranchStatus("energySCEle", 1);             fChain->SetBranchAddress("energySCEle", &energySCEle, &b_energySCEle);
 	fChain->SetBranchStatus("etaSCEle", 1);
 	fChain->SetBranchAddress("etaSCEle", &etaSCEle, &b_etaSCEle);
 	fChain->SetBranchStatus("esEnergySCEle", 1);
 	fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle, &b_esEnergySCEle);
-	fChain->SetBranchStatus("pAtVtxGsfEle", 1);
+	fChain->SetBranchStatus("pAtVtxGsfEle", 1); //please test also with: pModeGsfEle
 	fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle, &b_pAtVtxGsfEle);
 	fChain->SetBranchStatus("fbremEle", 1);
 	fChain->SetBranchAddress("fbremEle", &fbremEle, &b_fbremEle);
@@ -269,8 +269,8 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			FdiEta = energySCEle[0] / rawEnergySCEle[0]; /// FEta approximation
 			if (useRawEnergy == 1)
 				FdiEta = 1.;
-			if (applyEnergyCorrection)
-				FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
+			//			if (applyEnergyCorrection)
+			//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
 
 			float thisE = 0;
 			int   iseed = 0 ;
@@ -323,8 +323,10 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if(!isMCTruth)  {
 				pIn = pAtVtxGsfEle[0];
 				//       int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
-				if (applyMomentumCorrection)
-					pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+				if (applyMomentumCorrection) {
+				  if (chargeEle[0]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[0] );
+				  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[0] );
+				}
 			} else {
 				pIn = energyMCEle[0];
 				ele1_DR     = TMath::Sqrt((etaMCEle[0] - etaEle[0]) * (etaMCEle[0] - etaEle[0]) + (phiMCEle[0] - phiEle[0]) * (phiMCEle[0] - phiEle[0])) ;
@@ -338,7 +340,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if( fabs(fbremEle[0]) > fbremMax  && isfbrem == true ) skipElectron = true;
 
 			/// fbrem Selection
-			if( PtEle[0] < PtMin  && isPtCut == true ) skipElectron = true;
+			if( (energySCEle[0]/cosh(etaEle[0])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 			/// Save electron E/p in a chain of histogramm each for eta bin
 			if(!skipElectron)    hC_EoP_eta_ele -> Fill(eta_seed + 85, thisE / pIn);
@@ -352,8 +354,8 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			FdiEta = energySCEle[1] / rawEnergySCEle[1]; /// FEta approximation
 			if (useRawEnergy == 1)
 				FdiEta = 1.;
-			if (applyEnergyCorrection)
-				FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
+			//			if (applyEnergyCorrection)
+			//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
 
 			float thisE = 0;
 			int   iseed = 0 ;
@@ -407,9 +409,10 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if(!isMCTruth)  {
 				pIn = pAtVtxGsfEle[1];
 				//	 int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
-				if (applyMomentumCorrection)
-					pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
-				//         pIn /= myMomentumScale[regionId] -> Eval( phiEle[1] );
+				if (applyMomentumCorrection) {
+				  if (chargeEle[1]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[1] );
+				  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[1] );
+				}
 			} else {
 				pIn = energyMCEle[1];
 				ele2_DR     = TMath::Sqrt((etaMCEle[1] - etaEle[1]) * (etaMCEle[1] - etaEle[1]) + (phiMCEle[1] - phiEle[1]) * (phiMCEle[1] - phiEle[1])) ;
@@ -423,7 +426,7 @@ void FastCalibratorEB::BuildEoPeta_ele(int iLoop, int nentries , int useW, int u
 			if( fabs(fbremEle[1]) > fbremMax  && isfbrem == true ) skipElectron = true;
 
 			/// fbrem Selection
-			if( PtEle[1] < PtMin  && isPtCut == true ) skipElectron = true;
+			if( (energySCEle[1]/cosh(etaEle[1])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 			/// Save E/p electron information
 			if(!skipElectron) hC_EoP_eta_ele -> Fill(eta_seed + 85, thisE / pIn);
@@ -582,8 +585,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				FdiEta = energySCEle[0] / rawEnergySCEle[0];
 				if (useRawEnergy == 1)
 					FdiEta = 1.;
-				if (applyEnergyCorrection)
-					FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
+				//				if (applyEnergyCorrection)
+				//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[0] );
 
 				float thisE = 0;
 				int iseed = 0 ;
@@ -636,8 +639,10 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if(!isMCTruth)  {
 					pIn = pAtVtxGsfEle[0];
 					//	    int regionId = templIndexEB(myTypeEB,etaEle[0],chargeEle[0],thisE3x3/thisE);
-					if (applyMomentumCorrection)
-						pIn /= myMomentumScale[0] -> Eval( phiEle[0] );
+					if (applyMomentumCorrection) {
+					  if (chargeEle[0]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[0] );
+					  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[0] );
+					}
 				} else {
 					pIn = energyMCEle[0];
 					ele1_DR     = TMath::Sqrt((etaMCEle[0] - etaEle[0]) * (etaMCEle[0] - etaEle[0]) + (phiMCEle[0] - phiEle[0]) * (phiMCEle[0] - phiEle[0]));
@@ -653,7 +658,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if( fabs(thisE / pIn  - 1) > 0.3 && isEPselection == true ) skipElectron = true;
 				if( fabs(thisE3x3 / thisE) < R9Min && isR9selection == true ) skipElectron = true;
 				if( fabs(fbremEle[0]) > fbremMax  && isfbrem == true ) skipElectron = true;
-				if( PtEle[0] < PtMin  && isPtCut == true ) skipElectron = true;
+				if( (energySCEle[0]/cosh(etaEle[0])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 				if( thisE / pIn < EoPHisto->GetXaxis()->GetXmin() || thisE / pIn > EoPHisto->GetXaxis()->GetXmax()) skipElectron = true;
 				if( !skipElectron) {
@@ -722,8 +727,8 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				FdiEta = energySCEle[1] / rawEnergySCEle[1];
 				if (useRawEnergy == 1)
 					FdiEta = 1.;
-				if (applyEnergyCorrection)
-					FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
+				//				if (applyEnergyCorrection)
+				//	FdiEta /= myEnergyScale[0] -> Eval( phiEle[1] );
 
 				// Electron energy
 				float thisE = 0;
@@ -779,8 +784,10 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if(!isMCTruth) {
 					pIn = pAtVtxGsfEle[1];
 					//	    int regionId = templIndexEB(myTypeEB,etaEle[1],ele2_charge,thisE3x3/thisE);
-					if (applyMomentumCorrection)
-						pIn /= myMomentumScale[0] -> Eval( phiEle[1] );
+					if (applyMomentumCorrection) {
+					  if (chargeEle[1]<0)					pIn /= myMomentumScaleElectrons[0] -> Eval( phiEle[1] );
+					  else                                                  pIn /= myMomentumScalePositrons[0] -> Eval( phiEle[1] );
+					}
 				} else {
 					pIn = energyMCEle[1];
 					ele2_DR     = TMath::Sqrt((etaMCEle[1] - etaEle[1]) * (etaMCEle[1] - etaEle[1]) + (phiMCEle[1] - phiEle[1]) * (phiMCEle[1] - phiEle[1]));
@@ -794,7 +801,7 @@ void FastCalibratorEB::Loop( int nentries, int useZ, int useW, int splitStat, in
 				if( fabs(thisE / pIn  - 1) > 0.3 && isEPselection == true ) skipElectron = true;
 				if( fabs(thisE3x3 / thisE) < R9Min && isR9selection == true ) skipElectron = true;
 				if( fabs(fbremEle[1]) > fbremMax  && isfbrem == true ) skipElectron = true;
-				if( PtEle[1] < PtMin  && isPtCut == true ) skipElectron = true;
+				if( (energySCEle[1]/cosh(etaEle[1])) < PtMin  && isPtCut == true ) skipElectron = true;
 
 				if( !skipElectron ) {
 

@@ -59,40 +59,40 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 
 	fChain->SetBranchStatus("*", 0);
 	fChain->SetBranchStatus("runNumber", 1);
-	fChain->SetBranchStatus("runTime", 1);
+	fChain->SetBranchStatus("eventTime", 1);
 	fChain->SetBranchStatus("nPU", 1);
 	fChain->SetBranchStatus("nPV", 1);
-	fChain->SetBranchStatus("avgLCSCEle", 1);
+	fChain->SetBranchStatus("avgLCSC", 1);
 	//  fChain->SetBranchStatus("seedLaserAlphaSCEle1",1);
 	//  fChain->SetBranchStatus("ele1_EOverP",1);
 	fChain->SetBranchStatus("etaSCEle", 1);
 	fChain->SetBranchStatus("phiSCEle", 1);
-	fChain->SetBranchStatus("energySCEle_must", 1);
-	fChain->SetBranchStatus("energySCEle_corr", 1);
+	fChain->SetBranchStatus("energy_ECAL_ele", 1);
+	fChain->SetBranchStatus("energyEle", 1);
 	fChain->SetBranchStatus("esEnergySCEle", 1);
 	fChain->SetBranchStatus("pAtVtxGsfEle", 1);
-	fChain->SetBranchStatus("seedXSCEle", 1);
-	fChain->SetBranchStatus("seedYSCEle", 1);
+	fChain->SetBranchStatus("xSeedSC", 1);
+	fChain->SetBranchStatus("ySeedSC", 1);
 	//  fChain->SetBranchStatus("ele1_seedZside",1);
 
 	fChain->SetBranchAddress("runNumber", &runNumber);
-	fChain->SetBranchAddress("runTime", &runTime);
+	fChain->SetBranchAddress("eventTime", &runTime);
 	fChain->SetBranchAddress("nPU", &nPU);
 	fChain->SetBranchAddress("nPV", &nPV);
-	fChain->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
+	fChain->SetBranchAddress("avgLCSC", &avgLCSCEle[0]);
 	//fChain->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
 	//  fChain->SetBranchAddress("ele1_EOverP", &EoP);
 	fChain->SetBranchAddress("etaSCEle", &etaSCEle);
 	fChain->SetBranchAddress("phiSCEle", &phiSCEle);
 	if( useRegression < 1 )
-		fChain->SetBranchAddress("energySCEle_must", &energySCEle);
+		fChain->SetBranchAddress("energy_ECAL_ele", &energySCEle);
 	else
-		fChain->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
+		fChain->SetBranchAddress("energy_ECAL_ele", &energySCEle_corr);
 	//  fChain->SetBranchAddress("energySCEle_corr", &energySCEle);
 	fChain->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
 	fChain->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
-	fChain->SetBranchAddress("seedXSCEle", &seedXSCEle);
-	fChain->SetBranchAddress("seedYSCEle", &seedYSCEle);
+	fChain->SetBranchAddress("xSeedSC", &seedXSCEle);
+	fChain->SetBranchAddress("ySeedSC", &seedYSCEle);
 	//  fChain->SetBranchAddress("ele1_seedZside", &seedZside);
 
 
@@ -108,40 +108,40 @@ void LaserMonitoringEoP::Init(TTree *tree, TTree *treeMC, int useRegression)
 
 	fChainMC->SetBranchStatus("*", 0);
 	fChainMC->SetBranchStatus("runNumber", 1);
-	fChainMC->SetBranchStatus("runTime", 1);
+	fChainMC->SetBranchStatus("eventTime", 1);
 	fChainMC->SetBranchStatus("nPU", 1);
 	fChainMC->SetBranchStatus("nPV", 1);
-	fChainMC->SetBranchStatus("avgLCSCEle", 1);
+	fChainMC->SetBranchStatus("avgLCSC", 1);
 	//  fChainMC->SetBranchStatus("seedLaserAlphaSCEle1",1);
 	//  fChainMC->SetBranchStatus("ele1_EOverP",1);
 	fChainMC->SetBranchStatus("etaSCEle", 1);
 	fChainMC->SetBranchStatus("phiSCEle", 1);
-	fChainMC->SetBranchStatus("energySCEle_must", 1);
-	fChainMC->SetBranchStatus("energySCEle_corr", 1);
+	fChainMC->SetBranchStatus("energy_ECAL_ele", 1);
+	fChainMC->SetBranchStatus("energyEle", 1);
 	fChainMC->SetBranchStatus("esEnergySCEle", 1);
 	fChainMC->SetBranchStatus("pAtVtxGsfEle", 1);
-	fChainMC->SetBranchStatus("seedXSCEle", 1);
-	fChainMC->SetBranchStatus("seedYSCEle", 1);
+	fChainMC->SetBranchStatus("xSeedSC", 1);
+	fChainMC->SetBranchStatus("ySeedSC", 1);
 	//  fChainMC->SetBranchStatus("ele1_seedZside",1);
 
 	fChainMC->SetBranchAddress("runNumber", &runNumber);
-	fChainMC->SetBranchAddress("runTime", &runTime);
+	fChainMC->SetBranchAddress("eventTime", &runTime);
 	fChainMC->SetBranchAddress("nPU", &nPU);
 	fChainMC->SetBranchAddress("nPV", &nPV);
-	fChainMC->SetBranchAddress("avgLCSCEle", &avgLCSCEle[0]);
+	fChainMC->SetBranchAddress("avgLCSC", &avgLCSCEle[0]);
 	//fChainMC->SetBranchAddress("seedLaserAlphaSCEle1", &seedLaserAlphaSCEle1);
 	//  fChainMC->SetBranchAddress("ele1_EOverP", &EoP);
 	fChainMC->SetBranchAddress("etaSCEle", &etaSCEle);
 	fChainMC->SetBranchAddress("phiSCEle", &phiSCEle);
 	if( useRegression < 1 )
-		fChainMC->SetBranchAddress("energySCEle_must", &energySCEle);
+		fChainMC->SetBranchAddress("energy_ECAL_ele", &energySCEle);
 	else
-		fChainMC->SetBranchAddress("energySCEle_corr", &energySCEle_corr);
+		fChainMC->SetBranchAddress("energy_ECAL_ele", &energySCEle_corr);
 	//  fChainMC->SetBranchAddress("energySCEle_corr", &energySCEle);
 	fChainMC->SetBranchAddress("esEnergySCEle", &esEnergySCEle);
 	fChainMC->SetBranchAddress("pAtVtxGsfEle", &pAtVtxGsfEle);
-	fChainMC->SetBranchAddress("seedXSCEle", &seedXSCEle);
-	fChainMC->SetBranchAddress("seedYSCEle", &seedYSCEle);
+	fChainMC->SetBranchAddress("xSeedSC", &seedXSCEle);
+	fChainMC->SetBranchAddress("ySeedSC", &seedYSCEle);
 	//  fChainMC->SetBranchAddress("ele1_seedZside", &seedZside);
 
 }
@@ -263,6 +263,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 	// Define in/outfiles
 
 	std::string folderName = std::string(EBEE) + "_" + dayMinLabel + "_" + dayMaxLabel;
+	/*
 	if( (absEtaMin != -1.) && (absEtaMax != -1.) ) {
 		char absEtaBuffer[50];
 		sprintf(absEtaBuffer, "_%.2f-%.2f", absEtaMin, absEtaMax);
@@ -274,7 +275,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 		sprintf(absEtaBuffer, "_Ieta_%d-%d_Iphi_%d-%d", IetaMin, IetaMax, IphiMin, IphiMax);
 		folderName += std::string(absEtaBuffer);
 	}
-
+	*/
 	gSystem->mkdir(folderName.c_str());
 	TFile* o = new TFile((folderName + "/" + folderName + "_histos.root").c_str(), "RECREATE");
 
@@ -1645,6 +1646,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 
 	//ciao
 
+	/*
 	for(int i = 0; i < nBins; ++i) {
 		gStyle->SetOptFit(1111);
 
@@ -1656,6 +1658,7 @@ void LaserMonitoringEoP::Loop( float yMIN, float yMAX, std::string EBEE, int evt
 		//
 		//  h_Cvl[i] -> Write();
 	}
+	*/
 
 	o -> Close();
 

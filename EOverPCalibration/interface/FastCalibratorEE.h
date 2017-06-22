@@ -34,7 +34,7 @@ class FastCalibratorEE
 public :
 
 	///! Class methods
-	FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScale, std::vector<TGraphErrors*> & inputEnergyScale, const std::string& typeEE, TString outEPDistribution = "NULL");
+	FastCalibratorEE(TTree *tree, std::vector<TGraphErrors*> & inputMomentumScaleElectrons, std::vector<TGraphErrors*> & inputMomentumScalePositrons, const std::string& typeEE, TString outEPDistribution = "NULL");
 
 	virtual ~FastCalibratorEE();
 
@@ -60,8 +60,8 @@ public :
 	virtual bool     CheckDeadXtal(const int & iX, const int & iY, const int & iZ);
 
 
-	std::vector<TGraphErrors*> myMomentumScale;
-	std::vector<TGraphErrors*> myEnergyScale;
+	std::vector<TGraphErrors*> myMomentumScaleElectrons;
+	std::vector<TGraphErrors*> myMomentumScalePositrons;
 	std::string myTypeEE;
 
 	TTree          *fChain;   //!pointer to the analyzed TTree or TChain
@@ -76,7 +76,7 @@ public :
 	Int_t           isW;
 	Int_t           isZ;
 
-	Int_t           chargeEle[3];
+	Short_t           chargeEle[3];
 	Float_t         etaEle[3];
 	Float_t         PtEle[3];
 	Float_t         phiEle[3];
