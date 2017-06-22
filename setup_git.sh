@@ -51,7 +51,8 @@ myDir=Calibration
 if [ ! -d "$myDir" ];then
     case "$USER" in 
 		shervin)
-			git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+#			git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+			git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 			;;
 		*)
             ### if you are not Shervin download this to have some useful scripts
