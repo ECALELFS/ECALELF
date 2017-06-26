@@ -14,12 +14,16 @@ parser.add_argument("--plotdir", help="outdir for plots", default="plots/")
 parser.add_argument("--noPU", help="no pileup weights", default=False, action="store_true")
 parser.add_argument("--noEleIDSF", help="no EleIDSF weights", default=False, action="store_true")
 parser.add_argument("--noScales", help="no scales on data", default=False, action="store_true")
+parser.add_argument("--nEntries", help="number of entries to go over in TTree::Draw()", default=None, type=int)
 
 args = parser.parse_args()
 
 sys.path.insert(0, os.getcwd() + '/python')
 import plot
 import ROOT
+
+if args.nEntries:
+	plot.ndraw_entries = args.nEntries
 
 #plot.ndraw_entries = 100000
 ROOT.gROOT.SetBatch(True)

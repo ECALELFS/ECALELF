@@ -45,19 +45,22 @@ class Step:
 		self.name = "Step {}".format(n)
 		for datfile in datfiles:
 			filename = dirname + "/" + datfile.format(step=n)
-			with open(filename, "r") as f:
-				for line in f:
-					if "phi4" in line: continue
-					line = line.replace("-" + commoncut, "")
-					m = self.pattern.match(line)
-					varname, category, value, value_err = m.groups()
-					if "scale" == varname:
-						v = "${:.2f} \pm {:.3f}$".format(100* (1 - float(value)), 100*float(value_err))
-					elif "phi" == varname:
-						v = "${:.2f} \pm {:.3f}$".format( float(value), float(value_err))
-					else:
-						v = "${:.2f} \pm {:.3f}$".format(100* float(value), 100*float(value_err))
-					self.variables[varname.strip()][category.strip()] = v
+			try:
+				with open(filename, "r") as f:
+					for line in f:
+						if "phi4" in line: continue
+						line = line.replace("-" + commoncut, "")
+						m = self.pattern.match(line)
+						varname, category, value, value_err = m.groups()
+						if "scale" == varname:
+							v = "${:.2f} \pm {:.3f}$".format(100* (1 - float(value)), 100*float(value_err))
+						elif "phi" == varname:
+							v = "${:.2f} \pm {:.3f}$".format( float(value), float(value_err))
+						else:
+							v = "${:.2f} \pm {:.3f}$".format(100* float(value), 100*float(value_err))
+						self.variables[varname.strip()][category.strip()] = v
+			except:
+				pass
 	def __str__(self):
 		s = ""
 		for var in self.variables:
