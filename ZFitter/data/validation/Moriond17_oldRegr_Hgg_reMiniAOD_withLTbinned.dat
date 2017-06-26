@@ -7,29 +7,118 @@ d6	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/n
 d7	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v16/DoubleEG-Run2016H-03Feb2017-v2-MINIAOD/281613-284035/271036-284044_23Sep2016_v1/regressionOld/DoubleEG-Run2016H-03Feb2017-v2-MINIAOD-281613-284035.root
 d8	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_dataRun2_Prompt_v16/DoubleEG-Run2016H-03Feb2017-v3-MINIAOD/284036-284044/271036-284044_23Sep2016_v1/regressionOld/DoubleEG-Run2016H-03Feb2017-v3-MINIAOD-284036-284044.root
 
-s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-RunIISummer16-miniAODv2-allRange.root
+#s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-RunIISummer16-miniAODv2-allRange.root
 
 d pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/271036-284044_23Sept_v1-nPUtrue.root
 s pileupHist /eos/project/c/cms-ecal-calibration/data/puHistos/PUMoriond17-nPUtrue.root
 
-s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_oldRegr.root
-s1 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s1-Moriond17_oldRegr.root
+#s1 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_Moriond17_oldRegr.root
+#s1 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s1-Moriond17_oldRegr.root
 #this tree should be all ones, but exists to make ZFitter happy
-s1 LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s1_LTweight_Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+#s1 LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s1_LTweight_Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
 
 #LT bins
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_5To75-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_5To75-RunIISummer16-miniAODv2-allRange.root
+s1	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_5To75-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_5To75-RunIISummer16-miniAODv2-allRange.root
 s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_75To80-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_75To80-RunIISummer16-miniAODv2-allRange.root
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2-allRange.root
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2-allRange.root
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2-allRange.root
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2-allRange.root
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2-allRange.root
-s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2-allRange.root
-#s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2-allRange.root
-#s2	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2-allRange.root
+s3	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_80To85-RunIISummer16-miniAODv2-allRange.root
+s4	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_85To90-RunIISummer16-miniAODv2-allRange.root
+s5	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_90To95-RunIISummer16-miniAODv2-allRange.root
+s6	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_95To100-RunIISummer16-miniAODv2-allRange.root
+s7	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_100To200-RunIISummer16-miniAODv2-allRange.root
+s8	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_200To400-RunIISummer16-miniAODv2-allRange.root
+s9	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_400To800-RunIISummer16-miniAODv2-allRange.root
+s10	selected	root://eoscms//eos/cms/store/group/dpg_ecal/alca_ecalcalib/ecalelf/ntuples/13TeV/MINIAODNTUPLE/80X_mcRun2_asymptotic_2016_TrancheIV_v7/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2/allRange/regressionOld/DYJets_madgraph-LT_800To2000-RunIISummer16-miniAODv2-allRange.root
 
 # These chains do not have last to LT bins
-s2	 LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s2_LTweight_Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
-s2	 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
-s2	 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+#s2	 LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s2_LTweight_Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+#s2	 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+#s2	 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+
+s1  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s1-LTregrOld.root
+s2  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s2-LTregrOld.root
+s3  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s3-LTregrOld.root
+s4  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s4-LTregrOld.root
+s5  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s5-LTregrOld.root
+s6  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s6-LTregrOld.root
+s7  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s7-LTregrOld.root
+s8  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s8-LTregrOld.root
+s9  LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s9-LTregrOld.root
+s10 LTweight /eos/project/c/cms-ecal-calibration/data/LTweight/s10-LTregrOld.root
+
+s1  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s1-LTregrOld.root
+s2  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s2-LTregrOld.root
+s3  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s3-LTregrOld.root
+s4  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s4-LTregrOld.root
+s5  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s5-LTregrOld.root
+s6  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s6-LTregrOld.root
+s7  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s7-LTregrOld.root
+s8  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s8-LTregrOld.root
+s9  EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s9-LTregrOld.root
+s10 EleIDSF_loose25nsRun22016Moriond /eos/project/c/cms-ecal-calibration/data/EleIDSF/EleIDSF_loose25nsRun22016Moriond_s10-LTregrOld.root
+
+s1  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s1_LTregrOld.root
+s2  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s2_LTregrOld.root
+s3  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s3_LTregrOld.root
+s4  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s4_LTregrOld.root
+s5  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s5_LTregrOld.root
+s6  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s6_LTregrOld.root
+s7  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s7_LTregrOld.root
+s8  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s8_LTregrOld.root
+s9  pileup /eos/project/c/cms-ecal-calibration/data/puTree/s9_LTregrOld.root
+s10 pileup /eos/project/c/cms-ecal-calibration/data/puTree/s10_LTregrOld.root
+s1	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s1-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s2	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s3	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s3-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s4	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s4-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s5	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s5-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s6	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s6-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s7	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s7-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s8	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s8-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s9	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s9-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s10	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_s10-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d1	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d1-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d2	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d3	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d3-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d4	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d4-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d5	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d5-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d6	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d6-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d7	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d7-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d8	smearerCat_scaleStep_Et_EB	/eos/project/c/cms-ecal-calibration/data/smearerCat//smearerCat_scaleStep_Et_EB_d8-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+
+s1	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s1-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s2	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s3	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s3-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s4	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s4-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s5	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s5-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s6	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s6-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s7	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s7-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s8	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s8-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s9	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s9-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s10	smearerCat_scaleStep2smearing_6	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_6_s10-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s1	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s1-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s2	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s3	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s3-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s4	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s4-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s5	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s5-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s6	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s6-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s7	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s7-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s8	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s8-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s9	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s9-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+s10	smearerCat_scaleStep2smearing_7	/eos/project/c/cms-ecal-calibration/data/smearerCat/smearerCat_scaleStep2smearing_7_s10-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+
+d1	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d1-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d2	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d3	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d3-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d4	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d4-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d5	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d5-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d6	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d6-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d7	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d7-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d8	smearerCat_scaleStep2smearing_6	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_6_d8-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d1	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d1-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d2	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d2-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d3	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d3-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d4	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d4-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d5	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d5-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d6	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d6-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d7	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d7-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
+d8	smearerCat_scaleStep2smearing_7	./test/dato/Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned/loose25nsRun22016Moriond/invMass_ECAL_pho/step5/smearerCat_scaleStep2smearing_7_d8-Moriond17_oldRegr_Hgg_reMiniAOD_withLTbinned.root
