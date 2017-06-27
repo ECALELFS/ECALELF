@@ -57,12 +57,14 @@ git cms-init
 
 #########################################################################################
 echo "[STATUS] Download ECALELF directory"
+pwd
 myDir=Calibration
 if [ ! -d "$myDir" ]; then
 	if [ -n "${BRANCH}" ]; then
 		echo "Cloning branch $BRANCH"
 		git clone  -b $BRANCH https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	else
+		echo "[INFO] user=$USER"
 		case "$USER" in 
 			shervin)
 				git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
