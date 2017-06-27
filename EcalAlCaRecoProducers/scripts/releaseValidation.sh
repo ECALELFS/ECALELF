@@ -72,6 +72,7 @@ testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "
 		echo "{$dir,test}/${logName}.dump are different" 
 		echo "you can use"
 		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
+		diff {$dir,test}/${logName}.dump
 		exit 1
 	}
 	echo "OK"
