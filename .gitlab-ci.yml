@@ -5,6 +5,7 @@ fullTest:
   variables:
     GIT_STRATEGY: none
   script:
+    - export PATH=/cvmfs/cms.cern.ch/common/scram:$PATH
     - pwd
     - wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/$BRANCH/setup_git.sh
     - chmod +x setup_git.sh
