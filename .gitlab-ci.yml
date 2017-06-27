@@ -10,6 +10,8 @@ fullTest:
     - pwd
     - wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/$BRANCH/setup_git.sh
     - git config --global user.github shervin86
+    - git config --global user.name 'TESTBOT'
+    - git config --global user.email 'shervin@cern.ch'
     - chmod +x setup_git.sh
     - ./setup_git.sh $CMSSW_VERSION $BRANCH
     - cd $CMSSW_VERSION/src/
