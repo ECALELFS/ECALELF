@@ -58,8 +58,9 @@ git cms-init
 #########################################################################################
 echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
-if [ ! -d "$myDir" ];then
-	if [ -n "${BRANCH}" ];then
+if [ ! -d "$myDir" ]; then
+	if [ -n "${BRANCH}" ]; then
+		echo "Cloning branch $BRANCH"
 		git clone  -b $BRANCH https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	else
 		case "$USER" in 
