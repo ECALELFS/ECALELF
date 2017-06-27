@@ -2,7 +2,7 @@
 echo "------------------------------"
 echo $PATH
 echo "------------------------------"
-exit 1
+
 checkVERSION(){
     case $CMSSW_VERSION in
 		CMSSW_5_3_21)
@@ -87,9 +87,9 @@ cd $CMSSW_BASE/src
 # - Last stable pattuple code:
 case $CMSSW_VERSION in
     CMSSW_8_0_*)
-		git cms-merge-topic 16790  || exit 1
-		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
-		git cms-merge-topic shervin86:slewrate || exit 1
+#		git cms-merge-topic 16790  || exit 1
+#		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
+#		git cms-merge-topic shervin86:slewrate || exit 1
 		;;
 esac
 
