@@ -1,5 +1,8 @@
 #!/bin/bash
-
+echo "------------------------------"
+echo $PATH
+echo "------------------------------"
+exit 1
 checkVERSION(){
     case $CMSSW_VERSION in
 		CMSSW_5_3_21)
@@ -57,7 +60,6 @@ git cms-init
 
 #########################################################################################
 echo "[STATUS] Download ECALELF directory"
-pwd
 myDir=Calibration
 if [ ! -d "$myDir" ]; then
 	if [ -n "${BRANCH}" ]; then
@@ -80,12 +82,12 @@ if [ ! -d "$myDir" ]; then
 fi
 
 cd $CMSSW_BASE/src
-pwd
+
 #Other package to download:
 # - Last stable pattuple code:
 case $CMSSW_VERSION in
     CMSSW_8_0_*)
-#		git cms-merge-topic 16790  || exit 1
+		git cms-merge-topic 16790  || exit 1
 		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
 		git cms-merge-topic shervin86:slewrate || exit 1
 		;;
