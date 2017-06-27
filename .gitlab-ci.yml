@@ -22,13 +22,4 @@ fullTest:
     - cd EcalAlCaRecoProducers/
     - ./scripts/releaseValidation.sh
 
-test1:
-  script: 
-   - pwd
-   - cd ../../../$CMSSW_VERSION/src/
-   - eval `scramv1 runtime -sh`
-   - which cmsRun
-   - ls -l
-   - cd Calibration/EcalAlCaRecoProducers/
-   - ./scripts/releaseValidation.sh
 
