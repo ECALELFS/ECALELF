@@ -1,0 +1,65 @@
+stages:
+  - releaseSetup
+  - compile
+  - test
+
+variables:
+  GIT_STRATEGY: none
+
+setup:
+  stage: releaseSetup 
+  script:
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin
+    - pwd
+    - git config --global user.github shervin86
+    - git config --global user.name 'TESTBOT'
+    - git config --global user.email 'shervin@cern.ch'
+    - wget -q --no-check-certificate -O setup_git-last.sh https://gitlab.cern.ch/shervin/ECALELF/raw/$CI_COMMIT_REF_NAME/setup_git.sh
+    - ls
+    - set > $HOME/gitlabset
+    - if [ -d "$CMSSW_VERSION" ] & diff -q setup_git.sh setup_git-last.sh ; then rm setup_git-last.sh; cd $CMSSW_VERSION/src/Calibration/; ls; git remote -vv; git fetch origin; echo "SETUP OK"; exit 0; fi
+    - rm $CMSSW_VERSION/ -Rf
+    - mv setup_git-last.sh setup_git.sh
+    - chmod +x setup_git.sh
+    - ./setup_git.sh $CMSSW_VERSION 
+
+cmsswCompile:
+  stage: compile
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cer
+    - pwd
+    - git config --global user.github shervin86
+    - git config --global user.name 'TESTBOT'
+    - git config --global user.email 'shervin@cern.ch'
+    - cd $CMSSW_VERSION/src/
+    - eval `scramv1 runtime -sh`
+    - cd Calibration/
+    - git checkout $CI_COMMIT_SHA
+    - scram b 
+
+ZFitterCompile:
+  stage: compile
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cer
+    - pwd
+    - cd $CMSSW_VERSION/src/
+    - eval `scramv1 runtime -sh`
+    - cd Calibration/
+    - cd ZFitter/
+    - make -j4
+
+ntuple_rereco_test:
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cer
+    - pwd
+    - cd $CMSSW_VERSION/src/
+    - eval `scramv1 runtime -sh`
+    - cd Calibration/EcalAlCaRecoProducers/
+    - ./scripts/releaseValidation.sh

@@ -1,5 +1,9 @@
 #!/bin/bash
-
+echo "------------------------------"
+echo $PATH
+echo "------------------------------"
+echo $USER
+echo "------------------------------"
 checkVERSION(){
     case $CMSSW_VERSION in
 		CMSSW_5_3_21)
@@ -10,7 +14,7 @@ checkVERSION(){
 			echo "[`basename $0` ERROR] $CMSSW_VERSION (2015 13TeV analysis) is not anymore supported by ECALELF"
 			exit 1
 			;;
-		 CMSSW_8_0_24_patch1)
+		 CMSSW_8_0_26_patch1)
 			echo "[INFO] Installing for $CMSSW_VERSION (2016 13TeV)"
 			;;
 		*)
@@ -31,6 +35,16 @@ case $# in
 		cd ${CMSSW_VERSION}/src
 		eval `scramv1 runtime -sh`
 		;;
+	2)
+		BRANCH=$2
+		echo "[STATUS] Creating $1 CMSSW release working area"
+		CMSSW_VERSION=$1
+		checkVERSION 
+		scram project CMSSW ${CMSSW_VERSION} || exit 1
+		cd ${CMSSW_VERSION}/src
+		eval `scramv1 runtime -sh`
+		;;
+	
     *)
 		checkVERSION
 		;;
@@ -48,19 +62,24 @@ git cms-init
 #########################################################################################
 echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
-if [ ! -d "$myDir" ];then
-    case "$USER" in 
-		shervin)
-#			git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-			git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
-			;;
+if [ ! -d "$myDir" ]; then
+
+		echo "[INFO] user=$USER"
+		case "$USER" in 
+			shervin)
+				git clone --single-branch https://shervin@gitlab.cern.ch/shervin/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+				;;
+			gitlab-runner)
+				git clone  https://gitlab.cern.ch/shervin/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+				;;
 		*)
             ### if you are not Shervin download this to have some useful scripts
-			git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
-			cd $myDir/EcalAlCaRecoProducers/
-			git clone  --single-branch https://github.com/ECALELFS/Utilities.git bin
-	    ;;
+				git clone  --single-branch https://shervin@gitlab.cern.ch/shervin/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+				cd $myDir/EcalAlCaRecoProducers/
+				git clone  --single-branch https://github.com/ECALELFS/Utilities.git bin
+				;;
     esac
+
 fi
 
 cd $CMSSW_BASE/src
@@ -69,9 +88,9 @@ cd $CMSSW_BASE/src
 # - Last stable pattuple code:
 case $CMSSW_VERSION in
     CMSSW_8_0_*)
-		git cms-merge-topic 16790  || exit 1
-		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
-		git cms-merge-topic shervin86:slewrate || exit 1
+#		git cms-merge-topic 16790  || exit 1
+#		git cms-merge-topic ikrav:egm_id_80X_v1 || exit 1
+#		git cms-merge-topic shervin86:slewrate || exit 1
 		;;
 esac
 

@@ -19,8 +19,9 @@ function testStep(){
 		echo -n "[`basename $0`] $stepString ... "
 		cd $dir
 		$stepCommand &> $stepLog.err || {
-			echo "${bold}ERROR${normal}"
+			echo "\n\t\t${bold}ERROR${normal}"
 			echo "See $dir/$stepLog.err"
+			cat $stepLog.err
 			exit 1
 		}
 		cd -
@@ -41,10 +42,19 @@ if [ ! -d "tmp/releaseValidation" ];then mkdir tmp/releaseValidation -p; fi
 
 case $CMSSW_VERSION in
 	CMSSW_8_0_*)
-		fileMINIAOD=/store/mc/RunIISpring16MiniAODv1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/008099CA-5501-E611-9AAE-24BE05BDCEF1.root
-		fileMINIAODData=/store/data/Run2016B/DoubleEG/MINIAOD/23Sep2016-v3/00000/F48EC9B9-A197-E611-BBBE-001E6739753A.root
-		fileALCARAWData=/store/data/Run2016B/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v2/000/275/376/00000/6EB9C0F0-E639-E611-AAD9-02163E014492.root
-		fileAODSIM=/store/mc/RunIISpring16DR80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/AODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/20000/F28F765D-A3FB-E511-B7F4-3417EBE64699.root
+		case $USER in
+			gitlab-runner)
+				fileMINIAOD=$HOME/fileMINIAOD.root
+				fileMINIAODData=$HOME/fileMINIAODData.root
+				fileALCARAWData=$HOME/fileALCARAWData.root
+				;;
+			*)
+				fileMINIAOD=/store/mc/RunIISpring16MiniAODv1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/008099CA-5501-E611-9AAE-24BE05BDCEF1.root
+				fileMINIAODData=/store/data/Run2016B/DoubleEG/MINIAOD/23Sep2016-v3/00000/F48EC9B9-A197-E611-BBBE-001E6739753A.root
+				fileALCARAWData=/store/data/Run2016B/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v2/000/275/376/00000/6EB9C0F0-E639-E611-AAD9-02163E014492.root
+				fileAODSIM=/store/mc/RunIISpring16DR80/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/AODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1/20000/F28F765D-A3FB-E511-B7F4-3417EBE64699.root
+		;;
+		esac
 		json=$PWD/test/releaseValidation.json
 #/store/data/Run2016H/DoubleEG/ALCARECO/EcalUncalZElectron-PromptReco-v3/000/284/036/00000/240108A1-599F-E611-A3A5-FA163E7F2F56.root
 		;;
@@ -72,6 +82,7 @@ testStep 1 "Testing local production of ntuples from MINIAODSIM (MC)" $logName "
 		echo "{$dir,test}/${logName}.dump are different" 
 		echo "you can use"
 		echo "wdiff -n {$dir,test}/${logName}.dump | colordiff --difftype=wdiff  | less -RS"
+		diff {$dir,test}/${logName}.dump
 		exit 1
 	}
 	echo "OK"
