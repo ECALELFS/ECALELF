@@ -9,6 +9,7 @@ fullTest:
     - which scram
     - pwd
     - wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/$BRANCH/setup_git.sh
+	- git config --global user.github shervin86
     - chmod +x setup_git.sh
     - ./setup_git.sh $CMSSW_VERSION $BRANCH
     - cd $CMSSW_VERSION/src/
