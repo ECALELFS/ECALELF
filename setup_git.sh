@@ -31,6 +31,16 @@ case $# in
 		cd ${CMSSW_VERSION}/src
 		eval `scramv1 runtime -sh`
 		;;
+	2)
+		BRANCH=$2
+		echo "[STATUS] Creating $1 CMSSW release working area"
+		CMSSW_VERSION=$1
+		checkVERSION 
+		scram project CMSSW ${CMSSW_VERSION} || exit 1
+		cd ${CMSSW_VERSION}/src
+		eval `scramv1 runtime -sh`
+		;;
+	
     *)
 		checkVERSION
 		;;
@@ -49,18 +59,21 @@ git cms-init
 echo "[STATUS] Download ECALELF directory"
 myDir=Calibration
 if [ ! -d "$myDir" ];then
-    case "$USER" in 
-		shervin)
-#			git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
-			git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
-			;;
+	if [ -n "${BRANCH}" ];then
+		git clone  -b $BRANCH https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+	else
+		case "$USER" in 
+			shervin)
+				git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+				;;
 		*)
             ### if you are not Shervin download this to have some useful scripts
-			git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
-			cd $myDir/EcalAlCaRecoProducers/
-			git clone  --single-branch https://github.com/ECALELFS/Utilities.git bin
-	    ;;
+				git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+				cd $myDir/EcalAlCaRecoProducers/
+				git clone  --single-branch https://github.com/ECALELFS/Utilities.git bin
+				;;
     esac
+	fi
 fi
 
 cd $CMSSW_BASE/src
