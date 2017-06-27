@@ -78,7 +78,7 @@ if [ ! -d "$myDir" ]; then
 fi
 
 cd $CMSSW_BASE/src
-
+pwd
 #Other package to download:
 # - Last stable pattuple code:
 case $CMSSW_VERSION in
