@@ -19,7 +19,7 @@ function testStep(){
 		echo -n "[`basename $0`] $stepString ... "
 		cd $dir
 		$stepCommand &> $stepLog.err || {
-			echo "${bold}ERROR${normal}"
+			echo "\n\t\t${bold}ERROR${normal}"
 			echo "See $dir/$stepLog.err"
 			cat $dir/$stepLog.err
 			exit 1
