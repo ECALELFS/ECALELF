@@ -5,7 +5,7 @@ fullTest:
   variables:
     GIT_STRATEGY: none
   script:
-    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin
     - which scram
     - pwd
     - wget --no-check-certificate https://raw.githubusercontent.com/ECALELFS/ECALELF/$BRANCH/setup_git.sh
