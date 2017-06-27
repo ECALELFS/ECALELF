@@ -115,7 +115,7 @@ testStep 3 "Testing local production of alcarereco from DATA" $logName "cmsRun $
 
 ################
 logName=ntuple_alcarereco_data
-echo "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=False jsonFile=$json"
+#echo "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=False jsonFile=$json"
 testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_dataRun2_Prompt_v14.py type=ALCARERECO maxEvents=-1 doTree=1 doEleIDTree=1 doTreeOnly=1 files=file:$PWD/$dir/EcalRecalElectron.root outputAll=False jsonFile=$json" || {
 
 	python test/dumpNtuple.py $dir/ 1> $dir/$logName.dump 2> $dir/${logName}_2.log || {
@@ -137,7 +137,7 @@ testStep 4 "Testing local production of ntuples from alcarereco (DATA)" $logName
 #	rm $dir/*.root
 }
 
-
+exit 0
 ################
 logName=alcareco_mc
 testStep 5 "Testing local production of ALCARECOSIM from AODSIM (MC)" $logName "cmsRun $PWD/python/alcaSkimming.py tagFile=$PWD/config/reRecoTags/80X_mcRun2_asymptotic_2016_v3.py type=ALCARECOSIM maxEvents=-1 doTree=0 doEleIDTree=0 doTreeOnly=0 files=$fileAODSIM outputAll=False jsonFile= skim=ZSkim isCrab=0" || {
