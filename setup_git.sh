@@ -13,7 +13,7 @@ checkVERSION(){
 			echo "[`basename $0` ERROR] $CMSSW_VERSION (2015 13TeV analysis) is not anymore supported by ECALELF"
 			exit 1
 			;;
-		 CMSSW_8_0_24_patch1)
+		 CMSSW_8_0_26_patch1)
 			echo "[INFO] Installing for $CMSSW_VERSION (2016 13TeV)"
 			;;
 		*)
