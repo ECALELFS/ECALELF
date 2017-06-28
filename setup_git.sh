@@ -64,16 +64,16 @@ myDir=Calibration
 if [ ! -d "$myDir" ]; then
 	if [ -n "${BRANCH}" ]; then
 		echo "Cloning branch $BRANCH"
-		git clone  -b $BRANCH https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+		git clone  -b $BRANCH https://shervin@gitlab.cern.ch/shervin/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	else
 		echo "[INFO] user=$USER"
 		case "$USER" in 
 			shervin)
-				git clone --single-branch git@github.com:ECALELFS/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
+				git clone --single-branch https://shervin@gitlab.cern.ch/shervin/ECALELF.git $myDir  >> setup.log || exit 1 # read-only mode
 				;;
 		*)
             ### if you are not Shervin download this to have some useful scripts
-				git clone  --single-branch https://github.com/ECALELFS/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
+				git clone  --single-branch https://shervin@gitlab.cern.ch/shervin/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 				cd $myDir/EcalAlCaRecoProducers/
 				git clone  --single-branch https://github.com/ECALELFS/Utilities.git bin
 				;;
