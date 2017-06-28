@@ -21,7 +21,7 @@ function testStep(){
 		$stepCommand &> $stepLog.err || {
 			echo "\n\t\t${bold}ERROR${normal}"
 			echo "See $dir/$stepLog.err"
-			cat $dir/$stepLog.err
+			cat $stepLog.err
 			exit 1
 		}
 		cd -
