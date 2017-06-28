@@ -2,7 +2,8 @@
 echo "------------------------------"
 echo $PATH
 echo "------------------------------"
-
+echo $USER
+echo "------------------------------"
 checkVERSION(){
     case $CMSSW_VERSION in
 		CMSSW_5_3_21)
@@ -81,7 +82,7 @@ if [ ! -d "$myDir" ]; then
     esac
 	fi
 fi
-exit 0
+
 cd $CMSSW_BASE/src
 
 #Other package to download:
