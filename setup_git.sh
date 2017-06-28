@@ -64,6 +64,7 @@ myDir=Calibration
 if [ ! -d "$myDir" ]; then
 	if [ -n "${BRANCH}" ]; then
 		echo "Cloning branch $BRANCH"
+		echo "[INFO] user=$USER"
 		git clone  -b $BRANCH https://shervin@gitlab.cern.ch/shervin/ECALELF.git $myDir >> setup.log || exit 1 # read-only mode
 	else
 		echo "[INFO] user=$USER"
@@ -80,7 +81,7 @@ if [ ! -d "$myDir" ]; then
     esac
 	fi
 fi
-
+exit 0
 cd $CMSSW_BASE/src
 
 #Other package to download:
