@@ -62,4 +62,5 @@ ntuple_rereco_test:
     - cd $CMSSW_VERSION/src/
     - eval `scramv1 runtime -sh`
     - cd Calibration/EcalAlCaRecoProducers/
+    - rm tmp/* -Rf
     - ./scripts/releaseValidation.sh
