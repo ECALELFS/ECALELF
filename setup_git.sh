@@ -96,9 +96,14 @@ esac
 
 # compile
 echo "[INFO] Starting to compile"
-
-scram b -j16 || {
-	echo "[INFO for USERS] You could get a C++ seg fault: Be persistent! from $CMSSW_BASE/src go for a scram b -j16 again :-)"
-	scram b
-}
+case $USER in
+    gitlab-runner)
+	;;
+    *)
+	scram b -j16 || {
+	    echo "[INFO for USERS] You could get a C++ seg fault: Be persistent! from $CMSSW_BASE/src go for a scram b -j16 again :-)"
+	    scram b
+	}
+	;;
+esac
 
