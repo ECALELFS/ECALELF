@@ -28,7 +28,7 @@ cmsswCompile:
   variables:
     GIT_STRATEGY: none
   script:
-    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cer
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin
     - pwd
     - git config --global user.github shervin86
     - git config --global user.name 'TESTBOT'
@@ -44,7 +44,7 @@ ZFitterCompile:
   variables:
     GIT_STRATEGY: none
   script:
-    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cer
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin
     - pwd
     - cd $CMSSW_VERSION/src/
     - eval `scramv1 runtime -sh`
@@ -57,7 +57,7 @@ ntuple_rereco_test:
   variables:
     GIT_STRATEGY: none
   script:
-    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cer
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin
     - pwd
     - cd $CMSSW_VERSION/src/
     - eval `scramv1 runtime -sh`
