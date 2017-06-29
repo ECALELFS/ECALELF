@@ -44,9 +44,9 @@ case $CMSSW_VERSION in
 	CMSSW_8_0_*)
 		case $USER in
 			gitlab-runner)
-				fileMINIAOD=$HOME/fileMINIAOD.root
-				fileMINIAODData=$HOME/fileMINIAODData.root
-				fileALCARAWData=$HOME/fileALCARAWData.root
+				fileMINIAOD=file:$HOME/fileMINIAOD.root
+				fileMINIAODData=file:$HOME/fileMINIAODData.root
+				fileALCARAWData=file:$HOME/fileALCARAWData.root
 				;;
 			*)
 				fileMINIAOD=/store/mc/RunIISpring16MiniAODv1/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/00000/008099CA-5501-E611-9AAE-24BE05BDCEF1.root
