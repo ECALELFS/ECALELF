@@ -1,7 +1,22 @@
+stages:
+  - releaseSetup
+
 variables:
   GIT_STRATEGY: none
 
+setup:
+  stage: releaseSetup 
+  script:
+    - export PATH=/cvmfs/cms.cern.ch/common/:$PATH:/cvmfs/cms.cern.ch/share/overrides/bin:/afs/cern.ch/group/zh/bin:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin
+    - pwd
+    - wget --no-check-certificate -O setup_git-last.sh https://gitlab.cern.ch/shervin/ECALELF/raw/releaseValidationUpdate/setup_git.sh
+    - diff -q setup_git.sh setup_git-last.sh || rm $CMSSW_VERSION/ -Rf
+    - mv setup_git-last.sh setup_git.sh
+    - chmod +x setup_git.sh
+    - ./setup_git.sh $CMSSW_VERSION $BRANCH
+
 fullTest:
+  stage: compile
   variables:
     GIT_STRATEGY: none
   script:
