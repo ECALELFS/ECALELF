@@ -14,7 +14,7 @@ ifeq ($(SCRAMTOOL),1)
 	ROOSTAT_LIB="-lRooStats"
 	ROOFIT_INCLUDE="./"
 else
-	BOOST=/afs/cern.ch/cms/slc6_amd64_gcc491/external/boost/1.57.0
+	BOOST :=$(shell echo $(CMSSW_FWLITE_INCLUDE_PATH) | sed -E 's|.*:([^:]+)boost([^:]+)|\1boost\2|;s|include||' )
 	ROOFIT_INCLUDE := $(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep INCLUDE= | sed 's|INCLUDE=||')
 	ROOFIT_LIB := -l$(shell cd $(CMSSW_BASE); scram tool info roofitcore | grep LIB= | sed 's|LIB=||')
 	ROOFIT_LIB += -l$(shell cd $(CMSSW_BASE); scram tool info roofit | grep LIB= | sed 's|LIB=||')
@@ -34,7 +34,7 @@ OBJ_DIR=./lib
 EoPDir:=../EOverPCalibration
 #SCRAM_ARCH=`scram arch`
 #################
-INCLUDE=-I$(INCLUDEDIR) $(FWCORE_INCLUDE) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include
-LIB=-L$(BOOST)/lib -L/usr/lib64 # -L/usr/lib 
+INCLUDE=-I$(INCLUDEDIR) $(FWCORE_INCLUDE) -isystem$(ROOT_INCLUDE)   -I$(ROOFIT_INCLUDE) -I$(BOOST)/include 
+LIB=-L/usr/lib64 -L$(BOOST)/lib
 
 
