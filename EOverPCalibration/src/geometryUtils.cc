@@ -7,7 +7,7 @@ TEndcapRegions::TEndcapRegions()
 	//initializing the matrix
 	for(int ii = 0; ii < 100; ++ii)
 		for(int jj = 0; jj < 100; ++jj) {
-			iEndcapRing[ii][jj][-1] = -1;
+			iEndcapRing[ii][jj][2] = -1;///< \todoy to be corrected? it was -1
 			iEndcapRing[ii][jj][0] = -1;
 			iEndcapRing[ii][jj][+1] = -1;
 			iLMR[ii][jj][0] = -1;

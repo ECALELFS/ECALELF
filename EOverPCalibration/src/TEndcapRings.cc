@@ -1,6 +1,7 @@
 #include "Calibration/EOverPCalibration/interface/TEndcapRings.h"
-
-
+#include "TMath.h"
+#include <iostream>
+#include <map>
 
 //-----
 // ctor

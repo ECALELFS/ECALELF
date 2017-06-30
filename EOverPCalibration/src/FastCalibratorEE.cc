@@ -1,6 +1,8 @@
 #include "Calibration/EOverPCalibration/interface/FastCalibratorEE.h"
 #include "Calibration/EOverPCalibration/interface/GetHashedIndexEE.h"
+#include <iostream>
 #include <fstream>
+#include <sstream>
 #include <TRandom3.h>
 #include <TString.h>
 #include "Calibration/EOverPCalibration/interface/CalibrationUtils.h"

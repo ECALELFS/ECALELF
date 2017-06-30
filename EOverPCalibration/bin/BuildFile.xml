@@ -4,7 +4,7 @@
 <use name="Calibration/EOverPCalibration"/>
 <use name="Calibration/ZFitter"/>
 <use name="FWCore/PythonParameterSet"/>
-<flags CXXFLAGS="-g -Wall -fpermissive -std=c++0x -Wno-reorder"/>
+<!-- <flags CXXFLAGS="-g -Wall -fpermissive -Wno-reorder"/> -->
 <export>
 <lib name="1"/>
 </export>
@@ -13,8 +13,8 @@
 <bin file="MomentumCorrection_MC.cpp" name="MomentumCorrection_MC"> </bin>
 <bin file="DrawPrecisionPlotsEB.cpp" name="DrawPrecisionPlotsEB"> </bin>
 <bin file="DrawPrecisionPlotsEE.cpp" name="DrawPrecisionPlotsEE"> </bin>
-<bin file="CompareICSet.cpp" name="CompareICSet"> </bin>
-<bin file="CompareICSet_ratio.cpp" name="CompareICSet_ratio"> </bin>
+<!-- <bin file="CompareICSet.cpp" name="CompareICSet"> </bin> -->
+<!-- <bin file="CompareICSet_ratio.cpp" name="CompareICSet_ratio"> </bin> -->
 <bin file="CalibrationPlots.cpp" name="CalibrationPlots"> </bin>
 <bin file="CalibrationMomentum.cpp" name="CalibrationMomentum"> </bin>
 <bin file="CompareSCalibMCTruth_EB.cpp" name="CompareSCalibMCTruth_EB"> </bin>
@@ -22,4 +22,4 @@
 <bin file="NormalizeIC_EE.cpp" name="NormalizeIC_EE"> </bin>
 <bin file="PlotICMapsRatio.cpp" name="PlotICMapsRatio"> </bin>
 <bin file="PlotICMapsRatioEE.cpp" name="PlotICMapsRatioEE"> </bin>
-<Flags CppDefines="CMSSW_7_2_X"/>
+<!-- <Flags CppDefines="CMSSW_7_2_X"/> -->
