@@ -41,7 +41,7 @@ echo "[`basename $0`] CMSSW RELEASE: $CMSSW_VERSION"
 if [ ! -d "tmp/releaseValidation" ];then mkdir tmp/releaseValidation -p; fi
 
 case $CMSSW_VERSION in
-	CMSSW_8_0_*)
+	CMSSW_8_0_*|CMSSW_9_2_*)
 		case $USER in
 			gitlab-runner)
 				fileMINIAOD=file:$HOME/fileMINIAOD.root
