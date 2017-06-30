@@ -50,6 +50,7 @@ ZFitterCompile:
     - eval `scramv1 runtime -sh`
     - cd Calibration/
     - cd ZFitter/
+    - make clean
     - make -j4
 
 ntuple_rereco_test:
