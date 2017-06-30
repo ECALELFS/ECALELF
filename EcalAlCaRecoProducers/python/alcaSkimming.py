@@ -160,6 +160,8 @@ if(doAnyTree==True and options.doTreeOnly==1):
 CMSSW_VERSION=os.getenv("CMSSW_VERSION")
 CMSSW_BASE=os.getenv("CMSSW_BASE")
 
+if(not re.match("CMSSW_8_.*", CMSSW_VERSION)):
+    newRegression=False
 process = cms.Process(processName)
 
 # import of standard configurations
