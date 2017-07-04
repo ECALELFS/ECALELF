@@ -49,11 +49,13 @@ regionFileStep4EE_95=data/regions/scaleStep4smearing_2_R9_95.dat
 regionFileStep5EB=data/regions/scaleStep2smearing_6.dat
 regionFileStep5EE=data/regions/scaleStep2smearing_7.dat
 #echo "Test of finer Et Bins"
-regionFileStep5EB=data/regions/scaleStep5_FineET1.dat
-regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
-
-regionFileStep5EB=data/regions/scaleStep5_JetMetCheck2.dat
-regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
+regionFileStep7EB=data/regions/scaleStep7smearing_1.dat
+regionFileStep7EE=data/regions/scaleStep7smearing_2.dat
+#regionFileStep5EB=data/regions/scaleStep5_FineET1.dat
+#regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
+#
+#regionFileStep5EB=data/regions/scaleStep5_JetMetCheck2.dat
+#regionFileStep5EE=data/regions/scaleStep5_FineET2.dat
 
 regionFileStep6EB=data/regions/scaleStep6smearing_1.dat
 regionFileStep6EE=data/regions/scaleStep6smearing_2.dat
@@ -1064,6 +1066,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 	echo Doing $thisstep
 	step5EBconfig=outProfile-`basename ${regionFileStep5EB} .dat`-${commonCut}-FitResult-.config
 	step5EEconfig=outProfile-`basename ${regionFileStep5EE} .dat`-${commonCut}-FitResult-.config
+	step7EBconfig=outProfile-`basename ${regionFileStep7EB} .dat`-${commonCut}-FitResult-.config
+	step7EEconfig=outProfile-`basename ${regionFileStep7EE} .dat`-${commonCut}-FitResult-.config
 	case ${STEP} in
 		5EB)
 			step_args="--profileOnly --plotOnly  --onlyScale"
@@ -1085,9 +1089,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			;;
 		6EB)
 			step_args=" --onlyScale"
-			scalesfromstep=Moriond17
-			corrEleType=Moriond1723JanPhoScales
-			corrEleType=Moriond1723JanEleScales
+			scalesfromstep=step2
+			corrEleType=HggRunEtaR9
 			newCorrEleType=HggRunEtaR9Et_step6_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
@@ -1105,9 +1108,7 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 		7EB)
 			step_args=""
 			scalesfromstep=step2
-			scalesfromstep=Moriond17
 			corrEleType=HggRunEtaR9
-			corrEleType=Moriond1723JanEleScales
 			newCorrEleType=HggRunEtaR9Et_step7_EB
 			laststep_EB_config=${outDirData}/step5EB/img/${step5EBconfig}
 			laststep_EE_config=${outDirData}/step5EE/img/${step5EEconfig}
@@ -1172,6 +1173,12 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 
    #eta x Et with smearing method (use step4 as initialization)
 	case ${STEP} in
+#		*7EB|*8EB)
+#			regionFile=${regionFileStep7EB}
+#			;;
+#		*7EE|*8EB)
+#			regionFile=${regionFileStep7EE}
+#			;;
 		*EB)
 			regionFile=${regionFileStep5EB}
 			;;
@@ -1179,7 +1186,8 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 			regionFile=${regionFileStep5EE}
 			;;
 		*)
-			regionFile=${regionFileStep5EB}
+			echo "Unknown step"
+			exit 1
 	esac
     basenameRegionFile=`basename $regionFile .dat`
     outFile=${outDirTable}/${thisstep}${extension}-${invMass_var}-${newSelection}-${commonCut}-${newCorrEleType}.dat
@@ -1358,15 +1366,15 @@ if [ -n "${STEP5}" -o -n "${STEP6}" -o -n "${STEP7}" -o -n "${STEP8}" ];then
 
 
 	if [[ $scenario = "finalize_${thisstep}" ]] || [[ $scenario = "" ]]; then
-		if [ ! -d "${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}" ];then
-			echo "${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension} is being created"
-			www_mkdir ${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/ -p
-			www_mkdir ${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/DataMC/ -p
+		if [ ! -d "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}" ];then
+			echo "${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension} is being created"
+			www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/ -p
+			www_mkdir ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/DataMC/ -p
 		fi
-		cp ${outFile} ${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/
-		mv ${outDirData}/${thisstep}${extension}/img/outProfile-*.png ${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/
+		cp ${outFile} ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/
+		mv ${outDirData}/${thisstep}${extension}/img/outProfile-*.png ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/
 		./script/plot_histos_validation.sh ${outDirData}/${thisstep}${extension}/fitres/histos-${basenameRegionFile}-${commonCut}.root
-		mv ${outDirData}/${thisstep}${extension}/./img/histos-* ${tmp_path_plots}/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/DataMC/
+		mv ${outDirData}/${thisstep}${extension}/./img/histos-* ${eos_path}/www/RUN2_ECAL_Calibration/${file}/${invMass_var}/${thisstep}${extension}/DataMC/
 	fi
 
 fi

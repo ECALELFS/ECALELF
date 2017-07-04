@@ -2,7 +2,9 @@ import ROOT
 import numpy as np
 from collections import defaultdict
 import re
+import sys
 
+step = sys.argv[1]
 low_et = defaultdict(list)
 hi_et = defaultdict(list)
 scales = defaultdict(list)
@@ -12,7 +14,7 @@ max_et = 1000
 min_et = 27
 max_scale = 0
 min_scale = 2
-for line in open("test/dato/Moriond17_newRegr_LT/loose25nsRun22016Moriond/invMass_ECAL_pho/table/step6EE-invMass_ECAL_pho-loose25nsRun22016Moriond-EtLeading_32-EtSubLeading_20-noPF-isEle-HggRunEtaR9Et.dat"):
+for line in open("test/dato/Moriond17_newRegrFix_LT/loose25nsRun22016Moriond/invMass_ECAL_pho/table/%sEE-invMass_ECAL_pho-loose25nsRun22016Moriond-EtLeading_32-EtSubLeading_20-noPF-isEle-HggRunEtaR9Et.dat" % step):
 	if line[0] == "#": continue
 	if not "scale" in line: continue
 	let, hiet, category, scale, scale_err = re.match("scale_Et_(\d*)_(\d*)-(.*)-EtLeading.*=  ([-0-9.]*)[^0-9]*([-0-9.]*).*",line).groups()
@@ -88,5 +90,5 @@ for name, cat1, cat2, label1, label2 in plots:
 	leg.SetNColumns(2)
 	leg.Draw()
 	c.SetLogx()
-	c.SaveAs("plots/step6_%s_scales.png" % name)
+	c.SaveAs("plots/%s_%sFix_scales.png" % (step, name))
 
