@@ -4,7 +4,8 @@ source $CMSSW_BASE/src/Calibration/EcalAlCaRecoProducers/scripts/prodFunctions.s
 ############################### OPTIONS
 #------------------------------ default
 USESERVER=0
-SCHEDULER=grid
+SCHEDULER=caf
+QUEUE=cmscaf1nd
 STORAGE_ELEMENT=caf
 isMC=0
 UI_WORKING_DIR=prod_ntuples
@@ -100,6 +101,7 @@ then
     exit 1
 fi
 
+checkVerboseOption
 
 set -- $options
 #echo $options
@@ -175,7 +177,7 @@ do
 					config/reRecoTags/*) TAG=`basename ${TAGFILE} .py` ;;
 					*) TAG=$TAGFILE; TAGFILE=config/reRecoTags/$TAG.py;;
 				esac						
-			echo "[OPTION] GLOBALTAG:$TAGFILE"; 
+				if [ -n "${VERBOSE}" ];then	echo "[OPTION] GLOBALTAG:$TAGFILE"; fi
 			fi
 			shift 
 			;;
@@ -185,9 +187,21 @@ do
 	#--puWeight) PUWEIGHTFILE=$2; shift;;
 	--extraName) EXTRANAME=$2;shift;;
         #name of the output files is hardcoded in ZNtupleDumper
-	--doExtraCalibTree) echo "[OPTION] doExtraCalibTree"; DOEXTRACALIBTREE=1; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doExtraStudyTree) echo "[OPTION] doExtraStudyTree"; DOEXTRASTUDYTREE=1; OUTFILES="${OUTFILES},extraStudyTree.root";;
-	--doEleIDTree) DOELEIDTREE=1;OUTFILES="${OUTFILES},eleIDTree.root";;
+	--doExtraCalibTree)
+			if [ -n "${VERBOSE}" ]; then
+				echo "[OPTION] doExtraCalibTree"; 
+			fi
+			DOEXTRACALIBTREE=1; OUTFILES="${OUTFILES},extraCalibTree.root"
+			;;
+	--doExtraStudyTree)
+			if [ -n "${VERBOSE}" ];then 
+				echo "[OPTION] doExtraStudyTree"; 
+			fi
+			DOEXTRASTUDYTREE=1; OUTFILES="${OUTFILES},extraStudyTree.root"
+			;;
+	--doEleIDTree)
+			DOELEIDTREE=1;OUTFILES="${OUTFILES},eleIDTree.root"
+			;;
 	--noStandardTree) DOTREE=0; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION] createOnly"; unset SUBMIT;;
 	--submitOnly) echo "[OPTION] submitOnly"; unset CREATE;;
@@ -196,7 +210,9 @@ do
 			CHECK=y; EXTRAOPTION="--check"; unset CREATE; unset SUBMIT;;
 	--isPrivate)      echo "[OPTION] private dataset"; ISPRIVATE=1;;
 
- 	--file_per_job) echo "[OPTION] file per job: $2"; FILE_PER_JOB=$2; shift ;;
+ 	--file_per_job)
+			#echo "[OPTION] file per job: $2"; 
+			FILE_PER_JOB=$2; shift ;;
 	--develRelease) echo "[OPTION] Request also CMSSW release not in production!"; DEVEL_RELEASE=y;;
 	--weightsReco)    echo "[OPTION `basename $0`] using weights for local reco"; BUNCHSPACING=-1;;
 
@@ -257,6 +273,10 @@ fi
 case $SCHEDULER in
 	CAF|caf)
 		CRABVERSION=2
+		;;
+	LSF|lsf)
+		CRABVERSION=2
+		QUEUE=1nd
 		;;
 	*)
 		CRABVERSION=3
@@ -433,12 +453,16 @@ if [ ! -d "tmp" ];then mkdir tmp/; fi
 
 #Write the crab config file
 cat > ${crab2File} <<EOF
-[CRAB]
-scheduler=$SCHEDULER
-jobtype=cmssw
-#use_server=$USESERVER
+UI_WORKING_DIR=$UI_WORKING_DIR
+pset=python/alcaSkimming.py
+psetparams="type=${TYPE} doTree=${DOTREE} doExtraCalibTree=${DOEXTRACALIBTREE} doExtraStudyTree=${DOEXTRASTUDYTREE} doEleIDTree=${DOELEIDTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}"
 
-[CMSSW]
+outFiles=${OUTFILES}
+use_parent=${USEPARENT}
+queue=${QUEUE}
+
+user_remote_dir="$USER_REMOTE_DIR"
+storage_path="$STORAGE_PATH"
 EOF
 case ${ORIGIN_REMOTE_DIR_BASE} in
         database)
@@ -455,76 +479,30 @@ case ${ORIGIN_REMOTE_DIR_BASE} in
 
 		if [ "$isMC" != "1" ];then
         cat >> ${crab2File} <<EOF
-total_number_of_lumis = -1
-lumis_per_job=${LUMIS_PER_JOBS}
-datasetpath=${DATASETPATH}
+dataset=${DATASETPATH}
+datasetname=${DATASETNAME}
+runrange=${RUNRANGE}
 #dbs_url = phys03
-use_dbs3 = 1
 EOF
 		else
 			cat >> ${crab2File} <<EOF
-total_number_of_events = -1
-events_per_job = ${EVENTS_PER_JOB}
-datasetpath=${DATASETPATH}
-#dbs_url = phys03
-use_dbs3 = 1
+dataset=${DATASETPATH}
+datasetname=${DATASETNAME}
+runrange=allRange
 EOF
 		fi
         ;;
         *)
         cat >> ${crab2File} <<EOF
-total_number_of_events=${NJOBS}
-number_of_jobs=${NJOBS}
-datasetpath=None
+dataset=None
+datasetname=${DATASETNAME}
+runrange=${RUNRANGE}
 EOF
 	;;
 esac
 
-if [ -n "${DEVEL_RELEASE}" ]; then
-cat >> ${crab2File} <<EOF
-allow_NonProductionCMSSW = 1
-EOF
-fi
 
 cat >> ${crab2File} <<EOF
-runselection=${RUNRANGE}
-split_by_run=0
-check_user_remote_dir=1
-pset=python/alcaSkimming.py
-pycfg_params=type=${TYPE} doTree=${DOTREE} doExtraCalibTree=${DOEXTRACALIBTREE} doExtraStudyTree=${DOEXTRASTUDYTREE} doEleIDTree=${DOELEIDTREE} doTreeOnly=1  jsonFile=${JSONFILE} isCrab=1 skim=${SKIM} tagFile=${TAGFILE} isPrivate=$ISPRIVATE  bunchSpacing=${BUNCHSPACING}
-get_edm_output=1
-output_file=${OUTFILES}
-
-
-use_parent=0
-#lumi_mask=
-
-
-[LSF]
-queue = 1nd
-[CAF]
-queue = cmscaf1nd
-resource = type==SLC6_64
-
-[USER]
-
-ui_working_dir=${UI_WORKING_DIR}
-return_data = 0
-copy_data = 1
-
-storage_element=$STORAGE_ELEMENT
-user_remote_dir=$USER_REMOTE_DIR
-storage_path=$STORAGE_PATH
-
-thresholdLevel=50
-eMail = shervin@cern.ch
-
-[GRID]
-
-rb = HC
-rb = CERN
-proxy_server = myproxy.cern.ch
-
 EOF
 
 crab3outfiles=`echo $OUTFILES | sed "s|^|\'|;s|$|'|;s|,|\',\'|"`
@@ -578,12 +556,8 @@ EOF
 ##############At this point you wrote the crab config file in tmp/${crabFile}####################
 
 if [[ ${CRABVERSION} = "2" ]]; then
-    echo "You are using crab version "${CRABVERSION} 
-    crab -cfg ${crabFile} -create || exit 1
-    if [ -n "$FILELIST" ];then
-	makeArguments.sh -f $FILELIST -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1
-    fi
-    splittedOutputFilesCrabPatch.sh -u $UI_WORKING_DIR
+    echo "You are using LSFsubmit tool"
+	create ${crabFile} ${FILELIST} || exit $?
 fi
 
 echo "Working dir is " $UI_WORKING_DIR
@@ -592,7 +566,7 @@ fi  #This is the end of the option createOnly
 
 if [ -n "$SUBMIT" -a -z "${CHECK}" ];then
     if [[ ${CRABVERSION} = "2" ]]; then
-	crab -c ${UI_WORKING_DIR} -submit
+		submit ${UI_WORKING_DIR} ${DATASETNAME} ${QUEUE}
     fi
 
     if [[ ${CRABVERSION} = "3" ]]; then
@@ -617,8 +591,9 @@ OUTFILES=`echo ${OUTFILES} | sed 's|,| |g'`
 if [ -n "${CHECK}" ];then
     if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
 	#echo $dir >> tmp/$TAG.log 
-		echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
-		resubmitCrab.sh -u ${UI_WORKING_DIR}
+		check $UI_WORKING_DIR
+#		echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
+#		resubmitCrab.sh -u ${UI_WORKING_DIR}
     else
 		if [ "${isMC}" == "1" -a "${TYPE}" != "MINIAODNTUPLE" ];then
 			OUTFILES="$OUTFILES PUDumper"

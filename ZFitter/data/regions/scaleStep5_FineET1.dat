@@ -1,0 +1,34 @@
+# regions defined for condition validation
+Et_27_33-absEta_0_1-bad
+Et_33_39-absEta_0_1-bad
+Et_39_50-absEta_0_1-bad
+Et_50_75-absEta_0_1-bad
+Et_75_100-absEta_0_1-bad
+Et_100_200-absEta_0_1-bad
+Et_200_400-absEta_0_1-bad
+Et_400_1000-absEta_0_1-bad
+Et_27_33-absEta_0_1-gold
+Et_33_39-absEta_0_1-gold
+Et_39_50-absEta_0_1-gold
+Et_50_75-absEta_0_1-gold
+Et_75_100-absEta_0_1-gold
+Et_100_200-absEta_0_1-gold
+Et_200_400-absEta_0_1-gold
+Et_400_1000-absEta_0_1-gold
+##Outer Barrel
+Et_27_33-absEta_1_1.4442-bad
+Et_33_39-absEta_1_1.4442-bad
+Et_39_50-absEta_1_1.4442-bad
+Et_50_65-absEta_1_1.4442-bad
+Et_65_80-absEta_1_1.4442-bad
+Et_80_100-absEta_1_1.4442-bad
+Et_100_200-absEta_1_1.4442-bad
+Et_200_400-absEta_1_1.4442-bad
+Et_400_1000-absEta_1_1.4442-bad
+Et_27_40-absEta_1_1.4442-gold
+Et_40_50-absEta_1_1.4442-gold
+Et_50_75-absEta_1_1.4442-gold
+Et_75_100-absEta_1_1.4442-gold
+Et_100_200-absEta_1_1.4442-gold
+Et_200_400-absEta_1_1.4442-gold
+Et_400_1000-absEta_1_1.4442-gold

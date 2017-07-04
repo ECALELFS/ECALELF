@@ -76,6 +76,8 @@ then
     exit 1
 fi
 
+checkVerboseOption
+
 set -- $options
 
 while [ $# -gt 0 ]
@@ -83,25 +85,49 @@ do
     case $1 in
 	-h|--help) usage; exit 0;;
 	-H|--expertHelp)  expertUsage; exit 0;;
-	-v|--verbose)    VERBOSE=y;;
 	-r|--runrange) RUNRANGE=$2; shift;;
 	-d|--datasetpath) DATASETPATH=$2; shift ;;
 	-n|--datasetname) DATASETNAME=$2; shift ;;
 	--store) STORAGE_ELEMENT=$2; shift;;
 	--remote_dir) ALCARAW_REMOTE_DIR_BASE=$2; shift;;
- 	-t | --tag) TAGFILE=$2; echo "[OPTION `basename $0`] TAGFILE:$TAGFILE";shift;;
-
+ 	-t | --tag) 
+			TAGFILE=$2; 
+			if [ -n "${VERBOSE}" ];then
+				echo "[OPTION `basename $0`] TAGFILE:$TAGFILE";
+			fi
+			shift
+			;;
  	--crabVersion) CRABVERSION=$2;  shift;;
  	--json) JSONFILE=$2;  shift;;
 	--json_name) JSONNAME=$2; shift;;
-	--doExtraCalibTree) echo "[OPTION `basename $0`] doing eleIDTree"; DOEXTRACALIBTREE="--doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root";;
-	--doEleIDTree) echo "[OPTION `basename $0`] doing eleIDTree"; let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root";;
+	--doExtraCalibTree) 
+			if [ -n "${VERBOSE}" ];then 
+				echo "[OPTION `basename $0`] doing extraCalibTree"; 
+			fi
+			DOEXTRACALIBTREE="--doExtraCalibTree"; let DOTREE=${DOTREE}+2; OUTFILES="${OUTFILES},extraCalibTree.root"
+			;;
+	--doEleIDTree)
+			if [ -n "${VERBOSE}" ];then
+				echo "[OPTION `basename $0`] doing eleIDTree"; 
+			fi
+			let DOTREE=${DOTREE}+4; OUTFILES="${OUTFILES},eleIDTree.root"
+			;;
 	--noStandardTree) EXTRAOPTION="$EXTRAOPTION --noStandardTree"; let DOTREE=${DOTREE}-1; OUTFILES=`echo ${OUTFILES} | sed 's|ntuple.root,||'`;;
 	--createOnly) echo "[OPTION `basename $0`] createOnly"; unset SUBMIT; EXTRAOPTION="$EXTRAOPTION --createOnly";;
 	--submitOnly) echo "[OPTION `basename $0`] submitOnly"; unset CREATE; EXTRAOPTION="$EXTRAOPTION --submitOnly";;
-	--check)      echo "[OPTION `basename $0`] checking jobs"; unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check";;
+	--check)   
+			if [ -n "${VERBOSE}" ];then
+				echo "[OPTION `basename $0`] checking jobs"; 
+			fi
+			unset CREATE; unset SUBMIT; CHECK=y; EXTRAOPTION="--check"
+			;;
 	--ntupleCheck)      echo "[OPTION `basename $0`] checking ntuple jobs"; unset CREATE; unset SUBMIT; NTUPLECHECK=y; EXTRAOPTION="--check";;
-	--alcarerecoOnly) echo "[OPTION `basename $0`] alcarerecoOnly"; OUTFILES=""; DOTREE=0;;
+	--alcarerecoOnly) 
+			if [ -n "${VERBOSE}" ];then 
+				echo "[OPTION `basename $0`] alcarerecoOnly"; 
+			fi
+			OUTFILES="EcalRecalElectron.root"; DOTREE=0
+			;;
 	--weightsReco)    echo "[OPTION `basename $0`] using weights for local reco"; BUNCHSPACING=-1;;
 	--ntupleOnly)     echo "[OPTION `basename $0`] ntupleOnly"; NTUPLEONLY=y;;
 	--rereco_remote_dir) USER_REMOTE_DIR_BASE=$2; shift;;
@@ -117,7 +143,6 @@ do
     esac
     shift
 done
-
 
 #------------------------------ checking
 if [ -z "$DATASETPATH" ];then 
@@ -157,33 +182,6 @@ if [ ! -r "$TAGFILE" ];then
 fi
 
 
-if [ -n "${TUTORIAL}" ];then
-    case $DATASETPATH in
-	/DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO)
-	    ;;
-	/DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO)
-	    ;;
-	/DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO)
-	    ;;
-	/DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO)
-	    ;;
-	*)
-	    echo "[ERROR] With the tutorial mode, the only permitted datasetpaths are:"
-	    echo "        /DoubleElectron/Run2012A-ZElectron-22Jan2013-v1/RAW-RECO"
-	    echo "        /DoubleElectron/Run2012B-ZElectron-22Jan2013-v1/RAW-RECO"
-	    echo "        /DoubleElectron/Run2012C-ZElectron-22Jan2013-v1/RAW-RECO"
-	    echo "        /DoubleElectron/Run2012D-ZElectron-22Jan2013-v1/RAW-RECO"
-	    echo "        Be sure to have it in alcaraw_datasets.dat and to have selected it using the parseDatasetFile.sh"
-	    exit 1
-	    ;;
-    esac
-    USER_REMOTE_DIR_BASE=${USER_REMOTE_DIR_BASE}/tutorial/$USER
-    echo "============================================================"
-    echo "= [INFO] With the tutorial mode, the output goes into the directory:"
-    echo "=       ${USER_REMOTE_DIR_BASE}"
-    echo "= --> Please, remember to remove it after the tests (ask to shervin@cern.ch)"
-    /bin/sleep 5s
-fi
 
 
 ##############################
@@ -196,31 +194,12 @@ setEnergy $DATASETPATH
 
 setStoragePath $STORAGE_ELEMENT $SCHEDULER 
 
-case $SCHEDULER in
-    caf)
-		USESERVER=0
-		;;
-    lsf)
-		USESERVER=0
-		;;
-	remoteGlidein)
-		USESERVER=0
-		;;
-    *)
-		echo "[ERROR] SCHEDULER not accepted: only caf and lsf" >> /dev/stderr
-		usage >> /dev/stderr
-		exit 1
-		;;
-esac
 
 case $DATASETNAME in
 #	*-50nsReco) BUNCHSPACING=50;;
 #	*-25nsReco) BUNCHSPACING=25;;
-	*-weightsReco) BUNCHSPACING=-1;;
-esac
-
-case ${BUNCHSPACING} in 
-	-1)
+	*-weightsReco) 
+		BUNCHSPACING=-1
 		DATASETNAME=${DATASETNAME}-weightsReco
 		;;
 esac
@@ -253,8 +232,15 @@ fi
 #if [ -n "${NTUPLE}" ];then DOTREE=1; fi
 
 #if [ -n "${VERBOSE}" ];then
-echo "[INFO] UI_WORKING_DIR=${UI_WORKING_DIR:=prod_alcarereco/${TAG}/${DATASETNAME}/${RUNRANGE}/${TUTORIAL}}"
+UI_WORKING_DIR=${UI_WORKING_DIR:=prod_alcarereco/${TAG}/${DATASETNAME}/${RUNRANGE}/${TUTORIAL}}
+#printf '[INFO %19s] %s\n' `basename $0` $UI_WORKING_DIR
+echo "[INFO] $UI_WORKING_DIR"
 #fi
+
+if [ -e "${UI_WORKING_DIR}/res/finished" ];then
+	echo "finished"
+	exit 0
+fi
 
 #==============================
 if [ -n "${CREATE}" ];then
@@ -318,152 +304,46 @@ if [ -n "${CREATE}" ];then
 #==============================
 	crabFile=tmp/`echo $UI_WORKING_DIR | sed 's|/|_|g'`.cfg
 	cat > $crabFile <<EOF
-[CRAB]
-#use_server = 0
-jobtype = cmssw
-scheduler = $SCHEDULER
-
-[LSF]
-queue = 1nd
-[CAF]
-queue = cmscaf1nd
-#resource = type==SLC6_64 r&& usage[mem=1024,swap=2500]
-resource = type==SLC6_64 
-
-
-[CMSSW]
-allow_NonProductionCMSSW = 1
-
+UI_WORKING_DIR=$UI_WORKING_DIR
 pset=python/alcaSkimming.py
-pycfg_params= type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 jsonFile=${JSONFILE}  isCrab=1 bunchSpacing=${BUNCHSPACING}
+psetparams="type=ALCARERECO tagFile=${TAGFILE} doTree=${DOTREE} doTreeOnly=0 jsonFile=${JSONFILE}  isCrab=1 bunchSpacing=${BUNCHSPACING}"
 
-runselection=${RUNRANGE}
-split_by_run=0
-
-output_file=${OUTFILES}
-get_edm_output=1
-check_user_remote_dir=1
+outFiles=${OUTFILES}
 use_parent=${USEPARENT}
 
 EOF
 	case ${ALCARAW_REMOTE_DIR_BASE} in
         database)
 			cat >> ${crabFile} <<EOF
-total_number_of_lumis = -1
-datasetpath=${DATASETPATH}
-lumis_per_job=${LUMIS_PER_JOB}
-#number_of_jobs=494
-#dbs_url = ${DBS_URL}
+dataset=${DATASETPATH}
+runrange=${RUNRANGE}
 EOF
         ;;
         *)
 			cat >> ${crabFile} <<EOF
-total_number_of_events=${NJOBS}
-#total_number_of_events=494
-number_of_jobs=${NJOBS}
-#number_of_jobs=494
-datasetpath=None
+dataset=None
+runrange=
 EOF
 			;;
 	esac
 	
 	
 	cat >> ${crabFile} <<EOF
-[USER]
-ui_working_dir=$UI_WORKING_DIR
-return_data = 0
-copy_data = 1
-
-storage_element=caf.cern.ch
-user_remote_dir=$USER_REMOTE_DIR
-storage_path=$STORAGE_PATH
-
-thresholdLevel=50
-eMail = shervin@cern.ch
-
-[GRID]
-
-rb = HC
-rb = CERN
-proxy_server = myproxy.cern.ch
+user_remote_dir="$USER_REMOTE_DIR"
+storage_path="$STORAGE_PATH"
 
 EOF
-	cat > ${crab3File} <<EOF
-from CRABClient.UserUtilities import config
-config = config()
-config.General.requestName = '${JOBNAME}'
-config.General.workArea = 'crab_projects'
-config.JobType.pluginName = 'Analysis'
-config.JobType.outputFiles= ['${OUTFILES}']
-config.JobType.psetName = 'python/alcaSkimming.py'
-config.JobType.pyCfgParams = ['tagFile=${TAGFILE}', 'skim=${SKIM}', 'type=$TYPE','doTree=${DOTREE}', 'jsonFile=${JSONFILE}', 'isCrab=1', 'bunchSpacing=${BUNCHSPACING}']
-config.JobType.allowUndistributedCMSSW = True
-config.Data.inputDataset = '${DATASETPATH}'
-config.Data.inputDBS = '${DBS_URL}'
-config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 1
-config.Data.lumiMask = '${JSONFILE}'
-config.Data.runRange = '${RUNRANGE}'
-config.Data.outLFNDirBase = '/store/${USER_REMOTE_DIR}'
-config.Data.publication = ${PUBLISH}
-config.Data.publishDataName = '${JOBNAME}'
-#config.Site.storageSite = '$STORAGE_ELEMENT'
-config.Site.storageSite = "T2_CH_CERN"
-#config.Site.storageSite = "T2_UK_London_IC"
-EOF
 
-	case ${CRABVERSION} in
-		2)
-			crab -cfg ${crabFile} -create || exit 1
-			if [ -n "${FILE_PER_JOB}" ];then
-				makeArguments.sh -f filelist/$sample.list -u $UI_WORKING_DIR -n $FILE_PER_JOB || exit 1 
-			fi
-			./scripts/splittedOutputFilesCrabPatch.sh -u ${UI_WORKING_DIR}
-#crabMonitorID.sh -r ${RUNRANGE} -n $DATASETNAME -u ${UI_WORKING_DIR} --type ALCARECO
-			rm filelist/$sample* -Rf
-			;;
-		3)
-			;;
-	esac
+create ${crabFile} || exit $?
 #end of create
 fi
 
 if [ -n "${SUBMIT}" ]; then
+	submit ${UI_WORKING_DIR} ${TAG}
     if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
 		echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
 		exit 0
 	fi
-	case ${CRABVERSION} in
-		2)  
-			crab -c ${UI_WORKING_DIR} -submit all || {
-				crab -c ${UI_WORKING_DIR} -submit 450 || exit 1
-				crab -c ${UI_WORKING_DIR} -submit 450 &
-				}
-#    if [ "`cat alcarereco_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep -c $RUNRANGE`" != "0" ];then
-#	echo "[WARNING] Rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
-#	if [ "${DOTREE}" == "1" ]; then
-#	    echo "          Doing only ntuples"
-#	    if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
-#		echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
-#		exit 0
-#	    fi
-#				echo "[INFO] using prodNtuples "
-#	    ./scripts/prodNtuples.sh -r ${RUNRANGE} -d ${DATASETPATH} -n ${DATASETNAME} --store ${STORAGE_ELEMENT} --remote_dir ${USER_REMOTE_DIR_BASE} --type=ALCARERECO --json=${JSONFILE} --json_name=${JSONNAME} -t ${TAGFILE} ${DOEXTRACALIBTREE} ${EXTRAOPTION}
-#	    exit 0
-#	fi
-#	exit 0
-#    fi
-	 ;;
-		3)
-			echo "[INFO] submitting to CRAB3"
-			crab submit -c $crab3File
-			;;
-	esac
-	
-#    STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${USER_REMOTE_DIR_BASE}\t${TAG}"
-#    echo -e $STRING >> alcarereco_datasets.dat
-#    STRING="${RUNRANGE}\t${DATASETPATH}\t${DATASETNAME}\t${STORAGE_ELEMENT}\t${NTUPLE_REMOTE_DIR_BASE}\t${TYPE}\t${TAG}\t${JSONNAME}"
-#    echo -e $STRING >> ntuple_datasets.dat 
 	
 
 elif [ -n "${CREATE}" ];then
@@ -476,60 +356,46 @@ fi
 OUTFILES=`echo ${OUTFILES} | sed 's|,| |g'`
 
 if [ -n "${CHECK}" ];then
-	case ${CRABVERSION} in
-		2)
-			# first round of check
-			if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
-				echo "[INFO] UI_WORKING_DIR=${UI_WORKING_DIR} "
-				resubmitCrab.sh -u ${UI_WORKING_DIR}
-			fi
-			if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
+	if [ ! -e "${UI_WORKING_DIR}/res" ];then
+		echo "[ERROR] No $UI_WORKING_DIR directory found" >> /dev/stderr
+		exit 1
+	fi
+	if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
+		check $UI_WORKING_DIR
+		if [ ! -e "${UI_WORKING_DIR}/res/finished" ];then
              	#echo $dir >> tmp/$TAG.log 
-				echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
-			else
-				if [ -z "${NTUPLEONLY}" ];then
-					echo "FINISHED"
-					if checkIfRerecoed; then 
-						echo 
-					else
-						echo -e $STRING
-						echo -e $STRING >> alcarereco_datasets.dat
-					fi
-
-					if [ "${DOTREE}" != "0" ];then
-						for file in $OUTFILES
-						do
-							file=`basename $file .root`
-							echo "[INF0] Merging $file files"
-							mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --merged_remote_dir=${NTUPLE_REMOTE_DIR}
-						done
-					fi
+			echo 
+#			echo "[STATUS] Unfinished ${UI_WORKING_DIR}"
+		else
+			if [ -z "${NTUPLEONLY}" ];then
+				echo "FINISHED"
+				if checkIfRerecoed; then 
+					echo 
 				else
-					if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
-						echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
-						exit 0
-					fi
-					echo "[INFO] using prodNtuples "
-					rm filelist/ -Rf
-					./scripts/prodNtuples.sh -r ${RUNRANGE} -d ${DATASETPATH} -n ${DATASETNAME} --store ${STORAGE_ELEMENT} --remote_dir ${USER_REMOTE_DIR_BASE} --type=ALCARERECO --json=${JSONFILE} --json_name=${JSONNAME} -t ${TAGFILE} ${DOEXTRACALIBTREE} ${EXTRAOPTION}
+					echo -e $STRING
+					echo -e $STRING >> alcarereco_datasets.dat
 				fi
+				
+				if [ "${DOTREE}" != "0" ];then
+					for file in $OUTFILES
+					do
+						file=`basename $file .root`
+						echo "[INF0] Merging $file files"
+						mergeOutput.sh -u ${UI_WORKING_DIR} -g $file --merged_remote_dir=${NTUPLE_REMOTE_DIR}
+					done
+				fi
+			else
+				if [ "`cat ntuple_datasets.dat | grep  \"$TAG[ ]*\$\" | grep ${DATASETNAME} | grep ${JSONNAME} |grep -c $RUNRANGE `" != "0" ];then
+					echo "[WARNING] Ntuple for rereco $TAG already done for ${RUNRAGE} ${DATASETNAME}"
+					exit 0
+				fi
+				echo "[INFO] using prodNtuples "
+				rm filelist/ -Rf
+				./scripts/prodNtuples.sh -r ${RUNRANGE} -d ${DATASETPATH} -n ${DATASETNAME} --store ${STORAGE_ELEMENT} --remote_dir ${USER_REMOTE_DIR_BASE} --type=ALCARERECO --json=${JSONFILE} --json_name=${JSONNAME} -t ${TAGFILE} ${DOEXTRACALIBTREE} ${EXTRAOPTION}
 			fi
-			;;
-		3)
-			echo "crab status crab_projects/crab_${JOBNAME}"
-			crab status crab_projects/crab_${JOBNAME} |  tee temp.txt
-			DONE=`cat temp.txt | grep finished | grep "100%" | wc -l`
-			if [ $DONE == 0 ];then
-			echo "jobs not finished!"
-			fi
-			if [ $DONE == 1 ];then
-			echo "done!"
-			fi
-
-			;;
-	esac
+		fi
 #    echo "mergeOutput.sh -u ${UI_WORKING_DIR} -n ${DATASETNAME} -r ${RUNRANGE}"
+	fi
 fi
-
 
 

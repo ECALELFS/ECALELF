@@ -1,0 +1,22 @@
+# regions defined for condition validation
+EB
+Et_20_40-absEta_1.566_2-bad
+Et_40_50-absEta_1.566_2-bad
+Et_50_100-absEta_1.566_2-bad
+Et_100_400-absEta_1.566_2-bad
+Et_400_1000-absEta_1.566_2-bad
+Et_20_40-absEta_1.566_2-gold
+Et_40_50-absEta_1.566_2-gold
+Et_50_100-absEta_1.566_2-gold
+Et_100_400-absEta_1.566_2-gold
+Et_400_1000-absEta_1.566_2-gold
+Et_20_40-absEta_2_2.5-bad
+Et_40_50-absEta_2_2.5-bad
+Et_50_100-absEta_2_2.5-bad
+Et_100_400-absEta_2_2.5-bad
+Et_400_1000-absEta_2_2.5-bad
+Et_20_40-absEta_2_2.5-gold
+Et_40_50-absEta_2_2.5-gold
+Et_50_100-absEta_2_2.5-gold
+Et_100_400-absEta_2_2.5-gold
+Et_400_1000-absEta_2_2.5-gold

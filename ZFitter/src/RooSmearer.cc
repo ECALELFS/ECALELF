@@ -35,7 +35,7 @@ RooSmearer::RooSmearer(const char *name,  ///< name of the variable
 	_paramSet("paramSet", "Set of parameters", this),
 	invMass_min_(80), invMass_max_(100), invMass_bin_(0.25),
 	deltaNLLMaxSmearToy(330),
-	_deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(1500), _nSmearToy(20),
+	_deactive_minEventsDiag(1000), _deactive_minEventsOffDiag(2000), _nSmearToy(20),
 	nllBase(0),
 	nllVar("nll", "", 0, 1e20),
 	_isDataSmeared(false),
@@ -232,21 +232,25 @@ void RooSmearer::InitCategories(bool mcToy)
 			unsigned int deactiveMinEvents = _deactive_minEventsDiag;//default is 1000
 			unsigned int deactiveMinEvents_off = _deactive_minEventsOffDiag;//default is 2000
 			if(cat.categoryIndex1 == cat.categoryIndex2) { // diagonal category
-				if(cat.hist_data->Integral() < deactiveMinEvents) {
+				if(cat.mc_events->size() < deactiveMinEvents) {
 					std::cout << "[INFO] Diagonal Category: " << ZeeCategories.size()
 					          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
 					          << " has been deactivated: events in data less " << deactiveMinEvents
-					          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+					          << "; Integral is " << cat.mc_events->size() << std::endl;
 					cat.active = false;
 				}
 			} else { //not diagonal category
-				if(cat.hist_data->Integral() < deactiveMinEvents_off) {
+				if(cat.mc_events->size() < deactiveMinEvents_off) {
 					std::cout << "[INFO] Off-Diag Category: " << ZeeCategories.size()
 					          << ": " << cat.categoryName1 << "\t" << cat.categoryName2
 					          << " has been deactivated: events in data less " << deactiveMinEvents_off
-					          << "; Integral is " << cat.hist_data->Integral() << std::endl;
+					          << "; Integral is " << cat.mc_events->size() << std::endl;
 					cat.active = false;
 				}
+			}
+			if(cat.data_events->size()<10){
+				cat.active = false;
+				std::cout << "[INFO] Category disabled because less than 10 events in data" << std::endl;
 			}
 
 			//Shoulder in the invariant mass spectra (if the mass spectrum is too much asymmetric, the category is de-activated)
@@ -1148,21 +1152,13 @@ void RooSmearer::DumpNLL(void) const
 	for(std::vector<ZeeCategory>::const_iterator cat_itr = ZeeCategories.begin();
 	        cat_itr != ZeeCategories.end();
 	        cat_itr++) {
-		if(!cat_itr->active)
-			std::cout << "[DUMP NLL] " << std::setprecision(10)
-			          << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2
-			          << "\t" << cat_itr->nll
-			          << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size()
-			          << "\t1"
-			          << "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
-			          << std::endl;
-		else
-			std::cout << "[DUMP NLL] " << std::setprecision(10)
-			          << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2
-			          << "\t" << cat_itr->nll
-			          << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size() << "\t0"
-			          << "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
-			          << std::endl;
+		std::cout << "[DUMP NLL] " << std::setprecision(10)
+		          << cat_itr->categoryIndex1 << " " << cat_itr->categoryIndex2
+		          << "\t" << cat_itr->nll
+		          << "\t" << cat_itr->mc_events->size() << "\t" << cat_itr->data_events->size()
+		          << "\t" << cat_itr->active
+		          << "\t" << cat_itr->hist_mc->Integral() << "\t" << cat_itr->hist_data->Integral()
+		          << std::endl;
 	}
 	return;
 }

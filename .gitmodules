@@ -1,0 +1,3 @@
+[submodule "ZFitter/data/ScalesSmearings"]
+	path = ZFitter/data/ScalesSmearings
+	url = git@github.com:ECALELFS/ScalesSmearings

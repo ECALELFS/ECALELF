@@ -225,6 +225,8 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 	TCut isEle_ele2_cut = "chargeEle_ele2 == 1 || chargeEle_ele2 == -1";
 	TCut isEle_cut = isEle_ele1_cut && isEle_ele2_cut;
 
+	TCut isSC_cut = "chargeEle_ele2 == 0";
+
 	/*
 	  se region contiene runNumber:
 	  prendi il primo range dal primo _ _ dopo runNumber
@@ -254,6 +256,11 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 		if(string.CompareTo("isEle") == 0) {
 			cut_string += isEle_cut;
 			cutSet.insert(TString(isEle_cut));
+			continue;
+		}
+		if(string.CompareTo("isSC") == 0) {
+			cut_string += isSC_cut;
+			cutSet.insert(TString(isSC_cut));
 			continue;
 		}
 
@@ -349,11 +356,11 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 			TString string1 = Objstring1->GetString();
 			if(string1 == "12") string1 = "0";
 			else if(string1 == "6") string1 = "1";
-			else if(string1 == "1") string1 = "2"; 
+			else if(string1 == "1") string1 = "2"; //this includes category 61
 			else if(string1 == "61") string1 = "3";
 
-			TCut cutEle1("gainSeedSC_ele1 ==" + string1);
-			TCut cutEle2("gainSeedSC_ele2 ==" + string1);
+			TCut cutEle1("(gainSeedSC_ele1 &" + string1 + ")==" + string1);
+			TCut cutEle2("(gainSeedSC_ele2 &" + string1 + ")==" + string1);
 
 			if(string.Contains("SingleEle"))
 				cutSet.insert(TString(cutEle1 || cutEle2));
@@ -1336,6 +1343,22 @@ std::set<TString> ElectronCategory_class::GetCutSet(TString region)
 		if(string.CompareTo("EERefReg", TString::kIgnoreCase) == 0) {
 			cutSet.insert(TString(EE_cut));
 			cutSet.insert(TString(EERefReg_cut));
+			continue;
+		}
+
+		//--------------- smearerCat
+		if(string.Contains("smearerCat")) {
+			TObjArray *splitted = string.Tokenize("_");
+			if(splitted->GetEntries() < 2) {
+				std::cerr << "ERROR: incomplete smearerCat region definition" << std::endl;
+				continue;
+			}
+			TObjString *Objstring1 = (TObjString *) splitted->At(1);
+			TString string1 = Objstring1->GetString();
+
+			TCut cut("smearerCat[0] == " + string1);
+			cutSet.insert(TString(cut));
+			delete splitted;
 			continue;
 		}
 

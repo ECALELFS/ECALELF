@@ -104,10 +104,13 @@ mkSmearerCatX() {
 	if [ "$6" ]; then
 		corrEleType=$5 #optional
 		force=$6
-	else
+	elif [ "$5" = "-f" ]; then
 		force=$5
+	else
+		corrEleType=$5
 	fi
 
+	mkdir -p ${outFolder}
 	file1=${outFolder}/${outFileForm/DDD/${dORs}1}
 	echo "[STATUS] checking for $file1"
    if [ ! -e "$file1" ] || [ "$force" = "-f" ]; then
@@ -124,7 +127,7 @@ mkSmearerCatX() {
    #Once cat root files are created, just write them in the validation file and be sure they are unique
    for tag in `grep "^$dORs" $configFile | grep selected | awk -F" " ' { print $1 } '`
    do
-		is_already_written=$(cat $configFile |grep smearerCat_${basenameRegion}_${tag}|wc -l)
+		is_already_written=$(cat $configFile |grep smearerCat_${basenameRegion}_${tag}-|wc -l)
 		if [ "${is_already_written}" = "1" ]; then
 	    	echo "[CHECK NEEDED] The categorization root file was already written for tag ${tag}. Be sure of what you are doing"
 		elif [ "${is_already_written}" = "0" ]; then  

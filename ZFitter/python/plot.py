@@ -1,19 +1,36 @@
 import ROOT
 from ElectronCategory import cutter,defaultEnergyBranch,ReduceFormula
 
+import errno
+import os
+def mkdir_p(path):
+	try:
+		os.makedirs(path)
+	except OSError as exc:  # Python >2.5
+		if exc.errno == errno.EEXIST and os.path.isdir(path):
+			pass
+		else:
+			raise
+
 colors = [ROOT.kRed, ROOT.kGreen, ROOT.kBlue, ROOT.kCyan, ROOT.kMagenta, ROOT.kOrange-6, ROOT.kViolet-6, ROOT.kGray+1, ROOT.kOrange-3, ROOT.kViolet-9]
 ndraw_entries = 1000000000
 #ndraw_entries = 100000
 
 hist_index = 0
 
-def GetTH1(chain, branchname, isMC, binning="", category="", label="", histname="",
-		 usePU=True, useEleIDSF=2, smear=False, scale=False, useR9Weight=False, energyBranchName = None, useLT=True, noWeights = False):
+def GetTH1(chain, branchname, isMC, binning="", category="", sel="", label="", histname="",
+		 usePU=True, useEleIDSF=2, smear=True, scale=True, useR9Weight=False, energyBranchName = None, useLT=True, noWeights = False):
 	global hist_index
-	#enable only used branches
-	ActivateBranches(chain, branchname, category, energyBranchName)
-	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT, noWeights)
 
+	if scale and not isMC and CheckForBranch(chain, "scaleEle"):
+		branchname = ApplyScaleSmear(branchname, "scaleEle")
+	if smear and isMC and CheckForBranch(chain, "smearEle"):
+		branchname = ApplyScaleSmear(branchname, "smearEle")
+
+	ActivateBranches(chain, branchname, category, energyBranchName, scale, smear)
+	selection, weights = GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT, noWeights)
+	if(sel!=""):
+		selection = ROOT.TCut(str(selection) + "&&" +  sel)
 	print "[DEBUG] Getting TH1F of " + branchname + binning + " with " + str(selection) + " and weights" + str(weights)
 	if histname:
 		chain.Draw(branchname + ">>" + histname, selection * weights, "", ndraw_entries)
@@ -74,15 +91,12 @@ def GetTH1Stack(chain, splits, branchname, isMC, binning="", category="", label=
 def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU, useEleIDSF, useLT, noWeights):
 	selection = ROOT.TCut("")
 	if(category):
-		selection = cutter.GetCut(category, False, 0 , scale)
-	
-	if(smear and isMC):
-		#print "Apply smear to the MC"
-		print "[WARNING] smearing not implemented"
-	if(scale and not isMC):
-		print "[WARNING] scale not implemented"
-	if(useR9Weight):
-		print "[WARNING] R9weight not implemented"
+		try:
+			cat1, cat2, common  = category
+			selection = cutter.GetCut(cat1 + '-' + common, False, 1 , scale) + cutter.GetCut(cat2 + '-' + common, False, 2 , scale)
+			category = common
+		except (TypeError, ValueError):
+			selection = cutter.GetCut(category, False, 0 , scale and not isMC)
 
 	weights = ROOT.TCut("")
 	if(noWeights): return selection, weights
@@ -104,7 +118,7 @@ def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU,
 				if useEleIDSF == 2:
 					weights *= "{id}[0]*{id}[1]".format(id=EleIDSF)
 				elif useEleIDSF == 1:
-					weights *= EleIDSF 
+					weights *= EleIDSF
 				chain.SetBranchStatus(EleIDSF, 1)
 			else:
 				print EleIDSF + " branch not present"
@@ -116,6 +130,21 @@ def GetSelectionWeights(chain, category, isMC, smear, scale, useR9Weight, usePU,
 
 	return selection, weights
 
+def ApplyScaleSmear(branchname, scaleOrSmear):
+	import re
+	branches = ReduceFormula(branchname)
+	energy_branches = [b for b in branches if b.startswith("energy")]
+	for sub in energy_branches:
+		#replace energyBranchname with energyBranchname*scaleEle
+		branchname = re.sub(sub + r"(?!\[\d\])", "(" + sub + "*" + scaleOrSmear + ")",branchname)
+		#replace energyBranchname[i] with energyBranchname[i]*scaleEle[i]
+		branchname = re.sub(sub + r"(\[\d\])", "(" + sub + r"\1" + "*" + scaleOrSmear + r"\1)",branchname)
+	invmass_branches = [b for b in branches if b.startswith("invMass")]
+	for sub in invmass_branches:
+		#replace energyBranchname with energyBranchname*scaleEle
+		branchname = re.sub(sub, "(" + sub + "*sqrt({s}[0]*{s}[1]))".format(s=scaleOrSmear), branchname)
+	return branchname
+
 def CheckForBranch(chain, branch):
 	chain.GetEntry(0)
 	try:
@@ -125,25 +154,32 @@ def CheckForBranch(chain, branch):
 	return True
 
 
-def ActivateBranches(chain, branchnames, category, energyBranchName):
+def ActivateBranches(chain, branchnames, category, energyBranchName=None, scale=False, smear=False, debug=False):
 	chain.SetBranchStatus("*", 0)
 	if energyBranchName:
 		cutter.energyBranchName=energyBranchName
 	else:
 		cutter.energyBranchName=defaultEnergyBranch
 		
+	branchlist = []
 	if category:
-		branchlist = cutter.GetBranchNameNtupleVec(category)
-	else:
-		branchlist = []
+		for c in AsList(category):
+			branchlist += [str(b) for b in cutter.GetBranchNameNtupleVec(c)]
 
+	branchlist = [x for x in set(branchlist)]
+	if scale:
+		branchlist += ["scaleEle"]
+	if smear:
+		branchlist += ["smearEle"]
 	for b in branchlist:
-		print "[Status] Enabling branch:", b
-		chain.SetBranchStatus(b.Data(), 1)
+		if not CheckForBranch(chain, b): continue
+		if debug: print "[Status] Enabling branch:", b
+		chain.SetBranchStatus(b, 1)
 	for branchname in AsList(branchnames):
 		for br in ReduceFormula(branchname):
 			if not br: continue
-			print "[Status] Enabling branch:", br
+			if not CheckForBranch(chain, br): continue
+			if debug: print "[Status] Enabling branch:", br
 			chain.SetBranchStatus(br, 1)
 
 
@@ -166,14 +202,17 @@ def AsList(arg):
 			except:
 				return [arg]
 
-def ColorMCs(mcs):
+def ColorMCs(mcs, fill=False):
 	mc_hists = AsList(mcs)
 
 	for i, h in enumerate(mc_hists):
 		h.SetMarkerStyle(20)
 		h.SetMarkerSize(1)
 		h.SetMarkerColor(colors[i % len(colors)])
-		h.SetFillStyle(0)
+		if fill:
+			h.SetFillStyle(1001)
+		else:
+			h.SetFillStyle(0)
 		h.SetFillColorAlpha(colors[i % len(colors)], 1)
 		h.SetLineColor(colors[i % len(colors)])
 		h.SetLineWidth(2)
@@ -200,6 +239,9 @@ def Normalize(data, mc):
 	nmc = len(mc_list)
 
 	if nmc > 0:
+                if ndata > 1:
+                        for h in data_list:
+                                h.Scale(1./h.Integral())
 		if ndata:
 			for h in mc_list:
 				h.Scale(data_list[0].Integral()/h.Integral())
@@ -211,11 +253,14 @@ def Normalize(data, mc):
 	if ndata > 1 and mc == 0:
 		for h in data_list:
 			h.Scale(1./h.Integral())
+                # for h in mc_list:
+		# 	h.Scale(1./h.Integral())
 	else:
 		print "[WARNING] No normalization defind for (ndata=%d, nmc%d)" % (ndata, nmc)
 
 def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
-		ylabel_unit="", logx = False, logy=False, ratio=False, stack_data=False, stack_mc=False):
+		ylabel_unit="", logx = False, logy=False, ratio=False, stack_data=False, stack_mc=False,
+		x_range = None):
 
 	mc_list = AsList(mc)
 	data_list = AsList(data)
@@ -245,13 +290,6 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 		minimum = 0.0
 		maximum *= 1.2
 	
-	dstack = None
-	if stack_data:
-		dstack = ROOT.THStack("dstack","")
-		for h in data_list:
-			dstack.Add(h)
-		dstack.Draw()
-
 	mcstack = None
 	if stack_mc:
 		mcstack = ROOT.THStack("mcstack","")
@@ -259,19 +297,26 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 			mcstack.Add(h)
 		mcstack.Draw()
 
-	if dstack:
-		h0 = dstack
-	elif mcstack:
+	dstack = None
+	if stack_data:
+		dstack = ROOT.THStack("dstack","")
+		for h in data_list:
+			dstack.Add(h)
+		dstack.Draw()
+
+
+	if mcstack:
 		h0 = mcstack
-	elif data_list:
-		h0 = data_list[0]
+	elif dstack:
+		h0 = dstack
 	elif mc_list:
 		h0 = mc_list[0]
+	elif data_list:
+		h0 = data_list[0]
 	else:
 		raise Exception("no histograms")
 
 	if not ratio:
-		print xlabel
 		h0.GetXaxis().SetTitle(xlabel)
 	else:
 		h0.GetXaxis().SetTitleOffset(3)
@@ -281,25 +326,28 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 	h0.GetYaxis().SetRangeUser(minimum, maximum)
 	h0.GetYaxis().SetTitleOffset(1.5)
 
+	if x_range:
+		h0.GetXaxis().SetRangeUser(*x_range)
+
 	same = ""
+	if mcstack:
+		mcstack.Draw("hist" + same)
+		same = "same"
+
 	#draw stacks
 	if dstack:
 		dstack.Draw("p" + same)
 		same = "same"
 
-	if mcstack:
-		mcstack.Draw("hist" + same)
-		same = "same"
-
 	#draw not stacks
-	if not stack_data:
-		for h in data_list:
-			h.Draw("p" + same)
-			same = "same" 
-
 	if not stack_mc:
 		for h in mc_list:
 			h.Draw("hist" + same)
+			same = "same" 
+
+	if not stack_data:
+		for h in data_list:
+			h.Draw("p" + same)
 			same = "same" 
 
 	x0 = ROOT.gPad.GetLeftMargin()
@@ -320,7 +368,11 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 	#pv.SetBorderSize(0)
 	#pv.Draw()
 
-	htemp = ROOT.TH1F("dummy","",1,h0.GetXaxis().GetXmin(),h0.GetXaxis().GetXmax())
+	if x_range:
+		low,hi = x_range
+	else:
+		low,hi = h0.GetXaxis().GetXmin(), h0.GetXaxis().GetXmax()
+	htemp = ROOT.TH1F("dummy","",1,low, hi)
 	if(ratio):
 		if not mc_list or not data_list:
 			print "[ERROR] Ratio plot with either no MC or no data"
@@ -337,26 +389,28 @@ def PlotDataMC(data, mc, file_path, file_basename, xlabel="", ylabel="",
 			ratio_mc = [h.Clone() for h in mc_list]
 
 		ratio_mc = AsList(ratio_mc)
-		ratio_mc[0].GetXaxis().SetTitle(xlabel)
-		ratio_mc[0].GetYaxis().SetTitle("MC/Data")
-		ratio_mc[0].GetXaxis().SetTitleSize(1.2*.072)
-		ratio_mc[0].GetXaxis().SetLabelSize(.072)
-		ratio_mc[0].GetYaxis().SetTitleSize(1.2*.072)
-		ratio_mc[0].GetYaxis().SetLabelSize(.072)
+		htemp.GetXaxis().SetTitle(xlabel)
+		htemp.GetYaxis().SetTitle("MC/Data")
+		htemp.GetXaxis().SetTitleSize(1.2*.072)
+		htemp.GetXaxis().SetLabelSize(.072)
+		htemp.GetYaxis().SetTitleSize(1.2*.072)
+		htemp.GetYaxis().SetLabelSize(.072)
 		try:
-			ratio_mc[0].GetYaxis().SetRangeUser(*ratio)
+			htemp.GetYaxis().SetRangeUser(*ratio)
 		except:
 			pass
-		same = ""
-		for h in ratio_mc:
-			h.Divide(data_list[0])
-			h.Draw(same)
-			same = "same"
+		if x_range:
+			htemp.GetXaxis().SetRangeUser(*x_range)
 		htemp.SetBinContent(1, 1)
 		htemp.SetLineColor(data_list[0].GetMarkerColor())
 		htemp.SetLineWidth(2)
-		htemp.Draw("hist" + same)
+		htemp.Draw("hist")
+		same = "same"
+		for h in ratio_mc:
+			h.Divide(data_list[0])
+			h.Draw(same)
 
+	mkdir_p(file_path)
 	c.SaveAs(file_path + '/' + file_basename + ".png")
 	c.SaveAs(file_path + '/' + file_basename + ".pdf")
 	c.SaveAs(file_path + '/' + file_basename + ".C")
@@ -369,7 +423,7 @@ def NormalizeStack(stack, normalizeTo=1):
 	for h in stack:
 		h.Scale(1./stack_sum)
 		hstack.Add(h)
-	
+
 	return hstack.GetStack(), hstack
 
 def FoldTH2(h):
@@ -382,7 +436,7 @@ def FoldTH2(h):
 			h.SetBinContent(i,j, 0)
 	h.SetEntries(entries)
 
-def Draw2D(h, label, name, diagBins=None, plotdir="plots/", logx=False, logy=False):
+def Draw2D(h, label, name, diagBins=None, plotdir="plots/", logx=False, logy=False, logz=False):
 	c = ROOT.TCanvas("c","c", 800, 500)
 
 	c.SetRightMargin(.3)
@@ -403,6 +457,7 @@ def Draw2D(h, label, name, diagBins=None, plotdir="plots/", logx=False, logy=Fal
 	c.Update()
 	if logx: c.SetLogx()
 	if logy: c.SetLogy()
+	if logz: c.SetLogz()
 
 	if diagBins:
 		boxes = []
